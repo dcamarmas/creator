@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <title>WepSim</title>
+
+    <!-- Required Stylesheets -->
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Required scripts -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+  </head>
+
+  <body>
+    <div id="app">
+      <template>
+        <header>
+          <!-- 1 navbar -->
+          <div class="contenedor cabecera row">
+            <div class="col-lg-8 col-sm-12 row">
+              <div class="col-lg-12 col-sm-12">
+                <b-navbar-brand href="wepsim.html">
+                  <h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5>
+                </b-navbar-brand>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-sm-12 row">
+              <div class="col-lg-4 col-sm-4">
+                <img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt">
+              </div>
+              <div class="col-lg-8 col-sm-7">
+                <img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt">
+              </div>
+            </div>
+          </div>
+
+          <!-- 2 navbar -->
+          <div class="contenedor menu row">
+            <div class="col-lg-5 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoMenu">Configuration</b-button>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoMenu">MicroCode</b-button>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoMenu">Assembly</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-2 col-sm-12">
+
+            </div>
+
+            <div class="col-lg-5 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block" style="background-color:#FAFAFA;">Examples</b-button>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block" style="background-color:#D4DB17;">Help</b-button>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block dropdown-toggle" style="background-color:#D4DB17;">Instructive</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <div class="contenedor row">
+            <!-- pestañas -->
+            <div class="col-lg-8 col-sm-12">
+              <b-tabs>
+                <b-tab title="Data">
+                    <b-table striped hover :items="data"></b-table>
+                </b-tab>
+                <b-tab title="Instructions" >
+                    <b-table striped hover :items="instructions"></b-table>
+                </b-tab>
+              </b-tabs>
+
+
+              <b-button @click="prueba()">Prueba</b-button> <!-- PRUEBA -->
+
+
+
+            </div>
+
+            <!-- lateral datos -->
+            <div class="col-lg-4 col-sm-12">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col-lg-3 col-sm-3 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
+                      <span class="fa fa-power-off"></span>
+                      <br>
+                      Reset
+                    </b-button>
+                  </div>
+                  <div class="col-lg-3 col-sm-3 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
+                      <span class="fa fa-forward"></span>
+                      <br>
+                      µInst.
+                    </b-button>
+                  </div>
+                  <div class="col-lg-3 col-sm-3 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
+                      <span class="fa fa-forward"></span>
+                      <br>
+                      Inst.
+                    </b-button>
+                  </div>
+                  <div class="col-lg-3 col-sm-3 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
+                      <span class="fa fa-play"></span>
+                      <br>
+                      Run
+                    </b-button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoOpciones">
+                      <span class="fa fa-camera"></span>
+                      States 
+                    </b-button>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <select class="form-control border border-secondary" style="background-color: white; color: black, " id="selectData">
+                      <option value="CPU" disabled><b>CPU</b></option>
+                      <option value="CPU-INT Registers">  CPU-INT Registers</option>
+                      <option value="CPU-FP Registers">  CPU-FP Registers</option>
+                      <option value="CPU-Stats">  CPU-Stats</option>
+
+                      <option value="Main Memory" disabled><b>Main Memory</b></option>
+                      <option value="MM-Memory">  MM-Memory</option>
+                      <option value="MM-Configuration">  MM-Configuration</option>
+
+                      <option value="Devices" disabled><b>Devices</b></option>
+                      <option value="Dev-Keyboard+Display">    Dev-Keyboard+Display</option>
+                      <option value="Dev-I/O Stats">  Dev-I/O Stats</option>
+                      <option value="Dev-I/O Configuration">  Dev-I/O Configuration</option>
+                    </select>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block grupoOpciones">
+                      <span class="fa fa-refresh"></span>
+                      Refresh 
+                    </b-button>
+                  </div>
+                </div>
+                <hr>
+              </div>
+
+
+              <!-- registros enteros-->
+
+              <div class="col-lg-12 col-sm-12" id="int registers">
+                <div class="col-lg-12 col-sm-12 botones">
+                  <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                     PC  <b-badge>{{ pc }}</b-badge>
+                  </b-button>
+                </div>
+
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       EPC  <b-badge>{{epc}}</b-badge>
+                    </b-button>
+                  </div>
+
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       Cause  <b-badge>{{cause}}</b-badge>
+                    </b-button>
+                  </div>
+
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       BadVAddr  <b-badge>{{badvaddr}}</b-badge>
+                    </b-button>
+                  </div>
+                </div>
+
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       Status  <b-badge>{{status}}</b-badge>
+                    </b-button>
+                  </div>
+
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       HI  <b-badge>{{hi}}</b-badge>
+                    </b-button>
+                  </div>
+
+                  <div class="col-lg-4 col-sm-4 botones">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       LO  <b-badge>{{lo}}</b-badge>
+                    </b-button>
+                  </div>
+                </div>
+
+                <hr>
+
+
+
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col botones" v-for="item in reg_int">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       {{item.name}}  <b-badge>{{item.value}}</b-badge>
+                    </b-button>
+                  </div>
+                </div>
+
+
+              <!-- registros reales-->
+                <div class="col-lg-12 col-sm-12 botones row">
+                  <div class="col botones" v-for="item in reg_fp">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
+                       {{item.name}}  <b-badge>{{item.value + " x "}}</b-badge>
+                    </b-button>
+                  </div>
+                </div>
+
+                </div>
+              </div>
+
+            </div>
+          </div>
+      </template>
+    </div>
+
+    <script src="js/app.js"></script>
+
+  </body>
+</html>
