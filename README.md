@@ -1,4 +1,4 @@
 # WepMIPS
-WebMIPS
+WepMIPS
 
 Author: Diego Camarmas Alonso
