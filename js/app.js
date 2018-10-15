@@ -24,13 +24,15 @@ const instructions = [
 
 
 /*Datos de los registros de control*/
-const pc ={name:"PC", nbits:"32", value:0, default_value:0};
-const epc ={name:"EPC", nbits:"32", value:0, default_value:0};
-const cause ={name:"CAUSE", nbits:"32", value:0, default_value:0};
-const badvaddr ={name:"BADVADDR", nbits:"32", value:0, default_value:0};
-const status ={name:"STATUS", nbits:"32", value:0, default_value:0};
-const hi ={name:"HI", nbits:"32", value:0, default_value:0};
-const lo ={name:"LO", nbits:"32", value:0, default_value:0};
+const contr_reg =[
+  {name:"PC", nbits:"32", value:0, default_value:0},
+  {name:"EPC", nbits:"32", value:0, default_value:0},
+  {name:"CAUSE", nbits:"32", value:0, default_value:0},
+  {name:"BADVADDR", nbits:"32", value:0, default_value:0},
+  {name:"STATUS", nbits:"32", value:0, default_value:0},
+  {name:"HI", nbits:"32", value:0, default_value:0},
+  {name:"LO", nbits:"32", value:0, default_value:0},
+]
 
 /*Datos de los registros enteros*/
 const int_reg =[
@@ -104,24 +106,12 @@ const fp_reg =[
   {name:"FP31", nbits:"32", value:0.0, default_value:0.0},
 ]
 
-function square() {
-  for (var i = Things.length - 1; i >= 0; i--) {
-    Things[i]
-  }
-}
-
 window.app = new Vue({
   el: "#app",
   data: {
 
     /*Asignacion de valores de los registros de control*/
-    pc: pc.value,
-    epc: epc.value,
-    cause: cause.value,
-    badvaddr: badvaddr.value,
-    status: status.value,
-    hi: hi.value,
-    lo:lo.value,
+    reg_contr: contr_reg,
     /*Asignacion de valores de los registros enteros*/
     reg_int: int_reg,
     /*Asignacion de valores de los registros reales*/
