@@ -18,6 +18,7 @@
     <script src="https://unpkg.com/vue"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   </head>
 
   <body>
@@ -25,10 +26,10 @@
       <template>
         <header>
           <!-- 1 navbar -->
-          <div class="contenedor cabecera row">
+          <div class="contenedor header row">
             <div class="col-lg-8 col-sm-12 row">
               <div class="col-lg-12 col-sm-12">
-                <b-navbar-brand href="wepsim.html">
+                <b-navbar-brand href="index.html">
                   <h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5>
                 </b-navbar-brand>
               </div>
@@ -43,48 +44,47 @@
               </div>
             </div>
           </div>
-
-          <!-- 2 navbar -->
-          <div class="contenedor menu row">
-            <div class="col-lg-5 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoMenu">Configuration</b-button>
-                  </div>
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoMenu">MicroCode</b-button>
-                  </div>
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoMenu">Assembly</b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-2 col-sm-12">
-
-            </div>
-
-            <div class="col-lg-5 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block" style="background-color:#FAFAFA;">Examples</b-button>
-                  </div>
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block" style="background-color:#D4DB17;">Help</b-button>
-                  </div>
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block dropdown-toggle" style="background-color:#D4DB17;">Instructive</b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
         </header>
 
-        <div class="contenedor row">
+        <div class="contenedor row" id="simulator">
+	        	<!-- 2 navbar -->
+	          <div class="contenedor menu row">
+	            <div class="col-lg-4 col-sm-12 nopadding">
+	              <div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim">Configuration</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn" id="micro_btn_sim">MicroCode</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim">Assembly</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-3 col-sm-12">
+
+	            </div>
+
+	            <div class="col-lg-5 col-sm-12 nopadding">
+	              <div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block btn-sm" style="background-color:#FAFAFA;">Examples</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block btn-sm" style="background-color:#D4DB17;">Help</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block dropdown-toggle btn-sm" style="background-color:#D4DB17;">Instructive</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+	          </div>
             <!-- pestañas -->
             <div class="col-lg-8 col-sm-12">
               <b-tabs>
@@ -106,30 +106,30 @@
             <!-- lateral datos -->
             <div class="col-lg-4 col-sm-12">
               <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col-lg-3 col-sm-3 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-3 col-sm-3 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
                       <span class="fa fa-power-off"></span>
                       <br>
                       Reset
                     </b-button>
                   </div>
-                  <div class="col-lg-3 col-sm-3 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
-                      <span class="fa fa-forward"></span>
+                  <div class="col-lg-3 col-sm-3 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
+                      <span class="fa fa-step-forward"></span>
                       <br>
                       µInst.
                     </b-button>
                   </div>
-                  <div class="col-lg-3 col-sm-3 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
-                      <span class="fa fa-forward"></span>
+                  <div class="col-lg-3 col-sm-3 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
+                      <span class="fa fa-fast-forward"></span>
                       <br>
                       Inst.
                     </b-button>
                   </div>
-                  <div class="col-lg-3 col-sm-3 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoAcciones">
+                  <div class="col-lg-3 col-sm-3 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
                       <span class="fa fa-play"></span>
                       <br>
                       Run
@@ -139,15 +139,15 @@
               </div>
 
               <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoOpciones">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm">
                       <span class="fa fa-camera"></span>
                       States 
                     </b-button>
                   </div>
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <select class="form-control border border-secondary" style="background-color: white; color: black, " id="selectData">
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <select class="form-control border border-secondary form-control-sm" style="background-color: white; color: black, " id="selectData">
                       <option value="CPU" disabled><b>CPU</b></option>
                       <option value="CPU-INT Registers">  CPU-INT Registers</option>
                       <option value="CPU-FP Registers">  CPU-FP Registers</option>
@@ -163,8 +163,8 @@
                       <option value="Dev-I/O Configuration">  Dev-I/O Configuration</option>
                     </select>
                   </div>
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block grupoOpciones">
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm">
                       <span class="fa fa-refresh"></span>
                       Refresh 
                     </b-button>
@@ -173,87 +173,184 @@
                 <hr>
               </div>
 
-
               <!-- registros enteros-->
-
-              <div class="col-lg-12 col-sm-12" id="int registers">
-                <div class="col-lg-12 col-sm-12 botones">
-                  <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                     PC  <b-badge>{{ pc }}</b-badge>
-                  </b-button>
-                </div>
-
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       EPC  <b-badge>{{epc}}</b-badge>
-                    </b-button>
-                  </div>
-
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       Cause  <b-badge>{{cause}}</b-badge>
-                    </b-button>
-                  </div>
-
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       BadVAddr  <b-badge>{{badvaddr}}</b-badge>
-                    </b-button>
-                  </div>
-                </div>
-
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       Status  <b-badge>{{status}}</b-badge>
-                    </b-button>
-                  </div>
-
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       HI  <b-badge>{{hi}}</b-badge>
-                    </b-button>
-                  </div>
-
-                  <div class="col-lg-4 col-sm-4 botones">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       LO  <b-badge>{{lo}}</b-badge>
+              <div class="col-lg-12 col-sm-12" id="int_registers">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_contr">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge>
                     </b-button>
                   </div>
                 </div>
 
                 <hr>
 
-
-
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col botones" v-for="item in reg_int">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       {{item.name}}  <b-badge>{{item.value}}</b-badge>
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge>
                     </b-button>
                   </div>
                 </div>
-
+              </div>
 
               <!-- registros reales-->
-                <div class="col-lg-12 col-sm-12 botones row">
-                  <div class="col botones" v-for="item in reg_fp">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registros">
-                       {{item.name}}  <b-badge>{{item.value + " x "}}</b-badge>
+              <div class="col-lg-12 col-sm-12" id="fp_registers">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value + " x "}}</b-badge>
                     </b-button>
                   </div>
-                </div>
-
                 </div>
               </div>
 
             </div>
-          </div>
+
+        </div>
+
+        <div class="contenedor row" id="microcode">
+        		<!-- 2 navbar -->
+	          <div class="contenedor menu row">
+	            <div class="col-lg-4 col-sm-12 nopadding">
+	              <div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_micro">Configuration</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_micro">Assembly</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_micro">Simulator</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-2 col-sm-12 nopadding">
+								<div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-6 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_micro"><span class="fa fa-upload"></span> Load</b-button>
+	                  </div>
+	                  <div class="col-lg-6 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_micro"><span class="fa fa-download"></span> Save</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-5 col-sm-12 nopadding">
+								<div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-3 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_micro"><span class="fa fa-sign-in"></span> µcompile</b-button>
+	                  </div>
+	                  <div class="col-lg-9 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_micro"><span class="fa fa-microchip"></span> Show co2µaddr + control memory</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-1 col-sm-12 nopadding">
+	            	<div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	              		<div class="col-lg-12 col-sm-12 buttons">
+	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_micro" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
+	              		</div>
+	            		</div>
+	              </div>
+	            </div>
+	          </div>
+
+	          <div class="contenedor menu row">
+	          	<div class="col-lg-12 col-sm-12">
+	          		<h5>Microcode:</h5>
+	          	</div>
+	          	<div class="col-lg-12 col-sm-12">
+	          		<b-form-textarea id="textarea_micro"
+                     v-model="text"
+                     :rows="11">
+    						</b-form-textarea>
+	          	</div>
+	          </div>
+        </div>
+
+        <div class="contenedor row" id="assembly">
+        		<!-- 2 navbar -->
+	          <div class="contenedor menu row">
+	            <div class="col-lg-4 col-sm-12 nopadding">
+	              <div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assembly">Configuration</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn" id="micro_btn_assembly">MicroCode</b-button>
+	                  </div>
+	                  <div class="col-lg-4 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly">Simulator</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-2 col-sm-12 nopadding">
+								<div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-6 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly"><span class="fa fa-upload"></span> Load</b-button>
+	                  </div>
+	                  <div class="col-lg-6 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly"><span class="fa fa-download"></span> Save</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-5 col-sm-12 nopadding">
+								<div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-3 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly"><span class="fa fa-sign-in"></span> Compile</b-button>
+	                  </div>
+	                  <div class="col-lg-9 col-sm-4 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_assembly"><span class="fa fa-microchip"></span> Show Main Memory</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-1 col-sm-12 nopadding">
+	            	<div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	              		<div class="col-lg-12 col-sm-12 buttons">
+	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_assembly" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
+	              		</div>
+	            		</div>
+	              </div>
+	            </div>
+	          </div>
+
+	          <div class="contenedor menu row">
+	          	<div class="col-lg-12 col-sm-12">
+	          		<h5>Assembly:</h5>
+	          	</div>
+	          	<div class="col-lg-12 col-sm-12">
+	          		<b-form-textarea id="textarea_micro"
+                     v-model="text"
+                     :rows="11">
+    						</b-form-textarea>
+	          	</div>
+	          </div>
+        </div>
       </template>
     </div>
 
     <script src="js/app.js"></script>
+    <script src="js/buttons_actions.js"></script>
 
   </body>
 </html>
