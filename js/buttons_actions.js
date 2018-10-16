@@ -3,8 +3,10 @@ $(document).ready(function(){
 	$("#simulator").show();
   $("#microcode").hide();
   $("#assembly").hide();
+  
   $("#int_registers").show();
   $("#fp_registers").hide();
+  $("#memory").hide();
 
 });
 
@@ -31,9 +33,16 @@ $("#selectData").change(function(){
     if(value == "CPU-FP Registers"){
     	$("#int_registers").hide();
   		$("#fp_registers").show();
+  		$("#memory").hide();
     }
     if(value == "CPU-INT Registers") {
     	$("#int_registers").show();
   		$("#fp_registers").hide();
+  		$("#memory").hide();
+    }
+    if(value == "MM-Memory") {
+    	$("#int_registers").hide();
+  		$("#fp_registers").hide();
+  		$("#memory").show();
     }
 });
