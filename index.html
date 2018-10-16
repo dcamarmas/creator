@@ -85,15 +85,20 @@
 	              </div>
 	            </div>
 	          </div>
-            <!-- Tabla -->
+            <!-- pestañas -->
             <div class="col-lg-8 col-sm-12">
-              <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
-                <b-table striped small hover :items="instructions" class="instructions_table"></b-table>
-              </div>
-      
+              <b-tabs>
+                <b-tab title="Data">
+                    <b-table striped hover :items="data"></b-table>
+                </b-tab>
+                <b-tab title="Instructions" >
+                    <b-table striped hover :items="instructions"></b-table>
+                </b-tab>
+              </b-tabs>
 
 
               <b-button @click="prueba()">Prueba</b-button> <!-- PRUEBA -->
+
 
 
             </div>
@@ -102,21 +107,31 @@
             <div class="col-lg-4 col-sm-12">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
                       <span class="fa fa-power-off"></span>
+                      <br>
                       Reset
                     </b-button>
                   </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-3 col-sm-3 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
+                      <span class="fa fa-step-forward"></span>
+                      <br>
+                      µInst.
+                    </b-button>
+                  </div>
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
                       <span class="fa fa-fast-forward"></span>
+                      <br>
                       Inst.
                     </b-button>
                   </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
                       <span class="fa fa-play"></span>
+                      <br>
                       Run
                     </b-button>
                   </div>
@@ -133,16 +148,16 @@
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
                     <select class="form-control border border-secondary form-control-sm" style="background-color: white; color: black, " id="selectData">
-                      <option value="CPU" disabled>CPU</option>
+                      <option value="CPU" disabled><b>CPU</b></option>
                       <option value="CPU-INT Registers">  CPU-INT Registers</option>
                       <option value="CPU-FP Registers">  CPU-FP Registers</option>
                       <option value="CPU-Stats">  CPU-Stats</option>
 
-                      <option value="Main Memory" disabled>Main Memory</option>
+                      <option value="Main Memory" disabled><b>Main Memory</b></option>
                       <option value="MM-Memory">  MM-Memory</option>
                       <option value="MM-Configuration">  MM-Configuration</option>
 
-                      <option value="Devices" disabled>Devices</option>
+                      <option value="Devices" disabled><b>Devices</b></option>
                       <option value="Dev-Keyboard+Display">    Dev-Keyboard+Display</option>
                       <option value="Dev-I/O Stats">  Dev-I/O Stats</option>
                       <option value="Dev-I/O Configuration">  Dev-I/O Configuration</option>
@@ -158,10 +173,10 @@
                 <hr>
               </div>
 
-              <!-- CPU-INT Registers-->
+              <!-- registros enteros-->
               <div class="col-lg-12 col-sm-12" id="int_registers">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int_contr">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_contr">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge>
                     </b-button>
@@ -179,41 +194,14 @@
                 </div>
               </div>
 
-              <!-- CPU-FP Registers-->
+              <!-- registros reales-->
               <div class="col-lg-12 col-sm-12" id="fp_registers">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_contr">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value + " x "}}</b-badge>
                     </b-button>
                   </div>
-                </div>
-
-                <hr>
-
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_single">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge>
-                    </b-button>
-                  </div>
-                </div>
-
-                <hr>
-
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_double">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge>
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- MM-Memory-->
-              <div class="col-lg-12 col-sm-12" id="memory">
-                <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                  <b-table striped small hover :items="memory" class="memory_table"></b-table>
                 </div>
               </div>
 
@@ -351,7 +339,7 @@
 	          		<h5>Assembly:</h5>
 	          	</div>
 	          	<div class="col-lg-12 col-sm-12">
-	          		<b-form-textarea id="textarea_assembly"
+	          		<b-form-textarea id="textarea_micro"
                      v-model="text"
                      :rows="11">
     						</b-form-textarea>

@@ -22,7 +22,6 @@ hr {
     width:100%;     
 	align-items: center;
 	margin: 5px;
-	margin-bottom: 10px;
 }
 
 .nopadding{
@@ -51,30 +50,6 @@ hr {
 .registers{
 	background-color: #f5f5f5;
 }
-
-.instructions_table{
-	font-size: 16px;
-}
-
-.table-inst-wrapper-scroll-y {
-  display: block;
-  max-height: 600px;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.memory_table{
-	font-size: 13px;
-}
-
-.table-mem-wrapper-scroll-y {
-  display: block;
-  max-height: 400px;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 .flexbox { display: flex; }
