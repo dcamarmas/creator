@@ -74,7 +74,12 @@ hr {
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
-
+.code-scroll-y {
+  display: block;
+  max-height: 450px;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 .flexbox { display: flex; }
