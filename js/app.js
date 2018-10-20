@@ -108,6 +108,10 @@ const contr_fp_reg =[
 const fp_reg_single_precision=[]
 const fp_reg_double_precision=[]
 
+/*Variables q almacenan el codigo introducido*/
+var code_assembly = '';
+var code_micro = '';
+
 /*Funcion que genera la estructura de datos segun el numero de registros*/
 function register_generator(){
   for (var i = 0; i < num_int_reg; i++) {
@@ -119,6 +123,10 @@ function register_generator(){
   for (var i = 0; i < num_fp_reg_double_precision; i++) {
     fp_reg_double_precision.push({name:"FP"+(i*2), nbits: num_bits, value:0.0, default_value:0.0, read: true, write: true});
   }
+}
+
+function destroyClickedElement(event) {
+  document.body.removeChild(event.target);
 }
 
 window.app = new Vue({
@@ -136,8 +144,8 @@ window.app = new Vue({
     /*Asignacion de valores de los registros reales de doble precision*/
     reg_fp_double: fp_reg_double_precision,
     /*Variables donde se guardan los contenidos de los textarea*/
-    text_micro: '',
-    text_assembly: '',
+    text_micro: code_micro,
+    text_assembly: code_assembly,
     /*Variables donde se guardan los ficheros cargados*/
     load_assembly: '',
     load_micro: '',
@@ -174,6 +182,86 @@ window.app = new Vue({
       for (var i = 0; i < num_fp_reg_double_precision; i++) {
         fp_reg_double_precision[i].value = fp_reg_double_precision[i].default_value;
       }
+    },
+
+    read_assembly(e){
+      var file;
+      var reader;
+      var files = document.getElementById('assembly_file').files;
+
+      for (var i = 0; i < files.length; i++) {
+        file = files[i];
+        reader = new FileReader();
+        reader.onloadend = onFileLoaded;
+        reader.readAsBinaryString(file);
+      }
+
+      function onFileLoaded(event) {
+        code_assembly = event.currentTarget.result;
+      }
+    },
+
+    assembly_update(){
+      this.text_assembly = code_assembly;
+    },
+
+    assembly_save(){
+      var textToWrite = this.text_assembly;
+      var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
+      var fileNameToSaveAs = this.save_assembly + ".txt";
+
+      var downloadLink = document.createElement("a");
+      downloadLink.download = fileNameToSaveAs;
+      downloadLink.innerHTML = "My Hidden Link";
+
+      window.URL = window.URL || window.webkitURL;
+
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+      downloadLink.onclick = destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+
+      downloadLink.click();
+    },
+
+    read_micro(e){
+      var file;
+      var reader;
+      var files = document.getElementById('micro_file').files;
+
+      for (var i = 0; i < files.length; i++) {
+        file = files[i];
+        reader = new FileReader();
+        reader.onloadend = onFileLoaded;
+        reader.readAsBinaryString(file);
+      }
+
+      function onFileLoaded(event) {
+        code_micro = event.currentTarget.result;
+      }
+    },
+
+    micro_update(){
+      this.text_micro = code_micro;
+    },
+
+    micro_save(){
+      var textToWrite = this.text_micro;
+      var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
+      var fileNameToSaveAs = this.save_micro + ".txt";
+
+      var downloadLink = document.createElement("a");
+      downloadLink.download = fileNameToSaveAs;
+      downloadLink.innerHTML = "My Hidden Link";
+
+      window.URL = window.URL || window.webkitURL;
+
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+      downloadLink.onclick = destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+
+      downloadLink.click();
     }
   }
 })

@@ -282,19 +282,17 @@
 	          		<h5>Microcode:</h5>
 	          	</div>
 	          	<div class="col-lg-12 col-sm-12">
-	          		<b-form-textarea id="textarea_micro"
-                     v-model="text_micro"
-                     :rows="11">
+	          		<b-form-textarea id="textarea_micro" v-model="text_micro" :rows="11" class="code-scroll-y">
     						</b-form-textarea>
 	          	</div>
 	          </div>
 
-	          <b-modal id = "load_micro" title = "Load Microcode" ok-title="Load from this File">
+	          <b-modal id = "load_micro" title = "Load Microcode" ok-title="Load from this File" @ok="micro_update">
 					    <p> Please select the microcode file to be loaded: </p> 
-					    <b-form-file v-model="load_micro" :state="Boolean(load_micro)" placeholder="Choose a file..."></b-form-file>
+					    <b-form-file v-model="load_micro" :state="Boolean(load_micro)" placeholder="Choose a file..." id="micro_file" @change="read_micro"></b-form-file>
 					  </b-modal >
 
-					  <b-modal  id = "save_micro"   title = "Save Microcode" ok-title="Save to File">
+					  <b-modal  id = "save_micro"   title = "Save Microcode" ok-title="Save to File" @ok="micro_save">
 					    <p> Please write the file name: </p> 
 					    <b-form-input v-model="save_micro"
                   type="text"
@@ -365,19 +363,17 @@
 	          		<h5>Assembly:</h5>
 	          	</div>
 	          	<div class="col-lg-12 col-sm-12">
-	          		<b-form-textarea id="textarea_assembly"
-                     v-model="text_assembly"
-                     :rows="11">
+	          		<b-form-textarea id="textarea_assembly" v-model="text_assembly" :rows="11" class="code-scroll-y">
     						</b-form-textarea>
 	          	</div>
 	          </div>
 
-	          <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File">
+	          <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File" @ok="assembly_update">
 					    <p> Please select the assembly file to be loaded </p> 
-					    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..."></b-form-file>
+					    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." @change="read_assembly" id="assembly_file"></b-form-file>
 					  </b-modal  >
 
-					  <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File">
+					  <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File" @ok="assembly_save">
 					    <p> Please write the file name: </p> 
 					    <b-form-input v-model="save_assembly"
                   type="text"
