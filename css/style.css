@@ -58,7 +58,7 @@ hr {
 
 .table-inst-wrapper-scroll-y {
   display: block;
-  max-height: 600px;
+  max-height: 90vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
@@ -69,14 +69,14 @@ hr {
 
 .table-mem-wrapper-scroll-y {
   display: block;
-  max-height: 400px;
+  max-height: 75vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
 .code-scroll-y {
   display: block;
-  max-height: 450px;
+  max-height: 75vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }

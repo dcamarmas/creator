@@ -35,52 +35,16 @@ const instructions = [
   { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
 
 ]
-
+/*Ejemplos de memoria*/
 const memory = [
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-  { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-  { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-  { isActive: false, age: 89, first_name: 'Geneva', last_name: 'Wilson' },
-  { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' },
-
+  { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
+  { Address: "0x01007-0x01004", Binary: "61 65 6c 50", Tag: 'b', Value: 30 },
+  { Address: "0x0100b-0x01008", Binary: "61 65 6c 50", Tag: 'msg', Value: "hello wold" },
+  { Address: "0x0100f-0x0100c", Binary: "61 65 6c 50", Tag: 'msg2', Value: "Please, press letter '0' to end the 'echo' effect" },
 ]
 
-
-
-
 /*Variables que indican la configuracion del procesador*/
-var assembly_type = "MIPS32";
-var num_bits = 32;
-var num_int_reg = 32;
-var num_fp_reg_single_precision = 32;
-var num_fp_reg_double_precision = 16;
+var conf = {assembly_type: "MIPS32", num_bits: 32, num_int_reg: 32, num_fp_reg_single_precision: 32, num_fp_reg_double_precision:16}
 
 /*Datos de los registros de control de los enteros*/
 const contr_int_reg =[
@@ -114,14 +78,14 @@ var code_micro = '';
 
 /*Funcion que genera la estructura de datos segun el numero de registros*/
 function register_generator(){
-  for (var i = 0; i < num_int_reg; i++) {
-    int_reg.push({name:"R"+i, nbits: num_bits, value:0, default_value:0, read: true, write: true});
+  for (var i = 0; i < conf.num_int_reg; i++) {
+    int_reg.push({name:"R"+i, nbits: conf.num_bits, value:0, default_value:0, read: true, write: true});
   }
-  for (var i = 0; i < num_fp_reg_single_precision; i++) {
-    fp_reg_single_precision.push({name:"FG"+i, nbits: num_bits, value:0.0, default_value:0.0, read: true, write: true});
+  for (var i = 0; i < conf.num_fp_reg_single_precision; i++) {
+    fp_reg_single_precision.push({name:"FG"+i, nbits: conf.num_bits, value:0.0, default_value:0.0, read: true, write: true});
   }
-  for (var i = 0; i < num_fp_reg_double_precision; i++) {
-    fp_reg_double_precision.push({name:"FP"+(i*2), nbits: num_bits, value:0.0, default_value:0.0, read: true, write: true});
+  for (var i = 0; i < conf.num_fp_reg_double_precision; i++) {
+    fp_reg_double_precision.push({name:"FP"+(i*2), nbits: conf.num_bits, value:0.0, default_value:0.0, read: true, write: true});
   }
 }
 
