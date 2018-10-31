@@ -19,6 +19,7 @@
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   </head>
 
   <body onload="register_generator()">
@@ -90,12 +91,6 @@
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
                 <b-table striped small hover :items="instructions" class="instructions_table"></b-table>
               </div>
-      
-
-
-              <b-button @click="prueba()">Prueba</b-button> <!-- PRUEBA -->
-
-
             </div>
 
             <!-- lateral datos -->
@@ -161,10 +156,53 @@
               <!-- CPU-INT Registers-->
               <div class="col-lg-12 col-sm-12" id="int_registers">
                 <div class="col-lg-12 col-sm-12 buttons row">
+                  
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int_contr">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
                     </b-button>
+
+                    <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
+							        <b-container fluid>
+												<table class="table table-bordered table-sm popoverText">
+												  <tbody>
+												    <tr>
+												      <td>Hex.</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Binary</td>
+												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Signed</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Unsig.</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Char</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>float</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												  </tbody>
+												</table>
+
+												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
+					            		</div>
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateIntcontr(item.name)">Update</b-button>
+					            		</div>
+				            		</div>
+					            </b-container>
+							      </b-popover>
                   </div>
                 </div>
 
@@ -172,9 +210,52 @@
 
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
                     </b-button>
+
+                    <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
+							        <b-container fluid>
+												<table class="table table-bordered table-sm popoverText">
+												  <tbody>
+												    <tr>
+												      <td>Hex.</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Binary</td>
+												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Signed</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Unsig.</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Char</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>float</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												  </tbody>
+												</table>
+
+												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
+					            		</div>
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateIntReg(item.name)">Update</b-button>
+					            		</div>
+				            		</div>
+					            </b-container>
+							      </b-popover>
+
                   </div>
                 </div>
               </div>
@@ -183,9 +264,52 @@
               <div class="col-lg-12 col-sm-12" id="fp_registers">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_contr">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
                     </b-button>
+
+                    <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
+							        <b-container fluid>
+												<table class="table table-bordered table-sm popoverText">
+												  <tbody>
+												    <tr>
+												      <td>Hex.</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Binary</td>
+												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Signed</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Unsig.</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Char</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>float</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												  </tbody>
+												</table>
+
+												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
+					            		</div>
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpContr(item.name)">Update</b-button>
+					            		</div>
+				            		</div>
+					            </b-container>
+							      </b-popover>
+
                   </div>
                 </div>
 
@@ -193,9 +317,52 @@
 
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_single">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
                     </b-button>
+
+                    <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
+							        <b-container fluid>
+												<table class="table table-bordered table-sm popoverText">
+												  <tbody>
+												    <tr>
+												      <td>Hex.</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Binary</td>
+												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Signed</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Unsig.</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Char</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>float</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												  </tbody>
+												</table>
+
+												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
+					            		</div>
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpSingle(item.name)">Update</b-button>
+					            		</div>
+				            		</div>
+					            </b-container>
+							      </b-popover>
+
                   </div>
                 </div>
 
@@ -203,9 +370,52 @@
 
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_double">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
                     </b-button>
+
+                    <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
+							        <b-container fluid>
+												<table class="table table-bordered table-sm popoverText">
+												  <tbody>
+												    <tr>
+												      <td>Hex.</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Binary</td>
+												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>Signed</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Unsig.</td>
+												      <td>{{item.value}}</td>
+												    </tr>
+												    <tr>
+												      <td>Char</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												    <tr>
+												      <td>float</td>
+												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
+												    </tr>
+												  </tbody>
+												</table>
+
+												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
+					            		</div>
+					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpDouble(item.name)">Update</b-button>
+					            		</div>
+				            		</div>
+					            </b-container>
+							      </b-popover>
+
                   </div>
                 </div>
               </div>
@@ -216,9 +426,7 @@
                   <b-table striped small hover :items="memory" class="memory_table"></b-table>
                 </div>
               </div>
-
             </div>
-
         </div>
 
         <div class="contenedor row" id="microcode">
@@ -244,10 +452,10 @@
 								<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_micro" v-b-modal.load_micro><span class="fa fa-upload"></span> Load</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_micro_btn" v-b-modal.load_micro><span class="fa fa-upload"></span> Load</b-button>
 	                  </div>
 	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_micro" v-b-modal.save_micro><span class="fa fa-download"></span> Save</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_micro_btn" v-b-modal.save_micro><span class="fa fa-download"></span> Save</b-button>
 	                  </div>
 	                </div>
 	              </div>
@@ -325,10 +533,10 @@
 								<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly" v-b-modal.load_assembly><span class="fa fa-upload"></span> Load</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly_btn" v-b-modal.load_assembly><span class="fa fa-upload"></span> Load</b-button>
 	                  </div>
 	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly" v-b-modal.save_assembly><span class="fa fa-download"></span> Save</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly_btn" v-b-modal.save_assembly><span class="fa fa-download"></span> Save</b-button>
 	                  </div>
 	                </div>
 	              </div>
