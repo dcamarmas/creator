@@ -29,20 +29,20 @@ $(".simulator_btn").click(function(){
 });
 
 $("#selectData").change(function(){
-    var value = document.getElementById("selectData").value;
-    if(value == "CPU-FP Registers"){
-    	$("#int_registers").hide();
-  		$("#fp_registers").show();
-  		$("#memory").hide();
-    }
-    if(value == "CPU-INT Registers") {
-    	$("#int_registers").show();
-  		$("#fp_registers").hide();
-  		$("#memory").hide();
-    }
-    if(value == "MM-Memory") {
-    	$("#int_registers").hide();
-  		$("#fp_registers").hide();
-  		$("#memory").show();
-    }
+  var value = document.getElementById("selectData").value;
+  if(value == "CPU-FP Registers"){
+  	$("#int_registers").hide();
+		$("#fp_registers").show();
+		$("#memory").hide();
+  }
+  if(value == "CPU-INT Registers") {
+  	$("#int_registers").show();
+		$("#fp_registers").hide();
+		$("#memory").hide();
+  }
+  if(value == "MM-Memory") {
+  	$("#int_registers").hide();
+		$("#fp_registers").hide();
+		$("#memory").show();
+  }
 });

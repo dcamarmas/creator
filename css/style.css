@@ -2,24 +2,24 @@ body{background-color: #FFFFFF;}
 
 hr {
 
-    height: 1px;
-    background-color: #9E9E9E;
+  height: 1px;
+  background-color: #9E9E9E;
 }
 
 .contenedor {
-    display: -webkit-flex;
-    display: flex;
-    width: 100%;
-    margin: 0px;
+  display: -webkit-flex;
+  display: flex;
+  width: 100%;
+  margin: 0px;
 }
 
 .header {
-    width:100%;     
+  width:100%;     
 	align-items: center;
 	background-color: #EAEAEA;
 }
 .menu {
-    width:100%;     
+  width:100%;     
 	align-items: center;
 	margin: 5px;
 	margin-bottom: 10px;
@@ -79,6 +79,14 @@ hr {
   max-height: 75vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.popoverFooter {
+  padding: 2px;
+}
+
+.popoverText {
+  font-size: 12px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

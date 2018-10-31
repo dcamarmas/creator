@@ -1,11 +1,11 @@
-/*PRUEBAS*/
-
+/*Ejemplos Instrucciones*/
 const instructions = [
   { Break: null, Address: "0x8000", Label: "main", assembly: "la $26 msg" },
   { Break: null, Address: "0x8004", Label: "loop1", assembly: "lb $27 ($26)" },
   { Break: null, Address: "0x8008", Label: "", assembly: "li $1 0" },
   { Break: null, Address: "0x800c", Label: "", assembly: "beq $27 $1 end1" },
 ]
+
 /*Ejemplos de memoria*/
 const memory = [
   { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
@@ -87,34 +87,33 @@ window.app = new Vue({
     /*Variables donde se guardan los nombre de los ficheros guardados*/
     save_assembly: '',
     save_micro: '',
-
-
-
-    /*PRUEBAS*/
+    /*Asignacion de valores de la tabla de instrucciones*/
     instructions: instructions,
-    memory:memory
+    /*Asignacion de valores de la tabla de memoria*/
+    memory:memory,
+    /*Nuevo valor del registro*/
+    newValue: '',
+
   },
   computed: {
-    
+
   },
   methods:{
-    /*PRUEBA*/
-    prueba (){
-      this.instructions[0].age = this.instructions[0].age + 1;
-
-      this.reg_int[0].value=this.reg_int[0].value+1;
-      this.reg_fp_single[0].value=this.reg_fp_single[0].value+1.2;
-    },
-
     /*Funcion que resetea todos los registros*/
     reset(){
-      for (var i = 0; i < num_int_reg; i++) {
+      for (var i = 0; i < contr_int_reg.length; i++) {
+         contr_int_reg[i].value =  contr_int_reg[i].default_value;
+      }
+      for (var i = 0; i < conf.num_int_reg; i++) {
         int_reg[i].value = int_reg[i].default_value;
       }
-      for (var i = 0; i < num_fp_reg_single_precision; i++) {
+      for (var i = 0; i < contr_fp_reg.length; i++) {
+        contr_fp_reg[i].value = contr_fp_reg[i].default_value;
+      }
+      for (var i = 0; i < conf.num_fp_reg_single_precision; i++) {
         fp_reg_single_precision[i].value = fp_reg_single_precision[i].default_value;
       }
-      for (var i = 0; i < num_fp_reg_double_precision; i++) {
+      for (var i = 0; i < conf.num_fp_reg_double_precision; i++) {
         fp_reg_double_precision[i].value = fp_reg_double_precision[i].default_value;
       }
     },
@@ -197,7 +196,56 @@ window.app = new Vue({
       document.body.appendChild(downloadLink);
 
       downloadLink.click();
-    }
+    },
+
+    popoverId(i){
+      return 'popoverValueContent' + i;
+    },
+
+    /*Funciones de actualizacion de los valores de los registros*/
+    updateIntcontr(j){
+      for (var i = 0; i < contr_int_reg.length; i++) {
+        if(contr_int_reg[i].name == j && this.newValue != ''){
+          contr_int_reg[i].value = parseInt(this.newValue, 10);
+        }
+      }
+      this.newValue = '';
+    },
+
+    updateIntReg(j){
+      for (var i = 0; i < int_reg.length; i++) {
+        if(int_reg[i].name == j && this.newValue != ''){
+          int_reg[i].value = parseInt(this.newValue, 10);
+        }
+      }
+      this.newValue = '';
+    },
+
+    updateRegFpContr(j){
+      for (var i = 0; i < contr_fp_reg.length; i++) {
+        if(contr_fp_reg[i].name == j && this.newValue != ''){
+          contr_fp_reg[i].value = parseInt(this.newValue, 10);
+        }
+      }
+      this.newValue = '';
+    },
+
+    updateRegFpSingle(j){
+      for (var i = 0; i < fp_reg_single_precision.length; i++) {
+        if(fp_reg_single_precision[i].name == j && this.newValue != ''){
+          fp_reg_single_precision[i].value = parseInt(this.newValue, 10);
+        }
+      }
+      this.newValue = '';
+    },
+
+    updateRegFpDouble(j){
+      for (var i = 0; i < fp_reg_double_precision.length; i++) {
+        if(fp_reg_double_precision[i].name == j && this.newValue != ''){
+          fp_reg_double_precision[i].value = parseInt(this.newValue, 10);
+        }
+      }
+      this.newValue = '';
+    },
   }
 })
-
