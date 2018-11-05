@@ -19,7 +19,6 @@
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
   </head>
 
   <body onload="register_generator()">
@@ -261,7 +260,7 @@
               </div>
 
               <!-- CPU-FP Registers-->
-              <div class="col-lg-12 col-sm-12" id="fp_registers">
+              <div class="col-lg-12 col-sm-12" id="fp_registers" style="display:none;">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_contr">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
@@ -421,7 +420,7 @@
               </div>
 
               <!-- MM-Memory-->
-              <div class="col-lg-12 col-sm-12" id="memory">
+              <div class="col-lg-12 col-sm-12" id="memory" style="display:none;">
                 <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
                   <b-table striped small hover :items="memory" class="memory_table"></b-table>
                 </div>
@@ -429,7 +428,7 @@
             </div>
         </div>
 
-        <div class="contenedor row" id="microcode">
+        <div class="contenedor row" id="microcode" style="display:none;">
         		<!-- 2 navbar -->
 	          <div class="contenedor menu row">
 	            <div class="col-lg-4 col-sm-12 nopadding">
@@ -510,7 +509,7 @@
 
         </div>
 
-        <div class="contenedor row" id="assembly">
+        <div class="contenedor row" id="assembly" style="display:none;">
         		<!-- 2 navbar -->
 	          <div class="contenedor menu row">
 	            <div class="col-lg-4 col-sm-12 nopadding">
