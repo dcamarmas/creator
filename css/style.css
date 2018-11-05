@@ -1,7 +1,6 @@
 body{background-color: #FFFFFF;}
 
 hr {
-
   height: 1px;
   background-color: #9E9E9E;
 }
@@ -18,6 +17,7 @@ hr {
 	align-items: center;
 	background-color: #EAEAEA;
 }
+
 .menu {
   width:100%;     
 	align-items: center;

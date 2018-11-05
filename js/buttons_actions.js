@@ -1,15 +1,3 @@
-$(document).ready(function(){
-
-	$("#simulator").show();
-  $("#microcode").hide();
-  $("#assembly").hide();
-  
-  $("#int_registers").show();
-  $("#fp_registers").hide();
-  $("#memory").hide();
-
-});
-
 $(".micro_btn").click(function(){
   $("#simulator").hide();
   $("#microcode").show();
