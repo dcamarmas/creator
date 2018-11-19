@@ -96,7 +96,7 @@ window.app = new Vue({
 
   },
   computed: {
-
+    
   },
   methods:{
     /*Funcion que resetea todos los registros*/
@@ -202,11 +202,53 @@ window.app = new Vue({
       return 'popoverValueContent' + i;
     },
 
+    hex2float ( hexvalue ){
+      var sign     = (hexvalue & 0x80000000) ? -1 : 1;
+      var exponent = ((hexvalue >> 23) & 0xff) - 127;
+      var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
+
+      var valuef = sign * mantissa * Math.pow(2, exponent);
+      if (-127 == exponent)
+          if (1 == mantissa)
+         valuef = (sign == 1) ? "+0" : "-0" ;
+          else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126) ;
+      if (128 == exponent)
+          if (1 == mantissa)
+         valuef = (sign == 1) ? "+Inf" : "-Inf" ;
+          else valuef = "NaN" ;
+
+      return valuef ;
+    },
+
+    hex2char8 ( hexvalue ){
+      var valuec = new Array();
+
+      valuec[0] = String.fromCharCode((hexvalue & 0xFF000000) >> 24) ;
+      valuec[1] = String.fromCharCode((hexvalue & 0x00FF0000) >> 16) ;
+      valuec[2] = String.fromCharCode((hexvalue & 0x0000FF00) >>  8) ;
+      valuec[3] = String.fromCharCode((hexvalue & 0x000000FF) >>  0) ;
+
+      var characters = '';
+
+      for (var i = 0; i < valuec.length; i++) {
+        characters = characters + valuec[i] + ' ';
+      }
+
+      return  characters;
+    },
+
     /*Funciones de actualizacion de los valores de los registros*/
     updateIntcontr(j){
       for (var i = 0; i < contr_int_reg.length; i++) {
-        if(contr_int_reg[i].name == j && this.newValue != ''){
-          contr_int_reg[i].value = parseInt(this.newValue, 10);
+        if(contr_int_reg[i].name == j && this.newValue.match(/^0x/)){
+          var value = this.newValue.split("x");
+          contr_int_reg[i].value = bigInt(value[1], 16);
+        }
+        else if(contr_int_reg[i].name == j && this.newValue.match(/^(\d)+/)){
+          contr_int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        }
+        else if(contr_int_reg[i].name == j && this.newValue.match(/^-/)){
+          contr_int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
       }
       this.newValue = '';
@@ -214,8 +256,15 @@ window.app = new Vue({
 
     updateIntReg(j){
       for (var i = 0; i < int_reg.length; i++) {
-        if(int_reg[i].name == j && this.newValue != ''){
-          int_reg[i].value = parseInt(this.newValue, 10);
+        if(int_reg[i].name == j && this.newValue.match(/^0x/)){
+          var value = this.newValue.split("x");
+          int_reg[i].value = bigInt(value[1], 16);
+        }
+        else if(int_reg[i].name == j && this.newValue.match(/^(\d)+/)){
+          int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        }
+        else if(int_reg[i].name == j && this.newValue.match(/^-/)){
+          int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
       }
       this.newValue = '';
@@ -223,8 +272,15 @@ window.app = new Vue({
 
     updateRegFpContr(j){
       for (var i = 0; i < contr_fp_reg.length; i++) {
-        if(contr_fp_reg[i].name == j && this.newValue != ''){
-          contr_fp_reg[i].value = parseInt(this.newValue, 10);
+        if(contr_fp_reg[i].name == j && this.newValue.match(/^0x/)){
+          var value = this.newValue.split("x");
+          contr_fp_reg[i].value = bigInt(value[1], 16);
+        }
+        else if(contr_fp_reg[i].name == j && this.newValue.match(/^(\d)+/)){
+          contr_int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        }
+        else if(contr_int_reg[i].name == j && this.newValue.match(/^-/)){
+          contr_int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
       }
       this.newValue = '';
@@ -232,8 +288,12 @@ window.app = new Vue({
 
     updateRegFpSingle(j){
       for (var i = 0; i < fp_reg_single_precision.length; i++) {
-        if(fp_reg_single_precision[i].name == j && this.newValue != ''){
-          fp_reg_single_precision[i].value = parseInt(this.newValue, 10);
+        if(fp_reg_single_precision[i].name == j && this.newValue.match(/^0x/)){
+          var value = this.newValue.split("x");
+          fp_reg_single_precision[i].value = convertFloat(value[1]);
+        }
+        else if(fp_reg_single_precision[i].name == j && this.newValue.match(/^(\d)+/)){
+          fp_reg_single_precision[i].value = parseFloat(this.newValue, 10);
         }
       }
       this.newValue = '';
@@ -241,8 +301,12 @@ window.app = new Vue({
 
     updateRegFpDouble(j){
       for (var i = 0; i < fp_reg_double_precision.length; i++) {
-        if(fp_reg_double_precision[i].name == j && this.newValue != ''){
-          fp_reg_double_precision[i].value = parseInt(this.newValue, 10);
+        if(fp_reg_double_precision[i].name == j && this.newValue.match(/^0x/)){
+          var value = this.newValue.split("x");
+          fp_reg_double_precision[i].value = convertFloat(value[1]);
+        }
+        else if(fp_reg_double_precision[i].name == j && this.newValue.match(/^(\d)+/)){
+          fp_reg_double_precision[i].value = parseFloat(this.newValue, 10);
         }
       }
       this.newValue = '';
