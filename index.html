@@ -19,6 +19,7 @@
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
   </head>
 
   <body onload="register_generator()">
@@ -86,14 +87,14 @@
 	            </div>
 	          </div>
             <!-- Tabla -->
-            <div class="col-lg-8 col-sm-12">
+            <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
                 <b-table striped small hover :items="instructions" class="instructions_table"></b-table>
               </div>
             </div>
 
             <!-- lateral datos -->
-            <div class="col-lg-4 col-sm-12">
+            <div class="col-lg-5 col-sm-12">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
@@ -158,49 +159,47 @@
                   
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int_contr">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
 
-                    <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
-							        <b-container fluid>
-												<table class="table table-bordered table-sm popoverText">
-												  <tbody>
-												    <tr>
-												      <td>Hex.</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Binary</td>
-												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Signed</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Unsig.</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Char</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>float</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												  </tbody>
-												</table>
+                    <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur" class="popover">
+											<table class="table table-bordered table-sm popoverText">
+											  <tbody>
+											    <tr>
+											      <td>Hex.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Binary</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(2)).padStart(item.nbits, "0"))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Signed</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10) >> 0}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Unsig.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10) >>> 0}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Char</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>float</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
+											    </tr>
+											  </tbody>
+											</table>
 
-												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
-					            		</div>
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateIntcontr(item.name)">Update</b-button>
-					            		</div>
+											<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
 				            		</div>
-					            </b-container>
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateIntcontr(item.name)">Update</b-button>
+				            		</div>
+			            		</div>
 							      </b-popover>
                   </div>
                 </div>
@@ -210,49 +209,47 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
 
                     <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
-							        <b-container fluid>
-												<table class="table table-bordered table-sm popoverText">
-												  <tbody>
-												    <tr>
-												      <td>Hex.</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Binary</td>
-												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Signed</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Unsig.</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Char</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>float</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												  </tbody>
-												</table>
+											<table class="table table-bordered table-sm popoverText">
+											  <tbody>
+											    <tr>
+											      <td>Hex.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Binary</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(2)).padStart(item.nbits, "0"))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Signed</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10) >> 0}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Unsig.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10) >>> 0}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Char</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>float</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
+											    </tr>
+											  </tbody>
+											</table>
 
-												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
-					            		</div>
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateIntReg(item.name)">Update</b-button>
-					            		</div>
+											<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
 				            		</div>
-					            </b-container>
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateIntReg(item.name)">Update</b-button>
+				            		</div>
+			            		</div>
 							      </b-popover>
 
                   </div>
@@ -264,49 +261,47 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_contr">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
 
                     <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
-							        <b-container fluid>
-												<table class="table table-bordered table-sm popoverText">
-												  <tbody>
-												    <tr>
-												      <td>Hex.</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Binary</td>
-												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Signed</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Unsig.</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Char</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>float</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												  </tbody>
-												</table>
+											<table class="table table-bordered table-sm popoverText">
+											  <tbody>
+											    <tr>
+											      <td>Hex.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Binary</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(2)).padStart(item.nbits, "0"))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Signed</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10) >> 0}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Unsig.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10) >>> 0}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Char</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>float</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
+											    </tr>
+											  </tbody>
+											</table>
 
-												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
-					            		</div>
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpContr(item.name)">Update</b-button>
-					            		</div>
+											<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
 				            		</div>
-					            </b-container>
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpContr(item.name)">Update</b-button>
+				            		</div>
+			            		</div>
 							      </b-popover>
 
                   </div>
@@ -317,49 +312,47 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_single">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge>
                     </b-button>
 
                     <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
-							        <b-container fluid>
-												<table class="table table-bordered table-sm popoverText">
-												  <tbody>
-												    <tr>
-												      <td>Hex.</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Binary</td>
-												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Signed</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Unsig.</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Char</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>float</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												  </tbody>
-												</table>
+											<table class="table table-bordered table-sm popoverText">
+											  <tbody>
+											    <tr>
+											      <td>Hex.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Binary</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(2)).padStart(32, "0"))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Signed</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Unsig.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Char</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>float</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
+											    </tr>
+											  </tbody>
+											</table>
 
-												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
-					            		</div>
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpSingle(item.name)">Update</b-button>
-					            		</div>
+											<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
 				            		</div>
-					            </b-container>
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpSingle(item.name)">Update</b-button>
+				            		</div>
+			            		</div>
 							      </b-popover>
 
                   </div>
@@ -370,49 +363,47 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_double">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{((item.value).toString(16)).toUpperCase()}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge>
                     </b-button>
 
                     <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
-							        <b-container fluid>
-												<table class="table table-bordered table-sm popoverText">
-												  <tbody>
-												    <tr>
-												      <td>Hex.</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Binary</td>
-												      <td>{{((item.value).toString(2)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>Signed</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Unsig.</td>
-												      <td>{{item.value}}</td>
-												    </tr>
-												    <tr>
-												      <td>Char</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												    <tr>
-												      <td>float</td>
-												      <td>{{((item.value).toString(16)).toUpperCase()}}</td>
-												    </tr>
-												  </tbody>
-												</table>
+											<table class="table table-bordered table-sm popoverText">
+											  <tbody>
+											    <tr>
+											      <td>Hex.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Binary</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(2)).padStart(32, "0"))}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Signed</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Unsig.</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>Char</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											    </tr>
+											    <tr>
+											      <td>float</td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
+											    </tr>
+											  </tbody>
+											</table>
 
-												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-form-input v-model="newValue" type="number" size="sm"></b-form-input>
-					            		</div>
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpDouble(item.name)">Update</b-button>
-					            		</div>
+											<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
 				            		</div>
-					            </b-container>
+				            		<div class="col-lg-6 col-sm-6 popoverFooter">
+				            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateRegFpDouble(item.name)">Update</b-button>
+				            		</div>
+			            		</div>
 							      </b-popover>
 
                   </div>
