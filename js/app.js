@@ -279,8 +279,8 @@ window.app = new Vue({
         else if(contr_fp_reg[i].name == j && this.newValue.match(/^(\d)+/)){
           contr_int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
-        else if(contr_int_reg[i].name == j && this.newValue.match(/^-/)){
-          contr_int_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(contr_fp_reg[i].name == j && this.newValue.match(/^-/)){
+          contr_fp_reg[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
       }
       this.newValue = '';
