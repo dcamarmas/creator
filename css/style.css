@@ -94,7 +94,13 @@ hr {
   font-size: 16px;
 }
 
+.components_table{
+  font-size: 14px;
+}
 
+.centArch{
+  margin-top: 2vh;
+}
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 .flexbox { display: flex; }
