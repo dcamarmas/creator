@@ -22,7 +22,7 @@
     <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
   </head>
 
-  <body onload="register_generator()">
+  <body>
     <div id="app">
       <template>
         <header>
@@ -47,26 +47,130 @@
           </div>
         </header>
 
-        <div class="contenedor row" id="simulator">
-	        	<!-- 2 navbar -->
+        <div class="contenedor row" id="architecture_menu">
+        		<!-- 2 navbar -->
 	          <div class="contenedor menu row">
-	            <div class="col-lg-4 col-sm-12 nopadding">
+	            <div class="col-lg-6 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim">Configuration</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn" id="micro_btn_sim">MicroCode</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim">Assembly</b-button>
+	                  </div>
+	                  <div class="col-lg-3 col-sm-3 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="conf_btn_sim">Simulator</b-button>
+	                  </div>
+	                </div>
+	              </div>
+	            </div>
+
+	            <div class="col-lg-5 col-sm-12 nopadding">
+								
+	            </div>
+
+	            <div class="col-lg-1 col-sm-12 nopadding">
+	            	<div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	              		<div class="col-lg-12 col-sm-12 buttons">
+	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
+	              		</div>
+	            		</div>
+	              </div>
+	            </div>
+	          </div>
+
+	          <div class="contenedor menu row">
+	          	<div class="col-lg-12 col-sm-12 row">
+	          		<div class="col-lg-3 col-sm-12">
+	          			<div class="col-lg-12 col-sm-12">
+	          				<h6>Select action:</h6>
+	          				<b-button class="btn btn-outline-secondary btn-block btn-sm" id="load_arch_default"><span class="fa fa-upload"></span> Load Default</b-button>
+		          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="load_arch"><span class="fa fa-upload"></span> Load</b-button>
+		          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="save_arch"><span class="fa fa-download"></span> Save</b-button>
+		          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="new_arch"><span class="fa fa-plus-circle"></span> New</b-button>
+                	</div>
+                  <br>
+                  <div class="col-lg-12 col-sm-12">
+                  	<h6>Select the number of bits:</h6>
+                  	<b-form-input v-model="number_bits" type="number" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black,"></b-form-input>
+                	</div>
+                  <br>
+	          		</div>
+	          		<div class="col-lg-9 col-sm-12 row">
+	          			<div class="col-lg-12 col-sm-12" id="available_arch">
+	          				<h6>The available architectures are:</h6>
+	          				<br>
+	          				<div class="col-lg-12 col-sm-12 row" v-for="item in arch_available">
+	          					<div class="col-lg-8 col-sm-8 centArch">
+	          						<h6>{{item.name}}</h6>
+	          					</div>
+	          					<div class="col-lg-4 col-sm-4">
+	          						<b-button class="btn btn-outline-secondary btn-block btn-sm selectArch" :id="item.name" @click="load_arch_select(item.name)">Select</b-button>
+	          					</div>
+	          					<div class="col-lg-12 col-sm-12">
+	          						<hr>
+	          					</div>
+	          				</div>
+	          			</div>
+	          			<div class="col-lg-12 col-sm-12" id="load_menu_arch" style="display:none;">
+	          				<h6>Select the architecture to load:</h6>
+	          				<br>
+	          				<div class="col-lg-12 col-sm-12">
+	          					<div class="col-lg-12 col-sm-12">
+	          						<b-form-file v-model="load_arch" :state="Boolean(load_arch)" placeholder="Choose a file..." id="arch_file" @change="read_arch" ></b-form-file>
+	          					</div>
+	          				</div>
+	          			</div>
+	          			<div class="col-lg-12 col-sm-12" id="save_menu_arch" style="display:none;">
+	          				<h6>Enter the name of the architecture to save:</h6>
+	          				<br>
+	          				<div class="col-lg-12 col-sm-12 row">
+	          					<div class="col-lg-8 col-sm-8">
+	          						<b-form-input v-model="name_arch_save" type="text" placeholder="Enter the name" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black,"></b-form-input>
+	          					</div>
+	          					<div class="col-lg-4 col-sm-4">
+	          						<b-button class="btn btn-primary btn-block btn-sm" id="btn_save_arch" @click="arch_save"><span class="fa fa-download"></span> Save</b-button>
+	          					</div>
+	          				</div>
+	          			</div>
+	          			<div class="col-lg-12 col-sm-12" id="new_arch" style="display:none;">
+	          				<h6>Added components:</h6>
+	          				<b-table striped small hover :items="components" class="components_table"></b-table>
+	          				<b-button class="btn btn-secondary btn-sm" id="accept_arch">Accept Configuration</b-button>
+	          			</div>
+	          		</div>
+	          	</div>
+	          </div>
+        </div>
+
+        <div class="contenedor row" id="simulator" style="display:none;">
+	        	<!-- 2 navbar -->
+	          <div class="contenedor menu row">
+	            <div class="col-lg-6 col-sm-12 nopadding">
+	              <div class="col-lg-12 col-sm-12">
+	                <div class="col-lg-12 col-sm-12 buttons row">
+	                  <div class="col-lg-3 col-sm-3 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim">Configuration</b-button>
+	                  </div>
+	                  <div class="col-lg-3 col-sm-3 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="conf_btn_arch">Architecture</b-button>
+	                  </div>
+	                  <div class="col-lg-3 col-sm-3 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn" id="micro_btn_sim">MicroCode</b-button>
+	                  </div>
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim">Assembly</b-button>
 	                  </div>
 	                </div>
 	              </div>
 	            </div>
 
-	            <div class="col-lg-3 col-sm-12">
+	            <div class="col-lg-1 col-sm-12">
 
 	            </div>
 
@@ -186,7 +290,7 @@
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
 											    </tr>
 											    <tr>
-											      <td>float</td>
+											      <td>Float</td>
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
 											    </tr>
 											  </tbody>
@@ -236,7 +340,7 @@
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
 											    </tr>
 											    <tr>
-											      <td>float</td>
+											      <td>Float</td>
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
 											    </tr>
 											  </tbody>
@@ -288,7 +392,7 @@
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
 											    </tr>
 											    <tr>
-											      <td>float</td>
+											      <td>Float</td>
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(item.nbits/4, "0")))}}</b-badge></td>
 											    </tr>
 											  </tbody>
@@ -339,7 +443,7 @@
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
 											    </tr>
 											    <tr>
-											      <td>float</td>
+											      <td>Float</td>
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
 											    </tr>
 											  </tbody>
@@ -390,7 +494,7 @@
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
 											    </tr>
 											    <tr>
-											      <td>float</td>
+											      <td>Float</td>
 											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
 											    </tr>
 											  </tbody>
@@ -425,13 +529,16 @@
 	            <div class="col-lg-4 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_micro">Configuration</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="conf_btn_arch">Architecture</b-button>
+	                  </div>
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_micro">Assembly</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_micro">Simulator</b-button>
 	                  </div>
 	                </div>
@@ -506,13 +613,16 @@
 	            <div class="col-lg-4 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assembly">Configuration</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="conf_btn_arch">Architecture</b-button>
+	                  </div>
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn" id="micro_btn_assembly">MicroCode</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly">Simulator</b-button>
 	                  </div>
 	                </div>

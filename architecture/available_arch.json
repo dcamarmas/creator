@@ -1,0 +1,14 @@
+[
+  {
+    "name": "MIPS",
+    "id": "select_confMIPS"
+  },
+  {
+    "name": "ARM",
+    "id": "select_confARM"
+  },
+  {
+    "name": "80x80",
+    "id": "select_conf80x80"
+  }
+]
