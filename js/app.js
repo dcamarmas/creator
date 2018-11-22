@@ -13,45 +13,7 @@ var components = [
 ]
 
 /*Arquitectura cargada*/
-var architecture = [
-  /*conf = {assembly_type: "MIPS32", num_bits: 32, num_int_reg: 32, num_fp_reg_single_precision: 32, num_fp_reg_double_precision:16},
-
-  contr_int_reg =[
-    {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"BADVADDR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"STATUS", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-  ],
-
-  int_reg = [],
-
-  contr_fp_reg =[
-    {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-  ],
-
-  fp_reg_single_precision=[],
-  fp_reg_double_precision=[],
-
-  memory = [
-    { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
-    { Address: "0x01007-0x01004", Binary: "61 65 6c 50", Tag: 'b', Value: 30 },
-    { Address: "0x0100b-0x01008", Binary: "61 65 6c 50", Tag: 'msg', Value: "hello wold" },
-    { Address: "0x0100f-0x0100c", Binary: "61 65 6c 50", Tag: 'msg2', Value: "Please, press letter '0' to end the 'echo' effect" },
-  ],
-
-  instructions = [
-    { Break: null, Address: "0x8000", Label: "main", Assembly: "la $26 msg" },
-    { Break: null, Address: "0x8004", Label: "loop1", Assembly: "lb $27 ($26)" },
-    { Break: null, Address: "0x8008", Label: "", Assembly: "li $1 0" },
-    { Break: null, Address: "0x800c", Label: "", Assembly: "beq $27 $1 end1" },
-  ],*/
-]
+var architecture = []
 
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
@@ -64,6 +26,11 @@ function destroyClickedElement(event) {
 window.app = new Vue({
   el: "#app",
   data: {
+
+    /*ALERTA*/
+    alertMessaje: '',
+    dismissSecs: 3,
+    dismissCountDown: 0,
 
     /*PAGINA CARGA*/
     /*Configuraciones Disponibles*/
@@ -115,6 +82,11 @@ window.app = new Vue({
     
   },
   methods:{
+    /*ALERTA*/
+    countDownChanged (dismissCountDown) {
+      this.dismissCountDown = dismissCountDown
+    },
+
     /*PAGINA CARGA*/
     /*Carga las arquitecturas que hay disponibles*/
     load_arch_available(){
@@ -146,6 +118,12 @@ window.app = new Vue({
         app._data.reg_fp_double = architecture[5];
         app._data.memory = architecture[6];
         app._data.instructions = architecture[7];
+
+        $(".btn_arch").show();
+
+        app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+        app._data.dismissCountDown = app._data.dismissSecs;
+
       });
     },
 
@@ -183,6 +161,10 @@ window.app = new Vue({
         app._data.memory = architecture[6];
         app._data.instructions = architecture[7];
 
+        $(".btn_arch").show();
+        
+        app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+        app._data.dismissCountDown = app._data.dismissSecs;
       }
     },
 
@@ -204,6 +186,8 @@ window.app = new Vue({
       document.body.appendChild(downloadLink);
 
       downloadLink.click();
+      app._data.alertMessaje = 'Save architecture';
+      app._data.dismissCountDown = app._data.dismissSecs;
     },
 
     /*CARGA Y LECTURA ENSAMBLADOR Y MICROCODIGO*/
@@ -425,9 +409,6 @@ window.app = new Vue({
       }
       this.newValue = '';
     },
-    
-
-
   },
   created(){
     this.load_arch_available();
