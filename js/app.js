@@ -13,11 +13,50 @@ var components = [
 ]
 
 /*Arquitectura cargada*/
-var architecture = []
+var architecture = [
+  /*Contenido del JSON*/
+  /*conf = {assembly_type: "MIPS32", num_bits: 32, num_int_reg: 32, num_fp_reg_single_precision: 32, num_fp_reg_double_precision:16},
+
+  contr_int_reg =[
+    {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"BADVADDR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"STATUS", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+  ],
+
+  int_reg = [],
+
+  contr_fp_reg =[
+    {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+  ],
+
+  fp_reg_single_precision=[],
+  fp_reg_double_precision=[],
+
+  memory = [
+    { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
+    { Address: "0x01007-0x01004", Binary: "61 65 6c 50", Tag: 'b', Value: 30 },
+    { Address: "0x0100b-0x01008", Binary: "61 65 6c 50", Tag: 'msg', Value: "hello wold" },
+    { Address: "0x0100f-0x0100c", Binary: "61 65 6c 50", Tag: 'msg2', Value: "Please, press letter '0' to end the 'echo' effect" },
+  ],
+
+  instructions = [
+    { Break: null, Address: "0x8000", Label: "main", Pseudo: "la $26 msg", Assebly: "la $26 msg" },
+    { Break: null, Address: "0x8004", Label: "loop1", Pseudo: "lb $27 ($26)", Assebly: "lb $27 ($26)" },
+    { Break: null, Address: "0x8008", Label: "", Pseudo: "li $1 0", Assebly: "li $1 0" },
+    { Break: null, Address: "0x800c", Label: "", Pseudo: "beq $27 $1 end1", Assebly: "beq $27 $1 end1" },
+  ],*/
+]
 
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
-var code_micro = '';
+var code_assDef = '';
 
 function destroyClickedElement(event) {
   document.body.removeChild(event.target);
@@ -45,16 +84,16 @@ window.app = new Vue({
     components: components,
 
 
-    /*CARGA Y LECTURA ENSAMBLADOR Y MICROCODIGO*/
+    /*CARGA Y LECTURA ENSAMBLADOR Y DEFINICION*/
     /*Variables donde se guardan los contenidos de los textarea*/
-    text_micro: code_micro,
+    text_assDef: code_assDef,
     text_assembly: code_assembly,
     /*Variables donde se guardan los ficheros cargados*/
     load_assembly: '',
-    load_micro: '',
+    load_assDef: '',
     /*Variables donde se guardan los nombre de los ficheros guardados*/
     save_assembly: '',
-    save_micro: '',
+    save_assDef: '',
 
     /*PAGINA SIMULADOR*/
     /*Nuevo valor del registro*/
@@ -62,21 +101,33 @@ window.app = new Vue({
 
 
     /*SE CREA SEGUN JSON*/
+    /*Definicion de posiciones:
+     * 1- reg_int_contr
+     * 2- reg_int
+     * 3- reg_fp_contr
+     * 4- reg_fp_single
+     * 5- reg_fp_double
+     * 6- memory
+     * 7- instructions
+     */
+     
+    architecture: architecture,
+
     /*Asignacion de valores de los registros de control de los enteros*/
-    reg_int_contr: architecture[1],
+    //reg_int_contr: architecture[1],
     /*Asignacion de valores de los registros enteros*/
-    reg_int: architecture[2],
+    //reg_int: architecture[2],
     /*Asignacion de valores de los registros de control de los reales*/
-    reg_fp_contr: architecture[3],
+    //reg_fp_contr: architecture[3],
     /*Asignacion de valores de los registros reales de simple precision*/
-    reg_fp_single: architecture[4],
+    //reg_fp_single: architecture[4],
     /*Asignacion de valores de los registros reales de doble precision*/
-    reg_fp_double: architecture[5],
+    //reg_fp_double: architecture[5],
     /*Asignacion de valores de la tabla de memoria*/
-    memory: architecture[6],
+    //memory: architecture[6],
     /*Asignacion de valores de la tabla de instrucciones*/
-    instructions: architecture[7],
-    
+    //instructions: architecture[7],
+
   },
   computed: {
     
@@ -111,13 +162,15 @@ window.app = new Vue({
           architecture[5].push({name:"FP"+(i*2), nbits: architecture[0].num_bits, value:0.0, default_value:0.0, properties: ["read", "write"]});
         }*/
 
-        app._data.reg_int_contr = architecture[1];
+        /*app._data.reg_int_contr = architecture[1];
         app._data.reg_int = architecture[2];
         app._data.reg_fp_contr = architecture[3];
         app._data.reg_fp_single = architecture[4];
         app._data.reg_fp_double = architecture[5];
         app._data.memory = architecture[6];
-        app._data.instructions = architecture[7];
+        app._data.instructions = architecture[7];*/
+
+        app._data.architecture = architecture;
 
         $(".btn_arch").show();
 
@@ -153,13 +206,15 @@ window.app = new Vue({
           architecture[5].push({name:"FP"+(i*2), nbits: architecture[0].num_bits, value:0.0, default_value:0.0, properties: ["read", "write"]});
         }*/
 
-        app._data.reg_int_contr = architecture[1];
+        /*app._data.reg_int_contr = architecture[1];
         app._data.reg_int = architecture[2];
         app._data.reg_fp_contr = architecture[3];
         app._data.reg_fp_single = architecture[4];
         app._data.reg_fp_double = architecture[5];
         app._data.memory = architecture[6];
-        app._data.instructions = architecture[7];
+        app._data.instructions = architecture[7];*/
+
+        app._data.architecture = architecture;
 
         $(".btn_arch").show();
         
@@ -232,10 +287,10 @@ window.app = new Vue({
       downloadLink.click();
     },
 
-    read_micro(e){
+    read_assDef(e){
       var file;
       var reader;
-      var files = document.getElementById('micro_file').files;
+      var files = document.getElementById('assDef_file').files;
 
       for (var i = 0; i < files.length; i++) {
         file = files[i];
@@ -245,18 +300,18 @@ window.app = new Vue({
       }
 
       function onFileLoaded(event) {
-        code_micro = event.currentTarget.result;
+        code_assDef = event.currentTarget.result;
       }
     },
 
-    micro_update(){
-      this.text_micro = code_micro;
+    assDef_update(){
+      this.text_assDef = code_assDef;
     },
 
-    micro_save(){
-      var textToWrite = this.text_micro;
+    assDef_save(){
+      var textToWrite = this.text_assDef;
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
-      var fileNameToSaveAs = this.save_micro + ".txt";
+      var fileNameToSaveAs = this.save_assDef + ".txt";
 
       var downloadLink = document.createElement("a");
       downloadLink.download = fileNameToSaveAs;
@@ -286,13 +341,13 @@ window.app = new Vue({
 
       var valuef = sign * mantissa * Math.pow(2, exponent);
       if (-127 == exponent)
-          if (1 == mantissa)
-         valuef = (sign == 1) ? "+0" : "-0" ;
-          else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126) ;
+        if (1 == mantissa)
+          valuef = (sign == 1) ? "+0" : "-0" ;
+        else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126) ;
       if (128 == exponent)
-          if (1 == mantissa)
-         valuef = (sign == 1) ? "+Inf" : "-Inf" ;
-          else valuef = "NaN" ;
+        if (1 == mantissa)
+          valuef = (sign == 1) ? "+Inf" : "-Inf" ;
+        else valuef = "NaN" ;
 
       return valuef ;
     },

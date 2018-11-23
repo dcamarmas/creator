@@ -47,8 +47,8 @@
           </div>
         </header>
 
-        <b-alert :show="dismissCountDown" dismissible variant="info" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" style="margin: 0pt">
-           <p>{{alertMessaje}}</p>
+        <b-alert :show="dismissCountDown" dismissible variant="info" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" style="margin: 5pt;">
+        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
 		    </b-alert>
 
         <div class="contenedor row" id="architecture_menu">
@@ -57,13 +57,13 @@
             <div class="col-lg-4 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn btn_arch" id="micro_btn_arch" style="display:none;">MicroCode</b-button>
-                  </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;">Assembly</b-button>
                   </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn btn_arch" id="assDef_btn_arch" style="display:none;">Assembly Definition</b-button>
+                  </div>
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch" id="sim_btn_arch" style="display:none;">Simulator</b-button>
                   </div>
                 </div>
@@ -164,14 +164,14 @@
 	            <div class="col-lg-4 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_sim">Architecture</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn" id="micro_btn_sim">MicroCode</b-button>
-	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim">Assembly</b-button>
+	                  </div>
+	                  <div class="col-lg-6 col-sm-6 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn" id="assDef_btn_sim">Assembly Definition</b-button>
 	                  </div>
 	                </div>
 	              </div>
@@ -200,7 +200,7 @@
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
-                <b-table striped small hover :items="instructions" class="instructions_table"></b-table>
+                <b-table striped small hover :items="architecture[7]" class="instructions_table"></b-table>
               </div>
             </div>
 
@@ -232,27 +232,17 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm">
-                      <span class="fa fa-camera"></span>
-                      States 
-                    </b-button>
-                  </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
-                    <select class="form-control border border-secondary form-control-sm" style="background-color: white; color: black, " id="selectData">
+                  	<select class="form-control border border-secondary form-control-sm" style="background-color: white; color: black, " id="selectData">
                       <option value="CPU" disabled>CPU</option>
                       <option value="CPU-INT Registers">  CPU-INT Registers</option>
                       <option value="CPU-FP Registers">  CPU-FP Registers</option>
                       <option value="CPU-Stats">  CPU-Stats</option>
-
-                      <option value="Main Memory" disabled>Main Memory</option>
-                      <option value="MM-Memory">  MM-Memory</option>
-                      <option value="MM-Configuration">  MM-Configuration</option>
-
-                      <option value="Devices" disabled>Devices</option>
-                      <option value="Dev-Keyboard+Display">    Dev-Keyboard+Display</option>
-                      <option value="Dev-I/O Stats">  Dev-I/O Stats</option>
-                      <option value="Dev-I/O Configuration">  Dev-I/O Configuration</option>
                     </select>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="memory_btn">
+                      Memory 
+                    </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm">
@@ -268,7 +258,7 @@
               <div class="col-lg-12 col-sm-12" id="int_registers">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int_contr">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[1]">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -318,7 +308,7 @@
                 <hr>
 
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_int">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[2]">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -370,7 +360,7 @@
               <!-- CPU-FP Registers-->
               <div class="col-lg-12 col-sm-12" id="fp_registers" style="display:none;">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_contr">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[3]">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -421,7 +411,7 @@
                 <hr>
 
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_single">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[4]">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -451,7 +441,7 @@
 											    </tr>
 											    <tr>
 											      <td>Float</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge></td>
 											    </tr>
 											  </tbody>
 											</table>
@@ -472,7 +462,7 @@
                 <hr>
 
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in reg_fp_double">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[5]">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -524,26 +514,26 @@
               <!-- MM-Memory-->
               <div class="col-lg-12 col-sm-12" id="memory" style="display:none;">
                 <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                  <b-table striped small hover :items="memory" class="memory_table"></b-table>
+                  <b-table striped small hover :items="architecture[6]" class="memory_table"></b-table>
                 </div>
               </div>
             </div>
         </div>
 
-        <div class="contenedor row" id="microcode" style="display:none;">
+        <div class="contenedor row" id="assDefinition" style="display:none;">
         		<!-- 2 navbar -->
 	          <div class="contenedor menu row">
 	            <div class="col-lg-3 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_micro">Architecture</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assDef">Architecture</b-button>
 	                  </div>
 	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_micro">Assembly</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_assDef">Assembly</b-button>
 	                  </div>
 	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_micro">Simulator</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assDef">Simulator</b-button>
 	                  </div>
 	                </div>
 	              </div>
@@ -553,10 +543,10 @@
 								<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_micro_btn" v-b-modal.load_micro><span class="fa fa-upload"></span> Load</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assDef_btn" v-b-modal.load_assdef><span class="fa fa-upload"></span> Load</b-button>
 	                  </div>
 	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_micro_btn" v-b-modal.save_micro><span class="fa fa-download"></span> Save</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assDef_btn" v-b-modal.save_assdef><span class="fa fa-download"></span> Save</b-button>
 	                  </div>
 	                </div>
 	              </div>
@@ -566,10 +556,10 @@
 								<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-3 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_micro"><span class="fa fa-sign-in"></span> µcompile</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assDef"><span class="fa fa-sign-in"></span> µcompile</b-button>
 	                  </div>
 	                  <div class="col-lg-9 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_micro"><span class="fa fa-microchip"></span> Show co2µaddr + control memory</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_assDef"><span class="fa fa-microchip"></span> Show co2µaddr + control memory</b-button>
 	                  </div>
 	                </div>
 	              </div>
@@ -579,10 +569,10 @@
 	            	<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                	<div class="col-lg-8 col-sm-8 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch"><span class="fa fa-gear"></span> Configuration</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assDef"><span class="fa fa-gear"></span> Configuration</b-button>
 	                  </div>
 	              		<div class="col-lg-4 col-sm-4 buttons">
-	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_micro" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
+	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_assDef" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
 	              		</div>
 	            		</div>
 	              </div>
@@ -591,24 +581,24 @@
 
 	          <div class="contenedor menu row">
 	          	<div class="col-lg-12 col-sm-12">
-	          		<h5>Microcode:</h5>
+	          		<h5>Assembly Definition:</h5>
 	          	</div>
 	          	<div class="col-lg-12 col-sm-12">
-	          		<b-form-textarea id="textarea_micro" v-model="text_micro" :rows="11" class="code-scroll-y">
+	          		<b-form-textarea id="textarea_assDef" v-model="text_assDef" :rows="11" class="code-scroll-y">
     						</b-form-textarea>
 	          	</div>
 	          </div>
 
-	          <b-modal id = "load_micro" title = "Load Microcode" ok-title="Load from this File" @ok="micro_update">
-					    <p> Please select the microcode file to be loaded: </p> 
-					    <b-form-file v-model="load_micro" :state="Boolean(load_micro)" placeholder="Choose a file..." id="micro_file" @change="read_micro"></b-form-file>
+	          <b-modal id ="load_assdef" title = "Load Assembly Definition" ok-title="Load from this File" @ok="assDef_update">
+					    <p> Please select the assembly definition file to be loaded: </p> 
+					    <b-form-file v-model="load_assDef" :state="Boolean(load_assDef)" placeholder="Choose a file..." id="assDef_file" @change="read_assDef"></b-form-file>
 					  </b-modal >
 
-					  <b-modal  id = "save_micro"   title = "Save Microcode" ok-title="Save to File" @ok="micro_save">
+					  <b-modal  id ="save_assdef"   title = "Save Assembly Definition" ok-title="Save to File" @ok="assDef_save">
 					    <p> Please write the file name: </p> 
-					    <b-form-input v-model="save_micro"
+					    <b-form-input v-model="save_assDef"
                   type="text"
-                  placeholder="File name where microcode will be saved">
+                  placeholder="File name where assembly definition will be saved">
               </b-form-input>
 					  </b-modal >
 
@@ -617,16 +607,16 @@
         <div class="contenedor row" id="assembly" style="display:none;">
         		<!-- 2 navbar -->
 	          <div class="contenedor menu row">
-	            <div class="col-lg-3 col-sm-12 nopadding">
+	            <div class="col-lg-4 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-4 col-sm-4 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assembly">Architecture</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm micro_btn" id="micro_btn_assembly">MicroCode</b-button>
+	                  <div class="col-lg-5 col-sm-5 buttons">
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn" id="assDef_btn_assembly">Assembly Definition</b-button>
 	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly">Simulator</b-button>
 	                  </div>
 	                </div>
@@ -646,7 +636,7 @@
 	              </div>
 	            </div>
 
-	            <div class="col-lg-5 col-sm-12 nopadding">
+	            <div class="col-lg-4 col-sm-12 nopadding">
 								<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-3 col-sm-4 buttons">
