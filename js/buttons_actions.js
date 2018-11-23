@@ -28,30 +28,30 @@ $("#new_arch").click(function(){
 });
 
 /*Botones modos*/
-$(".micro_btn").click(function(){
+$(".assDef_btn").click(function(){
   $("#simulator").hide();
-  $("#microcode").show();
+  $("#assDefinition").show();
   $("#assembly").hide();
   $("#architecture_menu").hide();
 });
 
 $(".assembly_btn").click(function(){
   $("#simulator").hide();
-  $("#microcode").hide();
+  $("#assDefinition").hide();
   $("#assembly").show();
   $("#architecture_menu").hide();
 });
 
 $(".simulator_btn").click(function(){
   $("#simulator").show();
-  $("#microcode").hide();
+  $("#assDefinition").hide();
   $("#assembly").hide();
   $("#architecture_menu").hide();
 });
 
 $(".arch_btn").click(function(){
   $("#simulator").hide();
-  $("#microcode").hide();
+  $("#assDefinition").hide();
   $("#assembly").hide();
   $("#architecture_menu").show();
 });
@@ -69,9 +69,10 @@ $("#selectData").change(function(){
 		$("#fp_registers").hide();
 		$("#memory").hide();
   }
-  if(value == "MM-Memory") {
-  	$("#int_registers").hide();
-		$("#fp_registers").hide();
-		$("#memory").show();
-  }
+});
+
+$("#memory_btn").click(function(){
+  $("#int_registers").hide();
+  $("#fp_registers").hide();
+  $("#memory").show();
 });
