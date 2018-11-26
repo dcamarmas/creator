@@ -20,6 +20,7 @@
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script>
+
   </head>
 
   <body>
@@ -413,7 +414,7 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[4]">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{bin2hex(float2bin(item.value))}}</b-badge>
                     </b-button>
 
                     <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
@@ -421,23 +422,23 @@
 											  <tbody>
 											    <tr>
 											      <td>Hex.</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(float2bin(item.value))}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Binary</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(2)).padStart(32, "0"))}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{float2bin(item.value)}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Signed</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item.value.toString(), 10) >> 0}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Unsig.</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item.value.toString(), 10) >>> 0}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Char</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+((bin2hex(float2bin(item.value)))))}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Float</td>
@@ -464,7 +465,7 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[5]">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
-                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge>
+                       {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{bin2hex(double2bin(item.value))}}</b-badge>
                     </b-button>
 
                     <b-popover :target="popoverId(item.name)" :title="item.name" triggers="click blur">
@@ -472,27 +473,27 @@
 											  <tbody>
 											    <tr>
 											      <td>Hex.</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item.value).toString(16)).padStart(8, "0")).toUpperCase()}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(double2bin(item.value))}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Binary</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(2)).padStart(32, "0"))}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{double2bin(item.value)}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Signed</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item.value.toString(), 10) >> 0}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Unsig.</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item.value.toString(), 10) >>> 0}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Char</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item.value).toString(10)}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+((bin2hex(double2bin(item.value)))))}}</b-badge></td>
 											    </tr>
 											    <tr>
 											      <td>Float</td>
-											      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item.value).toString(16)).padStart(8, "0")))}}</b-badge></td>
+											      <td><b-badge style="background-color:#CEECF5; color:black;">{{item.value}}</b-badge></td>
 											    </tr>
 											  </tbody>
 											</table>

@@ -354,12 +354,19 @@ window.app = new Vue({
 
     /*Convierte de hexadecimal a char*/
     hex2char8 ( hexvalue ){
+
+    	var num_char = ((hexvalue.toString().length)-2)/2;
+    	var exponent = 0;
+    	var pos = 0;
+
       var valuec = new Array();
 
-      valuec[0] = String.fromCharCode((hexvalue & 0xFF000000) >> 24) ;
-      valuec[1] = String.fromCharCode((hexvalue & 0x00FF0000) >> 16) ;
-      valuec[2] = String.fromCharCode((hexvalue & 0x0000FF00) >>  8) ;
-      valuec[3] = String.fromCharCode((hexvalue & 0x000000FF) >>  0) ;
+      for (var i = 0; i < num_char; i++) {
+      	var dec_mask = (15 * Math.pow(16,exponent)) + (15 * Math.pow(16,exponent+1));
+      	exponent = exponent + 2;
+      	valuec[i] = String.fromCharCode((hexvalue & dec_mask) >> pos);
+      	pos = pos + 8;
+      }
 
       var characters = '';
 
@@ -370,6 +377,90 @@ window.app = new Vue({
       return  characters;
     },
 
+    /*Depurar*/
+    float2bin (num){
+    	var aux = Math.abs(num);
+	    var str = aux.toString(2); // binary representation
+
+	    //Normalize and find the exponent and mantissa
+	    var mantissa = parseInt(str.substring(0,str.indexOf(".")));
+	    if(isNaN(mantissa)){
+	    	var value = bigInt(parseInt(num) >>> 0, 10);
+	    	return value.toString(2).padStart(32, "0");
+	    }
+	    var exp = 0;
+	    var sig = 0;
+
+	    if(num < 0){
+	    	sig = 1;
+	    }
+
+	    if(mantissa <=0){
+		    var i = str.indexOf(".") +1;
+		    while(parseInt(str.charAt(i),10) < 1){
+		     i = i +1;
+		    } 
+		    exp = 127 - (i -1); //bias as 127;
+		    mantissa = str.substring(i+1);
+	    }
+	    
+	    else if(mantissa > 0){
+		    var i = str.indexOf(".");
+		    exp = i -1;        
+		    exp = 127 +exp; //bias as 127;
+		    mantissa = str.replace(".","").substring(1);
+	    }
+	   
+	    return sig + exp.toString(2).padStart(8,"0") + mantissa.toString().substring(0, 23).padStart(23, "0");
+    },
+
+    double2bin(number) {
+	    var i, result = "";
+	    var dv = new DataView(new ArrayBuffer(8));
+
+	    dv.setFloat64(0, number, false);
+
+	    for (i = 0; i < 8; i++) {
+	        var bits = dv.getUint8(i).toString(2);
+	        if (bits.length < 8) {
+	            bits = new Array(8 - bits.length).fill('0').join("") + bits;
+	        }
+	        result += bits;
+	    }
+	    return result;
+		},
+
+    bin2hex(s) {
+	    var i, k, part, accum, ret = '';
+	    for (i = s.length-1; i >= 3; i -= 4) {
+
+	      part = s.substr(i+1-4, 4);
+	      accum = 0;
+	      for (k = 0; k < 4; k += 1) {
+          if (part[k] !== '0' && part[k] !== '1') {     
+              return { valid: false };
+          }
+          accum = accum * 2 + parseInt(part[k], 10);
+	      }
+	      if (accum >= 10) {
+          ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
+	      } else {
+          ret = String(accum) + ret;
+	      }
+	    }
+
+	    if (i >= 0) {
+        accum = 0;
+        for (k = 0; k <= i; k += 1) {
+          if (s[k] !== '0' && s[k] !== '1') {
+              return { valid: false };
+          }
+          accum = accum * 2 + parseInt(s[k], 10);
+        }
+        ret = String(accum) + ret;
+	    }
+	    return ret;
+		},
 
     /*FUNCIONES DE GESTION DE REGISTROS*/
     /*Funcion que resetea todos los registros*/
@@ -440,7 +531,7 @@ window.app = new Vue({
       this.newValue = '';
     },
 
-    /*REVISAR*/
+    /*Revisar cuando es hexadecimal ya que no lo hace bien por la funcion que pasa a binario*/
     updateRegFpSingle(j){
       for (var i = 0; i < architecture[4].length; i++) {
         if(architecture[4][i].name == j && this.newValue.match(/^0x/)){
@@ -449,10 +540,13 @@ window.app = new Vue({
         else if(architecture[4][i].name == j && this.newValue.match(/^(\d)+/)){
           architecture[4][i].value = parseFloat(this.newValue, 10);
         }
+        else if(architecture[4][i].name == j && this.newValue.match(/^-/)){
+        	architecture[4][i].value = parseFloat(this.newValue, 10);
+        }
       }
       this.newValue = '';
     },
-    /*REVISAR*/
+    /*Revisar cuando es hexadecimal ya que coge el float*/
     updateRegFpDouble(j){
       for (var i = 0; i < architecture[5].length; i++) {
         if(architecture[5][i].name == j && this.newValue.match(/^0x/)){
@@ -460,6 +554,9 @@ window.app = new Vue({
         }
         else if(architecture[5][i].name == j && this.newValue.match(/^(\d)+/)){
           architecture[5][i].value = parseFloat(this.newValue, 10);
+        }
+        else if(architecture[5][i].name == j && this.newValue.match(/^-/)){
+        	architecture[5][i].value = parseFloat(this.newValue, 10);
         }
       }
       this.newValue = '';
