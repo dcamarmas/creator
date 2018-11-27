@@ -377,41 +377,20 @@ window.app = new Vue({
       return  characters;
     },
 
-    /*Depurar*/
-    float2bin (num){
-    	var aux = Math.abs(num);
-	    var str = aux.toString(2); // binary representation
+    float2bin (number){
+	    var i, result = "";
+	    var dv = new DataView(new ArrayBuffer(4));
 
-	    //Normalize and find the exponent and mantissa
-	    var mantissa = parseInt(str.substring(0,str.indexOf(".")));
-	    if(isNaN(mantissa)){
-	    	var value = bigInt(parseInt(num) >>> 0, 10);
-	    	return value.toString(2).padStart(32, "0");
-	    }
-	    var exp = 0;
-	    var sig = 0;
+	    dv.setFloat32(0, number, false);
 
-	    if(num < 0){
-	    	sig = 1;
+	    for (i = 0; i < 4; i++) {
+	        var bits = dv.getUint8(i).toString(2);
+	        if (bits.length < 8) {
+	            bits = new Array(8 - bits.length).fill('0').join("") + bits;
+	        }
+	        result += bits;
 	    }
-
-	    if(mantissa <=0){
-		    var i = str.indexOf(".") +1;
-		    while(parseInt(str.charAt(i),10) < 1){
-		     i = i +1;
-		    } 
-		    exp = 127 - (i -1); //bias as 127;
-		    mantissa = str.substring(i+1);
-	    }
-	    
-	    else if(mantissa > 0){
-		    var i = str.indexOf(".");
-		    exp = i -1;        
-		    exp = 127 +exp; //bias as 127;
-		    mantissa = str.replace(".","").substring(1);
-	    }
-	   
-	    return sig + exp.toString(2).padStart(8,"0") + mantissa.toString().substring(0, 23).padStart(23, "0");
+	    return result;
     },
 
     double2bin(number) {
