@@ -12,6 +12,12 @@ var components = [
   {name:"LO", nbits:"32", value:0, default_value:0, read: true, write: true},
 ]
 
+function binaryStringToInt( b ) {
+    return parseInt(b, 2);
+}
+
+
+
 /*Arquitectura cargada*/
 var architecture = [
   /*Contenido del JSON*/
@@ -352,6 +358,46 @@ window.app = new Vue({
       return valuef ;
     },
 
+    hex2double ( hexvalue ){
+      /*var sign     = (hexvalue & 0x8000000000000000) ? -1 : 1;
+      var exponent = ((hexvalue >> 52) & 0x7ff) - 1023;
+      var mantissa = 1 + ((hexvalue & 0xfffffffffffff) / 0x10000000000000);
+
+
+
+      console.log(sign);
+      console.log((hexvalue).toString(2));
+
+      var valuef = sign * mantissa * Math.pow(2, exponent);
+      if (-1023 == exponent)
+        if (1 == mantissa)
+          valuef = (sign == 1) ? "+0" : "-0" ;
+        else valuef = sign * ((hexvalue & 0xfffffffffffff) / 0xfffffffffffff) * Math.pow(2, -1022) ;
+      if (1024 == exponent)
+        if (1 == mantissa)
+          valuef = (sign == 1) ? "+Inf" : "-Inf" ;
+        else valuef = "NaN" ;
+
+      return valuef ;*/
+
+      /*Cogido de github https://github.com/bartaz/ieee754-visualization licencia MIT teoria libre*/
+
+      var value = hexvalue.split('x');
+      var value_bit = '';
+
+      for (var i = 0; i < value[1].length; i++) {
+      	var aux = value[1].charAt(i);
+      	aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
+      	value_bit = value_bit + aux;
+      }
+
+	  	var buffer = new ArrayBuffer(8);
+		  new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
+		  return new DataView( buffer ).getFloat64(0, false);
+
+
+    },
+
     /*Convierte de hexadecimal a char*/
     hex2char8 ( hexvalue ){
 
@@ -529,7 +575,7 @@ window.app = new Vue({
     updateRegFpDouble(j){
       for (var i = 0; i < architecture[5].length; i++) {
         if(architecture[5][i].name == j && this.newValue.match(/^0x/)){
-          architecture[5][i].value = this.hex2float(this.newValue);
+          architecture[5][i].value = this.hex2double(this.newValue);
         }
         else if(architecture[5][i].name == j && this.newValue.match(/^(\d)+/)){
           architecture[5][i].value = parseFloat(this.newValue, 10);
