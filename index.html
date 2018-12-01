@@ -150,9 +150,47 @@
 	                	<b-form-input v-model="number_bits" type="number" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black;"></b-form-input>
 	                	<br>
                 	</div>
-          				<h6>Added components:</h6>
-          				<b-table striped small hover :items="components" class="components_table"></b-table>
-          				<b-button class="btn btn-secondary btn-sm" id="accept_arch">Accept Configuration</b-button>
+          				<h6>Components of the architecture:</h6>
+
+                  <b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
+                  
+                  <div class="col-lg-12 col-sm-12 architecture-scroll-y">
+                    <div class="col-lg-12 col-sm-12" v-for="item in architecture[0]">
+                      <br>
+                      <h6>{{item.name}}:</h6>
+                      <b-table striped small hover :items="architecture[item.index]"></b-table>
+                      <b-button class="btn btn-outline-secondary btn-sm " :id="item.name" v-b-modal="item.name"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
+
+                      <b-modal :id ="item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newParameter(item.name)">
+                        <b-form>
+                          <b-form-group id="newComponentName" label="Name:">
+                            <b-form-input id="newComponentName" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
+                            </b-form-input>
+                          </b-form-group>
+                          <b-form-group id="newComponentDefValue" label="Default value:">
+                            <b-form-input id="newComponentDefValue"ntype="text" v-model="formArchitecture.defValue" required placeholder="Enter default value">
+                            </b-form-input>
+                          </b-form-group>
+                          <b-form-group id="newComponentProperties">
+                            <b-form-checkbox-group v-model="formArchitecture.properties" id="newComponentProperties">
+                              <b-form-checkbox value="read">Read</b-form-checkbox>
+                              <b-form-checkbox value="write">Write</b-form-checkbox>
+                            </b-form-checkbox-group>
+                          </b-form-group>
+                        </b-form>
+                      </b-modal >
+                    </div>
+                  </div>
+
+                  <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponent">
+                    <b-form>
+                      <b-form-group id="newComponentName" label="Name:">
+                        <b-form-input id="newComponentName" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
+                        </b-form-input>
+                      </b-form-group>
+                    </b-form>
+                  </b-modal >
+
           			</div>
           		</div>
           	</div>
@@ -201,7 +239,7 @@
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
-                <b-table striped small hover :items="architecture[7]" class="instructions_table"></b-table>
+                <b-table striped small hover :items="instructions" class="instructions_table"></b-table>
               </div>
             </div>
 
@@ -515,7 +553,7 @@
               <!-- MM-Memory-->
               <div class="col-lg-12 col-sm-12" id="memory" style="display:none;">
                 <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                  <b-table striped small hover :items="architecture[6]" class="memory_table"></b-table>
+                  <b-table striped small hover :items="memory" class="memory_table"></b-table>
                 </div>
               </div>
             </div>
