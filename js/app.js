@@ -1,27 +1,19 @@
 /*Listado de arquitecturas disponibles*/
 var architecture_available = [];
 
-/*Listado de componentes creados*/
-var components = [
-  {name:"PC", nbits:"32", value:0, default_value:0, read: true, write: true},
-  {name:"EPC", nbits:"32", value:0, default_value:0, read: true, write: true},
-  {name:"CAUSE", nbits:"32", value:0, default_value:0, read: true, write: true},
-  {name:"BADVADDR", nbits:"32", value:0, default_value:0, read: true, write: true},
-  {name:"STATUS", nbits:"32", value:0, default_value:0, read: true, write: true},
-  {name:"HI", nbits:"32", value:0, default_value:0, read: true, write: true},
-  {name:"LO", nbits:"32", value:0, default_value:0, read: true, write: true},
-]
-
-function binaryStringToInt( b ) {
-    return parseInt(b, 2);
-}
-
-
-
 /*Arquitectura cargada*/
 var architecture = [
-  /*Contenido del JSON*/
-  /*conf = {assembly_type: "MIPS32", num_bits: 32, num_int_reg: 32, num_fp_reg_single_precision: 32, num_fp_reg_double_precision:16},
+
+  components = [],
+
+  /*Contenido del JSON MIPS*/
+  /*components = [
+    {name:"Integer control registers", index:1},
+    {name:"Integer registers", index:2},
+    {name:"Floating point control registers", index:3},
+    {name:"Simple floating point registers", index:4},
+    {name:"Double floating point registers", index:5},
+  ],
 
   contr_int_reg =[
     {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -43,21 +35,21 @@ var architecture = [
   ],
 
   fp_reg_single_precision=[],
-  fp_reg_double_precision=[],
+  fp_reg_double_precision=[],*/
+]
 
-  memory = [
-    { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
-    { Address: "0x01007-0x01004", Binary: "61 65 6c 50", Tag: 'b', Value: 30 },
-    { Address: "0x0100b-0x01008", Binary: "61 65 6c 50", Tag: 'msg', Value: "hello wold" },
-    { Address: "0x0100f-0x0100c", Binary: "61 65 6c 50", Tag: 'msg2', Value: "Please, press letter '0' to end the 'echo' effect" },
-  ],
+var memory = [
+  { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
+  { Address: "0x01007-0x01004", Binary: "61 65 6c 50", Tag: 'b', Value: 30 },
+  { Address: "0x0100b-0x01008", Binary: "61 65 6c 50", Tag: 'msg', Value: "hello wold" },
+  { Address: "0x0100f-0x0100c", Binary: "61 65 6c 50", Tag: 'msg2', Value: "Please, press letter '0' to end the 'echo' effect" },
+]
 
-  instructions = [
-    { Break: null, Address: "0x8000", Label: "main", Pseudo: "la $26 msg", Assebly: "la $26 msg" },
-    { Break: null, Address: "0x8004", Label: "loop1", Pseudo: "lb $27 ($26)", Assebly: "lb $27 ($26)" },
-    { Break: null, Address: "0x8008", Label: "", Pseudo: "li $1 0", Assebly: "li $1 0" },
-    { Break: null, Address: "0x800c", Label: "", Pseudo: "beq $27 $1 end1", Assebly: "beq $27 $1 end1" },
-  ],*/
+var  instructions = [
+  { Break: null, Address: "0x8000", Label: "main", Pseudo: "la $26 msg", Assebly: "la $26 msg" },
+  { Break: null, Address: "0x8004", Label: "loop1", Pseudo: "lb $27 ($26)", Assebly: "lb $27 ($26)" },
+  { Break: null, Address: "0x8008", Label: "", Pseudo: "li $1 0", Assebly: "li $1 0" },
+  { Break: null, Address: "0x800c", Label: "", Pseudo: "beq $27 $1 end1", Assebly: "beq $27 $1 end1" },
 ]
 
 /*Variables que almacenan el codigo introducido*/
@@ -66,6 +58,10 @@ var code_assDef = '';
 
 function destroyClickedElement(event) {
   document.body.removeChild(event.target);
+}
+
+function binaryStringToInt( b ) {
+    return parseInt(b, 2);
 }
 
 window.app = new Vue({
@@ -86,9 +82,6 @@ window.app = new Vue({
     load_arch: '',
     /*Nombre del fichero a guardar*/
     name_arch_save: '',
-    /*Componentes creados en la nueva arquitectura*/
-    components: components,
-
 
     /*CARGA Y LECTURA ENSAMBLADOR Y DEFINICION*/
     /*Variables donde se guardan los contenidos de los textarea*/
@@ -101,6 +94,14 @@ window.app = new Vue({
     save_assembly: '',
     save_assDef: '',
 
+    /*Edicion del ensamblador*/
+    formArchitecture: {
+      name: '',
+      defValue: '',
+      properties: [],
+    },
+
+
     /*PAGINA SIMULADOR*/
     /*Nuevo valor del registro*/
     newValue: '',
@@ -108,31 +109,19 @@ window.app = new Vue({
 
     /*SE CREA SEGUN JSON*/
     /*Definicion de posiciones:
+     * 0- Components
      * 1- reg_int_contr
      * 2- reg_int
      * 3- reg_fp_contr
      * 4- reg_fp_single
      * 5- reg_fp_double
-     * 6- memory
-     * 7- instructions
      */
-     
     architecture: architecture,
 
-    /*Asignacion de valores de los registros de control de los enteros*/
-    //reg_int_contr: architecture[1],
-    /*Asignacion de valores de los registros enteros*/
-    //reg_int: architecture[2],
-    /*Asignacion de valores de los registros de control de los reales*/
-    //reg_fp_contr: architecture[3],
-    /*Asignacion de valores de los registros reales de simple precision*/
-    //reg_fp_single: architecture[4],
-    /*Asignacion de valores de los registros reales de doble precision*/
-    //reg_fp_double: architecture[5],
     /*Asignacion de valores de la tabla de memoria*/
-    //memory: architecture[6],
+    memory: memory,
     /*Asignacion de valores de la tabla de instrucciones*/
-    //instructions: architecture[7],
+    instructions: instructions,
 
   },
   computed: {
@@ -158,23 +147,15 @@ window.app = new Vue({
       $.getJSON('architecture/'+e+'.json', function(cfg){
         architecture = cfg;
 
-        /*for (var i = 0; i < architecture[0].num_int_reg; i++) {
-          architecture[2].push({name:"R"+i, nbits: architecture[0].num_bits, value:0, default_value:0, properties: ["read", "write"]});
+        /*for (var i = 0; i < 32; i++) {
+          architecture[2].push({name:"R"+i, nbits: "32", value:0, default_value:0, properties: ["read", "write"]});
         }
-        for (var i = 0; i < architecture[0].num_fp_reg_single_precision; i++) {
-          architecture[4].push({name:"FG"+i, nbits: architecture[0].num_bits, value:0.0, default_value:0.0, properties: ["read", "write"]});
+        for (var i = 0; i < 32; i++) {
+          architecture[4].push({name:"FG"+i, nbits: "32", value:0.0, default_value:0.0, properties: ["read", "write"]});
         }
-        for (var i = 0; i < architecture[0].num_fp_reg_double_precision; i++) {
-          architecture[5].push({name:"FP"+(i*2), nbits: architecture[0].num_bits, value:0.0, default_value:0.0, properties: ["read", "write"]});
+        for (var i = 0; i < 16; i++) {
+          architecture[5].push({name:"FP"+(i*2), nbits: "64", value:0.0, default_value:0.0, properties: ["read", "write"]});
         }*/
-
-        /*app._data.reg_int_contr = architecture[1];
-        app._data.reg_int = architecture[2];
-        app._data.reg_fp_contr = architecture[3];
-        app._data.reg_fp_single = architecture[4];
-        app._data.reg_fp_double = architecture[5];
-        app._data.memory = architecture[6];
-        app._data.instructions = architecture[7];*/
 
         app._data.architecture = architecture;
 
@@ -201,24 +182,6 @@ window.app = new Vue({
 
       function onFileLoaded(event) {
         architecture = JSON.parse(event.currentTarget.result);
-
-        /*for (var i = 0; i < architecture[0].num_int_reg; i++) {
-          architecture[2].push({name:"R"+i, nbits: architecture[0].num_bits, value:0, default_value:0, properties: ["read", "write"]});
-        }
-        for (var i = 0; i < architecture[0].num_fp_reg_single_precision; i++) {
-          architecture[4].push({name:"FG"+i, nbits: architecture[0].num_bits, value:0.0, default_value:0.0, properties: ["read", "write"]});
-        }
-        for (var i = 0; i < architecture[0].num_fp_reg_double_precision; i++) {
-          architecture[5].push({name:"FP"+(i*2), nbits: architecture[0].num_bits, value:0.0, default_value:0.0, properties: ["read", "write"]});
-        }*/
-
-        /*app._data.reg_int_contr = architecture[1];
-        app._data.reg_int = architecture[2];
-        app._data.reg_fp_contr = architecture[3];
-        app._data.reg_fp_single = architecture[4];
-        app._data.reg_fp_double = architecture[5];
-        app._data.memory = architecture[6];
-        app._data.instructions = architecture[7];*/
 
         app._data.architecture = architecture;
 
@@ -249,6 +212,35 @@ window.app = new Vue({
       downloadLink.click();
       app._data.alertMessaje = 'Save architecture';
       app._data.dismissCountDown = app._data.dismissSecs;
+    },
+
+    newComponent(){
+      var newComp = {name: this.formArchitecture.name, index: architecture[0].length + 1};
+      architecture[0].push(newComp);
+      newComp = [];
+      architecture.push(newComp);
+      this.formArchitecture.name='';
+    },
+
+    newParameter(comp){
+      for (var i = 0; i < architecture[0].length; i++) {
+        if(comp == architecture[0][i].name && (i==0 || i==1 || i==2)){
+          var newPar = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
+          architecture[i+1].push(newPar);
+          this.formArchitecture.name='';
+          this.formArchitecture.defValue='';
+          this.formArchitecture.properties=[];
+          break;
+        }
+        if(comp == architecture[0][i].name && (i==3 || i==4)){
+          var newPar = {name:this.formArchitecture.name, nbits: this.number_bits*2, value:parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+          architecture[i+1].push(newPar);
+          this.formArchitecture.name='';
+          this.formArchitecture.defValue='';
+          this.formArchitecture.properties=[];
+          break;
+        }
+      }
     },
 
     /*CARGA Y LECTURA ENSAMBLADOR Y MICROCODIGO*/
@@ -493,16 +485,16 @@ window.app = new Vue({
       for (var i = 0; i < architecture[1].length; i++) {
          architecture[1][i].value =  architecture[1][i].default_value;
       }
-      for (var i = 0; i < architecture[0].num_int_reg; i++) {
+      for (var i = 0; i < architecture[2].length; i++) {
         architecture[2][i].value = architecture[2][i].default_value;
       }
       for (var i = 0; i < architecture[3].length; i++) {
         architecture[3][i].value = architecture[3][i].default_value;
       }
-      for (var i = 0; i < architecture[0].num_fp_reg_single_precision; i++) {
+      for (var i = 0; i < architecture[4].length; i++) {
         architecture[4][i].value = architecture[4][i].default_value;
       }
-      for (var i = 0; i < architecture[0].num_fp_reg_double_precision; i++) {
+      for (var i = 0; i < architecture[5].length; i++) {
         architecture[5][i].value = architecture[5][i].default_value;
       }
     },

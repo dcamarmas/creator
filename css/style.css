@@ -12,10 +12,18 @@ hr {
   margin: 0px;
 }
 
+.nopadding{
+  padding: 0px;
+}
+
 .header {
   width:100%;     
-	align-items: center;
-	background-color: #EAEAEA;
+  align-items: center;
+  background-color: #EAEAEA;
+}
+
+.menuGroup{
+  background-color: #FAFAFA;
 }
 
 .menu {
@@ -23,14 +31,6 @@ hr {
 	align-items: center;
 	margin: 5px;
 	margin-bottom: 10px;
-}
-
-.nopadding{
-	padding: 0px;
-}
-
-.menuGroup{
-	background-color: #FAFAFA;
 }
 
 .actionsGroup{
@@ -100,6 +100,13 @@ hr {
 
 .centArch{
   margin-top: 2vh;
+}
+
+.architecture-scroll-y {
+  display: block;
+  max-height: 60vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
