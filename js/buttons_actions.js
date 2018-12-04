@@ -1,10 +1,4 @@
 /*Botones menu de configuracion*/
-$("#load_arch_default").click(function(){
-  $("#available_arch").show();
-  $("#load_menu_arch").hide();
-  $("#save_menu_arch").hide();
-  $("#new_components").hide();
-});
 
 $("#load_arch").click(function(){
   $("#available_arch").hide();
