@@ -1,14 +1,14 @@
 [
   {
-    "name": "MIPS",
+    "name": "MIPS-like",
     "id": "select_confMIPS"
   },
   {
-    "name": "ARM",
+    "name": "ARM-like",
     "id": "select_confARM"
   },
   {
-    "name": "80x80",
+    "name": "80x80-like",
     "id": "select_conf80x80"
   }
 ]

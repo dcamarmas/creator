@@ -76,8 +76,6 @@ window.app = new Vue({
     /*PAGINA CARGA*/
     /*Configuraciones Disponibles*/
     arch_available: architecture_available,
-    /*Numero de bits*/
-    number_bits: 0,
     /*Nombre del fichero a cargar*/
     load_arch: '',
     /*Nombre del fichero a guardar*/
@@ -225,15 +223,23 @@ window.app = new Vue({
     newParameter(comp){
       for (var i = 0; i < architecture[0].length; i++) {
         if(comp == architecture[0][i].name && (i==0 || i==1 || i==2)){
-          var newPar = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
+          var newPar = {name:this.formArchitecture.name, nbits: "32", value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
           architecture[i+1].push(newPar);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
           break;
         }
-        if(comp == architecture[0][i].name && (i==3 || i==4)){
-          var newPar = {name:this.formArchitecture.name, nbits: this.number_bits*2, value:parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+        if(comp == architecture[0][i].name && i==3 ){
+          var newPar = {name:this.formArchitecture.name, nbits:"32", value:parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+          architecture[i+1].push(newPar);
+          this.formArchitecture.name='';
+          this.formArchitecture.defValue='';
+          this.formArchitecture.properties=[];
+          break;
+        }
+        if(comp == architecture[0][i].name && i==4){
+          var newPar = {name:this.formArchitecture.name, nbits: "64", value:parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
           architecture[i+1].push(newPar);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
@@ -408,7 +414,7 @@ window.app = new Vue({
 
       var characters = '';
 
-      for (var i = 0; i < valuec.length; i++) {
+      for (var i = valuec.length - 1; i >= 0; i--) {
         characters = characters + valuec[i] + ' ';
       }
 

@@ -58,11 +58,11 @@
             <div class="col-lg-4 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-3 col-sm-3 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;">Assembly</b-button>
-                  </div>
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn btn_arch" id="assDef_btn_arch" style="display:none;">Assembly Definition</b-button>
+                  </div>
+                  <div class="col-lg-3 col-sm-3 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;">Assembly</b-button>
                   </div>
                   <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch" id="sim_btn_arch" style="display:none;">Simulator</b-button>
@@ -94,7 +94,6 @@
           		<div class="col-lg-3 col-sm-12">
           			<div class="col-lg-12 col-sm-12">
           				<h6>Select action:</h6>
-          				<b-button class="btn btn-outline-secondary btn-block btn-sm" id="load_arch_default"><span class="fa fa-upload"></span> Load Default</b-button>
 	          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="load_arch"><span class="fa fa-upload"></span> Load</b-button>
 	          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="save_arch"><span class="fa fa-download"></span> Save</b-button>
 	          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="new_arch"><span class="fa fa-plus-circle"></span> New</b-button>
@@ -102,12 +101,15 @@
               	</div>
           		</div>
           		<div class="col-lg-9 col-sm-12">
-          			<div class="col-lg-12 col-sm-12" id="available_arch">
-                	<h6>Select the number of bits:</h6>
-                	<div class="col-lg-3 col-sm-3">
-	                	<b-form-input v-model="number_bits" type="number" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black;"></b-form-input>
-	                	<br>
-                	</div>
+          			<div class="col-lg-12 col-sm-12" id="load_menu_arch">
+                  <h6>Select the architecture to load:</h6>
+                  <br>
+                  <div class="col-lg-12 col-sm-12">
+                    <div class="col-lg-12 col-sm-12">
+                      <b-form-file v-model="load_arch" :state="Boolean(load_arch)" placeholder="Choose a file..." id="arch_file" @change="read_arch" ></b-form-file>
+                    </div>
+                  </div>
+                  <br>
           				<h6>The available architectures are:</h6>
           				<br>
           				<div class="col-lg-12 col-sm-12 row" v-for="item in arch_available">
@@ -119,15 +121,6 @@
           					</div>
           					<div class="col-lg-12 col-sm-12">
           						<hr>
-          					</div>
-          				</div>
-          			</div>
-          			<div class="col-lg-12 col-sm-12" id="load_menu_arch" style="display:none;">
-          				<h6>Select the architecture to load:</h6>
-          				<br>
-          				<div class="col-lg-12 col-sm-12">
-          					<div class="col-lg-12 col-sm-12">
-          						<b-form-file v-model="load_arch" :state="Boolean(load_arch)" placeholder="Choose a file..." id="arch_file" @change="read_arch" ></b-form-file>
           					</div>
           				</div>
           			</div>
@@ -145,11 +138,6 @@
           				</div>
           			</div>
           			<div class="col-lg-12 col-sm-12" id="new_components" style="display:none;">
-          				<h6>Select the number of bits:</h6>
-                	<div class="col-lg-3 col-sm-3">
-	                	<b-form-input v-model="number_bits" type="number" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black;"></b-form-input>
-	                	<br>
-                	</div>
           				<h6>Components of the architecture:</h6>
 
                   <b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
@@ -206,11 +194,11 @@
 	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_sim">Architecture</b-button>
 	                  </div>
+                    <div class="col-lg-6 col-sm-6 buttons">
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn" id="assDef_btn_sim">Assembly Definition</b-button>
+                    </div>
 	                  <div class="col-lg-3 col-sm-3 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim">Assembly</b-button>
-	                  </div>
-	                  <div class="col-lg-6 col-sm-6 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn" id="assDef_btn_sim">Assembly Definition</b-button>
 	                  </div>
 	                </div>
 	              </div>
