@@ -48,7 +48,7 @@
           </div>
         </header>
 
-        <b-alert :show="dismissCountDown" dismissible variant="info" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" style="margin: 5pt;">
+        <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" style="margin: 5pt;">
         	<span class="fa fa-info-circle"></span> {{alertMessaje}}
 		    </b-alert>
 
@@ -102,7 +102,7 @@
           		</div>
           		<div class="col-lg-9 col-sm-12">
           			<div class="col-lg-12 col-sm-12" id="load_menu_arch">
-                  <h6>Select the architecture to load:</h6>
+                  <h6>(1) Select the architecture to load:</h6>
                   <br>
                   <div class="col-lg-12 col-sm-12">
                     <div class="col-lg-12 col-sm-12">
@@ -110,7 +110,7 @@
                     </div>
                   </div>
                   <br>
-          				<h6>The available architectures are:</h6>
+          				<h6>(2) The available architectures are:</h6>
           				<br>
           				<div class="col-lg-12 col-sm-12 row" v-for="item in arch_available">
           					<div class="col-lg-8 col-sm-8 centArch">
@@ -143,24 +143,24 @@
                   <b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
                   
                   <div class="col-lg-12 col-sm-12 architecture-scroll-y">
-                    <div class="col-lg-12 col-sm-12" v-for="item in architecture[0]">
+                    <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">
                       <br>
                       <h6>{{item.name}}:</h6>
-                      <b-table striped small hover :items="architecture[item.index]"></b-table>
+                      <b-table striped small hover :items="architecture.components[item.index].elements" v-if="architecture.components[item.index].elements.length > 0"></b-table>
                       <b-button class="btn btn-outline-secondary btn-sm " :id="item.name" v-b-modal="item.name"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
 
                       <b-modal :id ="item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newParameter(item.name)">
                         <b-form>
-                          <b-form-group id="newComponentName" label="Name:">
-                            <b-form-input id="newComponentName" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
+                          <b-form-group id="newElementName" label="Name:">
+                            <b-form-input id="newElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
                             </b-form-input>
                           </b-form-group>
-                          <b-form-group id="newComponentDefValue" label="Default value:">
-                            <b-form-input id="newComponentDefValue"ntype="text" v-model="formArchitecture.defValue" required placeholder="Enter default value">
+                          <b-form-group id="newElementDefValue" label="Default value:">
+                            <b-form-input id="newElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value">
                             </b-form-input>
                           </b-form-group>
-                          <b-form-group id="newComponentProperties">
-                            <b-form-checkbox-group v-model="formArchitecture.properties" id="newComponentProperties">
+                          <b-form-group id="newElementProperties">
+                            <b-form-checkbox-group v-model="formArchitecture.properties" id="newElementPropertiesInput">
                               <b-form-checkbox value="read">Read</b-form-checkbox>
                               <b-form-checkbox value="write">Write</b-form-checkbox>
                             </b-form-checkbox-group>
@@ -173,7 +173,7 @@
                   <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponent">
                     <b-form>
                       <b-form-group id="newComponentName" label="Name:">
-                        <b-form-input id="newComponentName" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
+                        <b-form-input id="newComponentNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
                         </b-form-input>
                       </b-form-group>
                     </b-form>
@@ -283,9 +283,8 @@
 
               <!-- CPU-INT Registers-->
               <div class="col-lg-12 col-sm-12" id="int_registers">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[1]">
+                <div class="col-lg-12 col-sm-12 buttons row" v-if="architecture.components.length > 0">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture.components[0].elements">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -334,8 +333,8 @@
 
                 <hr>
 
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[2]">
+                <div class="col-lg-12 col-sm-12 buttons row" v-if="architecture.components.length > 1">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture.components[1].elements">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -386,8 +385,8 @@
 
               <!-- CPU-FP Registers-->
               <div class="col-lg-12 col-sm-12" id="fp_registers" style="display:none;">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[3]">
+                <div class="col-lg-12 col-sm-12 buttons row" v-if="architecture.components.length > 2">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture.components[2].elements">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item.value).toString(16)).padStart(item.nbits/4, "0")).toUpperCase()}}</b-badge>
                     </b-button>
@@ -437,8 +436,8 @@
 
                 <hr>
 
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[4]">
+                <div class="col-lg-12 col-sm-12 buttons row" v-if="architecture.components.length > 3">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture.components[3].elements">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{bin2hex(float2bin(item.value))}}</b-badge>
                     </b-button>
@@ -488,8 +487,8 @@
 
                 <hr>
 
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture[5]">
+                <div class="col-lg-12 col-sm-12 buttons row" v-if="architecture.components.length > 4">
+                  <div class="col-lg-4 col-sm-4 buttons" v-for="item in architecture.components[4].elements">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item.name)">
                        {{item.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{bin2hex(double2bin(item.value))}}</b-badge>
                     </b-button>

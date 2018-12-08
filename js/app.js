@@ -1,21 +1,11 @@
 /*Listado de arquitecturas disponibles*/
 var architecture_available = [];
 
+/*tabla hash de la arquitectura*/
+var architecture_hash = [];
 /*Arquitectura cargada*/
-var architecture = [
-
-  components = [],
-
-  /*Contenido del JSON MIPS*/
-  /*components = [
-    {name:"Integer control registers", index:1},
-    {name:"Integer registers", index:2},
-    {name:"Floating point control registers", index:3},
-    {name:"Simple floating point registers", index:4},
-    {name:"Double floating point registers", index:5},
-  ],
-
-  contr_int_reg =[
+var architecture = {components:[
+  /*{name: "Integer control registers", elements:[
     {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -23,20 +13,100 @@ var architecture = [
     {name:"STATUS", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-  ],
-
-  int_reg = [],
-
-  contr_fp_reg =[
+  ]},
+  {name: "Integer registers", elements:[
+    {name:"R0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R9", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R10", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R11", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R12", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R13", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R14", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R15", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R16", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R17", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R18", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R19", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R20", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R21", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R22", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R23", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R24", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R25", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R26", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R27", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R28", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R29", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R30", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    {name:"R31", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+  ]},
+  {name: "Floating point control registers", elements:[
     {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-  ],
-
-  fp_reg_single_precision=[],
-  fp_reg_double_precision=[],*/
-]
+  ]},
+  {component: "Simple floating point registers", elements:[
+    {name:"FG0", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG1", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG2", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG3", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG4", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG5", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG6", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG7", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG8", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG9", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG10", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG11", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG12", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG13", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG14", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG15", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG16", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG17", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG18", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG19", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG20", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG21", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG22", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG23", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG24", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG25", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG26", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG27", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG28", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG29", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG30", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+  ]},
+  {name: "Double floating point registers", elements:[
+    {name:"FP0", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP2", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP4", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP6", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP8", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP10", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP12", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP14", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP16", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP18", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP20", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP22", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP24", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP26", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP28", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    {name:"FP30", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+  ]}*/
+]};
 
 var memory = [
   { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
@@ -46,10 +116,7 @@ var memory = [
 ]
 
 var  instructions = [
-  { Break: null, Address: "0x8000", Label: "main", Pseudo: "la $26 msg", Assebly: "la $26 msg" },
-  { Break: null, Address: "0x8004", Label: "loop1", Pseudo: "lb $27 ($26)", Assebly: "lb $27 ($26)" },
-  { Break: null, Address: "0x8008", Label: "", Pseudo: "li $1 0", Assebly: "li $1 0" },
-  { Break: null, Address: "0x800c", Label: "", Pseudo: "beq $27 $1 end1", Assebly: "beq $27 $1 end1" },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "pr R1 R2 R0", Assebly: "pr R1 R2 R0" }
 ]
 
 /*Variables que almacenan el codigo introducido*/
@@ -70,16 +137,34 @@ window.app = new Vue({
 
     /*ALERTA*/
     alertMessaje: '',
+    type: '',
     dismissSecs: 3,
     dismissCountDown: 0,
 
-    /*PAGINA CARGA*/
+    /*PAGINA CARGA ARQUITECTURA*/
     /*Configuraciones Disponibles*/
     arch_available: architecture_available,
     /*Nombre del fichero a cargar*/
     load_arch: '',
     /*Nombre del fichero a guardar*/
     name_arch_save: '',
+    /*Definicion de posiciones:
+     * 0- Components
+     * 1- reg_int_contr
+     * 2- reg_int
+     * 3- reg_fp_contr
+     * 4- reg_fp_single
+     * 5- reg_fp_double
+     */
+    architecture: architecture,
+    /*Tabla hash arquitectura*/
+    architecture_hash: architecture_hash,
+    /*Edicion de la arquitectura*/
+    formArchitecture: {
+      name: '',
+      defValue: '',
+      properties: [],
+    },
 
     /*CARGA Y LECTURA ENSAMBLADOR Y DEFINICION*/
     /*Variables donde se guardan los contenidos de los textarea*/
@@ -103,18 +188,6 @@ window.app = new Vue({
     /*PAGINA SIMULADOR*/
     /*Nuevo valor del registro*/
     newValue: '',
-
-
-    /*SE CREA SEGUN JSON*/
-    /*Definicion de posiciones:
-     * 0- Components
-     * 1- reg_int_contr
-     * 2- reg_int
-     * 3- reg_fp_contr
-     * 4- reg_fp_single
-     * 5- reg_fp_double
-     */
-    architecture: architecture,
 
     /*Asignacion de valores de la tabla de memoria*/
     memory: memory,
@@ -144,22 +217,23 @@ window.app = new Vue({
     load_arch_select(e){
       $.getJSON('architecture/'+e+'.json', function(cfg){
         architecture = cfg;
-
-        /*for (var i = 0; i < 32; i++) {
-          architecture[2].push({name:"R"+i, nbits: "32", value:0, default_value:0, properties: ["read", "write"]});
-        }
-        for (var i = 0; i < 32; i++) {
-          architecture[4].push({name:"FG"+i, nbits: "32", value:0.0, default_value:0.0, properties: ["read", "write"]});
-        }
-        for (var i = 0; i < 16; i++) {
-          architecture[5].push({name:"FP"+(i*2), nbits: "64", value:0.0, default_value:0.0, properties: ["read", "write"]});
-        }*/
-
         app._data.architecture = architecture;
+
+        /*PREGUNTAR*/
+        architecture_hash = [];
+        for (var i = 0; i < architecture.components.length; i++) {
+          architecture_hash.push({name: architecture.components[i].name, index: i}); 
+          app._data.architecture_hash = architecture_hash;
+        }
+
+        /*$("#assDefinition").show();
+        $("#assDef_btn_arch").show();
+        $("#architecture_menu").hide();*/
 
         $(".btn_arch").show();
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+        app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
 
       });
@@ -183,9 +257,21 @@ window.app = new Vue({
 
         app._data.architecture = architecture;
 
+        /*PREGUNTAR*/
+        architecture_hash = [];
+        for (var i = 0; i < architecture.components.length; i++) {
+          architecture_hash.push({name: architecture.components[i].name, index: i}); 
+          app._data.architecture_hash = architecture_hash;
+        }
+
+        /*$("#assDefinition").show();
+        $("#assDef_btn_arch").show();
+        $("#architecture_menu").hide();*/
+
         $(".btn_arch").show();
         
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+        app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
       }
     },
@@ -209,38 +295,39 @@ window.app = new Vue({
 
       downloadLink.click();
       app._data.alertMessaje = 'Save architecture';
+      app._data.type ='success';
       app._data.dismissCountDown = app._data.dismissSecs;
     },
 
     newComponent(){
-      var newComp = {name: this.formArchitecture.name, index: architecture[0].length + 1};
-      architecture[0].push(newComp);
-      newComp = [];
-      architecture.push(newComp);
+      var newComp = {name: this.formArchitecture.name, elements:[]};
+      architecture.components.push(newComp);
+      var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
+      architecture_hash.push(newComponentHash);
       this.formArchitecture.name='';
     },
 
     newParameter(comp){
-      for (var i = 0; i < architecture[0].length; i++) {
-        if(comp == architecture[0][i].name && (i==0 || i==1 || i==2)){
-          var newPar = {name:this.formArchitecture.name, nbits: "32", value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
-          architecture[i+1].push(newPar);
+      for (var i = 0; i < architecture_hash.length; i++) {
+        if(comp == architecture_hash[i].name && (i==0 || i==1 || i==2)){
+          var newElement = {name:this.formArchitecture.name, nbits: "32", value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
+          architecture.components[i].elements.push(newElement);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
           break;
         }
         if(comp == architecture[0][i].name && i==3 ){
-          var newPar = {name:this.formArchitecture.name, nbits:"32", value:parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
-          architecture[i+1].push(newPar);
+          var newElement = {name:this.formArchitecture.name, nbits: "32", value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+          architecture.components[i].elements.push(newElement);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
           break;
         }
         if(comp == architecture[0][i].name && i==4){
-          var newPar = {name:this.formArchitecture.name, nbits: "64", value:parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
-          architecture[i+1].push(newPar);
+          var newElement = {name:this.formArchitecture.name, nbits: "64", value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+          architecture.components[i].elements.push(newElement);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
@@ -486,69 +573,50 @@ window.app = new Vue({
 		},
 
     /*FUNCIONES DE GESTION DE REGISTROS*/
-    /*Funcion que resetea todos los registros*/
-    reset(){
-      for (var i = 0; i < architecture[1].length; i++) {
-         architecture[1][i].value =  architecture[1][i].default_value;
-      }
-      for (var i = 0; i < architecture[2].length; i++) {
-        architecture[2][i].value = architecture[2][i].default_value;
-      }
-      for (var i = 0; i < architecture[3].length; i++) {
-        architecture[3][i].value = architecture[3][i].default_value;
-      }
-      for (var i = 0; i < architecture[4].length; i++) {
-        architecture[4][i].value = architecture[4][i].default_value;
-      }
-      for (var i = 0; i < architecture[5].length; i++) {
-        architecture[5][i].value = architecture[5][i].default_value;
-      }
-    },
-
     /*Funciones de actualizacion de los valores de los registros de control enteros*/
     updateIntcontr(j){
-      for (var i = 0; i < architecture[1].length; i++) {
-        if(architecture[1][i].name == j && this.newValue.match(/^0x/)){
+      for (var i = 0; i < architecture.components[0].elements.length; i++) {
+        if(architecture.components[0].elements[i].name == j && this.newValue.match(/^0x/)){
           var value = this.newValue.split("x");
-          architecture[1][i].value = bigInt(value[1], 16);
+          architecture.components[0].elements[i].value = bigInt(value[1], 16);
         }
-        else if(architecture[1][i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture[1][i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(architecture.components[0].elements[i].name == j && this.newValue.match(/^(\d)+/)){
+          architecture.components[0].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
-        else if(architecture[1][i].name == j && this.newValue.match(/^-/)){
-          architecture[1][i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(architecture.components[0].elements[i].name == j && this.newValue.match(/^-/)){
+          architecture.components[0].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
       }
       this.newValue = '';
     },
 
     updateIntReg(j){
-      for (var i = 0; i < architecture[2].length; i++) {
-        if(architecture[2][i].name == j && this.newValue.match(/^0x/)){
+      for (var i = 0; i < architecture.components[1].elements.length; i++) {
+        if(architecture.components[1].elements[i].name == j && this.newValue.match(/^0x/)){
           var value = this.newValue.split("x");
-          architecture[2][i].value = bigInt(value[1], 16);
+          architecture.components[1].elements[i].value = bigInt(value[1], 16);
         }
-        else if(architecture[2][i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture[2][i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(architecture.components[1].elements[i].name == j && this.newValue.match(/^(\d)+/)){
+          architecture.components[1].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
-        else if(architecture[2][i].name == j && this.newValue.match(/^-/)){
-          architecture[2][i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(architecture.components[1].elements[i].name == j && this.newValue.match(/^-/)){
+          architecture.components[1].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
       }
       this.newValue = '';
     },
 
     updateRegFpContr(j){
-      for (var i = 0; i < architecture[3].length; i++) {
-        if(architecture[3][i].name == j && this.newValue.match(/^0x/)){
+      for (var i = 0; i < architecture.components[2].elements.length; i++) {
+        if(architecture.components[2].elements[i].name == j && this.newValue.match(/^0x/)){
           var value = this.newValue.split("x");
-          architecture[3][i].value = bigInt(value[1], 16);
+          architecture.components[2].elements[i].value = bigInt(value[1], 16);
         }
-        else if(architecture[3][i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture[3][i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(architecture.components[2].elements[i].name == j && this.newValue.match(/^(\d)+/)){
+          architecture.components[2].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
-        else if(architecture[3][i].name == j && this.newValue.match(/^-/)){
-          architecture[3][i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(architecture.components[2].elements[i].name == j && this.newValue.match(/^-/)){
+          architecture.components[2].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
         }
       }
       this.newValue = '';
@@ -556,33 +624,53 @@ window.app = new Vue({
 
     /*Revisar cuando es hexadecimal ya que no lo hace bien por la funcion que pasa a binario*/
     updateRegFpSingle(j){
-      for (var i = 0; i < architecture[4].length; i++) {
-        if(architecture[4][i].name == j && this.newValue.match(/^0x/)){
-          architecture[4][i].value = this.hex2float(this.newValue);
+      for (var i = 0; i < architecture.components[3].elements.length; i++) {
+        if(architecture.components[3].elements[i].name == j && this.newValue.match(/^0x/)){
+          architecture.components[3].elements[i].value = this.hex2float(this.newValue);
         }
-        else if(architecture[4][i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture[4][i].value = parseFloat(this.newValue, 10);
+        else if(architecture.components[3].elements[i].name == j && this.newValue.match(/^(\d)+/)){
+          architecture.components[3].elements[i].value = parseFloat(this.newValue, 10);
         }
-        else if(architecture[4][i].name == j && this.newValue.match(/^-/)){
-        	architecture[4][i].value = parseFloat(this.newValue, 10);
+        else if(architecture.components[3].elements[i].name == j && this.newValue.match(/^-/)){
+          architecture.components[3].elements[i].value = parseFloat(this.newValue, 10);
         }
       }
       this.newValue = '';
     },
     /*Revisar cuando es hexadecimal ya que coge el float*/
     updateRegFpDouble(j){
-      for (var i = 0; i < architecture[5].length; i++) {
-        if(architecture[5][i].name == j && this.newValue.match(/^0x/)){
-          architecture[5][i].value = this.hex2double(this.newValue);
+      for (var i = 0; i < architecture.components[4].elements.length; i++) {
+        if(architecture.components[4].elements[i].name == j && this.newValue.match(/^0x/)){
+          architecture.components[4].elements[i].value = this.hex2double(this.newValue);
         }
-        else if(architecture[5][i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture[5][i].value = parseFloat(this.newValue, 10);
+        else if(architecture.components[4].elements[i].name == j && this.newValue.match(/^(\d)+/)){
+          architecture.components[4].elements[i].value = parseFloat(this.newValue, 10);
         }
-        else if(architecture[5][i].name == j && this.newValue.match(/^-/)){
-        	architecture[5][i].value = parseFloat(this.newValue, 10);
+        else if(architecture.components[4].elements[i].name == j && this.newValue.match(/^-/)){
+          architecture.components[4].elements[i].value = parseFloat(this.newValue, 10);
         }
       }
       this.newValue = '';
+    },
+
+    /*Funcion que resetea la ejecucion*/
+    reset(){
+      executionIndex = 0;
+      for (var i = 0; i < architecture.components[0].elements.length; i++) {
+         architecture.components[0].elements[i].value =  architecture.components[0].elements[i].default_value;
+      }
+      for (var i = 0; i < architecture.components[1].elements.length; i++) {
+        architecture.components[1].elements[i].value = architecture.components[1].elements[i].default_value;
+      }
+      for (var i = 0; i < architecture.components[2].elements.length; i++) {
+        architecture.components[2].elements[i].value = architecture.components[2].elements[i].default_value;
+      }
+      for (var i = 0; i < architecture.components[3].elements.length; i++) {
+        architecture.components[3].elements[i].value = architecture.components[3].elements[i].default_value;
+      }
+      for (var i = 0; i < architecture.components[4].elements.length; i++) {
+        architecture.components[4].elements[i].value = architecture.components[4].elements[i].default_value;
+      }
     },
   },
   created(){

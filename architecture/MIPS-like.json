@@ -1,944 +1,939 @@
-[
-  [
+{
+  "components": [
     {
       "name": "Integer control registers",
-      "index": 1
+      "elements": [
+        {
+          "name": "PC",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "EPC",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "CAUSE",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "BADVADDR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "STATUS",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "HI",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "LO",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
       "name": "Integer registers",
-      "index": 2
+      "elements": [
+        {
+          "name": "R0",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R1",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R2",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R3",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R4",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R5",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R6",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R7",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R8",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R9",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R10",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R11",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R12",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R13",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R14",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R15",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R16",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R17",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R18",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R19",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R20",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R21",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R22",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R23",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R24",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R25",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R26",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R27",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R28",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R29",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R30",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "R31",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
       "name": "Floating point control registers",
-      "index": 3
+      "elements": [
+        {
+          "name": "FIR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FCSR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FCCR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FEXR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
-      "name": "Simple floating point registers",
-      "index": 4
+      "component": "Simple floating point registers",
+      "elements": [
+        {
+          "name": "FG0",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG1",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG2",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG3",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG4",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG5",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG6",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG7",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG8",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG9",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG10",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG11",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG12",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG13",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG14",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG15",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG16",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG17",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG18",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG19",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG20",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG21",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG22",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG23",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG24",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG25",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG26",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG27",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG28",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG29",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG30",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FG31",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
       "name": "Double floating point registers",
-      "index": 5
-    }
-  ],
-  [
-    {
-      "name": "PC",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "EPC",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "CAUSE",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "BADVADDR",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "STATUS",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "HI",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "LO",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    }
-  ],
-  [
-    {
-      "name": "R0",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R1",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R2",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R3",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R4",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R5",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R6",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R7",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R8",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R9",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R10",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R11",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R12",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R13",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R14",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R15",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R16",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R17",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R18",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R19",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R20",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R21",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R22",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R23",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R24",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R25",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R26",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R27",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R28",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R29",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R30",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "R31",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    }
-  ],
-  [
-    {
-      "name": "FIR",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FCSR",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FCCR",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FEXR",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    }
-  ],
-  [
-    {
-      "name": "FG0",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG1",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG2",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG3",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG4",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG5",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG6",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG7",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG8",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG9",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG10",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG11",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG12",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG13",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG14",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG15",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG16",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG17",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG18",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG19",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG20",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG21",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG22",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG23",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG24",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG25",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG26",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG27",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG28",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG29",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG30",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FG31",
-      "nbits": "32",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    }
-  ],
-  [
-    {
-      "name": "FP0",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP2",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP4",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP6",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP8",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP10",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP12",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP14",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP16",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP18",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP20",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP22",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP24",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP26",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP28",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
-      ]
-    },
-    {
-      "name": "FP30",
-      "nbits": "64",
-      "value": 0,
-      "default_value": 0,
-      "properties": [
-        "read",
-        "write"
+      "elements": [
+        {
+          "name": "FP0",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP2",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP4",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP6",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP8",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP10",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP12",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP14",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP16",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP18",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP20",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP22",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP24",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP26",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP28",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FP30",
+          "nbits": "64",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        }
       ]
     }
   ]
-]
+}
