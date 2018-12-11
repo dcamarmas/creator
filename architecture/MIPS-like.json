@@ -2,6 +2,7 @@
   "components": [
     {
       "name": "Integer control registers",
+      "type": "integer",
       "elements": [
         {
           "name": "PC",
@@ -77,6 +78,7 @@
     },
     {
       "name": "Integer registers",
+      "type": "integer",
       "elements": [
         {
           "name": "R0",
@@ -402,6 +404,7 @@
     },
     {
       "name": "Floating point control registers",
+      "type": "integer",
       "elements": [
         {
           "name": "FIR",
@@ -446,7 +449,8 @@
       ]
     },
     {
-      "component": "Simple floating point registers",
+      "name": "Simple floating point registers",
+      "type": "floating point",
       "elements": [
         {
           "name": "FG0",
@@ -772,6 +776,7 @@
     },
     {
       "name": "Double floating point registers",
+      "type": "floatin point",
       "elements": [
         {
           "name": "FP0",
@@ -935,5 +940,6 @@
         }
       ]
     }
-  ]
+  ],
+  "instructions": []
 }

@@ -1,11 +1,13 @@
 /*Listado de arquitecturas disponibles*/
 var architecture_available = [];
+/*Listado de set de instrucciones disponibles*/
+var instruction_set_available =[];
 
 /*tabla hash de la arquitectura*/
 var architecture_hash = [];
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Integer control registers", elements:[
+  /*{name: "Integer control registers", type: "integer", elements:[
     {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -14,7 +16,7 @@ var architecture = {components:[
     {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
   ]},
-  {name: "Integer registers", elements:[
+  {name: "Integer registers", type: "integer", elements:[
     {name:"R0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"R1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"R2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -48,13 +50,13 @@ var architecture = {components:[
     {name:"R30", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"R31", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
   ]},
-  {name: "Floating point control registers", elements:[
+  {name: "Floating point control registers", type: "integer", elements:[
     {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
   ]},
-  {component: "Simple floating point registers", elements:[
+  {name: "Simple floating point registers",type: "floating point", elements:[
     {name:"FG0", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FG1", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FG2", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
@@ -88,7 +90,7 @@ var architecture = {components:[
     {name:"FG30", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
   ]},
-  {name: "Double floating point registers", elements:[
+  {name: "Double floating point registers", type: "floatin point", elements:[
     {name:"FP0", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FP2", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FP4", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
@@ -106,7 +108,18 @@ var architecture = {components:[
     {name:"FP28", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FP30", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
   ]}*/
+], instructions:[
+  
 ]};
+
+var componentsTypes = [
+  { text: 'Integer', value: 'integer' },
+  { text: 'Floating point', value: 'floating point' },
+]
+
+/*tabla hash y instrucciones disponibles*/
+var instruction_set_hash = [];
+var instruction_set = {firmware: []};
 
 var memory = [
   { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
@@ -116,12 +129,14 @@ var memory = [
 ]
 
 var  instructions = [
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "pr R1 R2 R0", Assebly: "pr R1 R2 R0" }
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "pr R0 R1 R2", Assebly: "pr R0 R1 R2" },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "pr R3 R0 R2", Assebly: "pr R3 R0 R2" }
 ]
+
+var executionIndex = 0;
 
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
-var code_assDef = '';
 
 function destroyClickedElement(event) {
   document.body.removeChild(event.target);
@@ -148,6 +163,8 @@ window.app = new Vue({
     load_arch: '',
     /*Nombre del fichero a guardar*/
     name_arch_save: '',
+    /*Numero de bits de la arquitectura*/
+    number_bits: 0,
     /*Definicion de posiciones:
      * 0- Components
      * 1- reg_int_contr
@@ -162,33 +179,47 @@ window.app = new Vue({
     /*Edicion de la arquitectura*/
     formArchitecture: {
       name: '',
+      type: '',
       defValue: '',
       properties: [],
     },
+    /*Nombre de la arquitectura*/
+    architecture_name: '',
 
-    /*CARGA Y LECTURA ENSAMBLADOR Y DEFINICION*/
+
+    /*PAGINA DE CARGA INSTRUCCIONES*/
+    /*Definicion del ensamblador*/
+    ins_set_available: instruction_set_available,
+    /*Nombre del fichero a cargar*/
+    load_assDef: '',
+    /*Nombre del fichero a guardar*/
+    name_assDef_save: '',
+    /*Instrucciones definidas*/
+    instruction_set: instruction_set,
+    /*hash de las instrucciones definidas*/
+    instruction_set_hash: instruction_set_hash,
+    /*Listado de tipos de componentes*/
+    componentsTypes:componentsTypes,
+    /*Edicion de las instrucciones*/
+    formInstruction: {
+      name: '',
+      cop: '',
+      signature: '',
+      definition: '',
+    },
+
+    /*CARGA Y LECTURA ENSAMBLADOR*/
     /*Variables donde se guardan los contenidos de los textarea*/
-    text_assDef: code_assDef,
     text_assembly: code_assembly,
     /*Variables donde se guardan los ficheros cargados*/
     load_assembly: '',
-    load_assDef: '',
     /*Variables donde se guardan los nombre de los ficheros guardados*/
     save_assembly: '',
-    save_assDef: '',
-
-    /*Edicion del ensamblador*/
-    formArchitecture: {
-      name: '',
-      defValue: '',
-      properties: [],
-    },
-
 
     /*PAGINA SIMULADOR*/
     /*Nuevo valor del registro*/
     newValue: '',
-
+    
     /*Asignacion de valores de la tabla de memoria*/
     memory: memory,
     /*Asignacion de valores de la tabla de instrucciones*/
@@ -201,10 +232,10 @@ window.app = new Vue({
   methods:{
     /*ALERTA*/
     countDownChanged (dismissCountDown) {
-      this.dismissCountDown = dismissCountDown
+      this.dismissCountDown = dismissCountDown;
     },
 
-    /*PAGINA CARGA*/
+    /*PAGINA CARGA ARQUITECTURA*/
     /*Carga las arquitecturas que hay disponibles*/
     load_arch_available(){
       $.getJSON('architecture/available_arch.json', function(cfg){
@@ -226,11 +257,15 @@ window.app = new Vue({
           app._data.architecture_hash = architecture_hash;
         }
 
-        /*$("#assDefinition").show();
-        $("#assDef_btn_arch").show();
-        $("#architecture_menu").hide();*/
+        app._data.architecture_name = e;
 
-        $(".btn_arch").show();
+        $("#architecture_menu").hide();
+        $("#simulator").show();
+        $("#assembly_btn_arch").show();
+        $("#sim_btn_arch").show();
+        $("#load_arch").hide();
+        $("#load_menu_arch").hide();
+        $("#new_components").show();
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
@@ -264,11 +299,13 @@ window.app = new Vue({
           app._data.architecture_hash = architecture_hash;
         }
 
-        /*$("#assDefinition").show();
-        $("#assDef_btn_arch").show();
-        $("#architecture_menu").hide();*/
-
-        $(".btn_arch").show();
+        $("#architecture_menu").hide();
+        $("#simulator").show();
+        $("#assembly_btn_arch").show();
+        $("#sim_btn_arch").show();
+        $("#load_arch").hide();
+        $("#load_menu_arch").hide();
+        $("#new_components").show();
         
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
@@ -307,7 +344,7 @@ window.app = new Vue({
       this.formArchitecture.name='';
     },
 
-    newParameter(comp){
+    newElement(comp){
       for (var i = 0; i < architecture_hash.length; i++) {
         if(comp == architecture_hash[i].name && (i==0 || i==1 || i==2)){
           var newElement = {name:this.formArchitecture.name, nbits: "32", value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
@@ -336,8 +373,108 @@ window.app = new Vue({
       }
     },
 
-    /*CARGA Y LECTURA ENSAMBLADOR Y MICROCODIGO*/
-    /*Funciones de carga y descarga de microcodigo y ensamblador*/
+    /*PAGINA DE CARGA DE INSTRUCCIONES*/
+    /*Carga el listado de instrucciones disponibles*/
+    load_instruction_set_available(){
+      $.getJSON('instructions_set/default_instruction_set.json', function(cfg){
+        instruction_set_available = cfg;
+        app._data.ins_set_available = cfg;
+      })
+    },
+
+    load_assDef_select(e){
+      $.getJSON('instructions_set/'+e+'.json', function(cfg){
+        instruction_set = cfg;
+
+        app._data.instruction_set = instruction_set;
+
+        /*PREGUNTAR*/
+        instruction_set_hash = [];
+        for (var i = 0; i < instruction_set.firmware.length; i++) {
+          instruction_set_hash.push({name: instruction_set.firmware[i].name, index: i}); 
+          app._data.instruction_set_hash = instruction_set_hash;
+        }
+
+        $(".btn_arch").show();
+        $(".assDef_btn").show();
+
+        app._data.alertMessaje = 'The selected instruction set has been loaded correctly';
+        app._data.type ='success';
+        app._data.dismissCountDown = app._data.dismissSecs;
+
+      });
+    },
+
+    /*Lectura del JSON de las instrucciones seleccionadas*/
+    read_assDef(e){
+      var file;
+      var reader;
+      var files = document.getElementById('assDef_file').files;
+
+      for (var i = 0; i < files.length; i++) {
+        file = files[i];
+        reader = new FileReader();
+        reader.onloadend = onFileLoaded;
+        reader.readAsBinaryString(file);
+      }
+
+      function onFileLoaded(event) {
+        instruction_set = JSON.parse(event.currentTarget.result);
+
+        app._data.instruction_set = instruction_set;
+
+        instruction_set_hash = [];
+        for (var i = 0; i < instruction_set.firmware.length; i++) {
+          instruction_set_hash.push({name: instruction_set.firmware[i].name, index: i}); 
+          app._data.instruction_set_hash = instruction_set_hash;
+        }
+
+        $(".btn_arch").show();
+        $(".assDef_btn").show();
+
+        app._data.alertMessaje = 'The selected instruction set has been loaded correctly';
+        app._data.type ='success';
+        app._data.dismissCountDown = app._data.dismissSecs;
+      }
+    },
+
+    /*Guarda las instruccciones definidas en un JSON*/
+    assDef_save(){
+      var textToWrite = JSON.stringify(instruction_set, null, 2);
+      var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
+      var fileNameToSaveAs = this.name_assDef_save + ".json";
+
+      var downloadLink = document.createElement("a");
+      downloadLink.download = fileNameToSaveAs;
+      downloadLink.innerHTML = "My Hidden Link";
+
+      window.URL = window.URL || window.webkitURL;
+
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+      downloadLink.onclick = destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+
+      downloadLink.click();
+      app._data.alertMessaje = 'Save instruction set';
+      app._data.type ='success';
+      app._data.dismissCountDown = app._data.dismissSecs;
+    },
+
+    /*Inserta una nueva instruccion*/
+    newInstruction(){
+      var newInstruction = {name: this.formInstruction.name, cop: this.formInstruction.cop, signatureRaw: this.formInstruction.signature, definition: this.formInstruction.definition};
+      instruction_set.firmware.push(newInstruction);
+      var newInstructionHash = {name: this.formInstruction.name, index: instruction_set_hash.length};
+      instruction_set_hash.push(newInstructionHash);
+      this.formInstruction.name='';
+      this.formInstruction.cop='';
+      this.formInstruction.signature='';
+      this.formInstruction.definition='';
+    },
+
+    /*PAGINA ENSAMBLADOR*/
+    /*Funciones de carga y descarga de ensamblador*/
     read_assembly(e){
       var file;
       var reader;
@@ -378,45 +515,6 @@ window.app = new Vue({
       downloadLink.click();
     },
 
-    read_assDef(e){
-      var file;
-      var reader;
-      var files = document.getElementById('assDef_file').files;
-
-      for (var i = 0; i < files.length; i++) {
-        file = files[i];
-        reader = new FileReader();
-        reader.onloadend = onFileLoaded;
-        reader.readAsBinaryString(file);
-      }
-
-      function onFileLoaded(event) {
-        code_assDef = event.currentTarget.result;
-      }
-    },
-
-    assDef_update(){
-      this.text_assDef = code_assDef;
-    },
-
-    assDef_save(){
-      var textToWrite = this.text_assDef;
-      var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
-      var fileNameToSaveAs = this.save_assDef + ".txt";
-
-      var downloadLink = document.createElement("a");
-      downloadLink.download = fileNameToSaveAs;
-      downloadLink.innerHTML = "My Hidden Link";
-
-      window.URL = window.URL || window.webkitURL;
-
-      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-      downloadLink.onclick = destroyClickedElement;
-      downloadLink.style.display = "none";
-      document.body.appendChild(downloadLink);
-
-      downloadLink.click();
-    },
 
     /*PAGINA SIMULADOR*/
     /*Funciones de los popover*/
@@ -632,7 +730,7 @@ window.app = new Vue({
           architecture.components[3].elements[i].value = parseFloat(this.newValue, 10);
         }
         else if(architecture.components[3].elements[i].name == j && this.newValue.match(/^-/)){
-          architecture.components[3].elements[i].value = parseFloat(this.newValue, 10);
+        	architecture.components[3].elements[i].value = parseFloat(this.newValue, 10);
         }
       }
       this.newValue = '';
@@ -647,10 +745,101 @@ window.app = new Vue({
           architecture.components[4].elements[i].value = parseFloat(this.newValue, 10);
         }
         else if(architecture.components[4].elements[i].name == j && this.newValue.match(/^-/)){
-          architecture.components[4].elements[i].value = parseFloat(this.newValue, 10);
+        	architecture.components[4].elements[i].value = parseFloat(this.newValue, 10);
         }
       }
       this.newValue = '';
+    },
+
+
+    /*FUNCIONES DE EJECUCION*/
+    /*Funcion que ejecuta instruccion a instruccion*/
+    executeInstruction(){
+      var error = 0;
+      var index;
+
+      var instruction = instructions[executionIndex].Pseudo;
+
+      var instructionParts = instruction.split(' ');
+      var instructionObjet = [];
+
+
+      /*PREGUNTAR ESTO VA EN COMPILACION*/
+      /*Busca errores en la instruccion a ejecutar*/
+      for (i = 0; i < instruction_set_hash.length; i++) {
+        if(instruction_set_hash[i].name == instructionParts[0]){
+          index = i;
+          break;
+        }
+        if((instruction_set_hash[i].name != instructionParts[0]) && (i == instruction_set_hash.length-1)){
+          error = 1;
+        }
+      }
+
+      /*Busca erroes en los registros que se usan*/
+      for (i = 1; i < instructionParts.length; i++){
+        var valReg = 0;
+        for (j = 0; j < architecture.components.length && valReg == 0; j++) {
+          for (z = 0; z < architecture.components[j].elements.length; z++){
+            if(instructionParts[i] == architecture.components[j].elements[z].name){
+              instructionObjet.push({name: instructionParts[i], value: architecture.components[j].elements[z].value})
+              valReg = 1;
+              break;
+            }
+            if((j == architecture.components.length-1) && (z == architecture.components[j].elements.length-1) && (instructionParts[i] != architecture.components[j].elements[z].name)){
+              error = 1;
+            }
+          }
+        }
+      }
+
+      if(error == 0){
+        var signatureParts = (instruction_set.firmware[index].signatureRaw).split(' ');
+
+        for (i = 1; i < signatureParts.length; i++){
+          eval(signatureParts[i] + " = " + instructionObjet[i-1].value);
+        }
+
+        eval(instruction_set.firmware[index].definition);
+
+        var defParts = (instruction_set.firmware[index].definition).split('=');
+        var resultIndex;
+        for (i = 0; i < signatureParts.length; i++) {
+          if(signatureParts[i] == defParts[0]){
+            resultIndex = i;
+          }
+        }
+
+        var valReg = 0;
+        for (j = 0; j < architecture.components.length && valReg == 0; j++) {
+          for (z = 0; z < architecture.components[j].elements.length; z++){
+            if(instructionParts[resultIndex] == architecture.components[j].elements[z].name){
+              eval("architecture.components[j].elements[z].value = bigInt(parseInt("+defParts[0]+") >>> 0, 10).value");
+              valReg = 1;
+              break;
+            }
+          }
+        }
+
+        executionIndex++;
+        if(executionIndex >= instructions.length){
+          executionIndex = 0;
+          app._data.alertMessaje = 'The execution of the program has finished';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+        }
+      }
+      else{
+        executionIndex = 0;
+        app._data.alertMessaje = 'Invalid instruction';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+      }
+    },
+
+    /*Funcion que ejecuta todo el programa*/
+    executeProgram(){
+      console.log("executeProgram");
     },
 
     /*Funcion que resetea la ejecucion*/
@@ -675,5 +864,6 @@ window.app = new Vue({
   },
   created(){
     this.load_arch_available();
+    this.load_instruction_set_available();
   }
 })

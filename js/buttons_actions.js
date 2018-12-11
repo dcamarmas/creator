@@ -1,24 +1,39 @@
 /*Botones menu de configuracion*/
-
 $("#load_arch").click(function(){
-  $("#available_arch").hide();
   $("#load_menu_arch").show();
   $("#save_menu_arch").hide();
   $("#new_components").hide();
 });
 
 $("#save_arch").click(function(){
-  $("#available_arch").hide();
   $("#load_menu_arch").hide();
   $("#save_menu_arch").show();
   $("#new_components").hide();
 });
 
 $("#new_arch").click(function(){
-  $("#available_arch").hide();
   $("#load_menu_arch").hide();
   $("#save_menu_arch").hide();
   $("#new_components").show();
+});
+
+/*Botones menu de instrucciones*/
+$("#load_assDef").click(function(){
+  $("#load_instructions_set").show();
+  $("#save_menu_assDef").hide();
+  $("#new_instruction_set").hide();
+});
+
+$("#save_assDef").click(function(){
+  $("#load_instructions_set").hide();
+  $("#save_menu_assDef").show();
+  $("#new_instruction_set").hide();
+});
+
+$("#new_assDef").click(function(){
+  $("#load_instructions_set").hide();
+  $("#save_menu_assDef").hide();
+  $("#new_instruction_set").show();
 });
 
 /*Botones modos*/
