@@ -29,13 +29,17 @@
         <header>
           <!-- 1 navbar -->
           <div class="contenedor header row">
-            <div class="col-lg-8 col-sm-12 row">
+            <div class="col-lg-4 col-sm-12 row">
               <div class="col-lg-12 col-sm-12">
                 <b-navbar-brand href="#">
                   <h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5>
                 </b-navbar-brand>
               </div>
             </div>
+
+            <div class="col-lg-4 col-sm-12 row">
+            	<h5>{{architecture_name}}</h5>
+           	</div>
 
             <div class="col-lg-4 col-sm-12 row">
               <div class="col-lg-4 col-sm-4">
@@ -59,12 +63,9 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn btn_arch" id="assDef_btn_arch" style="display:none;">Assembly Definition</b-button>
-                  </div>
-                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;">Assembly</b-button>
                   </div>
-                  <div class="col-lg-3 col-sm-3 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch" id="sim_btn_arch" style="display:none;">Simulator</b-button>
                   </div>
                 </div>
@@ -102,15 +103,12 @@
           		</div>
           		<div class="col-lg-9 col-sm-12">
           			<div class="col-lg-12 col-sm-12" id="load_menu_arch">
-                  <h6>(1) Select the architecture to load:</h6>
-                  <br>
-                  <div class="col-lg-12 col-sm-12">
-                    <div class="col-lg-12 col-sm-12">
-                      <b-form-file v-model="load_arch" :state="Boolean(load_arch)" placeholder="Choose a file..." id="arch_file" @change="read_arch" ></b-form-file>
-                    </div>
-                  </div>
-                  <br>
-          				<h6>(2) The available architectures are:</h6>
+          				<h6>Select the number of bits:</h6>
+                	<div class="col-lg-3 col-sm-3">
+	                	<b-form-input v-model="number_bits" type="number" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black;"></b-form-input>
+	                	<br>
+                	</div>
+          				<h6>The available architectures are:</h6>
           				<br>
           				<div class="col-lg-12 col-sm-12 row" v-for="item in arch_available">
           					<div class="col-lg-8 col-sm-8 centArch">
@@ -123,6 +121,14 @@
           						<hr>
           					</div>
           				</div>
+          				<br>
+          				<h6>Select the architecture to load:</h6>
+                  <br>
+                  <div class="col-lg-12 col-sm-12">
+                    <div class="col-lg-12 col-sm-12">
+                      <b-form-file v-model="load_arch" :state="Boolean(load_arch)" placeholder="Choose a file..." id="arch_file" @change="read_arch" ></b-form-file>
+                    </div>
+                  </div>
           			</div>
           			<div class="col-lg-12 col-sm-12" id="save_menu_arch" style="display:none;">
           				<h6>Enter the name of the architecture to save:</h6>
@@ -138,47 +144,122 @@
           				</div>
           			</div>
           			<div class="col-lg-12 col-sm-12" id="new_components" style="display:none;">
-          				<h6>Components of the architecture:</h6>
+          				<b-tabs>
+									  <b-tab title="Components" active>
+									  	<br>
+									    <h6>Components of the architecture:</h6>
 
-                  <b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
-                  
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y">
-                    <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">
-                      <br>
-                      <h6>{{item.name}}:</h6>
-                      <b-table striped small hover :items="architecture.components[item.index].elements" v-if="architecture.components[item.index].elements.length > 0"></b-table>
-                      <b-button class="btn btn-outline-secondary btn-sm " :id="item.name" v-b-modal="item.name"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
+		                  <b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
+		                  
+		                  <div class="col-lg-12 col-sm-12">
+		                  	<br>
+		                    <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">
+		                    	<b-card no-body class="mb-1">
+											      <b-card-header header-tag="header" class="p-1" role="tab">
+											        <b-btn block href="#" v-b-toggle="item.name" class="btn btn-outline-secondary btn-sm">{{item.name}}</b-btn>
+											      </b-card-header>
+											      <b-collapse :id="item.name" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
+											        <b-card-body>
+											          <b-table striped small hover :items="architecture.components[item.index].elements" v-if="architecture.components[item.index].elements.length > 0"></b-table>
+					                      <b-button class="btn btn-outline-secondary btn-sm " :id="item.name" v-b-modal="item.name"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
 
-                      <b-modal :id ="item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newParameter(item.name)">
-                        <b-form>
-                          <b-form-group id="newElementName" label="Name:">
-                            <b-form-input id="newElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
-                            </b-form-input>
-                          </b-form-group>
-                          <b-form-group id="newElementDefValue" label="Default value:">
-                            <b-form-input id="newElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value">
-                            </b-form-input>
-                          </b-form-group>
-                          <b-form-group id="newElementProperties">
-                            <b-form-checkbox-group v-model="formArchitecture.properties" id="newElementPropertiesInput">
-                              <b-form-checkbox value="read">Read</b-form-checkbox>
-                              <b-form-checkbox value="write">Write</b-form-checkbox>
-                            </b-form-checkbox-group>
-                          </b-form-group>
-                        </b-form>
-                      </b-modal >
-                    </div>
-                  </div>
+					                      <b-modal :id ="item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newElement(item.name)">
+					                        <b-form>
+					                          <b-form-group id="newElementName" label="Name:">
+					                            <b-form-input id="newElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
+					                            </b-form-input>
+					                          </b-form-group>
+					                          <b-form-group id="newElementDefValue" label="Default value:">
+					                            <b-form-input id="newElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value">
+					                            </b-form-input>
+					                          </b-form-group>
+					                          <b-form-group id="newElementProperties">
+					                            <b-form-checkbox-group v-model="formArchitecture.properties" id="newElementPropertiesInput">
+					                              <b-form-checkbox value="read">Read</b-form-checkbox>
+					                              <b-form-checkbox value="write">Write</b-form-checkbox>
+					                            </b-form-checkbox-group>
+					                          </b-form-group>
+					                        </b-form>
+					                      </b-modal >
+											        </b-card-body>
+											      </b-collapse>
+											    </b-card>
+		                    </div>
+		                  </div>
 
-                  <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponent">
-                    <b-form>
-                      <b-form-group id="newComponentName" label="Name:">
-                        <b-form-input id="newComponentNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
-                        </b-form-input>
-                      </b-form-group>
-                    </b-form>
-                  </b-modal >
+		                  <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponent">
+		                    <b-form>
+		                      <b-form-group id="newComponentName" label="Name:">
+		                        <b-form-input id="newComponentNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
+		                        </b-form-input>
+		                      </b-form-group>
+		                      <b-form-group id="newComponentType" label="Type:">
+										        <b-form-select id="newComponentTypeInput" :options="componentsTypes" required v-model="formArchitecture.type"></b-form-select>
+									        </b-form-group>
+		                    </b-form>
+		                  </b-modal >
+									  </b-tab>
 
+									  <b-tab title="Assembly Definition" >
+									  	<br>
+									    <h6>Components of the instruction set:</h6>
+
+		                  <b-button class="btn btn-outline-secondary btn-sm " id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
+
+		                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
+		                  	<!--<div class="col-lg-12 col-sm-12 row" style="background-color: #EAEAEA">
+		                  		<br>
+		                      <div class="col-lg-4 col-sm-4">
+		                      	<h6>Name</h6>
+		                      </div>
+		                      <div class="col-lg-4 col-sm-4">
+		                      	<h6>Signature</h6>
+		                      </div>
+		                      <div class="col-lg-4 col-sm-4">
+		                      	<h6>Cop</h6>
+		                      </div>
+		                    </div>
+		                    <div class="col-lg-12 col-sm-12 row" v-for="item in instruction_set_hash">
+		                      <br>
+		                      <div class="col-lg-4 col-sm-4">
+		                      	<h6>{{item.name}}</h6>
+		                      </div>
+		                      <div class="col-lg-4 col-sm-4">
+		                      	<h6>{{instruction_set.firmware[item.index].signatureRaw}}</h6>
+		                      </div>
+		                      <div class="col-lg-4 col-sm-4">
+		                      	<h6>{{instruction_set.firmware[item.index].cop}}</h6>
+		                      </div>
+		                    </div>-->
+		                     <b-table striped small hover :items="architecture.instructions"></b-table>
+		                  </div>
+
+		                  <b-modal id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstruction">
+		                    <b-form>
+		                      <b-form-group id="newInstructionName" label="Name:">
+		                        <b-form-input id="newInstructionName" type="text" v-model="formInstruction.name" required placeholder="Enter name">
+		                        </b-form-input>
+		                      </b-form-group>
+
+		                      <b-form-group id="newInstructioncop" label="Cop:">
+		                        <b-form-input id="newInstructionCop" type="text" v-model="formInstruction.cop" required placeholder="Enter cop">
+		                        </b-form-input>
+		                      </b-form-group>
+
+		                      <b-form-group id="newInstructionSignature" label="Signature:">
+		                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signature" required placeholder="Example: add reg3 reg2 reg1">
+		                        </b-form-input>
+		                      </b-form-group>
+
+		                      <b-form-group id="newInstructionDefinition" label="Definition:">
+		                        <b-form-input id="newInstructionDefinition" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3 = reg2 + reg1">
+		                        </b-form-input>
+		                      </b-form-group>
+
+		                    </b-form>
+		                  </b-modal >
+									  </b-tab>
+									</b-tabs>
           			</div>
           		</div>
           	</div>
@@ -191,13 +272,10 @@
 	            <div class="col-lg-4 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-3 col-sm-3 buttons">
+	                  <div class="col-lg-6 col-sm-6 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_sim">Architecture</b-button>
 	                  </div>
-                    <div class="col-lg-6 col-sm-6 buttons">
-                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn" id="assDef_btn_sim">Assembly Definition</b-button>
-                    </div>
-	                  <div class="col-lg-3 col-sm-3 buttons">
+	                  <div class="col-lg-6 col-sm-6 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim">Assembly</b-button>
 	                  </div>
 	                </div>
@@ -212,7 +290,7 @@
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                	<div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch"><span class="fa fa-gear"></span> Configuration</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>
 	                  </div>
 	                  <div class="col-lg-4 col-sm-4 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block btn-sm" style="background-color:#FAFAFA;">Examples</b-button>
@@ -242,13 +320,13 @@
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeInstruction">
                       <span class="fa fa-fast-forward"></span>
                       Inst.
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeProgram">
                       <span class="fa fa-play"></span>
                       Run
                     </b-button>
@@ -546,103 +624,16 @@
             </div>
         </div>
 
-        <div class="contenedor row" id="assDefinition" style="display:none;">
-        		<!-- 2 navbar -->
-	          <div class="contenedor menu row">
-	            <div class="col-lg-3 col-sm-12 nopadding">
-	              <div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assDef">Architecture</b-button>
-	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_assDef">Assembly</b-button>
-	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assDef">Simulator</b-button>
-	                  </div>
-	                </div>
-	              </div>
-	            </div>
-
-	            <div class="col-lg-2 col-sm-12 nopadding">
-								<div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assDef_btn" v-b-modal.load_assdef><span class="fa fa-upload"></span> Load</b-button>
-	                  </div>
-	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assDef_btn" v-b-modal.save_assdef><span class="fa fa-download"></span> Save</b-button>
-	                  </div>
-	                </div>
-	              </div>
-	            </div>
-
-	            <div class="col-lg-5 col-sm-12 nopadding">
-								<div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-3 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assDef"><span class="fa fa-sign-in"></span> µcompile</b-button>
-	                  </div>
-	                  <div class="col-lg-9 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_assDef"><span class="fa fa-microchip"></span> Show co2µaddr + control memory</b-button>
-	                  </div>
-	                </div>
-	              </div>
-	            </div>
-
-	            <div class="col-lg-2 col-sm-12 nopadding">
-	            	<div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                	<div class="col-lg-8 col-sm-8 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assDef"><span class="fa fa-gear"></span> Configuration</b-button>
-	                  </div>
-	              		<div class="col-lg-4 col-sm-4 buttons">
-	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_assDef" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
-	              		</div>
-	            		</div>
-	              </div>
-	            </div>
-	          </div>
-
-	          <div class="contenedor menu row">
-	          	<div class="col-lg-12 col-sm-12">
-	          		<h5>Assembly Definition:</h5>
-	          	</div>
-	          	<div class="col-lg-12 col-sm-12">
-	          		<b-form-textarea id="textarea_assDef" v-model="text_assDef" :rows="11" class="code-scroll-y">
-    						</b-form-textarea>
-	          	</div>
-	          </div>
-
-	          <b-modal id ="load_assdef" title = "Load Assembly Definition" ok-title="Load from this File" @ok="assDef_update">
-					    <p> Please select the assembly definition file to be loaded: </p> 
-					    <b-form-file v-model="load_assDef" :state="Boolean(load_assDef)" placeholder="Choose a file..." id="assDef_file" @change="read_assDef"></b-form-file>
-					  </b-modal >
-
-					  <b-modal  id ="save_assdef"   title = "Save Assembly Definition" ok-title="Save to File" @ok="assDef_save">
-					    <p> Please write the file name: </p> 
-					    <b-form-input v-model="save_assDef"
-                  type="text"
-                  placeholder="File name where assembly definition will be saved">
-              </b-form-input>
-					  </b-modal >
-
-        </div>
-
         <div class="contenedor row" id="assembly" style="display:none;">
         		<!-- 2 navbar -->
 	          <div class="contenedor menu row">
 	            <div class="col-lg-4 col-sm-12 nopadding">
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-4 col-sm-4 buttons">
+	                  <div class="col-lg-6 col-sm-6 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assembly">Architecture</b-button>
 	                  </div>
-	                  <div class="col-lg-5 col-sm-5 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assDef_btn" id="assDef_btn_assembly">Assembly Definition</b-button>
-	                  </div>
-	                  <div class="col-lg-3 col-sm-3 buttons">
+	                  <div class="col-lg-6 col-sm-6 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly">Simulator</b-button>
 	                  </div>
 	                </div>
@@ -679,7 +670,7 @@
 	            	<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                	<div class="col-lg-8 col-sm-8 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch"><span class="fa fa-gear"></span> Configuration</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assembly"><span class="fa fa-gear"></span> Configuration</b-button>
 	                  </div>
 	              		<div class="col-lg-4 col-sm-4 buttons">
 	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_assembly" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
