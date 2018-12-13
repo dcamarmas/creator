@@ -176,6 +176,8 @@ window.app = new Vue({
     architecture: architecture,
     /*Tabla hash arquitectura*/
     architecture_hash: architecture_hash,
+    /*Campos de la tabla de componentes*/
+    fields: ['name', 'nbits', 'value', 'default_value', 'properties', 'actions'],
     /*Edicion de la arquitectura*/
     formArchitecture: {
       name: '',
@@ -183,9 +185,15 @@ window.app = new Vue({
       defValue: '',
       properties: [],
     },
+    /*Edicion de un elemento*/
+    modalInfo:{
+      title: '',
+      element: '',
+    },
     /*Nombre de la arquitectura*/
     architecture_name: '',
 
+    
 
     /*PAGINA DE CARGA INSTRUCCIONES*/
     /*Definicion del ensamblador*/
@@ -337,11 +345,36 @@ window.app = new Vue({
     },
 
     newComponent(){
-      var newComp = {name: this.formArchitecture.name, elements:[]};
+      var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, elements:[]};
       architecture.components.push(newComp);
       var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
       architecture_hash.push(newComponentHash);
       this.formArchitecture.name='';
+      this.formArchitecture.type='';
+    },
+
+    editComponent(comp){
+      for (var i = 0; i < architecture_hash.length; i++) {
+        if(comp == architecture_hash[i].name){
+          architecture_hash[i].name = this.formArchitecture.name;
+          architecture.components[i].name = this.formArchitecture.name;
+          architecture.components[i].type = this.formArchitecture.type;
+        }
+      }
+      this.formArchitecture.name='';
+      this.formArchitecture.type='';
+    },
+
+    delComponent(comp){
+      for (var i = 0; i < architecture_hash.length; i++) {
+        if(comp == architecture_hash[i].name){
+          architecture.components.splice(i,1);
+          architecture_hash.splice(i,1);
+          for (var j = 0; j < architecture_hash.length; j++){
+            architecture_hash[j].index = j;
+          }
+        }
+      }
     },
 
     newElement(comp){
@@ -369,6 +402,40 @@ window.app = new Vue({
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
           break;
+        }
+      }
+    },
+    
+    editModal(elem, button){
+      console.log(elem);
+      this.modalInfo.title = "Edit " + elem;
+      this.modalInfo.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalInfo', button);
+      console.log(elem);
+
+    },
+
+    editElement(comp){
+      for (var i = 0; i < architecture_hash.length; i++) {
+        for(var j=0; j < architecture.components[i].elements.length; j++){
+          if(comp == architecture.components[i].elements[j].name){
+            architecture.components[i].elements[j].name = this.formArchitecture.name;
+            architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+            architecture.components[i].elements[j].properties = this.formArchitecture.properties;
+          }
+        }
+      }
+      this.formArchitecture.name='';
+      this.formArchitecture.defValue='';
+      this.formArchitecture.properties=[];
+    },
+
+    delElement(comp){
+      for (var i = 0; i < architecture_hash.length; i++) {
+        for(var j=0; j < architecture.components[i].elements.length; j++){
+          if(comp == architecture.components[i].elements[j].name){
+            architecture.components[i].elements.splice(j,1);
+          }
         }
       }
     },

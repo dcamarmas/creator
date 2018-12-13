@@ -11,10 +11,10 @@ $("#save_arch").click(function(){
   $("#new_components").hide();
 });
 
-$("#new_arch").click(function(){
+$("#view_arch").click(function(){
   $("#load_menu_arch").hide();
   $("#save_menu_arch").hide();
-  $("#new_components").show();
+  $("#view_components").show();
 });
 
 /*Botones menu de instrucciones*/
