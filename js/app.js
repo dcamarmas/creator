@@ -7,7 +7,7 @@ var instruction_set_available =[];
 var architecture_hash = [];
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Integer control registers", type: "integer", elements:[
+  /*{name: "Integer control registers", type: "integer", double_precision: false, elements:[
     {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -16,7 +16,7 @@ var architecture = {components:[
     {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
   ]},
-  {name: "Integer registers", type: "integer", elements:[
+  {name: "Integer registers", type: "integer", double_precision: false, elements:[
     {name:"R0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"R1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"R2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -50,13 +50,13 @@ var architecture = {components:[
     {name:"R30", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"R31", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
   ]},
-  {name: "Floating point control registers", type: "integer", elements:[
+  {name: "Floating point control registers", type: "integer", double_precision: false, elements:[
     {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
   ]},
-  {name: "Simple floating point registers",type: "floating point", elements:[
+  {name: "Simple floating point registers",type: "floating point", double_precision: false, elements:[
     {name:"FG0", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FG1", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FG2", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
@@ -90,7 +90,7 @@ var architecture = {components:[
     {name:"FG30", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
   ]},
-  {name: "Double floating point registers", type: "floatin point", elements:[
+  {name: "Double floating point registers", type: "floating point", double_precision: true, elements:[
     {name:"FP0", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FP2", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
     {name:"FP4", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
@@ -164,7 +164,7 @@ window.app = new Vue({
     /*Nombre del fichero a guardar*/
     name_arch_save: '',
     /*Numero de bits de la arquitectura*/
-    number_bits: 0,
+    number_bits: 32,
     /*Definicion de posiciones:
      * 0- Components
      * 1- reg_int_contr
@@ -184,6 +184,7 @@ window.app = new Vue({
       type: '',
       defValue: '',
       properties: [],
+      precision: '',
     },
     /*Borrado de un componente*/
     modalDeletComp:{
@@ -204,7 +205,6 @@ window.app = new Vue({
     architecture_name: '',
 
     
-
     /*PAGINA DE CARGA INSTRUCCIONES*/
     /*Definicion del ensamblador*/
     ins_set_available: instruction_set_available,
@@ -226,6 +226,7 @@ window.app = new Vue({
       definition: '',
     },
 
+
     /*CARGA Y LECTURA ENSAMBLADOR*/
     /*Variables donde se guardan los contenidos de los textarea*/
     text_assembly: code_assembly,
@@ -237,6 +238,8 @@ window.app = new Vue({
     /*PAGINA SIMULADOR*/
     /*Nuevo valor del registro*/
     newValue: '',
+    /*Registros a mostrar*/
+    register_type: 'integer',
     
     /*Asignacion de valores de la tabla de memoria*/
     memory: memory,
@@ -354,33 +357,40 @@ window.app = new Vue({
       app._data.dismissCountDown = app._data.dismissSecs;
     },
 
+    /*Crea un nuevo componente*/
     newComponent(){
-      var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, elements:[]};
+      var precision = false;
+      if(this.formArchitecture.precision == "precision"){
+        precision = true;
+      }
+      var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
       architecture.components.push(newComp);
       var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
       architecture_hash.push(newComponentHash);
       this.formArchitecture.name='';
       this.formArchitecture.type='';
+      this.formArchitecture.precision='';
     },
 
+    /*Edita un componente*/
     editComponent(comp){
       for (var i = 0; i < architecture_hash.length; i++) {
         if(comp == architecture_hash[i].name){
           architecture_hash[i].name = this.formArchitecture.name;
           architecture.components[i].name = this.formArchitecture.name;
-          architecture.components[i].type = this.formArchitecture.type;
         }
       }
       this.formArchitecture.name='';
-      this.formArchitecture.type='';
     },
 
+    /*Muestra el modal de confirmacion de borrado de un componente*/
     delCompModal(elem, button){
       this.modalDeletComp.title = "Delete " + elem;
       this.modalDeletComp.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletComp', button);
     },
 
+    /*Borra un componente*/
     delComponent(comp){
       for (var i = 0; i < architecture_hash.length; i++) {
         if(comp == architecture_hash[i].name){
@@ -393,26 +403,28 @@ window.app = new Vue({
       }
     },
 
+    /*Crea un nuevo elemento*/
     newElement(comp){
+      console.log(comp);
       for (var i = 0; i < architecture_hash.length; i++) {
-        if(comp == architecture_hash[i].name && (i==0 || i==1 || i==2)){
-          var newElement = {name:this.formArchitecture.name, nbits: "32", value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
+        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
+          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
           break;
         }
-        if(comp == architecture[0][i].name && i==3 ){
-          var newElement = {name:this.formArchitecture.name, nbits: "32", value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
+          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
           break;
         }
-        if(comp == architecture[0][i].name && i==4){
-          var newElement = {name:this.formArchitecture.name, nbits: "64", value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
+          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
           this.formArchitecture.name='';
           this.formArchitecture.defValue='';
@@ -422,12 +434,14 @@ window.app = new Vue({
       }
     },
     
+    /*Muestra el modal de editar un elemento*/
     editElemModal(elem, button){
       this.modalEditElement.title = "Edit " + elem;
       this.modalEditElement.element = elem;
       this.$root.$emit('bv::show::modal', 'modalEditElement', button);
     },
 
+    /*Edita un elemento*/
     editElement(comp){
       for (var i = 0; i < architecture_hash.length; i++) {
         for(var j=0; j < architecture.components[i].elements.length; j++){
@@ -443,14 +457,15 @@ window.app = new Vue({
       this.formArchitecture.properties=[];
     },
 
+    /*Muestra el modal para confirmar el borrado*/
     delElemModal(elem, button){
       this.modalDeletElement.title = "Delete " + elem;
       this.modalDeletElement.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
     },
 
+    /*Borra un elemento*/
     delElement(comp){
-      console.log(comp);
       for (var i = 0; i < architecture_hash.length; i++) {
         for(var j=0; j < architecture.components[i].elements.length; j++){
           if(comp == architecture.components[i].elements[j].name){
@@ -758,82 +773,33 @@ window.app = new Vue({
 		},
 
     /*FUNCIONES DE GESTION DE REGISTROS*/
-    /*Funciones de actualizacion de los valores de los registros de control enteros*/
-    updateIntcontr(j){
-      for (var i = 0; i < architecture.components[0].elements.length; i++) {
-        if(architecture.components[0].elements[i].name == j && this.newValue.match(/^0x/)){
-          var value = this.newValue.split("x");
-          architecture.components[0].elements[i].value = bigInt(value[1], 16);
+    /*Actualiza el valor de un registro*/
+    updateReg(comp, elem, type){
+      for (var i = 0; i < architecture.components[comp].elements.length; i++) {
+        if(type == "integer"){
+          if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
+            var value = this.newValue.split("x");
+            architecture.components[comp].elements[i].value = bigInt(value[1], 16);
+          }
+          else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
+            architecture.components[comp].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+          }
+          else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
+            architecture.components[comp].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+          }
         }
-        else if(architecture.components[0].elements[i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture.components[0].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
+        else if(type =="floating point"){
+          if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
+            architecture.components[comp].elements[i].value = this.hex2double(this.newValue);
+          }
+          else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
+            architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+          }
+          else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
+            architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+          }
         }
-        else if(architecture.components[0].elements[i].name == j && this.newValue.match(/^-/)){
-          architecture.components[0].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
-        }
-      }
-      this.newValue = '';
-    },
-
-    updateIntReg(j){
-      for (var i = 0; i < architecture.components[1].elements.length; i++) {
-        if(architecture.components[1].elements[i].name == j && this.newValue.match(/^0x/)){
-          var value = this.newValue.split("x");
-          architecture.components[1].elements[i].value = bigInt(value[1], 16);
-        }
-        else if(architecture.components[1].elements[i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture.components[1].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
-        }
-        else if(architecture.components[1].elements[i].name == j && this.newValue.match(/^-/)){
-          architecture.components[1].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
-        }
-      }
-      this.newValue = '';
-    },
-
-    updateRegFpContr(j){
-      for (var i = 0; i < architecture.components[2].elements.length; i++) {
-        if(architecture.components[2].elements[i].name == j && this.newValue.match(/^0x/)){
-          var value = this.newValue.split("x");
-          architecture.components[2].elements[i].value = bigInt(value[1], 16);
-        }
-        else if(architecture.components[2].elements[i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture.components[2].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
-        }
-        else if(architecture.components[2].elements[i].name == j && this.newValue.match(/^-/)){
-          architecture.components[2].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10);
-        }
-      }
-      this.newValue = '';
-    },
-
-    /*Revisar cuando es hexadecimal ya que no lo hace bien por la funcion que pasa a binario*/
-    updateRegFpSingle(j){
-      for (var i = 0; i < architecture.components[3].elements.length; i++) {
-        if(architecture.components[3].elements[i].name == j && this.newValue.match(/^0x/)){
-          architecture.components[3].elements[i].value = this.hex2float(this.newValue);
-        }
-        else if(architecture.components[3].elements[i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture.components[3].elements[i].value = parseFloat(this.newValue, 10);
-        }
-        else if(architecture.components[3].elements[i].name == j && this.newValue.match(/^-/)){
-        	architecture.components[3].elements[i].value = parseFloat(this.newValue, 10);
-        }
-      }
-      this.newValue = '';
-    },
-    /*Revisar cuando es hexadecimal ya que coge el float*/
-    updateRegFpDouble(j){
-      for (var i = 0; i < architecture.components[4].elements.length; i++) {
-        if(architecture.components[4].elements[i].name == j && this.newValue.match(/^0x/)){
-          architecture.components[4].elements[i].value = this.hex2double(this.newValue);
-        }
-        else if(architecture.components[4].elements[i].name == j && this.newValue.match(/^(\d)+/)){
-          architecture.components[4].elements[i].value = parseFloat(this.newValue, 10);
-        }
-        else if(architecture.components[4].elements[i].name == j && this.newValue.match(/^-/)){
-        	architecture.components[4].elements[i].value = parseFloat(this.newValue, 10);
-        }
+        
       }
       this.newValue = '';
     },
@@ -932,20 +898,10 @@ window.app = new Vue({
     /*Funcion que resetea la ejecucion*/
     reset(){
       executionIndex = 0;
-      for (var i = 0; i < architecture.components[0].elements.length; i++) {
-         architecture.components[0].elements[i].value =  architecture.components[0].elements[i].default_value;
-      }
-      for (var i = 0; i < architecture.components[1].elements.length; i++) {
-        architecture.components[1].elements[i].value = architecture.components[1].elements[i].default_value;
-      }
-      for (var i = 0; i < architecture.components[2].elements.length; i++) {
-        architecture.components[2].elements[i].value = architecture.components[2].elements[i].default_value;
-      }
-      for (var i = 0; i < architecture.components[3].elements.length; i++) {
-        architecture.components[3].elements[i].value = architecture.components[3].elements[i].default_value;
-      }
-      for (var i = 0; i < architecture.components[4].elements.length; i++) {
-        architecture.components[4].elements[i].value = architecture.components[4].elements[i].default_value;
+      for (var i = 0; i < architecture_hash.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+          architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
+        }
       }
     },
   },
@@ -954,3 +910,18 @@ window.app = new Vue({
     this.load_instruction_set_available();
   }
 })
+
+/*Cambia la vision de los registros*/
+$("#selectData").change(function(){
+  var value = document.getElementById("selectData").value;
+  if(value == "CPU-FP Registers"){
+    app._data.register_type = 'floating point';
+    $("#registers").show();
+    $("#memory").hide();
+  }
+  if(value == "CPU-INT Registers") {
+    app._data.register_type = 'integer';
+    $("#registers").show();
+    $("#memory").hide();
+  }
+});

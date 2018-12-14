@@ -66,22 +66,7 @@ $(".arch_btn").click(function(){
 });
 
 /*Selector de modo de datos*/
-$("#selectData").change(function(){
-  var value = document.getElementById("selectData").value;
-  if(value == "CPU-FP Registers"){
-  	$("#int_registers").hide();
-		$("#fp_registers").show();
-		$("#memory").hide();
-  }
-  if(value == "CPU-INT Registers") {
-  	$("#int_registers").show();
-		$("#fp_registers").hide();
-		$("#memory").hide();
-  }
-});
-
 $("#memory_btn").click(function(){
-  $("#int_registers").hide();
-  $("#fp_registers").hide();
+  $("#registers").hide();
   $("#memory").show();
 });
