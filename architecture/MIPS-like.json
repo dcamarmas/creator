@@ -3,6 +3,7 @@
     {
       "name": "Integer control registers",
       "type": "integer",
+      "double_precision": false,
       "elements": [
         {
           "name": "PC",
@@ -79,6 +80,7 @@
     {
       "name": "Integer registers",
       "type": "integer",
+      "double_precision": false,
       "elements": [
         {
           "name": "R0",
@@ -405,6 +407,7 @@
     {
       "name": "Floating point control registers",
       "type": "integer",
+      "double_precision": false,
       "elements": [
         {
           "name": "FIR",
@@ -451,6 +454,7 @@
     {
       "name": "Simple floating point registers",
       "type": "floating point",
+      "double_precision": false,
       "elements": [
         {
           "name": "FG0",
@@ -776,7 +780,8 @@
     },
     {
       "name": "Double floating point registers",
-      "type": "floatin point",
+      "type": "floating point",
+      "double_precision": true,
       "elements": [
         {
           "name": "FP0",
