@@ -162,8 +162,8 @@
 											        <b-card-body>
 											           <b-table :items="architecture.components[item.index].elements" :fields="fields" v-if="architecture.components[item.index].elements.length > 0">
 														      <template slot="actions" slot-scope="row">
-														        <b-button @click.stop="editModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm"><span class="fa fa-edit" v-b-modal="item.index.toString()+row.index.toString()"></span> Edit</b-button>
-														        <b-button @click.stop="delElement(row.item.name)" class="btn btn-outline-danger btn-sm"><span class="fa fa-trash-o"></span> Delete</b-button> 
+														        <b-button @click.stop="editElemModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm"><span class="fa fa-edit"></span> Edit</b-button>
+														        <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm"><span class="fa fa-trash-o"></span> Delete</b-button> 
 														      </template>
 											           </b-table>
 
@@ -171,7 +171,7 @@
 
 					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'edit '+item.name" v-b-modal="'edit'+item.index"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
 
-					                      <b-button class="btn btn-outline-danger btn-sm " :id="'delete '+item.name" @click="delComponent(item.name)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
+					                      <b-button class="btn btn-outline-danger btn-sm " :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
 
 					                      <b-modal :id ="'new'+item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newElement(item.name)">
 					                        <b-form>
@@ -204,12 +204,7 @@
 							                    </b-form>
 							                  </b-modal >
 
-
-
-
-
-
-							                  <b-modal id ="modalInfo" :title="modalInfo.title" ok-title="Edit" @ok="editElement(modalInfo.element)">
+							                  <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElement(modalEditElement.element)">
 					                        <b-form>
 					                          <b-form-group id="editElementName" label="Name:">
 					                            <b-form-input id="editElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
@@ -226,6 +221,14 @@
 					                            </b-form-checkbox-group>
 					                          </b-form-group>
 					                        </b-form>
+					                      </b-modal >
+
+					                      <b-modal id ="modalDeletElement" :title="modalDeletElement.title" ok-variant="danger" ok-title="Delete" @ok="delElement(modalDeletElement.element)">
+					                        <h6>Are you sure you want to delete the item?</h6>
+					                      </b-modal >
+
+					                      <b-modal id ="modalDeletComp" :title="modalDeletComp.title" ok-variant="danger" ok-title="Delete" @ok="delComponent(modalDeletComp.element)">
+					                        <h6>Are you sure you want to delete the component?</h6>
 					                      </b-modal >
 
 											        </b-card-body>
