@@ -185,8 +185,18 @@ window.app = new Vue({
       defValue: '',
       properties: [],
     },
+    /*Borrado de un componente*/
+    modalDeletComp:{
+      title: '',
+      element: '',
+    },
     /*Edicion de un elemento*/
-    modalInfo:{
+    modalEditElement:{
+      title: '',
+      element: '',
+    },
+    /*Borrado de un elemento*/
+    modalDeletElement:{
       title: '',
       element: '',
     },
@@ -273,7 +283,7 @@ window.app = new Vue({
         $("#sim_btn_arch").show();
         $("#load_arch").hide();
         $("#load_menu_arch").hide();
-        $("#new_components").show();
+        $("#view_components").show();
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
@@ -313,7 +323,7 @@ window.app = new Vue({
         $("#sim_btn_arch").show();
         $("#load_arch").hide();
         $("#load_menu_arch").hide();
-        $("#new_components").show();
+        $("#view_components").show();
         
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
@@ -365,6 +375,12 @@ window.app = new Vue({
       this.formArchitecture.type='';
     },
 
+    delCompModal(elem, button){
+      this.modalDeletComp.title = "Delete " + elem;
+      this.modalDeletComp.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalDeletComp', button);
+    },
+
     delComponent(comp){
       for (var i = 0; i < architecture_hash.length; i++) {
         if(comp == architecture_hash[i].name){
@@ -406,13 +422,10 @@ window.app = new Vue({
       }
     },
     
-    editModal(elem, button){
-      console.log(elem);
-      this.modalInfo.title = "Edit " + elem;
-      this.modalInfo.element = elem;
-      this.$root.$emit('bv::show::modal', 'modalInfo', button);
-      console.log(elem);
-
+    editElemModal(elem, button){
+      this.modalEditElement.title = "Edit " + elem;
+      this.modalEditElement.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalEditElement', button);
     },
 
     editElement(comp){
@@ -430,7 +443,14 @@ window.app = new Vue({
       this.formArchitecture.properties=[];
     },
 
+    delElemModal(elem, button){
+      this.modalDeletElement.title = "Delete " + elem;
+      this.modalDeletElement.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
+    },
+
     delElement(comp){
+      console.log(comp);
       for (var i = 0; i < architecture_hash.length; i++) {
         for(var j=0; j < architecture.components[i].elements.length; j++){
           if(comp == architecture.components[i].elements[j].name){

@@ -2,13 +2,13 @@
 $("#load_arch").click(function(){
   $("#load_menu_arch").show();
   $("#save_menu_arch").hide();
-  $("#new_components").hide();
+  $("#view_components").hide();
 });
 
 $("#save_arch").click(function(){
   $("#load_menu_arch").hide();
   $("#save_menu_arch").show();
-  $("#new_components").hide();
+  $("#view_components").hide();
 });
 
 $("#view_arch").click(function(){
