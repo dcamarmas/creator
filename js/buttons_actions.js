@@ -70,3 +70,8 @@ $("#memory_btn").click(function(){
   $("#registers").hide();
   $("#memory").show();
 });
+
+$("#selectData").click(function(){
+  $("#registers").show();
+  $("#memory").hide();
+});
