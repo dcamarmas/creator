@@ -186,6 +186,11 @@ window.app = new Vue({
       properties: [],
       precision: '',
     },
+    /*Edicion de un componente*/
+    modalEditComponent: {
+      title: '',
+      element: '',
+    },
     /*Borrado de un componente*/
     modalDeletComp:{
       title: '',
@@ -355,31 +360,86 @@ window.app = new Vue({
       app._data.alertMessaje = 'Save architecture';
       app._data.type ='success';
       app._data.dismissCountDown = app._data.dismissSecs;
+
+    },
+
+    resetArchitecture(arch){
+      $.getJSON('architecture/'+arch+'.json', function(cfg){
+        architecture.components = cfg.components;
+        app._data.architecture = architecture;
+
+        /*PREGUNTAR*/
+        architecture_hash = [];
+        for (var i = 0; i < architecture.components.length; i++) {
+          architecture_hash.push({name: architecture.components[i].name, index: i}); 
+          app._data.architecture_hash = architecture_hash;
+        }
+
+        app._data.alertMessaje = 'The architecture has been reset correctly';
+        app._data.type ='success';
+        app._data.dismissCountDown = app._data.dismissSecs;
+      });
     },
 
     /*Crea un nuevo componente*/
     newComponent(){
-      var precision = false;
-      if(this.formArchitecture.precision == "precision"){
-        precision = true;
+      var error = 0;
+      for (var i = 0; i < architecture_hash.length; i++) {
+        if(this.formArchitecture.name == architecture_hash[i].name){
+          app._data.alertMessaje = 'The component already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          error = 1;
+        }
       }
-      var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
-      architecture.components.push(newComp);
-      var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
-      architecture_hash.push(newComponentHash);
+
+      if(error == 0){
+        var precision = false;
+        if(this.formArchitecture.precision == "precision"){
+          precision = true;
+        }
+        var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
+        architecture.components.push(newComp);
+        var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
+        architecture_hash.push(newComponentHash);
+      }
+      
       this.formArchitecture.name='';
       this.formArchitecture.type='';
       this.formArchitecture.precision='';
     },
 
+    /*Muestra el modal para editar un componente*/
+    editCompModal(comp, button){
+      this.modalEditComponent.title = "Edit " + comp;
+      this.modalEditComponent.element = comp;
+
+      this.formArchitecture.name = comp;
+
+      this.$root.$emit('bv::show::modal', 'modalEditComponent', button);
+    },
+
     /*Edita un componente*/
     editComponent(comp){
+      var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
-        if(comp == architecture_hash[i].name){
-          architecture_hash[i].name = this.formArchitecture.name;
-          architecture.components[i].name = this.formArchitecture.name;
+        if((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
+          app._data.alertMessaje = 'The component already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          error = 1;
         }
       }
+      
+      if(error == 0){
+        for (var i = 0; i < architecture_hash.length; i++) {
+          if(comp == architecture_hash[i].name){
+            architecture_hash[i].name = this.formArchitecture.name;
+            architecture.components[i].name = this.formArchitecture.name;
+          }
+        }
+      }
+
       this.formArchitecture.name='';
     },
 
@@ -405,53 +465,86 @@ window.app = new Vue({
 
     /*Crea un nuevo elemento*/
     newElement(comp){
-      console.log(comp);
+      var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
-        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
-          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
-          architecture.components[i].elements.push(newElement);
-          this.formArchitecture.name='';
-          this.formArchitecture.defValue='';
-          this.formArchitecture.properties=[];
-          break;
-        }
-        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
-          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
-          architecture.components[i].elements.push(newElement);
-          this.formArchitecture.name='';
-          this.formArchitecture.defValue='';
-          this.formArchitecture.properties=[];
-          break;
-        }
-        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
-          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
-          architecture.components[i].elements.push(newElement);
-          this.formArchitecture.name='';
-          this.formArchitecture.defValue='';
-          this.formArchitecture.properties=[];
-          break;
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(this.formArchitecture.name == architecture.components[i].elements[j].name){
+            app._data.alertMessaje = 'The element already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+            error = 1;
+          }
+        } 
+      }
+      if(error == 0){
+        for (var i = 0; i < architecture_hash.length; i++) {
+          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
+            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
+            architecture.components[i].elements.push(newElement);
+            this.formArchitecture.name='';
+            this.formArchitecture.defValue='';
+            this.formArchitecture.properties=[];
+            break;
+          }
+          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
+            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+            architecture.components[i].elements.push(newElement);
+            this.formArchitecture.name='';
+            this.formArchitecture.defValue='';
+            this.formArchitecture.properties=[];
+            break;
+          }
+          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
+            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+            architecture.components[i].elements.push(newElement);
+            this.formArchitecture.name='';
+            this.formArchitecture.defValue='';
+            this.formArchitecture.properties=[];
+            break;
+          }
         }
       }
     },
     
     /*Muestra el modal de editar un elemento*/
-    editElemModal(elem, button){
+    editElemModal(elem, comp, button){
       this.modalEditElement.title = "Edit " + elem;
       this.modalEditElement.element = elem;
+      for(var j=0; j < architecture.components[comp].elements.length; j++){
+        if(elem == architecture.components[comp].elements[j].name){
+          this.formArchitecture.name = elem;
+          this.formArchitecture.defValue = architecture.components[comp].elements[j].default_value;
+          this.formArchitecture.properties = architecture.components[comp].elements[j].properties;
+        }
+      }
       this.$root.$emit('bv::show::modal', 'modalEditElement', button);
     },
 
     /*Edita un elemento*/
     editElement(comp){
+      var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
-        for(var j=0; j < architecture.components[i].elements.length; j++){
-          if(comp == architecture.components[i].elements[j].name){
-            architecture.components[i].elements[j].name = this.formArchitecture.name;
-            architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
-            architecture.components[i].elements[j].properties = this.formArchitecture.properties;
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
+            app._data.alertMessaje = 'The element already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+            error = 1;
           }
-        }
+        } 
       }
+      if(error == 0){
+        for (var i = 0; i < architecture_hash.length; i++) {
+          for(var j=0; j < architecture.components[i].elements.length; j++){
+            if(comp == architecture.components[i].elements[j].name){
+              architecture.components[i].elements[j].name = this.formArchitecture.name;
+              architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+              architecture.components[i].elements[j].properties = this.formArchitecture.properties;
+            }
+          }
+        } 
+      }
+
       this.formArchitecture.name='';
       this.formArchitecture.defValue='';
       this.formArchitecture.properties=[];
@@ -459,6 +552,7 @@ window.app = new Vue({
 
     /*Muestra el modal para confirmar el borrado*/
     delElemModal(elem, button){
+      console.log(button);
       this.modalDeletElement.title = "Delete " + elem;
       this.modalDeletElement.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
