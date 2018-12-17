@@ -8,109 +8,118 @@ var architecture_hash = [];
 /*Arquitectura cargada*/
 var architecture = {components:[
   /*{name: "Integer control registers", type: "integer", double_precision: false, elements:[
-    {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"BADVADDR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"STATUS", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-  ]},
-  {name: "Integer registers", type: "integer", double_precision: false, elements:[
-    {name:"R0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R9", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R10", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R11", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R12", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R13", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R14", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R15", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R16", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R17", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R18", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R19", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R20", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R21", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R22", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R23", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R24", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R25", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R26", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R27", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R28", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R29", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R30", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"R31", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-  ]},
-  {name: "Floating point control registers", type: "integer", double_precision: false, elements:[
-    {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-  ]},
-  {name: "Simple floating point registers",type: "floating point", double_precision: false, elements:[
-    {name:"FG0", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG1", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG2", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG3", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG4", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG5", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG6", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG7", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG8", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG9", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG10", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG11", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG12", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG13", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG14", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG15", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG16", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG17", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG18", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG19", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG20", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG21", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG22", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG23", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG24", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG25", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG26", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG27", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG28", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG29", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG30", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-  ]},
-  {name: "Double floating point registers", type: "floating point", double_precision: true, elements:[
-    {name:"FP0", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP2", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP4", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP6", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP8", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP10", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP12", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP14", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP16", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP18", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP20", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP22", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP24", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP26", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP28", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    {name:"FP30", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-  ]}*/
-], instructions:[
-  
-]};
+      {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"BADVADDR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"STATUS", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    ]},
+    {name: "Integer registers", type: "integer", double_precision: false, elements:[
+      {name:"R0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R9", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R10", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R11", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R12", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R13", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R14", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R15", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R16", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R17", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R18", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R19", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R20", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R21", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R22", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R23", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R24", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R25", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R26", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R27", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R28", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R29", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R30", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"R31", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    ]},
+    {name: "Floating point control registers", type: "integer", double_precision: false, elements:[
+      {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+    ]},
+    {name: "Simple floating point registers",type: "floating point", double_precision: false, elements:[
+      {name:"FG0", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG1", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG2", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG3", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG4", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG5", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG6", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG7", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG8", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG9", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG10", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG11", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG12", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG13", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG14", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG15", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG16", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG17", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG18", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG19", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG20", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG21", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG22", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG23", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG24", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG25", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG26", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG27", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG28", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG29", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG30", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    ]},
+    {name: "Double floating point registers", type: "floating point", double_precision: true, elements:[
+      {name:"FP0", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP2", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP4", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP6", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP8", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP10", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP12", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP14", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP16", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP18", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP20", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP22", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP24", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP26", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP28", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP30", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+    ]}*/
+  ], instructions:[
+    /*{name: "add", signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", cop: "1001", fields: [
+      {name: "reg 1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg 2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg 3", type: "reg", startbit: 15, stopbit: 11},
+    ], definition: "reg3=reg1+reg2"},
+    {name: "and", signature: "and,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", cop: "000", fields: [
+      {name: "reg 1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg 2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg 3", type: "reg", startbit: 15, stopbit: 11},
+    ], definition: "reg3=reg1&reg2"},*/
+  ]};
 
 var componentsTypes = [
   { text: 'Integer', value: 'integer' },
@@ -165,19 +174,14 @@ window.app = new Vue({
     name_arch_save: '',
     /*Numero de bits de la arquitectura*/
     number_bits: 32,
-    /*Definicion de posiciones:
-     * 0- Components
-     * 1- reg_int_contr
-     * 2- reg_int
-     * 3- reg_fp_contr
-     * 4- reg_fp_single
-     * 5- reg_fp_double
-     */
+    /*Asingacion de la arquitectura empleada*/
     architecture: architecture,
     /*Tabla hash arquitectura*/
     architecture_hash: architecture_hash,
+    /*Listado de tipos de componentes*/
+    componentsTypes:componentsTypes,
     /*Campos de la tabla de componentes*/
-    fields: ['name', 'nbits', 'value', 'default_value', 'properties', 'actions'],
+    archFields: ['name', 'nbits', 'value', 'default_value', 'properties', 'actions'],
     /*Edicion de la arquitectura*/
     formArchitecture: {
       name: '',
@@ -212,23 +216,42 @@ window.app = new Vue({
     
     /*PAGINA DE CARGA INSTRUCCIONES*/
     /*Definicion del ensamblador*/
-    ins_set_available: instruction_set_available,
+    //ins_set_available: instruction_set_available,
     /*Nombre del fichero a cargar*/
-    load_assDef: '',
+   // load_assDef: '',
     /*Nombre del fichero a guardar*/
-    name_assDef_save: '',
+    //name_assDef_save: '',
     /*Instrucciones definidas*/
-    instruction_set: instruction_set,
+    //instruction_set: instruction_set,
     /*hash de las instrucciones definidas*/
-    instruction_set_hash: instruction_set_hash,
-    /*Listado de tipos de componentes*/
-    componentsTypes:componentsTypes,
+    //instruction_set_hash: instruction_set_hash,
+    
+
+    instFields: ['name', 'signature', 'signatureRaw', 'cop', 'fields', 'definition', 'actions'],
     /*Edicion de las instrucciones*/
     formInstruction: {
       name: '',
       cop: '',
+      numfields: 1,
+      nameField: '',
+      typeField: '',
+      startBitField: 0,
+      stopBitField: 0,
       signature: '',
+      signatureRaw: '',
       definition: '',
+    },
+    /*Barra de paginas formulario instrucciones*/
+    instructionFormPage: 1,
+    /*Barra de paginas formulario instrucciones parte campos*/
+    fieldsFormPage:1,
+    /*Variables para el selector de campos tabla*/
+    fieldsSel: '',
+    instSel: '',
+    /*Borrado de una instruccion*/
+    modalDeletInst:{
+      title: '',
+      element: '',
     },
 
 
@@ -552,7 +575,6 @@ window.app = new Vue({
 
     /*Muestra el modal para confirmar el borrado*/
     delElemModal(elem, button){
-      console.log(button);
       this.modalDeletElement.title = "Delete " + elem;
       this.modalDeletElement.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
@@ -667,6 +689,22 @@ window.app = new Vue({
       this.formInstruction.cop='';
       this.formInstruction.signature='';
       this.formInstruction.definition='';
+    },
+
+    /*Muestra el modal de confirmacion de borrado de una instruccion*/
+    delInstModal(elem, button){
+      this.modalDeletInst.title = "Delete " + elem;
+      this.modalDeletInst.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalDeletInst', button);
+    },
+
+    /*Borra una instruccion*/
+    delInstruction(comp){
+      for (var i = 0; i < architecture.instructions.length; i++) {
+        if(comp == architecture.instructions[i].name){
+          architecture.instructions.splice(i,1);
+        }
+      }
     },
 
     /*PAGINA ENSAMBLADOR*/
@@ -1018,4 +1056,11 @@ $("#selectData").change(function(){
     $("#registers").show();
     $("#memory").hide();
   }
+});
+
+/*Obtiene la instruccion asociada al select*/
+$(document).on('change','.fieldsSel',function(){
+  var id = this.id;
+  var inst = id.split('-');
+  app._data.instSel = inst[inst.length-1];
 });

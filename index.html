@@ -162,7 +162,7 @@
 											      </b-card-header>
 											      <b-collapse :id="item.index.toString()" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
 											        <b-card-body>
-											           <b-table :items="architecture.components[item.index].elements" :fields="fields" v-if="architecture.components[item.index].elements.length > 0">
+											           <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
 														      <template slot="actions" slot-scope="row">
 														        <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm"><span class="fa fa-edit"></span> Edit</b-button>
 														        <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm"><span class="fa fa-trash-o"></span> Delete</b-button> 
@@ -266,56 +266,103 @@
 		                  <b-button class="btn btn-outline-secondary btn-sm " id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
 
 		                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-		                  	<!--<div class="col-lg-12 col-sm-12 row" style="background-color: #EAEAEA">
-		                  		<br>
-		                      <div class="col-lg-4 col-sm-4">
-		                      	<h6>Name</h6>
-		                      </div>
-		                      <div class="col-lg-4 col-sm-4">
-		                      	<h6>Signature</h6>
-		                      </div>
-		                      <div class="col-lg-4 col-sm-4">
-		                      	<h6>Cop</h6>
-		                      </div>
-		                    </div>
-		                    <div class="col-lg-12 col-sm-12 row" v-for="item in instruction_set_hash">
-		                      <br>
-		                      <div class="col-lg-4 col-sm-4">
-		                      	<h6>{{item.name}}</h6>
-		                      </div>
-		                      <div class="col-lg-4 col-sm-4">
-		                      	<h6>{{instruction_set.firmware[item.index].signatureRaw}}</h6>
-		                      </div>
-		                      <div class="col-lg-4 col-sm-4">
-		                      	<h6>{{instruction_set.firmware[item.index].cop}}</h6>
-		                      </div>
-		                    </div>-->
-		                     <b-table striped small hover :items="architecture.instructions"></b-table>
+		                    <b-table small :items="architecture.instructions" :fields="instFields">
+		                    	<template slot="fields" slot-scope="row">
+		                    		<b-form-select :id="'fieldsSel-'+row.item.name" required v-model="fieldsSel" class="fieldsSel">
+		                    			<option v-for="i in row.item.fields" :value="i.name">{{i.name}}</option>
+		                    		</b-form-select>
+
+										        <div v-for="i in row.item.fields" v-if="(fieldsSel == i.name) && (instSel == row.item.name)">
+										        	<h6>Name: {{i.name}}</h6>
+										        	<h6>Type: {{i.type}}</h6>
+										        	<h6>Start Bit: {{i.startbit}}</h6>
+										        	<h6>Stop Bit: {{i.stopbit}}</h6>
+										        </div>
+										      </template>
+
+										      <template slot="actions" slot-scope="row">
+										        <b-button @click.stop="editInstModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm"><span class="fa fa-edit"></span> Edit</b-button>
+										        <b-button @click.stop="delInstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm"><span class="fa fa-trash-o"></span> Delete</b-button> 
+										      </template>
+							           </b-table>
+
+							           <!-- Borrar elemento -->
+	                      <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.element)">
+	                        <h6>Are you sure you want to delete the item?</h6>
+	                      </b-modal >
+
 		                  </div>
 
+		                  <!-- Formulario nueva instruccion -->
 		                  <b-modal id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstruction">
 		                    <b-form>
-		                      <b-form-group id="newInstructionName" label="Name:">
-		                        <b-form-input id="newInstructionName" type="text" v-model="formInstruction.name" required placeholder="Enter name">
-		                        </b-form-input>
-		                      </b-form-group>
+		                    	<div id="newInstForm1" v-if="instructionFormPage == 1">
+			                      <b-form-group id="newInstructionName" label="Name:">
+			                        <b-form-input id="newInstructionName" type="text" v-model="formInstruction.name" required placeholder="Enter name">
+			                        </b-form-input>
+			                      </b-form-group>
 
-		                      <b-form-group id="newInstructioncop" label="Cop:">
-		                        <b-form-input id="newInstructionCop" type="text" v-model="formInstruction.cop" required placeholder="Enter cop">
-		                        </b-form-input>
-		                      </b-form-group>
+			                      <b-form-group id="newInstructioncop" label="Cop:">
+			                        <b-form-input id="newInstructionCop" type="text" v-model="formInstruction.cop" required placeholder="Enter cop">
+			                        </b-form-input>
+			                      </b-form-group>
 
-		                      <b-form-group id="newInstructionSignature" label="Signature:">
-		                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signature" required placeholder="Example: add reg3 reg2 reg1">
-		                        </b-form-input>
-		                      </b-form-group>
+			                      <b-form-group id="newNumFields" label="Number of fields:">
+			                        <b-form-input id="newNumFields" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" placeholder="1">
+			                        </b-form-input>
+			                      </b-form-group>
+		                    	</div>
 
-		                      <b-form-group id="newInstructionDefinition" label="Definition:">
-		                        <b-form-input id="newInstructionDefinition" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3 = reg2 + reg1">
-		                        </b-form-input>
-		                      </b-form-group>
+		                    	<div id="newInstForm2" v-if="instructionFormPage == 2">
+		                    		<div v-for="i in parseInt(formInstruction.numfields)" v-if="fieldsFormPage == i">
 
+		                    			<h6>Field {{i}}</h6>
+		                    			<hr>
+
+		                    			<b-form-group :id="'nameField'+i" label="Name Field:">
+				                        <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField" required>
+				                        </b-form-input>
+				                      </b-form-group>
+
+				                      <b-form-group :id="'typeField'+i" label="Type Field:">
+				                        <b-form-input id="'typeField'+i" type="text" v-model="formInstruction.typeField" required>
+				                        </b-form-input>
+				                      </b-form-group>
+
+				                      <b-form-group :id="'startBitField'+i" label="Start Bit Field:">
+				                        <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField" required>
+				                        </b-form-input>
+				                      </b-form-group>
+
+				                      <b-form-group :id="'stopBitField'+i" label="Stop Bit Field:">
+				                        <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField" required>
+				                        </b-form-input>
+				                      </b-form-group>
+		                    		</div>
+		                    		<b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="parseInt(formInstruction.numfields)" v-model="fieldsFormPage" />
+		                    	</div>
+
+		                    	<div id="newInstForm3" v-if="instructionFormPage == 3">
+			                      <b-form-group id="newInstructionSignature" label="Signature:">
+			                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signature" required placeholder="Example: add reg reg reg">
+			                        </b-form-input>
+			                      </b-form-group>
+
+			                      <b-form-group id="newInstructionSignature" label="Signature Raw:">
+			                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signatureRaw" required placeholder="Example: add reg1 reg2 reg3">
+			                        </b-form-input>
+			                      </b-form-group>
+
+			                      <b-form-group id="newInstructionDefinition" label="Assembly Definition:">
+			                        <b-form-input id="newInstructionDefinition" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3=reg1+reg2">
+			                        </b-form-input>
+			                      </b-form-group>
+		                     	</div>
 		                    </b-form>
+
+		                    <hr>
+		                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" />
+
 		                  </b-modal >
 									  </b-tab>
 									</b-tabs>
