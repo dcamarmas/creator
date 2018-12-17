@@ -1,10 +1,9 @@
 /*Listado de arquitecturas disponibles*/
 var architecture_available = [];
-/*Listado de set de instrucciones disponibles*/
-var instruction_set_available =[];
 
 /*tabla hash de la arquitectura*/
 var architecture_hash = [];
+
 /*Arquitectura cargada*/
 var architecture = {components:[
   /*{name: "Integer control registers", type: "integer", double_precision: false, elements:[
@@ -126,10 +125,6 @@ var componentsTypes = [
   { text: 'Floating point', value: 'floating point' },
 ]
 
-/*tabla hash y instrucciones disponibles*/
-var instruction_set_hash = [];
-var instruction_set = {firmware: []};
-
 var memory = [
   { Address: "0x01003-0x01000", Binary: "61 65 6c 50", Tag: 'a', Value: null },
   { Address: "0x01007-0x01004", Binary: "61 65 6c 50", Tag: 'b', Value: 30 },
@@ -159,11 +154,15 @@ window.app = new Vue({
   el: "#app",
   data: {
 
-    /*ALERTA*/
+    /*ALERTA GLOBAL*/
     alertMessaje: '',
     type: '',
     dismissSecs: 3,
     dismissCountDown: 0,
+
+    /*ALERTA MODAL*/
+    dismissSecsMod: 3,
+    dismissCountDownMod: 0,
 
     /*PAGINA CARGA ARQUITECTURA*/
     /*Configuraciones Disponibles*/
@@ -214,29 +213,17 @@ window.app = new Vue({
     architecture_name: '',
 
     
-    /*PAGINA DE CARGA INSTRUCCIONES*/
-    /*Definicion del ensamblador*/
-    //ins_set_available: instruction_set_available,
-    /*Nombre del fichero a cargar*/
-   // load_assDef: '',
-    /*Nombre del fichero a guardar*/
-    //name_assDef_save: '',
-    /*Instrucciones definidas*/
-    //instruction_set: instruction_set,
-    /*hash de las instrucciones definidas*/
-    //instruction_set_hash: instruction_set_hash,
-    
-
+    /*PAGINA DE INSTRUCCIONES*/
     instFields: ['name', 'signature', 'signatureRaw', 'cop', 'fields', 'definition', 'actions'],
     /*Edicion de las instrucciones*/
     formInstruction: {
       name: '',
       cop: '',
       numfields: 1,
-      nameField: '',
-      typeField: '',
-      startBitField: 0,
-      stopBitField: 0,
+      nameField: [],
+      typeField: [],
+      startBitField: [],
+      stopBitField: [],
       signature: '',
       signatureRaw: '',
       definition: '',
@@ -250,6 +237,11 @@ window.app = new Vue({
     instSel: '',
     /*Borrado de una instruccion*/
     modalDeletInst:{
+      title: '',
+      element: '',
+    },
+    /*Edicion de una instruccion*/
+    modalEditInst:{
       title: '',
       element: '',
     },
@@ -279,9 +271,14 @@ window.app = new Vue({
     
   },
   methods:{
-    /*ALERTA*/
+    /*ALERTA GLOBAL*/
     countDownChanged (dismissCountDown) {
       this.dismissCountDown = dismissCountDown;
+    },
+
+    /*ALERTA MODAL*/
+    countDownChangedMod (dismissCountDown) {
+      this.dismissCountDownMod = dismissCountDown;
     },
 
     /*PAGINA CARGA ARQUITECTURA*/
@@ -404,6 +401,19 @@ window.app = new Vue({
       });
     },
 
+    /*Comprueba que estan todos los campos del formulario de nuevo componente*/
+    newComponentVerify(evt){
+      evt.preventDefault();
+      if (!this.formArchitecture.name || !this.formArchitecture.type) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.$refs.modal.hide();
+        this.newComponent()
+      }
+    },
+
     /*Crea un nuevo componente*/
     newComponent(){
       var error = 0;
@@ -483,6 +493,19 @@ window.app = new Vue({
             architecture_hash[j].index = j;
           }
         }
+      }
+    },
+
+    /*Comprueba que estan todos los campos del formulario de nuevo elemento*/
+    newElementVerify(evt, comp){
+      evt.preventDefault();
+      if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.$refs.modal.hide();
+        this.newElement(comp);
       }
     },
 
@@ -591,104 +614,53 @@ window.app = new Vue({
       }
     },
 
-    /*PAGINA DE CARGA DE INSTRUCCIONES*/
-    /*Carga el listado de instrucciones disponibles*/
-    load_instruction_set_available(){
-      $.getJSON('instructions_set/default_instruction_set.json', function(cfg){
-        instruction_set_available = cfg;
-        app._data.ins_set_available = cfg;
-      })
-    },
+    /*PAGINA DE INSTRUCCIONES*/
+    resetInstructions(arch){
+      $.getJSON('architecture/'+arch+'.json', function(cfg){
+        architecture.instructions = cfg.instructions;
+        app._data.architecture = architecture;
 
-    load_assDef_select(e){
-      $.getJSON('instructions_set/'+e+'.json', function(cfg){
-        instruction_set = cfg;
-
-        app._data.instruction_set = instruction_set;
-
-        /*PREGUNTAR*/
-        instruction_set_hash = [];
-        for (var i = 0; i < instruction_set.firmware.length; i++) {
-          instruction_set_hash.push({name: instruction_set.firmware[i].name, index: i}); 
-          app._data.instruction_set_hash = instruction_set_hash;
-        }
-
-        $(".btn_arch").show();
-        $(".assDef_btn").show();
-
-        app._data.alertMessaje = 'The selected instruction set has been loaded correctly';
+        app._data.alertMessaje = 'The instruction set has been reset correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
-
       });
-    },
-
-    /*Lectura del JSON de las instrucciones seleccionadas*/
-    read_assDef(e){
-      var file;
-      var reader;
-      var files = document.getElementById('assDef_file').files;
-
-      for (var i = 0; i < files.length; i++) {
-        file = files[i];
-        reader = new FileReader();
-        reader.onloadend = onFileLoaded;
-        reader.readAsBinaryString(file);
-      }
-
-      function onFileLoaded(event) {
-        instruction_set = JSON.parse(event.currentTarget.result);
-
-        app._data.instruction_set = instruction_set;
-
-        instruction_set_hash = [];
-        for (var i = 0; i < instruction_set.firmware.length; i++) {
-          instruction_set_hash.push({name: instruction_set.firmware[i].name, index: i}); 
-          app._data.instruction_set_hash = instruction_set_hash;
-        }
-
-        $(".btn_arch").show();
-        $(".assDef_btn").show();
-
-        app._data.alertMessaje = 'The selected instruction set has been loaded correctly';
-        app._data.type ='success';
-        app._data.dismissCountDown = app._data.dismissSecs;
-      }
-    },
-
-    /*Guarda las instruccciones definidas en un JSON*/
-    assDef_save(){
-      var textToWrite = JSON.stringify(instruction_set, null, 2);
-      var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
-      var fileNameToSaveAs = this.name_assDef_save + ".json";
-
-      var downloadLink = document.createElement("a");
-      downloadLink.download = fileNameToSaveAs;
-      downloadLink.innerHTML = "My Hidden Link";
-
-      window.URL = window.URL || window.webkitURL;
-
-      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-      downloadLink.onclick = destroyClickedElement;
-      downloadLink.style.display = "none";
-      document.body.appendChild(downloadLink);
-
-      downloadLink.click();
-      app._data.alertMessaje = 'Save instruction set';
-      app._data.type ='success';
-      app._data.dismissCountDown = app._data.dismissSecs;
     },
 
     /*Inserta una nueva instruccion*/
     newInstruction(){
-      var newInstruction = {name: this.formInstruction.name, cop: this.formInstruction.cop, signatureRaw: this.formInstruction.signature, definition: this.formInstruction.definition};
-      instruction_set.firmware.push(newInstruction);
-      var newInstructionHash = {name: this.formInstruction.name, index: instruction_set_hash.length};
-      instruction_set_hash.push(newInstructionHash);
+      var error = 0;
+
+      for (var i = 0; i < architecture.instructions.length; i++) {
+        if(this.formInstruction.name == architecture.instructions[i].name){
+          app._data.alertMessaje = 'The instruction already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          error = 1;
+        }
+      }
+
+      if(error == 0){
+        var newInstruction = {name: this.formInstruction.name, signature: this.formInstruction.signature, signatureRaw: this.formInstruction.signatureRaw, cop: this.formInstruction.cop, fields: [], definition: this.formInstruction.definition};
+        architecture.instructions.push(newInstruction);
+
+        for (var i = 0; i < this.formInstruction.numfields; i++) {
+          var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: this.formInstruction.startBitField[i], stopbit: this.formInstruction.stopBitField[i]};
+          architecture.instructions[architecture.instructions.length-1].fields.push(newField);
+        }
+      }
+      
       this.formInstruction.name='';
       this.formInstruction.cop='';
+      this.formInstruction.numfields=1;
+      this.formInstruction.nameField=[];
+      this.formInstruction.typeField=[];
+      this.formInstruction.startBitField=[];
+      this.formInstruction.stopBitField=[];
       this.formInstruction.signature='';
+      this.formInstruction.signatureRaw='';
       this.formInstruction.definition='';
+      this.fieldsFormPage = 1;
+      this.instructionFormPage = 1;
     },
 
     /*Muestra el modal de confirmacion de borrado de una instruccion*/
@@ -705,6 +677,88 @@ window.app = new Vue({
           architecture.instructions.splice(i,1);
         }
       }
+    },
+
+    /*Muestra el modal de editar instruccion*/
+    editInstModal(elem, button){
+      this.modalEditInst.title = "Edit " + elem;
+      this.modalEditInst.element = elem;
+      for (var i = 0; i < architecture.instructions.length; i++) {
+        if(elem == architecture.instructions[i].name){
+          this.formInstruction.name = architecture.instructions[i].name;
+          this.formInstruction.cop = architecture.instructions[i].cop;
+          this.formInstruction.numfields = architecture.instructions[i].fields.length;
+          this.formInstruction.signature = architecture.instructions[i].signature;
+          this.formInstruction.signatureRaw = architecture.instructions[i].signatureRaw;
+          this.formInstruction.definition = architecture.instructions[i].definition;
+
+          for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
+            this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
+            this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
+            this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+            this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+          }
+
+        }
+      }
+      this.$root.$emit('bv::show::modal', 'modalEditInst', button);
+    },
+
+    /*edita una instruccion*/
+    editInstruction(comp){
+      var error = 0;
+
+      for (var i = 0; i < architecture.instructions.length; i++) {
+        if((this.formInstruction.name == architecture.instructions[i].name) && (comp != this.formInstruction.name)){
+          app._data.alertMessaje = 'The instruction already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          error = 1;
+        }
+      }
+
+      if(error == 0){
+        for (var i = 0; i < architecture.instructions.length; i++){
+          if(architecture.instructions[i].name == comp){
+            architecture.instructions[i].name = this.formInstruction.name;
+            architecture.instructions[i].signature = this.formInstruction.signature;
+            architecture.instructions[i].signatureRaw = this.formInstruction.signatureRaw;
+            architecture.instructions[i].cop = this.formInstruction.cop;
+            architecture.instructions[i].definition = this.formInstruction.definition;
+
+            for (var j = 0; j < this.formInstruction.numfields; j++){
+              if(j < architecture.instructions[i].fields.length){
+                architecture.instructions[i].fields[j].name = this.formInstruction.nameField[j];
+                architecture.instructions[i].fields[j].type = this.formInstruction.typeField[j];
+                architecture.instructions[i].fields[j].startbit = this.formInstruction.startBitField[j];
+                architecture.instructions[i].fields[j].stopbit = this.formInstruction.stopBitField[j];
+              }
+              else{
+                var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j]};
+                architecture.instructions[i].fields.push(newField);
+              }
+            }
+
+            if(architecture.instructions[i].fields.length > this.formInstruction.numfields){
+              architecture.instructions[i].fields.splice(this.formInstruction.numfields, (architecture.instructions[i].fields.length - this.formInstruction.numfields));
+            }
+
+          }
+        }
+      }
+      
+      this.formInstruction.name='';
+      this.formInstruction.cop='';
+      this.formInstruction.numfields=1;
+      this.formInstruction.nameField=[];
+      this.formInstruction.typeField=[];
+      this.formInstruction.startBitField=[];
+      this.formInstruction.stopBitField=[];
+      this.formInstruction.signature='';
+      this.formInstruction.signatureRaw='';
+      this.formInstruction.definition='';
+      this.fieldsFormPage = 1;
+      this.instructionFormPage = 1;
     },
 
     /*PAGINA ENSAMBLADOR*/
@@ -1039,7 +1093,6 @@ window.app = new Vue({
   },
   created(){
     this.load_arch_available();
-    this.load_instruction_set_available();
   }
 })
 
@@ -1059,7 +1112,7 @@ $("#selectData").change(function(){
 });
 
 /*Obtiene la instruccion asociada al select*/
-$(document).on('change','.fieldsSel',function(){
+$(document).on('click','.fieldsSel',function(){
   var id = this.id;
   var inst = id.split('-');
   app._data.instSel = inst[inst.length-1];
