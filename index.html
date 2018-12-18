@@ -176,7 +176,7 @@
 					                      <b-button class="btn btn-outline-danger btn-sm " :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
 
 					                      <!-- Nuevo elemento -->
-					                      <b-modal :id ="'new'+item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newElement(item.name)">
+					                      <b-modal :id ="'new'+item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newElementVerify($event, item.name, item.index)" ref="newElement">
 
 					                      	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
 													        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -205,7 +205,12 @@
 		                    </div>
 
 		                    <!-- Editar componente -->
-	                      <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editComponent(modalEditComponent.element)">
+	                      <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" ref="editComponent">
+
+	                      	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+									        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
+											    </b-alert>
+
 			                    <b-form>
 			                      <b-form-group id="editComponentName" label="Name:">
 			                        <b-form-input id="editComponentNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
@@ -215,7 +220,12 @@
 			                  </b-modal >
 
 			                  <!-- Editar elemento -->
-			                  <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElement(modalEditElement.element)">
+			                  <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" ref="editElement">
+
+			                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+									        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
+											    </b-alert>
+
 	                        <b-form>
 	                          <b-form-group id="editElementName" label="Name:">
 	                            <b-form-input id="editElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
@@ -246,7 +256,7 @@
 
 		                  </div>
 
-		                  <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" ref="modal">
+		                  <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" ref="newComponent">
 
 		                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
 								        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -303,27 +313,32 @@
 	                        <h6>Are you sure you want to delete the item?</h6>
 	                      </b-modal >
 
-	                      <!-- Formulario para editar una instruccion instruccion -->
-			                  <b-modal id ="modalEditInst" :title="modalEditInst.title" ok-title="Create" @ok="editInstruction(modalEditInst.element)">
+	                      <!-- Formulario para editar una instruccion -->
+			                  <b-modal id ="modalEditInst" :title="modalEditInst.title" ok-title="Create" @ok="editInstVerify($event, modalEditInst.element)" ref="editInst">
+
+			                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+									        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
+											    </b-alert>
+
 			                    <b-form>
-			                    	<div id="newInstForm1" v-if="instructionFormPage == 1">
-				                      <b-form-group id="newInstructionName" label="Name:">
-				                        <b-form-input id="newInstructionName" type="text" v-model="formInstruction.name" required placeholder="Enter name">
+			                    	<div id="editInstForm1" v-if="instructionFormPage == 1">
+				                      <b-form-group id="editInstructionName" label="Name:">
+				                        <b-form-input id="editInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name">
 				                        </b-form-input>
 				                      </b-form-group>
 
-				                      <b-form-group id="newInstructioncop" label="Cop:">
-				                        <b-form-input id="newInstructionCop" type="text" v-model="formInstruction.cop" required placeholder="Enter cop">
+				                      <b-form-group id="editInstructioncop" label="Cop:">
+				                        <b-form-input id="editInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop">
 				                        </b-form-input>
 				                      </b-form-group>
 
-				                      <b-form-group id="newNumFields" label="Number of fields:">
-				                        <b-form-input id="newNumFields" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" placeholder="1">
+				                      <b-form-group id="editNumFields" label="Number of fields:">
+				                        <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields">
 				                        </b-form-input>
 				                      </b-form-group>
 			                    	</div>
 
-			                    	<div id="newInstForm2" v-if="instructionFormPage == 2">
+			                    	<div id="editInstForm2" v-if="instructionFormPage == 2">
 			                    		<div v-for="i in parseInt(formInstruction.numfields)" v-if="fieldsFormPage == i">
 
 			                    			<h6>Field {{i}}</h6>
@@ -349,50 +364,55 @@
 					                        </b-form-input>
 					                      </b-form-group>
 			                    		</div>
-			                    		<b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="parseInt(formInstruction.numfields)" v-model="fieldsFormPage" />
+			                    		<b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="parseInt(formInstruction.numfields)" v-model="fieldsFormPage"> </b-pagination-nav>
 			                    	</div>
 
-			                    	<div id="newInstForm3" v-if="instructionFormPage == 3">
-				                      <b-form-group id="newInstructionSignature" label="Signature:">
-				                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signature" required placeholder="Example: add reg reg reg">
+			                    	<div id="editInstForm3" v-if="instructionFormPage == 3">
+				                      <b-form-group id="editInstructionSignature" label="Signature:">
+				                        <b-form-input id="editInstructionSignatureInput" type="text" v-model="formInstruction.signature" required placeholder="Example: add reg reg reg">
 				                        </b-form-input>
 				                      </b-form-group>
 
-				                      <b-form-group id="newInstructionSignature" label="Signature Raw:">
-				                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signatureRaw" required placeholder="Example: add reg1 reg2 reg3">
+				                      <b-form-group id="editInstructionSignatureRaw" label="Signature Raw:">
+				                        <b-form-input id="editInstructionSignatureRawInput" type="text" v-model="formInstruction.signatureRaw" required placeholder="Example: add reg1 reg2 reg3">
 				                        </b-form-input>
 				                      </b-form-group>
 
-				                      <b-form-group id="newInstructionDefinition" label="Assembly Definition:">
-				                        <b-form-input id="newInstructionDefinition" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3=reg1+reg2">
+				                      <b-form-group id="editInstructionDefinition" label="Assembly Definition:">
+				                        <b-form-input id="editInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3=reg1+reg2">
 				                        </b-form-input>
 				                      </b-form-group>
 			                     	</div>
 			                    </b-form>
 
 			                    <hr>
-			                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" />
+			                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage"> </b-pagination-nav>
 
 			                  </b-modal >
 
 		                  </div>
 
 		                  <!-- Formulario nueva instruccion -->
-		                  <b-modal id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstruction">
+		                  <b-modal id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstVerify" ref="newInst">
+
+		                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+								        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
+										    </b-alert>
+
 		                    <b-form>
 		                    	<div id="newInstForm1" v-if="instructionFormPage == 1">
 			                      <b-form-group id="newInstructionName" label="Name:">
-			                        <b-form-input id="newInstructionName" type="text" v-model="formInstruction.name" required placeholder="Enter name">
+			                        <b-form-input id="newInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name">
 			                        </b-form-input>
 			                      </b-form-group>
 
 			                      <b-form-group id="newInstructioncop" label="Cop:">
-			                        <b-form-input id="newInstructionCop" type="text" v-model="formInstruction.cop" required placeholder="Enter cop">
+			                        <b-form-input id="newInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop">
 			                        </b-form-input>
 			                      </b-form-group>
 
 			                      <b-form-group id="newNumFields" label="Number of fields:">
-			                        <b-form-input id="newNumFields" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" placeholder="1">
+			                        <b-form-input id="newNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields">
 			                        </b-form-input>
 			                      </b-form-group>
 		                    	</div>
@@ -404,48 +424,48 @@
 		                    			<hr>
 
 		                    			<b-form-group :id="'nameField'+i" label="Name Field:">
-				                        <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required>
+				                        <b-form-input :id="'nameFieldInput'+i" type="text" v-model="formInstruction.nameField[i-1]" required>
 				                        </b-form-input>
 				                      </b-form-group>
 
 				                      <b-form-group :id="'typeField'+i" label="Type Field:">
-				                        <b-form-input id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]" required>
+				                        <b-form-input id="'typeFieldInput'+i" type="text" v-model="formInstruction.typeField[i-1]" required>
 				                        </b-form-input>
 				                      </b-form-group>
 
 				                      <b-form-group :id="'startBitField'+i" label="Start Bit Field:">
-				                        <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required>
+				                        <b-form-input id="'startBitFieldInput'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required>
 				                        </b-form-input>
 				                      </b-form-group>
 
 				                      <b-form-group :id="'stopBitField'+i" label="Stop Bit Field:">
-				                        <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required>
+				                        <b-form-input id="'stopBitFieldInput'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required>
 				                        </b-form-input>
 				                      </b-form-group>
 		                    		</div>
-		                    		<b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="parseInt(formInstruction.numfields)" v-model="fieldsFormPage" />
+		                    		<b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="parseInt(formInstruction.numfields)" v-model="fieldsFormPage"> </b-pagination-nav>
 		                    	</div>
 
 		                    	<div id="newInstForm3" v-if="instructionFormPage == 3">
 			                      <b-form-group id="newInstructionSignature" label="Signature:">
-			                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signature" required placeholder="Example: add reg reg reg">
+			                        <b-form-input id="newInstructionSignatureInput" type="text" v-model="formInstruction.signature" required placeholder="Example: add reg reg reg">
 			                        </b-form-input>
 			                      </b-form-group>
 
-			                      <b-form-group id="newInstructionSignature" label="Signature Raw:">
-			                        <b-form-input id="newInstructionSignature" type="text" v-model="formInstruction.signatureRaw" required placeholder="Example: add reg1 reg2 reg3">
+			                      <b-form-group id="newInstructionSignatureRaw" label="Signature Raw:">
+			                        <b-form-input id="newInstructionSignatureRawInput" type="text" v-model="formInstruction.signatureRaw" required placeholder="Example: add reg1 reg2 reg3">
 			                        </b-form-input>
 			                      </b-form-group>
 
 			                      <b-form-group id="newInstructionDefinition" label="Assembly Definition:">
-			                        <b-form-input id="newInstructionDefinition" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3=reg1+reg2">
+			                        <b-form-input id="newInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3=reg1+reg2">
 			                        </b-form-input>
 			                      </b-form-group>
 		                     	</div>
 		                    </b-form>
 
 		                    <hr>
-		                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" />
+		                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage"></b-pagination-nav>
 
 		                  </b-modal >
 									  </b-tab>
