@@ -133,8 +133,8 @@ var memory = [
 ]
 
 var  instructions = [
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "pr R0 R1 R2", Assebly: "pr R0 R1 R2" },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "pr R3 R0 R2", Assebly: "pr R3 R0 R2" }
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assebly: "and R0 R1 R2" },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R3 R0 R2", Assebly: "add R3 R0 R2" }
 ]
 
 var executionIndex = 0;
@@ -409,7 +409,6 @@ window.app = new Vue({
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } else {
-        this.$refs.modal.hide();
         this.newComponent()
       }
     },
@@ -421,12 +420,13 @@ window.app = new Vue({
         if(this.formArchitecture.name == architecture_hash[i].name){
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
         }
       }
 
       if(error == 0){
+        this.$refs.newComponent.hide();
         var precision = false;
         if(this.formArchitecture.precision == "precision"){
           precision = true;
@@ -435,11 +435,11 @@ window.app = new Vue({
         architecture.components.push(newComp);
         var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
         architecture_hash.push(newComponentHash);
+
+        this.formArchitecture.name='';
+        this.formArchitecture.type='';
+        this.formArchitecture.precision='';
       }
-      
-      this.formArchitecture.name='';
-      this.formArchitecture.type='';
-      this.formArchitecture.precision='';
     },
 
     /*Muestra el modal para editar un componente*/
@@ -452,6 +452,18 @@ window.app = new Vue({
       this.$root.$emit('bv::show::modal', 'modalEditComponent', button);
     },
 
+    /*Comprueba que estan todos los campos del formulario de editar component*/
+    editCompVerify(evt, comp){
+      evt.preventDefault();
+      if (!this.formArchitecture.name) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.editComponent(comp);
+      }
+    },
+
     /*Edita un componente*/
     editComponent(comp){
       var error = 0;
@@ -459,21 +471,21 @@ window.app = new Vue({
         if((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
         }
       }
       
       if(error == 0){
+        this.$refs.editComponent.hide();
         for (var i = 0; i < architecture_hash.length; i++) {
           if(comp == architecture_hash[i].name){
             architecture_hash[i].name = this.formArchitecture.name;
             architecture.components[i].name = this.formArchitecture.name;
           }
         }
-      }
-
-      this.formArchitecture.name='';
+        this.formArchitecture.name='';
+      }   
     },
 
     /*Muestra el modal de confirmacion de borrado de un componente*/
@@ -497,32 +509,32 @@ window.app = new Vue({
     },
 
     /*Comprueba que estan todos los campos del formulario de nuevo elemento*/
-    newElementVerify(evt, comp){
+    newElementVerify(evt, comp, index){
       evt.preventDefault();
       if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } else {
-        this.$refs.modal.hide();
-        this.newElement(comp);
+        this.newElement(comp, index);
       }
     },
 
     /*Crea un nuevo elemento*/
-    newElement(comp){
+    newElement(comp, index){
       var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if(this.formArchitecture.name == architecture.components[i].elements[j].name){
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
             error = 1;
           }
         } 
       }
       if(error == 0){
+        this.$refs.newElement[index].hide();
         for (var i = 0; i < architecture_hash.length; i++) {
           if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
             var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
@@ -566,6 +578,18 @@ window.app = new Vue({
       this.$root.$emit('bv::show::modal', 'modalEditElement', button);
     },
 
+    /*Comprueba que estan todos los campos del formulario de editar elemento*/
+    editElementVerify(evt, comp){
+      evt.preventDefault();
+      if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.editElement(comp);
+      }
+    },
+
     /*Edita un elemento*/
     editElement(comp){
       var error = 0;
@@ -574,12 +598,13 @@ window.app = new Vue({
           if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
             error = 1;
           }
         } 
       }
       if(error == 0){
+        this.$refs.editElement.hide();
         for (var i = 0; i < architecture_hash.length; i++) {
           for(var j=0; j < architecture.components[i].elements.length; j++){
             if(comp == architecture.components[i].elements[j].name){
@@ -589,11 +614,10 @@ window.app = new Vue({
             }
           }
         } 
+        this.formArchitecture.name='';
+        this.formArchitecture.defValue='';
+        this.formArchitecture.properties=[];
       }
-
-      this.formArchitecture.name='';
-      this.formArchitecture.defValue='';
-      this.formArchitecture.properties=[];
     },
 
     /*Muestra el modal para confirmar el borrado*/
@@ -626,6 +650,26 @@ window.app = new Vue({
       });
     },
 
+    /*Comprueba que estan todos los campos del formulario de nueva instruccion*/
+    newInstVerify(evt){
+      evt.preventDefault();
+
+      var vacio = 0;
+      for (var i = 0; i < this.formInstruction.numfields; i++) {
+        if(this.formInstruction.nameField.length <  this.formInstruction.numfields || this.formInstruction.typeField.length <  this.formInstruction.numfields || this.formInstruction.startBitField.length <  this.formInstruction.numfields || this.formInstruction.stopBitField.length <  this.formInstruction.numfields){
+          vacio = 1;
+        }
+      }
+
+      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.numfields || !this.formInstruction.signature || !this.formInstruction.signatureRaw || !this.formInstruction.definition || vacio == 1) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.newInstruction();
+      }
+    },
+
     /*Inserta una nueva instruccion*/
     newInstruction(){
       var error = 0;
@@ -634,12 +678,13 @@ window.app = new Vue({
         if(this.formInstruction.name == architecture.instructions[i].name){
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
         }
       }
 
       if(error == 0){
+        this.$refs.newInst.hide();
         var newInstruction = {name: this.formInstruction.name, signature: this.formInstruction.signature, signatureRaw: this.formInstruction.signatureRaw, cop: this.formInstruction.cop, fields: [], definition: this.formInstruction.definition};
         architecture.instructions.push(newInstruction);
 
@@ -647,20 +692,20 @@ window.app = new Vue({
           var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: this.formInstruction.startBitField[i], stopbit: this.formInstruction.stopBitField[i]};
           architecture.instructions[architecture.instructions.length-1].fields.push(newField);
         }
+
+        this.formInstruction.name='';
+        this.formInstruction.cop='';
+        this.formInstruction.numfields=1;
+        this.formInstruction.nameField=[];
+        this.formInstruction.typeField=[];
+        this.formInstruction.startBitField=[];
+        this.formInstruction.stopBitField=[];
+        this.formInstruction.signature='';
+        this.formInstruction.signatureRaw='';
+        this.formInstruction.definition='';
+        this.fieldsFormPage = 1;
+        this.instructionFormPage = 1;
       }
-      
-      this.formInstruction.name='';
-      this.formInstruction.cop='';
-      this.formInstruction.numfields=1;
-      this.formInstruction.nameField=[];
-      this.formInstruction.typeField=[];
-      this.formInstruction.startBitField=[];
-      this.formInstruction.stopBitField=[];
-      this.formInstruction.signature='';
-      this.formInstruction.signatureRaw='';
-      this.formInstruction.definition='';
-      this.fieldsFormPage = 1;
-      this.instructionFormPage = 1;
     },
 
     /*Muestra el modal de confirmacion de borrado de una instruccion*/
@@ -689,8 +734,8 @@ window.app = new Vue({
           this.formInstruction.cop = architecture.instructions[i].cop;
           this.formInstruction.numfields = architecture.instructions[i].fields.length;
           this.formInstruction.signature = architecture.instructions[i].signature;
-          this.formInstruction.signatureRaw = architecture.instructions[i].signatureRaw;
           this.formInstruction.definition = architecture.instructions[i].definition;
+          this.formInstruction.signatureRaw = architecture.instructions[i].signatureRaw;
 
           for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
             this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
@@ -704,6 +749,26 @@ window.app = new Vue({
       this.$root.$emit('bv::show::modal', 'modalEditInst', button);
     },
 
+    /*Comprueba que estan todos los campos del formulario de editar instruccion*/
+    editInstVerify(evt, inst){
+      evt.preventDefault();
+
+      var vacio = 0;
+      for (var i = 0; i < this.formInstruction.numfields; i++) {
+        if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || !this.formInstruction.startBitField[i] || !this.formInstruction.stopBitField[i]){
+          vacio = 1;
+        }
+      }
+
+      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.numfields || !this.formInstruction.signature || !this.formInstruction.signatureRaw || !this.formInstruction.definition || vacio == 1) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.editInstruction(inst);
+      }
+    },
+
     /*edita una instruccion*/
     editInstruction(comp){
       var error = 0;
@@ -712,12 +777,13 @@ window.app = new Vue({
         if((this.formInstruction.name == architecture.instructions[i].name) && (comp != this.formInstruction.name)){
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
         }
       }
 
       if(error == 0){
+        this.$refs.editInst.hide();
         for (var i = 0; i < architecture.instructions.length; i++){
           if(architecture.instructions[i].name == comp){
             architecture.instructions[i].name = this.formInstruction.name;
@@ -745,20 +811,21 @@ window.app = new Vue({
 
           }
         }
+
+        this.formInstruction.name='';
+        this.formInstruction.cop='';
+        this.formInstruction.numfields=1;
+        this.formInstruction.nameField=[];
+        this.formInstruction.typeField=[];
+        this.formInstruction.startBitField=[];
+        this.formInstruction.stopBitField=[];
+        this.formInstruction.signature='';
+        this.formInstruction.signatureRaw='';
+        this.formInstruction.definition='';
+        this.fieldsFormPage = 1;
+        this.instructionFormPage = 1;
+
       }
-      
-      this.formInstruction.name='';
-      this.formInstruction.cop='';
-      this.formInstruction.numfields=1;
-      this.formInstruction.nameField=[];
-      this.formInstruction.typeField=[];
-      this.formInstruction.startBitField=[];
-      this.formInstruction.stopBitField=[];
-      this.formInstruction.signature='';
-      this.formInstruction.signatureRaw='';
-      this.formInstruction.definition='';
-      this.fieldsFormPage = 1;
-      this.instructionFormPage = 1;
     },
 
     /*PAGINA ENSAMBLADOR*/
@@ -1005,12 +1072,12 @@ window.app = new Vue({
 
       /*PREGUNTAR ESTO VA EN COMPILACION*/
       /*Busca errores en la instruccion a ejecutar*/
-      for (i = 0; i < instruction_set_hash.length; i++) {
-        if(instruction_set_hash[i].name == instructionParts[0]){
+      for (i = 0; i < architecture.instructions.length; i++) {
+        if(architecture.instructions[i].name == instructionParts[0]){
           index = i;
           break;
         }
-        if((instruction_set_hash[i].name != instructionParts[0]) && (i == instruction_set_hash.length-1)){
+        if((architecture.instructions[i].name != instructionParts[0]) && (i == architecture.instructions.length-1)){
           error = 1;
         }
       }
@@ -1033,15 +1100,15 @@ window.app = new Vue({
       }
 
       if(error == 0){
-        var signatureParts = (instruction_set.firmware[index].signatureRaw).split(' ');
+        var signatureParts = (architecture.instructions[index].signatureRaw).split(' ');
 
         for (i = 1; i < signatureParts.length; i++){
           eval(signatureParts[i] + " = " + instructionObjet[i-1].value);
         }
 
-        eval(instruction_set.firmware[index].definition);
+        eval(architecture.instructions[index].definition);
 
-        var defParts = (instruction_set.firmware[index].definition).split('=');
+        var defParts = (architecture.instructions[index].definition).split('=');
         var resultIndex;
         for (i = 0; i < signatureParts.length; i++) {
           if(signatureParts[i] == defParts[0]){
