@@ -169,36 +169,12 @@
 														      </template>
 											           </b-table>
 
-					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'new '+item.name" v-b-modal="'new'+item.name"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
+					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'new '+item.name" @click="newElemModal(item.name, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
 
 					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'edit '+item.name" @click="editCompModal(item.name, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
 
 					                      <b-button class="btn btn-outline-danger btn-sm " :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
 
-					                      <!-- Nuevo elemento -->
-					                      <b-modal :id ="'new'+item.name" :title = "'New ' + item.name" ok-title="Create" @ok="newElementVerify($event, item.name, item.index)" ref="newElement">
-
-					                      	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
-													        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
-															    </b-alert>
-
-					                        <b-form >
-					                          <b-form-group id="newElementName" label="Name:">
-					                            <b-form-input id="newElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
-					                            </b-form-input>
-					                          </b-form-group>
-					                          <b-form-group id="newElementDefValue" label="Default value:">
-					                            <b-form-input id="newElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value">
-					                            </b-form-input>
-					                          </b-form-group>
-					                          <b-form-group id="newElementProperties">
-					                            <b-form-checkbox-group v-model="formArchitecture.properties" id="newElementPropertiesInput">
-					                              <b-form-checkbox value="read">Read</b-form-checkbox>
-					                              <b-form-checkbox value="write">Write</b-form-checkbox>
-					                            </b-form-checkbox-group>
-					                          </b-form-group>
-					                        </b-form>
-					                      </b-modal >
 											        </b-card-body>
 											      </b-collapse>
 											    </b-card>
@@ -218,6 +194,31 @@
 			                      </b-form-group>
 			                    </b-form>
 			                  </b-modal >
+
+                        <!-- Nuevo elemento -->
+                        <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Create" @ok="newElementVerify($event, modalNewElement.element)" ref="newElement">
+
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                            <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                          </b-alert>
+
+                          <b-form >
+                            <b-form-group id="newElementName" label="Name:">
+                              <b-form-input id="newElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name">
+                              </b-form-input>
+                            </b-form-group>
+                            <b-form-group id="newElementDefValue" label="Default value:">
+                              <b-form-input id="newElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value">
+                              </b-form-input>
+                            </b-form-group>
+                            <b-form-group id="newElementProperties">
+                              <b-form-checkbox-group v-model="formArchitecture.properties" id="newElementPropertiesInput">
+                                <b-form-checkbox value="read">Read</b-form-checkbox>
+                                <b-form-checkbox value="write">Write</b-form-checkbox>
+                              </b-form-checkbox-group>
+                            </b-form-group>
+                          </b-form>
+                        </b-modal >
 
 			                  <!-- Editar elemento -->
 			                  <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" ref="editElement">

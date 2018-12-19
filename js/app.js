@@ -133,8 +133,10 @@ var memory = [
 ]
 
 var  instructions = [
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assebly: "and R0 R1 R2" },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R3 R0 R2", Assebly: "add R3 R0 R2" }
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assebly: "and R0 R1 R2", _rowVariant: 'success'},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R1 R2 R3", Assebly: "add R1 R2 R3", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FG0 FG1 FG2", Assebly: "add FG0 FG1 FG2", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FP0 FP2 FP4", Assebly: "add FP0 FP2 FP4", _rowVariant: '' }
 ]
 
 var executionIndex = 0;
@@ -196,6 +198,11 @@ window.app = new Vue({
     },
     /*Borrado de un componente*/
     modalDeletComp:{
+      title: '',
+      element: '',
+    },
+    /*Nuevo elemento*/
+    modalNewElement:{
       title: '',
       element: '',
     },
@@ -508,20 +515,28 @@ window.app = new Vue({
       }
     },
 
+    /*Muestra el modal para nuevo un elemento*/
+    newElemModal(comp, index, button){
+      this.modalNewElement.title = "Edit " + comp;
+      this.modalNewElement.element = comp;
+
+      this.$root.$emit('bv::show::modal', 'modalNewElement', button);
+    },
+
     /*Comprueba que estan todos los campos del formulario de nuevo elemento*/
-    newElementVerify(evt, comp, index){
+    newElementVerify(evt, comp){
       evt.preventDefault();
       if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } else {
-        this.newElement(comp, index);
+        this.newElement(comp);
       }
     },
 
     /*Crea un nuevo elemento*/
-    newElement(comp, index){
+    newElement(comp){
       var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
@@ -534,7 +549,7 @@ window.app = new Vue({
         } 
       }
       if(error == 0){
-        this.$refs.newElement[index].hide();
+        this.$refs.newElement.hide();
         for (var i = 0; i < architecture_hash.length; i++) {
           if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
             var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
@@ -1120,19 +1135,28 @@ window.app = new Vue({
         for (j = 0; j < architecture.components.length && valReg == 0; j++) {
           for (z = 0; z < architecture.components[j].elements.length; z++){
             if(instructionParts[resultIndex] == architecture.components[j].elements[z].name){
-              eval("architecture.components[j].elements[z].value = bigInt(parseInt("+defParts[0]+") >>> 0, 10).value");
+              if(architecture.components[j].type == "integer"){
+                eval("architecture.components[j].elements[z].value = bigInt(parseInt("+defParts[0]+") >>> 0, 10).value");
+              }
+              if(architecture.components[j].type == "floating point"){
+                eval("architecture.components[j].elements[z].value = parseFloat("+defParts[0]+", 10)");
+              }
               valReg = 1;
               break;
             }
           }
         }
 
+        instructions[executionIndex]._rowVariant = '';
         executionIndex++;
         if(executionIndex >= instructions.length){
           executionIndex = 0;
           app._data.alertMessaje = 'The execution of the program has finished';
           app._data.type ='success';
           app._data.dismissCountDown = app._data.dismissSecs;
+        }
+        else{
+          instructions[executionIndex]._rowVariant = 'success';
         }
       }
       else{
