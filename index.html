@@ -52,7 +52,7 @@
           </div>
         </header>
 
-        <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" style="margin: 5pt;">
+        <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" style="margin: 5pt; ">
         	<span class="fa fa-info-circle"></span> {{alertMessaje}}
 		    </b-alert>
 
