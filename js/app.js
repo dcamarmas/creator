@@ -134,6 +134,8 @@ var memory = [
 
 var  instructions = [
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assebly: "and R0 R1 R2", _rowVariant: 'success'},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FG0 FG1 FG2", Assebly: "and FG0 FG1 FG2", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FP0 FP2 FP4", Assebly: "and FP0 FP2 FP4", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R1 R2 R3", Assebly: "add R1 R2 R3", _rowVariant: '' },
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FG0 FG1 FG2", Assebly: "add FG0 FG1 FG2", _rowVariant: '' },
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FP0 FP2 FP4", Assebly: "add FP0 FP2 FP4", _rowVariant: '' }
@@ -586,7 +588,7 @@ window.app = new Vue({
       for(var j=0; j < architecture.components[comp].elements.length; j++){
         if(elem == architecture.components[comp].elements[j].name){
           this.formArchitecture.name = elem;
-          this.formArchitecture.defValue = architecture.components[comp].elements[j].default_value;
+          this.formArchitecture.defValue = (architecture.components[comp].elements[j].default_value).toString();
           this.formArchitecture.properties = architecture.components[comp].elements[j].properties;
         }
       }
@@ -1174,7 +1176,9 @@ window.app = new Vue({
 
     /*Funcion que resetea la ejecucion*/
     reset(){
+      instructions[executionIndex]._rowVariant = '';
       executionIndex = 0;
+      instructions[executionIndex]._rowVariant = 'success';
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++) {
           architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
