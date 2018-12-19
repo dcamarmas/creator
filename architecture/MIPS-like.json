@@ -949,57 +949,61 @@
   "instructions": [
     {
       "name": "add",
+      "co": "000000",
+      "cop": "100000",
+      "nwords": 1,
       "signature": "add,reg,reg,reg",
       "signatureRaw": "add reg1 reg2 reg3",
-      "cop": "1001",
       "fields": [
         {
-          "name": "reg 1",
+          "name": "reg1",
           "type": "reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
-          "name": "reg 2",
+          "name": "reg2",
           "type": "reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
-          "name": "reg 3",
+          "name": "reg3",
           "type": "reg",
           "startbit": 15,
           "stopbit": 11
         }
       ],
-      "definition": "reg3=reg1+reg2"
+      "definition": "reg1=reg2+reg3"
     },
     {
       "name": "and",
+      "co": "000000",
+      "cop": "100100",
+      "nwords": 1,
       "signature": "and,reg,reg,reg",
       "signatureRaw": "add reg1 reg2 reg3",
-      "cop": "000",
       "fields": [
         {
-          "name": "reg 1",
+          "name": "reg1",
           "type": "reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
-          "name": "reg 2",
+          "name": "reg2",
           "type": "reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
-          "name": "reg 3",
+          "name": "reg3",
           "type": "reg",
           "startbit": 15,
           "stopbit": 11
         }
       ],
-      "definition": "reg3=reg1&reg2"
+      "definition": "reg1=reg2&reg3"
     }
   ]
 }

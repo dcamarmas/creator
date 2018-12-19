@@ -68,6 +68,10 @@ hr {
 	font-size: 13px;
 }
 
+.instruction_table{
+  font-size: 15px;
+}
+
 .table-mem-wrapper-scroll-y {
   display: block;
   max-height: 75vh;

@@ -108,16 +108,16 @@ var architecture = {components:[
       {name:"FP30", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
     ]}*/
   ], instructions:[
-    /*{name: "add", signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", cop: "1001", fields: [
-      {name: "reg 1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg 2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg 3", type: "reg", startbit: 15, stopbit: 11},
-    ], definition: "reg3=reg1+reg2"},
-    {name: "and", signature: "and,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", cop: "000", fields: [
-      {name: "reg 1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg 2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg 3", type: "reg", startbit: 15, stopbit: 11},
-    ], definition: "reg3=reg1&reg2"},*/
+    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+    ], definition: "reg1=reg2+reg3"},
+    {name: "and", co: "000000", cop: "100100", nwords: 1, signature: "and,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+    ], definition: "reg1=reg2&reg3"},*/
   ]};
 
 var componentsTypes = [
@@ -133,12 +133,12 @@ var memory = [
 ]
 
 var  instructions = [
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assebly: "and R0 R1 R2", _rowVariant: 'success'},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FG0 FG1 FG2", Assebly: "and FG0 FG1 FG2", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FP0 FP2 FP4", Assebly: "and FP0 FP2 FP4", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R1 R2 R3", Assebly: "add R1 R2 R3", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FG0 FG1 FG2", Assebly: "add FG0 FG1 FG2", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FP0 FP2 FP4", Assebly: "add FP0 FP2 FP4", _rowVariant: '' }
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assembly: "and R0 R1 R2", _rowVariant: 'success'},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FG0 FG1 FG2", Assembly: "and FG0 FG1 FG2", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FP0 FP2 FP4", Assembly: "and FP0 FP2 FP4", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R1 R2 R3", Assembly: "add R1 R2 R3", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FG0 FG1 FG2", Assembly: "add FG0 FG1 FG2", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FP0 FP2 FP4", Assembly: "add FP0 FP2 FP4", _rowVariant: '' }
 ]
 
 var executionIndex = 0;
@@ -193,6 +193,11 @@ window.app = new Vue({
       properties: [],
       precision: '',
     },
+    /*Reset de la arquitectura*/
+    modalResetArch: {
+      title: '',
+      element: '',
+    },
     /*Edicion de un componente*/
     modalEditComponent: {
       title: '',
@@ -223,27 +228,30 @@ window.app = new Vue({
 
     
     /*PAGINA DE INSTRUCCIONES*/
-    instFields: ['name', 'signature', 'signatureRaw', 'cop', 'fields', 'definition', 'actions'],
+    instFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
     /*Edicion de las instrucciones*/
     formInstruction: {
       name: '',
+      co: '',
       cop: '',
+      nwords: 1,
       numfields: 1,
       nameField: [],
       typeField: [],
       startBitField: [],
       stopBitField: [],
-      signature: '',
-      signatureRaw: '',
       definition: '',
     },
     /*Barra de paginas formulario instrucciones*/
     instructionFormPage: 1,
-    /*Barra de paginas formulario instrucciones parte campos*/
-    fieldsFormPage:1,
     /*Variables para el selector de campos tabla*/
     fieldsSel: '',
     instSel: '',
+    /*Reset de las instrucciones*/
+    modalResetInst:{
+      title: '',
+      element: '',
+    },
     /*Borrado de una instruccion*/
     modalDeletInst:{
       title: '',
@@ -288,6 +296,16 @@ window.app = new Vue({
     /*ALERTA MODAL*/
     countDownChangedMod (dismissCountDown) {
       this.dismissCountDownMod = dismissCountDown;
+    },
+
+    /*VALIDADOR FORMULARIOS*/
+    valid(value){
+      if(!value){
+        return false;
+      }
+      else{
+        return true;
+      }
     },
 
     /*PAGINA CARGA ARQUITECTURA*/
@@ -392,6 +410,14 @@ window.app = new Vue({
 
     },
 
+    /*Modal de alerta de reset*/
+    resetArchModal(elem, button){
+      this.modalResetArch.title = "Reset " + elem + " architecture";
+      this.modalResetArch.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalResetArch', button);
+    },
+
+    /*Resetea la arquitectura*/
     resetArchitecture(arch){
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.components = cfg.components;
@@ -656,6 +682,13 @@ window.app = new Vue({
     },
 
     /*PAGINA DE INSTRUCCIONES*/
+    /*Modal de alerta de reset*/
+    resetInstModal(elem, button){
+      this.modalResetInst.title = "Reset " + elem + " instructions";
+      this.modalResetInst.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalResetInst', button);
+    },
+
     resetInstructions(arch){
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.instructions = cfg.instructions;
@@ -678,7 +711,7 @@ window.app = new Vue({
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.numfields || !this.formInstruction.signature || !this.formInstruction.signatureRaw || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -702,7 +735,24 @@ window.app = new Vue({
 
       if(error == 0){
         this.$refs.newInst.hide();
-        var newInstruction = {name: this.formInstruction.name, signature: this.formInstruction.signature, signatureRaw: this.formInstruction.signatureRaw, cop: this.formInstruction.cop, fields: [], definition: this.formInstruction.definition};
+
+        var signature = this.formInstruction.name + ' ';
+        for (var z = 0; z < this.formInstruction.numfields; z++) {
+          signature = signature + this.formInstruction.typeField[z];
+          if(z<this.formInstruction.numfields-1){
+            signature = signature + ',';
+          }
+        }
+
+        var signatureRaw = this.formInstruction.name + ' ';
+        for (var z = 0; z < this.formInstruction.numfields; z++) {
+          signatureRaw = signatureRaw + this.formInstruction.nameField[z];
+          if(z<this.formInstruction.numfields-1){
+            signatureRaw = signatureRaw + ' ';
+          }
+        }
+
+        var newInstruction = {name: this.formInstruction.name, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
         architecture.instructions.push(newInstruction);
 
         for (var i = 0; i < this.formInstruction.numfields; i++) {
@@ -712,15 +762,14 @@ window.app = new Vue({
 
         this.formInstruction.name='';
         this.formInstruction.cop='';
+        this.formInstruction.co ='';
+        this.formInstruction.nwords =1;
         this.formInstruction.numfields=1;
         this.formInstruction.nameField=[];
         this.formInstruction.typeField=[];
         this.formInstruction.startBitField=[];
         this.formInstruction.stopBitField=[];
-        this.formInstruction.signature='';
-        this.formInstruction.signatureRaw='';
         this.formInstruction.definition='';
-        this.fieldsFormPage = 1;
         this.instructionFormPage = 1;
       }
     },
@@ -749,10 +798,10 @@ window.app = new Vue({
         if(elem == architecture.instructions[i].name){
           this.formInstruction.name = architecture.instructions[i].name;
           this.formInstruction.cop = architecture.instructions[i].cop;
+          this.formInstruction.co = architecture.instructions[i].co;
+          this.formInstruction.nwords = architecture.instructions[i].nwords;
           this.formInstruction.numfields = architecture.instructions[i].fields.length;
-          this.formInstruction.signature = architecture.instructions[i].signature;
           this.formInstruction.definition = architecture.instructions[i].definition;
-          this.formInstruction.signatureRaw = architecture.instructions[i].signatureRaw;
 
           for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
             this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
@@ -777,7 +826,7 @@ window.app = new Vue({
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.numfields || !this.formInstruction.signature || !this.formInstruction.signatureRaw || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -804,9 +853,9 @@ window.app = new Vue({
         for (var i = 0; i < architecture.instructions.length; i++){
           if(architecture.instructions[i].name == comp){
             architecture.instructions[i].name = this.formInstruction.name;
-            architecture.instructions[i].signature = this.formInstruction.signature;
-            architecture.instructions[i].signatureRaw = this.formInstruction.signatureRaw;
+            architecture.instructions[i].co = this.formInstruction.co;
             architecture.instructions[i].cop = this.formInstruction.cop;
+            architecture.instructions[i].nwords = this.formInstruction.nwords;
             architecture.instructions[i].definition = this.formInstruction.definition;
 
             for (var j = 0; j < this.formInstruction.numfields; j++){
@@ -822,6 +871,25 @@ window.app = new Vue({
               }
             }
 
+            var signature = this.formInstruction.name + ' ';
+            for (var z = 0; z < this.formInstruction.numfields; z++) {
+              signature = signature + this.formInstruction.typeField[z];
+              if(z<this.formInstruction.numfields-1){
+                signature = signature + ',';
+              }
+            }
+
+            var signatureRaw = this.formInstruction.name + ' ';
+            for (var z = 0; z < this.formInstruction.numfields; z++) {
+              signatureRaw = signatureRaw + this.formInstruction.nameField[z];
+              if(z<this.formInstruction.numfields-1){
+                signatureRaw = signatureRaw + ' ';
+              }
+            }
+
+            architecture.instructions[i].signature = signature;
+            architecture.instructions[i].signatureRaw = signatureRaw;
+
             if(architecture.instructions[i].fields.length > this.formInstruction.numfields){
               architecture.instructions[i].fields.splice(this.formInstruction.numfields, (architecture.instructions[i].fields.length - this.formInstruction.numfields));
             }
@@ -831,15 +899,14 @@ window.app = new Vue({
 
         this.formInstruction.name='';
         this.formInstruction.cop='';
+        this.formInstruction.co ='';
+        this.formInstruction.nwords =1;
         this.formInstruction.numfields=1;
         this.formInstruction.nameField=[];
         this.formInstruction.typeField=[];
         this.formInstruction.startBitField=[];
         this.formInstruction.stopBitField=[];
-        this.formInstruction.signature='';
-        this.formInstruction.signatureRaw='';
         this.formInstruction.definition='';
-        this.fieldsFormPage = 1;
         this.instructionFormPage = 1;
 
       }
@@ -1211,4 +1278,18 @@ $(document).on('click','.fieldsSel',function(){
   var id = this.id;
   var inst = id.split('-');
   app._data.instSel = inst[inst.length-1];
+});
+
+$(".break").click(function(){
+  var id = $(this).attr('id');
+
+  if(instructions[id].Break == null){
+    instructions[id].Break = true;
+    app._data.instructions[id].Break = true;
+  }
+  else if(instructions[id].Break == true){
+    instructions[id].Break = null;
+    app._data.instructions[id].Break = null;
+  }
+
 });
