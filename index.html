@@ -105,7 +105,7 @@
           			<div class="col-lg-12 col-sm-12" id="load_menu_arch">
           				<h6>Select the number of bits:</h6>
                 	<div class="col-lg-3 col-sm-3">
-	                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black;"></b-form-input>
+	                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm"  style="background-color: white; color: black;"></b-form-input>
 	                	<br>
                 	</div>
           				<h6>The available architectures are:</h6>
@@ -301,7 +301,7 @@
 		                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
 		                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
 		                    	<template slot="fields" slot-scope="row">
-		                    		<b-form-select :id="'fieldsSel-'+row.item.name" required v-model="fieldsSel" class="fieldsSel">
+		                    		<b-form-select :id="'fieldsSel-'+row.item.name" required v-model="fieldsSel" class="fieldsSel" size="sm">
 		                    			<option v-for="i in row.item.fields" :value="i.name">{{i.name}}</option>
 		                    		</b-form-select>
 
@@ -325,7 +325,7 @@
 	                      </b-modal >
 
 	                      <!-- Formulario para editar una instruccion -->
-			                  <b-modal id ="modalEditInst" :title="modalEditInst.title" ok-title="Create" @ok="editInstVerify($event, modalEditInst.element)" ref="editInst">
+			                  <b-modal id ="modalEditInst" :title="modalEditInst.title" ok-title="Create" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" ref="editInst">
 
 			                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
 									        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -344,7 +344,7 @@
                               </b-form-group>
 
 				                      <b-form-group id="editInstructioncop" label="Cop:">
-				                        <b-form-input id="editInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop" :state="valid(formInstruction.cop)" size="sm">
+				                        <b-form-input id="editInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop" size="sm">
 				                        </b-form-input>
 				                      </b-form-group>
 
@@ -396,8 +396,11 @@
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'typeField'+i">
-                                      <b-form-input id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
-                                      </b-form-input>
+                                      <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" >
+                                        <option value="reg">reg</option>
+                                        <option value="inm">inm</option>
+                                        <option value="address">address</option>
+                                      </b-form-select>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
@@ -444,7 +447,7 @@
                             </b-form-group>
 
                             <b-form-group id="editInstructioncop" label="Cop:">
-                              <b-form-input id="editInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop" :state="valid(formInstruction.cop)" size="sm">
+                              <b-form-input id="editInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop" size="sm">
                               </b-form-input>
                             </b-form-group>
 
@@ -496,8 +499,11 @@
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'typeField'+i">
-                                    <b-form-input id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
-                                    </b-form-input>
+                                    <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" >
+                                      <option value="reg">reg</option>
+                                      <option value="inm">inm</option>
+                                      <option value="address">address</option>
+                                    </b-form-select>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">

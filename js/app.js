@@ -150,7 +150,6 @@ var  instructions = [
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi FG0 FG2 32.52", Assembly: "addi FG0 R2 32.52", _rowVariant: '' },
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi FP0 FP2 321.321", Assembly: "addi FP0 FP2 321.321", _rowVariant: '' },
 
-
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assembly: "and R0 R1 R2", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FG0 FG1 FG2", Assembly: "and FG0 FG1 FG2", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FP0 FP2 FP4", Assembly: "and FP0 FP2 FP4", _rowVariant: ''},
@@ -160,6 +159,7 @@ var  instructions = [
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FP0 FP2 FP4", Assembly: "add FP0 FP2 FP4", _rowVariant: '' }
 ]
 
+/*Indice de ejecucion*/
 var executionIndex = 0;
 
 /*Variables que almacenan el codigo introducido*/
@@ -280,6 +280,8 @@ window.app = new Vue({
     modalEditInst:{
       title: '',
       element: '',
+      co: '',
+      cop: '',
     },
 
 
@@ -290,6 +292,7 @@ window.app = new Vue({
     load_assembly: '',
     /*Variables donde se guardan los nombre de los ficheros guardados*/
     save_assembly: '',
+
 
     /*PAGINA SIMULADOR*/
     /*Nuevo valor del registro*/
@@ -319,7 +322,8 @@ window.app = new Vue({
 
     /*VALIDADOR FORMULARIOS*/
     valid(value){
-      if(!value){
+      var aux = value.toString();
+      if(!aux){
         return false;
       }
       else{
@@ -362,7 +366,6 @@ window.app = new Vue({
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
-
       });
     },
 
@@ -433,7 +436,6 @@ window.app = new Vue({
       app._data.alertMessaje = 'Save architecture';
       app._data.type ='success';
       app._data.dismissCountDown = app._data.dismissSecs;
-
     },
 
     /*Modal de alerta de reset*/
@@ -737,11 +739,22 @@ window.app = new Vue({
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
-      } else {
+      } 
+      else if(isNaN(this.formInstruction.co)){
+        app._data.alertMessaje = 'The field co must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else if(isNaN(this.formInstruction.cop)){
+        app._data.alertMessaje = 'The field cop must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else {
         this.newInstruction();
       }
     },
@@ -751,11 +764,33 @@ window.app = new Vue({
       var error = 0;
 
       for (var i = 0; i < architecture.instructions.length; i++) {
-        if(this.formInstruction.name == architecture.instructions[i].name || this.formInstruction.cop == architecture.instructions[i].cop){
-          app._data.alertMessaje = 'The instruction already exists';
+        if(this.formInstruction.name == architecture.instructions[i].name || this.formInstruction.co == architecture.instructions[i].co){
+          if((this.formInstruction.co != "000000") || (this.formInstruction.name == architecture.instructions[i].name)){
+            app._data.alertMessaje = 'The instruction already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            error = 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < architecture.instructions.length && error == 0; i++) {
+        if(!this.formInstruction.cop && this.formInstruction.co == "000000"){
+          app._data.alertMessaje = 'Cop field cannot be empty';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
+        }
+        else if(!this.formInstruction.cop && this.formInstruction.co != "000000"){
+          break
+        }
+        else if(architecture.instructions[i].cop != null){
+          if(this.formInstruction.cop == architecture.instructions[i].cop){
+            app._data.alertMessaje = 'The instruction already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            error = 1;
+          }
         }
       }
 
@@ -777,6 +812,9 @@ window.app = new Vue({
             signatureRaw = signatureRaw + ' ';
           }
         }
+
+        console.log(this.formInstruction.cop)
+
 
         var newInstruction = {name: this.formInstruction.name, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
         architecture.instructions.push(newInstruction);
@@ -825,6 +863,8 @@ window.app = new Vue({
           this.formInstruction.name = architecture.instructions[i].name;
           this.formInstruction.cop = architecture.instructions[i].cop;
           this.formInstruction.co = architecture.instructions[i].co;
+          app._data.modalEditInst.co = architecture.instructions[i].co;
+          app._data.modalEditInst.cop = architecture.instructions[i].cop;
           this.formInstruction.nwords = architecture.instructions[i].nwords;
           this.formInstruction.numfields = architecture.instructions[i].fields.length;
           this.formInstruction.definition = architecture.instructions[i].definition;
@@ -838,39 +878,72 @@ window.app = new Vue({
 
         }
       }
+
       this.$root.$emit('bv::show::modal', 'modalEditInst', button);
     },
 
     /*Comprueba que estan todos los campos del formulario de editar instruccion*/
-    editInstVerify(evt, inst){
+    editInstVerify(evt, inst, co, cop){
       evt.preventDefault();
 
       var vacio = 0;
       for (var i = 0; i < this.formInstruction.numfields; i++) {
-        if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || !this.formInstruction.startBitField[i] || !this.formInstruction.stopBitField[i]){
+        if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
           vacio = 1;
         }
       }
-
-      if (!this.formInstruction.name || !this.formInstruction.cop || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
-      } else {
-        this.editInstruction(inst);
+      }
+      else if(isNaN(this.formInstruction.co)){
+        app._data.alertMessaje = 'The field co must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else if(isNaN(this.formInstruction.cop)){
+        app._data.alertMessaje = 'The field cop must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else {
+        this.editInstruction(inst, co, cop);
       }
     },
 
     /*edita una instruccion*/
-    editInstruction(comp){
+    editInstruction(comp, co, cop){
       var error = 0;
 
       for (var i = 0; i < architecture.instructions.length; i++) {
-        if(((this.formInstruction.name == architecture.instructions[i].name) && (comp != this.formInstruction.name)) || this.formInstruction.cop == architecture.instructions[i].cop){
-          app._data.alertMessaje = 'The instruction already exists';
+        if(((this.formInstruction.name == architecture.instructions[i].name) && (comp != this.formInstruction.name)) || ((this.formInstruction.co == architecture.instructions[i].co) && (co != this.formInstruction.co))){
+          if((this.formInstruction.co != "000000") || (this.formInstruction.name == architecture.instructions[i].name)){
+            app._data.alertMessaje = 'The instruction already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            error = 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < architecture.instructions.length && error == 0; i++) {
+        if(!this.formInstruction.cop && this.formInstruction.co == "000000"){
+          app._data.alertMessaje = 'Cop field cannot be empty';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
+        }
+        else if(!this.formInstruction.cop && this.formInstruction.co != "000000"){
+          break
+        }
+        else if(architecture.instructions[i].cop != null){
+          if(((this.formInstruction.cop == architecture.instructions[i].cop) && (cop != this.formInstruction.cop))){
+            app._data.alertMessaje = 'The instruction already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            error = 1;
+          }
         }
       }
 
@@ -1014,29 +1087,6 @@ window.app = new Vue({
     },
 
     hex2double ( hexvalue ){
-      /*var sign     = (hexvalue & 0x8000000000000000) ? -1 : 1;
-      var exponent = ((hexvalue >> 52) & 0x7ff) - 1023;
-      var mantissa = 1 + ((hexvalue & 0xfffffffffffff) / 0x10000000000000);
-
-
-
-      console.log(sign);
-      console.log((hexvalue).toString(2));
-
-      var valuef = sign * mantissa * Math.pow(2, exponent);
-      if (-1023 == exponent)
-        if (1 == mantissa)
-          valuef = (sign == 1) ? "+0" : "-0" ;
-        else valuef = sign * ((hexvalue & 0xfffffffffffff) / 0xfffffffffffff) * Math.pow(2, -1022) ;
-      if (1024 == exponent)
-        if (1 == mantissa)
-          valuef = (sign == 1) ? "+Inf" : "-Inf" ;
-        else valuef = "NaN" ;
-
-      return valuef ;*/
-
-      /*Cogido de github https://github.com/bartaz/ieee754-visualization licencia MIT teoria libre*/
-
       var value = hexvalue.split('x');
       var value_bit = '';
 
@@ -1049,8 +1099,6 @@ window.app = new Vue({
 	  	var buffer = new ArrayBuffer(8);
 		  new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
 		  return new DataView( buffer ).getFloat64(0, false);
-
-
     },
 
     /*Convierte de hexadecimal a char*/
@@ -1169,7 +1217,6 @@ window.app = new Vue({
             architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
           }
         }
-        
       }
       this.newValue = '';
     },
@@ -1179,8 +1226,14 @@ window.app = new Vue({
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
       /*Verifica que el programa no ha finalizado ya*/
-      if(executionIndex < 0){
+      if(executionIndex < -1){
         app._data.alertMessaje = 'The program has finished';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        return;
+      }
+      else if(executionIndex == -1){
+        app._data.alertMessaje = 'The program has finished with errors';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
         return;
@@ -1222,7 +1275,7 @@ window.app = new Vue({
           var valReg = 0;
           for (j = 0; j < architecture.components.length && valReg == 0; j++) {
             for (z = 0; z < architecture.components[j].elements.length; z++){
-              
+
               if((instructionExecParts[i] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] == "read" || architecture.components[j].elements[z].properties[1] == "read")){
                 instructionObjet.push({name: instructionExecParts[i], value: architecture.components[j].elements[z].value})
                 valReg = 1;
@@ -1289,9 +1342,25 @@ window.app = new Vue({
             if((instructionExecParts[resultIndex] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] == "write" || architecture.components[j].elements[z].properties[1] == "write")){
               if(architecture.components[j].type == "integer"){
                 eval("architecture.components[j].elements[z].value = bigInt(parseInt("+defParts[0]+") >>> 0, 10).value");
+
+                var button = '#popoverValueContent' + architecture.components[j].elements[z].name;
+
+                $(button).attr("style", "background-color:#c2c2c2;");
+
+                setTimeout(function() {
+                  $(button).attr("style", "background-color:#f5f5f5;");
+                }, 350);
               }
               if(architecture.components[j].type == "floating point"){
                 eval("architecture.components[j].elements[z].value = parseFloat("+defParts[0]+", 10)");
+
+                var button = '#popoverValueContent' + architecture.components[j].elements[z].name;
+
+                $(button).attr("style", "background-color:#c2c2c2;");
+
+                setTimeout(function() {
+                  $(button).attr("style", "background-color:#f5f5f5;");
+                }, 350);
               }
               valReg = 1;
               break;
@@ -1320,7 +1389,7 @@ window.app = new Vue({
           executionIndex++;
         
           if(executionIndex >= instructions.length){
-            executionIndex = -1;
+            executionIndex = -2;
             app._data.alertMessaje = 'The execution of the program has finished';
             app._data.type ='success';
             app._data.dismissCountDown = app._data.dismissSecs;
