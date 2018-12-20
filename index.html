@@ -105,7 +105,7 @@
           			<div class="col-lg-12 col-sm-12" id="load_menu_arch">
           				<h6>Select the number of bits:</h6>
                 	<div class="col-lg-3 col-sm-3">
-	                	<b-form-input v-model="number_bits" type="number" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black;"></b-form-input>
+	                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black;"></b-form-input>
 	                	<br>
                 	</div>
           				<h6>The available architectures are:</h6>
@@ -126,7 +126,7 @@
                   <br>
                   <div class="col-lg-12 col-sm-12">
                     <div class="col-lg-12 col-sm-12">
-                      <b-form-file v-model="load_arch" :state="Boolean(load_arch)" placeholder="Choose a file..." id="arch_file" @change="read_arch" ></b-form-file>
+                      <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" @change="read_arch" ></b-form-file>
                     </div>
                   </div>
           			</div>
@@ -359,54 +359,54 @@
 				                      </b-form-group>
 
                               <b-form-group id="editInstructionDefinition" label="Assembly Definition:">
-                                <b-form-input id="editInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3=reg1+reg2" :state="valid(formInstruction.definition)" size="sm">
+                                <b-form-input id="editInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" size="sm">
                                 </b-form-input>
                               </b-form-group>
 			                    	</div>
 
 			                    	<div id="editInstForm2" v-if="instructionFormPage == 2">
                               <div class="col-lg-12 col-sm-12 row">
-                                <div class="col-lg-3 col-2 nopadding">
+                                <div class="col-lg-3 col-2 fields">
                                   
                                 </div>
-                                <div class="col-lg-3 col-2 nopadding">
+                                <div class="col-lg-3 col-2 fields">
                                   <h6>Name:</h6>
                                 </div>
-                                <div class="col-lg-2 col-2 nopadding">
+                                <div class="col-lg-2 col-2 fields">
                                   <h6>Type</h6>
                                 </div>
-                                <div class="col-lg-2 col-2 nopadding">
+                                <div class="col-lg-2 col-2 fields">
                                   <h6>Start Bit</h6>
                                 </div>
-                                <div class="col-lg-2 col-2 nopadding">
+                                <div class="col-lg-2 col-2 fields">
                                   <h6>Stop Bit</h6>
                                 </div>
                               </div>
 
 			                    		<div v-for="i in parseInt(formInstruction.numfields)">
                                 <div class="col-lg-12 col-sm-12 row">
-                                  <div class="col-lg-3 col-2 nopadding">
+                                  <div class="col-lg-3 col-2 fields">
                                     <h6>Field {{i}}</h6>
                                   </div>
-                                  <div class="col-lg-3 col-2 nopadding">
+                                  <div class="col-lg-3 col-2 fields">
                                     <b-form-group :id="'nameField'+i">
                                       <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
-                                  <div class="col-lg-2 col-2 nopadding">
+                                  <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'typeField'+i">
                                       <b-form-input id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
-                                  <div class="col-lg-2 col-2 nopadding">
+                                  <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'startBitField'+i">
                                       <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
-                                  <div class="col-lg-2 col-2 nopadding">
+                                  <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'stopBitField'+i">
                                       <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
                                       </b-form-input>
@@ -459,54 +459,54 @@
                             </b-form-group>
 
                             <b-form-group id="editInstructionDefinition" label="Assembly Definition:">
-                              <b-form-input id="editInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg3=reg1+reg2" :state="valid(formInstruction.definition)" size="sm">
+                              <b-form-input id="editInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" size="sm">
                               </b-form-input>
                             </b-form-group>
                           </div>
 
                           <div id="editInstForm2" v-if="instructionFormPage == 2">
                             <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-3 col-2 nopadding">
+                              <div class="col-lg-3 col-2 fields">
                                 
                               </div>
-                              <div class="col-lg-3 col-2 nopadding">
+                              <div class="col-lg-3 col-2 fields">
                                 <h6>Name:</h6>
                               </div>
-                              <div class="col-lg-2 col-2 nopadding">
+                              <div class="col-lg-2 col-2 fields">
                                 <h6>Type</h6>
                               </div>
-                              <div class="col-lg-2 col-2 nopadding">
+                              <div class="col-lg-2 col-2 fields">
                                 <h6>Start Bit</h6>
                               </div>
-                              <div class="col-lg-2 col-2 nopadding">
+                              <div class="col-lg-2 col-2 fields">
                                 <h6>Stop Bit</h6>
                               </div>
                             </div>
 
                             <div v-for="i in parseInt(formInstruction.numfields)">
                               <div class="col-lg-12 col-sm-12 row">
-                                <div class="col-lg-3 col-2 nopadding">
+                                <div class="col-lg-3 col-2 fields">
                                   <h6>Field {{i}}</h6>
                                 </div>
-                                <div class="col-lg-3 col-2 nopadding">
+                                <div class="col-lg-3 col-2 fields">
                                   <b-form-group :id="'nameField'+i">
                                     <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
-                                <div class="col-lg-2 col-2 nopadding">
+                                <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'typeField'+i">
                                     <b-form-input id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
-                                <div class="col-lg-2 col-2 nopadding">
+                                <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'startBitField'+i">
                                     <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
-                                <div class="col-lg-2 col-2 nopadding">
+                                <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'stopBitField'+i">
                                     <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
                                     </b-form-input>
@@ -855,7 +855,7 @@
 
 	          <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File" @ok="assembly_update">
 					    <p> Please select the assembly file to be loaded </p> 
-					    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." @change="read_assembly" id="assembly_file"></b-form-file>
+					    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." accept=".txt" @change="read_assembly" id="assembly_file"></b-form-file>
 					  </b-modal  >
 
 					  <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File" @ok="assembly_save">

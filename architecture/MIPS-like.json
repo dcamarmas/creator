@@ -1004,6 +1004,58 @@
         }
       ],
       "definition": "reg1=reg2&reg3"
+    },
+    {
+      "name": "li",
+      "co": "000010",
+      "cop": null,
+      "nwords": 1,
+      "signature": "li,reg,inm",
+      "signatureRaw": "li reg val",
+      "fields": [
+        {
+          "name": "reg",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg=val"
+    },
+    {
+      "name": "addi",
+      "co": "001000",
+      "cop": null,
+      "nwords": 1,
+      "signature": "and,reg,reg,inm",
+      "signatureRaw": "add reg1 reg2 val",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2+val"
     }
   ]
 }

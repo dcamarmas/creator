@@ -72,6 +72,10 @@ hr {
   font-size: 15px;
 }
 
+.fields{
+  padding: 1%;
+}
+
 .table-mem-wrapper-scroll-y {
   display: block;
   max-height: 75vh;
