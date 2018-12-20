@@ -143,6 +143,8 @@ var  instructions = [
 
 var executionIndex = 0;
 
+
+
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
 
@@ -1145,6 +1147,14 @@ window.app = new Vue({
     /*FUNCIONES DE EJECUCION*/
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
+      /*Verifica que el programa no ha finalizado ya*/
+      if(executionIndex < 0){
+        app._data.alertMessaje = 'The program has finished';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        return;
+      }
+
       var error = 0;
       var index;
 
@@ -1216,10 +1226,19 @@ window.app = new Vue({
           }
         }
 
+        /*Incrementa PC buscar otra forma*/
+        for (j = 0; j < architecture.components.length; j++) {
+          for (z = 0; z < architecture.components[j].elements.length; z++){
+            if("PC" == architecture.components[j].elements[z].name){
+              architecture.components[j].elements[z].value = architecture.components[j].elements[z].value + 4;
+            }
+          }
+        }
+
         instructions[executionIndex]._rowVariant = '';
         executionIndex++;
         if(executionIndex >= instructions.length){
-          executionIndex = 0;
+          executionIndex = -1;
           app._data.alertMessaje = 'The execution of the program has finished';
           app._data.type ='success';
           app._data.dismissCountDown = app._data.dismissSecs;
@@ -1229,7 +1248,7 @@ window.app = new Vue({
         }
       }
       else{
-        executionIndex = 0;
+        executionIndex = -1;
         app._data.alertMessaje = 'Invalid instruction';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
@@ -1238,12 +1257,23 @@ window.app = new Vue({
 
     /*Funcion que ejecuta todo el programa*/
     executeProgram(){
-      console.log("executeProgram");
+      var iter1 = 1;
+      for (x = executionIndex; x < instructions.length; x++) {
+        if(instructions[x].Break == true && iter1 == 0){
+          return;
+        }
+        else{
+          this.executeInstruction();
+          iter1 = 0;
+        }
+      }
     },
 
     /*Funcion que resetea la ejecucion*/
     reset(){
-      instructions[executionIndex]._rowVariant = '';
+      if(executionIndex >= 0){
+        instructions[executionIndex]._rowVariant = '';
+      }
       executionIndex = 0;
       instructions[executionIndex]._rowVariant = 'success';
       for (var i = 0; i < architecture_hash.length; i++) {
