@@ -117,7 +117,16 @@ var architecture = {components:[
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
-    ], definition: "reg1=reg2&reg3"},*/
+    ], definition: "reg1=reg2&reg3"},
+    {name: "li", co: "000010", cop: null, nwords: 1, signature: "li,reg,inm", signatureRaw: "li reg val", fields: [
+      {name: "reg", type: "reg", startbit: 25, stopbit: 21},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "reg=val"},
+    {name: "addi", co: "001000", cop: null, nwords: 1, signature: "and,reg,reg,inm", signatureRaw: "add reg1 reg2 val", fields: [
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "reg1=reg2+val"},*/
   ]};
 
 var componentsTypes = [
@@ -133,17 +142,25 @@ var memory = [
 ]
 
 var  instructions = [
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assembly: "and R0 R1 R2", _rowVariant: 'success'},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li R1 5", Assembly: "li R1 5", _rowVariant: 'success'},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li FG0 5.5", Assembly: "li FG0 5.5", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li FP0 50.65", Assembly: "li FP 50.65", _rowVariant: ''},
+
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi R1 R2 5", Assembly: "addi R1 R2 5", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi FG0 FG2 32.52", Assembly: "addi FG0 R2 32.52", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi FP0 FP2 321.321", Assembly: "addi FP0 FP2 321.321", _rowVariant: '' },
+
+
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assembly: "and R0 R1 R2", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FG0 FG1 FG2", Assembly: "and FG0 FG1 FG2", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FP0 FP2 FP4", Assembly: "and FP0 FP2 FP4", _rowVariant: ''},
+
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R1 R2 R3", Assembly: "add R1 R2 R3", _rowVariant: '' },
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FG0 FG1 FG2", Assembly: "add FG0 FG1 FG2", _rowVariant: '' },
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FP0 FP2 FP4", Assembly: "add FP0 FP2 FP4", _rowVariant: '' }
 ]
 
 var executionIndex = 0;
-
-
 
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
@@ -392,7 +409,14 @@ window.app = new Vue({
     arch_save(){
       var textToWrite = JSON.stringify(architecture, null, 2);
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
-      var fileNameToSaveAs = this.name_arch_save + ".json";
+      var fileNameToSaveAs;
+
+      if(this.name_arch_save == ''){
+        fileNameToSaveAs = "architecture.json";
+      }
+      else{
+        fileNameToSaveAs = this.name_arch_save + ".json";
+      }
 
       var downloadLink = document.createElement("a");
       downloadLink.download = fileNameToSaveAs;
@@ -727,7 +751,7 @@ window.app = new Vue({
       var error = 0;
 
       for (var i = 0; i < architecture.instructions.length; i++) {
-        if(this.formInstruction.name == architecture.instructions[i].name){
+        if(this.formInstruction.name == architecture.instructions[i].name || this.formInstruction.cop == architecture.instructions[i].cop){
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -842,7 +866,7 @@ window.app = new Vue({
       var error = 0;
 
       for (var i = 0; i < architecture.instructions.length; i++) {
-        if((this.formInstruction.name == architecture.instructions[i].name) && (comp != this.formInstruction.name)){
+        if(((this.formInstruction.name == architecture.instructions[i].name) && (comp != this.formInstruction.name)) || this.formInstruction.cop == architecture.instructions[i].cop){
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -940,7 +964,14 @@ window.app = new Vue({
     assembly_save(){
       var textToWrite = this.text_assembly;
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
-      var fileNameToSaveAs = this.save_assembly + ".txt";
+      var fileNameToSaveAs;
+
+      if(this.save_assembly == ''){
+        fileNameToSaveAs = "assembly.txt";
+      }
+      else{
+        fileNameToSaveAs = this.save_assembly + ".txt";
+      }
 
       var downloadLink = document.createElement("a");
       downloadLink.download = fileNameToSaveAs;
@@ -1158,39 +1189,80 @@ window.app = new Vue({
       var error = 0;
       var index;
 
-      var instruction = instructions[executionIndex].Pseudo;
+      var instructionExec = instructions[executionIndex].Pseudo;
 
-      var instructionParts = instruction.split(' ');
+      var instructionExecParts = instructionExec.split(' ');
+      var signatureParts;
+
       var instructionObjet = [];
 
 
       /*PREGUNTAR ESTO VA EN COMPILACION*/
       /*Busca errores en la instruccion a ejecutar*/
       for (i = 0; i < architecture.instructions.length; i++) {
-        if(architecture.instructions[i].name == instructionParts[0]){
+        if(architecture.instructions[i].name == instructionExecParts[0]){
           index = i;
+          signatureParts = architecture.instructions[i].signature.split(',');
           break;
         }
-        if((architecture.instructions[i].name != instructionParts[0]) && (i == architecture.instructions.length-1)){
+        if((architecture.instructions[i].name != instructionExecParts[0]) && (i == architecture.instructions.length-1)){
           error = 1;
+          executionIndex = -1;
+          app._data.alertMessaje = 'The instruction does not exist';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
         }
       }
 
-      /*Busca erroes en los registros que se usan*/
-      for (i = 1; i < instructionParts.length; i++){
-        var valReg = 0;
-        for (j = 0; j < architecture.components.length && valReg == 0; j++) {
-          for (z = 0; z < architecture.components[j].elements.length; z++){
-            if(instructionParts[i] == architecture.components[j].elements[z].name){
-              instructionObjet.push({name: instructionParts[i], value: architecture.components[j].elements[z].value})
-              valReg = 1;
-              break;
-            }
-            if((j == architecture.components.length-1) && (z == architecture.components[j].elements.length-1) && (instructionParts[i] != architecture.components[j].elements[z].name)){
-              error = 1;
+
+
+      /*Busca errores en los registros que se usan*/
+      for (i = 1; i < instructionExecParts.length && error == 0; i++){
+        if(signatureParts[i] == "reg"){
+          var valReg = 0;
+          for (j = 0; j < architecture.components.length && valReg == 0; j++) {
+            for (z = 0; z < architecture.components[j].elements.length; z++){
+              
+              if((instructionExecParts[i] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] == "read" || architecture.components[j].elements[z].properties[1] == "read")){
+                instructionObjet.push({name: instructionExecParts[i], value: architecture.components[j].elements[z].value})
+                valReg = 1;
+                break;
+              }
+              else if((instructionExecParts[i] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] != "read" && architecture.components[j].elements[z].properties[1] != "read")){
+                error = 1;
+                valReg = 1;
+                executionIndex = -1;
+                app._data.alertMessaje = 'Cannot be read in the register';
+                app._data.type ='danger';
+                app._data.dismissCountDown = app._data.dismissSecs;
+              }
+              else if((j == architecture.components.length-1) && (z == architecture.components[j].elements.length-1) && (instructionExecParts[i] != architecture.components[j].elements[z].name)){
+                error = 1;
+                valReg = 1;
+                executionIndex = -1;
+                app._data.alertMessaje = 'The register does not exist';
+                app._data.type ='danger';
+                app._data.dismissCountDown = app._data.dismissSecs;
+              }
             }
           }
         }
+        else if(signatureParts[i] == "inm"){
+          if(isNaN(instructionExecParts[i])){
+            error = 1;
+            executionIndex = -1;
+            app._data.alertMessaje = 'Immediate value not valid';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+          }
+          else{
+            instructionObjet.push({name: instructionExecParts[i], value: instructionExecParts[i]});
+          }
+        }
+        /*HACER*/
+        else if(signatureParts[i] == "address"){
+
+        } 
       }
 
       if(error == 0){
@@ -1205,6 +1277,7 @@ window.app = new Vue({
         var defParts = (architecture.instructions[index].definition).split('=');
         var resultIndex;
         for (i = 0; i < signatureParts.length; i++) {
+
           if(signatureParts[i] == defParts[0]){
             resultIndex = i;
           }
@@ -1213,7 +1286,7 @@ window.app = new Vue({
         var valReg = 0;
         for (j = 0; j < architecture.components.length && valReg == 0; j++) {
           for (z = 0; z < architecture.components[j].elements.length; z++){
-            if(instructionParts[resultIndex] == architecture.components[j].elements[z].name){
+            if((instructionExecParts[resultIndex] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] == "write" || architecture.components[j].elements[z].properties[1] == "write")){
               if(architecture.components[j].type == "integer"){
                 eval("architecture.components[j].elements[z].value = bigInt(parseInt("+defParts[0]+") >>> 0, 10).value");
               }
@@ -1223,35 +1296,39 @@ window.app = new Vue({
               valReg = 1;
               break;
             }
-          }
-        }
-
-        /*Incrementa PC buscar otra forma*/
-        for (j = 0; j < architecture.components.length; j++) {
-          for (z = 0; z < architecture.components[j].elements.length; z++){
-            if("PC" == architecture.components[j].elements[z].name){
-              architecture.components[j].elements[z].value = architecture.components[j].elements[z].value + 4;
+            else if((instructionExecParts[resultIndex] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] != "write" && architecture.components[j].elements[z].properties[1] != "write")){
+              error = 1;
+              executionIndex = -1;
+              app._data.alertMessaje = 'Cannot be written in the register';
+              app._data.type ='danger';
+              app._data.dismissCountDown = app._data.dismissSecs;
             }
           }
         }
 
-        instructions[executionIndex]._rowVariant = '';
-        executionIndex++;
-        if(executionIndex >= instructions.length){
-          executionIndex = -1;
-          app._data.alertMessaje = 'The execution of the program has finished';
-          app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+        if(error == 0){
+        /*Incrementa PC buscar otra forma*/
+          for (j = 0; j < architecture.components.length || error == 1; j++) {
+            for (z = 0; z < architecture.components[j].elements.length; z++){
+              if("PC" == architecture.components[j].elements[z].name){
+                architecture.components[j].elements[z].value = architecture.components[j].elements[z].value + 4;
+              }
+            }
+          }
+        
+          instructions[executionIndex]._rowVariant = '';
+          executionIndex++;
+        
+          if(executionIndex >= instructions.length){
+            executionIndex = -1;
+            app._data.alertMessaje = 'The execution of the program has finished';
+            app._data.type ='success';
+            app._data.dismissCountDown = app._data.dismissSecs;
+          }
+          else{
+            instructions[executionIndex]._rowVariant = 'success';
+          }
         }
-        else{
-          instructions[executionIndex]._rowVariant = 'success';
-        }
-      }
-      else{
-        executionIndex = -1;
-        app._data.alertMessaje = 'Invalid instruction';
-        app._data.type ='danger';
-        app._data.dismissCountDown = app._data.dismissSecs;
       }
     },
 
