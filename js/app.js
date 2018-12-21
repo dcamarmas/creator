@@ -6,7 +6,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Integer control registers", type: "integer", double_precision: false, elements:[
+  /*{name: "Integer control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -49,7 +49,7 @@ var architecture = {components:[
       {name:"R30", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"R31", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     ]},
-    {name: "Floating point control registers", type: "integer", double_precision: false, elements:[
+    {name: "Floating point control registers", type: "control", double_precision: false, elements:[
       {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -132,6 +132,7 @@ var architecture = {components:[
 var componentsTypes = [
   { text: 'Integer', value: 'integer' },
   { text: 'Floating point', value: 'floating point' },
+  { text: 'Control', value: 'control' },
 ]
 
 var memory = [
@@ -231,11 +232,13 @@ window.app = new Vue({
     modalNewElement:{
       title: '',
       element: '',
+      type: '',
     },
     /*Edicion de un elemento*/
     modalEditElement:{
       title: '',
       element: '',
+      type: '',
     },
     /*Borrado de un elemento*/
     modalDeletElement:{
@@ -322,8 +325,7 @@ window.app = new Vue({
 
     /*VALIDADOR FORMULARIOS*/
     valid(value){
-      var aux = value.toString();
-      if(!aux){
+      if(!value){
         return false;
       }
       else{
@@ -506,7 +508,7 @@ window.app = new Vue({
     },
 
     /*Muestra el modal para editar un componente*/
-    editCompModal(comp, button){
+    editCompModal(comp, index, button){
       this.modalEditComponent.title = "Edit " + comp;
       this.modalEditComponent.element = comp;
 
@@ -575,6 +577,7 @@ window.app = new Vue({
     newElemModal(comp, index, button){
       this.modalNewElement.title = "Edit " + comp;
       this.modalNewElement.element = comp;
+      this.modalNewElement.type = architecture.components[index].type;
 
       this.$root.$emit('bv::show::modal', 'modalNewElement', button);
     },
@@ -639,6 +642,8 @@ window.app = new Vue({
     editElemModal(elem, comp, button){
       this.modalEditElement.title = "Edit " + elem;
       this.modalEditElement.element = elem;
+      this.modalEditElement.type = architecture.components[comp].type;
+
       for(var j=0; j < architecture.components[comp].elements.length; j++){
         if(elem == architecture.components[comp].elements[j].name){
           this.formArchitecture.name = elem;
@@ -764,8 +769,8 @@ window.app = new Vue({
       var error = 0;
 
       for (var i = 0; i < architecture.instructions.length; i++) {
-        if(this.formInstruction.name == architecture.instructions[i].name || this.formInstruction.co == architecture.instructions[i].co){
-          if((this.formInstruction.co != "000000") || (this.formInstruction.name == architecture.instructions[i].name)){
+        if(this.formInstruction.co == architecture.instructions[i].co){
+          if((!this.formInstruction.cop)){
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -775,22 +780,11 @@ window.app = new Vue({
       }
 
       for (var i = 0; i < architecture.instructions.length && error == 0; i++) {
-        if(!this.formInstruction.cop && this.formInstruction.co == "000000"){
-          app._data.alertMessaje = 'Cop field cannot be empty';
+        if(this.formInstruction.cop == architecture.instructions[i].cop){
+          app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
-        }
-        else if(!this.formInstruction.cop && this.formInstruction.co != "000000"){
-          break
-        }
-        else if(architecture.instructions[i].cop != null){
-          if(this.formInstruction.cop == architecture.instructions[i].cop){
-            app._data.alertMessaje = 'The instruction already exists';
-            app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
-            error = 1;
-          }
         }
       }
 
@@ -917,8 +911,8 @@ window.app = new Vue({
       var error = 0;
 
       for (var i = 0; i < architecture.instructions.length; i++) {
-        if(((this.formInstruction.name == architecture.instructions[i].name) && (comp != this.formInstruction.name)) || ((this.formInstruction.co == architecture.instructions[i].co) && (co != this.formInstruction.co))){
-          if((this.formInstruction.co != "000000") || (this.formInstruction.name == architecture.instructions[i].name)){
+        if((this.formInstruction.co == architecture.instructions[i].co) && (co != this.formInstruction.co)){
+          if((!this.formInstruction.cop)){
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -928,22 +922,11 @@ window.app = new Vue({
       }
 
       for (var i = 0; i < architecture.instructions.length && error == 0; i++) {
-        if(!this.formInstruction.cop && this.formInstruction.co == "000000"){
-          app._data.alertMessaje = 'Cop field cannot be empty';
+        if((this.formInstruction.cop == architecture.instructions[i].cop) && (cop != this.formInstruction.cop)){
+          app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
           error = 1;
-        }
-        else if(!this.formInstruction.cop && this.formInstruction.co != "000000"){
-          break
-        }
-        else if(architecture.instructions[i].cop != null){
-          if(((this.formInstruction.cop == architecture.instructions[i].cop) && (cop != this.formInstruction.cop))){
-            app._data.alertMessaje = 'The instruction already exists';
-            app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
-            error = 1;
-          }
         }
       }
 
@@ -1260,6 +1243,7 @@ window.app = new Vue({
         }
         if((architecture.instructions[i].name != instructionExecParts[0]) && (i == architecture.instructions.length-1)){
           error = 1;
+          instructions[executionIndex]._rowVariant = '';
           executionIndex = -1;
           app._data.alertMessaje = 'The instruction does not exist';
           app._data.type ='danger';
@@ -1284,14 +1268,16 @@ window.app = new Vue({
               else if((instructionExecParts[i] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] != "read" && architecture.components[j].elements[z].properties[1] != "read")){
                 error = 1;
                 valReg = 1;
+                instructions[executionIndex]._rowVariant = '';
                 executionIndex = -1;
-                app._data.alertMessaje = 'Cannot be read in the register';
+                app._data.alertMessaje = 'The register cannot be read';
                 app._data.type ='danger';
                 app._data.dismissCountDown = app._data.dismissSecs;
               }
               else if((j == architecture.components.length-1) && (z == architecture.components[j].elements.length-1) && (instructionExecParts[i] != architecture.components[j].elements[z].name)){
                 error = 1;
                 valReg = 1;
+                instructions[executionIndex]._rowVariant = '';
                 executionIndex = -1;
                 app._data.alertMessaje = 'The register does not exist';
                 app._data.type ='danger';
@@ -1303,6 +1289,7 @@ window.app = new Vue({
         else if(signatureParts[i] == "inm"){
           if(isNaN(instructionExecParts[i])){
             error = 1;
+            instructions[executionIndex]._rowVariant = '';
             executionIndex = -1;
             app._data.alertMessaje = 'Immediate value not valid';
             app._data.type ='danger';
@@ -1322,10 +1309,34 @@ window.app = new Vue({
         var signatureParts = (architecture.instructions[index].signatureRaw).split(' ');
 
         for (i = 1; i < signatureParts.length; i++){
-          eval(signatureParts[i] + " = " + instructionObjet[i-1].value);
+          try{
+            eval(signatureParts[i] + " = " + instructionObjet[i-1].value);
+          }
+          catch(e){
+            if (e instanceof SyntaxError) {
+              error = 1;
+              instructions[executionIndex]._rowVariant = '';
+              executionIndex = -1;
+              app._data.alertMessaje = 'Syntax Error';
+              app._data.type ='danger';
+              app._data.dismissCountDown = app._data.dismissSecs;
+            }
+          }
         }
 
-        eval(architecture.instructions[index].definition);
+        try{
+          eval(architecture.instructions[index].definition);
+        }
+        catch(e){
+          if (e instanceof SyntaxError) {
+            error = 1;
+            instructions[executionIndex]._rowVariant = '';
+            executionIndex = -1;
+            app._data.alertMessaje = 'Syntax Error';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+          }
+        }
 
         var defParts = (architecture.instructions[index].definition).split('=');
         var resultIndex;
@@ -1341,7 +1352,20 @@ window.app = new Vue({
           for (z = 0; z < architecture.components[j].elements.length; z++){
             if((instructionExecParts[resultIndex] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] == "write" || architecture.components[j].elements[z].properties[1] == "write")){
               if(architecture.components[j].type == "integer"){
-                eval("architecture.components[j].elements[z].value = bigInt(parseInt("+defParts[0]+") >>> 0, 10).value");
+                
+                try{
+                  eval("architecture.components[j].elements[z].value = bigInt(parseInt("+defParts[0]+") >>> 0, 10).value");
+                }
+                catch(e){
+                  if (e instanceof SyntaxError) {
+                    error = 1;
+                    instructions[executionIndex]._rowVariant = '';
+                    executionIndex = -1;
+                    app._data.alertMessaje = 'Syntax Error';
+                    app._data.type ='danger';
+                    app._data.dismissCountDown = app._data.dismissSecs;
+                  }
+                }
 
                 var button = '#popoverValueContent' + architecture.components[j].elements[z].name;
 
@@ -1351,8 +1375,20 @@ window.app = new Vue({
                   $(button).attr("style", "background-color:#f5f5f5;");
                 }, 350);
               }
-              if(architecture.components[j].type == "floating point"){
-                eval("architecture.components[j].elements[z].value = parseFloat("+defParts[0]+", 10)");
+              if(architecture.components[j].type == "floating point"){                
+                try{
+                  eval("architecture.components[j].elements[z].value = parseFloat("+defParts[0]+", 10)");
+                }
+                catch(e){
+                  if (e instanceof SyntaxError) {
+                    error = 1;
+                    instructions[executionIndex]._rowVariant = '';
+                    executionIndex = -1;
+                    app._data.alertMessaje = 'Syntax Error';
+                    app._data.type ='danger';
+                    app._data.dismissCountDown = app._data.dismissSecs;
+                  }
+                }
 
                 var button = '#popoverValueContent' + architecture.components[j].elements[z].name;
 
@@ -1367,8 +1403,9 @@ window.app = new Vue({
             }
             else if((instructionExecParts[resultIndex] == architecture.components[j].elements[z].name) && (architecture.components[j].elements[z].properties[0] != "write" && architecture.components[j].elements[z].properties[1] != "write")){
               error = 1;
+              instructions[executionIndex]._rowVariant = '';
               executionIndex = -1;
-              app._data.alertMessaje = 'Cannot be written in the register';
+              app._data.alertMessaje = 'The register cannot be written';
               app._data.type ='danger';
               app._data.dismissCountDown = app._data.dismissSecs;
             }

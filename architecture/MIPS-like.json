@@ -2,7 +2,7 @@
   "components": [
     {
       "name": "Integer control registers",
-      "type": "integer",
+      "type": "control",
       "double_precision": false,
       "elements": [
         {
@@ -406,7 +406,7 @@
     },
     {
       "name": "Floating point control registers",
-      "type": "integer",
+      "type": "control",
       "double_precision": false,
       "elements": [
         {
