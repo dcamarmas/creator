@@ -103,11 +103,6 @@
           		</div>
           		<div class="col-lg-9 col-sm-12">
           			<div class="col-lg-12 col-sm-12" id="load_menu_arch">
-          				<h6>Select the number of bits:</h6>
-                	<div class="col-lg-3 col-sm-3">
-	                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm"  style="background-color: white; color: black;"></b-form-input>
-	                	<br>
-                	</div>
           				<h6>The available architectures are:</h6>
           				<br>
           				<div class="col-lg-12 col-sm-12 row" v-for="item in arch_available">
@@ -149,9 +144,19 @@
 									  	<br>
 									    <h6>Components of the architecture:</h6>
 
-		                  <b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
+									    <div class="col-lg-12 col-sm-12 row">
+									    	<div class="compMenu">
+			                  	<b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
+			                	</div>
 
-		                  <b-button class="btn btn-outline-danger btn-sm " id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Architecture</b-button>
+			                	<div class="compMenu">
+			                  	<b-button class="btn btn-outline-danger btn-sm " id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Architecture</b-button>
+			                  </div>
+
+			                  <div class="compMenu">
+				                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm"  style="background-color: white; color: black;"></b-form-input>
+			                	</div>
+		                	</div>
 
                       <!-- Resetea las instrucciones -->
                       <b-modal id ="modalResetArch" :title="modalResetArch.title" ok-variant="danger" ok-title="Reset" @ok="resetArchitecture(modalResetArch.element)">
@@ -174,9 +179,9 @@
 														      </template>
 											           </b-table>
 
-					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'new '+item.name" @click="newElemModal(item.name, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
+					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
 
-					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'edit '+item.name" @click="editCompModal(item.name, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
+					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
 
 					                      <b-button class="btn btn-outline-danger btn-sm " :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
 
@@ -216,7 +221,7 @@
                               <b-form-input id="newElementDefValueInput" type="text" :state="valid(formArchitecture.defValue)" v-model="formArchitecture.defValue" required placeholder="Enter default value" size="sm">
                               </b-form-input>
                             </b-form-group>
-                            <b-form-group id="newElementProperties">
+                            <b-form-group id="newElementProperties" v-if="modalNewElement.type != 'control'">
                               <b-form-checkbox-group v-model="formArchitecture.properties" id="newElementPropertiesInput">
                                 <b-form-checkbox value="read">Read</b-form-checkbox>
                                 <b-form-checkbox value="write">Write</b-form-checkbox>
@@ -242,7 +247,7 @@
 	                            </b-form-input>
 	                          </b-form-group>
 	                          <b-form-group id="editElementProperties">
-	                            <b-form-checkbox-group v-model="formArchitecture.properties" id="editElementPropertiesInput">
+	                            <b-form-checkbox-group v-model="formArchitecture.properties" id="editElementPropertiesInput" v-if="modalEditElement.type != 'control'">
 	                              <b-form-checkbox value="read">Read</b-form-checkbox>
 	                              <b-form-checkbox value="write">Write</b-form-checkbox>
 	                            </b-form-checkbox-group>
@@ -562,7 +567,7 @@
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>
 	                  </div>
 	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block btn-sm" style="background-color:#FAFAFA;">Examples</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block btn-sm">Examples</b-button>
 	                  </div>
 	                  <div class="col-lg-4 col-sm-4 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block btn-sm" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
@@ -637,9 +642,9 @@
 
               <div class="col-lg-12 col-sm-12" id="registers">
               	<div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
-              		<div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="register_type == architecture.components[item.index].type">
+              		<div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
               			<!-- Estructura si los numeros son enteros -->
-	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'integer'">
+	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
 	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
 	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
 	                    </b-button>
