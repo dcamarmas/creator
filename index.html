@@ -95,9 +95,9 @@
           		<div class="col-lg-3 col-sm-12">
           			<div class="col-lg-12 col-sm-12">
           				<h6>Select action:</h6>
-	          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="load_arch"><span class="fa fa-upload"></span> Load</b-button>
-	          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="save_arch"><span class="fa fa-download"></span> Save</b-button>
-	          			<b-button class="btn btn-outline-secondary btn-block btn-sm" id="view_arch">View Architecture</b-button>
+	          			<b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground" id="load_arch"><span class="fa fa-upload"></span> Load</b-button>
+	          			<b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground" id="save_arch"><span class="fa fa-download"></span> Save</b-button>
+	          			<b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground" id="view_arch">View Architecture</b-button>
 	          			<br>
               	</div>
           		</div>
@@ -110,7 +110,7 @@
           						<h6>{{item.name}}</h6>
           					</div>
           					<div class="col-lg-4 col-sm-4">
-          						<b-button class="btn btn-outline-secondary btn-block btn-sm selectArch" :id="item.name" @click="load_arch_select(item.name)">Select</b-button>
+          						<b-button class="btn btn-outline-secondary btn-block btn-sm selectArch buttonBackground" :id="item.name" @click="load_arch_select(item.name)">Select</b-button>
           					</div>
           					<div class="col-lg-12 col-sm-12">
           						<hr>
@@ -146,15 +146,15 @@
 
 									    <div class="col-lg-12 col-sm-12 row">
 									    	<div class="compMenu">
-			                  	<b-button class="btn btn-outline-secondary btn-sm " id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
+			                  	<b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
 			                	</div>
 
 			                	<div class="compMenu">
-			                  	<b-button class="btn btn-outline-danger btn-sm " id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Architecture</b-button>
+			                  	<b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Architecture</b-button>
 			                  </div>
 
 			                  <div class="compMenu">
-				                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm"  style="background-color: white; color: black;"></b-form-input>
+				                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;"></b-form-input>
 			                	</div>
 		                	</div>
 
@@ -168,22 +168,22 @@
 		                    <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">
 		                    	<b-card no-body class="mb-1">
 											      <b-card-header header-tag="header" class="p-1" role="tab">
-											        <b-btn block href="#" v-b-toggle="item.index.toString()" class="btn btn-outline-secondary btn-sm">{{item.name}}</b-btn>
+											        <b-btn block href="#" v-b-toggle="item.index.toString()" class="btn btn-outline-secondary btn-sm buttonBackground">{{item.name}}</b-btn>
 											      </b-card-header>
 											      <b-collapse :id="item.index.toString()" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
 											        <b-card-body>
 											           <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
 														      <template slot="actions" slot-scope="row">
-														        <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm"><span class="fa fa-edit"></span> Edit</b-button>
-														        <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm"><span class="fa fa-trash-o"></span> Delete</b-button> 
+														        <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
+														        <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
 														      </template>
 											           </b-table>
 
-					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
+					                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
 
-					                      <b-button class="btn btn-outline-secondary btn-sm " :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
+					                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
 
-					                      <b-button class="btn btn-outline-danger btn-sm " :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
+					                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
 
 											        </b-card-body>
 											      </b-collapse>
@@ -294,9 +294,9 @@
 									  	<br>
 									    <h6>Components of the instruction set:</h6>
 
-		                  <b-button class="btn btn-outline-secondary btn-sm " id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
+		                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
 
-		                  <b-button class="btn btn-outline-danger btn-sm " id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Instructions</b-button>
+		                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Instructions</b-button>
 
                       <!-- Resetea las instrucciones -->
                       <b-modal id ="modalResetInst" :title="modalResetInst.title" ok-variant="danger" ok-title="Reset" @ok="resetInstructions(modalResetInst.element)">
@@ -319,8 +319,8 @@
 										      </template>
 
 										      <template slot="actions" slot-scope="row">
-										        <b-button @click.stop="editInstModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm"><span class="fa fa-edit"></span> Edit</b-button>
-										        <b-button @click.stop="delInstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm"><span class="fa fa-trash-o"></span> Delete</b-button> 
+										        <b-button @click.stop="editInstModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
+										        <b-button @click.stop="delInstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
 										      </template>
 							           </b-table>
 
@@ -567,7 +567,7 @@
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>
 	                  </div>
 	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block btn-sm">Examples</b-button>
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm">Examples</b-button>
 	                  </div>
 	                  <div class="col-lg-4 col-sm-4 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block btn-sm" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
