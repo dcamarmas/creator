@@ -956,6 +956,12 @@
       "signatureRaw": "add reg1 reg2 reg3",
       "fields": [
         {
+          "name": "add",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
           "name": "reg1",
           "type": "reg",
           "startbit": 25,
@@ -972,6 +978,12 @@
           "type": "reg",
           "startbit": 15,
           "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
         }
       ],
       "definition": "reg1=reg2+reg3"
@@ -985,6 +997,12 @@
       "signatureRaw": "add reg1 reg2 reg3",
       "fields": [
         {
+          "name": "and",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
           "name": "reg1",
           "type": "reg",
           "startbit": 25,
@@ -1001,6 +1019,12 @@
           "type": "reg",
           "startbit": 15,
           "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
         }
       ],
       "definition": "reg1=reg2&reg3"
@@ -1013,6 +1037,12 @@
       "signature": "li,reg,inm",
       "signatureRaw": "li reg val",
       "fields": [
+        {
+          "name": "li",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
         {
           "name": "reg",
           "type": "reg",
@@ -1036,6 +1066,12 @@
       "signature": "and,reg,reg,inm",
       "signatureRaw": "add reg1 reg2 val",
       "fields": [
+        {
+          "name": "addi",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
         {
           "name": "reg1",
           "type": "reg",

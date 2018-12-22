@@ -109,20 +109,26 @@ var architecture = {components:[
     ]}*/
   ], instructions:[
     /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+      {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2+reg3"},
     {name: "and", co: "000000", cop: "100100", nwords: 1, signature: "and,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+      {name: "and", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2&reg3"},
     {name: "li", co: "000010", cop: null, nwords: 1, signature: "li,reg,inm", signatureRaw: "li reg val", fields: [
+      {name: "li", type: "co", startbit: 31, stopbit: 26},
       {name: "reg", type: "reg", startbit: 25, stopbit: 21},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg=val"},
     {name: "addi", co: "001000", cop: null, nwords: 1, signature: "and,reg,reg,inm", signatureRaw: "add reg1 reg2 val", fields: [
+      {name: "addi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
@@ -262,6 +268,7 @@ window.app = new Vue({
       typeField: [],
       startBitField: [],
       stopBitField: [],
+      assignedCop: false,
       definition: '',
     },
     /*Barra de paginas formulario instrucciones*/
@@ -325,8 +332,24 @@ window.app = new Vue({
 
     /*VALIDADOR FORMULARIOS*/
     valid(value){
-      if(!value){
-        return false;
+
+      for (var i = 0; i <this.formInstruction.typeField.length; i++) {
+        if(this.formInstruction.typeField[i]=='cop'){
+          this.formInstruction.assignedCop = true;
+          break;
+        }
+        if(i == this.formInstruction.typeField.length-1){
+          this.formInstruction.assignedCop = false;
+        }
+      }
+
+      if(parseInt(value) != 0){
+        if(!value){
+          return false;
+        }
+        else{
+          return true;
+        }
       }
       else{
         return true;
@@ -738,6 +761,14 @@ window.app = new Vue({
       evt.preventDefault();
 
       var vacio = 0;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] == 'cop'){
+          if(!this.formInstruction.cop){
+            vacio = 1;
+          }
+        }
+      }
+
       for (var i = 0; i < this.formInstruction.numfields; i++) {
         if(this.formInstruction.nameField.length <  this.formInstruction.numfields || this.formInstruction.typeField.length <  this.formInstruction.numfields || this.formInstruction.startBitField.length <  this.formInstruction.numfields || this.formInstruction.stopBitField.length <  this.formInstruction.numfields){
           vacio = 1;
@@ -780,7 +811,7 @@ window.app = new Vue({
       }
 
       for (var i = 0; i < architecture.instructions.length && error == 0; i++) {
-        if(this.formInstruction.cop == architecture.instructions[i].cop){
+        if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -791,24 +822,40 @@ window.app = new Vue({
       if(error == 0){
         this.$refs.newInst.hide();
 
-        var signature = this.formInstruction.name + ' ';
-        for (var z = 0; z < this.formInstruction.numfields; z++) {
-          signature = signature + this.formInstruction.typeField[z];
-          if(z<this.formInstruction.numfields-1){
-            signature = signature + ',';
+        var cop = false;
+
+        var signature = this.formInstruction.name;
+        for (var z = 1; z < this.formInstruction.numfields; z++) {
+          if(this.formInstruction.typeField[z] != 'cop'){
+            if(z == 1){
+              signature = signature + ",";
+            }
+            signature = signature + this.formInstruction.typeField[z];
+            if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+              signature = signature + ',';
+            }
+          }
+          if(this.formInstruction.typeField[z] == 'cop'){
+            cop = true;
+            if(z<this.formInstruction.numfields-1){
+              signature = signature + ',';
+            }
           }
         }
 
         var signatureRaw = this.formInstruction.name + ' ';
-        for (var z = 0; z < this.formInstruction.numfields; z++) {
-          signatureRaw = signatureRaw + this.formInstruction.nameField[z];
-          if(z<this.formInstruction.numfields-1){
-            signatureRaw = signatureRaw + ' ';
+        for (var z = 1; z < this.formInstruction.numfields; z++) {
+          if(this.formInstruction.typeField[z] != 'cop'){
+            signatureRaw = signatureRaw + this.formInstruction.nameField[z];
+            if(z<this.formInstruction.numfields-1){
+              signatureRaw = signatureRaw + ' ';
+            } 
           }
         }
 
-        console.log(this.formInstruction.cop)
-
+        if(cop == false){
+          this.formInstruction.cop='';
+        }
 
         var newInstruction = {name: this.formInstruction.name, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
         architecture.instructions.push(newInstruction);
@@ -828,6 +875,7 @@ window.app = new Vue({
         this.formInstruction.startBitField=[];
         this.formInstruction.stopBitField=[];
         this.formInstruction.definition='';
+        this.formInstruction.assignedCop=false;
         this.instructionFormPage = 1;
       }
     },
@@ -881,6 +929,14 @@ window.app = new Vue({
       evt.preventDefault();
 
       var vacio = 0;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] == 'cop'){
+          if(!this.formInstruction.cop){
+            vacio = 1;
+          }
+        }
+      }
+
       for (var i = 0; i < this.formInstruction.numfields; i++) {
         if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
           vacio = 1;
@@ -910,9 +966,17 @@ window.app = new Vue({
     editInstruction(comp, co, cop){
       var error = 0;
 
+      var exCop = false;
+
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] == 'cop'){
+          exCop = true;
+        }
+      }
+
       for (var i = 0; i < architecture.instructions.length; i++) {
-        if((this.formInstruction.co == architecture.instructions[i].co) && (co != this.formInstruction.co)){
-          if((!this.formInstruction.cop)){
+        if((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
+          if(((!this.formInstruction.cop) || (exCop != true))){
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -921,8 +985,8 @@ window.app = new Vue({
         }
       }
 
-      for (var i = 0; i < architecture.instructions.length && error == 0; i++) {
-        if((this.formInstruction.cop == architecture.instructions[i].cop) && (cop != this.formInstruction.cop)){
+      for (var i = 0; i < architecture.instructions.length && error == 0 && exCop == true ; i++) {
+        if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -953,20 +1017,37 @@ window.app = new Vue({
               }
             }
 
-            var signature = this.formInstruction.name + ' ';
-            for (var z = 0; z < this.formInstruction.numfields; z++) {
-              signature = signature + this.formInstruction.typeField[z];
-              if(z<this.formInstruction.numfields-1){
-                signature = signature + ',';
+            var signature = this.formInstruction.name;
+            for (var z = 1; z < this.formInstruction.numfields; z++) {
+              if(z == 1){
+                signature = signature + ",";
+              }
+              if(this.formInstruction.typeField[z] != 'cop'){
+                signature = signature + this.formInstruction.typeField[z];
+                if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+                  signature = signature + ',';
+                }
+              }
+              if(this.formInstruction.typeField[z] == 'cop'){
+                cop = true;
+                if(z<this.formInstruction.numfields-1){
+                  signature = signature + ',';
+                }
               }
             }
 
             var signatureRaw = this.formInstruction.name + ' ';
-            for (var z = 0; z < this.formInstruction.numfields; z++) {
-              signatureRaw = signatureRaw + this.formInstruction.nameField[z];
-              if(z<this.formInstruction.numfields-1){
-                signatureRaw = signatureRaw + ' ';
+            for (var z = 1; z < this.formInstruction.numfields; z++) {
+              if(this.formInstruction.typeField[z] != 'cop'){
+                signatureRaw = signatureRaw + this.formInstruction.nameField[z];
+                if(z<this.formInstruction.numfields-1){
+                  signatureRaw = signatureRaw + ' ';
+                } 
               }
+            }
+
+            if(exCop == false){
+              architecture.instructions[i].cop='';
             }
 
             architecture.instructions[i].signature = signature;
