@@ -1310,16 +1310,94 @@ window.app = new Vue({
 
       var instructionExecParts = instructionExec.split(' ');
       var signatureParts;
+      var signatureRawParts;
+      var auxDef;
 
-      var instructionObjet = [];
+      for (var i = 0; i < architecture.instructions.length; i++) {
+        if(architecture.instructions[i].name == instructionExecParts[0]){
+          signatureParts = architecture.instructions[i].signature.split(',');
+          signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
+          auxDef = architecture.instructions[i].definition;
+          break;
+        }
+      }
+
+      /*Replaza los valores por el nombre de los registros*/
+      for (var i = 1; i < signatureRawParts.length && error == 0; i++){
+        auxDef = auxDef.replace(signatureRawParts[i], instructionExecParts[i]);
+      }
+
+      /*Remplaza el nombre del registro por su variable*/
+      for (var i = 0; i < architecture.components.length && error == 0; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          var re = new RegExp(architecture.components[i].elements[j].name,"g");
+          auxDef = auxDef.replace(re, "architecture.components["+i+"].elements["+j+"].value");
+        }
+      }
+
+      try{
+        eval(auxDef);
+      }
+      catch(e){
+        if (e instanceof SyntaxError) {
+          error = 1;
+          instructions[executionIndex]._rowVariant = '';
+          executionIndex = -1;
+          app._data.alertMessaje = 'Syntax Error';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+        }
+      }
+
+      /*Ilumina el registro modificado*/
+      /*var button = '#popoverValueContent' + architecture.components[j].elements[z].name;
+
+      $(button).attr("style", "background-color:#c2c2c2;");
+
+      setTimeout(function() {
+        $(button).attr("style", "background-color:#f5f5f5;");
+      }, 350);*/
+
+      for (var j = 0; j < architecture.components.length || error == 1; j++) {
+        for (var z = 0; z < architecture.components[j].elements.length; z++){
+          if("PC" == architecture.components[j].elements[z].name){
+            architecture.components[j].elements[z].value = architecture.components[j].elements[z].value + 4;
+          }
+        }
+      }
+    
+      instructions[executionIndex]._rowVariant = '';
+      executionIndex++;
+    
+      if(executionIndex >= instructions.length){
+        executionIndex = -2;
+        app._data.alertMessaje = 'The execution of the program has finished';
+        app._data.type ='success';
+        app._data.dismissCountDown = app._data.dismissSecs;
+      }
+      else{
+        instructions[executionIndex]._rowVariant = 'success';
+      }
+
+
+
+
+
+
+
+
+      /*LA VALIDACION AL ENSABLAR*/
+      //var instructionObjet = [];
 
 
       /*PREGUNTAR ESTO VA EN COMPILACION*/
       /*Busca errores en la instruccion a ejecutar*/
-      for (i = 0; i < architecture.instructions.length; i++) {
+      /*for (var i = 0; i < architecture.instructions.length; i++) {
         if(architecture.instructions[i].name == instructionExecParts[0]){
           index = i;
           signatureParts = architecture.instructions[i].signature.split(',');
+          signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
+          auxDef = architecture.instructions[i].definition;
           break;
         }
         if((architecture.instructions[i].name != instructionExecParts[0]) && (i == architecture.instructions.length-1)){
@@ -1330,12 +1408,10 @@ window.app = new Vue({
           app._data.type ='danger';
           app._data.dismissCountDown = app._data.dismissSecs;
         }
-      }
-
-
+      }*/
 
       /*Busca errores en los registros que se usan*/
-      for (i = 1; i < instructionExecParts.length && error == 0; i++){
+      /*for (i = 1; i < instructionExecParts.length && error == 0; i++){
         if(signatureParts[i] == "reg"){
           var valReg = 0;
           for (j = 0; j < architecture.components.length && valReg == 0; j++) {
@@ -1379,9 +1455,9 @@ window.app = new Vue({
           else{
             instructionObjet.push({name: instructionExecParts[i], value: instructionExecParts[i]});
           }
-        }
+        }*/
         /*HACER*/
-        else if(signatureParts[i] == "address"){
+        /*else if(signatureParts[i] == "address"){
 
         } 
       }
@@ -1493,9 +1569,9 @@ window.app = new Vue({
           }
         }
 
-        if(error == 0){
+        if(error == 0){*/
         /*Incrementa PC buscar otra forma*/
-          for (j = 0; j < architecture.components.length || error == 1; j++) {
+          /*for (j = 0; j < architecture.components.length || error == 1; j++) {
             for (z = 0; z < architecture.components[j].elements.length; z++){
               if("PC" == architecture.components[j].elements[z].name){
                 architecture.components[j].elements[z].value = architecture.components[j].elements[z].value + 4;
@@ -1516,7 +1592,7 @@ window.app = new Vue({
             instructions[executionIndex]._rowVariant = 'success';
           }
         }
-      }
+      }*/
     },
 
     /*Funcion que ejecuta todo el programa*/
