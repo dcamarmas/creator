@@ -1258,7 +1258,7 @@ window.app = new Vue({
     /*Actualiza el valor de un registro*/
     updateReg(comp, elem, type){
       for (var i = 0; i < architecture.components[comp].elements.length; i++) {
-        if(type == "integer"){
+        if(type == "integer" || type == "control"){
           if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
             var value = this.newValue.split("x");
             architecture.components[comp].elements[i].value = bigInt(value[1], 16);
@@ -1622,6 +1622,10 @@ window.app = new Vue({
         }
       }
     },
+
+    cambio(){
+      console.log("h")
+    }
   },
   created(){
     this.load_arch_available();
@@ -1662,4 +1666,17 @@ $(".break").click(function(){
     app._data.instructions[id].Break = null;
   }
 
+});
+
+/*Detecta un cambio de valor en un registro y se ilumina*/
+$("body").on('DOMSubtreeModified', "span", function () {
+  var id = this.id;
+
+  var button = '#popoverValueContent' + id;
+
+  $(button).attr("style", "background-color:#c2c2c2;");
+
+  setTimeout(function() {
+    $(button).attr("style", "background-color:#f5f5f5;");
+  }, 350);
 });
