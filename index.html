@@ -881,7 +881,7 @@
               			<!-- Estructura si los numeros son enteros -->
 	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
 	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
 	                    </b-button>
 
 	                    <b-popover :target="popoverId(item2.name)" :title="item2.name" triggers="click blur" class="popover">
@@ -929,7 +929,7 @@
 	                  	<!-- Estructura si los numeros son FP simple -->
 	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
 	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{bin2hex(float2bin(item2.value))}}</b-badge>
+	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
 		                    </b-button>
 
 		                    <b-popover :target="popoverId(item2.name)" :title="item2.name" triggers="click blur">
@@ -976,7 +976,7 @@
 	                  	<!-- Estructura si los numeros son FP doble -->
 	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
 	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;">{{bin2hex(double2bin(item2.value))}}</b-badge>
+		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
 		                    </b-button>
 
 		                    <b-popover :target="popoverId(item2.name)" :title="item2.name" triggers="click blur">
