@@ -1289,6 +1289,10 @@ window.app = new Vue({
     /*FUNCIONES DE EJECUCION*/
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
+
+      console.log(architecture)
+
+
       /*Verifica que el programa no ha finalizado ya*/
       if(executionIndex < -1){
         app._data.alertMessaje = 'The program has finished';
@@ -1302,6 +1306,8 @@ window.app = new Vue({
         app._data.dismissCountDown = app._data.dismissSecs;
         return;
       }
+
+      var oldArchitecture = architecture;
 
       var error = 0;
       var index;
@@ -1379,9 +1385,20 @@ window.app = new Vue({
         instructions[executionIndex]._rowVariant = 'success';
       }
 
+      for (var i = 0; i < architecture.components.length && error == 0; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(architecture.components[i].elements[j].value != oldArchitecture.components[i].elements[j].value){
+            /*Ilumina el registro modificado*/
+            var button = '#popoverValueContent' + architecture.components[i].elements[j].name;
 
+            $(button).attr("style", "background-color:#c2c2c2;");
 
-
+            setTimeout(function() {
+              $(button).attr("style", "background-color:#f5f5f5;");
+            }, 350);
+          }
+        }
+      }
 
 
 
@@ -1669,7 +1686,7 @@ $(".break").click(function(){
 });
 
 /*Detecta un cambio de valor en un registro y se ilumina*/
-$("body").on('DOMSubtreeModified', "span", function () {
+/*$("body").on('DOMSubtreeModified', "span", function () {
   var id = this.id;
 
   var button = '#popoverValueContent' + id;
@@ -1679,4 +1696,4 @@ $("body").on('DOMSubtreeModified', "span", function () {
   setTimeout(function() {
     $(button).attr("style", "background-color:#f5f5f5;");
   }, 350);
-});
+});*/
