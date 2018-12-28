@@ -1364,7 +1364,7 @@ window.app = new Vue({
         $(button).attr("style", "background-color:#f5f5f5;");
       }, 350);*/
 
-      for (var j = 0; j < architecture.components.length || error == 1; j++) {
+      for (var j = 0; j < architecture.components.length && error != 1; j++) {
         for (var z = 0; z < architecture.components[j].elements.length; z++){
           if("PC" == architecture.components[j].elements[z].name){
             architecture.components[j].elements[z].value = architecture.components[j].elements[z].value + 4;
@@ -1372,8 +1372,10 @@ window.app = new Vue({
         }
       }
     
-      instructions[executionIndex]._rowVariant = '';
-      executionIndex++;
+      if(error != 1){
+        instructions[executionIndex]._rowVariant = '';
+        executionIndex++;
+      }
     
       if(executionIndex >= instructions.length){
         executionIndex = -2;
@@ -1382,7 +1384,9 @@ window.app = new Vue({
         app._data.dismissCountDown = app._data.dismissSecs;
       }
       else{
-        instructions[executionIndex]._rowVariant = 'success';
+        if(error != 1){
+          instructions[executionIndex]._rowVariant = 'success';
+        }
       }
 
       for (var i = 0; i < architecture.components.length && error == 0; i++){
