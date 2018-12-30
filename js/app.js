@@ -1643,10 +1643,6 @@ window.app = new Vue({
         }
       }
     },
-
-    cambio(){
-      console.log("h")
-    }
   },
   created(){
     this.load_arch_available();
