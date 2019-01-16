@@ -1092,6 +1092,134 @@
         }
       ],
       "definition": "reg1=reg2+val"
+    },
+    {
+      "name": "lw",
+      "co": "000100",
+      "cop": null,
+      "nwords": 1,
+      "signature": "lw,reg,address",
+      "signatureRaw": "lw reg addr",
+      "fields": [
+        {
+          "name": "lw",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "addr",
+          "type": "address",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg=MP.w.addr"
+    },
+    {
+      "name": "sw",
+      "co": "000101",
+      "cop": null,
+      "nwords": 1,
+      "signature": "sw,reg,address",
+      "signatureRaw": "sw reg addr",
+      "fields": [
+        {
+          "name": "sw",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "addr",
+          "type": "address",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "MP.w.addr=reg"
+    },
+    {
+      "name": "lw",
+      "co": "000102",
+      "cop": null,
+      "nwords": 1,
+      "signature": "lw,reg,inm,(reg)",
+      "signatureRaw": "lw reg1 val (reg2)",
+      "fields": [
+        {
+          "name": "sw",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg2",
+          "type": "(reg)",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=MP.w.(val+reg2)"
+    },
+    {
+      "name": "sw",
+      "co": "000103",
+      "cop": null,
+      "nwords": 1,
+      "signature": "sw,reg,inm,(reg)",
+      "signatureRaw": "sw reg1 val (reg2)",
+      "fields": [
+        {
+          "name": "sw",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg2",
+          "type": "(reg)",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "MP.w.(val+reg2)=reg1"
     }
   ]
 }
