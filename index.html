@@ -52,7 +52,7 @@
           </div>
         </header>
 
-        <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" style="margin: 5pt; ">
+        <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" class="alert">
         	<span class="fa fa-info-circle"></span> {{alertMessaje}}
 		    </b-alert>
 
@@ -969,7 +969,7 @@
 						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
 						            		</div>
 						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
+						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
 						            		</div>
 					            		</div>
 									      </b-popover>
@@ -1016,7 +1016,7 @@
 						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
 						            		</div>
 						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
+						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
 						            		</div>
 					            		</div>
 									      </b-popover>
