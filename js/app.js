@@ -90,22 +90,22 @@ var architecture = {components:[
       {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     ]},
     {name: "Double floating point registers", type: "floating point", double_precision: true, elements:[
-      {name:"FP0", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP2", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP4", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP6", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP8", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP10", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP12", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP14", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP16", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP18", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP20", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP22", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP24", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP26", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP28", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FP30", nbits:"64", value:0.0, default_value:0.0, properties: ["read", "write"]},
+      {name:"FP0", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG0","FG1"], properties: ["read", "write"]},
+      {name:"FP2", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG2","FG3"], properties: ["read", "write"]},
+      {name:"FP4", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG4","FG5"], properties: ["read", "write"]},
+      {name:"FP6", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG6","FG7"], properties: ["read", "write"]},
+      {name:"FP8", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG8","FG9"], properties: ["read", "write"]},
+      {name:"FP10", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG10","FG11"], properties: ["read", "write"]},
+      {name:"FP12", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG12","FG13"], properties: ["read", "write"]},
+      {name:"FP14", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG14","FG15"], properties: ["read", "write"]},
+      {name:"FP16", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG16","FG17"], properties: ["read", "write"]},
+      {name:"FP18", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG18","FG19"], properties: ["read", "write"]},
+      {name:"FP20", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG20","FG21"], properties: ["read", "write"]},
+      {name:"FP22", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG22","FG23"], properties: ["read", "write"]},
+      {name:"FP24", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG24","FG25"], properties: ["read", "write"]},
+      {name:"FP26", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
+      {name:"FP28", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
+      {name:"FP30", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
     ]}*/
   ], instructions:[
     /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
@@ -194,7 +194,7 @@ var  instructions = [
 
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "li R1 5", Assembly: "li R1 5", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "li FG0 5.5", Assembly: "li FG0 5.5", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li FP0 50.65", Assembly: "li FP 50.65", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li FP0 50.65", Assembly: "li FP0 50.65", _rowVariant: ''},
 
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi R1 R2 5", Assembly: "addi R1 R2 5", _rowVariant: '' },
   { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi FG0 FG2 32.52", Assembly: "addi FG0 R2 32.52", _rowVariant: '' },
@@ -688,6 +688,14 @@ window.app = new Vue({
             this.formArchitecture.properties=[];
             break;
           }
+          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "control")){
+            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: ["read", "write"]};
+            architecture.components[i].elements.push(newElement);
+            this.formArchitecture.name='';
+            this.formArchitecture.defValue='';
+            this.formArchitecture.properties=[];
+            break;
+          }
           if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
             var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
             architecture.components[i].elements.push(newElement);
@@ -1097,16 +1105,21 @@ window.app = new Vue({
                   signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
                   if(z<this.formInstruction.numfields-1){
                     signatureRaw = signatureRaw + ' ';
+                    console.log("A")
                   } 
                 }
                 else{
                   signatureRaw = signatureRaw + this.formInstruction.nameField[z];
                   if(z<this.formInstruction.numfields-1){
                     signatureRaw = signatureRaw + ' ';
+                    console.log("B")
                   } 
                 }
               }
             }
+
+            console.log(signatureRaw)
+            console.log(signature)
 
             if(exCop == false){
               architecture.instructions[i].cop='';
@@ -1316,9 +1329,48 @@ window.app = new Vue({
 	    return ret;
 		},
 
+    /*Modifica registros de doble precision segun los de simple*/
+    updateDouble(comp, elem){
+      for (var j = 0; j < architecture.components.length; j++) {
+        for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
+          if(architecture.components[j].elements[z].simple_reg[0] == architecture.components[comp].elements[elem].name){
+            var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
+            var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
+            var newDouble = simple + double;
+
+            architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
+          }
+          if(architecture.components[j].elements[z].simple_reg[1] == architecture.components[comp].elements[elem].name){
+            var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
+            var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
+            var newDouble = double + simple;
+
+            architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
+          }
+        }
+      }
+    },
+
+    /*Modifica registros de simple precision segun los de doble*/
+    updateSimple(comp, elem){
+      var part1 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
+      var part2 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
+
+      for (var j = 0; j < architecture.components.length; j++) {
+        for (var z = 0; z < architecture.components[j].elements.length; z++) {
+          if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[0]){
+            architecture.components[j].elements[z].value = this.hex2float("0x"+part1);
+          }
+          if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[1]){
+            architecture.components[j].elements[z].value = this.hex2float("0x"+part2);
+          }
+        }
+      }
+    },
+
     /*FUNCIONES DE GESTION DE REGISTROS*/
     /*Actualiza el valor de un registro*/
-    updateReg(comp, elem, type){
+    updateReg(comp, elem, type, precision){
       for (var i = 0; i < architecture.components[comp].elements.length; i++) {
         if(type == "integer" || type == "control"){
           if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
@@ -1333,14 +1385,41 @@ window.app = new Vue({
           }
         }
         else if(type =="floating point"){
-          if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-            architecture.components[comp].elements[i].value = this.hex2double(this.newValue);
+          if(precision == false){
+            
+            if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
+              architecture.components[comp].elements[i].value = this.hex2float(this.newValue);
+
+              this.updateDouble(comp, i);
+            }
+            else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
+              architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+
+              this.updateDouble(comp, i);
+            }
+            else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
+              architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+
+              this.updateDouble(comp, i);
+            }
           }
-          else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-            architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-          }
-          else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-            architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+
+          else if(precision == true){
+            if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
+              architecture.components[comp].elements[i].value = this.hex2double(this.newValue);
+
+              this.updateSimple(comp, i);
+            }
+            else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
+              architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+
+              this.updateSimple(comp, i);
+            }
+            else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
+              architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
+
+              this.updateSimple(comp, i)
+            }
           }
         }
       }
@@ -1351,8 +1430,6 @@ window.app = new Vue({
     /*FUNCIONES DE EJECUCION*/
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
-
-      console.log(architecture)
 
       /*Verifica que el programa no ha finalizado ya*/
       if(executionIndex < -1){
@@ -1918,18 +1995,39 @@ window.app = new Vue({
           $(button).attr("style", "background-color:#f5f5f5;");
         }, 350);
       }
+
       else if(architecture.components[indexComp].type =="floating point"){
-        architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
+        console.log(architecture.components[indexComp].double_precision)
+        if(architecture.components[indexComp].double_precision == false){
+          console.log("fafssdg")
+          architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
 
-        var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+          this.updateDouble(indexComp, indexElem);
 
-        $(button).attr("style", "background-color:#c2c2c2;");
+          var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-        setTimeout(function() {
-          $(button).attr("style", "background-color:#f5f5f5;");
-        }, 350);
-      }
-      
+          $(button).attr("style", "background-color:#c2c2c2;");
+
+          setTimeout(function() {
+            $(button).attr("style", "background-color:#f5f5f5;");
+          }, 350);
+        }
+        
+        else if(architecture.components[indexComp].double_precision == true){
+          console.log("sgfgfg")
+          architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
+
+          this.updateSimple(indexComp, indexElem);
+
+          var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+
+          $(button).attr("style", "background-color:#c2c2c2;");
+
+          setTimeout(function() {
+            $(button).attr("style", "background-color:#f5f5f5;");
+          }, 350);
+        }
+      }  
     },
 
     /*Funcion que lee de memoria*/
@@ -2004,8 +2102,6 @@ window.app = new Vue({
       }
     }
 
-
-
   },
   created(){
     this.load_arch_available();
@@ -2047,16 +2143,3 @@ $(".break").click(function(){
   }
 
 });
-
-/*Detecta un cambio de valor en un registro y se ilumina*/
-/*$("body").on('DOMSubtreeModified', "span", function () {
-  var id = this.id;
-
-  var button = '#popoverValueContent' + id;
-
-  $(button).attr("style", "background-color:#c2c2c2;");
-
-  setTimeout(function() {
-    $(button).attr("style", "background-color:#f5f5f5;");
-  }, 350);
-});*/

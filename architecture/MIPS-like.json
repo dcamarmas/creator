@@ -788,6 +788,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG0",
+            "FG1"
+          ],
           "properties": [
             "read",
             "write"
@@ -798,6 +802,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG2",
+            "FG3"
+          ],
           "properties": [
             "read",
             "write"
@@ -808,6 +816,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG4",
+            "FG5"
+          ],
           "properties": [
             "read",
             "write"
@@ -818,6 +830,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG6",
+            "FG7"
+          ],
           "properties": [
             "read",
             "write"
@@ -828,6 +844,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG8",
+            "FG9"
+          ],
           "properties": [
             "read",
             "write"
@@ -838,6 +858,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG10",
+            "FG11"
+          ],
           "properties": [
             "read",
             "write"
@@ -848,6 +872,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG12",
+            "FG13"
+          ],
           "properties": [
             "read",
             "write"
@@ -858,6 +886,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG14",
+            "FG15"
+          ],
           "properties": [
             "read",
             "write"
@@ -868,6 +900,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG16",
+            "FG17"
+          ],
           "properties": [
             "read",
             "write"
@@ -878,6 +914,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG18",
+            "FG19"
+          ],
           "properties": [
             "read",
             "write"
@@ -888,6 +928,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG20",
+            "FG21"
+          ],
           "properties": [
             "read",
             "write"
@@ -898,6 +942,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG22",
+            "FG23"
+          ],
           "properties": [
             "read",
             "write"
@@ -908,6 +956,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG24",
+            "FG25"
+          ],
           "properties": [
             "read",
             "write"
@@ -918,6 +970,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG26",
+            "FG27"
+          ],
           "properties": [
             "read",
             "write"
@@ -928,6 +984,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG28",
+            "FG29"
+          ],
           "properties": [
             "read",
             "write"
@@ -938,6 +998,10 @@
           "nbits": "64",
           "value": 0,
           "default_value": 0,
+          "simple_reg": [
+            "FG30",
+            "FG31"
+          ],
           "properties": [
             "read",
             "write"

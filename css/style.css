@@ -131,3 +131,12 @@ hr {
 .flexbox .normal { flex: 0; margin: 0 0 0 1rem; }
 .flexbox div input { padding: .5em 1em; width: 100%; }
 .flexbox div button { padding: .5em 1em; white-space: nowrap; }
+
+.alert{
+  z-index:40;
+  position: fixed;
+  top: 0pt;
+  margin: 5pt;
+  width: 99%;
+  text-align: center;
+}
