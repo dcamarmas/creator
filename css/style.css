@@ -24,6 +24,8 @@ hr {
   width:100%;     
   align-items: center;
   background-color: #EAEAEA;
+  padding-top: 0pt; 
+  padding-bottom: 0pt;
 }
 
 .menuGroup{
@@ -125,14 +127,7 @@ hr {
   padding: 2px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-.flexbox { display: flex; }
-.flexbox .stretch { flex: 1; }
-.flexbox .normal { flex: 0; margin: 0 0 0 1rem; }
-.flexbox div input { padding: .5em 1em; width: 100%; }
-.flexbox div button { padding: .5em 1em; white-space: nowrap; }
-
-.alert{
+.principalAlert{
   z-index:40;
   position: fixed;
   top: 0pt;
@@ -140,3 +135,10 @@ hr {
   width: 99%;
   text-align: center;
 }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.flexbox { display: flex; }
+.flexbox .stretch { flex: 1; }
+.flexbox .normal { flex: 0; margin: 0 0 0 1rem; }
+.flexbox div input { padding: .5em 1em; width: 100%; }
+.flexbox div button { padding: .5em 1em; white-space: nowrap; }

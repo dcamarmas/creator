@@ -28,7 +28,7 @@
       <template>
         <header>
           <!-- 1 navbar -->
-          <div class="contenedor header row">
+          <!--<div class="contenedor header row">
             <div class="col-lg-4 col-sm-12 row">
               <div class="col-lg-12 col-sm-12">
                 <b-navbar-brand href="#">
@@ -49,10 +49,31 @@
                 <img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt">
               </div>
             </div>
-          </div>
+          </div>-->
+
+
+          <b-navbar toggleable="sm" class="header">
+
+            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+
+            <b-navbar-brand href="#" style="color: #2196F3;"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
+
+            <b-navbar-nav>
+                <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>
+            </b-navbar-nav>
+
+            <b-collapse is-nav id="nav_collapse">
+
+              <b-navbar-nav class="ml-auto">
+                <b-nav-item href="#"><img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
+                <b-nav-item href="#"><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
+              </b-navbar-nav>
+
+            </b-collapse>
+          </b-navbar>
         </header>
 
-        <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" class="alert">
+        <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" class="principalAlert">
         	<span class="fa fa-info-circle"></span> {{alertMessaje}}
 		    </b-alert>
 
@@ -907,7 +928,7 @@
 												    </tr>
 												    <tr>
 												      <td>Char</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
+												      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
 												    </tr>
 												    <tr>
 												      <td>Float</td>
@@ -955,7 +976,7 @@
 													    </tr>
 													    <tr>
 													      <td>Char</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+((bin2hex(float2bin(item2.value)))))}}</b-badge></td>
+													      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8(((bin2hex(float2bin(item2.value)))))}}</b-badge></td>
 													    </tr>
 													    <tr>
 													      <td>Float</td>
@@ -1002,7 +1023,7 @@
 													    </tr>
 													    <tr>
 													      <td>Char</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8("0x"+((bin2hex(double2bin(item2.value)))))}}</b-badge></td>
+													      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8(((bin2hex(double2bin(item2.value)))))}}</b-badge></td>
 													    </tr>
 													    <tr>
 													      <td>Float</td>
