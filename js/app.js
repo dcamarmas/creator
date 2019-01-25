@@ -1243,22 +1243,21 @@ window.app = new Vue({
     /*Convierte de hexadecimal a char*/
     hex2char8 ( hexvalue ){
 
-    	var num_char = ((hexvalue.toString().length)-2)/2;
+    	var num_char = ((hexvalue.toString().length))/2;
     	var exponent = 0;
     	var pos = 0;
 
       var valuec = new Array();
 
       for (var i = 0; i < num_char; i++) {
-      	var dec_mask = (15 * Math.pow(16,exponent)) + (15 * Math.pow(16,exponent+1));
-      	exponent = exponent + 2;
-      	valuec[i] = String.fromCharCode((hexvalue & dec_mask) >> pos);
-      	pos = pos + 8;
+        var auxHex = hexvalue.substring(pos, pos+2);
+        valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
+        pos = pos + 2;
       }
 
       var characters = '';
 
-      for (var i = valuec.length - 1; i >= 0; i--) {
+      for (var i = 0; i < valuec.length; i++) {
         characters = characters + valuec[i] + ' ';
       }
 
@@ -1705,7 +1704,7 @@ window.app = new Vue({
       catch(e){
         if (e instanceof SyntaxError) {
           error = 1;
-          instructions[executionIndex]._rowVariant = '';
+          instructions[executionIndex]._rowVariant = 'danger';
           executionIndex = -1;
           app._data.alertMessaje = 'Syntax Error';
           app._data.type ='danger';
@@ -1965,8 +1964,8 @@ window.app = new Vue({
 
     /*Funcion que resetea la ejecucion*/
     reset(){
-      if(executionIndex >= 0){
-        instructions[executionIndex]._rowVariant = '';
+      for (var i = 0; i < instructions.length; i++) {
+        instructions[i]._rowVariant = '';
       }
       executionIndex = 0;
       instructions[executionIndex]._rowVariant = 'success';
