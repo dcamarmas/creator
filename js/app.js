@@ -1170,11 +1170,11 @@ window.app = new Vue({
     },
 
     assembly_update(){
-      this.text_assembly = code_assembly;
+      textarea_assembly_editor.setValue(code_assembly);
     },
 
     assembly_save(){
-      var textToWrite = this.text_assembly;
+      var textToWrite = textarea_assembly_editor.getValue();
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
       var fileNameToSaveAs;
 
@@ -1503,7 +1503,7 @@ window.app = new Vue({
           var re;
           
           /*Replaces escritura en memoria por direccion*/
-          re = new RegExp("MP.w.0x"+memory[i].Binary[j].Addr.toString(16)+" *=");
+          re = new RegExp("0w.0x"+memory[i].Binary[j].Addr.toString(16)+" *=");
           if (auxDef.search(re) != -1){
             re = new RegExp("MP.w.0x"+memory[i].Binary[j].Addr.toString(16)+" *=","g");
             auxDef = auxDef.replace(re, "var dir"+ memory[i].Binary[j].Addr+"=");
@@ -2142,3 +2142,23 @@ $(".break").click(function(){
   }
 
 });
+
+
+/*Codemirror, text area ensamblador*/
+// initialize codemirror for assembly
+editor_cfg = {
+  lineNumbers: true
+} ;
+
+textarea_assembly_obj = document.getElementById("textarea_assembly");
+
+textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
+
+textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
+
+textarea_assembly_editor.setValue("\n\n");
+// textarea_assembly_editor.setSize("auto", "auto");
+textarea_assembly_editor.refresh();
+
+
+
