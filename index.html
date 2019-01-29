@@ -34,30 +34,6 @@
       <template>
         <header>
           <!-- 1 navbar -->
-          <!--<div class="contenedor header row">
-            <div class="col-lg-4 col-sm-12 row">
-              <div class="col-lg-12 col-sm-12">
-                <b-navbar-brand href="#">
-                  <h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5>
-                </b-navbar-brand>
-              </div>
-            </div>
-
-            <div class="col-lg-4 col-sm-12 row">
-            	<h5>{{architecture_name}}</h5>
-           	</div>
-
-            <div class="col-lg-4 col-sm-12 row">
-              <div class="col-lg-4 col-sm-4">
-                <img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt">
-              </div>
-              <div class="col-lg-8 col-sm-7">
-                <img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt">
-              </div>
-            </div>
-          </div>-->
-
-
           <b-navbar toggleable="sm" class="header">
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
@@ -117,120 +93,136 @@
             </div>
           </div>
 
-          <div class="contenedor menu row">
-          	<div class="col-lg-12 col-sm-12 row">
-          		<div class="col-lg-3 col-sm-12">
-          			<div class="col-lg-12 col-sm-12">
-          				<h6>Select action:</h6>
-	          			<b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground" id="load_arch"><span class="fa fa-upload"></span> Load</b-button>
-	          			<b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground" id="save_arch"><span class="fa fa-download"></span> Save</b-button>
-	          			<b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground" id="view_arch">View Architecture</b-button>
-	          			<br>
-              	</div>
-          		</div>
-          		<div class="col-lg-9 col-sm-12">
-          			<div class="col-lg-12 col-sm-12" id="load_menu_arch">
-          				<h6>The available architectures are:</h6>
-          				<br>
-          				<div class="col-lg-12 col-sm-12 row" v-for="item in arch_available">
-          					<div class="col-lg-8 col-sm-8 centArch">
-          						<h6>{{item.name}}</h6>
-          					</div>
-          					<div class="col-lg-4 col-sm-4">
-          						<b-button class="btn btn-outline-secondary btn-block btn-sm selectArch buttonBackground" :id="item.name" @click="load_arch_select(item.name)">Select</b-button>
-          					</div>
-          					<div class="col-lg-12 col-sm-12">
-          						<hr>
-          					</div>
-          				</div>
-          				<br>
-          				<h6>Select the architecture to load:</h6>
+        	<div class="contenedor menu row">
+            <div class="col-lg-12 col-sm-12" id="load_menu_arch">
+              <h5>The available architectures are:</h5>
+              <div class="col-lg-12 col-sm-12 row nopadding nomargin">
+                <div class="col-lg-1 col-sm-1"></div>
+                <div class="col-lg-10 col-sm-10">
+                  <b-card-group deck>
+                    <b-card :title=item.name title-tag="h6" :img-src=item.img :img-alt=item.alt img-top v-for="item in arch_available">
+                        <small class="card-text">
+                          This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
+                        </small>
+                        <div slot="footer">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm selectArch buttonBackground" :id="item.name" @click="load_arch_select(item.name)">Select</b-button>
+                        </div>
+                    </b-card>
+                  </b-card-group>
+                </div>
+                <div class="col-lg-1 col-sm-1"></div>
+              </div>
+              <br>
+              <h5>Select the architecture to load:</h5>
+              <div class="col-lg-12 col-sm-12" style="margin-bottom: 3%;">
+                <div class="col-lg-12 col-sm-12">
+                  <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" @change="read_arch"></b-form-file>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-12 col-sm-12 row" id="save_menu_arch" style="display:none;">
+              <div class="col-lg-3 col-sm-12">
+                <div class="col-lg-12 col-sm-12">
+                  <h6>Select action:</h6>
+                  <b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground save_arch" id="save_arch_save" style="background-color:#c2c2c2;" disabled><span class="fa fa-download"></span> Save</b-button>
+                  <b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground view_arch" id="view_arch_save">View Architecture</b-button>
                   <br>
-                  <div class="col-lg-12 col-sm-12">
-                    <div class="col-lg-12 col-sm-12">
-                      <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" @change="read_arch" ></b-form-file>
+                </div>
+              </div>
+              <div class="col-lg-9 col-sm-12">
+                <div class="col-lg-12 col-sm-12">
+                  <h6>Enter the name of the architecture to save:</h6>
+                  <br>
+                  <div class="col-lg-12 col-sm-12 row">
+                    <div class="col-lg-8 col-sm-8">
+                      <b-form-input v-model="name_arch_save" type="text" placeholder="Enter the name" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black,"></b-form-input>
+                      <br>
+                    </div>
+                    <div class="col-lg-4 col-sm-4">
+                      <b-button class="btn btn-primary btn-block btn-sm" id="btn_save_arch" @click="arch_save"><span class="fa fa-download"></span> Save</b-button>
                     </div>
                   </div>
-          			</div>
-          			<div class="col-lg-12 col-sm-12" id="save_menu_arch" style="display:none;">
-          				<h6>Enter the name of the architecture to save:</h6>
-          				<br>
-          				<div class="col-lg-12 col-sm-12 row">
-          					<div class="col-lg-8 col-sm-8">
-          						<b-form-input v-model="name_arch_save" type="text" placeholder="Enter the name" class="form-control border border-secondary form-control-sm" style="background-color: white; color: black,"></b-form-input>
-          						<br>
-          					</div>
-          					<div class="col-lg-4 col-sm-4">
-          						<b-button class="btn btn-primary btn-block btn-sm" id="btn_save_arch" @click="arch_save"><span class="fa fa-download"></span> Save</b-button>
-          					</div>
-          				</div>
-          			</div>
-          			<div class="col-lg-12 col-sm-12" id="view_components" style="display:none;">
-          				<b-tabs>
-									  <b-tab title="Components" active>
-									  	<br>
-									    <h6>Components of the architecture:</h6>
+                </div>
+              </div>
+            </div>
 
-									    <div class="col-lg-12 col-sm-12 row">
-									    	<div class="compMenu">
-			                  	<b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
-			                	</div>
+            <div class="col-lg-12 col-sm-12 row" id="view_components" style="display:none;">
+              <div class="col-lg-3 col-sm-12">
+                <div class="col-lg-12 col-sm-12">
+                  <h6>Select action:</h6>
+                  <b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground save_arch" id="save_arch_view"><span class="fa fa-download"></span> Save</b-button>
+                  <b-button class="btn btn-outline-secondary btn-block btn-sm buttonBackground view_arch" id="view_arch_view" style="background-color:#c2c2c2;" disabled>View Architecture</b-button>
+                  <br>
+                </div>
+              </div>
+              <div class="col-lg-9 col-sm-12">
+                <div class="col-lg-12 col-sm-12">
+                  <b-tabs>
+                    <b-tab title="Components" active>
+                      <br>
+                      <h6>Components of the architecture:</h6>
 
-			                	<div class="compMenu">
-			                  	<b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Architecture</b-button>
-			                  </div>
+                      <div class="col-lg-12 col-sm-12 row">
+                        <div class="compMenu">
+                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
+                        </div>
 
-			                  <div class="compMenu">
-				                	<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;"></b-form-input>
-			                	</div>
-		                	</div>
+                        <div class="compMenu">
+                          <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Architecture</b-button>
+                        </div>
+
+                        <div class="compMenu">
+                          <b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;"></b-form-input>
+                        </div>
+                      </div>
 
                       <!-- Resetea las instrucciones -->
                       <b-modal id ="modalResetArch" :title="modalResetArch.title" ok-variant="danger" ok-title="Reset" @ok="resetArchitecture(modalResetArch.element)">
                         <h6>Are you sure you want to reset the architecture?</h6>
                       </b-modal >
-		                  
-		                  <div class="col-lg-12 col-sm-12">
-		                  	<br>
-		                    <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">
-		                    	<b-card no-body class="mb-1">
-											      <b-card-header header-tag="header" class="p-1" role="tab">
-											        <b-btn block href="#" v-b-toggle="item.index.toString()" class="btn btn-outline-secondary btn-sm buttonBackground">{{item.name}}</b-btn>
-											      </b-card-header>
-											      <b-collapse :id="item.index.toString()" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
-											        <b-card-body>
-											           <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
-														      <template slot="actions" slot-scope="row">
-														        <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-														        <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
-														      </template>
-											           </b-table>
+                      
+                      <div class="col-lg-12 col-sm-12">
+                        <br>
+                        <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">
+                          <b-card no-body class="mb-1">
+                            <b-card-header header-tag="header" class="p-1" role="tab">
+                              <b-btn block href="#" v-b-toggle="item.index.toString()" class="btn btn-outline-secondary btn-sm buttonBackground">{{item.name}}</b-btn>
+                            </b-card-header>
+                            <b-collapse :id="item.index.toString()" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
+                              <b-card-body>
+                                 <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
+                                  <template slot="actions" slot-scope="row">
+                                    <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
+                                    <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                                  </template>
+                                 </b-table>
 
-					                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
+                                <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
 
-					                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
+                                <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
 
-					                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
+                                <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
 
-											        </b-card-body>
-											      </b-collapse>
-											    </b-card>
-		                    </div>
+                              </b-card-body>
+                            </b-collapse>
+                          </b-card>
+                        </div>
 
-		                    <!-- Editar componente -->
-	                      <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" ref="editComponent">
+                        <!-- Editar componente -->
+                        <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" ref="editComponent">
 
-	                      	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
-									        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
-											    </b-alert>
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                            <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                          </b-alert>
 
-			                    <b-form>
-			                      <b-form-group id="editComponentName" label="Name:">
-			                        <b-form-input id="editComponentNameInput" type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
-			                        </b-form-input>
-			                      </b-form-group>
-			                    </b-form>
-			                  </b-modal >
+                          <b-form>
+                            <b-form-group id="editComponentName" label="Name:">
+                              <b-form-input id="editComponentNameInput" type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
+                              </b-form-input>
+                            </b-form-group>
+                          </b-form>
+                        </b-modal >
 
                         <!-- Nuevo elemento -->
                         <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Create" @ok="newElementVerify($event, modalNewElement.element)" ref="newElement">
@@ -244,7 +236,7 @@
                               <b-form-input id="newElementNameInput" type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
                               </b-form-input>
                             </b-form-group>
-                            <b-form-group id="newElementDefValue" label="Default value:">
+                            <b-form-group id="newElementDefValue" label="Default value:" v-if="modalNewElement.double_precision == false">
                               <b-form-input id="newElementDefValueInput" type="text" :state="valid(formArchitecture.defValue)" v-model="formArchitecture.defValue" required placeholder="Enter default value" size="sm">
                               </b-form-input>
                             </b-form-group>
@@ -254,109 +246,131 @@
                                 <b-form-checkbox value="write">Write</b-form-checkbox>
                               </b-form-checkbox-group>
                             </b-form-group>
+                            <b-form-group id="newElementSimple" label="Simple Floating Points asociate:" v-if="modalNewElement.double_precision == true">
+                              <div class="col-lg-12 col-sm-12 row nomargin">
+                                <div class="col-lg-6 col-sm-6">
+                                  <b-form-select id="newElementSimple1" required v-model="formArchitecture.simple1" :state="valid(formArchitecture.simple1)" size="sm" :options="simple_reg"></b-form-select>
+                                </div>
+                                <div class="col-lg-6 col-sm-6">
+                                  <b-form-select id="newElementSimple2" required v-model="formArchitecture.simple2" :state="valid(formArchitecture.simple2)" size="sm" :options="simple_reg"></b-form-select>
+                                </div>
+                              </div>
+                            </b-form-group>
                           </b-form>
                         </b-modal >
 
-			                  <!-- Editar elemento -->
-			                  <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" ref="editElement">
+                        <!-- Editar elemento -->
+                        <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" ref="editElement">
 
-			                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
-									        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
-											    </b-alert>
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                            <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                          </b-alert>
 
-	                        <b-form>
-	                          <b-form-group id="editElementName" label="Name:">
-	                            <b-form-input id="editElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
-	                            </b-form-input>
-	                          </b-form-group>
-	                          <b-form-group id="editElementDefValue" label="Default value:">
-	                            <b-form-input id="editElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value" :state="valid(formArchitecture.defValue)" size="sm">
-	                            </b-form-input>
-	                          </b-form-group>
-	                          <b-form-group id="editElementProperties">
-	                            <b-form-checkbox-group v-model="formArchitecture.properties" id="editElementPropertiesInput" v-if="modalEditElement.type != 'control'">
-	                              <b-form-checkbox value="read">Read</b-form-checkbox>
-	                              <b-form-checkbox value="write">Write</b-form-checkbox>
-	                            </b-form-checkbox-group>
-	                          </b-form-group>
-	                        </b-form>
-	                      </b-modal >
+                          <b-form>
+                            <b-form-group id="editElementName" label="Name:">
+                              <b-form-input id="editElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                              </b-form-input>
+                            </b-form-group>
+                            <b-form-group id="editElementDefValue" label="Default value:" v-if="modalNewElement.double_precision == false">
+                              <b-form-input id="editElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value" :state="valid(formArchitecture.defValue)" size="sm">
+                              </b-form-input>
+                            </b-form-group>
+                            <b-form-group id="editElementProperties">
+                              <b-form-checkbox-group v-model="formArchitecture.properties" id="editElementPropertiesInput" v-if="modalEditElement.type != 'control'">
+                                <b-form-checkbox value="read">Read</b-form-checkbox>
+                                <b-form-checkbox value="write">Write</b-form-checkbox>
+                              </b-form-checkbox-group>
+                            </b-form-group>
 
-	                      <!-- Borrar elemento -->
-	                      <b-modal id ="modalDeletElement" :title="modalDeletElement.title" ok-variant="danger" ok-title="Delete" @ok="delElement(modalDeletElement.element)">
-	                        <h6>Are you sure you want to delete the item?</h6>
-	                      </b-modal >
+                            <b-form-group id="editElementSimple" label="Simple Floating Points asociate:" v-if="modalEditElement.double_precision == true">
+                              <div class="col-lg-12 col-sm-12 row nomargin">
+                                <div class="col-lg-6 col-sm-6">
+                                  <b-form-select id="editElementSimple1" required v-model="formArchitecture.simple1" :state="valid(formArchitecture.simple1)" size="sm" :options="simple_reg"></b-form-select>
+                                </div>
+                                <div class="col-lg-6 col-sm-6">
+                                  <b-form-select id="editElementSimple2" required v-model="formArchitecture.simple2" :state="valid(formArchitecture.simple2)" size="sm" :options="simple_reg"></b-form-select>
+                                </div>
+                              </div>
+                            </b-form-group>
 
-	                      <!-- Borrar componente -->
-	                      <b-modal id ="modalDeletComp" :title="modalDeletComp.title" ok-variant="danger" ok-title="Delete" @ok="delComponent(modalDeletComp.element)">
-	                        <h6>Are you sure you want to delete the component?</h6>
-	                      </b-modal >
+                          </b-form>
+                        </b-modal >
 
-		                  </div>
+                        <!-- Borrar elemento -->
+                        <b-modal id ="modalDeletElement" :title="modalDeletElement.title" ok-variant="danger" ok-title="Delete" @ok="delElement(modalDeletElement.element)">
+                          <h6>Are you sure you want to delete the item?</h6>
+                        </b-modal >
 
-		                  <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" ref="newComponent">
+                        <!-- Borrar componente -->
+                        <b-modal id ="modalDeletComp" :title="modalDeletComp.title" ok-variant="danger" ok-title="Delete" @ok="delComponent(modalDeletComp.element)">
+                          <h6>Are you sure you want to delete the component?</h6>
+                        </b-modal >
 
-		                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
-								        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
-										    </b-alert>
+                      </div>
 
-		                    <b-form>
-		                      <b-form-group id="newComponentName" label="Name:">
-		                        <b-form-input id="newComponentNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
-		                        </b-form-input>
-		                      </b-form-group>
-		                      <b-form-group id="newComponentType" label="Type:">
-										        <b-form-select id="newComponentTypeInput" :options="componentsTypes" required v-model="formArchitecture.type" :state="valid(formArchitecture.type)" size="sm"></b-form-select>
-									        </b-form-group>
-									        <b-form-group id="newComponentPrecision">
+                      <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" ref="newComponent">
+
+                        <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                          <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        </b-alert>
+
+                        <b-form>
+                          <b-form-group id="newComponentName" label="Name:">
+                            <b-form-input id="newComponentNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                            </b-form-input>
+                          </b-form-group>
+                          <b-form-group id="newComponentType" label="Type:">
+                            <b-form-select id="newComponentTypeInput" :options="componentsTypes" required v-model="formArchitecture.type" :state="valid(formArchitecture.type)" size="sm"></b-form-select>
+                          </b-form-group>
+                          <b-form-group id="newComponentPrecision" v-if="formArchitecture.type == 'floating point'">
                             <b-form-checkbox-group v-model="formArchitecture.precision" id="newComponentPrecisionInput">
                               <b-form-checkbox value="precision">Double Precision</b-form-checkbox>
                             </b-form-checkbox-group>
                           </b-form-group>
-		                    </b-form>
-		                  </b-modal >
-									  </b-tab>
+                        </b-form>
+                      </b-modal >
+                    </b-tab>
 
-									  <b-tab title="Assembly Definition" >
-									  	<br>
-									    <h6>Components of the instruction set:</h6>
+                    <b-tab title="Instructions Definition" >
+                      <br>
+                      <h6>Components of the instruction set:</h6>
 
-		                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
 
-		                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Instructions</b-button>
+                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Instructions</b-button>
 
                       <!-- Resetea las instrucciones -->
                       <b-modal id ="modalResetInst" :title="modalResetInst.title" ok-variant="danger" ok-title="Reset" @ok="resetInstructions(modalResetInst.element)">
                         <h6>Are you sure you want to reset the instructions?</h6>
                       </b-modal >
 
-		                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-		                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
-		                    	<template slot="fields" slot-scope="row">
-		                    		<b-form-select :id="'fieldsSel-'+row.item.name" required v-model="fieldsSel" class="fieldsSel" size="sm">
-		                    			<option v-for="i in row.item.fields" :value="i.name">{{i.name}}</option>
-		                    		</b-form-select>
+                      <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
+                        <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
+                          <template slot="fields" slot-scope="row">
+                            <b-form-select :id="'fieldsSel-'+row.item.name" required v-model="fieldsSel" class="fieldsSel" size="sm">
+                              <option v-for="i in row.item.fields" :value="i.name">{{i.name}}</option>
+                            </b-form-select>
 
-										        <div v-for="i in row.item.fields" v-if="(fieldsSel == i.name) && (instSel == row.item.name)">
-										        	<h6 class="instruction_table">Name: {{i.name}}</h6>
-										        	<h6 class="instruction_table">Type: {{i.type}}</h6>
-										        	<h6 class="instruction_table">Start Bit: {{i.startbit}}</h6>
-										        	<h6 class="instruction_table">Stop Bit: {{i.stopbit}}</h6>
-										        </div>
-										      </template>
+                            <div v-for="i in row.item.fields" v-if="(fieldsSel == i.name) && (instSel == row.item.name)">
+                              <h6 class="instruction_table">Name: {{i.name}}</h6>
+                              <h6 class="instruction_table">Type: {{i.type}}</h6>
+                              <h6 class="instruction_table">Start Bit: {{i.startbit}}</h6>
+                              <h6 class="instruction_table">End Bit: {{i.stopbit}}</h6>
+                            </div>
+                          </template>
 
-										      <template slot="actions" slot-scope="row">
-										        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-										        <b-button @click.stop="delInstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
-										      </template>
-							           </b-table>
+                          <template slot="actions" slot-scope="row">
+                            <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
+                            <b-button @click.stop="delInstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                          </template>
+                         </b-table>
 
-							           <!-- Borrar instruccion -->
-	                      <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.element)">
-	                        <h6>Are you sure you want to delete the item?</h6>
-	                      </b-modal >
+                         <!-- Borrar instruccion -->
+                        <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.element)">
+                          <h6>Are you sure you want to delete the item?</h6>
+                        </b-modal >
 
-	                      <!-- Formulario para editar una instruccion -->
+                        <!-- Formulario para editar una instruccion -->
                         <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Edit" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" ref="editInst">
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -395,7 +409,7 @@
                                   <h6>Start Bit</h6>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <h6>Stop Bit</h6>
+                                  <h6>End Bit</h6>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <h6>Value</h6>
@@ -467,113 +481,9 @@
                           <hr>
                           <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage"></b-pagination-nav>
                         </b-modal>
+                      </div>
 
-
-
-
-			                  <!--<b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Create" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" ref="editInst">
-
-			                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
-									        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
-											    </b-alert>
-
-			                    <b-form>
-			                    	<div id="editInstForm1" v-if="instructionFormPage == 1">
-				                      <b-form-group id="editInstructionName" label="Name:">
-				                        <b-form-input id="editInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
-				                        </b-form-input>
-				                      </b-form-group>
-
-                              <b-form-group id="editInstructionco" label="Co:">
-                                <b-form-input id="editInstructionCoInput" type="text" v-model="formInstruction.co" required placeholder="Enter co" :state="valid(formInstruction.co)" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-
-				                      <b-form-group id="editInstructioncop" label="Cop:">
-				                        <b-form-input id="editInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop" size="sm">
-				                        </b-form-input>
-				                      </b-form-group>
-
-                              <b-form-group id="editInstructionNwords" label="Number of Words:">
-                                <b-form-input id="editInstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-
-				                      <b-form-group id="editNumFields" label="Number of fields:">
-				                        <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
-				                        </b-form-input>
-				                      </b-form-group>
-
-                              <b-form-group id="editInstructionDefinition" label="Assembly Definition:">
-                                <b-form-input id="editInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-			                    	</div>
-
-			                    	<div id="editInstForm2" v-if="instructionFormPage == 2">
-                              <div class="col-lg-12 col-sm-12 row">
-                                <div class="col-lg-3 col-2 fields">
-                                  
-                                </div>
-                                <div class="col-lg-3 col-2 fields">
-                                  <h6>Name:</h6>
-                                </div>
-                                <div class="col-lg-2 col-2 fields">
-                                  <h6>Type</h6>
-                                </div>
-                                <div class="col-lg-2 col-2 fields">
-                                  <h6>Start Bit</h6>
-                                </div>
-                                <div class="col-lg-2 col-2 fields">
-                                  <h6>Stop Bit</h6>
-                                </div>
-                              </div>
-
-			                    		<div v-for="i in parseInt(formInstruction.numfields)">
-                                <div class="col-lg-12 col-sm-12 row">
-                                  <div class="col-lg-3 col-2 fields">
-                                    <h6>Field {{i}}</h6>
-                                  </div>
-                                  <div class="col-lg-3 col-2 fields">
-                                    <b-form-group :id="'nameField'+i">
-                                      <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
-                                      </b-form-input>
-                                    </b-form-group>
-                                  </div>
-                                  <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'typeField'+i">
-                                      <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" >
-                                        <option value="reg">reg</option>
-                                        <option value="inm">inm</option>
-                                        <option value="address">address</option>
-                                      </b-form-select>
-                                    </b-form-group>
-                                  </div>
-                                  <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'startBitField'+i">
-                                      <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
-                                      </b-form-input>
-                                    </b-form-group>
-                                  </div>
-                                  <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'stopBitField'+i">
-                                      <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
-                                      </b-form-input>
-                                    </b-form-group>
-                                  </div>
-                                </div>
-			                    		</div>
-			                    	</div>
-			                    </b-form>
-
-			                    <hr>
-			                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage"> </b-pagination-nav>
-
-			                  </b-modal >-->
-
-		                  </div>
-
-		                  <!-- Formulario nueva instruccion -->
+                      <!-- Formulario nueva instruccion -->
                       <b-modal size="lg" id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstVerify" ref="newInst">
 
                         <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
@@ -581,24 +491,24 @@
                         </b-alert>
 
                         <b-form>
-                          <div id="editInstForm1" v-if="instructionFormPage == 1">
-                            <b-form-group id="editInstructionName" label="Name:">
-                              <b-form-input id="editInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                          <div id="newInstForm1" v-if="instructionFormPage == 1">
+                            <b-form-group id="newInstructionName" label="Name:">
+                              <b-form-input id="newInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="editInstructionNwords" label="Number of Words:">
-                              <b-form-input id="editInstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                            <b-form-group id="newInstructionNwords" label="Number of Words:">
+                              <b-form-input id="newInstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="editNumFields" label="Number of fields: (Including co and cop)">
-                              <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                            <b-form-group id="newNumFields" label="Number of fields: (Including co and cop)">
+                              <b-form-input id="newNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                               </b-form-input>
                             </b-form-group>
                           </div>
 
-                          <div id="editInstForm2" v-if="instructionFormPage == 2">
+                          <div id="newInstForm2" v-if="instructionFormPage == 2">
                             <div class="col-lg-12 col-sm-12 row">
                               <div class="col-lg-2 col-2 fields">
                                 
@@ -613,7 +523,7 @@
                                 <h6>Start Bit</h6>
                               </div>
                               <div class="col-lg-2 col-2 fields">
-                                <h6>Stop Bit</h6>
+                                <h6>End Bit</h6>
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <h6>Value</h6>
@@ -627,7 +537,7 @@
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'nameField'+i">
-                                    <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    <b-form-input :id="'nameField'+i+'Input'" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
                                     </b-form-input>
                                     <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
                                     </b-form-input>
@@ -635,7 +545,7 @@
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'typeField'+i">
-                                    <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    <b-form-select id="'typeField'+i+'Input'" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
                                       <option value="reg">reg</option>
                                       <option value="inm">inm</option>
                                       <option value="address">address</option>
@@ -648,25 +558,25 @@
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'startBitField'+i">
-                                    <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                    <b-form-input id="'startBitField'+i+'Input'" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'stopBitField'+i">
-                                    <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                    <b-form-input id="'stopBitField'+i+'Input'" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
                                   <b-form-group :id="'valueFieldCo'+i">
-                                    <b-form-input :id="'valueFieldCo'+i" type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                    <b-form-input :id="'valueFieldCo'+i+'Input'" type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
                                   <b-form-group :id="'valueFieldCo'+i">
-                                    <b-form-input :id="'valueFieldCo'+i" type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
+                                    <b-form-input :id="'valueFieldCo'+i+'Input'" type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -674,9 +584,9 @@
                             </div>
                           </div>
 
-                          <div id="editInstForm3" v-if="instructionFormPage == 3">
-                            <b-form-group id="editInstructionDefinition" label="Assembly Definition:">
-                              <b-form-textarea id="editInstructionDefinitionInput" v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                          <div id="newInstForm3" v-if="instructionFormPage == 3">
+                            <b-form-group id="newInstructionDefinition" label="Assembly Definition:">
+                              <b-form-textarea id="newInstructionDefinitionInput" v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
                               </b-form-textarea>
                             </b-form-group>
                           </div>
@@ -686,123 +596,28 @@
                         <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage"></b-pagination-nav>
 
                       </b-modal >
+                    </b-tab>
 
+                    <b-tab title="Pseudoinstructions Definition" >
 
+                    </b-tab>
 
+                    <b-tab title="Directives Definition" >
 
+                    </b-tab>
 
-
-
-
-
-
-
-		                  <!--<b-modal size="lg" id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstVerify" ref="newInst">
-
-		                  	<b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
-								        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
-										    </b-alert>
-
-		                    <b-form>
-                          <div id="editInstForm1" v-if="instructionFormPage == 1">
-                            <b-form-group id="editInstructionName" label="Name:">
-                              <b-form-input id="editInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
-                              </b-form-input>
-                            </b-form-group>
-
-                            <b-form-group id="editInstructionco" label="Co:">
-                              <b-form-input id="editInstructionCoInput" type="text" v-model="formInstruction.co" required placeholder="Enter co" :state="valid(formInstruction.co)" size="sm">
-                              </b-form-input>
-                            </b-form-group>
-
-                            <b-form-group id="editInstructioncop" label="Cop:">
-                              <b-form-input id="editInstructionCopInput" type="text" v-model="formInstruction.cop" required placeholder="Enter cop" size="sm">
-                              </b-form-input>
-                            </b-form-group>
-
-                            <b-form-group id="editInstructionNwords" label="Number of Words:">
-                              <b-form-input id="editInstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
-                              </b-form-input>
-                            </b-form-group>
-
-                            <b-form-group id="editNumFields" label="Number of fields:">
-                              <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
-                              </b-form-input>
-                            </b-form-group>
-
-                            <b-form-group id="editInstructionDefinition" label="Assembly Definition:">
-                              <b-form-input id="editInstructionDefinitionInput" type="text" v-model="formInstruction.definition" required placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" size="sm">
-                              </b-form-input>
-                            </b-form-group>
-                          </div>
-
-                          <div id="editInstForm2" v-if="instructionFormPage == 2">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-3 col-2 fields">
-                                
-                              </div>
-                              <div class="col-lg-3 col-2 fields">
-                                <h6>Name:</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Type</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Start Bit</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Stop Bit</h6>
-                              </div>
-                            </div>
-
-                            <div v-for="i in parseInt(formInstruction.numfields)">
-                              <div class="col-lg-12 col-sm-12 row">
-                                <div class="col-lg-3 col-2 fields">
-                                  <h6>Field {{i}}</h6>
-                                </div>
-                                <div class="col-lg-3 col-2 fields">
-                                  <b-form-group :id="'nameField'+i">
-                                    <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
-                                    </b-form-input>
-                                  </b-form-group>
-                                </div>
-                                <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'typeField'+i">
-                                    <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" >
-                                      <option value="reg">reg</option>
-                                      <option value="inm">inm</option>
-                                      <option value="address">address</option>
-                                    </b-form-select>
-                                  </b-form-group>
-                                </div>
-                                <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'startBitField'+i">
-                                    <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
-                                    </b-form-input>
-                                  </b-form-group>
-                                </div>
-                                <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'stopBitField'+i">
-                                    <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
-                                    </b-form-input>
-                                  </b-form-group>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </b-form>
-
-		                    <hr>
-		                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="2" v-model="instructionFormPage"></b-pagination-nav>
-
-		                  </b-modal >-->
-									  </b-tab>
-									</b-tabs>
-          			</div>
-          		</div>
-          	</div>
+                  </b-tabs>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+
+
+
+
+
 
         <div class="contenedor row" id="simulator" style="display:none;">
 	        	<!-- 2 navbar -->
@@ -843,12 +658,20 @@
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
-                <b-table striped small hover :items="instructions" class="instructions_table">
+                <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table">
                   <template slot="Break" slot-scope="row">
-                    <div class="break" :id="row.index">
+                    <div class="break" :id="row.index" style="cursor: pointer;">
                       <br v-if="row.item.Break == null">
                       <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
                     </div>
+                  </template>
+
+                  <template slot="Loaded Instructions" slot-scope="row">
+                    {{row.item.loaded}}
+                  </template>
+
+                  <template slot="User Instructions" slot-scope="row">
+                    {{row.item.user}}
                   </template>
                 </b-table>
               </div>
@@ -883,7 +706,6 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
                   	<select class="form-control border border-secondary form-control-sm" style="background-color: white; color: black, " id="selectData">
-                      <option value="CPU" disabled>CPU</option>
                       <option value="CPU-INT Registers">  CPU-INT Registers</option>
                       <option value="CPU-FP Registers">  CPU-FP Registers</option>
                       <option value="CPU-Stats">  CPU-Stats</option>
@@ -910,7 +732,7 @@
               			<!-- Estructura si los numeros son enteros -->
 	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
 	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
 	                    </b-button>
 
 	                    <b-popover :target="popoverId(item2.name)" :title="item2.name" triggers="click blur" class="popover">
@@ -958,7 +780,7 @@
 	                  	<!-- Estructura si los numeros son FP simple -->
 	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
 	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
+	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
 		                    </b-button>
 
 		                    <b-popover :target="popoverId(item2.name)" :title="item2.name" triggers="click blur">
@@ -1005,7 +827,7 @@
 	                  	<!-- Estructura si los numeros son FP doble -->
 	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
 	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
+		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
 		                    </b-button>
 
 		                    <b-popover :target="popoverId(item2.name)" :title="item2.name" triggers="click blur">
