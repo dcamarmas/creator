@@ -90,22 +90,22 @@ var architecture = {components:[
       {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
     ]},
     {name: "Double floating point registers", type: "floating point", double_precision: true, elements:[
-      {name:"FP0", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG0","FG1"], properties: ["read", "write"]},
-      {name:"FP2", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG2","FG3"], properties: ["read", "write"]},
-      {name:"FP4", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG4","FG5"], properties: ["read", "write"]},
-      {name:"FP6", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG6","FG7"], properties: ["read", "write"]},
-      {name:"FP8", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG8","FG9"], properties: ["read", "write"]},
-      {name:"FP10", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG10","FG11"], properties: ["read", "write"]},
-      {name:"FP12", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG12","FG13"], properties: ["read", "write"]},
-      {name:"FP14", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG14","FG15"], properties: ["read", "write"]},
-      {name:"FP16", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG16","FG17"], properties: ["read", "write"]},
-      {name:"FP18", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG18","FG19"], properties: ["read", "write"]},
-      {name:"FP20", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG20","FG21"], properties: ["read", "write"]},
-      {name:"FP22", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG22","FG23"], properties: ["read", "write"]},
-      {name:"FP24", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG24","FG25"], properties: ["read", "write"]},
-      {name:"FP26", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
-      {name:"FP28", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
-      {name:"FP30", nbits:"64", value:0.0, default_value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
+      {name:"FP0", nbits:"64", value:0.0, simple_reg: ["FG0","FG1"], properties: ["read", "write"]},
+      {name:"FP2", nbits:"64", value:0.0, simple_reg: ["FG2","FG3"], properties: ["read", "write"]},
+      {name:"FP4", nbits:"64", value:0.0, simple_reg: ["FG4","FG5"], properties: ["read", "write"]},
+      {name:"FP6", nbits:"64", value:0.0, simple_reg: ["FG6","FG7"], properties: ["read", "write"]},
+      {name:"FP8", nbits:"64", value:0.0, simple_reg: ["FG8","FG9"], properties: ["read", "write"]},
+      {name:"FP10", nbits:"64", value:0.0, simple_reg: ["FG10","FG11"], properties: ["read", "write"]},
+      {name:"FP12", nbits:"64", value:0.0, simple_reg: ["FG12","FG13"], properties: ["read", "write"]},
+      {name:"FP14", nbits:"64", value:0.0, simple_reg: ["FG14","FG15"], properties: ["read", "write"]},
+      {name:"FP16", nbits:"64", value:0.0, simple_reg: ["FG16","FG17"], properties: ["read", "write"]},
+      {name:"FP18", nbits:"64", value:0.0, simple_reg: ["FG18","FG19"], properties: ["read", "write"]},
+      {name:"FP20", nbits:"64", value:0.0, simple_reg: ["FG20","FG21"], properties: ["read", "write"]},
+      {name:"FP22", nbits:"64", value:0.0, simple_reg: ["FG22","FG23"], properties: ["read", "write"]},
+      {name:"FP24", nbits:"64", value:0.0, simple_reg: ["FG24","FG25"], properties: ["read", "write"]},
+      {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
+      {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
+      {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
     ]}*/
   ], instructions:[
     /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
@@ -155,6 +155,9 @@ var architecture = {components:[
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "MP.w.(val+reg2)=reg1"},*/
+  ],pseudoinstructions:[
+
+
   ]};
 
 var componentsTypes = [
@@ -165,48 +168,47 @@ var componentsTypes = [
 
 memory = [
   {Address: 0x01000, Binary: [
-    {Addr: 0x01000, Bin: "01", Tag: 'a'},
-    {Addr: 0x01001, Bin: "ff", Tag: null},
-    {Addr: 0x01002, Bin: "07", Tag: null},
-    {Addr: 0x01003, Bin: "0a", Tag: 'd'},
+    {Addr: 0x01000, DefBin: "01", Bin: "01", Tag: 'a'},
+    {Addr: 0x01001, DefBin: "ff", Bin: "ff", Tag: null},
+    {Addr: 0x01002, DefBin: "07", Bin: "07", Tag: null},
+    {Addr: 0x01003, DefBin: "0a", Bin: "0a", Tag: 'd'},
   ]},
   {Address: 0x01004, Binary: [
-    {Addr: 0x01004, Bin: "61", Tag: 'b'},
-    {Addr: 0x01005, Bin: "65", Tag: null},
-    {Addr: 0x01006, Bin: "6c", Tag: 'c'},
-    {Addr: 0x01007, Bin: "50", Tag: null},
+    {Addr: 0x01004, DefBin: "61", Bin: "61", Tag: 'b'},
+    {Addr: 0x01005, DefBin: "65", Bin: "65", Tag: null},
+    {Addr: 0x01006, DefBin: "6c", Bin: "6c", Tag: 'c'},
+    {Addr: 0x01007, DefBin: "50", Bin: "50", Tag: null},
   ]},
 ]
 
 var  instructions = [
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "lw R1 0x1000", Assembly: "lw R1 0x1000", _rowVariant: 'success'},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "lw R2 b", Assembly: "lw R2 b", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li R1 0x00001002", Assembly: "li R1 0x00001002", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "lw R2 4 (R1)", Assembly: "lw R2 4 (R1)", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "lw R1 0x1000", user: "lw R1 0x1000", _rowVariant: 'success'},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "lw R2 b", user: "lw R2 b", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "li R1 0x00001002", user: "li R1 0x00001002", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "lw R2 4 (R1)", user: "lw R2 4 (R1)", _rowVariant: ''},
 
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "sw R2 0x1000", Assembly: "sw R2 0x1000", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "sw R1 c", Assembly: "sw R1 c", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li R1 0x00001000", Assembly: "li R1 0x00001000", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "sw R2 4 (R1)", Assembly: "sw R2 4 (R1)", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "sw R2 0x1000", user: "sw R2 0x1000", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "sw R1 c", user: "sw R1 c", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "li R1 0x00001000", user: "li R1 0x00001000", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "sw R2 4 (R1)", user: "sw R2 4 (R1)", _rowVariant: ''},
 
   
 
+  { Break: null, Address: "0x8000", Label:"" , loaded: "li R1 5", user: "li R1 5", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "li FG0 5.5", user: "li FG0 5.5", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "li FP0 50.65", user: "li FP0 50.65", _rowVariant: ''},
 
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li R1 5", Assembly: "li R1 5", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li FG0 5.5", Assembly: "li FG0 5.5", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "li FP0 50.65", Assembly: "li FP0 50.65", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "addi R1 R2 5", user: "addi R1 R2 5", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , loaded: "addi FG0 FG2 32.52", user: "addi FG0 R2 32.52", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , loaded: "addi FP0 FP2 321.321", user: "addi FP0 FP2 321.321", _rowVariant: '' },
 
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi R1 R2 5", Assembly: "addi R1 R2 5", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi FG0 FG2 32.52", Assembly: "addi FG0 R2 32.52", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "addi FP0 FP2 321.321", Assembly: "addi FP0 FP2 321.321", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , loaded: "and R0 R1 R2", user: "and R0 R1 R2", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "and FG0 FG1 FG2", user: "and FG0 FG1 FG2", _rowVariant: ''},
+  { Break: null, Address: "0x8000", Label:"" , loaded: "and FP0 FP2 FP4", user: "and FP0 FP2 FP4", _rowVariant: ''},
 
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and R0 R1 R2", Assembly: "and R0 R1 R2", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FG0 FG1 FG2", Assembly: "and FG0 FG1 FG2", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "and FP0 FP2 FP4", Assembly: "and FP0 FP2 FP4", _rowVariant: ''},
-
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add R1 R2 R3", Assembly: "add R1 R2 R3", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FG0 FG1 FG2", Assembly: "add FG0 FG1 FG2", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , Pseudo: "add FP0 FP2 FP4", Assembly: "add FP0 FP2 FP4", _rowVariant: '' }
+  { Break: null, Address: "0x8000", Label:"" , loaded: "add R1 R2 R3", user: "add R1 R2 R3", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , loaded: "add FG0 FG1 FG2", user: "add FG0 FG1 FG2", _rowVariant: '' },
+  { Break: null, Address: "0x8000", Label:"" , loaded: "add FP0 FP2 FP4", user: "add FP0 FP2 FP4", _rowVariant: '' }
 ]
 
 /*Indice de ejecucion*/
@@ -252,6 +254,8 @@ window.app = new Vue({
     architecture_hash: architecture_hash,
     /*Listado de tipos de componentes*/
     componentsTypes:componentsTypes,
+    /*Listado de registros de coma flotante*/
+    simple_reg:[],
     /*Campos de la tabla de componentes*/
     archFields: ['name', 'nbits', 'value', 'default_value', 'properties', 'actions'],
     /*Edicion de la arquitectura*/
@@ -282,12 +286,18 @@ window.app = new Vue({
       title: '',
       element: '',
       type: '',
+      double_precision: '',
+      simple1: '',
+      simple2: '',
     },
     /*Edicion de un elemento*/
     modalEditElement:{
       title: '',
       element: '',
       type: '',
+      double_precision: '',
+      simple1: '',
+      simple2: '',
     },
     /*Borrado de un elemento*/
     modalDeletElement:{
@@ -337,6 +347,7 @@ window.app = new Vue({
       cop: '',
     },
     /*Asignacion de valores de la tabla de instrucciones*/
+    archInstructions: ['Break', 'Address', 'Label', 'Loaded Instructions', 'User Instructions'],
     instructions: instructions,
 
 
@@ -645,22 +656,37 @@ window.app = new Vue({
 
     /*Muestra el modal para nuevo un elemento*/
     newElemModal(comp, index, button){
-      this.modalNewElement.title = "Edit " + comp;
+      this.modalNewElement.title = "New " + comp;
       this.modalNewElement.element = comp;
       this.modalNewElement.type = architecture.components[index].type;
+      this.modalNewElement.double_precision = architecture.components[index].double_precision;
 
       this.$root.$emit('bv::show::modal', 'modalNewElement', button);
+
+      app._data.simple_reg = [];
+      for (var i = 0; i < architecture_hash.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
+          app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},)
+        }
+      }
     },
 
     /*Comprueba que estan todos los campos del formulario de nuevo elemento*/
     newElementVerify(evt, comp){
       evt.preventDefault();
-      if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
+      if (!this.formArchitecture.name) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } else {
-        this.newElement(comp);
+        if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
+          app._data.alertMessaje = 'Please complete all fields';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        }
+        else{
+          this.newElement(comp);
+        }
       }
     },
 
@@ -705,7 +731,39 @@ window.app = new Vue({
             break;
           }
           if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+            var aux_new;
+
+            for (var z = 0; z < architecture_hash.length; z++) {
+              for (var j = 0; j < architecture.components[z].elements.length; j++) {
+                if(architecture.components[z].double_precision == false){
+                  architecture.components[z].elements[j].value = architecture.components[z].elements[j].default_value;
+                }
+
+                else{
+                  var aux_value;
+                  var aux_sim1;
+                  var aux_sim2;
+
+                  for (var a = 0; a < architecture_hash.length; a++) {
+                    for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
+                        aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
+                      }
+                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
+                        aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
+                      }
+                    }
+                  }
+
+                  aux_value = aux_sim1 + aux_sim2;
+
+                  aux_new = this.hex2double("0x" + aux_value);
+                }
+              }
+            }
+
+
+            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: aux_new, properties: this.formArchitecture.properties};
             architecture.components[i].elements.push(newElement);
             this.formArchitecture.name='';
             this.formArchitecture.defValue='';
@@ -721,12 +779,24 @@ window.app = new Vue({
       this.modalEditElement.title = "Edit " + elem;
       this.modalEditElement.element = elem;
       this.modalEditElement.type = architecture.components[comp].type;
+      this.modalEditElement.double_precision = architecture.components[comp].double_precision;
+
+      app._data.simple_reg = [];
+      for (var i = 0; i < architecture_hash.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
+          app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},)
+        }
+      }
 
       for(var j=0; j < architecture.components[comp].elements.length; j++){
         if(elem == architecture.components[comp].elements[j].name){
           this.formArchitecture.name = elem;
           this.formArchitecture.defValue = (architecture.components[comp].elements[j].default_value).toString();
           this.formArchitecture.properties = architecture.components[comp].elements[j].properties;
+          if(this.modalEditElement.double_precision == true){
+            this.formArchitecture.simple1 = architecture.components[comp].elements[j].simple_reg[0];
+            this.formArchitecture.simple2 = architecture.components[comp].elements[j].simple_reg[1];
+          }
         }
       }
       this.$root.$emit('bv::show::modal', 'modalEditElement', button);
@@ -763,7 +833,48 @@ window.app = new Vue({
           for(var j=0; j < architecture.components[i].elements.length; j++){
             if(comp == architecture.components[i].elements[j].name){
               architecture.components[i].elements[j].name = this.formArchitecture.name;
-              architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+              if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
+                architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+              }
+              else{
+                if(architecture.components[i].double_precision == false){
+                  architecture.components[i].elements[j].default_value= parseFloat(this.formArchitecture.defValue, 10);
+                }
+                else{
+                  for (var z = 0; z < architecture_hash.length; z++) {
+                    for (var k = 0; k < architecture.components[z].elements.length; k++) {
+                      if(architecture.components[z].double_precision == false){
+                        architecture.components[z].elements[k].value = architecture.components[z].elements[k].default_value;
+                      }
+
+                      else{
+                        var aux_value;
+                        var aux_sim1;
+                        var aux_sim2;
+
+                        for (var a = 0; a < architecture_hash.length; a++) {
+                          for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                            if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
+                              aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
+                            }
+                            if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
+                              aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
+                            }
+                          }
+                        }
+
+                        aux_value = aux_sim1 + aux_sim2;
+
+                        architecture.components[i].elements[j].value = this.hex2double("0x" + aux_value);
+                      }
+                    }
+                  }
+
+                  architecture.components[i].elements[j].simple_reg[0] = this.formArchitecture.simple1;
+                  architecture.components[i].elements[j].simple_reg[1] = this.formArchitecture.simple2;
+
+                }
+              }
               architecture.components[i].elements[j].properties = this.formArchitecture.properties;
             }
           }
@@ -771,6 +882,8 @@ window.app = new Vue({
         this.formArchitecture.name='';
         this.formArchitecture.defValue='';
         this.formArchitecture.properties=[];
+        this.formArchitecture.simple1='';
+        this.formArchitecture.simple2='';
       }
     },
 
@@ -1447,7 +1560,7 @@ window.app = new Vue({
       var error = 0;
       var index;
 
-      var instructionExec = instructions[executionIndex].Assembly;
+      var instructionExec = instructions[executionIndex].loaded;
 
       var instructionExecParts = instructionExec.split(' ');
       var signatureParts;
@@ -1969,9 +2082,39 @@ window.app = new Vue({
       }
       executionIndex = 0;
       instructions[executionIndex]._rowVariant = 'success';
+
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++) {
-          architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
+          if(architecture.components[i].double_precision == false){
+            architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
+          }
+
+          else{
+            var aux_value;
+            var aux_sim1;
+            var aux_sim2;
+
+            for (var a = 0; a < architecture_hash.length; a++) {
+              for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+                  aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
+                }
+                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+                  aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
+                }
+              }
+            }
+
+            aux_value = aux_sim1 + aux_sim2;
+
+            architecture.components[i].elements[j].value = this.hex2double("0x" + aux_value);
+          }
+        }
+      }
+
+      for (var i = 0; i < memory.length; i++) {
+        for (var j = 0; j < memory[i].Binary.length; j++) {
+          memory[i].Binary[j].Bin = memory[i].Binary[j].DefBin;
         }
       }
     },
@@ -2157,7 +2300,7 @@ textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor
 textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
 
 textarea_assembly_editor.setValue("\n\n");
-// textarea_assembly_editor.setSize("auto", "auto");
+//textarea_assembly_editor.setSize("auto", "auto");
 textarea_assembly_editor.refresh();
 
 

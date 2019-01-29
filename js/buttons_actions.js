@@ -1,17 +1,11 @@
 /*Botones menu de configuracion*/
-$("#load_arch").click(function(){
-  $("#load_menu_arch").show();
-  $("#save_menu_arch").hide();
-  $("#view_components").hide();
-});
-
-$("#save_arch").click(function(){
+$(".save_arch").click(function(){
   $("#load_menu_arch").hide();
   $("#save_menu_arch").show();
   $("#view_components").hide();
 });
 
-$("#view_arch").click(function(){
+$(".view_arch").click(function(){
   $("#load_menu_arch").hide();
   $("#save_menu_arch").hide();
   $("#view_components").show();

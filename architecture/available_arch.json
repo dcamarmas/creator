@@ -1,14 +1,20 @@
 [
   {
     "name": "MIPS-like",
+    "img": "./images/mips_logo.png",
+    "alt":"MIPS logo",
     "id": "select_confMIPS"
   },
   {
     "name": "ARM-like",
+    "img": "./images/arm_logo.png",
+    "alt":"ARM logo",
     "id": "select_confARM"
   },
   {
     "name": "80x80-like",
+    "img": "./images/80x80_logo.png",
+    "alt":"80x80 logo",
     "id": "select_conf80x80"
   }
 ]
