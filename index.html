@@ -271,7 +271,7 @@
                               <b-form-input id="editElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
                               </b-form-input>
                             </b-form-group>
-                            <b-form-group id="editElementDefValue" label="Default value:" v-if="modalNewElement.double_precision == false">
+                            <b-form-group id="editElementDefValue" label="Default value:" v-if="modalEditElement.double_precision == false">
                               <b-form-input id="editElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value" :state="valid(formArchitecture.defValue)" size="sm">
                               </b-form-input>
                             </b-form-group>
@@ -479,7 +479,7 @@
                           </b-form>
 
                           <hr>
-                          <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage"></b-pagination-nav>
+                          <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
                         </b-modal>
                       </div>
 
@@ -593,7 +593,7 @@
                         </b-form>
 
                         <hr>
-                        <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage"></b-pagination-nav>
+                        <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
 
                       </b-modal >
                     </b-tab>
