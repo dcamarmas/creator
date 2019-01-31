@@ -156,7 +156,11 @@ var architecture = {components:[
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "MP.w.(val+reg2)=reg1"},*/
   ],pseudoinstructions:[
-
+    /*{name: "move", co: "000000", cop: "100000", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+      {name: "move", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+    ], definition: "add reg1 R0 reg2"},*/
 
   ]};
 
@@ -307,7 +311,7 @@ window.app = new Vue({
     /*Nombre de la arquitectura*/
     architecture_name: '',
 
-    
+
     /*PAGINA DE INSTRUCCIONES*/
     instFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
     /*Edicion de las instrucciones*/
@@ -350,6 +354,27 @@ window.app = new Vue({
     /*Asignacion de valores de la tabla de instrucciones*/
     archInstructions: ['Break', 'Address', 'Label', 'Loaded Instructions', 'User Instructions'],
     instructions: instructions,
+
+
+    /*PAGINA DE PSEUDOINSTRUCCIONES*/
+    pseudoinstFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+    /*Reset de las instrucciones*/
+    modalResetPseudoinst:{
+      title: '',
+      element: '',
+    },
+    /*Borrado de una instruccion*/
+    modalDeletPseudoinst:{
+      title: '',
+      element: '',
+    },
+    /*Edicion de una instruccion*/
+    modalEditPseudoinst:{
+      title: '',
+      element: '',
+      co: '',
+      cop: '',
+    },
 
 
     /*MEMORIA*/
@@ -1060,7 +1085,7 @@ window.app = new Vue({
     /*Muestra el modal de editar instruccion*/
     editInstModal(elem, co, cop, button){
       app._data.dismissCountDownMod = 0;
-      
+
       this.modalEditInst.title = "Edit " + elem;
       this.modalEditInst.element = elem;
       for (var i = 0; i < architecture.instructions.length; i++) {
@@ -1248,6 +1273,404 @@ window.app = new Vue({
       this.formInstruction.definition='';
       this.instructionFormPage = 1;
     },
+
+
+
+
+
+
+
+
+
+
+    /*PAGINA DE PSEUDOINSTRUCCIONES*/
+    /*Modal de alerta de reset*/
+    resetPseudoinstModal(elem, button){
+      this.modalResetPseudoinst.title = "Reset " + elem + " pseudoinstructions";
+      this.modalResetPseudoinst.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalResetPseudoinst', button);
+    },
+
+    resetPseudoinstructionsModal(arch){
+      $.getJSON('architecture/'+arch+'.json', function(cfg){
+        architecture.pseudoinstructions = cfg.pseudoinstructions;
+        app._data.architecture = architecture;
+
+        app._data.alertMessaje = 'The pseudoinstruction set has been reset correctly';
+        app._data.type ='success';
+        app._data.dismissCountDown = app._data.dismissSecs;
+      });
+    },
+
+    /*Muestra el modal de confirmacion de borrado de una instruccion*/
+    delPseudoinstModal(elem, button){
+      this.modalDeletPseudoinst.title = "Delete " + elem;
+      this.modalDeletPseudoinst.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalDeletPseudoinst', button);
+    },
+
+    /*Borra una instruccion*/
+    delPseudoinstruction(comp){
+      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
+        if(comp == architecture.pseudoinstructions[i].name){
+          architecture.pseudoinstructions.splice(i,1);
+        }
+      }
+    },
+
+    /*Muestra el modal de editar instruccion*/
+    editPseudoinstModal(elem, co, cop, button){
+      app._data.dismissCountDownMod = 0;
+
+      this.modalEditPseudoinst.title = "Edit " + elem;
+      this.modalEditPseudoinst.element = elem;
+      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
+        if(elem == architecture.pseudoinstructions[i].name && co == architecture.pseudoinstructions[i].co && cop == architecture.pseudoinstructions[i].cop){
+          this.formInstruction.name = architecture.pseudoinstructions[i].name;
+          this.formInstruction.cop = architecture.pseudoinstructions[i].cop;
+          this.formInstruction.co = architecture.pseudoinstructions[i].co;
+          app._data.modalEditPseudoinst.co = architecture.pseudoinstructions[i].co;
+          app._data.modalEditPseudoinst.cop = architecture.pseudoinstructions[i].cop;
+          this.formInstruction.nwords = architecture.pseudoinstructions[i].nwords;
+          this.formInstruction.numfields = architecture.pseudoinstructions[i].fields.length;
+          this.formInstruction.definition = architecture.pseudoinstructions[i].definition;
+
+          for (var j = 0; j < architecture.pseudoinstructions[i].fields.length; j++) {
+            this.formInstruction.nameField [j]= architecture.pseudoinstructions[i].fields[j].name;
+            this.formInstruction.typeField[j] = architecture.pseudoinstructions[i].fields[j].type;
+            this.formInstruction.startBitField[j] = architecture.pseudoinstructions[i].fields[j].startbit;
+            this.formInstruction.stopBitField[j] = architecture.pseudoinstructions[i].fields[j].stopbit;
+          }
+        }
+      }
+
+      this.$root.$emit('bv::show::modal', 'modalEditPseudoinst', button);
+    },
+
+    /*Comprueba que estan todos los campos del formulario de editar instruccion*/
+    editPseudoinstVerify(evt, inst, co, cop){
+      evt.preventDefault();
+
+      var vacio = 0;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] == 'cop'){
+          if(!this.formInstruction.cop){
+            vacio = 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < this.formInstruction.numfields; i++) {
+        if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
+          vacio = 1;
+        }
+      }
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else if(isNaN(this.formInstruction.co)){
+        app._data.alertMessaje = 'The field co must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else if(isNaN(this.formInstruction.cop)){
+        app._data.alertMessaje = 'The field cop must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else {
+        this.editPseudoinstruction(inst, co, cop);
+      }
+    },
+
+    /*edita una instruccion*/
+    editPseudoinstruction(comp, co, cop){
+      var exCop = false;
+
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] == 'cop'){
+          exCop = true;
+        }
+      }
+
+      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
+        if((this.formInstruction.co == architecture.pseudoinstructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
+          if(((!this.formInstruction.cop) || (exCop != true))){
+            app._data.alertMessaje = 'The instruction already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            return;
+          }
+        }
+      }
+
+      for (var i = 0; i < architecture.pseudoinstructions.length && exCop == true ; i++) {
+        if((this.formInstruction.cop == architecture.pseudoinstructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
+          app._data.alertMessaje = 'The instruction already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          return;
+        }
+      }
+
+      this.$refs.editPseudoinst.hide();
+      for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+        if(architecture.pseudoinstructions[i].name == comp && architecture.pseudoinstructions[i].co == co && architecture.pseudoinstructions[i].cop == cop){
+          architecture.pseudoinstructions[i].name = this.formInstruction.name;
+          architecture.pseudoinstructions[i].co = this.formInstruction.co;
+          architecture.pseudoinstructions[i].cop = this.formInstruction.cop;
+          architecture.pseudoinstructions[i].nwords = this.formInstruction.nwords;
+          architecture.pseudoinstructions[i].definition = this.formInstruction.definition;
+
+          for (var j = 0; j < this.formInstruction.numfields; j++){
+            if(j < architecture.pseudoinstructions[i].fields.length){
+              architecture.pseudoinstructions[i].fields[j].name = this.formInstruction.nameField[j];
+              architecture.pseudoinstructions[i].fields[j].type = this.formInstruction.typeField[j];
+              architecture.pseudoinstructions[i].fields[j].startbit = this.formInstruction.startBitField[j];
+              architecture.pseudoinstructions[i].fields[j].stopbit = this.formInstruction.stopBitField[j];
+            }
+            else{
+              var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j]};
+              architecture.pseudoinstructions[i].fields.push(newField);
+            }
+          }
+
+          var signature = this.formInstruction.name;
+          for (var z = 1; z < this.formInstruction.numfields; z++) {
+            if(z == 1){
+              signature = signature + ",";
+            }
+            if(this.formInstruction.typeField[z] != 'cop'){
+              signature = signature + this.formInstruction.typeField[z];
+              if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+                signature = signature + ',';
+              }
+            }
+            if(this.formInstruction.typeField[z] == 'cop'){
+              cop = true;
+              if(z<this.formInstruction.numfields-1){
+                signature = signature + ',';
+              }
+            }
+          }
+
+          var signatureRaw = this.formInstruction.name;
+          for (var z = 1; z < this.formInstruction.numfields; z++) {
+            if(this.formInstruction.typeField[z] != 'cop'){
+              if(z == 1){
+                signatureRaw = signatureRaw + ' ';
+              }
+              if(this.formInstruction.typeField[z] == '(reg)'){
+                signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
+                if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+                  signatureRaw = signatureRaw + ' ';
+                } 
+              }
+              else{
+                signatureRaw = signatureRaw + this.formInstruction.nameField[z];
+                if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+                  signatureRaw = signatureRaw + ' ';
+                } 
+              }
+            }
+            if(this.formInstruction.typeField[z] == 'cop'){
+              if(z<this.formInstruction.numfields-1){
+                signatureRaw = signatureRaw + ' ';
+              }
+            }
+          }
+
+          if(exCop == false){
+            architecture.pseudoinstructions[i].cop='';
+          }
+
+          architecture.pseudoinstructions[i].signature = signature;
+          architecture.pseudoinstructions[i].signatureRaw = signatureRaw;
+
+          if(architecture.pseudoinstructions[i].fields.length > this.formInstruction.numfields){
+            architecture.pseudoinstructions[i].fields.splice(this.formInstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formInstruction.numfields));
+          }
+
+        }
+      }
+
+      this.formInstruction.name='';
+      this.formInstruction.cop='';
+      this.formInstruction.co ='';
+      this.formInstruction.nwords =1;
+      this.formInstruction.numfields=1;
+      this.formInstruction.nameField=[];
+      this.formInstruction.typeField=[];
+      this.formInstruction.startBitField=[];
+      this.formInstruction.stopBitField=[];
+      this.formInstruction.definition='';
+      this.instructionFormPage = 1;
+    },
+
+
+
+
+
+
+
+
+
+
+    /*Comprueba que estan todos los campos del formulario de nueva instruccion*/
+    newPseudoinstVerify(evt){
+      evt.preventDefault();
+
+      var vacio = 0;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] == 'cop'){
+          if(!this.formInstruction.cop){
+            vacio = 1;
+          }
+        }
+      }
+
+      for (var i = 0; i < this.formInstruction.numfields; i++) {
+        if(this.formInstruction.nameField.length <  this.formInstruction.numfields || this.formInstruction.typeField.length <  this.formInstruction.numfields || this.formInstruction.startBitField.length <  this.formInstruction.numfields || this.formInstruction.stopBitField.length <  this.formInstruction.numfields){
+          vacio = 1;
+        }
+      }
+
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } 
+      else if(isNaN(this.formInstruction.co)){
+        app._data.alertMessaje = 'The field co must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else if(isNaN(this.formInstruction.cop)){
+        app._data.alertMessaje = 'The field cop must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else {
+        this.newPseudoinstruction();
+      }
+    },
+
+    /*Inserta una nueva instruccion*/
+    newPseudoinstruction(){
+      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
+        if(this.formInstruction.co == architecture.pseudoinstructions[i].co){
+          if((!this.formInstruction.cop)){
+            app._data.alertMessaje = 'The instruction already exists';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            return;
+          }
+        }
+      }
+
+      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
+        if((this.formInstruction.cop == architecture.pseudoinstructions[i].cop) && (!this.formInstruction.cop == false)){
+          app._data.alertMessaje = 'The instruction already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          return;
+        }
+      }
+
+      this.$refs.newInst.hide();
+
+      var cop = false;
+
+      var signature = this.formInstruction.name;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] != 'cop'){
+          if(z == 1){
+            signature = signature + ",";
+          }
+          signature = signature + this.formInstruction.typeField[z];
+          if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+            signature = signature + ',';
+          }
+        }
+        if(this.formInstruction.typeField[z] == 'cop'){
+          cop = true;
+          if(z<this.formInstruction.numfields-1){
+            signature = signature + ',';
+          }
+        }
+      }
+
+      var signatureRaw = this.formInstruction.name;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(this.formInstruction.typeField[z] != 'cop'){
+          if(z == 1){
+            signatureRaw = signatureRaw + ' ';
+          }
+          if(this.formInstruction.typeField[z] == '(reg)'){
+            signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
+            if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+              signatureRaw = signatureRaw + ' ';
+            } 
+          }
+          else{
+            signatureRaw = signatureRaw + this.formInstruction.nameField[z];
+            if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+              signatureRaw = signatureRaw + ' ';
+            } 
+          }
+        }
+        if(this.formInstruction.typeField[z] == 'cop'){
+          if(z<this.formInstruction.numfields-1){
+            signatureRaw = signatureRaw + ' ';
+          }
+        }
+      }
+
+      if(cop == false){
+        this.formInstruction.cop='';
+      }
+
+      var newPseudoinstruction = {name: this.formInstruction.name, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
+      architecture.pseudoinstructions.push(newPseudoinstruction);
+
+      for (var i = 0; i < this.formInstruction.numfields; i++) {
+        var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: this.formInstruction.startBitField[i], stopbit: this.formInstruction.stopBitField[i]};
+        architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(newField);
+      }
+
+      this.formInstruction.name='';
+      this.formInstruction.cop='';
+      this.formInstruction.co ='';
+      this.formInstruction.nwords =1;
+      this.formInstruction.numfields=1;
+      this.formInstruction.nameField=[];
+      this.formInstruction.typeField=[];
+      this.formInstruction.startBitField=[];
+      this.formInstruction.stopBitField=[];
+      this.formInstruction.definition='';
+      this.formInstruction.assignedCop=false;
+      this.instructionFormPage = 1;
+      
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*PAGINA ENSAMBLADOR*/
     /*Funciones de carga y descarga de ensamblador*/
