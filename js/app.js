@@ -326,6 +326,7 @@ window.app = new Vue({
     },
     /*Barra de paginas formulario instrucciones*/
     instructionFormPage: 1,
+    instructionFormPageLink: ['#Principal', '#Fields', '#Definition'],
     /*Variables para el selector de campos tabla*/
     fieldsSel: '',
     instSel: '',
@@ -388,9 +389,16 @@ window.app = new Vue({
       this.dismissCountDownMod = dismissCountDown;
     },
 
+    /*Nombres de barra de paginacion*/
+    linkGen (pageNum) {
+      return this.instructionFormPageLink[pageNum - 1]
+    },
+    pageGen (pageNum) {
+      return this.instructionFormPageLink[pageNum - 1].slice(1)
+    },
+
     /*VALIDADOR FORMULARIOS*/
     valid(value){
-
       for (var i = 0; i <this.formInstruction.typeField.length; i++) {
         if(this.formInstruction.typeField[i]=='cop'){
           this.formInstruction.assignedCop = true;
@@ -429,7 +437,6 @@ window.app = new Vue({
         architecture = cfg;
         app._data.architecture = architecture;
 
-        /*PREGUNTAR*/
         architecture_hash = [];
         for (var i = 0; i < architecture.components.length; i++) {
           architecture_hash.push({name: architecture.components[i].name, index: i}); 
@@ -470,7 +477,6 @@ window.app = new Vue({
 
         app._data.architecture = architecture;
 
-        /*PREGUNTAR*/
         architecture_hash = [];
         for (var i = 0; i < architecture.components.length; i++) {
           architecture_hash.push({name: architecture.components[i].name, index: i}); 
@@ -534,7 +540,6 @@ window.app = new Vue({
         architecture.components = cfg.components;
         app._data.architecture = architecture;
 
-        /*PREGUNTAR*/
         architecture_hash = [];
         for (var i = 0; i < architecture.components.length; i++) {
           architecture_hash.push({name: architecture.components[i].name, index: i}); 
@@ -561,35 +566,35 @@ window.app = new Vue({
 
     /*Crea un nuevo componente*/
     newComponent(){
-      var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
         if(this.formArchitecture.name == architecture_hash[i].name){
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
-          error = 1;
+          return;
         }
       }
 
-      if(error == 0){
-        this.$refs.newComponent.hide();
-        var precision = false;
-        if(this.formArchitecture.precision == "precision"){
-          precision = true;
-        }
-        var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
-        architecture.components.push(newComp);
-        var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
-        architecture_hash.push(newComponentHash);
-
-        this.formArchitecture.name='';
-        this.formArchitecture.type='';
-        this.formArchitecture.precision='';
+      this.$refs.newComponent.hide();
+      var precision = false;
+      if(this.formArchitecture.precision == "precision"){
+        precision = true;
       }
+      var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
+      architecture.components.push(newComp);
+      var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
+      architecture_hash.push(newComponentHash);
+
+      this.formArchitecture.name='';
+      this.formArchitecture.type='';
+      this.formArchitecture.precision='';
+    
     },
 
     /*Muestra el modal para editar un componente*/
     editCompModal(comp, index, button){
+      app._data.dismissCountDownMod = 0;
+
       this.modalEditComponent.title = "Edit " + comp;
       this.modalEditComponent.element = comp;
 
@@ -612,26 +617,23 @@ window.app = new Vue({
 
     /*Edita un componente*/
     editComponent(comp){
-      var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
         if((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
-          error = 1;
+          return;
         }
       }
-      
-      if(error == 0){
-        this.$refs.editComponent.hide();
-        for (var i = 0; i < architecture_hash.length; i++) {
-          if(comp == architecture_hash[i].name){
-            architecture_hash[i].name = this.formArchitecture.name;
-            architecture.components[i].name = this.formArchitecture.name;
-          }
+
+      this.$refs.editComponent.hide();
+      for (var i = 0; i < architecture_hash.length; i++) {
+        if(comp == architecture_hash[i].name){
+          architecture_hash[i].name = this.formArchitecture.name;
+          architecture.components[i].name = this.formArchitecture.name;
         }
-        this.formArchitecture.name='';
-      }   
+      }
+      this.formArchitecture.name='';
     },
 
     /*Muestra el modal de confirmacion de borrado de un componente*/
@@ -656,6 +658,8 @@ window.app = new Vue({
 
     /*Muestra el modal para nuevo un elemento*/
     newElemModal(comp, index, button){
+      app._data.dismissCountDownMod = 0;
+
       this.modalNewElement.title = "New " + comp;
       this.modalNewElement.element = comp;
       this.modalNewElement.type = architecture.components[index].type;
@@ -692,90 +696,78 @@ window.app = new Vue({
 
     /*Crea un nuevo elemento*/
     newElement(comp){
-      var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if(this.formArchitecture.name == architecture.components[i].elements[j].name){
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
-            error = 1;
+            return;
           }
         } 
       }
-      if(error == 0){
-        this.$refs.newElement.hide();
-        for (var i = 0; i < architecture_hash.length; i++) {
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            this.formArchitecture.name='';
-            this.formArchitecture.defValue='';
-            this.formArchitecture.properties=[];
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "control")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: ["read", "write"]};
-            architecture.components[i].elements.push(newElement);
-            this.formArchitecture.name='';
-            this.formArchitecture.defValue='';
-            this.formArchitecture.properties=[];
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            this.formArchitecture.name='';
-            this.formArchitecture.defValue='';
-            this.formArchitecture.properties=[];
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
-            var aux_new;
 
-            for (var z = 0; z < architecture_hash.length; z++) {
-              for (var j = 0; j < architecture.components[z].elements.length; j++) {
-                if(architecture.components[z].double_precision == false){
-                  architecture.components[z].elements[j].value = architecture.components[z].elements[j].default_value;
-                }
+      this.$refs.newElement.hide();
+      for (var i = 0; i < architecture_hash.length; i++) {
+        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
+          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
+          architecture.components[i].elements.push(newElement);
+          this.formArchitecture.name='';
+          this.formArchitecture.defValue='';
+          this.formArchitecture.properties=[];
+          break;
+        }
+        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "control")){
+          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: ["read", "write"]};
+          architecture.components[i].elements.push(newElement);
+          this.formArchitecture.name='';
+          this.formArchitecture.defValue='';
+          this.formArchitecture.properties=[];
+          break;
+        }
+        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
+          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
+          architecture.components[i].elements.push(newElement);
+          this.formArchitecture.name='';
+          this.formArchitecture.defValue='';
+          this.formArchitecture.properties=[];
+          break;
+        }
+        if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
+          var aux_new;
 
-                else{
-                  var aux_value;
-                  var aux_sim1;
-                  var aux_sim2;
+          var aux_value;
+          var aux_sim1;
+          var aux_sim2;
 
-                  for (var a = 0; a < architecture_hash.length; a++) {
-                    for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
-                        aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                      }
-                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
-                        aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                      }
-                    }
-                  }
-
-                  aux_value = aux_sim1 + aux_sim2;
-
-                  aux_new = this.hex2double("0x" + aux_value);
-                }
+          for (var a = 0; a < architecture_hash.length; a++) {
+            for (var b = 0; b < architecture.components[a].elements.length; b++) {
+              if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
+                aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
+              }
+              if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
+                aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
               }
             }
-
-
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: aux_new, properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            this.formArchitecture.name='';
-            this.formArchitecture.defValue='';
-            this.formArchitecture.properties=[];
-            break;
           }
+
+          aux_value = aux_sim1 + aux_sim2;
+          aux_new = this.hex2double("0x" + aux_value);
+
+          var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: aux_new, properties: this.formArchitecture.properties};
+          architecture.components[i].elements.push(newElement);
+          this.formArchitecture.name='';
+          this.formArchitecture.defValue='';
+          this.formArchitecture.properties=[];
+          break;
         }
       }
     },
     
     /*Muestra el modal de editar un elemento*/
     editElemModal(elem, comp, button){
+      app._data.dismissCountDownMod = 0;
+
       this.modalEditElement.title = "Edit " + elem;
       this.modalEditElement.element = elem;
       this.modalEditElement.type = architecture.components[comp].type;
@@ -816,75 +808,63 @@ window.app = new Vue({
 
     /*Edita un elemento*/
     editElement(comp){
-      var error = 0;
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
-            error = 1;
+            return;
           }
         } 
       }
-      if(error == 0){
-        this.$refs.editElement.hide();
-        for (var i = 0; i < architecture_hash.length; i++) {
-          for(var j=0; j < architecture.components[i].elements.length; j++){
-            if(comp == architecture.components[i].elements[j].name){
-              architecture.components[i].elements[j].name = this.formArchitecture.name;
-              if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
-                architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+
+      this.$refs.editElement.hide();
+      for (var i = 0; i < architecture_hash.length; i++) {
+        for(var j=0; j < architecture.components[i].elements.length; j++){
+          if(comp == architecture.components[i].elements[j].name){
+            architecture.components[i].elements[j].name = this.formArchitecture.name;
+            if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
+              architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+            }
+            else{
+              if(architecture.components[i].double_precision == false){
+                architecture.components[i].elements[j].default_value= parseFloat(this.formArchitecture.defValue, 10);
               }
               else{
-                if(architecture.components[i].double_precision == false){
-                  architecture.components[i].elements[j].default_value= parseFloat(this.formArchitecture.defValue, 10);
-                }
-                else{
-                  for (var z = 0; z < architecture_hash.length; z++) {
-                    for (var k = 0; k < architecture.components[z].elements.length; k++) {
-                      if(architecture.components[z].double_precision == false){
-                        architecture.components[z].elements[k].value = architecture.components[z].elements[k].default_value;
-                      }
+                
+                var aux_value;
+                var aux_sim1;
+                var aux_sim2;
 
-                      else{
-                        var aux_value;
-                        var aux_sim1;
-                        var aux_sim2;
-
-                        for (var a = 0; a < architecture_hash.length; a++) {
-                          for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                            if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
-                              aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                            }
-                            if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
-                              aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                            }
-                          }
-                        }
-
-                        aux_value = aux_sim1 + aux_sim2;
-
-                        architecture.components[i].elements[j].value = this.hex2double("0x" + aux_value);
-                      }
+                for (var a = 0; a < architecture_hash.length; a++) {
+                  for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                    if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
+                      aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].value));
+                    }
+                    if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
+                      aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].value));
                     }
                   }
-
-                  architecture.components[i].elements[j].simple_reg[0] = this.formArchitecture.simple1;
-                  architecture.components[i].elements[j].simple_reg[1] = this.formArchitecture.simple2;
-
                 }
+
+                aux_value = aux_sim1 + aux_sim2;
+
+                architecture.components[i].elements[j].value = this.hex2double("0x" + aux_value);
+
+                architecture.components[i].elements[j].simple_reg[0] = this.formArchitecture.simple1;
+                architecture.components[i].elements[j].simple_reg[1] = this.formArchitecture.simple2;
               }
-              architecture.components[i].elements[j].properties = this.formArchitecture.properties;
             }
+            architecture.components[i].elements[j].properties = this.formArchitecture.properties;
           }
-        } 
-        this.formArchitecture.name='';
-        this.formArchitecture.defValue='';
-        this.formArchitecture.properties=[];
-        this.formArchitecture.simple1='';
-        this.formArchitecture.simple2='';
-      }
+        }
+      } 
+      this.formArchitecture.name='';
+      this.formArchitecture.defValue='';
+      this.formArchitecture.properties=[];
+      this.formArchitecture.simple1='';
+      this.formArchitecture.simple2='';
     },
 
     /*Muestra el modal para confirmar el borrado*/
