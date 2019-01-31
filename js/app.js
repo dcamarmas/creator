@@ -1059,6 +1059,8 @@ window.app = new Vue({
 
     /*Muestra el modal de editar instruccion*/
     editInstModal(elem, co, cop, button){
+      app._data.dismissCountDownMod = 0;
+      
       this.modalEditInst.title = "Edit " + elem;
       this.modalEditInst.element = elem;
       for (var i = 0; i < architecture.instructions.length; i++) {

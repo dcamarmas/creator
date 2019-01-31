@@ -212,7 +212,7 @@
                         <!-- Editar componente -->
                         <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" ref="editComponent">
 
-                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
                           </b-alert>
 
@@ -227,7 +227,7 @@
                         <!-- Nuevo elemento -->
                         <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Create" @ok="newElementVerify($event, modalNewElement.element)" ref="newElement">
 
-                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
                           </b-alert>
 
@@ -262,7 +262,7 @@
                         <!-- Editar elemento -->
                         <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" ref="editElement">
 
-                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
                           </b-alert>
 
@@ -310,7 +310,7 @@
 
                       <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" ref="newComponent">
 
-                        <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                        <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                           <span class="fa fa-info-circle"></span> {{alertMessaje}}
                         </b-alert>
 
@@ -352,6 +352,7 @@
                             </b-form-select>
 
                             <div v-for="i in row.item.fields" v-if="(fieldsSel == i.name) && (instSel == row.item.name)">
+                              <br>
                               <h6 class="instruction_table">Name: {{i.name}}</h6>
                               <h6 class="instruction_table">Type: {{i.type}}</h6>
                               <h6 class="instruction_table">Start Bit: {{i.startbit}}</h6>
@@ -372,7 +373,7 @@
 
                         <!-- Formulario para editar una instruccion -->
                         <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Edit" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" ref="editInst">
-                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
                           </b-alert>
 
@@ -486,7 +487,7 @@
                       <!-- Formulario nueva instruccion -->
                       <b-modal size="lg" id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstVerify" ref="newInst">
 
-                        <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style="margin: 5pt;">
+                        <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                           <span class="fa fa-info-circle"></span> {{alertMessaje}}
                         </b-alert>
 
