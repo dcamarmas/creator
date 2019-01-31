@@ -787,7 +787,6 @@
           "name": "FP0",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG0",
             "FG1"
@@ -801,7 +800,6 @@
           "name": "FP2",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG2",
             "FG3"
@@ -815,7 +813,6 @@
           "name": "FP4",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG4",
             "FG5"
@@ -829,7 +826,6 @@
           "name": "FP6",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG6",
             "FG7"
@@ -843,7 +839,6 @@
           "name": "FP8",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG8",
             "FG9"
@@ -857,7 +852,6 @@
           "name": "FP10",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG10",
             "FG11"
@@ -871,7 +865,6 @@
           "name": "FP12",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG12",
             "FG13"
@@ -885,7 +878,6 @@
           "name": "FP14",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG14",
             "FG15"
@@ -899,7 +891,6 @@
           "name": "FP16",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG16",
             "FG17"
@@ -913,7 +904,6 @@
           "name": "FP18",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG18",
             "FG19"
@@ -927,7 +917,6 @@
           "name": "FP20",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG20",
             "FG21"
@@ -941,7 +930,6 @@
           "name": "FP22",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG22",
             "FG23"
@@ -955,7 +943,6 @@
           "name": "FP24",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG24",
             "FG25"
@@ -969,7 +956,6 @@
           "name": "FP26",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG26",
             "FG27"
@@ -983,7 +969,6 @@
           "name": "FP28",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG28",
             "FG29"
@@ -997,7 +982,6 @@
           "name": "FP30",
           "nbits": "64",
           "value": 0,
-          "default_value": 0,
           "simple_reg": [
             "FG30",
             "FG31"
@@ -1284,6 +1268,37 @@
         }
       ],
       "definition": "MP.w.(val+reg2)=reg1"
+    }
+  ],
+  "pseudoinstructions": [
+    {
+      "name": "move",
+      "co": "000000",
+      "cop": "100000",
+      "nwords": 1,
+      "signature": "move,reg,reg,reg",
+      "signatureRaw": "add reg1 reg2 reg3",
+      "fields": [
+        {
+          "name": "move",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "add reg1 R0 reg2"
     }
   ]
 }
