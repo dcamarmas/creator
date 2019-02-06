@@ -6,8 +6,8 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Integer control registers", type: "control", double_precision: false, elements:[
-      {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+  {name: "Integer control registers", type: "control", double_precision: false, elements:[
+      /*{name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"BADVADDR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -105,8 +105,8 @@ var architecture = {components:[
       {name:"FP24", nbits:"64", value:0.0, simple_reg: ["FG24","FG25"], properties: ["read", "write"]},
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
-      {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}*/
+      {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},*/
+    ]}
   ], instructions:[
     /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
@@ -162,12 +162,29 @@ var architecture = {components:[
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
     ], definition: "add reg1 R0 reg2"},*/
 
+  ], directives:[
+    /*{name:".kdata", kindof:"segment", size:0 },
+    {name:".ktext", kindof:"segment", size:0 },
+    {name:".data", kindof:"segment", size:0 },
+    {name:".text", kindof:"segment", size:0 },
+    {name:".byte", kindof:"datatype", size:1 },
+    {name:".half", kindof:"datatype", size:2 },
+    {name:".word", kindof:"datatype", size:4 },
+    {name:".space", kindof:"datatype", size:1 },
+    {name:".ascii", kindof:"datatype", size:1 },
+    {name:".asciiz", kindof:"datatype", size:1 },
+    {name:".align", kindof:"datatype", size:0 },*/
   ]};
 
 var componentsTypes = [
   { text: 'Integer', value: 'integer' },
   { text: 'Floating point', value: 'floating point' },
   { text: 'Control', value: 'control' },
+]
+
+var kindofTypes = [
+  { text: 'segment', value: 'segment' },
+  { text: 'datatype', value: 'datatype' },
 ]
 
 memory = [
@@ -375,6 +392,31 @@ window.app = new Vue({
       element: '',
       co: '',
       cop: '',
+    },
+
+    /*PAGINA DE DIRECTIVAS*/
+    directivesFields: ['name', 'kindof', 'size', 'actions'],
+
+    formDirective:{
+      name: '',
+      kindof: '',
+      size: 0,
+    },
+    /*Reset de la arquitectura*/
+    modalResetDir: {
+      title: '',
+      element: '',
+    },
+    modalDeletDir:{
+      title: '',
+      element: '',
+    },
+    /*Listado de tipos de componentes*/
+    kindofTypes:kindofTypes,
+
+    modalEditDirective:{
+      title: '',
+      element: '',
     },
 
 
@@ -1275,15 +1317,6 @@ window.app = new Vue({
       this.instructionFormPage = 1;
     },
 
-
-
-
-
-
-
-
-
-
     /*PAGINA DE PSEUDOINSTRUCCIONES*/
     /*Modal de alerta de reset*/
     resetPseudoinstModal(elem, button){
@@ -1510,15 +1543,6 @@ window.app = new Vue({
       this.instructionFormPage = 1;
     },
 
-
-
-
-
-
-
-
-
-
     /*Comprueba que estan todos los campos del formulario de nueva pseudoinstruccion*/
     newPseudoinstVerify(evt){
       evt.preventDefault();
@@ -1656,6 +1680,100 @@ window.app = new Vue({
       
     },
 
+
+    /*PAGINA DE DIRECTIVAS*/
+    /*Modal de alerta de reset*/
+    resetDirModal(elem, button){
+      this.modalResetDir.title = "Reset " + elem + " directives";
+      this.modalResetDir.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalResetDir', button);
+    },
+
+    resetDirectives(arch){
+      $.getJSON('architecture/'+arch+'.json', function(cfg){
+        architecture.directives = cfg.directives;
+        app._data.architecture = architecture;
+
+        app._data.alertMessaje = 'The directive set has been reset correctly';
+        app._data.type ='success';
+        app._data.dismissCountDown = app._data.dismissSecs;
+      });
+    },
+
+    /*Muestra el modal de confirmacion de borrado de una directiva*/
+    delDirModal(elem, button){
+      this.modalDeletDir.title = "Delete " + elem;
+      this.modalDeletDir.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalDeletDir', button);
+    },
+
+    /*Borra una instruccion*/
+    delDirective(comp){
+      for (var i = 0; i < architecture.directives.length; i++) {
+        if(comp == architecture.directives[i].name){
+          architecture.directives.splice(i,1);
+        }
+      }
+    },
+
+    /*Muestra el modal de editar directiva*/
+    editDirModal(elem, button){
+      app._data.dismissCountDownMod = 0;
+
+      this.modalEditDirective.title = "Edit " + elem;
+      this.modalEditDirective.element = elem;
+
+      for (var i = 0; i < architecture.directives.length; i++) {
+        if(elem == architecture.directives[i].name){
+          this.formDirective.name = architecture.directives[i].name;
+          this.formDirective.kindof = architecture.directives[i].kindof;
+          this.formDirective.size = architecture.directives[i].size;
+        }
+      }
+      
+      this.$root.$emit('bv::show::modal', 'modalEditDirective', button);
+    },
+
+    /*Verifica que se han completado todos los campos*/
+    editDirVerify(evt, name){
+      evt.preventDefault();
+
+      if (!this.formDirective.name || !this.formDirective.kindof || isNaN(parseInt(this.formDirective.size))) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.editDirective(name);
+      }
+    },
+
+    /*Edita la directiva*/
+    editDirective(name){
+      for (var i = 0; i < architecture.directives.length; i++) {
+        if((this.formDirective.name == architecture.directives[i].name) && (name != this.formDirective.name)){
+          app._data.alertMessaje = 'The directive already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          return;
+        }
+      }
+
+      this.$refs.editDirective.hide();
+
+      for (var i = 0; i < architecture.directives.length; i++) {
+        if(name == architecture.directives[i].name){
+          architecture.directives[i].name = this.formDirective.name;
+          architecture.directives[i].kindof = this.formDirective.kindof;
+          architecture.directives[i].size = this.formDirective.size;
+
+          this.formDirective.name = '';
+          this.formDirective.kindof = '';
+          this.formDirective.size = 0;
+
+          return;
+        }
+      }
+    },
 
 
 

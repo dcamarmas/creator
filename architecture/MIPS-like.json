@@ -1300,5 +1300,62 @@
       ],
       "definition": "add reg1 R0 reg2"
     }
+  ],
+  "directives": [
+    {
+      "name": ".kdata",
+      "kindof": "segment",
+      "size": 0
+    },
+    {
+      "name": ".ktext",
+      "kindof": "segment",
+      "size": 0
+    },
+    {
+      "name": ".data",
+      "kindof": "segment",
+      "size": 0
+    },
+    {
+      "name": ".text",
+      "kindof": "segment",
+      "size": 0
+    },
+    {
+      "name": ".byte",
+      "kindof": "datatype",
+      "size": 1
+    },
+    {
+      "name": ".half",
+      "kindof": "datatype",
+      "size": 2
+    },
+    {
+      "name": ".word",
+      "kindof": "datatype",
+      "size": 4
+    },
+    {
+      "name": ".space",
+      "kindof": "datatype",
+      "size": 1
+    },
+    {
+      "name": ".ascii",
+      "kindof": "datatype",
+      "size": 1
+    },
+    {
+      "name": ".asciiz",
+      "kindof": "datatype",
+      "size": 1
+    },
+    {
+      "name": ".align",
+      "kindof": "datatype",
+      "size": 0
+    }
   ]
 }

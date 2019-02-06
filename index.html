@@ -165,11 +165,11 @@
 
                       <div class="col-lg-12 col-sm-12 row">
                         <div class="compMenu">
-                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New Component</b-button>
+                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New acmponent</b-button>
                         </div>
 
                         <div class="compMenu">
-                          <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Architecture</b-button>
+                          <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset architecture</b-button>
                         </div>
 
                         <div class="compMenu">
@@ -333,7 +333,7 @@
 
                     <b-tab title="Instructions Definition" >
                       <br>
-                      <h6>Components of the instruction set:</h6>
+                      <h6>Instruction set:</h6>
 
                       <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
 
@@ -601,7 +601,7 @@
 
                     <b-tab title="Pseudoinstructions Definition" >
                       <br>
-                      <h6>Components of the pseudoinstructions set:</h6>
+                      <h6>Pseudoinstructions set:</h6>
 
                       <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newPseudoinstructionsBtn" v-b-modal.new_pseudoinstruction> <span class="fa fa-plus-circle"></span> New pseudoinstructions</b-button>
 
@@ -632,9 +632,9 @@
                             <b-button @click.stop="editPseudoinstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
                             <b-button @click.stop="delPseudoinstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
                           </template>
-                         </b-table>
+                        </b-table>
 
-                         <!-- Borrar instruccion -->
+                        <!-- Borrar instruccion -->
                         <b-modal id ="modalDeletPseudoinst" :title="modalDeletPseudoinst.title" ok-variant="danger" ok-title="Delete" @ok="delPseudoinstruction(modalDeletPseudoinst.element)">
                           <h6>Are you sure you want to delete the item?</h6>
                         </b-modal >
@@ -868,6 +868,66 @@
                     </b-tab>
 
                     <b-tab title="Directives Definition" >
+                      <br>
+                      <h6>Directives set:</h6>
+
+                      <div class="col-lg-12 col-sm-12 row">
+                        <div class="compMenu">
+                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newDirectiveBtn" v-b-modal.new_directive> <span class="fa fa-plus-circle"></span> New directive</b-button>
+                        </div>
+
+                        <div class="compMenu">
+                          <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetDirectives" @click="resetDirModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset directives</b-button>
+                        </div>
+                      </div>
+
+                      <!-- Resetea las directivas -->
+                      <b-modal id ="modalResetDir" :title="modalResetDir.title" ok-variant="danger" ok-title="Reset" @ok="resetDirectives(modalResetDir.element)">
+                        <h6>Are you sure you want to reset the directives set?</h6>
+                      </b-modal >
+
+                      <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
+                        <b-table small :items="architecture.directives" :fields="directivesFields" class="instruction_table">
+                          <template slot="actions" slot-scope="row" class="">
+                            <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
+                            <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                          </template>
+                        </b-table>
+
+                        <!-- Borrar directiva -->
+                        <b-modal id ="modalDeletDir" :title="modalDeletDir.title" ok-variant="danger" ok-title="Delete" @ok="delDirective(modalDeletDir.element)">
+                          <h6>Are you sure you want to delete the item?</h6>
+                        </b-modal >
+
+                        <!-- Editar directiva -->
+                        <b-modal id ="modalEditDirective" :title = "modalEditDirective.title" ok-title="Edit" @ok="editDirVerify($event, modalEditDirective.element)" ref="editDirective">
+
+                          <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
+                            <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                          </b-alert>
+
+                          <b-form>
+                            <b-form-group id="editDirectiveName" label="Name:">
+                              <b-form-input id="editDirectiveNameInput" type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
+                              </b-form-input>
+                            </b-form-group>
+
+                            <b-form-group id="editDirectiveKindof" label="Kindof:">
+                              <b-form-select id="editDirectiveKindofInput" :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
+                            </b-form-group>
+
+                            <b-form-group id="editDirectiveSize" label="Size:">
+                              <b-form-input id="editDirectiveSizeInput" type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
+                              </b-form-input>
+                            </b-form-group>
+
+                          </b-form>
+                        </b-modal >
+                      </div>
+
+
+
+
 
                     </b-tab>
 
