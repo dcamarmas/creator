@@ -776,6 +776,7 @@ window.app = new Vue({
       }
 
       this.$refs.newElement.hide();
+
       for (var i = 0; i < architecture_hash.length; i++) {
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
           var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
@@ -1775,21 +1776,41 @@ window.app = new Vue({
       }
     },
 
+    /*Verifica que se han completado todos los campos*/
+    newDirVerify(evt){
 
+      evt.preventDefault();
 
+      if (!this.formDirective.name || !this.formDirective.kindof || isNaN(parseInt(this.formDirective.size))) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      } else {
+        this.newDirective();
+      }
+    },
 
+    /*Crea una nueva directiva*/
+    newDirective(){
+      for (var i = 0; i < architecture.directives.length; i++) {
+        if(this.formDirective.name == architecture.directives[i].name){
+          app._data.alertMessaje = 'The directive already exists';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          return;
+        }
+      }
 
+      this.$refs.newDir.hide();
 
+      var newDir = {name: this.formDirective.name, kindof: this.formDirective.kindof, size: this.formDirective.size};
+      architecture.directives.push(newDir);
 
-
-
-
-
-
-
-
-
-
+      this.formDirective.name='';
+      this.formDirective.kindof='';
+      this.formDirective.size=0;
+    },
+    
 
     /*PAGINA ENSAMBLADOR*/
     /*Funciones de carga y descarga de ensamblador*/

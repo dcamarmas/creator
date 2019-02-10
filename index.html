@@ -165,7 +165,7 @@
 
                       <div class="col-lg-12 col-sm-12 row">
                         <div class="compMenu">
-                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New acmponent</b-button>
+                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New component</b-button>
                         </div>
 
                         <div class="compMenu">
@@ -881,6 +881,28 @@
                         </div>
                       </div>
 
+                      <b-modal size="lg" id ="new_directive" title = "New directive" ok-title="Create" @ok="newDirVerify($event)" ref="newDir">
+                        <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
+                          <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        </b-alert>
+
+                        <b-form>
+                          <b-form-group id="newDirectiveName" label="Name:">
+                            <b-form-input id="newDirectiveNameInput" type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
+                            </b-form-input>
+                          </b-form-group>
+
+                          <b-form-group id="newDirectiveKindof" label="Kindof:">
+                            <b-form-select id="newDirectiveKindofInput" :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
+                          </b-form-group>
+
+                          <b-form-group id="newDirectiveSize" label="Size:">
+                            <b-form-input id="newDirectiveSizeInput" type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
+                            </b-form-input>
+                          </b-form-group>
+                        </b-form>
+                      </b-modal >
+
                       <!-- Resetea las directivas -->
                       <b-modal id ="modalResetDir" :title="modalResetDir.title" ok-variant="danger" ok-title="Reset" @ok="resetDirectives(modalResetDir.element)">
                         <h6>Are you sure you want to reset the directives set?</h6>
@@ -924,11 +946,6 @@
                           </b-form>
                         </b-modal >
                       </div>
-
-
-
-
-
                     </b-tab>
 
                   </b-tabs>
