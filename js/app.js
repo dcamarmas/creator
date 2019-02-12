@@ -1924,6 +1924,17 @@ window.app = new Vue({
       console.log(tokenIndex)
     },
 
+    /*Coloca el puntero en la primera posicion*/
+    first_token(){
+      var assembly = textarea_assembly_editor.getValue();
+      var index = tokenIndex;
+
+      while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+        index++;
+      }
+      tokenIndex = index;
+    },
+
     /*Compilador*/
     assembly_compiler(){
       instructions = [];
@@ -1932,7 +1943,14 @@ window.app = new Vue({
       var address = 0x8000;
       var firstInst = true;
 
-      this.next_token();
+      this.first_token();
+
+      if(this.get_token() == null){
+        app._data.alertMessaje = 'Please enter the assembly code before compiling';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        return;
+      }
 
       while(existsInstruction){
         var token = this.get_token();
@@ -2385,6 +2403,13 @@ window.app = new Vue({
     /*FUNCIONES DE EJECUCION*/
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
+
+      if(instructions.length == 0){
+        app._data.alertMessaje = 'No instructions in memory';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        return;
+      }
 
       /*Verifica que el programa no ha finalizado ya*/
       if(executionIndex < -1){

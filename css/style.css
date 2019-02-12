@@ -97,9 +97,14 @@ hr {
 
 .code-scroll-y {
   display: block;
-  max-height: 75vh;
+  max-height: 90vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
 }
 
 .popover{
