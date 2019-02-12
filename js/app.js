@@ -204,7 +204,7 @@ memory = [
 
 var  instructions = [
 
-  { Break: null, Address: "0x8000", Label:"" , loaded: "lw R1 0x1000", user: "lw R1 0x1000", _rowVariant: 'success'},
+  /*{ Break: null, Address: "0x8000", Label:"" , loaded: "lw R1 0x1000", user: "lw R1 0x1000", _rowVariant: 'success'},
   { Break: null, Address: "0x8000", Label:"" , loaded: "lw R2 b", user: "lw R2 b", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , loaded: "li R1 0x00001002", user: "li R1 0x00001002", _rowVariant: ''},
   { Break: null, Address: "0x8000", Label:"" , loaded: "lw R2 4 (R1)", user: "lw R2 4 (R1)", _rowVariant: ''},
@@ -230,8 +230,13 @@ var  instructions = [
 
   { Break: null, Address: "0x8000", Label:"" , loaded: "add R1 R2 R3", user: "add R1 R2 R3", _rowVariant: '' },
   { Break: null, Address: "0x8000", Label:"" , loaded: "add FG0 FG1 FG2", user: "add FG0 FG1 FG2", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , loaded: "add FP0 FP2 FP4", user: "add FP0 FP2 FP4", _rowVariant: '' }
+  { Break: null, Address: "0x8000", Label:"" , loaded: "add FP0 FP2 FP4", user: "add FP0 FP2 FP4", _rowVariant: '' }*/
 ]
+
+/*Indice de compilacion*/
+var tokenIndex = 0;
+/*Indica que se ha modificado la arquitectura*/
+var archChange = false;
 
 /*Indice de ejecucion*/
 var executionIndex = 0;
@@ -1812,6 +1817,17 @@ window.app = new Vue({
     },
     
 
+
+
+
+
+
+
+
+
+
+
+
     /*PAGINA ENSAMBLADOR*/
     /*Funciones de carga y descarga de ensamblador*/
     read_assembly(e){
@@ -1860,6 +1876,284 @@ window.app = new Vue({
 
       downloadLink.click();
     },
+
+    /*Lee un token*/
+    get_token(){
+      var assembly = textarea_assembly_editor.getValue();
+      var index = tokenIndex;
+
+      if(index == assembly.length){
+        return null;
+      }
+
+      while((assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
+        index++;
+      }
+
+      return assembly.substring(tokenIndex, index);
+    },
+
+    /*Avanza al siguente token*/
+    next_token(){
+
+      console.log("next")
+
+      var assembly = textarea_assembly_editor.getValue();
+      var index = tokenIndex;
+
+      while((assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
+        index++;
+      }
+
+      while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+        index++;
+      }
+
+      if(assembly.charAt(index) == '#'){
+        while((assembly.charAt(index) != '\n') && (index < assembly.length)){
+          index++;
+        }
+
+        while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+          index++;
+        }
+        
+      }
+      tokenIndex = index;
+
+      console.log(tokenIndex)
+    },
+
+    /*Compilador*/
+    assembly_compiler(){
+      instructions = [];
+
+      var existsInstruction = true;
+      var address = 0x8000;
+      var firstInst = true;
+
+      this.next_token();
+
+      while(existsInstruction){
+        var token = this.get_token();
+        if(token == null){
+          app._data.alertMessaje = 'Compilation completed successfully';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          tokenIndex = 0;
+          break;
+        }
+
+        console.log(token)
+
+        var found = false;
+
+        for(var i = 0; i < architecture.instructions.length; i++){
+          if(architecture.instructions[i].name != token){
+            continue;
+          }
+          else{
+            var error = false;
+
+            var binary = "";
+            var instruction ="";
+
+            signatureParts = architecture.instructions[i].signature.split(',');
+
+            for(var j = 0; j < architecture.instructions[i].fields.length; j++){
+              switch(architecture.instructions[i].fields[j].type) {
+                case "co":
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                  binary = binary + (architecture.instructions[i].co).padStart(fieldsLength, "0");
+
+                  instruction = instruction + token;
+
+                  console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"))
+                  console.log(binary)
+                  console.log(instruction)
+
+                  if(j < architecture.instructions[i].fields.length-1){
+                    var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
+                    binary = binary + ("").padStart(fieldsDiff, "0");
+                  }
+
+                  this.next_token();
+
+                  break;
+
+                case "reg":
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  var validReg = false;
+                  for(var z = 0; z < architecture_hash.length; z++){
+                    for(var w = 0; w < architecture.components[z].elements.length; w++){
+                      if(token == architecture.components[z].elements[w].name){
+                        validReg = true;
+
+                        fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                        var reg = parseInt(token.substring(1, token.length), 10);
+
+                        binary = binary + (reg.toString(2)).padStart(fieldsLength, "0");
+                        instruction = instruction + " " + token;
+
+                        console.log((reg.toString(2)).padStart(fieldsLength, "0"))
+                        console.log(binary)
+                        console.log(instruction)
+
+                        if(j < architecture.instructions[i].fields.length-1){
+                          var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
+                          binary = binary + ("").padStart(fieldsDiff, "0");
+                        }
+                      }
+                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                        /*app._data.alertMessaje = 'Register "'+ token +'" not found';
+                        app._data.type ='danger';
+                        app._data.dismissCountDown = app._data.dismissSecs;*/
+
+                        alert('Register "'+ token +'" not found');
+
+                        error = true;
+                      }
+                    }
+                  }
+
+                  this.next_token();
+
+                  break;
+
+                case "inm":
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                  
+                  var inm = parseInt(token, 10);
+
+                  if(inm.toString(2).length > fieldsLength){
+                    /*app._data.alertMessaje = 'Immediate number "'+ token +'" is too big';
+                    app._data.type ='danger';
+                    app._data.dismissCountDown = app._data.dismissSecs;*/
+
+                    alert('Immediate number "'+ token +'" is too big')
+
+                    error = true
+                    break;
+                  }
+
+                  if(isNaN(inm)){
+                    /*app._data.alertMessaje = 'Immediate number "'+ token +'" is not valid';
+                    app._data.type ='danger';
+                    app._data.dismissCountDown = app._data.dismissSecs;*/
+
+                    alert('Immediate number "'+ token +'" is not valid')
+                    
+                    error = true
+                    break;
+                  }
+
+                  binary = binary + (inm.toString(2)).padStart(fieldsLength, "0");
+                  instruction = instruction + " " + token;
+
+                  console.log(instruction)
+
+                  if(j < architecture.instructions[i].fields.length-1){
+                    var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
+                    binary = binary + ("").padStart(fieldsDiff, "0");
+                  }
+
+                  this.next_token();
+
+                  break;
+
+                case "address":
+                  
+                  break;
+
+                case "reg-addr":
+                  
+                  break;
+
+                case "cop":
+                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                  binary = binary + (architecture.instructions[i].cop).padStart(fieldsLength, "0");
+
+                  console.log((architecture.instructions[i].cop).padStart(fieldsLength, "0"))
+                  console.log(binary)
+
+                  if(j < architecture.instructions[i].fields.length-1){
+                    var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
+                    binary = binary + ("").padStart(fieldsDiff, "0");
+                  }
+
+                  break;
+              }
+            }
+
+            if(error == false){
+              var padding = "";
+              padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
+
+              binary = binary + padding;
+
+              console.log(binary)
+              console.log(instruction)
+
+              if(firstInst == true){
+                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label:"" , loaded: instruction, user: "", _rowVariant: 'success'});
+                firstInst = false;
+              }
+              else{
+                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label:"" , loaded: instruction, user: "", _rowVariant: ''});
+              }
+              
+              address = address + (4*architecture.instructions[i].nwords);
+
+              found = true;
+            }
+          }
+        }
+        if(!found){
+          /*app._data.alertMessaje = 'Instruction "'+ token +'" not found';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;*/
+
+          alert('Instruction "'+ token +'" not found');
+
+          existsInstruction = false;
+          tokenIndex = 0;
+        }
+      }
+
+      archChange = false;
+
+      app._data.instructions = instructions;
+    },
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     /*PAGINA SIMULADOR*/
@@ -2119,6 +2413,7 @@ window.app = new Vue({
       /*Busca la instruccion a ejecutar y coge la definicion*/
       for (var i = 0; i < architecture.instructions.length; i++) {
         var auxSig = architecture.instructions[i].signatureRaw.split(' ');
+
         if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
           signatureParts = architecture.instructions[i].signature.split(',');
           signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
@@ -2126,13 +2421,14 @@ window.app = new Vue({
           break;
         }
       }
-
       console.log(auxDef)
+
       /*Replaza los valores por el nombre de los registros*/
       for (var i = 1; i < signatureRawParts.length; i++){
         var re = new RegExp(signatureRawParts[i],"g");
         auxDef = auxDef.replace(re, instructionExecParts[i]);
       }
+
       console.log(auxDef)
 
       /*Remplaza el nombre del registro por su variable*/
@@ -2155,14 +2451,17 @@ window.app = new Vue({
 
           /*Si es un registro de lectura*/
           re = new RegExp(architecture.components[i].elements[j].name,"g");
-          auxDef = auxDef.replace(re, "architecture.components["+i+"].elements["+j+"].value");
+          auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
         }
       }
+
+      console.log(auxDef)
 
       /*Remplaza la direccion de memoria por su valor*/
       /*Replaces escritura en memoria por registro + desplazamiento*/
       re = /MP.([whb]).\((.*?)\)\) *=/;
       if (auxDef.search(re) != -1){
+        console.log("aqui")
         var match = re.exec(auxDef);
         var auxDir;
         eval("auxDir="+match[2]+")");
@@ -2176,6 +2475,7 @@ window.app = new Vue({
       /*Replaces escritura en memoria por direccion y etiqueta*/
       re = new RegExp("MP.([whb]).(.*?) *=");
       if (auxDef.search(re) != -1){
+        console.log("aqui2")
         var match = re.exec(auxDef);
 
         re = new RegExp("MP."+match[1]+"."+match[2]+" *=","g");
@@ -2187,17 +2487,20 @@ window.app = new Vue({
       /*Replaces lectura en memoria por registro + desplazamiento*/
       re = /MP.([whb]).\((.*?)\)\)/;
       if (auxDef.search(re) != -1){
+        console.log("aqui3")
         var match = re.exec(auxDef);
         var auxDir;
-        eval("auxDir="+match[2]+")");
+
+        eval("auxDir="+match[2]+"))");
 
         re = /MP.[whb].\((.*?)\)\)/g;
-        auxDef = auxDef.replace(re, "this.readMemory('0x"+auxDir.toString(16)+"', '"+match[1]+"')");
+        auxDef = auxDef.replace(re, "this.readMemory('0x"+auxDir.toString(16)+"', '"+match[1]+"'");
       }
 
       /*Replaces lectura en memoria por direccion y etiqueta*/
       re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
       if (auxDef.search(re) != -1){
+        console.log("aqui4")
         var match = re.exec(auxDef);
 
         re = new RegExp("MP."+match[1]+"."+match[2],"g");
@@ -2304,6 +2607,18 @@ window.app = new Vue({
       }
     },
 
+    /*Funcion que lee de los registro*/
+    readRegister(indexComp, indexElem){
+      /*Verifica que se puede leer el registro*/
+      if(architecture.components[indexComp].elements[indexElem].properties[0] != "read" && architecture.components[indexComp].elements[indexElem].properties[1] != "read"){
+        app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+      }
+
+      return architecture.components[indexComp].elements[indexElem].value;
+    },
+
     /*Funcion que escribe en los registro*/
     writeRegister(value, indexComp, indexElem){
 
@@ -2312,6 +2627,14 @@ window.app = new Vue({
       }
 
       if(architecture.components[indexComp].type == "integer" || architecture.components[indexComp].type == "control"){
+        /*Verifica que se puede escribir en el registro*/
+        if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
+          app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          return;
+        }
+
         architecture.components[indexComp].elements[indexElem].value = bigInt(parseInt(value) >>> 0, 10);
 
         var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -2326,7 +2649,14 @@ window.app = new Vue({
       else if(architecture.components[indexComp].type =="floating point"){
         console.log(architecture.components[indexComp].double_precision)
         if(architecture.components[indexComp].double_precision == false){
-          console.log("fafssdg")
+          /*Verifica que se puede escribir en el registro*/
+          if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
+            app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+            return;
+          }
+
           architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
 
           this.updateDouble(indexComp, indexElem);
@@ -2341,7 +2671,13 @@ window.app = new Vue({
         }
         
         else if(architecture.components[indexComp].double_precision == true){
-          console.log("sgfgfg")
+          /*Verifica que se puede escribir en el registro*/
+          if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
+            app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+            return;
+          }
           architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
 
           this.updateSimple(indexComp, indexElem);
@@ -2473,6 +2809,19 @@ window.app = new Vue({
           }
         }
       }
+    },
+
+    breakPoint(record, index){
+      console.log("break")
+
+      if(instructions[index].Break == null){
+        instructions[index].Break = true;
+        app._data.instructions[index].Break = true;
+      }
+      else if(instructions[index].Break == true){
+        instructions[index].Break = null;
+        app._data.instructions[index].Break = null;
+      }
     }
 
   },
@@ -2503,21 +2852,6 @@ $(document).on('click','.fieldsSel',function(){
   app._data.instSel = inst[inst.length-1];
 });
 
-$(".break").click(function(){
-  var id = $(this).attr('id');
-
-  if(instructions[id].Break == null){
-    instructions[id].Break = true;
-    app._data.instructions[id].Break = true;
-  }
-  else if(instructions[id].Break == true){
-    instructions[id].Break = null;
-    app._data.instructions[id].Break = null;
-  }
-
-});
-
-
 /*Codemirror, text area ensamblador*/
 // initialize codemirror for assembly
 editor_cfg = {
@@ -2530,7 +2864,7 @@ textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor
 
 textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
 
-textarea_assembly_editor.setValue("\n\n");
+textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n");
 //textarea_assembly_editor.setSize("auto", "auto");
 textarea_assembly_editor.refresh();
 

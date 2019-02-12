@@ -436,7 +436,7 @@
                                         <option value="reg">reg</option>
                                         <option value="inm">inm</option>
                                         <option value="address">address</option>
-                                        <option value="(reg)">reg-addr</option>
+                                        <option value="(reg)">reg-add<r/option>
                                         <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                       </b-form-select>
                                       <b-form-input :id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -1003,9 +1003,9 @@
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
-                <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table">
+                <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;">
                   <template slot="Break" slot-scope="row">
-                    <div class="break" :id="row.index" style="cursor: pointer;">
+                    <div class="break" :id="row.index">
                       <br v-if="row.item.Break == null">
                       <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
                     </div>
@@ -1277,7 +1277,7 @@
 								<div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-3 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly"><span class="fa fa-sign-in"></span> Compile</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fa fa-sign-in"></span> Compile</b-button>
 	                  </div>
 	                  <div class="col-lg-9 col-sm-4 buttons">
 	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_assembly"><span class="fa fa-microchip"></span> Show Main Memory</b-button>
