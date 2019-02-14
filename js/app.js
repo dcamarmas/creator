@@ -7,7 +7,7 @@ var architecture_hash = [];
 /*Arquitectura cargada*/
 var architecture = {components:[
   {name: "Integer control registers", type: "control", double_precision: false, elements:[
-      /*{name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"BADVADDR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -16,38 +16,38 @@ var architecture = {components:[
       {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     ]},
     {name: "Integer registers", type: "integer", double_precision: false, elements:[
-      {name:"R0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R9", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R10", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R11", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R12", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R13", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R14", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R15", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R16", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R17", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R18", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R19", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R20", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R21", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R22", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R23", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R24", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R25", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R26", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R27", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R28", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R29", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R30", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"R31", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"r0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"at", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"v0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"v1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"a0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"a1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"a2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"a3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"t9", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"k0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"k1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"gp", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"sp", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"s8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"ra", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     ]},
     {name: "Floating point control registers", type: "control", double_precision: false, elements:[
       {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -105,10 +105,10 @@ var architecture = {components:[
       {name:"FP24", nbits:"64", value:0.0, simple_reg: ["FG24","FG25"], properties: ["read", "write"]},
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
-      {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},*/
+      {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
     ]}
   ], instructions:[
-    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    {name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
@@ -154,16 +154,16 @@ var architecture = {components:[
       {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "MP.w.(val+reg2)=reg1"},*/
+    ], definition: "MP.w.(val+reg2)=reg1"},
   ],pseudoinstructions:[
-    /*{name: "move", co: "000000", cop: "100000", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    {name: "move", co: "000000", cop: "100000", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "move", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-    ], definition: "add reg1 R0 reg2"},*/
+    ], definition: "add reg1 R0 reg2"},
 
   ], directives:[
-    /*{name:".kdata", kindof:"segment", size:0 },
+    {name:".kdata", kindof:"segment", size:0 },
     {name:".ktext", kindof:"segment", size:0 },
     {name:".data", kindof:"segment", size:0 },
     {name:".text", kindof:"segment", size:0 },
@@ -173,7 +173,7 @@ var architecture = {components:[
     {name:".space", kindof:"datatype", size:1 },
     {name:".ascii", kindof:"datatype", size:1 },
     {name:".asciiz", kindof:"datatype", size:1 },
-    {name:".align", kindof:"datatype", size:0 },*/
+    {name:".align", kindof:"datatype", size:0 },
   ]};
 
 var componentsTypes = [
@@ -507,7 +507,7 @@ window.app = new Vue({
     /*Carga la arquitectura seleccionada*/
     load_arch_select(e){
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        architecture = cfg;
+        //architecture = cfg;
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -1940,7 +1940,7 @@ window.app = new Vue({
       instructions = [];
 
       var existsInstruction = true;
-      var address = 0x8000;
+      var address = 0x0000;
       var firstInst = true;
 
       this.first_token();
@@ -2009,13 +2009,22 @@ window.app = new Vue({
                   console.log(token)
 
                   var validReg = false;
+
+                  if(token.charAt(0)!= '$'){
+                    break;
+                  }
+
+                  var auxToken = token.substring(1,token.length);
+
+                  console.log("token " + auxToken)
+
                   for(var z = 0; z < architecture_hash.length; z++){
                     for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(token == architecture.components[z].elements[w].name){
+                      if(auxToken == architecture.components[z].elements[w].name){
                         validReg = true;
 
                         fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
-                        var reg = parseInt(token.substring(1, token.length), 10);
+                        var reg = w;
 
                         binary = binary + (reg.toString(2)).padStart(fieldsLength, "0");
                         instruction = instruction + " " + token;
@@ -2044,7 +2053,6 @@ window.app = new Vue({
                   this.next_token();
 
                   break;
-
                 case "inm":
                   token = this.get_token();
 
@@ -2052,31 +2060,67 @@ window.app = new Vue({
 
                   fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
                   
-                  var inm = parseInt(token, 10);
+                  var inm;
 
-                  if(inm.toString(2).length > fieldsLength){
-                    /*app._data.alertMessaje = 'Immediate number "'+ token +'" is too big';
-                    app._data.type ='danger';
-                    app._data.dismissCountDown = app._data.dismissSecs;*/
+                  if(token.match(/^0x/)){
+                    console.log("a")
+                    var value = token.split("x");
 
-                    alert('Immediate number "'+ token +'" is too big')
+                    if(value[1].length*4 > fieldsLength){
+                      alert('Immediate number "'+ token +'" is too big')
 
-                    error = true
-                    break;
-                  }
+                      error = true
+                      break;
+                    }
 
-                  if(isNaN(inm)){
-                    /*app._data.alertMessaje = 'Immediate number "'+ token +'" is not valid';
-                    app._data.type ='danger';
-                    app._data.dismissCountDown = app._data.dismissSecs;*/
-
-                    alert('Immediate number "'+ token +'" is not valid')
+                    if(isNaN(parseInt(token, 16)) == true){
+                      alert('Immediate number "'+ token +'" is not valid')
                     
-                    error = true
-                    break;
+                      error = true
+                      break;
+                    }
+
+                    inm = (parseInt(token, 16)).toString(2);
+                  }
+                  else if (token.match(/^(\d)+\.(\d)+/)){
+                    console.log("b")
+                    if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                      alert('Immediate number "'+ token +'" is too big')
+
+                      error = true
+                      break;
+                    }
+
+                    if(isNaN(parseFloat(token)) == true){
+                      alert('Immediate number "'+ token +'" is not valid')
+                    
+                      error = true
+                      break;
+                    }
+
+                    inm = this.float2bin(parseFloat(token, 16));
+                  }
+                  else {
+                    console.log("c")
+                    var numAux = parseInt(token, 10);
+                    if((numAux.toString(2)).length > fieldsLength){
+                      alert('Immediate number "'+ token +'" is too big')
+
+                      error = true
+                      break;
+                    }
+
+                    if(isNaN(parseInt(token)) == true){
+                      alert('Immediate number "'+ token +'" is not valid')
+                    
+                      error = true
+                      break;
+                    }
+
+                    inm = (parseInt(token, 10)).toString(2);
                   }
 
-                  binary = binary + (inm.toString(2)).padStart(fieldsLength, "0");
+                  binary = binary + inm.padStart(fieldsLength, "0");
                   instruction = instruction + " " + token;
 
                   console.log(instruction)
@@ -2091,11 +2135,137 @@ window.app = new Vue({
                   break;
 
                 case "address":
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+
+                  if(token.match(/^0x/)){
+                    var value = token.split("x");
+
+                    if(value[1].length*4 > fieldsLength){
+                      alert('Address "'+ token +'" is too big')
+
+                      error = true
+                      break;
+                    }
+
+                    if(isNaN(parseInt(token, 16)) == true){
+                      alert('Address "'+ token +'" is not valid')
+                    
+                      error = true
+                      break;
+                    }
+
+                    addr = (parseInt(token, 16)).toString(2);
+
+                    binary = binary + addr.padStart(fieldsLength, "0");
+                    instruction = instruction + " " + token;
+
+                    console.log(instruction)
+
+                    if(j < architecture.instructions[i].fields.length-1){
+                      var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
+                      binary = binary + ("").padStart(fieldsDiff, "0");
+                    }
+                  }
+                  else{
+                    var validTag = false;
+                    for (var z = 0; z < memory.length; z++){
+                      for (var w = 0; w < memory[z].Binary.length; w++){
+                        if(token == memory[z].Binary[w].Tag){
+                          addr = (memory[z].Binary[w].Addr).toString(2);
+
+                          binary = binary + addr.padStart(fieldsLength, "0");
+                          instruction = instruction + " " + token;
+
+                          validTag = true;
+                        }
+                        if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
+                          alert('Tag "'+ token +'" is not valid')
+                    
+                          error = true
+                          break;
+                        }
+                      }
+                    }
+                  }
                   
+                  this.next_token();
+
                   break;
 
-                case "reg-addr":
+
+
+
+
+
+
+
+
+
+
+
+
+
+                case "(reg)":
+                  token = this.get_token();
+
+                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+
+                  console.log(token)
+
+                  if(token.charAt(0) != '('){
+                    alert('This field"'+ token +'" must start with a ")"')
+                    
+                    error = true
+                    break;
+                  }
+                  if(token.charAt(token.length) != ')'){
+                    alert('This field"'+ token +'" must end with a ")"')
+                    
+                    error = true
+                    break;
+                  }
                   
+                  re = /\((.*?)\)/;
+                  if (token.search(re) != -1){
+                    var match = re.exec(token);
+
+                    var auxToken = match[0].substring(1,match[0].length);
+
+                    for(var z = 0; z < architecture_hash.length; z++){
+                      for(var w = 0; w < architecture.components[z].elements.length; w++){
+                        if(auxToken == architecture.components[z].elements[w].name){
+                          validReg = true;
+
+                          fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                          var reg = w;
+
+                          binary = binary + (reg.toString(2)).padStart(fieldsLength, "0");
+                          instruction = instruction + " " + token;
+
+                          console.log((reg.toString(2)).padStart(fieldsLength, "0"))
+                          console.log(binary)
+                          console.log(instruction)
+
+                          if(j < architecture.instructions[i].fields.length-1){
+                            var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
+                            binary = binary + ("").padStart(fieldsDiff, "0");
+                          }
+                        }
+                        else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                          alert('Register "'+ match[0] +'" not found');
+
+                          error = true;
+                        }
+                      }
+                    }
+                  }
+
+                  this.next_token();
+
                   break;
 
                 case "cop":
@@ -2451,7 +2621,12 @@ window.app = new Vue({
       /*Replaza los valores por el nombre de los registros*/
       for (var i = 1; i < signatureRawParts.length; i++){
         var re = new RegExp(signatureRawParts[i],"g");
-        auxDef = auxDef.replace(re, instructionExecParts[i]);
+        if(signatureParts[i] == "reg"){
+          auxDef = auxDef.replace(re, instructionExecParts[i].substring(1, instructionExecParts[i].length));
+        }
+        else{
+          auxDef = auxDef.replace(re, instructionExecParts[i]);
+        }
       }
 
       console.log(auxDef)
@@ -2664,10 +2839,10 @@ window.app = new Vue({
 
         var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-        $(button).attr("style", "background-color:#c2c2c2;");
+        $(button).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
 
         setTimeout(function() {
-          $(button).attr("style", "background-color:#f5f5f5;");
+          $(button).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
         }, 350);
       }
 
@@ -2892,6 +3067,3 @@ textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emac
 textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n");
 //textarea_assembly_editor.setSize("auto", "auto");
 textarea_assembly_editor.refresh();
-
-
-
