@@ -83,7 +83,7 @@
       "double_precision": false,
       "elements": [
         {
-          "name": "R0",
+          "name": "r0",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -93,7 +93,7 @@
           ]
         },
         {
-          "name": "R1",
+          "name": "at",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -103,7 +103,7 @@
           ]
         },
         {
-          "name": "R2",
+          "name": "v0",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -113,7 +113,7 @@
           ]
         },
         {
-          "name": "R3",
+          "name": "v1",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -123,7 +123,7 @@
           ]
         },
         {
-          "name": "R4",
+          "name": "a0",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -133,7 +133,7 @@
           ]
         },
         {
-          "name": "R5",
+          "name": "a1",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -143,7 +143,7 @@
           ]
         },
         {
-          "name": "R6",
+          "name": "a2",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -153,7 +153,7 @@
           ]
         },
         {
-          "name": "R7",
+          "name": "a3",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -163,7 +163,7 @@
           ]
         },
         {
-          "name": "R8",
+          "name": "t0",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -173,7 +173,7 @@
           ]
         },
         {
-          "name": "R9",
+          "name": "t1",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -183,7 +183,7 @@
           ]
         },
         {
-          "name": "R10",
+          "name": "t2",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -193,7 +193,7 @@
           ]
         },
         {
-          "name": "R11",
+          "name": "t3",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -203,7 +203,7 @@
           ]
         },
         {
-          "name": "R12",
+          "name": "t4",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -213,7 +213,7 @@
           ]
         },
         {
-          "name": "R13",
+          "name": "t5",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -223,7 +223,7 @@
           ]
         },
         {
-          "name": "R14",
+          "name": "t6",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -233,7 +233,7 @@
           ]
         },
         {
-          "name": "R15",
+          "name": "t7",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -243,7 +243,7 @@
           ]
         },
         {
-          "name": "R16",
+          "name": "s0",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -253,7 +253,7 @@
           ]
         },
         {
-          "name": "R17",
+          "name": "s1",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -263,7 +263,7 @@
           ]
         },
         {
-          "name": "R18",
+          "name": "s2",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -273,7 +273,7 @@
           ]
         },
         {
-          "name": "R19",
+          "name": "s3",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -283,7 +283,7 @@
           ]
         },
         {
-          "name": "R20",
+          "name": "s4",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -293,7 +293,7 @@
           ]
         },
         {
-          "name": "R21",
+          "name": "s5",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -303,7 +303,7 @@
           ]
         },
         {
-          "name": "R22",
+          "name": "s6",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -313,7 +313,7 @@
           ]
         },
         {
-          "name": "R23",
+          "name": "s7",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -323,7 +323,7 @@
           ]
         },
         {
-          "name": "R24",
+          "name": "t8",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -333,7 +333,7 @@
           ]
         },
         {
-          "name": "R25",
+          "name": "t9",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -343,7 +343,7 @@
           ]
         },
         {
-          "name": "R26",
+          "name": "k0",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -353,7 +353,7 @@
           ]
         },
         {
-          "name": "R27",
+          "name": "k1",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -363,7 +363,7 @@
           ]
         },
         {
-          "name": "R28",
+          "name": "gp",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -373,7 +373,7 @@
           ]
         },
         {
-          "name": "R29",
+          "name": "sp",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -383,7 +383,7 @@
           ]
         },
         {
-          "name": "R30",
+          "name": "s8",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -393,7 +393,7 @@
           ]
         },
         {
-          "name": "R31",
+          "name": "ra",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
