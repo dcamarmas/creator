@@ -133,18 +133,18 @@ var architecture = {components:[
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2+val"},
-    {name: "lw", co: "000100", cop: null, nwords: 1, signature: "lw,reg,address", signatureRaw: "lw reg addr", fields: [
+    /*{name: "lw", co: "000100", cop: null, nwords: 1, signature: "lw,reg,address", signatureRaw: "lw reg addr", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg", type: "reg", startbit: 25, stopbit: 21},
       {name: "addr", type: "address", startbit: 15, stopbit: 0},
-    ], definition: "reg=MP.w.addr"},
+    ], definition: "reg=MP.w.addr"},*/
     {name: "sw", co: "000101", cop: null, nwords: 1, signature: "sw,reg,address", signatureRaw: "sw reg addr", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg", type: "reg", startbit: 25, stopbit: 21},
       {name: "addr", type: "address", startbit: 15, stopbit: 0},
     ], definition: "MP.w.addr=reg"},
     {name: "lw", co: "000102", cop: null, nwords: 1, signature: "lw,reg,inm,(reg)", signatureRaw: "lw reg1 val (reg2)", fields: [
-      {name: "sw", type: "co", startbit: 31, stopbit: 26},
+      {name: "lw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
@@ -1974,35 +1974,15 @@ window.app = new Vue({
             var error = false;
 
             var binary = "";
+            binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
+
             var instruction ="";
 
             signatureParts = architecture.instructions[i].signature.split(',');
+            signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
 
-            for(var j = 0; j < architecture.instructions[i].fields.length; j++){
-              switch(architecture.instructions[i].fields[j].type) {
-                case "co":
-                  token = this.get_token();
-
-                  console.log(token)
-
-                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
-                  binary = binary + (architecture.instructions[i].co).padStart(fieldsLength, "0");
-
-                  instruction = instruction + token;
-
-                  console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"))
-                  console.log(binary)
-                  console.log(instruction)
-
-                  if(j < architecture.instructions[i].fields.length-1){
-                    var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
-                    binary = binary + ("").padStart(fieldsDiff, "0");
-                  }
-
-                  this.next_token();
-
-                  break;
-
+            for(var j = 0; j < signatureParts.length; j++){
+              switch(signatureParts[j]) {
                 case "reg":
                   token = this.get_token();
 
@@ -2018,34 +1998,34 @@ window.app = new Vue({
 
                   console.log("token " + auxToken)
 
-                  for(var z = 0; z < architecture_hash.length; z++){
-                    for(var w = 0; w < architecture.components[z].elements.length; w++){
-                      if(auxToken == architecture.components[z].elements[w].name){
-                        validReg = true;
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      for(var z = 0; z < architecture_hash.length; z++){
+                        for(var w = 0; w < architecture.components[z].elements.length; w++){
+                          if(auxToken == architecture.components[z].elements[w].name){
+                            validReg = true;
 
-                        fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
-                        var reg = w;
+                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                            var reg = w;
 
-                        binary = binary + (reg.toString(2)).padStart(fieldsLength, "0");
-                        instruction = instruction + " " + token;
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                            instruction = instruction + " " + token;
 
-                        console.log((reg.toString(2)).padStart(fieldsLength, "0"))
-                        console.log(binary)
-                        console.log(instruction)
+                            console.log((reg.toString(2)).padStart(fieldsLength, "0"))
+                            console.log(binary)
+                            console.log(instruction)
 
-                        if(j < architecture.instructions[i].fields.length-1){
-                          var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
-                          binary = binary + ("").padStart(fieldsDiff, "0");
+                          }
+                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                            /*app._data.alertMessaje = 'Register "'+ token +'" not found';
+                            app._data.type ='danger';
+                            app._data.dismissCountDown = app._data.dismissSecs;*/
+
+                            alert('Register "'+ token +'" not found');
+
+                            error = true;
+                          }
                         }
-                      }
-                      else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                        /*app._data.alertMessaje = 'Register "'+ token +'" not found';
-                        app._data.type ='danger';
-                        app._data.dismissCountDown = app._data.dismissSecs;*/
-
-                        alert('Register "'+ token +'" not found');
-
-                        error = true;
                       }
                     }
                   }
@@ -2058,76 +2038,76 @@ window.app = new Vue({
 
                   console.log(token)
 
-                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                   
-                  var inm;
+                      var inm;
 
-                  if(token.match(/^0x/)){
-                    console.log("a")
-                    var value = token.split("x");
+                      if(token.match(/^0x/)){
+                        console.log("a")
+                        var value = token.split("x");
 
-                    if(value[1].length*4 > fieldsLength){
-                      alert('Immediate number "'+ token +'" is too big')
+                        if(value[1].length*4 > fieldsLength){
+                          alert('Immediate number "'+ token +'" is too big')
 
-                      error = true
-                      break;
+                          error = true
+                          break;
+                        }
+
+                        if(isNaN(parseInt(token, 16)) == true){
+                          alert('Immediate number "'+ token +'" is not valid')
+                        
+                          error = true
+                          break;
+                        }
+
+                        inm = (parseInt(token, 16)).toString(2);
+                      }
+                      else if (token.match(/^(\d)+\.(\d)+/)){
+                        console.log("b")
+                        if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                          alert('Immediate number "'+ token +'" is too big')
+
+                          error = true
+                          break;
+                        }
+
+                        if(isNaN(parseFloat(token)) == true){
+                          alert('Immediate number "'+ token +'" is not valid')
+                        
+                          error = true
+                          break;
+                        }
+
+                        inm = this.float2bin(parseFloat(token, 16));
+                      }
+                      else {
+                        console.log("c")
+                        var numAux = parseInt(token, 10);
+                        if((numAux.toString(2)).length > fieldsLength){
+                          alert('Immediate number "'+ token +'" is too big')
+
+                          error = true
+                          break;
+                        }
+
+                        if(isNaN(parseInt(token)) == true){
+                          alert('Immediate number "'+ token +'" is not valid')
+                        
+                          error = true
+                          break;
+                        }
+
+                        inm = (parseInt(token, 10)).toString(2);
+                      }
+
+                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      instruction = instruction + " " + token;
+
+                      console.log(instruction)
+                      console.log(inm.padStart(fieldsLength, "0"))
                     }
-
-                    if(isNaN(parseInt(token, 16)) == true){
-                      alert('Immediate number "'+ token +'" is not valid')
-                    
-                      error = true
-                      break;
-                    }
-
-                    inm = (parseInt(token, 16)).toString(2);
-                  }
-                  else if (token.match(/^(\d)+\.(\d)+/)){
-                    console.log("b")
-                    if(this.float2bin(parseFloat(token)).length > fieldsLength){
-                      alert('Immediate number "'+ token +'" is too big')
-
-                      error = true
-                      break;
-                    }
-
-                    if(isNaN(parseFloat(token)) == true){
-                      alert('Immediate number "'+ token +'" is not valid')
-                    
-                      error = true
-                      break;
-                    }
-
-                    inm = this.float2bin(parseFloat(token, 16));
-                  }
-                  else {
-                    console.log("c")
-                    var numAux = parseInt(token, 10);
-                    if((numAux.toString(2)).length > fieldsLength){
-                      alert('Immediate number "'+ token +'" is too big')
-
-                      error = true
-                      break;
-                    }
-
-                    if(isNaN(parseInt(token)) == true){
-                      alert('Immediate number "'+ token +'" is not valid')
-                    
-                      error = true
-                      break;
-                    }
-
-                    inm = (parseInt(token, 10)).toString(2);
-                  }
-
-                  binary = binary + inm.padStart(fieldsLength, "0");
-                  instruction = instruction + " " + token;
-
-                  console.log(instruction)
-
-                  if(j < architecture.instructions[i].fields.length-1){
-                    var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
-                    binary = binary + ("").padStart(fieldsDiff, "0");
                   }
 
                   this.next_token();
@@ -2139,54 +2119,53 @@ window.app = new Vue({
 
                   console.log(token)
 
-                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 
-                  if(token.match(/^0x/)){
-                    var value = token.split("x");
+                      if(token.match(/^0x/)){
+                        var value = token.split("x");
 
-                    if(value[1].length*4 > fieldsLength){
-                      alert('Address "'+ token +'" is too big')
+                        if(value[1].length*4 > fieldsLength){
+                          alert('Address "'+ token +'" is too big')
 
-                      error = true
-                      break;
-                    }
-
-                    if(isNaN(parseInt(token, 16)) == true){
-                      alert('Address "'+ token +'" is not valid')
-                    
-                      error = true
-                      break;
-                    }
-
-                    addr = (parseInt(token, 16)).toString(2);
-
-                    binary = binary + addr.padStart(fieldsLength, "0");
-                    instruction = instruction + " " + token;
-
-                    console.log(instruction)
-
-                    if(j < architecture.instructions[i].fields.length-1){
-                      var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
-                      binary = binary + ("").padStart(fieldsDiff, "0");
-                    }
-                  }
-                  else{
-                    var validTag = false;
-                    for (var z = 0; z < memory.length; z++){
-                      for (var w = 0; w < memory[z].Binary.length; w++){
-                        if(token == memory[z].Binary[w].Tag){
-                          addr = (memory[z].Binary[w].Addr).toString(2);
-
-                          binary = binary + addr.padStart(fieldsLength, "0");
-                          instruction = instruction + " " + token;
-
-                          validTag = true;
-                        }
-                        if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
-                          alert('Tag "'+ token +'" is not valid')
-                    
                           error = true
                           break;
+                        }
+
+                        if(isNaN(parseInt(token, 16)) == true){
+                          alert('Address "'+ token +'" is not valid')
+                        
+                          error = true
+                          break;
+                        }
+
+                        addr = (parseInt(token, 16)).toString(2);
+                      
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        instruction = instruction + " " + token;
+
+                        console.log(instruction)
+                      }
+                      else{
+                        var validTag = false;
+                        for (var z = 0; z < memory.length; z++){
+                          for (var w = 0; w < memory[z].Binary.length; w++){
+                            if(token == memory[z].Binary[w].Tag){
+                              addr = (memory[z].Binary[w].Addr).toString(2);
+
+                              binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                              instruction = instruction + " " + token;
+
+                              validTag = true;
+                            }
+                            if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
+                              alert('Tag "'+ token +'" is not valid')
+                        
+                              error = true
+                              break;
+                            }
+                          }
                         }
                       }
                     }
@@ -2195,70 +2174,60 @@ window.app = new Vue({
                   this.next_token();
 
                   break;
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                 case "(reg)":
                   token = this.get_token();
 
-                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
+                  console.log("(reg) token        " + token)
 
-                  console.log(token)
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 
-                  if(token.charAt(0) != '('){
-                    alert('This field"'+ token +'" must start with a ")"')
-                    
-                    error = true
-                    break;
-                  }
-                  if(token.charAt(token.length) != ')'){
-                    alert('This field"'+ token +'" must end with a ")"')
-                    
-                    error = true
-                    break;
-                  }
-                  
-                  re = /\((.*?)\)/;
-                  if (token.search(re) != -1){
-                    var match = re.exec(token);
+                      console.log("signatureRawParts[j]")
 
-                    var auxToken = match[0].substring(1,match[0].length);
+                      if(token.charAt(0) != '('){
+                        alert('This field"'+ token +'" must start with a "("')
+                        
+                        error = true
+                        break;
+                      }
 
-                    for(var z = 0; z < architecture_hash.length; z++){
-                      for(var w = 0; w < architecture.components[z].elements.length; w++){
-                        if(auxToken == architecture.components[z].elements[w].name){
-                          validReg = true;
+                      if(token.charAt(token.length-1) != ')'){
+                        alert('This field"'+ token +'" must end with a ")"')
+                        
+                        error = true
+                        break;
+                      }
+                      
+                      re = /\((.*?)\)/;
+                      if (token.search(re) != -1){
+                        var match = re.exec(token);
 
-                          fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
-                          var reg = w;
+                        var auxToken = match[0].substring(1,match[0].length-1);
 
-                          binary = binary + (reg.toString(2)).padStart(fieldsLength, "0");
-                          instruction = instruction + " " + token;
+                        validReg = false;
 
-                          console.log((reg.toString(2)).padStart(fieldsLength, "0"))
-                          console.log(binary)
-                          console.log(instruction)
+                        for(var z = 0; z < architecture_hash.length; z++){
+                          for(var w = 0; w < architecture.components[z].elements.length; w++){
+                            if(auxToken == "$" + architecture.components[z].elements[w].name){
+                              validReg = true;
+                              fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                              var reg = w;
 
-                          if(j < architecture.instructions[i].fields.length-1){
-                            var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
-                            binary = binary + ("").padStart(fieldsDiff, "0");
+                              binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                              instruction = instruction + " " + token;
+
+                              console.log((reg.toString(2)).padStart(fieldsLength, "0"))
+                              console.log(binary)
+                              console.log(instruction)
+                            }
+                            else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                              alert('Register "'+ match[0] +'" not found');
+
+                              error = true;
+                            }
                           }
-                        }
-                        else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                          alert('Register "'+ match[0] +'" not found');
-
-                          error = true;
                         }
                       }
                     }
@@ -2268,19 +2237,41 @@ window.app = new Vue({
 
                   break;
 
-                case "cop":
-                  fieldsLength = architecture.instructions[i].fields[j].startbit - architecture.instructions[i].fields[j].stopbit + 1;
-                  binary = binary + (architecture.instructions[i].cop).padStart(fieldsLength, "0");
+                default:
+                  token = this.get_token();
 
-                  console.log((architecture.instructions[i].cop).padStart(fieldsLength, "0"))
-                  console.log(binary)
+                  console.log(token)
 
-                  if(j < architecture.instructions[i].fields.length-1){
-                    var fieldsDiff = architecture.instructions[i].fields[j].stopbit - architecture.instructions[i].fields[j+1].startbit - 1;
-                    binary = binary + ("").padStart(fieldsDiff, "0");
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+
+                    console.log(signatureRawParts[j])
+
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                      
+                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
+
+                      instruction = instruction + token;
+
+                      console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"))
+                      console.log(binary)
+                      console.log(instruction)
+                    }
+
+                    if(architecture.instructions[i].fields[a].type == "cop"){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].cop).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+
+                      console.log((architecture.instructions[i].cop).padStart(fieldsLength, "0"))
+                      console.log(binary)
+                    }
                   }
 
-                  break;
+                  console.log("antes token")
+
+                  this.next_token();
+                break;
               }
             }
 
@@ -2322,6 +2313,8 @@ window.app = new Vue({
       archChange = false;
 
       app._data.instructions = instructions;
+
+      this.reset();
     },
 
     

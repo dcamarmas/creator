@@ -1208,7 +1208,7 @@
       "signatureRaw": "lw reg1 val (reg2)",
       "fields": [
         {
-          "name": "sw",
+          "name": "lw",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
