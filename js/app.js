@@ -1,12 +1,15 @@
 /*Listado de arquitecturas disponibles*/
 var architecture_available = [];
 
+/*Almacena el color de fondo de cada card*/
+var back_card = [];
+
 /*tabla hash de la arquitectura*/
 var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  {name: "Integer control registers", type: "control", double_precision: false, elements:[
+  /*{name: "Integer control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -106,15 +109,21 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}
+    ]}*/
   ], instructions:[
-    {name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2+reg3"},
+    {name: "addi", co: "001000", cop: null, nwords: 1, signature: "and,reg,reg,inm", signatureRaw: "add reg1 reg2 val", fields: [
+      {name: "addi", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "reg1=reg2+val"},
     {name: "and", co: "000000", cop: "100100", nwords: 1, signature: "and,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "and", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
@@ -122,48 +131,100 @@ var architecture = {components:[
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2&reg3"},
-    {name: "li", co: "000010", cop: null, nwords: 1, signature: "li,reg,inm", signatureRaw: "li reg val", fields: [
-      {name: "li", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg", type: "reg", startbit: 25, stopbit: 21},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg=val"},
-    {name: "addi", co: "001000", cop: null, nwords: 1, signature: "and,reg,reg,inm", signatureRaw: "add reg1 reg2 val", fields: [
-      {name: "addi", type: "co", startbit: 31, stopbit: 26},
+    {name: "andi", co: "001100", cop: null, nwords: 1, signature: "andi,reg,reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
+      {name: "andi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2+val"},
-    /*{name: "lw", co: "000100", cop: null, nwords: 1, signature: "lw,reg,address", signatureRaw: "lw reg addr", fields: [
-      {name: "lw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg", type: "reg", startbit: 25, stopbit: 21},
-      {name: "addr", type: "address", startbit: 15, stopbit: 0},
-    ], definition: "reg=MP.w.addr"},*/
-    {name: "sw", co: "000101", cop: null, nwords: 1, signature: "sw,reg,address", signatureRaw: "sw reg addr", fields: [
-      {name: "sw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg", type: "reg", startbit: 25, stopbit: 21},
-      {name: "addr", type: "address", startbit: 15, stopbit: 0},
-    ], definition: "MP.w.addr=reg"},
+    ], definition: "reg1=reg2&val"},
+    {name: "b", co: "000100", cop: null, nwords: 1, signature: "b,inm", signatureRaw: "b val", fields: [
+      {name: "b", type: "co", startbit: 31, stopbit: 26},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "PC=val"},
+    {name: "beq", co: "000100", cop: null, nwords: 1, signature: "beq,reg,reg,inm", signatureRaw: "beq reg1 reg2 val", fields: [
+      {name: "beq", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "if(reg1 == reg2){PC=val}"},
+    {name: "bne", co: "000101", cop: null, nwords: 1, signature: "bne,reg,reg,inm", signatureRaw: "bne reg1 reg2 val", fields: [
+      {name: "bne", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "if(reg1 != reg2){PC=val}"},
+    {name: "div", co: "000000", cop: "011010", nwords: 1, signature: "div,reg,reg,reg", signatureRaw: "div reg1 reg2 reg3", fields: [
+      {name: "div", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
+    ], definition: "reg1=reg2/reg3"},
     {name: "lw", co: "000102", cop: null, nwords: 1, signature: "lw,reg,inm,(reg)", signatureRaw: "lw reg1 val (reg2)", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=MP.w.(val+reg2)"},
+    {name: "mul", co: "011100", cop: "000010", nwords: 1, signature: "mul,reg,reg,reg", signatureRaw: "mul reg1 reg2 reg3", fields: [
+      {name: "mul", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
+    ], definition: "reg1=reg2*reg3"},
+    {name: "nop", co: "000000", cop: "000000", nwords: 1, signature: "nop", signatureRaw: "nop", fields: [
+      {name: "nop", type: "co", startbit: 31, stopbit: 26},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
+    ], definition: ""},
+    {name: "or", co: "000000", cop: "100101", nwords: 1, signature: "or,reg,reg,reg", signatureRaw: "or reg1 reg2 reg3", fields: [
+      {name: "or", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
+    ], definition: "reg1=reg2|reg3"},
+    {name: "ori", co: "001101", cop: null, nwords: 1, signature: "ori,reg,reg,inm", signatureRaw: "ori reg1 reg2 val", fields: [
+      {name: "ori", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "reg1=reg2|val"},
+    {name: "sub", co: "000000", cop: "100010", nwords: 1, signature: "sub,reg,reg,reg", signatureRaw: "sub reg1 reg2 reg3", fields: [
+      {name: "sub", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
+    ], definition: "reg1=reg2-reg3"},
     {name: "sw", co: "000103", cop: null, nwords: 1, signature: "sw,reg,inm,(reg)", signatureRaw: "sw reg1 val (reg2)", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "MP.w.(val+reg2)=reg1"},
+    {name: "xor", co: "000000", cop: "100110", nwords: 1, signature: "xor,reg,reg,reg", signatureRaw: "xor reg1 reg2 reg3", fields: [
+      {name: "xor", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
+    ], definition: "reg1=reg2^reg3"},
+    {name: "xori", co: "001110", cop: null, nwords: 1, signature: "xori,reg,reg,inm", signatureRaw: "xori reg1 reg2 val", fields: [
+      {name: "ori", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "reg1=reg2^val"},*/
   ],pseudoinstructions:[
-    {name: "move", co: "000000", cop: "100000", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    /*{name: "move", co: "000000", cop: "100000", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "move", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-    ], definition: "add reg1 R0 reg2"},
+    ], definition: "add reg1 R0 reg2"},*/
 
   ], directives:[
-    {name:".kdata", kindof:"segment", size:0 },
+    /*{name:".kdata", kindof:"segment", size:0 },
     {name:".ktext", kindof:"segment", size:0 },
     {name:".data", kindof:"segment", size:0 },
     {name:".text", kindof:"segment", size:0 },
@@ -173,7 +234,7 @@ var architecture = {components:[
     {name:".space", kindof:"datatype", size:1 },
     {name:".ascii", kindof:"datatype", size:1 },
     {name:".asciiz", kindof:"datatype", size:1 },
-    {name:".align", kindof:"datatype", size:0 },
+    {name:".align", kindof:"datatype", size:0 },*/
   ]};
 
 var componentsTypes = [
@@ -269,6 +330,8 @@ window.app = new Vue({
     /*PAGINA CARGA ARQUITECTURA*/
     /*Configuraciones Disponibles*/
     arch_available: architecture_available,
+    /*Background de cada uno de los cards del menu*/
+    back_card: back_card,
     /*Nombre del fichero a cargar*/
     load_arch: '',
     /*Nombre del fichero a guardar*/
@@ -501,13 +564,36 @@ window.app = new Vue({
       $.getJSON('architecture/available_arch.json', function(cfg){
         architecture_available = cfg;
         app._data.arch_available = cfg;
+
+        for (var i = 0; i < architecture_available.length; i++) {
+          back_card.push({name: architecture_available[i].name , background: "default"});
+        }
       })
+    },
+
+    /*Cambia el background del card seleccionado*/
+    change_background(name, type){
+      if(type == 1){
+        for (var i = 0; i < back_card.length; i++) {
+          if(name == back_card[i].name){
+            back_card[i].background = "secondary";
+          }
+          else{
+            back_card[i].background = "default";
+          }
+        }
+      }
+      if(type == 0){
+        for (var i = 0; i < back_card.length; i++) {
+          back_card[i].background = "default";
+        }
+      }
     },
 
     /*Carga la arquitectura seleccionada*/
     load_arch_select(e){
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        //architecture = cfg;
+        architecture = cfg;
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -2178,8 +2264,6 @@ window.app = new Vue({
                 case "(reg)":
                   token = this.get_token();
 
-                  console.log("(reg) token        " + token)
-
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
@@ -2654,7 +2738,6 @@ window.app = new Vue({
       /*Replaces escritura en memoria por registro + desplazamiento*/
       re = /MP.([whb]).\((.*?)\)\) *=/;
       if (auxDef.search(re) != -1){
-        console.log("aqui")
         var match = re.exec(auxDef);
         var auxDir;
         eval("auxDir="+match[2]+")");
@@ -2668,7 +2751,6 @@ window.app = new Vue({
       /*Replaces escritura en memoria por direccion y etiqueta*/
       re = new RegExp("MP.([whb]).(.*?) *=");
       if (auxDef.search(re) != -1){
-        console.log("aqui2")
         var match = re.exec(auxDef);
 
         re = new RegExp("MP."+match[1]+"."+match[2]+" *=","g");
@@ -2680,7 +2762,6 @@ window.app = new Vue({
       /*Replaces lectura en memoria por registro + desplazamiento*/
       re = /MP.([whb]).\((.*?)\)\)/;
       if (auxDef.search(re) != -1){
-        console.log("aqui3")
         var match = re.exec(auxDef);
         var auxDir;
 
@@ -2693,7 +2774,6 @@ window.app = new Vue({
       /*Replaces lectura en memoria por direccion y etiqueta*/
       re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
       if (auxDef.search(re) != -1){
-        console.log("aqui4")
         var match = re.exec(auxDef);
 
         re = new RegExp("MP."+match[1]+"."+match[2],"g");
