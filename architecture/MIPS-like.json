@@ -1037,6 +1037,41 @@
       "definition": "reg1=reg2+reg3"
     },
     {
+      "name": "addi",
+      "co": "001000",
+      "cop": null,
+      "nwords": 1,
+      "signature": "and,reg,reg,inm",
+      "signatureRaw": "add reg1 reg2 val",
+      "fields": [
+        {
+          "name": "addi",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2+val"
+    },
+    {
       "name": "and",
       "co": "000000",
       "cop": "100100",
@@ -1078,44 +1113,15 @@
       "definition": "reg1=reg2&reg3"
     },
     {
-      "name": "li",
-      "co": "000010",
+      "name": "andi",
+      "co": "001100",
       "cop": null,
       "nwords": 1,
-      "signature": "li,reg,inm",
-      "signatureRaw": "li reg val",
+      "signature": "andi,reg,reg,inm",
+      "signatureRaw": "addi reg1 reg2 val",
       "fields": [
         {
-          "name": "li",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "reg",
-          "type": "reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "reg=val"
-    },
-    {
-      "name": "addi",
-      "co": "001000",
-      "cop": null,
-      "nwords": 1,
-      "signature": "and,reg,reg,inm",
-      "signatureRaw": "add reg1 reg2 val",
-      "fields": [
-        {
-          "name": "addi",
+          "name": "andi",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
@@ -1139,65 +1145,141 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+val"
+      "definition": "reg1=reg2&val"
     },
     {
-      "name": "lw",
+      "name": "b",
       "co": "000100",
       "cop": null,
       "nwords": 1,
-      "signature": "lw,reg,address",
-      "signatureRaw": "lw reg addr",
+      "signature": "b,inm",
+      "signatureRaw": "b val",
       "fields": [
         {
-          "name": "lw",
+          "name": "b",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
         },
         {
-          "name": "reg",
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "PC=val"
+    },
+    {
+      "name": "beq",
+      "co": "000100",
+      "cop": null,
+      "nwords": 1,
+      "signature": "beq,reg,reg,inm",
+      "signatureRaw": "beq reg1 reg2 val",
+      "fields": [
+        {
+          "name": "beq",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
           "type": "reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
-          "name": "addr",
-          "type": "address",
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
           "startbit": 15,
           "stopbit": 0
         }
       ],
-      "definition": "reg=MP.w.addr"
+      "definition": "if(reg1 == reg2){PC=val}"
     },
     {
-      "name": "sw",
+      "name": "bne",
       "co": "000101",
       "cop": null,
       "nwords": 1,
-      "signature": "sw,reg,address",
-      "signatureRaw": "sw reg addr",
+      "signature": "bne,reg,reg,inm",
+      "signatureRaw": "bne reg1 reg2 val",
       "fields": [
         {
-          "name": "sw",
+          "name": "bne",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
         },
         {
-          "name": "reg",
+          "name": "reg1",
           "type": "reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
-          "name": "addr",
-          "type": "address",
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
           "startbit": 15,
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.addr=reg"
+      "definition": "if(reg1 != reg2){PC=val}"
+    },
+    {
+      "name": "div",
+      "co": "000000",
+      "cop": "011010",
+      "nwords": 1,
+      "signature": "div,reg,reg,reg",
+      "signatureRaw": "div reg1 reg2 reg3",
+      "fields": [
+        {
+          "name": "div",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "reg3",
+          "type": "reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2/reg3"
     },
     {
       "name": "lw",
@@ -1235,6 +1317,187 @@
       "definition": "reg1=MP.w.(val+reg2)"
     },
     {
+      "name": "mul",
+      "co": "011100",
+      "cop": "000010",
+      "nwords": 1,
+      "signature": "mul,reg,reg,reg",
+      "signatureRaw": "mul reg1 reg2 reg3",
+      "fields": [
+        {
+          "name": "mul",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "reg3",
+          "type": "reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2*reg3"
+    },
+    {
+      "name": "nop",
+      "co": "000000",
+      "cop": "000000",
+      "nwords": 1,
+      "signature": "nop",
+      "signatureRaw": "nop",
+      "fields": [
+        {
+          "name": "nop",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": ""
+    },
+    {
+      "name": "or",
+      "co": "000000",
+      "cop": "100101",
+      "nwords": 1,
+      "signature": "or,reg,reg,reg",
+      "signatureRaw": "or reg1 reg2 reg3",
+      "fields": [
+        {
+          "name": "or",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "reg3",
+          "type": "reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2|reg3"
+    },
+    {
+      "name": "ori",
+      "co": "001101",
+      "cop": null,
+      "nwords": 1,
+      "signature": "ori,reg,reg,inm",
+      "signatureRaw": "ori reg1 reg2 val",
+      "fields": [
+        {
+          "name": "ori",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2|val"
+    },
+    {
+      "name": "sub",
+      "co": "000000",
+      "cop": "100010",
+      "nwords": 1,
+      "signature": "sub,reg,reg,reg",
+      "signatureRaw": "sub reg1 reg2 reg3",
+      "fields": [
+        {
+          "name": "sub",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "reg3",
+          "type": "reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2-reg3"
+    },
+    {
       "name": "sw",
       "co": "000103",
       "cop": null,
@@ -1268,6 +1531,82 @@
         }
       ],
       "definition": "MP.w.(val+reg2)=reg1"
+    },
+    {
+      "name": "xor",
+      "co": "000000",
+      "cop": "100110",
+      "nwords": 1,
+      "signature": "xor,reg,reg,reg",
+      "signatureRaw": "xor reg1 reg2 reg3",
+      "fields": [
+        {
+          "name": "xor",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "reg3",
+          "type": "reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2^reg3"
+    },
+    {
+      "name": "xori",
+      "co": "001110",
+      "cop": null,
+      "nwords": 1,
+      "signature": "xori,reg,reg,inm",
+      "signatureRaw": "xori reg1 reg2 val",
+      "fields": [
+        {
+          "name": "ori",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=reg2^val"
     }
   ],
   "pseudoinstructions": [
