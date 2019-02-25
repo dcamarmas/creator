@@ -1034,15 +1034,15 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+reg3"
+      "definition": "reg1=reg2+reg3\nPC=PC+4"
     },
     {
       "name": "addi",
       "co": "001000",
       "cop": null,
       "nwords": 1,
-      "signature": "and,reg,reg,inm",
-      "signatureRaw": "add reg1 reg2 val",
+      "signature": "addi,reg,reg,inm",
+      "signatureRaw": "addi reg1 reg2 val",
       "fields": [
         {
           "name": "addi",
@@ -1069,7 +1069,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+val"
+      "definition": "reg1=reg2+val\nPC=PC+4"
     },
     {
       "name": "and",
@@ -1077,7 +1077,7 @@
       "cop": "100100",
       "nwords": 1,
       "signature": "and,reg,reg,reg",
-      "signatureRaw": "add reg1 reg2 reg3",
+      "signatureRaw": "and reg1 reg2 reg3",
       "fields": [
         {
           "name": "and",
@@ -1110,7 +1110,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2&reg3"
+      "definition": "reg1=reg2&reg3\nPC=PC+4"
     },
     {
       "name": "andi",
@@ -1118,7 +1118,7 @@
       "cop": null,
       "nwords": 1,
       "signature": "andi,reg,reg,inm",
-      "signatureRaw": "addi reg1 reg2 val",
+      "signatureRaw": "andi reg1 reg2 val",
       "fields": [
         {
           "name": "andi",
@@ -1145,7 +1145,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2&val"
+      "definition": "reg1=reg2&val\nPC=PC+4"
     },
     {
       "name": "b",
@@ -1203,7 +1203,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 == reg2){PC=val}"
+      "definition": "if(reg1 == reg2){PC=val}\nelse{PC=PC+4}"
     },
     {
       "name": "bne",
@@ -1238,7 +1238,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 != reg2){PC=val}"
+      "definition": "if(reg1 != reg2){PC=val}\nelse{PC=PC+4}"
     },
     {
       "name": "div",
@@ -1279,7 +1279,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2/reg3"
+      "definition": "reg1=reg2/reg3\nPC=PC+4"
     },
     {
       "name": "lw",
@@ -1314,7 +1314,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=MP.w.(val+reg2)"
+      "definition": "reg1=MP.w.(val+reg2)\nPC=PC+4"
     },
     {
       "name": "mul",
@@ -1355,7 +1355,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2*reg3"
+      "definition": "reg1=reg2*reg3\nPC=PC+4"
     },
     {
       "name": "nop",
@@ -1419,7 +1419,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2|reg3"
+      "definition": "reg1=reg2|reg3\nPC=PC+4"
     },
     {
       "name": "ori",
@@ -1454,7 +1454,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2|val"
+      "definition": "reg1=reg2|val\nPC=PC+4"
     },
     {
       "name": "sub",
@@ -1495,7 +1495,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2-reg3"
+      "definition": "reg1=reg2-reg3\nPC=PC+4"
     },
     {
       "name": "sw",
@@ -1530,7 +1530,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.(val+reg2)=reg1"
+      "definition": "MP.w.(val+reg2)=reg1\nPC=PC+4"
     },
     {
       "name": "xor",
@@ -1571,7 +1571,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2^reg3"
+      "definition": "reg1=reg2^reg3\nPC=PC+4"
     },
     {
       "name": "xori",
@@ -1582,7 +1582,7 @@
       "signatureRaw": "xori reg1 reg2 val",
       "fields": [
         {
-          "name": "ori",
+          "name": "xori",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
@@ -1606,7 +1606,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2^val"
+      "definition": "reg1=reg2^val\nPC=PC+4"
     }
   ],
   "pseudoinstructions": [
@@ -1616,7 +1616,7 @@
       "cop": "100000",
       "nwords": 1,
       "signature": "move,reg,reg,reg",
-      "signatureRaw": "add reg1 reg2 reg3",
+      "signatureRaw": "move reg1 reg2 reg3",
       "fields": [
         {
           "name": "move",
