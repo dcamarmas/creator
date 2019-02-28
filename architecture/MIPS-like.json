@@ -1378,7 +1378,7 @@
           "stopbit": 0
         }
       ],
-      "definition": ""
+      "definition": "PC=PC+4"
     },
     {
       "name": "or",

@@ -358,12 +358,12 @@
 
                           <template slot="actions" slot-scope="row">
                             <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-                            <b-button @click.stop="delInstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                            <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
                           </template>
                          </b-table>
 
                          <!-- Borrar instruccion -->
-                        <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.element)">
+                        <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.index)">
                           <h6>Are you sure you want to delete the item?</h6>
                         </b-modal >
 
@@ -626,12 +626,12 @@
 
                           <template slot="actions" slot-scope="row">
                             <b-button @click.stop="editPseudoinstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-                            <b-button @click.stop="delPseudoinstModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                            <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
                           </template>
                         </b-table>
 
-                        <!-- Borrar instruccion -->
-                        <b-modal id ="modalDeletPseudoinst" :title="modalDeletPseudoinst.title" ok-variant="danger" ok-title="Delete" @ok="delPseudoinstruction(modalDeletPseudoinst.element)">
+                        <!-- Borrar pseudoinstruccion -->
+                        <b-modal id ="modalDeletPseudoinst" :title="modalDeletPseudoinst.title" ok-variant="danger" ok-title="Delete" @ok="delPseudoinstruction(modalDeletPseudoinst.index)">
                           <h6>Are you sure you want to delete the item?</h6>
                         </b-modal >
 
@@ -1241,83 +1241,97 @@
         </div>
 
         <div class="contenedor row" id="assembly" style="display:none;">
-        		<!-- 2 navbar -->
-	          <div class="contenedor menu row">
-	            <div class="col-lg-3 col-sm-12 nopadding">
-	              <div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-6 col-sm-6 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assembly">Architecture</b-button>
-	                  </div>
-	                  <div class="col-lg-6 col-sm-6 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly">Simulator</b-button>
-	                  </div>
-	                </div>
-	              </div>
-	            </div>
+      		<!-- 2 navbar -->
+          <div class="contenedor menu row">
+            <div class="col-lg-3 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assembly">Architecture</b-button>
+                  </div>
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly">Simulator</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-	            <div class="col-lg-2 col-sm-12 nopadding">
-								<div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly_btn" v-b-modal.load_assembly><span class="fa fa-upload"></span> Load</b-button>
-	                  </div>
-	                  <div class="col-lg-6 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly_btn" v-b-modal.save_assembly><span class="fa fa-download"></span> Save</b-button>
-	                  </div>
-	                </div>
-	              </div>
-	            </div>
+            <div class="col-lg-2 col-sm-12 nopadding">
+							<div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-6 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly_btn" v-b-modal.load_assembly><span class="fa fa-upload"></span> Load</b-button>
+                  </div>
+                  <div class="col-lg-6 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly_btn" v-b-modal.save_assembly><span class="fa fa-download"></span> Save</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-	            <div class="col-lg-4 col-sm-12 nopadding">
-								<div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                  <div class="col-lg-3 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fa fa-sign-in"></span> Compile</b-button>
-	                  </div>
-	                  <div class="col-lg-9 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_assembly"><span class="fa fa-microchip"></span> Show Main Memory</b-button>
-	                  </div>
-	                </div>
-	              </div>
-	            </div>
+            <div class="col-lg-4 col-sm-12 nopadding">
+							<div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-3 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fa fa-sign-in"></span> Compile</b-button>
+                  </div>
+                  <div class="col-lg-9 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_assembly"><span class="fa fa-microchip"></span> Show Main Memory</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-	            <div class="col-lg-3 col-sm-12 nopadding">
-	            	<div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                	<div class="col-lg-8 col-sm-8 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assembly"><span class="fa fa-gear"></span> Configuration</b-button>
-	                  </div>
-	              		<div class="col-lg-4 col-sm-4 buttons">
-	                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_assembly" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
-	              		</div>
-	            		</div>
-	              </div>
-	            </div>
-	          </div>
+            <div class="col-lg-3 col-sm-12 nopadding">
+            	<div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                	<div class="col-lg-8 col-sm-8 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assembly"><span class="fa fa-gear"></span> Configuration</b-button>
+                  </div>
+              		<div class="col-lg-4 col-sm-4 buttons">
+                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_assembly" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
+              		</div>
+            		</div>
+              </div>
+            </div>
+          </div>
 
-	          <div class="contenedor menu row">
-	          	<div class="col-lg-12 col-sm-12">
-	          		<h5>Assembly:</h5>
-	          	</div>
-	          	<div class="col-lg-12 col-sm-12">
-	          		<b-form-textarea id="textarea_assembly" v-model="text_assembly" :rows="11" class="code-scroll-y">
-    						</b-form-textarea>
-	          	</div>
-	          </div>
+          <div class="contenedor menu row">
+          	<div class="col-lg-12 col-sm-12">
+          		<h5>Assembly:</h5>
+          	</div>
+          	<div class="col-lg-12 col-sm-12">
+          		<b-form-textarea id="textarea_assembly" v-model="text_assembly" :rows="11" class="code-scroll-y">
+  						</b-form-textarea>
+          	</div>
+          </div>
 
-	          <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File" @ok="assembly_update">
-					    <p> Please select the assembly file to be loaded </p> 
-					    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." accept=".txt" @change="read_assembly" id="assembly_file"></b-form-file>
-					  </b-modal  >
+          <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File" @ok="assembly_update">
+				    <p> Please select the assembly file to be loaded </p> 
+				    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." accept=".txt" @change="read_assembly" id="assembly_file"></b-form-file>
+				  </b-modal>
 
-					  <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File" @ok="assembly_save">
-					    <p> Please write the file name: </p> 
-					    <b-form-input v-model="save_assembly"
-                  type="text"
-                  placeholder="File name where assembly will be saved">
-              </b-form-input>
-					  </b-modal  >
+				  <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File" @ok="assembly_save">
+				    <p> Please write the file name: </p> 
+				    <b-form-input v-model="save_assembly"
+                type="text"
+                placeholder="File name where assembly will be saved">
+            </b-form-input>
+				  </b-modal>
+
+          <!--Modal error al compilar-->
+          <b-modal  id = "modalAssemblyError" title = "Assembly Code Error" ref="errorAssembly" hide-footer>
+            <div style="padding: 3%; background: #EF9A9A;">
+              <h6>...</h6>
+              <h6>  {{modalAssemblyError.code1}}</h6>
+              <h6>* {{modalAssemblyError.code2}}</h6>
+              <h6>  {{modalAssemblyError.code3}}</h6>
+              <h6>...</h6>
+            </div>
+            <br>
+            <h6>{{modalAssemblyError.error}}</h6>
+            <br>
+          </b-modal>
 
         </div>
       </template>
