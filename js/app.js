@@ -176,7 +176,7 @@ var architecture = {components:[
     {name: "nop", co: "000000", cop: "000000", nwords: 1, signature: "nop", signatureRaw: "nop", fields: [
       {name: "nop", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: ""},
+    ], definition: "PC=PC+4"},
     {name: "or", co: "000000", cop: "100101", nwords: 1, signature: "or,reg,reg,reg", signatureRaw: "or reg1 reg2 reg3", fields: [
       {name: "or", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
@@ -431,6 +431,7 @@ window.app = new Vue({
     modalDeletInst:{
       title: '',
       element: '',
+      index: 0,
     },
     /*Edicion de una instruccion*/
     modalEditInst:{
@@ -455,6 +456,7 @@ window.app = new Vue({
     modalDeletPseudoinst:{
       title: '',
       element: '',
+      index: 0,
     },
     /*Edicion de una instruccion*/
     modalEditPseudoinst:{
@@ -504,6 +506,13 @@ window.app = new Vue({
     load_assembly: '',
     /*Variables donde se guardan los nombre de los ficheros guardados*/
     save_assembly: '',
+    /*Modal error compilacion*/
+    modalAssemblyError:{
+      code1: '',
+      code2: '',
+      code3: '',
+      error:'',
+    },
 
 
     /*PAGINA SIMULADOR*/
@@ -1204,19 +1213,16 @@ window.app = new Vue({
     },
 
     /*Muestra el modal de confirmacion de borrado de una instruccion*/
-    delInstModal(elem, button){
+    delInstModal(elem, index, button){
       this.modalDeletInst.title = "Delete " + elem;
       this.modalDeletInst.element = elem;
+      this.modalDeletInst.index = index;
       this.$root.$emit('bv::show::modal', 'modalDeletInst', button);
     },
 
     /*Borra una instruccion*/
-    delInstruction(comp){
-      for (var i = 0; i < architecture.instructions.length; i++) {
-        if(comp == architecture.instructions[i].name){
-          architecture.instructions.splice(i,1);
-        }
-      }
+    delInstruction(index){
+      architecture.instructions.splice(index,1);
     },
 
     /*Muestra el modal de editar instruccion*/
@@ -1431,19 +1437,16 @@ window.app = new Vue({
     },
 
     /*Muestra el modal de confirmacion de borrado de una instruccion*/
-    delPseudoinstModal(elem, button){
+    delPseudoinstModal(elem, index, button){
       this.modalDeletPseudoinst.title = "Delete " + elem;
       this.modalDeletPseudoinst.element = elem;
+      this.modalDeletPseudoinst.index = index;
       this.$root.$emit('bv::show::modal', 'modalDeletPseudoinst', button);
     },
 
     /*Borra una instruccion*/
-    delPseudoinstruction(comp){
-      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
-        if(comp == architecture.pseudoinstructions[i].name){
-          architecture.pseudoinstructions.splice(i,1);
-        }
-      }
+    delPseudoinstruction(index){
+      architecture.pseudoinstructions.splice(index,1);
     },
 
     /*Muestra el modal de editar instruccion*/
@@ -1983,9 +1986,6 @@ window.app = new Vue({
 
     /*Avanza al siguente token*/
     next_token(){
-
-      console.log("next")
-
       var assembly = textarea_assembly_editor.getValue();
       var index = tokenIndex;
 
@@ -2005,11 +2005,8 @@ window.app = new Vue({
         while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
           index++;
         }
-        
       }
       tokenIndex = index;
-
-      console.log(tokenIndex)
     },
 
     /*Coloca el puntero en la primera posicion*/
@@ -2037,6 +2034,7 @@ window.app = new Vue({
         app._data.alertMessaje = 'Please enter the assembly code before compiling';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        
         return;
       }
 
@@ -2046,9 +2044,6 @@ window.app = new Vue({
         var validTagPC = true;
 
         if(token == null){
-          app._data.alertMessaje = 'Compilation completed successfully';
-          app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
           tokenIndex = 0;
           break;
         }
@@ -2057,10 +2052,16 @@ window.app = new Vue({
 
         var found = false;
 
+        console.log(found)
+
         if(token.search(/\:$/) != -1){
           if(token.length == 1){
-            alert("Empty label");
-            break;
+            this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+            this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+            this.modalAssemblyError.error = "Empty label";
+
+            instructions = [];
+            return;
           }
 
           label = token.substring(0,token.length-1);
@@ -2072,8 +2073,10 @@ window.app = new Vue({
           if(architecture.instructions[i].name != token){
             continue;
           }
+
           else{
-            var error = false;
+
+            console.log("AQUI")
 
             var binary = "";
             binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
@@ -2094,7 +2097,12 @@ window.app = new Vue({
                   var validReg = false;
 
                   if(token.charAt(0)!= '$'){
-                    break;
+                    this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                    this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    this.modalAssemblyError.error = 'The registers should start with $';
+
+                    instructions = [];
+                    return;
                   }
 
                   var auxToken = token.substring(1,token.length);
@@ -2120,13 +2128,12 @@ window.app = new Vue({
 
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                            /*app._data.alertMessaje = 'Register "'+ token +'" not found';
-                            app._data.type ='danger';
-                            app._data.dismissCountDown = app._data.dismissSecs;*/
+                            this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                            this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            this.modalAssemblyError.error = 'Register "'+ token +'" not found';
 
-                            alert('Register "'+ token +'" not found');
-
-                            error = true;
+                            instructions = [];
+                            return;
                           }
                         }
                       }
@@ -2148,39 +2155,45 @@ window.app = new Vue({
                       var inm;
 
                       if(token.match(/^0x/)){
-                        console.log("a")
                         var value = token.split("x");
 
                         if(value[1].length*4 > fieldsLength){
-                          alert('Immediate number "'+ token +'" is too big')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         if(isNaN(parseInt(token, 16)) == true){
-                          alert('Immediate number "'+ token +'" is not valid')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                         
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         inm = (parseInt(token, 16)).toString(2);
                       }
                       else if (token.match(/^(\d)+\.(\d)+/)){
-                        console.log("b")
                         if(this.float2bin(parseFloat(token)).length > fieldsLength){
-                          alert('Immediate number "'+ token +'" is too big')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         if(isNaN(parseFloat(token)) == true){
-                          alert('Immediate number "'+ token +'" is not valid')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                         
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         inm = this.float2bin(parseFloat(token, 16));
@@ -2206,20 +2219,23 @@ window.app = new Vue({
                         }
                       }
                       else {
-                        console.log("c")
                         var numAux = parseInt(token, 10);
                         if((numAux.toString(2)).length > fieldsLength){
-                          alert('Immediate number "'+ token +'" is too big')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error = 'Immediate number "'+ token +'" is too big';
 
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         if(isNaN(parseInt(token)) == true){
-                          alert('Immediate number "'+ token +'" is not valid')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error = 'Immediate number "'+ token +'" is not valid';
                         
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         inm = (parseInt(token, 10)).toString(2);
@@ -2252,17 +2268,21 @@ window.app = new Vue({
                         var value = token.split("x");
 
                         if(value[1].length*4 > fieldsLength){
-                          alert('Address "'+ token +'" is too big')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Address "'+ token +'" is too big';
 
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         if(isNaN(parseInt(token, 16)) == true){
-                          alert('Address "'+ token +'" is not valid')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Address "'+ token +'" is not valid';
                         
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
 
                         addr = (parseInt(token, 16)).toString(2);
@@ -2285,10 +2305,12 @@ window.app = new Vue({
                               validTag = true;
                             }
                             if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
-                              alert('Tag "'+ token +'" is not valid')
+                              this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                              this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                              this.modalAssemblyError.error ='Tag "'+ token +'" is not valid';
                         
-                              error = true
-                              break;
+                              instructions = [];
+                              return;
                             }
                           }
                         }
@@ -2307,20 +2329,22 @@ window.app = new Vue({
                     if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 
-                      console.log("signatureRawParts[j]")
-
                       if(token.charAt(0) != '('){
-                        alert('This field"'+ token +'" must start with a "("')
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='This field"'+ token +'" must start with a "("';
                         
-                        error = true
-                        break;
+                        instructions = [];
+                        return;
                       }
 
                       if(token.charAt(token.length-1) != ')'){
-                        alert('This field"'+ token +'" must end with a ")"')
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='This field"'+ token +'" must end with a ")"';
                         
-                        error = true
-                        break;
+                        instructions = [];
+                        return;
                       }
                       
                       re = /\((.*?)\)/;
@@ -2346,9 +2370,12 @@ window.app = new Vue({
                               console.log(instruction)
                             }
                             else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                              alert('Register "'+ match[0] +'" not found');
+                              this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                              this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                              this.modalAssemblyError.error ='Register "'+ match[0] +'" not found';
 
-                              error = true;
+                              instructions = [];
+                              return;
                             }
                           }
                         }
@@ -2391,55 +2418,53 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log("antes token")
-
                   this.next_token();
+
                 break;
               }
 
 
             }
 
-            if(error == false){
-              if(validTagPC == false){
-                console.log("pendiente")
-                pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, instIndex: i});
+            if(validTagPC == false){
+              console.log("pendiente")
+              pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, instIndex: i, line: textarea_assembly_editor.posFromIndex(tokenIndex).line});
 
-                address = address + (4*architecture.instructions[i].nwords);
-                
-                found = true;
+              address = address + (4*architecture.instructions[i].nwords);
+              found = true;
 
-                break;
-              }
-              else{
-                console.log("no pendiente")
+              break;
+            }
+            else{
+              console.log("no pendiente")
 
-                var padding = "";
-                padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
+              var padding = "";
+              padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
 
-                binary = binary + padding;
+              binary = binary + padding;
 
-                console.log(binary)
-                console.log(instruction)
+              console.log(binary)
+              console.log(instruction)
 
-                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: "", _rowVariant: ''});
-                
-                address = address + (4*architecture.instructions[i].nwords);
+              instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: "", _rowVariant: ''});
+              
+              address = address + (4*architecture.instructions[i].nwords);
 
-                found = true;
-              }
+              found = true;
             }
           }
         }
-        if(!found){
-          /*app._data.alertMessaje = 'Instruction "'+ token +'" not found';
-          app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;*/
 
-          alert('Instruction "'+ token +'" not found');
+        if(!found){
+          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+          this.modalAssemblyError.error ='Instruction "'+ token +'" not found';
 
           existsInstruction = false;
           tokenIndex = 0;
+
+          instructions = [];
+          return;
         }
       }
 
@@ -2461,7 +2486,6 @@ window.app = new Vue({
 
 
       for(var p = 0; p < pending_instructions.length; p++){
-        var error = false;
 
         var instructionParts = pending_instructions[p].instruction.split(' ');
         var signature = pending_instructions[p].signature;
@@ -2509,13 +2533,12 @@ window.app = new Vue({
 
                       }
                       else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                        /*app._data.alertMessaje = 'Register "'+ token +'" not found';
-                        app._data.type ='danger';
-                        app._data.dismissCountDown = app._data.dismissSecs;*/
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='Register "'+ token +'" not found';
 
-                        alert('Register "'+ token +'" not found');
-
-                        error = true;
+                        instructions = [];
+                        return;
                       }
                     }
                   }
@@ -2535,85 +2558,99 @@ window.app = new Vue({
                   var inm;
 
                   if(token.match(/^0x/)){
-                    console.log("a")
                     var value = token.split("x");
 
                     if(value[1].length*4 > fieldsLength){
-                      alert('Immediate number "'+ token +'" is too big')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     if(isNaN(parseInt(token, 16)) == true){
-                      alert('Immediate number "'+ token +'" is not valid')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                     
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     inm = (parseInt(token, 16)).toString(2);
                   }
                   else if (token.match(/^(\d)+\.(\d)+/)){
-                    console.log("b")
                     if(this.float2bin(parseFloat(token)).length > fieldsLength){
-                      alert('Immediate number "'+ token +'" is too big')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     if(isNaN(parseFloat(token)) == true){
-                      alert('Immediate number "'+ token +'" is not valid')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                     
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     inm = this.float2bin(parseFloat(token, 16));
                   }
                   else if(isNaN(parseInt(token))){
                     if(instructions.length == 0){
-                      error = true;
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(0);
+                      this.modalAssemblyError.error = 'Tag "'+ token +'" is not valid';
+
+                      instructions = [];
+                      return;
                     }
 
                     for (var z = 0; z < instructions.length; z++){
                       if(token == instructions[z].Label){
                         var addr = (parseInt(instructions[z].Address, 16)).toString(2);
-
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         token = instructions[z].Address;
                         break;
                       }
                       else if(z == instructions.length-1){
-                        error = true;
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(pending_instructions[p].line - 1);
+                        this.modalAssemblyError.error = 'Tag "'+ token +'" is not valid';
+                        console.log("AAAAAAAAAAAAAAAAAa")
+                        instructions = [];
+                        return;
                       }  
                     }
                   }
                   else {
-                    console.log("c")
                     var numAux = parseInt(token, 10);
                     if((numAux.toString(2)).length > fieldsLength){
-                      alert('Immediate number "'+ token +'" is too big')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     if(isNaN(parseInt(token)) == true){
-                      alert('Immediate number "'+ token +'" is not valid')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                     
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     inm = (parseInt(token, 10)).toString(2);
                   }
-                  if(validTagPC == true){
-                    binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                    console.log(inm.padStart(fieldsLength, "0"))
-                  }
-                  
+                
                   instruction = instruction + " " + token;
                   console.log(instruction)
                   
@@ -2635,17 +2672,21 @@ window.app = new Vue({
                     var value = token.split("x");
 
                     if(value[1].length*4 > fieldsLength){
-                      alert('Address "'+ token +'" is too big')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Address "'+ token +'" is too big';
 
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     if(isNaN(parseInt(token, 16)) == true){
-                      alert('Address "'+ token +'" is not valid')
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='Address "'+ token +'" is not valid';
                     
-                      error = true
-                      break;
+                      instructions = [];
+                      return;
                     }
 
                     addr = (parseInt(token, 16)).toString(2);
@@ -2668,10 +2709,12 @@ window.app = new Vue({
                           validTag = true;
                         }
                         if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
-                          alert('Tag "'+ token +'" is not valid')
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Tag "'+ token +'" is not valid';
                     
-                          error = true
-                          break;
+                          instructions = [];
+                          return;
                         }
                       }
                     }
@@ -2688,20 +2731,22 @@ window.app = new Vue({
                 if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
                   fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 
-                  console.log("signatureRawParts[j]")
-
                   if(token.charAt(0) != '('){
-                    alert('This field"'+ token +'" must start with a "("')
+                    this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                    this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    this.modalAssemblyError.error ='This field"'+ token +'" must start with a "("';
                     
-                    error = true
-                    break;
+                    instructions = [];
+                    return;
                   }
 
                   if(token.charAt(token.length-1) != ')'){
-                    alert('This field"'+ token +'" must end with a ")"')
+                    this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                    this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    this.modalAssemblyError.error ='This field"'+ token +'" must end with a ")"';
                     
-                    error = true
-                    break;
+                    instructions = [];
+                    return;
                   }
                   
                   re = /\((.*?)\)/;
@@ -2727,9 +2772,12 @@ window.app = new Vue({
                           console.log(instruction)
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                          alert('Register "'+ match[0] +'" not found');
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error ='Register "'+ match[0] +'" not found';
 
-                          error = true;
+                          instructions = [];
+                          return;
                         }
                       }
                     }
@@ -2770,36 +2818,55 @@ window.app = new Vue({
                 }
               }
 
-              console.log("antes token")
             break;
           }
         }
-        if(error == false){
-          var padding = "";
-          padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
 
-          binary = binary + padding;
+        var padding = "";
+        padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
 
-          console.log(binary)
-          console.log(instruction)
+        binary = binary + padding;
 
-          for(var pos = 0; pos < instructions.length; pos++){
-            if(parseInt(instructions[pos].Address, 16) > pending_instructions[p].address){
-              instructions.splice(pos, 0, { Break: null, Address: "0x" + pending_instructions[p].address.toString(16), Label: label , loaded: instruction, user: "", _rowVariant: ''});
-              break;
-            }
+        console.log(binary)
+        console.log(instruction)
+
+        for(var pos = 0; pos < instructions.length; pos++){
+          if(parseInt(instructions[pos].Address, 16) > pending_instructions[p].address){
+            instructions.splice(pos, 0, { Break: null, Address: "0x" + pending_instructions[p].address.toString(16), Label: pending_instructions[p].Label , loaded: instruction, user: "", _rowVariant: ''});
+            break;
           }
         }
       }
 
       archChange = false;
 
-      app._data.instructions = instructions;
+      app._data.alertMessaje = 'Compilation completed successfully';
+      app._data.type ='success';
+      app._data.dismissCountDown = app._data.dismissSecs;
 
+      app._data.instructions = instructions;
+      
       this.reset();
     },
 
-    
+    /*Muestra el mensaje de error al compilar*/
+    errorMessage(line){
+      if (line > 0){
+        this.modalAssemblyError.code1 = line + "  " + textarea_assembly_editor.getLine(line - 1);
+      }
+      else{
+        this.modalAssemblyError.code1 = "";
+      }
+
+      this.modalAssemblyError.code2 = (line + 1) + "  " + textarea_assembly_editor.getLine(line);
+
+      if(line < textarea_assembly_editor.lineCount() - 1){
+        this.modalAssemblyError.code3 = (line + 2) + "  " + textarea_assembly_editor.getLine(line + 1);
+      }
+      else{
+        this.modalAssemblyError.code3 = "";
+      }
+    },
 
 
 
@@ -3250,7 +3317,9 @@ window.app = new Vue({
         instructions[i]._rowVariant = '';
       }
       executionIndex = 0;
-      instructions[executionIndex]._rowVariant = 'success';
+      if(instructions.length > 0){
+        instructions[executionIndex]._rowVariant = 'success';
+      }
 
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++) {
@@ -3493,8 +3562,6 @@ window.app = new Vue({
     },
 
     breakPoint(record, index){
-      console.log("break")
-
       if(instructions[index].Break == null){
         instructions[index].Break = true;
         app._data.instructions[index].Break = true;
@@ -3506,6 +3573,7 @@ window.app = new Vue({
     }
 
   },
+
   created(){
     this.load_arch_available();
   }
