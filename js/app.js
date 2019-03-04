@@ -117,26 +117,26 @@ var architecture = {components:[
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2+reg3\nPC=PC+4"},
+    ], definition: "reg1=reg2+reg3"},
     {name: "addi", co: "001000", cop: null, nwords: 1, signature: "addi,reg,reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
       {name: "addi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2+val\nPC=PC+4"},
+    ], definition: "reg1=reg2+val"},
     {name: "and", co: "000000", cop: "100100", nwords: 1, signature: "and,reg,reg,reg", signatureRaw: "and reg1 reg2 reg3", fields: [
       {name: "and", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2&reg3\nPC=PC+4"},
+    ], definition: "reg1=reg2&reg3"},
     {name: "andi", co: "001100", cop: null, nwords: 1, signature: "andi,reg,reg,inm", signatureRaw: "andi reg1 reg2 val", fields: [
       {name: "andi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2&val\nPC=PC+4"},
+    ], definition: "reg1=reg2&val"},
     {name: "b", co: "000100", cop: null, nwords: 1, signature: "b,inm", signatureRaw: "b val", fields: [
       {name: "b", type: "co", startbit: 31, stopbit: 26},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
@@ -146,79 +146,78 @@ var architecture = {components:[
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "if(reg1 == reg2){PC=val}\nelse{PC=PC+4}"},
+    ], definition: "if(reg1 == reg2){PC=val}"},
     {name: "bne", co: "000101", cop: null, nwords: 1, signature: "bne,reg,reg,inm", signatureRaw: "bne reg1 reg2 val", fields: [
       {name: "bne", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "if(reg1 != reg2){PC=val}\nelse{PC=PC+4}"},
+    ], definition: "if(reg1 != reg2){PC=val}"},
     {name: "div", co: "000000", cop: "011010", nwords: 1, signature: "div,reg,reg,reg", signatureRaw: "div reg1 reg2 reg3", fields: [
       {name: "div", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2/reg3\nPC=PC+4"},
+    ], definition: "reg1=reg2/reg3"},
     {name: "lw", co: "000102", cop: null, nwords: 1, signature: "lw,reg,inm,(reg)", signatureRaw: "lw reg1 val (reg2)", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=MP.w.(val+reg2)\nPC=PC+4"},
+    ], definition: "reg1=MP.w.(val+reg2)"},
     {name: "mul", co: "011100", cop: "000010", nwords: 1, signature: "mul,reg,reg,reg", signatureRaw: "mul reg1 reg2 reg3", fields: [
       {name: "mul", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2*reg3\nPC=PC+4"},
+    ], definition: "reg1=reg2*reg3"},
     {name: "nop", co: "000000", cop: "000000", nwords: 1, signature: "nop", signatureRaw: "nop", fields: [
       {name: "nop", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "PC=PC+4"},
+    ], definition: ""},
     {name: "or", co: "000000", cop: "100101", nwords: 1, signature: "or,reg,reg,reg", signatureRaw: "or reg1 reg2 reg3", fields: [
       {name: "or", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2|reg3\nPC=PC+4"},
+    ], definition: "reg1=reg2|reg3"},
     {name: "ori", co: "001101", cop: null, nwords: 1, signature: "ori,reg,reg,inm", signatureRaw: "ori reg1 reg2 val", fields: [
       {name: "ori", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2|val\nPC=PC+4"},
+    ], definition: "reg1=reg2|val"},
     {name: "sub", co: "000000", cop: "100010", nwords: 1, signature: "sub,reg,reg,reg", signatureRaw: "sub reg1 reg2 reg3", fields: [
       {name: "sub", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2-reg3\nPC=PC+4"},
+    ], definition: "reg1=reg2-reg3"},
     {name: "sw", co: "000103", cop: null, nwords: 1, signature: "sw,reg,inm,(reg)", signatureRaw: "sw reg1 val (reg2)", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "MP.w.(val+reg2)=reg1\nPC=PC+4"},
+    ], definition: "MP.w.(val+reg2)=reg1"},
     {name: "xor", co: "000000", cop: "100110", nwords: 1, signature: "xor,reg,reg,reg", signatureRaw: "xor reg1 reg2 reg3", fields: [
       {name: "xor", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2^reg3\nPC=PC+4"},
+    ], definition: "reg1=reg2^reg3"},
     {name: "xori", co: "001110", cop: null, nwords: 1, signature: "xori,reg,reg,inm", signatureRaw: "xori reg1 reg2 val", fields: [
       {name: "xori", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2^val\nPC=PC+4"},*/
+    ], definition: "reg1=reg2^val"},*/
   ],pseudoinstructions:[
-    /*{name: "move", co: "000000", cop: "100000", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "move reg1 reg2 reg3", fields: [
-      {name: "move", type: "co", startbit: 31, stopbit: 26},
+    /*{name: "move", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "move reg1 reg2 reg3", fields: [
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
     ], definition: "add reg1 R0 reg2"},*/
@@ -441,12 +440,12 @@ window.app = new Vue({
       cop: '',
     },
     /*Asignacion de valores de la tabla de instrucciones*/
-    archInstructions: ['Break', 'Address', 'Label', 'Loaded Instructions', 'User Instructions'],
+    archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
     instructions: instructions,
 
 
     /*PAGINA DE PSEUDOINSTRUCCIONES*/
-    pseudoinstFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+    pseudoinstFields: ['name', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
     /*Reset de las instrucciones*/
     modalResetPseudoinst:{
       title: '',
@@ -462,8 +461,7 @@ window.app = new Vue({
     modalEditPseudoinst:{
       title: '',
       element: '',
-      co: '',
-      cop: '',
+      index: 0,
     },
 
     /*PAGINA DE DIRECTIVAS*/
@@ -1450,186 +1448,111 @@ window.app = new Vue({
     },
 
     /*Muestra el modal de editar instruccion*/
-    editPseudoinstModal(elem, co, cop, button){
+    editPseudoinstModal(elem, index, button){
       app._data.dismissCountDownMod = 0;
 
       this.modalEditPseudoinst.title = "Edit " + elem;
       this.modalEditPseudoinst.element = elem;
-      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
-        if(elem == architecture.pseudoinstructions[i].name && co == architecture.pseudoinstructions[i].co && cop == architecture.pseudoinstructions[i].cop){
-          this.formInstruction.name = architecture.pseudoinstructions[i].name;
-          this.formInstruction.cop = architecture.pseudoinstructions[i].cop;
-          this.formInstruction.co = architecture.pseudoinstructions[i].co;
-          app._data.modalEditPseudoinst.co = architecture.pseudoinstructions[i].co;
-          app._data.modalEditPseudoinst.cop = architecture.pseudoinstructions[i].cop;
-          this.formInstruction.nwords = architecture.pseudoinstructions[i].nwords;
-          this.formInstruction.numfields = architecture.pseudoinstructions[i].fields.length;
-          this.formInstruction.definition = architecture.pseudoinstructions[i].definition;
+      this.modalEditPseudoinst.index = index;
+      
+      this.formInstruction.name = architecture.pseudoinstructions[index].name;
+      this.formInstruction.nwords = architecture.pseudoinstructions[index].nwords;
+      this.formInstruction.numfields = architecture.pseudoinstructions[index].fields.length;
+      this.formInstruction.definition = architecture.pseudoinstructions[index].definition;
 
-          for (var j = 0; j < architecture.pseudoinstructions[i].fields.length; j++) {
-            this.formInstruction.nameField [j]= architecture.pseudoinstructions[i].fields[j].name;
-            this.formInstruction.typeField[j] = architecture.pseudoinstructions[i].fields[j].type;
-            this.formInstruction.startBitField[j] = architecture.pseudoinstructions[i].fields[j].startbit;
-            this.formInstruction.stopBitField[j] = architecture.pseudoinstructions[i].fields[j].stopbit;
-          }
-        }
+      for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
+        this.formInstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
+        this.formInstruction.typeField[j] = architecture.pseudoinstructions[index].fields[j].type;
+        this.formInstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
+        this.formInstruction.stopBitField[j] = architecture.pseudoinstructions[index].fields[j].stopbit;
       }
 
       this.$root.$emit('bv::show::modal', 'modalEditPseudoinst', button);
     },
 
     /*Comprueba que estan todos los campos del formulario de editar instruccion*/
-    editPseudoinstVerify(evt, inst, co, cop){
+    editPseudoinstVerify(evt, inst, index){
       evt.preventDefault();
 
       var vacio = 0;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
-        if(this.formInstruction.typeField[z] == 'cop'){
-          if(!this.formInstruction.cop){
-            vacio = 1;
-          }
-        }
-      }
 
       for (var i = 0; i < this.formInstruction.numfields; i++) {
         if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
           vacio = 1;
         }
       }
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+
+      if (!this.formInstruction.name || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
-      else if(isNaN(this.formInstruction.co)){
-        app._data.alertMessaje = 'The field co must be numbers';
-        app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
-      }
-      else if(isNaN(this.formInstruction.cop)){
-        app._data.alertMessaje = 'The field cop must be numbers';
-        app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
-      }
       else {
-        this.editPseudoinstruction(inst, co, cop);
+        this.editPseudoinstruction(inst, index);
       }
     },
 
     /*edita una instruccion*/
-    editPseudoinstruction(comp, co, cop){
-      var exCop = false;
-
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
-        if(this.formInstruction.typeField[z] == 'cop'){
-          exCop = true;
-        }
-      }
-
-      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
-        if((this.formInstruction.co == architecture.pseudoinstructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
-          if(((!this.formInstruction.cop) || (exCop != true))){
-            app._data.alertMessaje = 'The instruction already exists';
-            app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
-            return;
-          }
-        }
-      }
-
-      for (var i = 0; i < architecture.pseudoinstructions.length && exCop == true ; i++) {
-        if((this.formInstruction.cop == architecture.pseudoinstructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
-          app._data.alertMessaje = 'The instruction already exists';
-          app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
-          return;
-        }
-      }
+    editPseudoinstruction(comp, index){
 
       this.$refs.editPseudoinst.hide();
-      for (var i = 0; i < architecture.pseudoinstructions.length; i++){
-        if(architecture.pseudoinstructions[i].name == comp && architecture.pseudoinstructions[i].co == co && architecture.pseudoinstructions[i].cop == cop){
-          architecture.pseudoinstructions[i].name = this.formInstruction.name;
-          architecture.pseudoinstructions[i].co = this.formInstruction.co;
-          architecture.pseudoinstructions[i].cop = this.formInstruction.cop;
-          architecture.pseudoinstructions[i].nwords = this.formInstruction.nwords;
-          architecture.pseudoinstructions[i].definition = this.formInstruction.definition;
+      
+      architecture.pseudoinstructions[index].name = this.formInstruction.name;
+      architecture.pseudoinstructions[index].nwords = this.formInstruction.nwords;
+      architecture.pseudoinstructions[index].definition = this.formInstruction.definition;
 
-          for (var j = 0; j < this.formInstruction.numfields; j++){
-            if(j < architecture.pseudoinstructions[i].fields.length){
-              architecture.pseudoinstructions[i].fields[j].name = this.formInstruction.nameField[j];
-              architecture.pseudoinstructions[i].fields[j].type = this.formInstruction.typeField[j];
-              architecture.pseudoinstructions[i].fields[j].startbit = this.formInstruction.startBitField[j];
-              architecture.pseudoinstructions[i].fields[j].stopbit = this.formInstruction.stopBitField[j];
-            }
-            else{
-              var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j]};
-              architecture.pseudoinstructions[i].fields.push(newField);
-            }
-          }
-
-          var signature = this.formInstruction.name;
-          for (var z = 1; z < this.formInstruction.numfields; z++) {
-            if(z == 1){
-              signature = signature + ",";
-            }
-            if(this.formInstruction.typeField[z] != 'cop'){
-              signature = signature + this.formInstruction.typeField[z];
-              if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-                signature = signature + ',';
-              }
-            }
-            if(this.formInstruction.typeField[z] == 'cop'){
-              cop = true;
-              if(z<this.formInstruction.numfields-1){
-                signature = signature + ',';
-              }
-            }
-          }
-
-          var signatureRaw = this.formInstruction.name;
-          for (var z = 1; z < this.formInstruction.numfields; z++) {
-            if(this.formInstruction.typeField[z] != 'cop'){
-              if(z == 1){
-                signatureRaw = signatureRaw + ' ';
-              }
-              if(this.formInstruction.typeField[z] == '(reg)'){
-                signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
-                if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-                  signatureRaw = signatureRaw + ' ';
-                } 
-              }
-              else{
-                signatureRaw = signatureRaw + this.formInstruction.nameField[z];
-                if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-                  signatureRaw = signatureRaw + ' ';
-                } 
-              }
-            }
-            if(this.formInstruction.typeField[z] == 'cop'){
-              if(z<this.formInstruction.numfields-1){
-                signatureRaw = signatureRaw + ' ';
-              }
-            }
-          }
-
-          if(exCop == false){
-            architecture.pseudoinstructions[i].cop='';
-          }
-
-          architecture.pseudoinstructions[i].signature = signature;
-          architecture.pseudoinstructions[i].signatureRaw = signatureRaw;
-
-          if(architecture.pseudoinstructions[i].fields.length > this.formInstruction.numfields){
-            architecture.pseudoinstructions[i].fields.splice(this.formInstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formInstruction.numfields));
-          }
-
+      for (var j = 0; j < this.formInstruction.numfields; j++){
+        if(j < architecture.pseudoinstructions[index].fields.length){
+          architecture.pseudoinstructions[index].fields[j].name = this.formInstruction.nameField[j];
+          architecture.pseudoinstructions[index].fields[j].type = this.formInstruction.typeField[j];
+          architecture.pseudoinstructions[index].fields[j].startbit = this.formInstruction.startBitField[j];
+          architecture.pseudoinstructions[index].fields[j].stopbit = this.formInstruction.stopBitField[j];
         }
+        else{
+          var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j]};
+          architecture.pseudoinstructions[index].fields.push(newField);
+        }
+      }
+
+      var signature = this.formInstruction.name;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(z == 1){
+          signature = signature + ",";
+        }
+
+        signature = signature + this.formInstruction.typeField[z];
+        if((z<this.formInstruction.numfields-1)){
+          signature = signature + ',';
+        }
+      }
+
+      var signatureRaw = this.formInstruction.name;
+      for (var z = 1; z < this.formInstruction.numfields; z++) {
+        if(z == 1){
+          signatureRaw = signatureRaw + ' ';
+        }
+        if(this.formInstruction.typeField[z] == '(reg)'){
+          signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
+          if((z<this.formInstruction.numfields-1)){
+            signatureRaw = signatureRaw + ' ';
+          } 
+        }
+        else{
+          signatureRaw = signatureRaw + this.formInstruction.nameField[z];
+          if((z<this.formInstruction.numfields-1)){
+            signatureRaw = signatureRaw + ' ';
+          } 
+        }
+      }
+
+      architecture.pseudoinstructions[index].signature = signature;
+      architecture.pseudoinstructions[index].signatureRaw = signatureRaw;
+
+      if(architecture.pseudoinstructions[index].fields.length > this.formInstruction.numfields){
+        architecture.pseudoinstructions[index].fields.splice(this.formInstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formInstruction.numfields));
       }
 
       this.formInstruction.name='';
-      this.formInstruction.cop='';
-      this.formInstruction.co ='';
       this.formInstruction.nwords =1;
       this.formInstruction.numfields=1;
       this.formInstruction.nameField=[];
@@ -2052,8 +1975,6 @@ window.app = new Vue({
 
         var found = false;
 
-        console.log(found)
-
         if(token.search(/\:$/) != -1){
           if(token.length == 1){
             this.$root.$emit('bv::show::modal', 'modalAssemblyError');
@@ -2061,7 +1982,31 @@ window.app = new Vue({
             this.modalAssemblyError.error = "Empty label";
 
             instructions = [];
+            pending_instructions = [];
             return;
+          }
+          for(var i = 0; i < instructions.length; i++){
+            if(instructions[i].Label == token.substring(0,token.length-1)){
+              this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+              this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              this.modalAssemblyError.error = "Repeated tag: " +token.substring(0,token.length-1);
+
+              instructions = [];
+              pending_instructions = [];
+              return;
+            } 
+          }
+
+          for(var i = 0; i < pending_instructions.length; i++){
+            if(pending_instructions[i].Label == token.substring(0,token.length-1)){
+              this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+              this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              this.modalAssemblyError.error = "Repeated tag: " +token.substring(0,token.length-1);
+
+              instructions = [];
+              pending_instructions = [];
+              return;
+            } 
           }
 
           label = token.substring(0,token.length-1);
@@ -2075,13 +2020,11 @@ window.app = new Vue({
           }
 
           else{
-
-            console.log("AQUI")
-
             var binary = "";
             binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
 
-            var instruction ="";
+            var instruction = "";
+            var user_instruction = "";
 
             signatureParts = architecture.instructions[i].signature.split(',');
             signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
@@ -2102,6 +2045,7 @@ window.app = new Vue({
                     this.modalAssemblyError.error = 'The registers should start with $';
 
                     instructions = [];
+                    pending_instructions = [];
                     return;
                   }
 
@@ -2121,6 +2065,7 @@ window.app = new Vue({
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                             instruction = instruction + " " + token;
+                            user_instruction = user_instruction + " " + token;
 
                             console.log((reg.toString(2)).padStart(fieldsLength, "0"))
                             console.log(binary)
@@ -2133,6 +2078,7 @@ window.app = new Vue({
                             this.modalAssemblyError.error = 'Register "'+ token +'" not found';
 
                             instructions = [];
+                            pending_instructions = [];
                             return;
                           }
                         }
@@ -2145,6 +2091,7 @@ window.app = new Vue({
                   break;
                 case "inm":
                   token = this.get_token();
+                  var token_user = "";
 
                   console.log(token)
 
@@ -2163,6 +2110,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2172,6 +2120,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                         
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2184,6 +2133,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2193,6 +2143,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                         
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2208,6 +2159,8 @@ window.app = new Vue({
                             var addr = (parseInt(instructions[z].Address, 16)).toString(2);
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                            
+                            token_user = token;
                             token = instructions[z].Address;
 
                             validTagPC = true;
@@ -2226,6 +2179,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error = 'Immediate number "'+ token +'" is too big';
 
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2235,6 +2189,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error = 'Immediate number "'+ token +'" is not valid';
                         
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2246,6 +2201,13 @@ window.app = new Vue({
                       }
                       
                       instruction = instruction + " " + token;
+                      if(token_user == ""){
+                        user_instruction = user_instruction + " " + token;
+                      }
+                      else{
+                        user_instruction = user_instruction + " " + token_user;
+                      }
+                    
                       console.log(instruction)
                       
                     }
@@ -2273,6 +2235,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Address "'+ token +'" is too big';
 
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2282,6 +2245,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Address "'+ token +'" is not valid';
                         
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
 
@@ -2289,6 +2253,7 @@ window.app = new Vue({
                       
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         instruction = instruction + " " + token;
+                        user_instruction = user_instruction + " " + token;
 
                         console.log(instruction)
                       }
@@ -2301,6 +2266,7 @@ window.app = new Vue({
 
                               binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                               instruction = instruction + " " + token;
+                              user_instruction = user_instruction + " " + token;
 
                               validTag = true;
                             }
@@ -2310,6 +2276,7 @@ window.app = new Vue({
                               this.modalAssemblyError.error ='Tag "'+ token +'" is not valid';
                         
                               instructions = [];
+                              pending_instructions = [];
                               return;
                             }
                           }
@@ -2332,18 +2299,20 @@ window.app = new Vue({
                       if(token.charAt(0) != '('){
                         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
                         this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        this.modalAssemblyError.error ='This field"'+ token +'" must start with a "("';
+                        this.modalAssemblyError.error ='This field "'+ token +'" must start with a "("';
                         
                         instructions = [];
+                        pending_instructions = [];
                         return;
                       }
 
                       if(token.charAt(token.length-1) != ')'){
                         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
                         this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        this.modalAssemblyError.error ='This field"'+ token +'" must end with a ")"';
+                        this.modalAssemblyError.error ='This field "'+ token +'" must end with a ")"';
                         
                         instructions = [];
+                        pending_instructions = [];
                         return;
                       }
                       
@@ -2364,6 +2333,7 @@ window.app = new Vue({
 
                               binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                               instruction = instruction + " " + token;
+                              user_instruction = user_instruction + " " + token;
 
                               console.log((reg.toString(2)).padStart(fieldsLength, "0"))
                               console.log(binary)
@@ -2375,6 +2345,7 @@ window.app = new Vue({
                               this.modalAssemblyError.error ='Register "'+ match[0] +'" not found';
 
                               instructions = [];
+                              pending_instructions = [];
                               return;
                             }
                           }
@@ -2402,6 +2373,7 @@ window.app = new Vue({
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
 
                       instruction = instruction + token;
+                      user_instruction = user_instruction + token;
 
                       console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"))
                       console.log(binary)
@@ -2446,8 +2418,9 @@ window.app = new Vue({
               console.log(binary)
               console.log(instruction)
 
-              instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: "", _rowVariant: ''});
+              instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: user_instruction, _rowVariant: ''});
               
+
               address = address + (4*architecture.instructions[i].nwords);
 
               found = true;
@@ -2464,6 +2437,7 @@ window.app = new Vue({
           tokenIndex = 0;
 
           instructions = [];
+          pending_instructions = [];
           return;
         }
       }
@@ -2495,7 +2469,8 @@ window.app = new Vue({
         var binary = "";
         binary = binary.padStart(architecture.instructions[pending_instructions[p].instIndex].nwords * 32, "0");
 
-        var instruction ="";
+        var instruction = "";
+        var user_instruction = "";
 
         for(var j = 0; j < signature.length; j++){
           switch(signature[j]) {
@@ -2526,6 +2501,7 @@ window.app = new Vue({
 
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         instruction = instruction + " " + token;
+                        user_instruction = user_instruction + " " + token;
 
                         console.log((reg.toString(2)).padStart(fieldsLength, "0"))
                         console.log(binary)
@@ -2538,6 +2514,7 @@ window.app = new Vue({
                         this.modalAssemblyError.error ='Register "'+ token +'" not found';
 
                         instructions = [];
+                        pending_instructions = [];
                         return;
                       }
                     }
@@ -2548,6 +2525,7 @@ window.app = new Vue({
               break;
             case "inm":
               token = instructionParts[j];
+              token_user = "";
 
               console.log(token)
 
@@ -2566,6 +2544,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2575,6 +2554,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                     
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2587,6 +2567,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2596,6 +2577,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                     
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2608,6 +2590,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error = 'Tag "'+ token +'" is not valid';
 
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2615,6 +2598,7 @@ window.app = new Vue({
                       if(token == instructions[z].Label){
                         var addr = (parseInt(instructions[z].Address, 16)).toString(2);
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        token_user = token;
                         token = instructions[z].Address;
                         break;
                       }
@@ -2622,8 +2606,9 @@ window.app = new Vue({
                         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
                         this.errorMessage(pending_instructions[p].line - 1);
                         this.modalAssemblyError.error = 'Tag "'+ token +'" is not valid';
-                        console.log("AAAAAAAAAAAAAAAAAa")
+
                         instructions = [];
+                        pending_instructions = [];
                         return;
                       }  
                     }
@@ -2636,6 +2621,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
 
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2645,6 +2631,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
                     
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2652,6 +2639,14 @@ window.app = new Vue({
                   }
                 
                   instruction = instruction + " " + token;
+                  
+                  if(token_user == ""){
+                    user_instruction = user_instruction + " " + token;
+                  }
+                  else{
+                    user_instruction = user_instruction + " " + token_user;
+                  }
+
                   console.log(instruction)
                   
                 }
@@ -2677,6 +2672,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Address "'+ token +'" is too big';
 
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2686,6 +2682,7 @@ window.app = new Vue({
                       this.modalAssemblyError.error ='Address "'+ token +'" is not valid';
                     
                       instructions = [];
+                      pending_instructions = [];
                       return;
                     }
 
@@ -2693,6 +2690,7 @@ window.app = new Vue({
                   
                     binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                     instruction = instruction + " " + token;
+                    user_instruction = user_instruction + " " + token;
 
                     console.log(instruction)
                   }
@@ -2705,6 +2703,7 @@ window.app = new Vue({
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           instruction = instruction + " " + token;
+                          user_instruction = user_instruction + " " + token;
 
                           validTag = true;
                         }
@@ -2714,6 +2713,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Tag "'+ token +'" is not valid';
                     
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
                       }
@@ -2737,6 +2737,7 @@ window.app = new Vue({
                     this.modalAssemblyError.error ='This field"'+ token +'" must start with a "("';
                     
                     instructions = [];
+                    pending_instructions = [];
                     return;
                   }
 
@@ -2746,6 +2747,7 @@ window.app = new Vue({
                     this.modalAssemblyError.error ='This field"'+ token +'" must end with a ")"';
                     
                     instructions = [];
+                    pending_instructions = [];
                     return;
                   }
                   
@@ -2766,6 +2768,7 @@ window.app = new Vue({
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           instruction = instruction + " " + token;
+                          user_instruction = user_instruction + " " + token;
 
                           console.log((reg.toString(2)).padStart(fieldsLength, "0"))
                           console.log(binary)
@@ -2777,6 +2780,7 @@ window.app = new Vue({
                           this.modalAssemblyError.error ='Register "'+ match[0] +'" not found';
 
                           instructions = [];
+                          pending_instructions = [];
                           return;
                         }
                       }
@@ -2802,6 +2806,7 @@ window.app = new Vue({
                   binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
 
                   instruction = instruction + token;
+                  user_instruction = user_instruction + " " + token;
 
                   console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"))
                   console.log(binary)
@@ -2832,7 +2837,7 @@ window.app = new Vue({
 
         for(var pos = 0; pos < instructions.length; pos++){
           if(parseInt(instructions[pos].Address, 16) > pending_instructions[p].address){
-            instructions.splice(pos, 0, { Break: null, Address: "0x" + pending_instructions[p].address.toString(16), Label: pending_instructions[p].Label , loaded: instruction, user: "", _rowVariant: ''});
+            instructions.splice(pos, 0, { Break: null, Address: "0x" + pending_instructions[p].address.toString(16), Label: pending_instructions[p].Label , loaded: instruction, user: user_instruction, _rowVariant: ''});
             break;
           }
         }
@@ -3154,6 +3159,7 @@ window.app = new Vue({
       var instructionExecParts = instructionExec.split(' ');
       var signatureParts;
       var signatureRawParts;
+      var nwords;
       var auxDef;
 
       /*Busca la instruccion a ejecutar y coge la definicion*/
@@ -3164,9 +3170,14 @@ window.app = new Vue({
           signatureParts = architecture.instructions[i].signature.split(',');
           signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
           auxDef = architecture.instructions[i].definition;
+          nwords = architecture.instructions[i].nwords;
           break;
         }
       }
+
+      /*Incrementar PC*/
+      architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + (nwords * 4);
+
       console.log(auxDef)
 
       /*Replaza los valores por el nombre de los registros*/
