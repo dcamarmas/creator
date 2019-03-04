@@ -625,7 +625,7 @@
                           </template>
 
                           <template slot="actions" slot-scope="row">
-                            <b-button @click.stop="editPseudoinstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
+                            <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
                             <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
                           </template>
                         </b-table>
@@ -636,7 +636,7 @@
                         </b-modal >
 
                         <!-- Formulario para editar una instruccion -->
-                        <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Edit" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.co, modalEditPseudoinst.cop)" ref="editPseudoinst">
+                        <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Edit" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.index)" ref="editPseudoinst">
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
                           </b-alert>
@@ -653,7 +653,7 @@
                                 </b-form-input>
                               </b-form-group>
 
-                              <b-form-group id="editNumFields" label="Number of fields: (Including co and cop)">
+                              <b-form-group id="editNumFields" label="Number of fields: ">
                                 <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                                 </b-form-input>
                               </b-form-group>
@@ -688,23 +688,18 @@
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'nameField'+i">
-                                      <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
-                                      </b-form-input>
-                                      <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0" disabled>
+                                      <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'typeField'+i">
-                                      <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                      <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
                                         <option value="reg">reg</option>
                                         <option value="inm">inm</option>
                                         <option value="address">address</option>
                                         <option value="(reg)">reg-addr</option>
-                                        <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                       </b-form-select>
-                                      <b-form-input :id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
-                                      </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
@@ -716,18 +711,6 @@
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'stopBitField'+i">
                                       <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
-                                      </b-form-input>
-                                    </b-form-group>
-                                  </div>
-                                  <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                    <b-form-group :id="'valueFieldCo'+i">
-                                      <b-form-input :id="'valueFieldCo'+i" type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
-                                      </b-form-input>
-                                    </b-form-group>
-                                  </div>
-                                  <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                    <b-form-group :id="'valueFieldCo'+i">
-                                      <b-form-input :id="'valueFieldCo'+i" type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
@@ -767,8 +750,8 @@
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="newNumFields" label="Number of fields: (Including co and cop)">
-                              <b-form-input id="newNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                            <b-form-group id="newNumFields" label="Number of fields: ">
+                              <b-form-input id="newNumFieldsInput" type="number" min="0" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                               </b-form-input>
                             </b-form-group>
                           </div>
@@ -802,23 +785,18 @@
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'nameField'+i">
-                                    <b-form-input :id="'nameField'+i+'Input'" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
-                                    </b-form-input>
-                                    <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                    <b-form-input :id="'nameField'+i+'Input'" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'typeField'+i">
-                                    <b-form-select id="'typeField'+i+'Input'" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    <b-form-select id="'typeField'+i+'Input'" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
                                       <option value="reg">reg</option>
                                       <option value="inm">inm</option>
                                       <option value="address">address</option>
                                       <option value="(reg)">reg-addr</option>
-                                      <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                     </b-form-select>
-                                    <b-form-input :id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
-                                    </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
@@ -830,18 +808,6 @@
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'stopBitField'+i">
                                     <b-form-input id="'stopBitField'+i+'Input'" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
-                                    </b-form-input>
-                                  </b-form-group>
-                                </div>
-                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                  <b-form-group :id="'valueFieldCo'+i">
-                                    <b-form-input :id="'valueFieldCo'+i+'Input'" type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
-                                    </b-form-input>
-                                  </b-form-group>
-                                </div>
-                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                  <b-form-group :id="'valueFieldCo'+i">
-                                    <b-form-input :id="'valueFieldCo'+i+'Input'" type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -1007,13 +973,13 @@
                     </div>
                   </template>
 
-                  <template slot="Loaded Instructions" slot-scope="row">
-                    {{row.item.loaded}}
-                  </template>
-
                   <template slot="User Instructions" slot-scope="row">
                     {{row.item.user}}
                   </template>
+
+                  <template slot="Loaded Instructions" slot-scope="row">
+                    {{row.item.loaded}}
+                  </template> 
                 </b-table>
               </div>
             </div>

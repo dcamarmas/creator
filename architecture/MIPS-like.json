@@ -1034,7 +1034,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+reg3\nPC=PC+4"
+      "definition": "reg1=reg2+reg3"
     },
     {
       "name": "addi",
@@ -1069,7 +1069,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+val\nPC=PC+4"
+      "definition": "reg1=reg2+val"
     },
     {
       "name": "and",
@@ -1110,7 +1110,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2&reg3\nPC=PC+4"
+      "definition": "reg1=reg2&reg3"
     },
     {
       "name": "andi",
@@ -1145,7 +1145,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2&val\nPC=PC+4"
+      "definition": "reg1=reg2&val"
     },
     {
       "name": "b",
@@ -1203,7 +1203,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 == reg2){PC=val}\nelse{PC=PC+4}"
+      "definition": "if(reg1 == reg2){PC=val}"
     },
     {
       "name": "bne",
@@ -1238,7 +1238,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 != reg2){PC=val}\nelse{PC=PC+4}"
+      "definition": "if(reg1 != reg2){PC=val}"
     },
     {
       "name": "div",
@@ -1279,7 +1279,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2/reg3\nPC=PC+4"
+      "definition": "reg1=reg2/reg3"
     },
     {
       "name": "lw",
@@ -1314,7 +1314,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=MP.w.(val+reg2)\nPC=PC+4"
+      "definition": "reg1=MP.w.(val+reg2)"
     },
     {
       "name": "mul",
@@ -1355,7 +1355,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2*reg3\nPC=PC+4"
+      "definition": "reg1=reg2*reg3"
     },
     {
       "name": "nop",
@@ -1378,7 +1378,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "PC=PC+4"
+      "definition": ""
     },
     {
       "name": "or",
@@ -1419,7 +1419,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2|reg3\nPC=PC+4"
+      "definition": "reg1=reg2|reg3"
     },
     {
       "name": "ori",
@@ -1454,7 +1454,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2|val\nPC=PC+4"
+      "definition": "reg1=reg2|val"
     },
     {
       "name": "sub",
@@ -1495,7 +1495,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2-reg3\nPC=PC+4"
+      "definition": "reg1=reg2-reg3"
     },
     {
       "name": "sw",
@@ -1530,7 +1530,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.(val+reg2)=reg1\nPC=PC+4"
+      "definition": "MP.w.(val+reg2)=reg1"
     },
     {
       "name": "xor",
@@ -1571,7 +1571,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2^reg3\nPC=PC+4"
+      "definition": "reg1=reg2^reg3"
     },
     {
       "name": "xori",
@@ -1606,24 +1606,16 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2^val\nPC=PC+4"
+      "definition": "reg1=reg2^val"
     }
   ],
   "pseudoinstructions": [
     {
       "name": "move",
-      "co": "000000",
-      "cop": "100000",
       "nwords": 1,
       "signature": "move,reg,reg,reg",
       "signatureRaw": "move reg1 reg2 reg3",
       "fields": [
-        {
-          "name": "move",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
         {
           "name": "reg1",
           "type": "reg",
