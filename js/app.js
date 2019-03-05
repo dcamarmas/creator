@@ -262,36 +262,7 @@ memory = [
   ]},
 ]
 
-var  instructions = [
-
-  /*{ Break: null, Address: "0x8000", Label:"" , loaded: "lw R1 0x1000", user: "lw R1 0x1000", _rowVariant: 'success'},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "lw R2 b", user: "lw R2 b", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "li R1 0x00001002", user: "li R1 0x00001002", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "lw R2 4 (R1)", user: "lw R2 4 (R1)", _rowVariant: ''},
-
-  { Break: null, Address: "0x8000", Label:"" , loaded: "sw R2 0x1000", user: "sw R2 0x1000", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "sw R1 c", user: "sw R1 c", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "li R1 0x00001000", user: "li R1 0x00001000", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "sw R2 4 (R1)", user: "sw R2 4 (R1)", _rowVariant: ''},
-
-  
-
-  { Break: null, Address: "0x8000", Label:"" , loaded: "li R1 5", user: "li R1 5", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "li FG0 5.5", user: "li FG0 5.5", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "li FP0 50.65", user: "li FP0 50.65", _rowVariant: ''},
-
-  { Break: null, Address: "0x8000", Label:"" , loaded: "addi R1 R2 5", user: "addi R1 R2 5", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , loaded: "addi FG0 FG2 32.52", user: "addi FG0 R2 32.52", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , loaded: "addi FP0 FP2 321.321", user: "addi FP0 FP2 321.321", _rowVariant: '' },
-
-  { Break: null, Address: "0x8000", Label:"" , loaded: "and R0 R1 R2", user: "and R0 R1 R2", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "and FG0 FG1 FG2", user: "and FG0 FG1 FG2", _rowVariant: ''},
-  { Break: null, Address: "0x8000", Label:"" , loaded: "and FP0 FP2 FP4", user: "and FP0 FP2 FP4", _rowVariant: ''},
-
-  { Break: null, Address: "0x8000", Label:"" , loaded: "add R1 R2 R3", user: "add R1 R2 R3", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , loaded: "add FG0 FG1 FG2", user: "add FG0 FG1 FG2", _rowVariant: '' },
-  { Break: null, Address: "0x8000", Label:"" , loaded: "add FP0 FP2 FP4", user: "add FP0 FP2 FP4", _rowVariant: '' }*/
-]
+var  instructions = []
 
 var pending_instructions = [];
 
@@ -397,6 +368,11 @@ window.app = new Vue({
     },
     /*Nombre de la arquitectura*/
     architecture_name: '',
+    /*Variables para mostrar modales*/
+    showNewComponent: false,
+    showEditComponent: false,
+    showNewElement: false,
+    showEditElement: false,
 
 
     /*PAGINA DE INSTRUCCIONES*/
@@ -446,6 +422,17 @@ window.app = new Vue({
 
     /*PAGINA DE PSEUDOINSTRUCCIONES*/
     pseudoinstFields: ['name', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+    /*Edicion de las instrucciones*/
+    formPseudoinstruction: {
+      name: '',
+      nwords: 1,
+      numfields: 0,
+      nameField: [],
+      typeField: [],
+      startBitField: [],
+      stopBitField: [],
+      definition: '',
+    },
     /*Reset de las instrucciones*/
     modalResetPseudoinst:{
       title: '',
@@ -743,11 +730,13 @@ window.app = new Vue({
         }
       }
 
-      this.$refs.newComponent.hide();
+      this.showNewComponent = false;
+
       var precision = false;
       if(this.formArchitecture.precision == "precision"){
         precision = true;
       }
+
       var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
       architecture.components.push(newComp);
       var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
@@ -794,7 +783,8 @@ window.app = new Vue({
         }
       }
 
-      this.$refs.editComponent.hide();
+      this.showEditComponent = false;
+
       for (var i = 0; i < architecture_hash.length; i++) {
         if(comp == architecture_hash[i].name){
           architecture_hash[i].name = this.formArchitecture.name;
@@ -875,7 +865,7 @@ window.app = new Vue({
         } 
       }
 
-      this.$refs.newElement.hide();
+      this.showNewElement = false;
 
       for (var i = 0; i < architecture_hash.length; i++) {
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
@@ -988,7 +978,8 @@ window.app = new Vue({
         } 
       }
 
-      this.$refs.editElement.hide();
+      this.showEditElement = false;
+
       for (var i = 0; i < architecture_hash.length; i++) {
         for(var j=0; j < architecture.components[i].elements.length; j++){
           if(comp == architecture.components[i].elements[j].name){
@@ -1322,6 +1313,7 @@ window.app = new Vue({
       }
 
       this.$refs.editInst.hide();
+
       for (var i = 0; i < architecture.instructions.length; i++){
         if(architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop){
           architecture.instructions[i].name = this.formInstruction.name;
@@ -1455,16 +1447,16 @@ window.app = new Vue({
       this.modalEditPseudoinst.element = elem;
       this.modalEditPseudoinst.index = index;
       
-      this.formInstruction.name = architecture.pseudoinstructions[index].name;
-      this.formInstruction.nwords = architecture.pseudoinstructions[index].nwords;
-      this.formInstruction.numfields = architecture.pseudoinstructions[index].fields.length;
-      this.formInstruction.definition = architecture.pseudoinstructions[index].definition;
+      this.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
+      this.formPseudoinstruction.nwords = architecture.pseudoinstructions[index].nwords;
+      this.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
+      this.formPseudoinstruction.definition = architecture.pseudoinstructions[index].definition;
 
       for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
-        this.formInstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
-        this.formInstruction.typeField[j] = architecture.pseudoinstructions[index].fields[j].type;
-        this.formInstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
-        this.formInstruction.stopBitField[j] = architecture.pseudoinstructions[index].fields[j].stopbit;
+        this.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
+        this.formPseudoinstruction.typeField[j] = architecture.pseudoinstructions[index].fields[j].type;
+        this.formPseudoinstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
+        this.formPseudoinstruction.stopBitField[j] = architecture.pseudoinstructions[index].fields[j].stopbit;
       }
 
       this.$root.$emit('bv::show::modal', 'modalEditPseudoinst', button);
@@ -1476,13 +1468,13 @@ window.app = new Vue({
 
       var vacio = 0;
 
-      for (var i = 0; i < this.formInstruction.numfields; i++) {
-        if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
+      for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
+        if(!this.formPseudoinstruction.nameField[i] || !this.formPseudoinstruction.typeField[i] || (!this.formPseudoinstruction.startBitField[i] && this.formPseudoinstruction.startBitField[i] != 0) || (!this.formPseudoinstruction.stopBitField[i] && this.formPseudoinstruction.stopBitField[i] != 0)){
           vacio = 1;
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1497,49 +1489,49 @@ window.app = new Vue({
 
       this.$refs.editPseudoinst.hide();
       
-      architecture.pseudoinstructions[index].name = this.formInstruction.name;
-      architecture.pseudoinstructions[index].nwords = this.formInstruction.nwords;
-      architecture.pseudoinstructions[index].definition = this.formInstruction.definition;
+      architecture.pseudoinstructions[index].name = this.formPseudoinstruction.name;
+      architecture.pseudoinstructions[index].nwords = this.formPseudoinstruction.nwords;
+      architecture.pseudoinstructions[index].definition = this.formPseudoinstruction.definition;
 
-      for (var j = 0; j < this.formInstruction.numfields; j++){
+      for (var j = 0; j < this.formPseudoinstruction.numfields; j++){
         if(j < architecture.pseudoinstructions[index].fields.length){
-          architecture.pseudoinstructions[index].fields[j].name = this.formInstruction.nameField[j];
-          architecture.pseudoinstructions[index].fields[j].type = this.formInstruction.typeField[j];
-          architecture.pseudoinstructions[index].fields[j].startbit = this.formInstruction.startBitField[j];
-          architecture.pseudoinstructions[index].fields[j].stopbit = this.formInstruction.stopBitField[j];
+          architecture.pseudoinstructions[index].fields[j].name = this.formPseudoinstruction.nameField[j];
+          architecture.pseudoinstructions[index].fields[j].type = this.formPseudoinstruction.typeField[j];
+          architecture.pseudoinstructions[index].fields[j].startbit = this.formPseudoinstruction.startBitField[j];
+          architecture.pseudoinstructions[index].fields[j].stopbit = this.formPseudoinstruction.stopBitField[j];
         }
         else{
-          var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j]};
+          var newField = {name: this.formPseudoinstruction.nameField[j], type: this.formPseudoinstruction.typeField[j], startbit: this.formPseudoinstruction.startBitField[j], stopbit: this.formPseudoinstruction.stopBitField[j]};
           architecture.pseudoinstructions[index].fields.push(newField);
         }
       }
 
-      var signature = this.formInstruction.name;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
+      var signature = this.formPseudoinstruction.name;
+      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
         if(z == 1){
           signature = signature + ",";
         }
 
-        signature = signature + this.formInstruction.typeField[z];
-        if((z<this.formInstruction.numfields-1)){
+        signature = signature + this.formPseudoinstruction.typeField[z];
+        if((z<this.formPseudoinstruction.numfields-1)){
           signature = signature + ',';
         }
       }
 
-      var signatureRaw = this.formInstruction.name;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
+      var signatureRaw = this.formPseudoinstruction.name;
+      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
         if(z == 1){
           signatureRaw = signatureRaw + ' ';
         }
-        if(this.formInstruction.typeField[z] == '(reg)'){
-          signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
-          if((z<this.formInstruction.numfields-1)){
+        if(this.formPseudoinstruction.typeField[z] == '(reg)'){
+          signatureRaw = signatureRaw + '(' +this.formPseudoinstruction.nameField[z] + ')';
+          if((z<this.formPseudoinstruction.numfields-1)){
             signatureRaw = signatureRaw + ' ';
           } 
         }
         else{
-          signatureRaw = signatureRaw + this.formInstruction.nameField[z];
-          if((z<this.formInstruction.numfields-1)){
+          signatureRaw = signatureRaw + this.formPseudoinstruction.nameField[z];
+          if((z<this.formPseudoinstruction.numfields-1)){
             signatureRaw = signatureRaw + ' ';
           } 
         }
@@ -1548,18 +1540,18 @@ window.app = new Vue({
       architecture.pseudoinstructions[index].signature = signature;
       architecture.pseudoinstructions[index].signatureRaw = signatureRaw;
 
-      if(architecture.pseudoinstructions[index].fields.length > this.formInstruction.numfields){
-        architecture.pseudoinstructions[index].fields.splice(this.formInstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formInstruction.numfields));
+      if(architecture.pseudoinstructions[index].fields.length > this.formPseudoinstruction.numfields){
+        architecture.pseudoinstructions[index].fields.splice(this.formPseudoinstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formPseudoinstruction.numfields));
       }
 
-      this.formInstruction.name='';
-      this.formInstruction.nwords =1;
-      this.formInstruction.numfields=1;
-      this.formInstruction.nameField=[];
-      this.formInstruction.typeField=[];
-      this.formInstruction.startBitField=[];
-      this.formInstruction.stopBitField=[];
-      this.formInstruction.definition='';
+      this.formPseudoinstruction.name='';
+      this.formPseudoinstruction.nwords =1;
+      this.formPseudoinstruction.numfields=0;
+      this.formPseudoinstruction.nameField=[];
+      this.formPseudoinstruction.typeField=[];
+      this.formPseudoinstruction.startBitField=[];
+      this.formPseudoinstruction.stopBitField=[];
+      this.formPseudoinstruction.definition='';
       this.instructionFormPage = 1;
     },
 
@@ -1568,35 +1560,18 @@ window.app = new Vue({
       evt.preventDefault();
 
       var vacio = 0;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
-        if(this.formInstruction.typeField[z] == 'cop'){
-          if(!this.formInstruction.cop){
-            vacio = 1;
-          }
-        }
-      }
 
-      for (var i = 0; i < this.formInstruction.numfields; i++) {
-        if(this.formInstruction.nameField.length <  this.formInstruction.numfields || this.formInstruction.typeField.length <  this.formInstruction.numfields || this.formInstruction.startBitField.length <  this.formInstruction.numfields || this.formInstruction.stopBitField.length <  this.formInstruction.numfields){
+      for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
+        if(this.formPseudoinstruction.nameField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.typeField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.startBitField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.stopBitField.length <  this.formPseudoinstruction.numfields){
           vacio = 1;
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } 
-      else if(isNaN(this.formInstruction.co)){
-        app._data.alertMessaje = 'The field co must be numbers';
-        app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
-      }
-      else if(isNaN(this.formInstruction.cop)){
-        app._data.alertMessaje = 'The field cop must be numbers';
-        app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
-      }
       else {
         this.newPseudoinstruction();
       }
@@ -1604,98 +1579,56 @@ window.app = new Vue({
 
     /*Inserta una nueva pseudoinstruccion*/
     newPseudoinstruction(){
-      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
-        if(this.formInstruction.co == architecture.pseudoinstructions[i].co){
-          if((!this.formInstruction.cop)){
-            app._data.alertMessaje = 'The instruction already exists';
-            app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
-            return;
-          }
+
+      this.$refs.newPseudoinst.hide();
+
+      var signature = this.formPseudoinstruction.name;
+      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
+        if(z == 1){
+          signature = signature + ",";
+        }
+        signature = signature + this.formPseudoinstruction.typeField[z];
+        if((z<this.formPseudoinstruction.numfields-1)){
+          signature = signature + ',';
         }
       }
 
-      for (var i = 0; i < architecture.pseudoinstructions.length; i++) {
-        if((this.formInstruction.cop == architecture.pseudoinstructions[i].cop) && (!this.formInstruction.cop == false)){
-          app._data.alertMessaje = 'The instruction already exists';
-          app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
-          return;
-        }
-      }
-
-      this.$refs.newInst.hide();
-
-      var cop = false;
-
-      var signature = this.formInstruction.name;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
-        if(this.formInstruction.typeField[z] != 'cop'){
-          if(z == 1){
-            signature = signature + ",";
-          }
-          signature = signature + this.formInstruction.typeField[z];
-          if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-            signature = signature + ',';
-          }
-        }
-        if(this.formInstruction.typeField[z] == 'cop'){
-          cop = true;
-          if(z<this.formInstruction.numfields-1){
-            signature = signature + ',';
-          }
-        }
-      }
-
-      var signatureRaw = this.formInstruction.name;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
-        if(this.formInstruction.typeField[z] != 'cop'){
+      var signatureRaw = this.formPseudoinstruction.name;
+      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
           if(z == 1){
             signatureRaw = signatureRaw + ' ';
           }
-          if(this.formInstruction.typeField[z] == '(reg)'){
-            signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
-            if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+          if(this.formPseudoinstruction.typeField[z] == '(reg)'){
+            signatureRaw = signatureRaw + '(' +this.formPseudoinstruction.nameField[z] + ')';
+            if((z<this.formPseudoinstruction.numfields-1)){
               signatureRaw = signatureRaw + ' ';
             } 
           }
           else{
-            signatureRaw = signatureRaw + this.formInstruction.nameField[z];
-            if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
+            signatureRaw = signatureRaw + this.formPseudoinstruction.nameField[z];
+            if((z<this.formPseudoinstruction.numfields-1)){
               signatureRaw = signatureRaw + ' ';
             } 
           }
-        }
-        if(this.formInstruction.typeField[z] == 'cop'){
-          if(z<this.formInstruction.numfields-1){
-            signatureRaw = signatureRaw + ' ';
-          }
-        }
       }
 
-      if(cop == false){
-        this.formInstruction.cop='';
-      }
-
-      var newPseudoinstruction = {name: this.formInstruction.name, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
+      var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
       architecture.pseudoinstructions.push(newPseudoinstruction);
 
-      for (var i = 0; i < this.formInstruction.numfields; i++) {
-        var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: this.formInstruction.startBitField[i], stopbit: this.formInstruction.stopBitField[i]};
+      for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
+        var newField = {name: this.formPseudoinstruction.nameField[i], type: this.formPseudoinstruction.typeField[i], startbit: this.formPseudoinstruction.startBitField[i], stopbit: this.formPseudoinstruction.stopBitField[i]};
         architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(newField);
       }
 
-      this.formInstruction.name='';
-      this.formInstruction.cop='';
-      this.formInstruction.co ='';
-      this.formInstruction.nwords =1;
-      this.formInstruction.numfields=1;
-      this.formInstruction.nameField=[];
-      this.formInstruction.typeField=[];
-      this.formInstruction.startBitField=[];
-      this.formInstruction.stopBitField=[];
-      this.formInstruction.definition='';
-      this.formInstruction.assignedCop=false;
+      this.formPseudoinstruction.name='';
+      this.formPseudoinstruction.nwords =1;
+      this.formPseudoinstruction.numfields=0;
+      this.formPseudoinstruction.nameField=[];
+      this.formPseudoinstruction.typeField=[];
+      this.formPseudoinstruction.startBitField=[];
+      this.formPseudoinstruction.stopBitField=[];
+      this.formPseudoinstruction.definition='';
+      this.formPseudoinstruction.assignedCop=false;
       this.instructionFormPage = 1;
       
     },
