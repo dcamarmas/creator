@@ -206,7 +206,7 @@
                         </div>
 
                         <!-- Editar componente -->
-                        <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" ref="editComponent">
+                        <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" v-model="showEditComponent">
 
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -221,7 +221,7 @@
                         </b-modal >
 
                         <!-- Nuevo elemento -->
-                        <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Create" @ok="newElementVerify($event, modalNewElement.element)" ref="newElement">
+                        <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Create" @ok="newElementVerify($event, modalNewElement.element)" v-model="showNewElement">
 
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -256,7 +256,7 @@
                         </b-modal >
 
                         <!-- Editar elemento -->
-                        <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" ref="editElement">
+                        <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" v-model="showEditElement">
 
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -304,7 +304,8 @@
 
                       </div>
 
-                      <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" ref="newComponent">
+                      <!-- Nuevo componente -->
+                      <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" v-model="showNewComponent">
 
                         <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                           <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -432,7 +433,7 @@
                                         <option value="reg">reg</option>
                                         <option value="inm">inm</option>
                                         <option value="address">address</option>
-                                        <option value="(reg)">reg-add<r/option>
+                                        <option value="(reg)">reg-add</option>
                                         <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                       </b-form-select>
                                       <b-form-input :id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -635,7 +636,7 @@
                           <h6>Are you sure you want to delete the item?</h6>
                         </b-modal >
 
-                        <!-- Formulario para editar una instruccion -->
+                        <!-- Formulario para editar una pseudoinstruccion -->
                         <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Edit" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.index)" ref="editPseudoinst">
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -644,17 +645,17 @@
                           <b-form>
                             <div id="editPseudoinstForm1" v-if="instructionFormPage == 1">
                               <b-form-group id="editPseudoinstructionName" label="Name:">
-                                <b-form-input id="editPseudoinstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                                <b-form-input id="editPseudoinstructionNameInput" type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
                                 </b-form-input>
                               </b-form-group>
 
                               <b-form-group id="editPseudoinstructionNwords" label="Number of Words:">
-                                <b-form-input id="editPseudoinstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                                <b-form-input id="editPseudoinstructionNwordsInput" type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
                                 </b-form-input>
                               </b-form-group>
 
                               <b-form-group id="editNumFields" label="Number of fields: ">
-                                <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                                <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
@@ -681,20 +682,20 @@
                                 </div>
                               </div>
 
-                              <div v-for="i in parseInt(formInstruction.numfields)">
+                              <div v-for="i in parseInt(formPseudoinstruction.numfields)">
                                 <div class="col-lg-12 col-sm-12 row">
                                   <div class="col-lg-2 col-2 fields">
                                     <h6>Field {{i-1}}</h6>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'nameField'+i">
-                                      <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
+                                      <b-form-input :id="'nameField'+i" type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'typeField'+i">
-                                      <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
+                                      <b-form-select id="'typeField'+i" v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
                                         <option value="reg">reg</option>
                                         <option value="inm">inm</option>
                                         <option value="address">address</option>
@@ -704,13 +705,13 @@
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'startBitField'+i">
-                                      <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                      <b-form-input id="'startBitField'+i" type="number" min="0" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
                                     <b-form-group :id="'stopBitField'+i">
-                                      <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                      <b-form-input id="'stopBitField'+i" type="number" min="0" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
@@ -720,7 +721,7 @@
 
                             <div id="editPseudoinstForm3" v-if="instructionFormPage == 3">
                               <b-form-group id="editPseudoinstructionDefinition" label="Assembly Definition:">
-                                <b-form-textarea id="editPseudoinstructionDefinitionInput" v-model="formInstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formInstruction.definition)" :rows="4">
+                                <b-form-textarea id="editPseudoinstructionDefinitionInput" v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                                 </b-form-textarea>
                               </b-form-group>
                             </div>
@@ -731,8 +732,8 @@
                         </b-modal>
                       </div>
 
-                      <!-- Formulario nueva instruccion -->
-                      <b-modal size="lg" id ="new_pseudoinstruction" title = "New pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" ref="newInst">
+                      <!-- Formulario nueva pseudoinstruccion -->
+                      <b-modal size="lg" id ="new_pseudoinstruction" title = "New pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" ref="newPseudoinst">
 
                         <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                           <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -741,17 +742,17 @@
                         <b-form>
                           <div id="newPseudoinstForm1" v-if="instructionFormPage == 1">
                             <b-form-group id="newPseudoinstructionName" label="Name:">
-                              <b-form-input id="newPseudoinstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                              <b-form-input id="newPseudoinstructionNameInput" type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
                             <b-form-group id="newPseudoinstructionNwords" label="Number of Words:">
-                              <b-form-input id="newPseudoinstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                              <b-form-input id="newPseudoinstructionNwordsInput" type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
                             <b-form-group id="newNumFields" label="Number of fields: ">
-                              <b-form-input id="newNumFieldsInput" type="number" min="0" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                              <b-form-input id="newNumFieldsInput" type="number" min="0" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
                               </b-form-input>
                             </b-form-group>
                           </div>
@@ -778,20 +779,20 @@
                               </div>
                             </div>
 
-                            <div v-for="i in parseInt(formInstruction.numfields)">
+                            <div v-for="i in parseInt(formPseudoinstruction.numfields)">
                               <div class="col-lg-12 col-sm-12 row">
                                 <div class="col-lg-2 col-2 fields">
                                   <h6>Field {{i-1}}</h6>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'nameField'+i">
-                                    <b-form-input :id="'nameField'+i+'Input'" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm">
+                                    <b-form-input :id="'nameField'+i+'Input'" type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'typeField'+i">
-                                    <b-form-select id="'typeField'+i+'Input'" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm">
+                                    <b-form-select id="'typeField'+i+'Input'" v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
                                       <option value="reg">reg</option>
                                       <option value="inm">inm</option>
                                       <option value="address">address</option>
@@ -801,13 +802,13 @@
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'startBitField'+i">
-                                    <b-form-input id="'startBitField'+i+'Input'" type="number" min="0" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                    <b-form-input id="'startBitField'+i+'Input'" type="number" min="0" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group :id="'stopBitField'+i">
-                                    <b-form-input id="'stopBitField'+i+'Input'" type="number" min="0" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                    <b-form-input id="'stopBitField'+i+'Input'" type="number" min="0" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -817,7 +818,7 @@
 
                           <div id="newPseudoinstForm3" v-if="instructionFormPage == 3">
                             <b-form-group id="newInstructionDefinition" label="Assembly Definition:">
-                              <b-form-textarea id="newInstructionDefinitionInput" v-model="formInstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formInstruction.definition)" :rows="4">
+                              <b-form-textarea id="newInstructionDefinitionInput" v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                               </b-form-textarea>
                             </b-form-group>
                           </div>
