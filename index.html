@@ -369,7 +369,7 @@
                         </b-modal >
 
                         <!-- Formulario para editar una instruccion -->
-                        <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Edit" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" ref="editInst">
+                        <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Edit" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" v-model="showEditInstruction">
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
                           </b-alert>
@@ -482,7 +482,7 @@
                       </div>
 
                       <!-- Formulario nueva instruccion -->
-                      <b-modal size="lg" id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstVerify" ref="newInst">
+                      <b-modal size="lg" id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstVerify" v-model="showNewInstruction">
 
                         <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                           <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -637,7 +637,7 @@
                         </b-modal >
 
                         <!-- Formulario para editar una pseudoinstruccion -->
-                        <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Edit" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.index)" ref="editPseudoinst">
+                        <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Edit" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.index)" v-model="showEditPseudoinstruction">
                           <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                             <span class="fa fa-info-circle"></span> {{alertMessaje}}
                           </b-alert>
@@ -733,7 +733,7 @@
                       </div>
 
                       <!-- Formulario nueva pseudoinstruccion -->
-                      <b-modal size="lg" id ="new_pseudoinstruction" title = "New pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" ref="newPseudoinst">
+                      <b-modal size="lg" id ="new_pseudoinstruction" title = "New pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction">
 
                         <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                           <span class="fa fa-info-circle"></span> {{alertMessaje}}
