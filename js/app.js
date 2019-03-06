@@ -415,6 +415,10 @@ window.app = new Vue({
       co: '',
       cop: '',
     },
+    /*Mostrar modal*/
+    showNewInstruction: false,
+    showEditInstruction: false,
+
     /*Asignacion de valores de la tabla de instrucciones*/
     archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
     instructions: instructions,
@@ -475,6 +479,10 @@ window.app = new Vue({
       title: '',
       element: '',
     },
+
+    /*Mostrar modal*/
+    showNewPseudoinstruction: false,
+    showEditPseudoinstruction: false,
 
 
     /*MEMORIA*/
@@ -1125,7 +1133,7 @@ window.app = new Vue({
         }
       }
 
-      this.$refs.newInst.hide();
+      this.showNewInstruction = false;
 
       var cop = false;
 
@@ -1312,7 +1320,7 @@ window.app = new Vue({
         }
       }
 
-      this.$refs.editInst.hide();
+      this.showEditInstruction = false;
 
       for (var i = 0; i < architecture.instructions.length; i++){
         if(architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop){
@@ -1487,7 +1495,7 @@ window.app = new Vue({
     /*edita una instruccion*/
     editPseudoinstruction(comp, index){
 
-      this.$refs.editPseudoinst.hide();
+      this.showEditPseudoinstruction = false;
       
       architecture.pseudoinstructions[index].name = this.formPseudoinstruction.name;
       architecture.pseudoinstructions[index].nwords = this.formPseudoinstruction.nwords;
@@ -1580,7 +1588,7 @@ window.app = new Vue({
     /*Inserta una nueva pseudoinstruccion*/
     newPseudoinstruction(){
 
-      this.$refs.newPseudoinst.hide();
+      this.showNewPseudoinstruction = false;
 
       var signature = this.formPseudoinstruction.name;
       for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
