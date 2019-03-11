@@ -9,7 +9,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Integer control registers", type: "control", double_precision: false, elements:[
+  {name: "Integer control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -109,9 +109,9 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}*/
+    ]}
   ], instructions:[
-    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    {name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
@@ -215,15 +215,15 @@ var architecture = {components:[
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2^val"},*/
+    ], definition: "reg1=reg2^val"},
   ],pseudoinstructions:[
-    /*{name: "move", nwords: 1, signature: "move,reg,reg,reg", signatureRaw: "move reg1 reg2 reg3", fields: [
+    {name: "move", nwords: 1, signature: "move,reg,reg", signatureRaw: "move reg1 reg2", fields: [
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-    ], definition: "add reg1 R0 reg2"},*/
+    ], definition: "add reg1 $r0 reg2"},
 
   ], directives:[
-    /*{name:".kdata", kindof:"segment", size:0 },
+    {name:".kdata", kindof:"segment", size:0 },
     {name:".ktext", kindof:"segment", size:0 },
     {name:".data", kindof:"segment", size:0 },
     {name:".text", kindof:"segment", size:0 },
@@ -233,7 +233,7 @@ var architecture = {components:[
     {name:".space", kindof:"datatype", size:1 },
     {name:".ascii", kindof:"datatype", size:1 },
     {name:".asciiz", kindof:"datatype", size:1 },
-    {name:".align", kindof:"datatype", size:0 },*/
+    {name:".align", kindof:"datatype", size:0 },
   ]};
 
 var componentsTypes = [
@@ -263,6 +263,9 @@ memory = [
 ]
 
 var  instructions = []
+
+/*Direccion para la siguiente instruccion compilada*/
+var address = 0x0000;
 
 var pending_instructions = [];
 
@@ -597,7 +600,7 @@ window.app = new Vue({
     /*Carga la arquitectura seleccionada*/
     load_arch_select(e){
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        architecture = cfg;
+        //architecture = cfg;
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -1890,7 +1893,7 @@ window.app = new Vue({
       pending_instructions = [];
 
       var existsInstruction = true;
-      var address = 0x0000;
+      var pseudoinstruccion = false;
 
       this.first_token();
 
@@ -1926,6 +1929,7 @@ window.app = new Vue({
             pending_instructions = [];
             return;
           }
+
           for(var i = 0; i < instructions.length; i++){
             if(instructions[i].Label == token.substring(0,token.length-1)){
               this.$root.$emit('bv::show::modal', 'modalAssemblyError');
@@ -1961,7 +1965,7 @@ window.app = new Vue({
           }
 
           else{
-            var binary = "";
+            /*var binary = "";
             binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
 
             var instruction = "";
@@ -2341,6 +2345,10 @@ window.app = new Vue({
 
             if(validTagPC == false){
               console.log("pendiente")
+
+
+
+
               pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, instIndex: i, line: textarea_assembly_editor.posFromIndex(tokenIndex).line});
 
               address = address + (4*architecture.instructions[i].nwords);
@@ -2365,44 +2373,97 @@ window.app = new Vue({
               address = address + (4*architecture.instructions[i].nwords);
 
               found = true;
+            
+            }*/
+
+            var instruction = "";
+            var userInstruction = "";
+
+            var numFields = 0;
+            found = true;
+
+            for (var j = 0; j < architecture.instructions[i].fields.length; j++){
+              if(architecture.instructions[i].fields[j].type != "cop"){
+                numFields++;
+              }
             }
+            console.log(numFields);
+
+            instruction = instruction + token;
+            userInstruction = userInstruction + token;
+
+            for (var j = 0; j < numFields - 1; j++){
+              this.next_token();
+              token = this.get_token();
+              instruction = instruction + " " + token;
+              userInstruction = userInstruction + " " + token;
+            }
+
+            console.log(instruction)
+            console.log(label)
+
+            var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0);
+
+            if(result == -1){
+              return;
+            }
+
+            this.next_token();
           }
         }
 
         if(!found){
-          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
-          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
-          this.modalAssemblyError.error ='Instruction "'+ token +'" not found';
+          var resultPseudo = -2;
+          var instruction = "";
+          var numToken = 0;
 
-          existsInstruction = false;
-          tokenIndex = 0;
+          for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+            if(architecture.pseudoinstructions[i].name == token){
+              numToken = architecture.pseudoinstructions[i].fields.length;
 
-          instructions = [];
-          pending_instructions = [];
-          return;
+              instruction = instruction + token;
+
+              for (var i = 0; i < numToken; i++){
+                this.next_token();
+                token = this.get_token();
+                instruction = instruction + " " + token;
+              }
+
+              resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+            }
+          }
+
+          if(resultPseudo == -2){
+            this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+            this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+            this.modalAssemblyError.error ='Instruction "'+ token +'" not found';
+
+            existsInstruction = false;
+            tokenIndex = 0;
+            address = 0;
+
+            instructions = [];
+            pending_instructions = [];
+            return;
+          }
+
+          if(resultPseudo == -1){
+            existsInstruction = false;
+            tokenIndex = 0;
+            address = 0;
+
+            instructions = [];
+            pending_instructions = [];
+            return;
+          }
+
+          this.next_token();
+
         }
       }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       for(var p = 0; p < pending_instructions.length; p++){
-
-        var instructionParts = pending_instructions[p].instruction.split(' ');
+        /*var instructionParts = pending_instructions[p].instruction.split(' ');
         var signature = pending_instructions[p].signature;
         var signatureRawParts = pending_instructions[p].signatureRaw;
         var i = pending_instructions[p].instIndex;
@@ -2781,10 +2842,18 @@ window.app = new Vue({
             instructions.splice(pos, 0, { Break: null, Address: "0x" + pending_instructions[p].address.toString(16), Label: pending_instructions[p].Label , loaded: instruction, user: user_instruction, _rowVariant: ''});
             break;
           }
-        }
-      }
+        }*/
 
-      archChange = false;
+        console.log("PENDING      " + pending_instructions[p].instruction)
+        console.log(pending_instructions[p].Label)
+
+        var result = this.instruction_compiler(pending_instructions[p].instruction, pending_instructions[p].instruction, pending_instructions[p].Label, pending_instructions[p].line, true, pending_instructions[p].address);
+      
+        if(result == -1){
+          return;
+        }
+
+      }
 
       app._data.alertMessaje = 'Compilation completed successfully';
       app._data.type ='success';
@@ -2793,7 +2862,457 @@ window.app = new Vue({
       app._data.instructions = instructions;
       
       this.reset();
+
+      address = 0;
     },
+
+
+
+
+
+
+
+
+
+
+
+
+    pseudoinstruction_compiler(instruction, label, line){
+      var instructionParts = instruction.split(' ');
+      var found = false;
+
+      console.log(instructionParts);
+      console.log(line);
+
+      for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+        if(architecture.pseudoinstructions[i].name != instructionParts[0]){
+          continue;
+        }
+
+        else{
+          found = true;
+
+          var signatureParts = architecture.pseudoinstructions[i].signature.split(',');
+          var signatureRawParts = architecture.pseudoinstructions[i].signatureRaw.split(' ');
+          var definition = architecture.pseudoinstructions[i].definition;
+
+          for (var j = 1; j < signatureRawParts.length; j++){
+            definition = definition.replace(signatureRawParts[j], instructionParts[j]);
+          }
+
+          console.log(definition)
+
+          return this.instruction_compiler(definition, instruction, label, line, false, 0);
+        }
+      }
+
+      if(!found){
+        return -1;
+      }
+    },
+
+
+
+
+
+
+    instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress){
+      var instructionParts = instruction.split(' ');
+      var validTagPC = true;
+
+      console.log(instructionParts)
+      console.log(label)
+      console.log(line)
+
+      for(var i = 0; i < architecture.instructions.length; i++){
+        if(architecture.instructions[i].name != instructionParts[0]){
+          continue;
+        }
+        else{
+          var binary = "";
+          binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
+
+          var instruction = "";
+          var userInstruction = userInstruction;
+
+          signatureParts = architecture.instructions[i].signature.split(',');
+          signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
+
+
+          for(var j = 0; j < signatureParts.length; j++){
+            switch(signatureParts[j]) {
+              case "reg":
+                token = instructionParts[j];
+
+                console.log(token)
+
+                var validReg = false;
+
+                if(token.charAt(0)!= '$'){
+                  this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                  this.errorMessage(line);
+                  this.modalAssemblyError.error = 'The registers should start with $';
+
+                  instructions = [];
+                  pending_instructions = [];
+                  return -1;
+                }
+
+                var auxToken = token.substring(1,token.length);
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                    for(var z = 0; z < architecture_hash.length; z++){
+                      for(var w = 0; w < architecture.components[z].elements.length; w++){
+                        if(auxToken == architecture.components[z].elements[w].name){
+                          validReg = true;
+
+                          fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                          var reg = w;
+
+                          binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                          instruction = instruction + " " + token;
+                        }
+                        else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                          this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                          this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          this.modalAssemblyError.error = 'Register "'+ token +'" not found';
+
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
+                      }
+                    }
+                  }
+                }
+
+                break;
+              case "inm":
+                token = instructionParts[j];
+
+                var token_user = "";
+
+                console.log(token)
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                
+                    var inm;
+
+                    if(token.match(/^0x/)){
+                      var value = token.split("x");
+
+                      if(value[1].length*4 > fieldsLength){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
+
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      if(isNaN(parseInt(token, 16)) == true){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
+                      
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      inm = (parseInt(token, 16)).toString(2);
+                    }
+                    else if (token.match(/^(\d)+\.(\d)+/)){
+                      if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='Immediate number "'+ token +'" is too big';
+
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      if(isNaN(parseFloat(token)) == true){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='Immediate number "'+ token +'" is not valid';
+                      
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      inm = this.float2bin(parseFloat(token, 16));
+                    }
+                    else if(isNaN(parseInt(token))){
+                      if(instructions.length == 0){
+                        validTagPC = false;
+                      }
+
+                      for (var z = 0; z < instructions.length; z++){
+                        if(token == instructions[z].Label){
+                          var addr = (parseInt(instructions[z].Address, 16)).toString(2);
+
+                          binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+
+                          token_user = token;
+                          token = instructions[z].Address;
+
+                          validTagPC = true;
+                          inm = addr;
+
+                          break;
+                        }
+                        else if(z == instructions.length-1){
+                          validTagPC = false;
+                          if(pending == true){
+                            this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                            this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            this.modalAssemblyError.error = 'Tag "'+ token +'" is not valid';
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+                        }  
+                      }
+                    }
+                    else {
+                      var numAux = parseInt(token, 10);
+                      if((numAux.toString(2)).length > fieldsLength){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error = 'Immediate number "'+ token +'" is too big';
+
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      if(isNaN(parseInt(token)) == true){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error = 'Immediate number "'+ token +'" is not valid';
+                      
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      inm = (parseInt(token, 10)).toString(2);
+                    }
+                    if(validTagPC == true){
+                      console.log("jjnflnflkjdfn     "  + inm)
+                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                    }
+                    
+                    instruction = instruction + " " + token;
+                  }
+                }
+
+                break;
+
+              case "address":
+                token = instructionParts[j];
+
+                console.log(token)
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                    if(token.match(/^0x/)){
+                      var value = token.split("x");
+
+                      if(value[1].length*4 > fieldsLength){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='Address "'+ token +'" is too big';
+
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      if(isNaN(parseInt(token, 16)) == true){
+                        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                        this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        this.modalAssemblyError.error ='Address "'+ token +'" is not valid';
+                      
+                        instructions = [];
+                        pending_instructions = [];
+                        return -1;
+                      }
+
+                      addr = (parseInt(token, 16)).toString(2);
+                    
+                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      instruction = instruction + " " + token;
+                    }
+                    else{
+                      var validTag = false;
+                      for (var z = 0; z < memory.length; z++){
+                        for (var w = 0; w < memory[z].Binary.length; w++){
+                          if(token == memory[z].Binary[w].Tag){
+                            addr = (memory[z].Binary[w].Addr).toString(2);
+
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                            instruction = instruction + " " + token;
+
+                            validTag = true;
+                          }
+                          if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
+                            this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                            this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            this.modalAssemblyError.error ='Tag "'+ token +'" is not valid';
+                      
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                break;
+
+              case "(reg)":
+                token = instructionParts[j];
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
+                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                    if(token.charAt(0) != '('){
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='This field "'+ token +'" must start with a "("';
+                      
+                      instructions = [];
+                      pending_instructions = [];
+                      return -1;
+                    }
+
+                    if(token.charAt(token.length-1) != ')'){
+                      this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                      this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.modalAssemblyError.error ='This field "'+ token +'" must end with a ")"';
+                      
+                      instructions = [];
+                      pending_instructions = [];
+                      return -1;
+                    }
+                    
+                    re = /\((.*?)\)/;
+                    if (token.search(re) != -1){
+                      var match = re.exec(token);
+
+                      var auxToken = match[0].substring(1,match[0].length-1);
+
+                      validReg = false;
+
+                      for(var z = 0; z < architecture_hash.length; z++){
+                        for(var w = 0; w < architecture.components[z].elements.length; w++){
+                          if(auxToken == "$" + architecture.components[z].elements[w].name){
+                            validReg = true;
+                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                            var reg = w;
+
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                            instruction = instruction + " " + token;
+                          }
+                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                            this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+                            this.errorMessage(textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            this.modalAssemblyError.error ='Register "'+ match[0] +'" not found';
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                break;
+
+              default:
+                token = instructionParts[j];
+
+                console.log(token)
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                    
+                    binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
+
+                    instruction = instruction + token;
+                  }
+
+                  if(architecture.instructions[i].fields[a].type == "cop"){
+                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                    binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].cop).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                  }
+                }
+
+              break;
+            }
+
+
+          }
+
+          if(validTagPC == false){
+            console.log("pendiente")
+
+            pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, instIndex: i, line: textarea_assembly_editor.posFromIndex(tokenIndex).line});
+
+            address = address + (4*architecture.instructions[i].nwords);
+
+            break;
+          }
+
+          else{
+            console.log("no pendiente")
+
+            var padding = "";
+            padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
+
+            binary = binary + padding;
+
+            console.log(binary)
+            console.log(instruction)
+            if(pending == false){
+              instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
+            }
+            else{
+              for(var pos = 0; pos < instructions.length; pos++){
+                if(parseInt(instructions[pos].Address, 16) > pendingAddress){
+                  instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
+                  break;
+                }
+              }
+            }
+            address = address + (4*architecture.instructions[i].nwords);         
+          }
+        }
+      } 
+    },
+
+
+
+
+
 
     /*Muestra el mensaje de error al compilar*/
     errorMessage(line){
