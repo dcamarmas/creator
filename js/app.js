@@ -220,7 +220,9 @@ var architecture = {components:[
     {name: "move", nwords: 1, signature: "move,reg,reg", signatureRaw: "move reg1 reg2", fields: [
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-    ], definition: "add reg1 $r0 reg2"},
+      ], definition: "add Field.1.SIZE $r0 reg2; add reg1 $r0 reg2"
+      //definition: "if(false){   add reg1 $r0 reg2;    add    reg1 $a0 reg2;               add    reg1 $a1 reg2;} else{add reg2 $r0 reg1;add reg1 $t2 reg2;add reg1 $a1 reg2;}"
+    },
 
   ], directives:[
     {name:".kdata", kindof:"segment", size:0 },
@@ -2112,15 +2114,72 @@ window.app = new Vue({
           var definition = architecture.pseudoinstructions[i].definition;
 
           for (var j = 1; j < signatureRawParts.length; j++){
-            definition = definition.replace(signatureRawParts[j], instructionParts[j]);
+            var re = new RegExp(signatureRawParts[j],"g");
+            definition = definition.replace(re, instructionParts[j]);
           }
 
           console.log(definition)
 
+          re = /Field.(\d).(.*?)\s/;
+          if (definition.search(re) != -1){
+            var match = re.exec(definition);
+            console.log(match)
+            var value;
 
+            eval("value = this.field('" + instructionParts[match[1]] +"', '" + match[2] + "')");
+
+            if(value == -1){
+              return -1;
+            }
+
+            re = /Field.(\d).(.*?)\s/g;
+            definition = definition.replace(re, value + " ");
+          }
+
+          var re = /{([^}]*)}/g;
+          var code = re.exec(definition);
+
+          if(code != null){
+            while(code != null){
+              var instructions = code[1].split(";");
+              console.log(instructions)
+
+              for (var j = 0; j < instructions.length-1; j++){
+                var aux;
+                if(j == 0){
+                  aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0)";
+                }
+                else{
+                  aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "', ''," + line + ", false, 0)";
+                }
+                definition = definition.replace(instructions[j]+";", aux+";\n");
+              }
+
+              code = re.exec(definition);
+            }
+          }
+          else{
+            var instructions = definition.split(";");
+            console.log(instructions)
+
+            for (var j = 0; j < instructions.length-1; j++){
+              var aux;
+              if(j == 0){
+                aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0)";
+              }
+              else{
+                aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "', ''," + line + ", false, 0)";
+              }
+              definition = definition.replace(instructions[j]+";", aux+";\n");
+            }
+          }
+
+          console.log(definition)
+
+          eval(definition);
 
           /*PROVISIONAL*/
-          return this.instruction_compiler(definition, instruction, label, line, false, 0);
+          //return this.instruction_compiler(definition, instruction, label, line, false, 0);
         }
       }
 
@@ -2129,12 +2188,46 @@ window.app = new Vue({
       }
     },
 
+    field(field, action){
+      console.log(field)
+      console.log(action)
+      switch(action){
+        case "SIZE":
+          console.log("SIZE")
+          return 0;
+        case "LO":
+          console.log("LO")
+          return 0;
+        case "HI":
+          console.log("HI")
+          return 0;
+      }
+
+      return -1;
+    },
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 
     instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress){
+      var re = new RegExp("^ +");
+      instruction = instruction.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      instruction = instruction.replace(re, " ");
+
       var instructionParts = instruction.split(' ');
       var validTagPC = true;
 
