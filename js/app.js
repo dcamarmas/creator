@@ -216,13 +216,21 @@ var architecture = {components:[
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2^val"},
+    {name: "lui", co: "001111", cop: null, nwords: 1, signature: "lui,reg,inm", signatureRaw: "lui reg1 val", fields: [
+      {name: "lui", type: "co", startbit: 31, stopbit: 26},
+      {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+    ], definition: "reg1=val<<16"},
   ],pseudoinstructions:[
     {name: "move", nwords: 1, signature: "move,reg,reg", signatureRaw: "move reg1 reg2", fields: [
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      ], definition: "add Field.1.SIZE $r0 reg2; add reg1 $r0 reg2"
-      //definition: "if(false){   add reg1 $r0 reg2;    add    reg1 $a0 reg2;               add    reg1 $a1 reg2;} else{add reg2 $r0 reg1;add reg1 $t2 reg2;add reg1 $a1 reg2;}"
-    },
+      ], definition: "add reg1 $r0 reg2;"},
+    {name: "addi", nwords: 1, signature: "addi,reg,reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
+      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "val", type: "inm", startbit: 15, stopbit: 0},
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add reg1 reg2 $at;"},
 
   ], directives:[
     {name:".kdata", kindof:"segment", size:0 },
@@ -2099,7 +2107,6 @@ window.app = new Vue({
       var found = false;
 
       console.log(instructionParts);
-      console.log(line);
 
       for (var i = 0; i < architecture.pseudoinstructions.length; i++){
         if(architecture.pseudoinstructions[i].name != instructionParts[0]){
@@ -2120,21 +2127,31 @@ window.app = new Vue({
 
           console.log(definition)
 
-          re = /Field.(\d).(.*?)\s/;
-          if (definition.search(re) != -1){
+          re = /Field.(\d).(.*?)[;\s]/;
+          while (definition.search(re) != -1){
             var match = re.exec(definition);
             console.log(match)
+
             var value;
 
-            eval("value = this.field('" + instructionParts[match[1]] +"', '" + match[2] + "')");
+            try{
+              eval("value = this.field('" + instructionParts[match[1]] +"', '" + match[2] + "')");
+            }
+            catch(e){
+              if (e instanceof SyntaxError) {
+                return -1;
+              }
+            }
 
             if(value == -1){
               return -1;
             }
 
-            re = /Field.(\d).(.*?)\s/g;
-            definition = definition.replace(re, value + " ");
+            definition = definition.replace("Field." + match[1] + "." + match[2], value);
+            re = /Field.(\d).(.*?)[;\s]/;
           }
+
+          console.log(definition)
 
           var re = /{([^}]*)}/g;
           var code = re.exec(definition);
@@ -2160,7 +2177,6 @@ window.app = new Vue({
           }
           else{
             var instructions = definition.split(";");
-            console.log(instructions)
 
             for (var j = 0; j < instructions.length-1; j++){
               var aux;
@@ -2176,10 +2192,17 @@ window.app = new Vue({
 
           console.log(definition)
 
-          eval(definition);
+          try{
+            eval(definition);
+            console.log("finpseudo")
+            return 0;
+          }
+          catch(e){
+            if (e instanceof SyntaxError) {
+              return -1;
+            }
+          }
 
-          /*PROVISIONAL*/
-          //return this.instruction_compiler(definition, instruction, label, line, false, 0);
         }
       }
 
@@ -2191,16 +2214,58 @@ window.app = new Vue({
     field(field, action){
       console.log(field)
       console.log(action)
-      switch(action){
-        case "SIZE":
-          console.log("SIZE")
-          return 0;
-        case "LO":
-          console.log("LO")
-          return 0;
-        case "HI":
-          console.log("HI")
-          return 0;
+      
+      if(action == "SIZE"){
+        console.log("SIZE")
+
+        if(field.match(/^0x/)){
+          var value = field.split("x");
+          return value[1].length*4;
+        }
+        else if (field.match(/^(\d)+\.(\d)+/)){
+          return this.float2bin(parseFloat(field)).length;
+        }
+        else {
+          var numAux = parseInt(field, 10);
+          return (numAux.toString(2)).length;
+        }
+      }
+
+      re = /\((.*?)\)/;
+      if (action.search(re) != -1){
+        var match = re.exec(action);
+        var bits = match[1].split(",");
+
+        var startBit = parseInt(bits[0]);
+        var endBit = parseInt(bits[1]);
+
+        if(field.match(/^0x/)){
+          var num = "";
+          num = num.padStart(startBit-endBit, "0");
+          var binNum = (parseInt(field, 16).toString(2));
+          binNum = binNum.substring(31-startBit, 31-endBit);
+          var hexNum = "0x" + this.bin2hex(binNum);
+
+          return hexNum;
+        }
+        else if (field.match(/^(\d)+\.(\d)+/)){
+          var num = "";
+          num = num.padStart(startBit-endBit, "0");
+          var binNum = this.float2bin(parseFloat(field));
+          binNum = binNum.substring(31-startBit, 31-endBit);
+          var hexNum = "0x" + this.bin2hex(binNum);
+
+          return hexNum;
+        }
+        else {
+          var num = "";
+          num = num.padStart(startBit-endBit, "0");
+          var binNum = (parseInt(field, 10)).toString(2);
+          binNum = binNum.substring(31-startBit, 31-endBit);
+          var hexNum = "0x" + this.bin2hex(binNum);
+
+          return hexNum;
+        }
       }
 
       return -1;
@@ -2223,13 +2288,14 @@ window.app = new Vue({
 
     instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress){
       var re = new RegExp("^ +");
-      instruction = instruction.replace(re, "");
+      var oriInstruction = instruction.replace(re, "");
 
       re = new RegExp(" +", "g");
-      instruction = instruction.replace(re, " ");
+      oriInstruction = oriInstruction.replace(re, " ");
 
-      var instructionParts = instruction.split(' ');
+      var instructionParts = oriInstruction.split(' ');
       var validTagPC = true;
+      var resultPseudo = -3;
 
       console.log(instructionParts)
       console.log(label)
@@ -2312,17 +2378,19 @@ window.app = new Vue({
                       var value = token.split("x");
 
                       if(value[1].length*4 > fieldsLength){
-                        this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
+                        if(resultPseudo == -1){
+                          this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
 
-                        instructions = [];
-                        pending_instructions = [];
-                        return -1;
                       }
 
                       if(isNaN(parseInt(token, 16)) == true){
                         this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
                         instructions = [];
                         pending_instructions = [];
                         return -1;
@@ -2332,16 +2400,18 @@ window.app = new Vue({
                     }
                     else if (token.match(/^(\d)+\.(\d)+/)){
                       if(this.float2bin(parseFloat(token)).length > fieldsLength){
-                        this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
-                        instructions = [];
-                        pending_instructions = [];
-                        return -1;
+                        if(resultPseudo == -1){
+                          this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
                       }
 
                       if(isNaN(parseFloat(token)) == true){
                         this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
                         instructions = [];
                         pending_instructions = [];
                         return -1;
@@ -2383,16 +2453,18 @@ window.app = new Vue({
                     else {
                       var numAux = parseInt(token, 10);
                       if((numAux.toString(2)).length > fieldsLength){
-                        this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                        resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
-                        instructions = [];
-                        pending_instructions = [];
-                        return -1;
+                        if(resultPseudo == -1){
+                          this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
                       }
 
-                      if(isNaN(parseInt(token)) == true){
+                      if(isNaN(parseInt(token)) == true && resultPseudo == -3){
                         this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      
                         instructions = [];
                         pending_instructions = [];
                         return -1;
@@ -2401,7 +2473,6 @@ window.app = new Vue({
                       inm = (parseInt(token, 10)).toString(2);
                     }
                     if(validTagPC == true){
-                      console.log("jjnflnflkjdfn     "  + inm)
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                     }
                     
@@ -2554,7 +2625,7 @@ window.app = new Vue({
 
           }
 
-          if(validTagPC == false){
+          if(validTagPC == false && resultPseudo == -3){
             console.log("pendiente")
 
             pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, instIndex: i, line: textarea_assembly_editor.posFromIndex(tokenIndex).line});
@@ -2565,27 +2636,32 @@ window.app = new Vue({
           }
 
           else{
-            console.log("no pendiente")
+            if(resultPseudo == -3){
+              console.log("no pendiente")
 
-            var padding = "";
-            padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
+              var padding = "";
+              padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
 
-            binary = binary + padding;
+              binary = binary + padding;
 
-            console.log(binary)
-            console.log(instruction)
-            if(pending == false){
-              instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
-            }
-            else{
-              for(var pos = 0; pos < instructions.length; pos++){
-                if(parseInt(instructions[pos].Address, 16) > pendingAddress){
-                  instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
-                  break;
+              console.log(binary)
+              console.log(instruction)
+              if(pending == false){
+                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
+              }
+              else{
+                for(var pos = 0; pos < instructions.length; pos++){
+                  if(parseInt(instructions[pos].Address, 16) > pendingAddress){
+                    instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
+                    break;
+                  }
                 }
               }
+              address = address + (4*architecture.instructions[i].nwords);
+
+              console.log(instructions)
             }
-            address = address + (4*architecture.instructions[i].nwords);         
+
           }
         }
       } 
