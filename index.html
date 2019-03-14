@@ -100,9 +100,9 @@
                 <div class="col-lg-10 col-sm-10">
                   <b-card-group deck>
                     <b-card :title=item.name title-tag="h6" :img-src=item.img :img-alt=item.alt img-top v-for="(item, index) in arch_available" @click="load_arch_select(item.name)" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer;">
-                        <small class="card-text">
-                          This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.
-                        </small>
+                        <b-card-text style="text-align: justify; font-size: 10pt;">
+                          {{item.description}}
+                        </b-card-text>
                     </b-card>
                   </b-card-group>
                 </div>
