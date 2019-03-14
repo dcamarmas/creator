@@ -3,18 +3,21 @@
     "name": "MIPS-like",
     "img": "./images/mips_logo.png",
     "alt":"MIPS logo",
-    "id": "select_confMIPS"
+    "id": "select_confMIPS",
+    "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market."
   },
   {
     "name": "ARM-like",
     "img": "./images/arm_logo.png",
     "alt":"ARM logo",
-    "id": "select_confARM"
+    "id": "select_confARM",
+    "description": "ARM is a family of reduced instruction set computing (RISC) architectures for computer processors, configured for various environments."
   },
   {
     "name": "80x80-like",
     "img": "./images/80x80_logo.png",
     "alt":"80x80 logo",
-    "id": "select_conf80x80"
+    "id": "select_conf80x80",
+    "description": ""
   }
 ]
