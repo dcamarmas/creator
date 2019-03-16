@@ -173,7 +173,7 @@
                         </div>
                       </div>
 
-                      <!-- Resetea las instrucciones -->
+                      <!-- Resetea la arquitectura -->
                       <b-modal id ="modalResetArch" :title="modalResetArch.title" ok-variant="danger" ok-title="Reset" @ok="resetArchitecture(modalResetArch.element)">
                         <h6>Are you sure you want to reset the architecture?</h6>
                       </b-modal >
@@ -188,6 +188,17 @@
                             <b-collapse :id="item.index.toString()" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
                               <b-card-body>
                                  <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
+                                  <template slot="properties" slot-scope="row">
+
+                                    <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'read' || architecture.components[item.index].elements[row.index].properties[1] == 'read'"> Read </b-form-checkbox>
+
+                                    <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'read' && architecture.components[item.index].elements[row.index].properties[1] != 'read'"> Read </b-form-checkbox>
+
+                                    <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'write' || architecture.components[item.index].elements[row.index].properties[1] == 'write'"> Write </b-form-checkbox>
+
+                                    <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'write' && architecture.components[item.index].elements[row.index].properties[1] != 'write'"> Write </b-form-checkbox>
+
+                                  </template>
                                   <template slot="actions" slot-scope="row">
                                     <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
                                     <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
@@ -213,8 +224,8 @@
                           </b-alert>
 
                           <b-form>
-                            <b-form-group id="editComponentName" label="Name:">
-                              <b-form-input id="editComponentNameInput" type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
+                            <b-form-group label="Name:">
+                              <b-form-input type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
                               </b-form-input>
                             </b-form-group>
                           </b-form>
@@ -228,27 +239,27 @@
                           </b-alert>
 
                           <b-form >
-                            <b-form-group id="newElementName" label="Name:">
-                              <b-form-input id="newElementNameInput" type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
+                            <b-form-group label="Name:">
+                              <b-form-input type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
                               </b-form-input>
                             </b-form-group>
-                            <b-form-group id="newElementDefValue" label="Default value:" v-if="modalNewElement.double_precision == false">
-                              <b-form-input id="newElementDefValueInput" type="text" :state="valid(formArchitecture.defValue)" v-model="formArchitecture.defValue" required placeholder="Enter default value" size="sm">
+                            <b-form-group label="Default value:" v-if="modalNewElement.double_precision == false">
+                              <b-form-input type="text" :state="valid(formArchitecture.defValue)" v-model="formArchitecture.defValue" required placeholder="Enter default value" size="sm">
                               </b-form-input>
                             </b-form-group>
-                            <b-form-group id="newElementProperties" v-if="modalNewElement.type != 'control'">
-                              <b-form-checkbox-group v-model="formArchitecture.properties" id="newElementPropertiesInput">
+                            <b-form-group v-if="modalNewElement.type != 'control'">
+                              <b-form-checkbox-group v-model="formArchitecture.properties">
                                 <b-form-checkbox value="read">Read</b-form-checkbox>
                                 <b-form-checkbox value="write">Write</b-form-checkbox>
                               </b-form-checkbox-group>
                             </b-form-group>
-                            <b-form-group id="newElementSimple" label="Simple Floating Points asociate:" v-if="modalNewElement.double_precision == true">
+                            <b-form-group label="Simple Floating Points asociate:" v-if="modalNewElement.double_precision == true">
                               <div class="col-lg-12 col-sm-12 row nomargin">
                                 <div class="col-lg-6 col-sm-6">
-                                  <b-form-select id="newElementSimple1" required v-model="formArchitecture.simple1" :state="valid(formArchitecture.simple1)" size="sm" :options="simple_reg"></b-form-select>
+                                  <b-form-select required v-model="formArchitecture.simple1" :state="valid(formArchitecture.simple1)" size="sm" :options="simple_reg"></b-form-select>
                                 </div>
                                 <div class="col-lg-6 col-sm-6">
-                                  <b-form-select id="newElementSimple2" required v-model="formArchitecture.simple2" :state="valid(formArchitecture.simple2)" size="sm" :options="simple_reg"></b-form-select>
+                                  <b-form-select required v-model="formArchitecture.simple2" :state="valid(formArchitecture.simple2)" size="sm" :options="simple_reg"></b-form-select>
                                 </div>
                               </div>
                             </b-form-group>
@@ -263,28 +274,28 @@
                           </b-alert>
 
                           <b-form>
-                            <b-form-group id="editElementName" label="Name:">
-                              <b-form-input id="editElementNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                            <b-form-group label="Name:">
+                              <b-form-input type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
                               </b-form-input>
                             </b-form-group>
-                            <b-form-group id="editElementDefValue" label="Default value:" v-if="modalEditElement.double_precision == false">
-                              <b-form-input id="editElementDefValueInput" type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value" :state="valid(formArchitecture.defValue)" size="sm">
+                            <b-form-group label="Default value:" v-if="modalEditElement.double_precision == false">
+                              <b-form-input type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value" :state="valid(formArchitecture.defValue)" size="sm">
                               </b-form-input>
                             </b-form-group>
-                            <b-form-group id="editElementProperties">
-                              <b-form-checkbox-group v-model="formArchitecture.properties" id="editElementPropertiesInput" v-if="modalEditElement.type != 'control'">
+                            <b-form-group>
+                              <b-form-checkbox-group v-model="formArchitecture.properties" v-if="modalEditElement.type != 'control'">
                                 <b-form-checkbox value="read">Read</b-form-checkbox>
                                 <b-form-checkbox value="write">Write</b-form-checkbox>
                               </b-form-checkbox-group>
                             </b-form-group>
 
-                            <b-form-group id="editElementSimple" label="Simple Floating Points asociate:" v-if="modalEditElement.double_precision == true">
+                            <b-form-group label="Simple Floating Points asociate:" v-if="modalEditElement.double_precision == true">
                               <div class="col-lg-12 col-sm-12 row nomargin">
                                 <div class="col-lg-6 col-sm-6">
-                                  <b-form-select id="editElementSimple1" required v-model="formArchitecture.simple1" :state="valid(formArchitecture.simple1)" size="sm" :options="simple_reg"></b-form-select>
+                                  <b-form-select required v-model="formArchitecture.simple1" :state="valid(formArchitecture.simple1)" size="sm" :options="simple_reg"></b-form-select>
                                 </div>
                                 <div class="col-lg-6 col-sm-6">
-                                  <b-form-select id="editElementSimple2" required v-model="formArchitecture.simple2" :state="valid(formArchitecture.simple2)" size="sm" :options="simple_reg"></b-form-select>
+                                  <b-form-select required v-model="formArchitecture.simple2" :state="valid(formArchitecture.simple2)" size="sm" :options="simple_reg"></b-form-select>
                                 </div>
                               </div>
                             </b-form-group>
@@ -312,15 +323,15 @@
                         </b-alert>
 
                         <b-form>
-                          <b-form-group id="newComponentName" label="Name:">
-                            <b-form-input id="newComponentNameInput" type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                          <b-form-group label="Name:">
+                            <b-form-input type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
                             </b-form-input>
                           </b-form-group>
-                          <b-form-group id="newComponentType" label="Type:">
-                            <b-form-select id="newComponentTypeInput" :options="componentsTypes" required v-model="formArchitecture.type" :state="valid(formArchitecture.type)" size="sm"></b-form-select>
+                          <b-form-group label="Type:">
+                            <b-form-select :options="componentsTypes" required v-model="formArchitecture.type" :state="valid(formArchitecture.type)" size="sm"></b-form-select>
                           </b-form-group>
-                          <b-form-group id="newComponentPrecision" v-if="formArchitecture.type == 'floating point'">
-                            <b-form-checkbox-group v-model="formArchitecture.precision" id="newComponentPrecisionInput">
+                          <b-form-group v-if="formArchitecture.type == 'floating point'">
+                            <b-form-checkbox-group v-model="formArchitecture.precision">
                               <b-form-checkbox value="precision">Double Precision</b-form-checkbox>
                             </b-form-checkbox-group>
                           </b-form-group>
@@ -344,26 +355,90 @@
                       <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
                         <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
                           <template slot="fields" slot-scope="row">
-                            <b-form-select :id="'fieldsSel-'+row.item.name" required v-model="fieldsSel" class="fieldsSel" size="sm">
-                              <option v-for="i in row.item.fields" :value="i.name">{{i.name}}</option>
-                            </b-form-select>
-
-                            <div v-for="i in row.item.fields" v-if="(fieldsSel == i.name) && (instSel == row.item.name)">
-                              <br>
-                              <h6 class="instruction_table">Name: {{i.name}}</h6>
-                              <h6 class="instruction_table">Type: {{i.type}}</h6>
-                              <h6 class="instruction_table">Start Bit: {{i.startbit}}</h6>
-                              <h6 class="instruction_table">End Bit: {{i.stopbit}}</h6>
-                            </div>
+                            <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
                           </template>
 
                           <template slot="actions" slot-scope="row">
                             <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
                             <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
                           </template>
-                         </b-table>
+                        </b-table>
 
-                         <!-- Borrar instruccion -->
+                        <!-- Campos de la instruccion -->
+                        <b-modal size="lg" id ="modalViewFields" :title="modalViewFields.title" hide-footer>
+                          <b-form>
+                            <div id="viewFields" >
+                              <div class="col-lg-12 col-sm-12 row">
+                                <div class="col-lg-2 col-2 fields">
+                                  
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Name:</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Type</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Start Bit</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>End Bit</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Value</h6>
+                                </div>
+                              </div>
+
+                              <div v-for="i in parseInt(formInstruction.numfields)">
+                                <div class="col-lg-12 col-sm-12 row">
+                                  <div class="col-lg-2 col-2 fields">
+                                    <h6>Field {{i-1}}</h6>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required size="sm" v-if="(i-1) != 0" disabled>
+                                      </b-form-input>
+                                      <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formInstruction.typeField[i-1]" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formInstruction.co" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formInstruction.cop" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </b-form>
+                        </b-modal>
+
+                        <!-- Borrar instruccion -->
                         <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.index)">
                           <h6>Are you sure you want to delete the item?</h6>
                         </b-modal >
@@ -376,18 +451,18 @@
 
                           <b-form>
                             <div id="editInstForm1" v-if="instructionFormPage == 1">
-                              <b-form-group id="editInstructionName" label="Name:">
-                                <b-form-input id="editInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                              <b-form-group label="Name:">
+                                <b-form-input type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
                                 </b-form-input>
                               </b-form-group>
 
-                              <b-form-group id="editInstructionNwords" label="Number of Words:">
-                                <b-form-input id="editInstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                              <b-form-group label="Number of Words:">
+                                <b-form-input type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
                                 </b-form-input>
                               </b-form-group>
 
-                              <b-form-group id="editNumFields" label="Number of fields: (Including co and cop)">
-                                <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                              <b-form-group label="Number of fields: (Including co and cop)">
+                                <b-form-input type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
@@ -420,47 +495,47 @@
                                     <h6>Field {{i-1}}</h6>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'nameField'+i">
-                                      <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
                                       </b-form-input>
-                                      <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                      <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'typeField'+i">
-                                      <b-form-select id="'typeField'+i" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    <b-form-group>
+                                      <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
                                         <option value="reg">reg</option>
                                         <option value="inm">inm</option>
                                         <option value="address">address</option>
                                         <option value="(reg)">reg-add</option>
                                         <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                       </b-form-select>
-                                      <b-form-input :id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
+                                      <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'startBitField'+i">
-                                      <b-form-input id="'startBitField'+i" type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'stopBitField'+i">
-                                      <b-form-input id="'stopBitField'+i" type="number" min="0" :max="32 * formInstruction.nwords - 1"v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                    <b-form-group :id="'valueFieldCo'+i">
-                                      <b-form-input :id="'valueFieldCo'+i" type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                    <b-form-group :id="'valueFieldCo'+i">
-                                      <b-form-input :id="'valueFieldCo'+i" type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
@@ -469,8 +544,8 @@
                             </div>
 
                             <div id="editInstForm3" v-if="instructionFormPage == 3">
-                              <b-form-group id="editInstructionDefinition" label="Assembly Definition:">
-                                <b-form-textarea id="editInstructionDefinitionInput" v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                              <b-form-group label="Assembly Definition:">
+                                <b-form-textarea v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
                                 </b-form-textarea>
                               </b-form-group>
                             </div>
@@ -490,18 +565,18 @@
 
                         <b-form>
                           <div id="newInstForm1" v-if="instructionFormPage == 1">
-                            <b-form-group id="newInstructionName" label="Name:">
-                              <b-form-input id="newInstructionNameInput" type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                            <b-form-group label="Name:">
+                              <b-form-input type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="newInstructionNwords" label="Number of Words:">
-                              <b-form-input id="newInstructionNwordsInput" type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                            <b-form-group label="Number of Words:">
+                              <b-form-input type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="newNumFields" label="Number of fields: (Including co and cop)">
-                              <b-form-input id="newNumFieldsInput" type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                            <b-form-group label="Number of fields: (Including co and cop)">
+                              <b-form-input type="number" min="1" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                               </b-form-input>
                             </b-form-group>
                           </div>
@@ -534,47 +609,47 @@
                                   <h6>Field {{i-1}}</h6>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'nameField'+i">
-                                    <b-form-input :id="'nameField'+i+'Input'" type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
                                     </b-form-input>
-                                    <b-form-input :id="'nameField'+i" type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                    <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'typeField'+i">
-                                    <b-form-select id="'typeField'+i+'Input'" v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                  <b-form-group>
+                                    <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
                                       <option value="reg">reg</option>
                                       <option value="inm">inm</option>
                                       <option value="address">address</option>
                                       <option value="(reg)">reg-addr</option>
                                       <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                     </b-form-select>
-                                    <b-form-input :id="'typeField'+i" type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
+                                    <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'startBitField'+i">
-                                    <b-form-input id="'startBitField'+i+'Input'" type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'stopBitField'+i">
-                                    <b-form-input id="'stopBitField'+i+'Input'" type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                  <b-form-group :id="'valueFieldCo'+i">
-                                    <b-form-input :id="'valueFieldCo'+i+'Input'" type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                  <b-form-group :id="'valueFieldCo'+i">
-                                    <b-form-input :id="'valueFieldCo'+i+'Input'" type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -583,8 +658,8 @@
                           </div>
 
                           <div id="newInstForm3" v-if="instructionFormPage == 3">
-                            <b-form-group id="newInstructionDefinition" label="Assembly Definition:">
-                              <b-form-textarea id="newInstructionDefinitionInput" v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                            <b-form-group label="Assembly Definition:">
+                              <b-form-textarea v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
                               </b-form-textarea>
                             </b-form-group>
                           </div>
@@ -612,17 +687,7 @@
                       <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
                         <b-table small :items="architecture.pseudoinstructions" :fields="pseudoinstFields" class="instruction_table">
                           <template slot="fields" slot-scope="row">
-                            <b-form-select :id="'fieldsSel-'+row.item.name" required v-model="fieldsSel" class="fieldsSel" size="sm">
-                              <option v-for="i in row.item.fields" :value="i.name">{{i.name}}</option>
-                            </b-form-select>
-
-                            <div v-for="i in row.item.fields" v-if="(fieldsSel == i.name) && (instSel == row.item.name)">
-                              <br>
-                              <h6 class="instruction_table">Name: {{i.name}}</h6>
-                              <h6 class="instruction_table">Type: {{i.type}}</h6>
-                              <h6 class="instruction_table">Start Bit: {{i.startbit}}</h6>
-                              <h6 class="instruction_table">End Bit: {{i.stopbit}}</h6>
-                            </div>
+                            <b-button @click.stop="viewFielsPseudo(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
                           </template>
 
                           <template slot="actions" slot-scope="row">
@@ -630,6 +695,66 @@
                             <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
                           </template>
                         </b-table>
+
+                        <!-- Campos de la pseudoinstruccion -->
+                        <b-modal size="lg" id ="modalViewPseudoFields" :title="modalViewFields.title" hide-footer>
+                          <b-form>
+                            <div id="viewFieldsPseudo">
+                              <div class="col-lg-12 col-sm-12 row">
+                                <div class="col-lg-2 col-2 fields">
+                                  
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Name:</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Type</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Start Bit</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>End Bit</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Value</h6>
+                                </div>
+                              </div>
+
+                              <div v-for="i in parseInt(formPseudoinstruction.numfields)">
+                                <div class="col-lg-12 col-sm-12 row">
+                                  <div class="col-lg-2 col-2 fields">
+                                    <h6>Field {{i-1}}</h6>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formPseudoinstruction.nameField[i-1]" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input v-model="formPseudoinstruction.typeField[i-1]" required type="text" size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                  <div class="col-lg-2 col-2 fields">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required size="sm" disabled>
+                                      </b-form-input>
+                                    </b-form-group>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </b-form>
+                        </b-modal>
 
                         <!-- Borrar pseudoinstruccion -->
                         <b-modal id ="modalDeletPseudoinst" :title="modalDeletPseudoinst.title" ok-variant="danger" ok-title="Delete" @ok="delPseudoinstruction(modalDeletPseudoinst.index)">
@@ -644,18 +769,18 @@
 
                           <b-form>
                             <div id="editPseudoinstForm1" v-if="instructionFormPage == 1">
-                              <b-form-group id="editPseudoinstructionName" label="Name:">
-                                <b-form-input id="editPseudoinstructionNameInput" type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
+                              <b-form-group label="Name:">
+                                <b-form-input type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
                                 </b-form-input>
                               </b-form-group>
 
-                              <b-form-group id="editPseudoinstructionNwords" label="Number of Words:">
-                                <b-form-input id="editPseudoinstructionNwordsInput" type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
+                              <b-form-group label="Number of Words:">
+                                <b-form-input type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
                                 </b-form-input>
                               </b-form-group>
 
-                              <b-form-group id="editNumFields" label="Number of fields: ">
-                                <b-form-input id="editNumFieldsInput" type="number" min="1" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
+                              <b-form-group label="Number of fields: ">
+                                <b-form-input type="number" min="1" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
@@ -688,14 +813,14 @@
                                     <h6>Field {{i-1}}</h6>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'nameField'+i">
-                                      <b-form-input :id="'nameField'+i" type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
+                                    <b-form-group>
+                                      <b-form-input type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'typeField'+i">
-                                      <b-form-select id="'typeField'+i" v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
+                                    <b-form-group>
+                                      <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
                                         <option value="reg">reg</option>
                                         <option value="inm">inm</option>
                                         <option value="address">address</option>
@@ -704,14 +829,14 @@
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'startBitField'+i">
-                                      <b-form-input id="'startBitField'+i" type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
                                   <div class="col-lg-2 col-2 fields">
-                                    <b-form-group :id="'stopBitField'+i">
-                                      <b-form-input id="'stopBitField'+i" type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
+                                    <b-form-group>
+                                      <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
                                       </b-form-input>
                                     </b-form-group>
                                   </div>
@@ -720,8 +845,8 @@
                             </div>
 
                             <div id="editPseudoinstForm3" v-if="instructionFormPage == 3">
-                              <b-form-group id="editPseudoinstructionDefinition" label="Assembly Definition:">
-                                <b-form-textarea id="editPseudoinstructionDefinitionInput" v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                              <b-form-group label="Assembly Definition:">
+                                <b-form-textarea v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                                 </b-form-textarea>
                               </b-form-group>
                             </div>
@@ -733,7 +858,7 @@
                       </div>
 
                       <!-- Formulario nueva pseudoinstruccion -->
-                      <b-modal size="lg" id ="new_pseudoinstruction" title = "New pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction">
+                      <b-modal size="lg" title = "New pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction" id="new_pseudoinstruction">
 
                         <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                           <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -741,18 +866,18 @@
 
                         <b-form>
                           <div id="newPseudoinstForm1" v-if="instructionFormPage == 1">
-                            <b-form-group id="newPseudoinstructionName" label="Name:">
-                              <b-form-input id="newPseudoinstructionNameInput" type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
+                            <b-form-group label="Name:">
+                              <b-form-input type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="newPseudoinstructionNwords" label="Number of Words:">
-                              <b-form-input id="newPseudoinstructionNwordsInput" type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
+                            <b-form-group label="Number of Words:">
+                              <b-form-input type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="newNumFields" label="Number of fields: ">
-                              <b-form-input id="newNumFieldsInput" type="number" min="0" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
+                            <b-form-group label="Number of fields: ">
+                              <b-form-input type="number" min="0" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
                               </b-form-input>
                             </b-form-group>
                           </div>
@@ -785,14 +910,14 @@
                                   <h6>Field {{i-1}}</h6>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'nameField'+i">
-                                    <b-form-input :id="'nameField'+i+'Input'" type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'typeField'+i">
-                                    <b-form-select id="'typeField'+i+'Input'" v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
+                                  <b-form-group>
+                                    <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
                                       <option value="reg">reg</option>
                                       <option value="inm">inm</option>
                                       <option value="address">address</option>
@@ -801,14 +926,14 @@
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'startBitField'+i">
-                                    <b-form-input id="'startBitField'+i+'Input'" type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
-                                  <b-form-group :id="'stopBitField'+i">
-                                    <b-form-input id="'stopBitField'+i+'Input'" type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -817,8 +942,8 @@
                           </div>
 
                           <div id="newPseudoinstForm3" v-if="instructionFormPage == 3">
-                            <b-form-group id="newInstructionDefinition" label="Assembly Definition:">
-                              <b-form-textarea id="newInstructionDefinitionInput" v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                            <b-form-group label="Assembly Definition:">
+                              <b-form-textarea v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                               </b-form-textarea>
                             </b-form-group>
                           </div>
@@ -850,17 +975,17 @@
                         </b-alert>
 
                         <b-form>
-                          <b-form-group id="newDirectiveName" label="Name:">
-                            <b-form-input id="newDirectiveNameInput" type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
+                          <b-form-group label="Name:">
+                            <b-form-input type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
                             </b-form-input>
                           </b-form-group>
 
-                          <b-form-group id="newDirectiveKindof" label="Kindof:">
-                            <b-form-select id="newDirectiveKindofInput" :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
+                          <b-form-group label="Kindof:">
+                            <b-form-select :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
                           </b-form-group>
 
-                          <b-form-group id="newDirectiveSize" label="Size:">
-                            <b-form-input id="newDirectiveSizeInput" type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
+                          <b-form-group label="Size:">
+                            <b-form-input type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
                             </b-form-input>
                           </b-form-group>
                         </b-form>
@@ -892,17 +1017,17 @@
                           </b-alert>
 
                           <b-form>
-                            <b-form-group id="editDirectiveName" label="Name:">
-                              <b-form-input id="editDirectiveNameInput" type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
+                            <b-form-group label="Name:">
+                              <b-form-input type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
                               </b-form-input>
                             </b-form-group>
 
-                            <b-form-group id="editDirectiveKindof" label="Kindof:">
-                              <b-form-select id="editDirectiveKindofInput" :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
+                            <b-form-group label="Kindof:">
+                              <b-form-select :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
                             </b-form-group>
 
-                            <b-form-group id="editDirectiveSize" label="Size:">
-                              <b-form-input id="editDirectiveSizeInput" type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
+                            <b-form-group label="Size:">
+                              <b-form-input type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
                               </b-form-input>
                             </b-form-group>
 
