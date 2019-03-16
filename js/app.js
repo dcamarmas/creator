@@ -9,7 +9,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  {name: "Integer control registers", type: "control", double_precision: false, elements:[
+  /*{name: "Integer control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -109,9 +109,9 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}
+    ]}*/
   ], instructions:[
-    {name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
@@ -162,9 +162,9 @@ var architecture = {components:[
     ], definition: "reg1=reg2/reg3"},
     {name: "lw", co: "000102", cop: null, nwords: 1, signature: "lw,reg,inm,(reg)", signatureRaw: "lw reg1 val (reg2)", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
+      {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
     ], definition: "reg1=MP.w.(val+reg2)"},
     {name: "mul", co: "011100", cop: "000010", nwords: 1, signature: "mul,reg,reg,reg", signatureRaw: "mul reg1 reg2 reg3", fields: [
       {name: "mul", type: "co", startbit: 31, stopbit: 26},
@@ -199,9 +199,9 @@ var architecture = {components:[
     ], definition: "reg1=reg2-reg3"},
     {name: "sw", co: "000103", cop: null, nwords: 1, signature: "sw,reg,inm,(reg)", signatureRaw: "sw reg1 val (reg2)", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
+      {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
     ], definition: "MP.w.(val+reg2)=reg1"},
     {name: "xor", co: "000000", cop: "100110", nwords: 1, signature: "xor,reg,reg,reg", signatureRaw: "xor reg1 reg2 reg3", fields: [
       {name: "xor", type: "co", startbit: 31, stopbit: 26},
@@ -220,9 +220,9 @@ var architecture = {components:[
       {name: "lui", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=val<<16"},
+    ], definition: "reg1=val<<16"},*/
   ],pseudoinstructions:[
-    {name: "move", nwords: 1, signature: "move,reg,reg", signatureRaw: "move reg1 reg2", fields: [
+    /*{name: "move", nwords: 1, signature: "move,reg,reg", signatureRaw: "move reg1 reg2", fields: [
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       ], definition: "add reg1 $r0 reg2;"},
@@ -230,10 +230,9 @@ var architecture = {components:[
       {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add reg1 reg2 $at;"},
-
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add reg1 reg2 $at;"},*/
   ], directives:[
-    {name:".kdata", kindof:"segment", size:0 },
+    /*{name:".kdata", kindof:"segment", size:0 },
     {name:".ktext", kindof:"segment", size:0 },
     {name:".data", kindof:"segment", size:0 },
     {name:".text", kindof:"segment", size:0 },
@@ -243,7 +242,7 @@ var architecture = {components:[
     {name:".space", kindof:"datatype", size:1 },
     {name:".ascii", kindof:"datatype", size:1 },
     {name:".asciiz", kindof:"datatype", size:1 },
-    {name:".align", kindof:"datatype", size:0 },
+    {name:".align", kindof:"datatype", size:0 },*/
   ]};
 
 var componentsTypes = [
@@ -625,7 +624,7 @@ window.app = new Vue({
     /*Carga la arquitectura seleccionada*/
     load_arch_select(e){
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        //architecture = cfg;
+        architecture = cfg;
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -882,6 +881,11 @@ window.app = new Vue({
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
         }
+        else if(isNaN(this.formArchitecture.defValue)){
+          app._data.alertMessaje = 'The default value must be a number';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        }
         else{
           this.newElement(comp);
         }
@@ -996,7 +1000,13 @@ window.app = new Vue({
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
-      } else {
+      } 
+      else if(isNaN(this.formArchitecture.defValue)){
+        app._data.alertMessaje = 'The default value must be a number';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else {
         this.editElement(comp);
       }
     },
@@ -1104,22 +1114,49 @@ window.app = new Vue({
     newInstVerify(evt){
       evt.preventDefault();
 
-      var vacio = 0;
+      var empty = 0;
       for (var z = 1; z < this.formInstruction.numfields; z++) {
         if(this.formInstruction.typeField[z] == 'cop'){
           if(!this.formInstruction.cop){
-            vacio = 1;
+            empty = 1;
           }
+          else{
+            if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
+              app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              return;
+            }
+
+            for (var i = 0; i < this.formInstruction.cop.length; i++) {
+              if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
+                app._data.alertMessaje = 'The value of cop must be binary';
+                app._data.type ='danger';
+                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                return;
+              }
+            }
+          }
+        }
+      }
+
+      for (var i = 0; i < this.formInstruction.co.length; i++) {
+        console.log(this.formInstruction.co.charAt(i))
+        if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+          app._data.alertMessaje = 'The value of co must be binary';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          return;
         }
       }
 
       for (var i = 0; i < this.formInstruction.numfields; i++) {
         if(this.formInstruction.nameField.length <  this.formInstruction.numfields || this.formInstruction.typeField.length <  this.formInstruction.numfields || this.formInstruction.startBitField.length <  this.formInstruction.numfields || this.formInstruction.stopBitField.length <  this.formInstruction.numfields){
-          vacio = 1;
+          empty = 1;
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || empty == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1131,6 +1168,11 @@ window.app = new Vue({
       }
       else if(isNaN(this.formInstruction.cop)){
         app._data.alertMessaje = 'The field cop must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+        app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
@@ -1284,21 +1326,47 @@ window.app = new Vue({
     editInstVerify(evt, inst, co, cop){
       evt.preventDefault();
 
-      var vacio = 0;
+      var empty = 0;
       for (var z = 1; z < this.formInstruction.numfields; z++) {
         if(this.formInstruction.typeField[z] == 'cop'){
           if(!this.formInstruction.cop){
-            vacio = 1;
+            empty = 1;
           }
+          else{
+            if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
+              app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              return;
+            }
+
+            for (var i = 0; i < this.formInstruction.cop.length; i++) {
+              if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
+                app._data.alertMessaje = 'The value of cop must be binary';
+                app._data.type ='danger';
+                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                return;
+              }
+            }
+          }
+        }
+      }
+
+      for (var i = 0; i < this.formInstruction.co.length; i++) {
+        if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+          app._data.alertMessaje = 'The value of co must be binary';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          return;
         }
       }
 
       for (var i = 0; i < this.formInstruction.numfields; i++) {
         if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
-          vacio = 1;
+          empty = 1;
         }
       }
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || vacio == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || empty == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1310,6 +1378,11 @@ window.app = new Vue({
       }
       else if(isNaN(this.formInstruction.cop)){
         app._data.alertMessaje = 'The field cop must be numbers';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+      }
+      else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+        app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
@@ -3454,6 +3527,6 @@ textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor
 
 textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
 
-textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n");
-//textarea_assembly_editor.setSize("auto", "auto");
+textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+textarea_assembly_editor.setSize("auto", "550px");
 textarea_assembly_editor.refresh();
