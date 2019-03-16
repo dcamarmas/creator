@@ -422,7 +422,6 @@ window.app = new Vue({
     instructionFormPage: 1,
     instructionFormPageLink: ['#Principal', '#Fields', '#Definition'],
     /*Variables para el selector de campos tabla*/
-    fieldsSel: '',
     instSel: '',
     /*Reset de las instrucciones*/
     modalResetInst:{
@@ -442,6 +441,14 @@ window.app = new Vue({
       co: '',
       cop: '',
     },
+    /*Campos instruccion*/
+    modalViewFields:{
+      title: '',
+      element: '',
+      co: '',
+      cop: '',
+    },
+
     /*Mostrar modal*/
     showNewInstruction: false,
     showEditInstruction: false,
@@ -520,8 +527,6 @@ window.app = new Vue({
 
 
     /*CARGA Y LECTURA ENSAMBLADOR*/
-    /*Variables donde se guardan los contenidos de los textarea*/
-    text_assembly: code_assembly,
     /*Variables donde se guardan los ficheros cargados*/
     load_assembly: '',
     /*Variables donde se guardan los nombre de los ficheros guardados*/
@@ -1092,6 +1097,34 @@ window.app = new Vue({
     },
 
     /*PAGINA DE INSTRUCCIONES*/
+    /*Visualizacion del modal con los campos de la instruccion*/
+    viewFielsInst(elem, co, cop, button){
+      this.modalViewFields.title = "Fields of " + elem;
+      this.modalViewFields.element = elem;
+      for (var i = 0; i < architecture.instructions.length; i++) {
+        if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
+          this.formInstruction.name = architecture.instructions[i].name;
+          this.formInstruction.cop = architecture.instructions[i].cop;
+          this.formInstruction.co = architecture.instructions[i].co;
+          app._data.modalViewFields.co = architecture.instructions[i].co;
+          app._data.modalViewFields.cop = architecture.instructions[i].cop;
+          this.formInstruction.nwords = architecture.instructions[i].nwords;
+          this.formInstruction.numfields = architecture.instructions[i].fields.length;
+          this.formInstruction.definition = architecture.instructions[i].definition;
+
+          for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
+            this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
+            this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
+            this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+            this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+          }
+
+        }
+      }
+
+      this.$root.$emit('bv::show::modal', 'modalViewFields', button);
+    },
+
     /*Modal de alerta de reset*/
     resetInstModal(elem, button){
       this.modalResetInst.title = "Reset " + elem + " instructions";
@@ -1517,6 +1550,26 @@ window.app = new Vue({
     },
 
     /*PAGINA DE PSEUDOINSTRUCCIONES*/
+
+    viewFielsPseudo(elem, index, button){
+      this.modalViewFields.title = "Edit " + elem;
+      this.modalViewFields.element = elem;
+      
+      this.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
+      this.formPseudoinstruction.nwords = architecture.pseudoinstructions[index].nwords;
+      this.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
+      this.formPseudoinstruction.definition = architecture.pseudoinstructions[index].definition;
+
+      for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
+        this.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
+        this.formPseudoinstruction.typeField[j] = architecture.pseudoinstructions[index].fields[j].type;
+        this.formPseudoinstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
+        this.formPseudoinstruction.stopBitField[j] = architecture.pseudoinstructions[index].fields[j].stopbit;
+      }
+
+      this.$root.$emit('bv::show::modal', 'modalViewPseudoFields', button);
+    },
+
     /*Modal de alerta de reset*/
     resetPseudoinstModal(elem, button){
       this.modalResetPseudoinst.title = "Reset " + elem + " pseudoinstructions";
@@ -3506,13 +3559,6 @@ $("#selectData").change(function(){
     $("#registers").show();
     $("#memory").hide();
   }
-});
-
-/*Obtiene la instruccion asociada al select*/
-$(document).on('click','.fieldsSel',function(){
-  var id = this.id;
-  var inst = id.split('-');
-  app._data.instSel = inst[inst.length-1];
 });
 
 /*Codemirror, text area ensamblador*/
