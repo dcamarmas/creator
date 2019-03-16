@@ -1296,12 +1296,6 @@
           "stopbit": 26
         },
         {
-          "name": "reg2",
-          "type": "(reg)",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
           "name": "reg1",
           "type": "reg",
           "startbit": 20,
@@ -1312,6 +1306,12 @@
           "type": "inm",
           "startbit": 15,
           "stopbit": 0
+        },
+        {
+          "name": "reg2",
+          "type": "(reg)",
+          "startbit": 25,
+          "stopbit": 21
         }
       ],
       "definition": "reg1=MP.w.(val+reg2)"
@@ -1512,12 +1512,6 @@
           "stopbit": 26
         },
         {
-          "name": "reg2",
-          "type": "(reg)",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
           "name": "reg1",
           "type": "reg",
           "startbit": 20,
@@ -1528,6 +1522,12 @@
           "type": "inm",
           "startbit": 15,
           "stopbit": 0
+        },
+        {
+          "name": "reg2",
+          "type": "(reg)",
+          "startbit": 25,
+          "stopbit": 21
         }
       ],
       "definition": "MP.w.(val+reg2)=reg1"
@@ -1607,14 +1607,43 @@
         }
       ],
       "definition": "reg1=reg2^val"
+    },
+    {
+      "name": "lui",
+      "co": "001111",
+      "cop": null,
+      "nwords": 1,
+      "signature": "lui,reg,inm",
+      "signatureRaw": "lui reg1 val",
+      "fields": [
+        {
+          "name": "lui",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg1=val<<16"
     }
   ],
   "pseudoinstructions": [
     {
       "name": "move",
       "nwords": 1,
-      "signature": "move,reg,reg,reg",
-      "signatureRaw": "move reg1 reg2 reg3",
+      "signature": "move,reg,reg",
+      "signatureRaw": "move reg1 reg2",
       "fields": [
         {
           "name": "reg1",
@@ -1629,7 +1658,34 @@
           "stopbit": 16
         }
       ],
-      "definition": "add reg1 R0 reg2"
+      "definition": "add reg1 $r0 reg2;"
+    },
+    {
+      "name": "addi",
+      "nwords": 1,
+      "signature": "addi,reg,reg,inm",
+      "signatureRaw": "addi reg1 reg2 val",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add reg1 reg2 $at;"
     }
   ],
   "directives": [
