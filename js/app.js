@@ -642,6 +642,7 @@ window.app = new Vue({
 
         $("#architecture_menu").hide();
         $("#simulator").show();
+        $("#save_btn_arch").show();
         $("#assembly_btn_arch").show();
         $("#sim_btn_arch").show();
         $("#load_arch").hide();
@@ -680,6 +681,7 @@ window.app = new Vue({
 
         $("#architecture_menu").hide();
         $("#simulator").show();
+        $("#save_btn_arch").show();
         $("#assembly_btn_arch").show();
         $("#sim_btn_arch").show();
         $("#load_arch").hide();
@@ -3236,7 +3238,11 @@ window.app = new Vue({
           app._data.dismissCountDown = app._data.dismissSecs;
         }
       }
-    
+      
+      if(executionIndex == -1){
+        error = 1;
+      }
+
       if(error != 1){
         for (var i = 0; i < instructions.length; i++) {
           if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
@@ -3331,6 +3337,8 @@ window.app = new Vue({
         app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        executionIndex = -1;
+        return;
       }
 
       return architecture.components[indexComp].elements[indexElem].value;
@@ -3349,6 +3357,7 @@ window.app = new Vue({
           app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
           app._data.type ='danger';
           app._data.dismissCountDown = app._data.dismissSecs;
+          executionIndex = -1;
           return;
         }
 
