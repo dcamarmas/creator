@@ -1,16 +1,3 @@
-/*Botones menu de configuracion*/
-$(".save_arch").click(function(){
-  $("#load_menu_arch").hide();
-  $("#save_menu_arch").show();
-  $("#view_components").hide();
-});
-
-$(".view_arch").click(function(){
-  $("#load_menu_arch").hide();
-  $("#save_menu_arch").hide();
-  $("#view_components").show();
-});
-
 /*Botones modos*/
 $(".assembly_btn").click(function(){
   $("#simulator").hide();
