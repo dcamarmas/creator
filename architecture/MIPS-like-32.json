@@ -1000,7 +1000,7 @@
       "co": "000000",
       "cop": "100000",
       "nwords": 1,
-      "signature": "add,reg,reg,reg",
+      "signature": "add,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "add reg1 reg2 reg3",
       "fields": [
         {
@@ -1011,19 +1011,19 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "reg3",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1041,7 +1041,7 @@
       "co": "001000",
       "cop": null,
       "nwords": 1,
-      "signature": "addi,reg,reg,inm",
+      "signature": "addi,INT-Reg,INT-Reg,inm",
       "signatureRaw": "addi reg1 reg2 val",
       "fields": [
         {
@@ -1052,13 +1052,13 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1076,7 +1076,7 @@
       "co": "000000",
       "cop": "100100",
       "nwords": 1,
-      "signature": "and,reg,reg,reg",
+      "signature": "and,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "and reg1 reg2 reg3",
       "fields": [
         {
@@ -1087,19 +1087,19 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "reg3",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1117,7 +1117,7 @@
       "co": "001100",
       "cop": null,
       "nwords": 1,
-      "signature": "andi,reg,reg,inm",
+      "signature": "andi,INT-Reg,INT-Reg,inm",
       "signatureRaw": "andi reg1 reg2 val",
       "fields": [
         {
@@ -1128,13 +1128,13 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1175,7 +1175,7 @@
       "co": "000100",
       "cop": null,
       "nwords": 1,
-      "signature": "beq,reg,reg,inm",
+      "signature": "beq,INT-Reg,INT-Reg,inm",
       "signatureRaw": "beq reg1 reg2 val",
       "fields": [
         {
@@ -1186,13 +1186,13 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1210,7 +1210,7 @@
       "co": "000101",
       "cop": null,
       "nwords": 1,
-      "signature": "bne,reg,reg,inm",
+      "signature": "bne,INT-Reg,INT-Reg,inm",
       "signatureRaw": "bne reg1 reg2 val",
       "fields": [
         {
@@ -1221,13 +1221,13 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1245,7 +1245,7 @@
       "co": "000000",
       "cop": "011010",
       "nwords": 1,
-      "signature": "div,reg,reg,reg",
+      "signature": "div,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "div reg1 reg2 reg3",
       "fields": [
         {
@@ -1256,19 +1256,19 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "reg3",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1286,7 +1286,7 @@
       "co": "000102",
       "cop": null,
       "nwords": 1,
-      "signature": "lw,reg,inm,(reg)",
+      "signature": "lw,INT-Reg,inm,(INT-Reg)",
       "signatureRaw": "lw reg1 val (reg2)",
       "fields": [
         {
@@ -1297,7 +1297,7 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1309,7 +1309,7 @@
         },
         {
           "name": "reg2",
-          "type": "(reg)",
+          "type": "(INT-Reg)",
           "startbit": 25,
           "stopbit": 21
         }
@@ -1321,7 +1321,7 @@
       "co": "011100",
       "cop": "000010",
       "nwords": 1,
-      "signature": "mul,reg,reg,reg",
+      "signature": "mul,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "mul reg1 reg2 reg3",
       "fields": [
         {
@@ -1332,19 +1332,19 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "reg3",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1385,7 +1385,7 @@
       "co": "000000",
       "cop": "100101",
       "nwords": 1,
-      "signature": "or,reg,reg,reg",
+      "signature": "or,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "or reg1 reg2 reg3",
       "fields": [
         {
@@ -1396,19 +1396,19 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "reg3",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1426,7 +1426,7 @@
       "co": "001101",
       "cop": null,
       "nwords": 1,
-      "signature": "ori,reg,reg,inm",
+      "signature": "ori,INT-Reg,INT-Reg,inm",
       "signatureRaw": "ori reg1 reg2 val",
       "fields": [
         {
@@ -1437,13 +1437,13 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1461,7 +1461,7 @@
       "co": "000000",
       "cop": "100010",
       "nwords": 1,
-      "signature": "sub,reg,reg,reg",
+      "signature": "sub,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "sub reg1 reg2 reg3",
       "fields": [
         {
@@ -1472,19 +1472,19 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "reg3",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1502,7 +1502,7 @@
       "co": "000103",
       "cop": null,
       "nwords": 1,
-      "signature": "sw,reg,inm,(reg)",
+      "signature": "sw,INT-Reg,inm,(INT-Reg)",
       "signatureRaw": "sw reg1 val (reg2)",
       "fields": [
         {
@@ -1513,7 +1513,7 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1525,7 +1525,7 @@
         },
         {
           "name": "reg2",
-          "type": "(reg)",
+          "type": "(INT-Reg)",
           "startbit": 25,
           "stopbit": 21
         }
@@ -1537,7 +1537,7 @@
       "co": "000000",
       "cop": "100110",
       "nwords": 1,
-      "signature": "xor,reg,reg,reg",
+      "signature": "xor,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "xor reg1 reg2 reg3",
       "fields": [
         {
@@ -1548,19 +1548,19 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "reg3",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1578,7 +1578,7 @@
       "co": "001110",
       "cop": null,
       "nwords": 1,
-      "signature": "xori,reg,reg,inm",
+      "signature": "xori,INT-Reg,INT-Reg,inm",
       "signatureRaw": "xori reg1 reg2 val",
       "fields": [
         {
@@ -1589,13 +1589,13 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1613,7 +1613,7 @@
       "co": "001111",
       "cop": null,
       "nwords": 1,
-      "signature": "lui,reg,inm",
+      "signature": "lui,INT-Reg,inm",
       "signatureRaw": "lui reg1 val",
       "fields": [
         {
@@ -1624,7 +1624,7 @@
         },
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },
@@ -1642,18 +1642,18 @@
     {
       "name": "move",
       "nwords": 1,
-      "signature": "move,reg,reg",
+      "signature": "move,INT-Reg,INT-Reg",
       "signatureRaw": "move reg1 reg2",
       "fields": [
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         }
@@ -1663,18 +1663,18 @@
     {
       "name": "addi",
       "nwords": 1,
-      "signature": "addi,reg,reg,inm",
+      "signature": "addi,INT-Reg,INT-Reg,inm",
       "signatureRaw": "addi reg1 reg2 val",
       "fields": [
         {
           "name": "reg1",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         },
         {
           "name": "reg2",
-          "type": "reg",
+          "type": "INT-Reg",
           "startbit": 20,
           "stopbit": 16
         },

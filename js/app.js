@@ -111,124 +111,124 @@ var architecture = {components:[
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
     ]}*/
   ], instructions:[
-    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,reg,reg,reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "add reg1 reg2 reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2+reg3"},
-    {name: "addi", co: "001000", cop: null, nwords: 1, signature: "addi,reg,reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
+    {name: "addi", co: "001000", cop: null, nwords: 1, signature: "addi,INT-Reg,INT-Reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
       {name: "addi", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2+val"},
-    {name: "and", co: "000000", cop: "100100", nwords: 1, signature: "and,reg,reg,reg", signatureRaw: "and reg1 reg2 reg3", fields: [
+    {name: "and", co: "000000", cop: "100100", nwords: 1, signature: "and,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "and reg1 reg2 reg3", fields: [
       {name: "and", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2&reg3"},
-    {name: "andi", co: "001100", cop: null, nwords: 1, signature: "andi,reg,reg,inm", signatureRaw: "andi reg1 reg2 val", fields: [
+    {name: "andi", co: "001100", cop: null, nwords: 1, signature: "andi,INT-Reg,INT-Reg,inm", signatureRaw: "andi reg1 reg2 val", fields: [
       {name: "andi", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2&val"},
     {name: "b", co: "000100", cop: null, nwords: 1, signature: "b,inm", signatureRaw: "b val", fields: [
       {name: "b", type: "co", startbit: 31, stopbit: 26},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "PC=val"},
-    {name: "beq", co: "000100", cop: null, nwords: 1, signature: "beq,reg,reg,inm", signatureRaw: "beq reg1 reg2 val", fields: [
+    {name: "beq", co: "000100", cop: null, nwords: 1, signature: "beq,INT-Reg,INT-Reg,inm", signatureRaw: "beq reg1 reg2 val", fields: [
       {name: "beq", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "if(reg1 == reg2){PC=val}"},
-    {name: "bne", co: "000101", cop: null, nwords: 1, signature: "bne,reg,reg,inm", signatureRaw: "bne reg1 reg2 val", fields: [
+    {name: "bne", co: "000101", cop: null, nwords: 1, signature: "bne,INT-Reg,INT-Reg,inm", signatureRaw: "bne reg1 reg2 val", fields: [
       {name: "bne", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "if(reg1 != reg2){PC=val}"},
-    {name: "div", co: "000000", cop: "011010", nwords: 1, signature: "div,reg,reg,reg", signatureRaw: "div reg1 reg2 reg3", fields: [
+    {name: "div", co: "000000", cop: "011010", nwords: 1, signature: "div,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "div reg1 reg2 reg3", fields: [
       {name: "div", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2/reg3"},
-    {name: "lw", co: "000102", cop: null, nwords: 1, signature: "lw,reg,inm,(reg)", signatureRaw: "lw reg1 val (reg2)", fields: [
+    {name: "lw", co: "000102", cop: null, nwords: 1, signature: "lw,INT-Reg,inm,(INT-Reg)", signatureRaw: "lw reg1 val (reg2)", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "(INT-Reg)", startbit: 25, stopbit: 21},
     ], definition: "reg1=MP.w.(val+reg2)"},
-    {name: "mul", co: "011100", cop: "000010", nwords: 1, signature: "mul,reg,reg,reg", signatureRaw: "mul reg1 reg2 reg3", fields: [
+    {name: "mul", co: "011100", cop: "000010", nwords: 1, signature: "mul,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "mul reg1 reg2 reg3", fields: [
       {name: "mul", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2*reg3"},
     {name: "nop", co: "000000", cop: "000000", nwords: 1, signature: "nop", signatureRaw: "nop", fields: [
       {name: "nop", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: ""},
-    {name: "or", co: "000000", cop: "100101", nwords: 1, signature: "or,reg,reg,reg", signatureRaw: "or reg1 reg2 reg3", fields: [
+    {name: "or", co: "000000", cop: "100101", nwords: 1, signature: "or,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "or reg1 reg2 reg3", fields: [
       {name: "or", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2|reg3"},
-    {name: "ori", co: "001101", cop: null, nwords: 1, signature: "ori,reg,reg,inm", signatureRaw: "ori reg1 reg2 val", fields: [
+    {name: "ori", co: "001101", cop: null, nwords: 1, signature: "ori,INT-Reg,INT-Reg,inm", signatureRaw: "ori reg1 reg2 val", fields: [
       {name: "ori", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2|val"},
-    {name: "sub", co: "000000", cop: "100010", nwords: 1, signature: "sub,reg,reg,reg", signatureRaw: "sub reg1 reg2 reg3", fields: [
+    {name: "sub", co: "000000", cop: "100010", nwords: 1, signature: "sub,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "sub reg1 reg2 reg3", fields: [
       {name: "sub", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2-reg3"},
-    {name: "sw", co: "000103", cop: null, nwords: 1, signature: "sw,reg,inm,(reg)", signatureRaw: "sw reg1 val (reg2)", fields: [
+    {name: "sw", co: "000103", cop: null, nwords: 1, signature: "sw,INT-Reg,inm,(INT-Reg)", signatureRaw: "sw reg1 val (reg2)", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      {name: "reg2", type: "(reg)", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "(INT-Reg)", startbit: 25, stopbit: 21},
     ], definition: "MP.w.(val+reg2)=reg1"},
-    {name: "xor", co: "000000", cop: "100110", nwords: 1, signature: "xor,reg,reg,reg", signatureRaw: "xor reg1 reg2 reg3", fields: [
+    {name: "xor", co: "000000", cop: "100110", nwords: 1, signature: "xor,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "xor reg1 reg2 reg3", fields: [
       {name: "xor", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "reg", startbit: 15, stopbit: 11},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
+      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2^reg3"},
-    {name: "xori", co: "001110", cop: null, nwords: 1, signature: "xori,reg,reg,inm", signatureRaw: "xori reg1 reg2 val", fields: [
+    {name: "xori", co: "001110", cop: null, nwords: 1, signature: "xori,INT-Reg,INT-Reg,inm", signatureRaw: "xori reg1 reg2 val", fields: [
       {name: "xori", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2^val"},
-    {name: "lui", co: "001111", cop: null, nwords: 1, signature: "lui,reg,inm", signatureRaw: "lui reg1 val", fields: [
+    {name: "lui", co: "001111", cop: null, nwords: 1, signature: "lui,INT-Reg,inm", signatureRaw: "lui reg1 val", fields: [
       {name: "lui", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "reg", startbit: 20, stopbit: 16},
+      {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=val<<16"},*/
   ],pseudoinstructions:[
-    /*{name: "move", nwords: 1, signature: "move,reg,reg", signatureRaw: "move reg1 reg2", fields: [
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+    /*{name: "move", nwords: 1, signature: "move,INT-Reg,INT-Reg", signatureRaw: "move reg1 reg2", fields: [
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       ], definition: "add reg1 $r0 reg2;"},
-    {name: "addi", nwords: 1, signature: "addi,reg,reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
-      {name: "reg1", type: "reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "reg", startbit: 20, stopbit: 16},
+    {name: "addi", nwords: 1, signature: "addi,INT-Reg,INT-Reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
+      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
       ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add reg1 reg2 $at;"},*/
   ], directives:[
@@ -293,6 +293,7 @@ var compileError =[
   {mess1: "Address '", mess2: "' is not valid"},
   {mess1: "This field '", mess2: "' must start with a '('"},
   {mess1: "This field '", mess2: "' must end with a ')'"},
+  {mess1: "This field is too small to encode in binary '", mess2: ""},
 ];
 
 /*Indice de compilacion*/
@@ -1267,7 +1268,7 @@ window.app = new Vue({
           if(z == 1){
             signatureRaw = signatureRaw + ' ';
           }
-          if(this.formInstruction.typeField[z] == '(reg)'){
+          if(this.formInstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
             signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
             if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
               signatureRaw = signatureRaw + ' ';
@@ -1504,7 +1505,7 @@ window.app = new Vue({
               if(z == 1){
                 signatureRaw = signatureRaw + ' ';
               }
-              if(this.formInstruction.typeField[z] == '(reg)'){
+              if(this.formPseudoinstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
                 signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
                 if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
                   signatureRaw = signatureRaw + ' ';
@@ -1638,6 +1639,12 @@ window.app = new Vue({
         }
       }
 
+      var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition);
+
+      if(result == -1){
+        return;
+      }
+
       if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1687,7 +1694,7 @@ window.app = new Vue({
         if(z == 1){
           signatureRaw = signatureRaw + ' ';
         }
-        if(this.formPseudoinstruction.typeField[z] == '(reg)'){
+        if(this.formPseudoinstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
           signatureRaw = signatureRaw + '(' +this.formPseudoinstruction.nameField[z] + ')';
           if((z<this.formPseudoinstruction.numfields-1)){
             signatureRaw = signatureRaw + ' ';
@@ -1731,6 +1738,12 @@ window.app = new Vue({
         }
       }
 
+      var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition);
+
+      if(result == -1){
+        return;
+      }
+
       if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1762,7 +1775,7 @@ window.app = new Vue({
           if(z == 1){
             signatureRaw = signatureRaw + ' ';
           }
-          if(this.formPseudoinstruction.typeField[z] == '(reg)'){
+          if(this.formPseudoinstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
             signatureRaw = signatureRaw + '(' +this.formPseudoinstruction.nameField[z] + ')';
             if((z<this.formPseudoinstruction.numfields-1)){
               signatureRaw = signatureRaw + ' ';
@@ -1796,6 +1809,175 @@ window.app = new Vue({
       this.instructionFormPage = 1;
       
     },
+
+    pseudoDefValidator(name, definition){
+      console.log(definition)
+
+      var re = new RegExp("^\n+");
+      definition = definition.replace(re, "");
+      
+      re = new RegExp("\n+", "g");
+      definition = definition.replace(re, "");
+
+      console.log(definition)
+
+      re = /{([^}]*)}/g;
+      var code = re.exec(definition);
+
+      if(code != null){
+        while(code != null){
+          console.log(code)
+          var instructions = code[1].split(";");
+
+          for (var j = 0; j < instructions.length-1; j++){
+            re = new RegExp("^ +");
+            instructions[j] = instructions[j].replace(re, "");
+
+            re = new RegExp(" +", "g");
+            instructions[j] = instructions[j].replace(re, " ");
+
+            var instructionParts = instructions[j].split(" ");
+
+            console.log(instructionParts)
+
+            var found = false;
+            for (var i = 0; i < architecture.instructions.length; i++){
+              if(architecture.instructions[i].name == instructionParts[0]){
+                found = true;
+                var numFields = 0;
+                for (var z = 0; z < architecture.instructions[i].fields.length; z++){
+                  if(architecture.instructions[i].fields[z].type != "cop"){
+                    numFields++;
+                  }
+                  console.log(architecture.instructions[i].fields[z].type)
+                  if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
+                    var found = false;
+                    for (var a = 0; a < architecture.components.length; a++){
+                      for (var b = 0; b < architecture.components[a].elements.length; b++){
+                        if("$" + architecture.components[a].elements[b].name == instructionParts[z]){
+                          found = true;
+                        }
+                      }
+                    }
+
+                    for (var a = 0; a < architecture.pseudoinstructions.length; a++){
+                      if(architecture.pseudoinstructions[a].name == name){
+                        for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
+                          if(architecture.pseudoinstructions[a].fields[b].name == instructionParts[z]){
+                            found = true;
+                          }
+                        }
+                      }
+                    }
+
+                    if(!found){
+                      app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+                  }
+                }
+
+                if(numFields != instructionParts.length){
+                  app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
+                  app._data.type ='danger';
+                  app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                  return -1;
+                }
+              }
+            }
+            if(!found){
+              app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              return -1;
+            }
+          }
+
+          definition = definition.replace(code[0], "");
+
+          re = /{([^}]*)}/g;
+          code = re.exec(definition);
+        }
+      }
+      else{
+        var instructions = definition.split(";");
+
+        for (var j = 0; j < instructions.length-1; j++){
+          var re = new RegExp("^ +");
+          instructions[j] = instructions[j].replace(re, "");
+
+          re = new RegExp(" +", "g");
+          instructions[j] = instructions[j].replace(re, " ");
+
+          var instructionParts = instructions[j].split(" ");
+
+          var found = false;
+          for (var i = 0; i < architecture.instructions.length; i++){
+            if(architecture.instructions[i].name == instructionParts[0]){
+              found = true;
+              var numFields = 0;
+              for (var z = 0; z < architecture.instructions[i].fields.length; z++){
+                if(architecture.instructions[i].fields[z].type != "cop"){
+                  numFields++;
+                }
+                if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
+                  var found = false;
+                  for (var a = 0; a < architecture.components.length; a++){
+                    for (var b = 0; b < architecture.components[a].elements.length; b++){
+                      if("$" + architecture.components[a].elements[b].name == instructionParts[z]){
+                        found = true;
+                      }
+                    }
+                  }
+
+                  for (var a = 0; a < architecture.pseudoinstructions.length; a++){
+                    if(architecture.pseudoinstructions[a].name == name){
+                      for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
+                        if(architecture.pseudoinstructions[a].fields[b].name == instructionParts[z]){
+                          found = true;
+                        }
+                      }
+                    }
+                  }
+
+                  if(!found){
+                    app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+                    app._data.type ='danger';
+                    app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                    return -1;
+                  }
+                }
+              }
+
+              if(numFields != instructionParts.length){
+                app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
+                app._data.type ='danger';
+                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                return -1;
+              }
+            }
+          }
+          if(!found){
+            app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            return -1;
+          }
+        }
+      }
+      return 0;
+    },
+
+
+
+
+
+
+
+
+
 
 
     /*PAGINA DE DIRECTIVAS*/
@@ -2248,8 +2430,10 @@ window.app = new Vue({
           var signatureRawParts = architecture.pseudoinstructions[i].signatureRaw.split(' ');
           var definition = architecture.pseudoinstructions[i].definition;
 
+          console.log(definition)
+
           for (var j = 1; j < signatureRawParts.length; j++){
-            var re = new RegExp(signatureRawParts[j],"g");
+            re = new RegExp(signatureRawParts[j],"g");
             definition = definition.replace(re, instructionParts[j]);
           }
 
@@ -2312,7 +2496,7 @@ window.app = new Vue({
                 aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0)";
               }
               else{
-                aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "', ''," + line + ", false, 0)";
+                aux = "this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0)";
               }
               definition = definition.replace(instructions[j]+";", aux+";\n");
             }
@@ -2446,7 +2630,7 @@ window.app = new Vue({
 
           for(var j = 0; j < signatureParts.length; j++){
             switch(signatureParts[j]) {
-              case "reg":
+              case "INT-Reg":
                 token = instructionParts[j];
 
                 console.log(token)
@@ -2462,16 +2646,26 @@ window.app = new Vue({
                 }
 
                 var auxToken = token.substring(1,token.length);
+                var regNum = 0;
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                   if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                     for(var z = 0; z < architecture_hash.length; z++){
                       for(var w = 0; w < architecture.components[z].elements.length; w++){
-                        if(auxToken == architecture.components[z].elements[w].name){
+                        if(auxToken == architecture.components[z].elements[w].name && architecture.components[z].type == "integer"){
                           validReg = true;
+                          regNum++;
 
                           fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                          var reg = w;
+                          var reg = regNum;
+
+                          if(reg.toString(2).length > fieldsLength){
+                            this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           instruction = instruction + " " + token;
@@ -2483,12 +2677,130 @@ window.app = new Vue({
                           pending_instructions = [];
                           return -1;
                         }
+                        if(architecture.components[z].type == "integer"){
+                          regNum++;
+                        }
                       }
                     }
                   }
                 }
 
                 break;
+
+              case "FP-Reg":
+                token = instructionParts[j];
+
+                console.log(token)
+
+                var validReg = false;
+
+                if(token.charAt(0)!= '$'){
+                  this.compileError(3, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  
+                  instructions = [];
+                  pending_instructions = [];
+                  return -1;
+                }
+
+                var auxToken = token.substring(1,token.length);
+                var regNum = 0;
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                    for(var z = 0; z < architecture_hash.length; z++){
+                      for(var w = 0; w < architecture.components[z].elements.length; w++){
+                        if(auxToken == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point"){
+                          validReg = true;
+                          regNum++;
+
+                          fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                          var reg = regNum;
+
+                          if(reg.toString(2).length > fieldsLength){
+                            this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+
+                          binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                          instruction = instruction + " " + token;
+                        }
+                        else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                          this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
+                        if(architecture.components[z].type == "floating point"){
+                          regNum++;
+                        }
+                      }
+                    }
+                  }
+                }
+
+                break;
+
+              case "Ctrl-Reg":
+                token = instructionParts[j];
+
+                console.log(token)
+
+                var validReg = false;
+
+                if(token.charAt(0)!= '$'){
+                  this.compileError(3, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  
+                  instructions = [];
+                  pending_instructions = [];
+                  return -1;
+                }
+
+                var auxToken = token.substring(1,token.length);
+                var regNum = 0;
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                    for(var z = 0; z < architecture_hash.length; z++){
+                      for(var w = 0; w < architecture.components[z].elements.length; w++){
+                        if(auxToken == architecture.components[z].elements[w].name && architecture.components[z].type == "control"){
+                          validReg = true;
+                          regNum++;
+
+                          fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                          var reg = regNum;
+
+                          if(reg.toString(2).length > fieldsLength){
+                            this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+
+                          binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                          instruction = instruction + " " + token;
+                        }
+                        else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                          this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
+                        if(architecture.components[z].type == "control"){
+                          regNum++;
+                        }
+                      }
+                    }
+                  }
+                }
+
+                break;
+
               case "inm":
                 token = instructionParts[j];
 
@@ -2670,7 +2982,7 @@ window.app = new Vue({
 
                 break;
 
-              case "(reg)":
+              case "(INT-Reg)":
                 token = instructionParts[j];
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
@@ -2698,15 +3010,24 @@ window.app = new Vue({
                       var match = re.exec(token);
 
                       var auxToken = match[0].substring(1,match[0].length-1);
+                      var regNum = 0;
 
                       validReg = false;
 
                       for(var z = 0; z < architecture_hash.length; z++){
                         for(var w = 0; w < architecture.components[z].elements.length; w++){
-                          if(auxToken == "$" + architecture.components[z].elements[w].name){
+                          if(auxToken == "$" + architecture.components[z].elements[w].name && architecture.components[z].type == "integer"){
                             validReg = true;
                             fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                            var reg = w;
+                            var reg = regNum;
+
+                            if(reg.toString(2).length > fieldsLength){
+                              this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                              instructions = [];
+                              pending_instructions = [];
+                              return -1;
+                            }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                             instruction = instruction + " " + token;
@@ -2717,6 +3038,145 @@ window.app = new Vue({
                             instructions = [];
                             pending_instructions = [];
                             return -1;
+                          }
+                          if(architecture.components[z].type == "integer"){
+                            regNum++;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                break;
+
+              case "(FP-Reg)":
+                token = instructionParts[j];
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
+                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                    if(token.charAt(0) != '('){
+                      this.compileError(10, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      
+                      instructions = [];
+                      pending_instructions = [];
+                      return -1;
+                    }
+
+                    if(token.charAt(token.length-1) != ')'){
+                      this.compileError(11, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      
+                      instructions = [];
+                      pending_instructions = [];
+                      return -1;
+                    }
+                    
+                    re = /\((.*?)\)/;
+                    if (token.search(re) != -1){
+                      var match = re.exec(token);
+
+                      var auxToken = match[0].substring(1,match[0].length-1);
+                      var regNum = 0;
+
+                      validReg = false;
+
+                      for(var z = 0; z < architecture_hash.length; z++){
+                        for(var w = 0; w < architecture.components[z].elements.length; w++){
+                          if(auxToken == "$" + architecture.components[z].elements[w].name && architecture.components[z].type == "floating point"){
+                            validReg = true;
+                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                            var reg = regNum;
+
+                            if(reg.toString(2).length > fieldsLength){
+                              this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                              instructions = [];
+                              pending_instructions = [];
+                              return -1;
+                            }
+
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                            instruction = instruction + " " + token;
+                          }
+                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                            this.compileError(4, match[0], textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+                          if(architecture.components[z].type == "floating point"){
+                            regNum++;
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+
+                break;
+
+              case "(Ctrl-Reg)":
+                token = instructionParts[j];
+
+                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                  if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
+                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                    if(token.charAt(0) != '('){
+                      this.compileError(10, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      
+                      instructions = [];
+                      pending_instructions = [];
+                      return -1;
+                    }
+
+                    if(token.charAt(token.length-1) != ')'){
+                      this.compileError(11, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      
+                      instructions = [];
+                      pending_instructions = [];
+                      return -1;
+                    }
+                    
+                    re = /\((.*?)\)/;
+                    if (token.search(re) != -1){
+                      var match = re.exec(token);
+
+                      var auxToken = match[0].substring(1,match[0].length-1);
+                      var regNum = 0;
+
+                      validReg = false;
+
+                      for(var z = 0; z < architecture_hash.length; z++){
+                        for(var w = 0; w < architecture.components[z].elements.length; w++){
+                          if(auxToken == "$" + architecture.components[z].elements[w].name && architecture.components[z].type == "control"){
+                            validReg = true;
+                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                            var reg = regNum;
+
+                            if(reg.toString(2).length > fieldsLength){
+                              this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                              instructions = [];
+                              pending_instructions = [];
+                              return -1;
+                            }
+
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                            instruction = instruction + " " + token;
+                          }
+                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                            this.compileError(4, match[0], textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+                          if(architecture.components[z].type == "control"){
+                            regNum++;
                           }
                         }
                       }
@@ -3141,7 +3601,7 @@ window.app = new Vue({
       /*Replaza los valores por el nombre de los registros*/
       for (var i = 1; i < signatureRawParts.length; i++){
         var re = new RegExp(signatureRawParts[i],"g");
-        if(signatureParts[i] == "reg"){
+        if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "Ctrl-Reg"){
           auxDef = auxDef.replace(re, instructionExecParts[i].substring(1, instructionExecParts[i].length));
         }
         else{
