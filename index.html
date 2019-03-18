@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
 
     <!-- Required scripts -->
     <script src="https://unpkg.com/vue"></script>
@@ -33,6 +34,17 @@
     <div id="app">
       <template>
         <header>
+
+          <!-- Cargando -->
+          <div class="spinner" style="text-align: center; display:none;" id="spinner">
+            <div style="display: inline-block;">
+              <b-spinner variant="primary" style="width: 3rem; height: 3rem;"/>
+            </div>
+            <div>
+              <span class="text-primary"><strong>Loading...</strong></span>
+            </div>
+          </div>
+
           <!-- 1 navbar -->
           <b-navbar toggleable="sm" class="header">
 
@@ -41,10 +53,64 @@
             <b-navbar-brand href="#" style="color: #2196F3;" id="popoverInfo"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
 
             <b-popover target="popoverInfo" triggers="click blur">
-              <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="showNotification" @click=""></span> Show Notifications</b-button>
-              <br>
-              <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="showNotification" @click=""></span> About as</b-button>
+              <div class="col-lg-12 col-sm-12">
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications></span> Show Notifications</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about></span> About as</b-button>
+              </div>
             </b-popover>
+
+            <b-modal id="notifications" title="Notifications" hide-footer scrollable>
+              <b-alert show :variant="item.color" v-for="item in notifications">
+                <h6>{{item.mess}}</h6>
+                <h6>{{item.time}}   -   {{item.date}}</h6>
+              </b-alert>
+            </b-modal>
+
+            <b-modal id="about" hide-footer scrollable>
+              <b-card-group>
+                <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>
+                  <b-card-text>
+                    <div style="height: 50px;">
+                      <h6>Félix García Carballeira</h6>
+                    </div>
+                    <hr>
+                    <a><span class="fab fa-linkedin-square"></span> linkedin</a>
+                    <hr>
+                    <a href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira'><span class="fab fa-researchgate"></span> r-gate</a>
+                    <hr>
+                    <a><span class="fab fa-github"></span> github</a>
+                  </b-card-text>
+                </b-card>
+
+                <b-card img-src="./images/author_acaldero.png" img-alt="author_acaldero" img-top>
+                  <b-card-text>
+                    <div style="height: 50px;">
+                      <h6>Alejandro Calderón Mateos</h6>
+                    </div>
+                    <hr>
+                    <a href='https://www.linkedin.com/in/alejandro-calderon-mateos/'><span class="fab fa-linkedin-square"></span> linkedin</a>
+                    <hr>
+                    <a href='https://www.researchgate.net/profile/Alejandro_Calderon2'><span class="fab fa-researchgate"></span> r-gate</a>
+                    <hr>
+                    <a href='https://github.com/acaldero/wepsim'><span class="fab fa-github"></span> github</a>
+                  </b-card-text>
+                </b-card>
+
+                <b-card img-src="./images/author_dcamarmas.png" img-alt="author_dcamarmas" img-top>
+                  <b-card-text>
+                    <div style="height: 50px;">
+                      <h6>Diego Camarmas Alonso</h6>
+                    </div>
+                    <hr>
+                    <a><span class="fab fa-linkedin-square"></span> linkedin</a>
+                    <hr>
+                    <a><span class="fab fa-researchgate"></span> r-gate</a>
+                    <hr>
+                    <a href='https://github.com/dcamarmas'><span class="fab fa-github"></span> github</a>
+                  </b-card-text>
+                </b-card>
+              </b-card-group>
+            </b-modal>
 
             <b-navbar-nav>
                 <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>

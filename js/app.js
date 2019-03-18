@@ -296,6 +296,9 @@ var compileError =[
   {mess1: "This field is too small to encode in binary '", mess2: ""},
 ];
 
+/*Notificaciones mostradas*/
+var notifications = [];
+
 /*Indice de compilacion*/
 var tokenIndex = 0;
 
@@ -326,6 +329,9 @@ window.app = new Vue({
     /*ALERTA MODAL*/
     dismissSecsMod: 3,
     dismissCountDownMod: 0,
+
+    /*Todas las alertas*/
+    notifications: notifications,
 
     /*PAGINA CARGA ARQUITECTURA*/
     /*Configuraciones Disponibles*/
@@ -629,6 +635,7 @@ window.app = new Vue({
 
     /*Carga la arquitectura seleccionada*/
     load_arch_select(e){
+      $("#spinner").show();
       $.getJSON('architecture/'+e+'.json', function(cfg){
         architecture = cfg;
         app._data.architecture = architecture;
@@ -649,15 +656,20 @@ window.app = new Vue({
         $("#load_arch").hide();
         $("#load_menu_arch").hide();
         $("#view_components").show();
+        $("#spinner").hide();
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
 
     /*Lectura del JSON de la arquitectura seleccionada*/
     read_arch(e){
+      $("#spinner").show();
+
       var file;
       var reader;
       var files = document.getElementById('arch_file').files;
@@ -688,15 +700,19 @@ window.app = new Vue({
         $("#load_arch").hide();
         $("#load_menu_arch").hide();
         $("#view_components").show();
+        $("#spinner").hide();
         
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
-      }
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});       }
     },
 
     /*Guarda la arquitectura actual en un JSON*/
     arch_save(){
+      $("#spinner").show();
+
       var textToWrite = JSON.stringify(architecture, null, 2);
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
       var fileNameToSaveAs;
@@ -720,9 +736,13 @@ window.app = new Vue({
       document.body.appendChild(downloadLink);
 
       downloadLink.click();
+
+      $("#spinner").hide();
       app._data.alertMessaje = 'Save architecture';
       app._data.type ='success';
       app._data.dismissCountDown = app._data.dismissSecs;
+      var date = new Date();
+      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
 
     /*Modal de alerta de reset*/
@@ -734,6 +754,7 @@ window.app = new Vue({
 
     /*Resetea la arquitectura*/
     resetArchitecture(arch){
+      $("#spinner").show();
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.components = cfg.components;
         app._data.architecture = architecture;
@@ -744,16 +765,21 @@ window.app = new Vue({
           app._data.architecture_hash = architecture_hash;
         }
 
+        $("#spinner").hide();
         app._data.alertMessaje = 'The architecture has been reset correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
 
     /*Comprueba que estan todos los campos del formulario de nuevo componente*/
     newComponentVerify(evt){
+      $("#spinner").show();
       evt.preventDefault();
       if (!this.formArchitecture.name || !this.formArchitecture.type) {
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -788,7 +814,7 @@ window.app = new Vue({
       this.formArchitecture.name='';
       this.formArchitecture.type='';
       this.formArchitecture.precision='';
-    
+      $("#spinner").hide();
     },
 
     /*Muestra el modal para editar un componente*/
@@ -805,8 +831,11 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar component*/
     editCompVerify(evt, comp){
+      $("#spinner").show();
+
       evt.preventDefault();
       if (!this.formArchitecture.name) {
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -835,6 +864,7 @@ window.app = new Vue({
         }
       }
       this.formArchitecture.name='';
+      $("#spinner").hide();
     },
 
     /*Muestra el modal de confirmacion de borrado de un componente*/
@@ -878,6 +908,7 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de nuevo elemento*/
     newElementVerify(evt, comp){
+      $("#spinner").show();
       evt.preventDefault();
       if (!this.formArchitecture.name) {
         app._data.alertMessaje = 'Please complete all fields';
@@ -885,11 +916,13 @@ window.app = new Vue({
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } else {
         if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
+          $("#spinner").hide();
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
         }
         else if(isNaN(this.formArchitecture.defValue)){
+          $("#spinner").hide();
           app._data.alertMessaje = 'The default value must be a number';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -905,6 +938,7 @@ window.app = new Vue({
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if(this.formArchitecture.name == architecture.components[i].elements[j].name){
+            $("#spinner").hide();
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -969,6 +1003,7 @@ window.app = new Vue({
           break;
         }
       }
+      $("#spinner").hide();
     },
     
     /*Muestra el modal de editar un elemento*/
@@ -1003,13 +1038,16 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar elemento*/
     editElementVerify(evt, comp){
+      $("#spinner").show();
       evt.preventDefault();
       if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } 
       else if(isNaN(this.formArchitecture.defValue)){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The default value must be a number';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1024,6 +1062,7 @@ window.app = new Vue({
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
+            $("#spinner").hide();
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1079,6 +1118,7 @@ window.app = new Vue({
       this.formArchitecture.properties=[];
       this.formArchitecture.simple1='';
       this.formArchitecture.simple2='';
+      $("#spinner").hide();
     },
 
     /*Muestra el modal para confirmar el borrado*/
@@ -1102,6 +1142,7 @@ window.app = new Vue({
     /*PAGINA DE INSTRUCCIONES*/
     /*Visualizacion del modal con los campos de la instruccion*/
     viewFielsInst(elem, co, cop, button){
+      $("#spinner").show();
       this.modalViewFields.title = "Fields of " + elem;
       this.modalViewFields.element = elem;
       for (var i = 0; i < architecture.instructions.length; i++) {
@@ -1125,6 +1166,7 @@ window.app = new Vue({
         }
       }
 
+      $("#spinner").hide();
       this.$root.$emit('bv::show::modal', 'modalViewFields', button);
     },
 
@@ -1136,18 +1178,23 @@ window.app = new Vue({
     },
 
     resetInstructions(arch){
+      $("#spinner").show();
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.instructions = cfg.instructions;
         app._data.architecture = architecture;
 
+        $("#spinner").hide();
         app._data.alertMessaje = 'The instruction set has been reset correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
 
     /*Comprueba que estan todos los campos del formulario de nueva instruccion*/
     newInstVerify(evt){
+      $("#spinner").show();
       evt.preventDefault();
 
       var empty = 0;
@@ -1158,6 +1205,7 @@ window.app = new Vue({
           }
           else{
             if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
+              $("#spinner").hide();
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
               app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1166,6 +1214,7 @@ window.app = new Vue({
 
             for (var i = 0; i < this.formInstruction.cop.length; i++) {
               if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
+                $("#spinner").hide();
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
                 app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1179,6 +1228,7 @@ window.app = new Vue({
       for (var i = 0; i < this.formInstruction.co.length; i++) {
         console.log(this.formInstruction.co.charAt(i))
         if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+          $("#spinner").hide();
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1193,21 +1243,25 @@ window.app = new Vue({
       }
 
       if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || empty == 1) {
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } 
       else if(isNaN(this.formInstruction.co)){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The field co must be numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
       else if(isNaN(this.formInstruction.cop)){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The field cop must be numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1222,6 +1276,7 @@ window.app = new Vue({
       for (var i = 0; i < architecture.instructions.length; i++) {
         if(this.formInstruction.co == architecture.instructions[i].co){
           if((!this.formInstruction.cop)){
+            $("#spinner").hide();
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1232,6 +1287,7 @@ window.app = new Vue({
 
       for (var i = 0; i < architecture.instructions.length; i++) {
         if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
+          $("#spinner").hide();
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1312,6 +1368,7 @@ window.app = new Vue({
       this.formInstruction.definition='';
       this.formInstruction.assignedCop=false;
       this.instructionFormPage = 1;
+      $("#spinner").hide();
       
     },
 
@@ -1360,6 +1417,7 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar instruccion*/
     editInstVerify(evt, inst, co, cop){
+      $("#spinner").show();
       evt.preventDefault();
 
       var empty = 0;
@@ -1370,6 +1428,7 @@ window.app = new Vue({
           }
           else{
             if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
+              $("#spinner").hide();
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
               app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1378,6 +1437,7 @@ window.app = new Vue({
 
             for (var i = 0; i < this.formInstruction.cop.length; i++) {
               if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
+                $("#spinner").hide();
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
                 app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1390,6 +1450,7 @@ window.app = new Vue({
 
       for (var i = 0; i < this.formInstruction.co.length; i++) {
         if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+          $("#spinner").hide();
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1403,21 +1464,25 @@ window.app = new Vue({
         }
       }
       if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || empty == 1) {
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
       else if(isNaN(this.formInstruction.co)){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The field co must be numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
       else if(isNaN(this.formInstruction.cop)){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The field cop must be numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1440,6 +1505,7 @@ window.app = new Vue({
       for (var i = 0; i < architecture.instructions.length; i++) {
         if((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
           if(((!this.formInstruction.cop) || (exCop != true))){
+            $("#spinner").hide();
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1450,6 +1516,7 @@ window.app = new Vue({
 
       for (var i = 0; i < architecture.instructions.length && exCop == true ; i++) {
         if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
+          $("#spinner").hide();
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1550,6 +1617,7 @@ window.app = new Vue({
       this.formInstruction.stopBitField=[];
       this.formInstruction.definition='';
       this.instructionFormPage = 1;
+      $("#spinner").hide();
     },
 
     /*PAGINA DE PSEUDOINSTRUCCIONES*/
@@ -1581,13 +1649,17 @@ window.app = new Vue({
     },
 
     resetPseudoinstructionsModal(arch){
+      $("#spinner").show();
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.pseudoinstructions = cfg.pseudoinstructions;
         app._data.architecture = architecture;
 
+        $("#spinner").hide();
         app._data.alertMessaje = 'The pseudoinstruction set has been reset correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
 
@@ -1629,6 +1701,7 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar instruccion*/
     editPseudoinstVerify(evt, inst, index){
+      $("#spinner").show();
       evt.preventDefault();
 
       var vacio = 0;
@@ -1646,6 +1719,7 @@ window.app = new Vue({
       }
 
       if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1724,10 +1798,12 @@ window.app = new Vue({
       this.formPseudoinstruction.stopBitField=[];
       this.formPseudoinstruction.definition='';
       this.instructionFormPage = 1;
+      $("#spinner").hide();
     },
 
     /*Comprueba que estan todos los campos del formulario de nueva pseudoinstruccion*/
     newPseudoinstVerify(evt){
+      $("#spinner").show();
       evt.preventDefault();
 
       var vacio = 0;
@@ -1745,6 +1821,7 @@ window.app = new Vue({
       }
 
       if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1807,10 +1884,11 @@ window.app = new Vue({
       this.formPseudoinstruction.definition='';
       this.formPseudoinstruction.assignedCop=false;
       this.instructionFormPage = 1;
-      
+      $("#spinner").hide();
     },
 
     pseudoDefValidator(name, definition){
+      $("#spinner").show();
       console.log(definition)
 
       var re = new RegExp("^\n+");
@@ -1871,6 +1949,7 @@ window.app = new Vue({
                     }
 
                     if(!found){
+                      $("#spinner").hide();
                       app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                       app._data.type ='danger';
                       app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1880,6 +1959,7 @@ window.app = new Vue({
                 }
 
                 if(numFields != instructionParts.length){
+                  $("#spinner").hide();
                   app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                   app._data.type ='danger';
                   app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1888,6 +1968,7 @@ window.app = new Vue({
               }
             }
             if(!found){
+              $("#spinner").hide();
               app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
               app._data.type ='danger';
               app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1943,6 +2024,7 @@ window.app = new Vue({
                   }
 
                   if(!found){
+                    $("#spinner").hide();
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type ='danger';
                     app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1952,6 +2034,7 @@ window.app = new Vue({
               }
 
               if(numFields != instructionParts.length){
+                $("#spinner").hide();
                 app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                 app._data.type ='danger';
                 app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1960,6 +2043,7 @@ window.app = new Vue({
             }
           }
           if(!found){
+            $("#spinner").hide();
             app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1967,6 +2051,7 @@ window.app = new Vue({
           }
         }
       }
+      $("#spinner").hide();
       return 0;
     },
 
@@ -1996,6 +2081,8 @@ window.app = new Vue({
         app._data.alertMessaje = 'The directive set has been reset correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
 
@@ -2124,6 +2211,7 @@ window.app = new Vue({
     /*PAGINA ENSAMBLADOR*/
     /*Funciones de carga y descarga de ensamblador*/
     read_assembly(e){
+      $("#spinner").show();
       var file;
       var reader;
       var files = document.getElementById('assembly_file').files;
@@ -2138,6 +2226,7 @@ window.app = new Vue({
       function onFileLoaded(event) {
         code_assembly = event.currentTarget.result;
       }
+      $("#spinner").hide();
     },
 
     assembly_update(){
@@ -2145,6 +2234,7 @@ window.app = new Vue({
     },
 
     assembly_save(){
+      $("#spinner").show();
       var textToWrite = textarea_assembly_editor.getValue();
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
       var fileNameToSaveAs;
@@ -2168,6 +2258,7 @@ window.app = new Vue({
       document.body.appendChild(downloadLink);
 
       downloadLink.click();
+      $("#spinner").hide();
     },
 
     /*Lee un token*/
@@ -2224,6 +2315,7 @@ window.app = new Vue({
 
     /*Compilador*/
     assembly_compiler(){
+      $("#spinner").show();
       instructions = [];
       pending_instructions = [];
 
@@ -2233,9 +2325,12 @@ window.app = new Vue({
       this.first_token();
 
       if(this.get_token() == null){
+        $("#spinner").hide();
         app._data.alertMessaje = 'Please enter the assembly code before compiling';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         
         return;
       }
@@ -2257,7 +2352,7 @@ window.app = new Vue({
         if(token.search(/\:$/) != -1){
           if(token.length == 1){
             this.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
+            $("#spinner").hide();
             instructions = [];
             pending_instructions = [];
             return;
@@ -2266,7 +2361,7 @@ window.app = new Vue({
           for(var i = 0; i < instructions.length; i++){
             if(instructions[i].Label == token.substring(0,token.length-1)){
               this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
+              $("#spinner").hide();
               instructions = [];
               pending_instructions = [];
               return;
@@ -2276,7 +2371,7 @@ window.app = new Vue({
           for(var i = 0; i < pending_instructions.length; i++){
             if(pending_instructions[i].Label == token.substring(0,token.length-1)){
               this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
+              $("#spinner").hide();
               instructions = [];
               pending_instructions = [];
               return;
@@ -2357,7 +2452,7 @@ window.app = new Vue({
             existsInstruction = false;
             tokenIndex = 0;
             address = 0;
-
+            $("#spinner").hide();
             instructions = [];
             pending_instructions = [];
             return;
@@ -2367,7 +2462,7 @@ window.app = new Vue({
             existsInstruction = false;
             tokenIndex = 0;
             address = 0;
-
+            $("#spinner").hide();
             instructions = [];
             pending_instructions = [];
             return;
@@ -2385,6 +2480,7 @@ window.app = new Vue({
         var result = this.instruction_compiler(pending_instructions[p].instruction, pending_instructions[p].instruction, pending_instructions[p].Label, pending_instructions[p].line, true, pending_instructions[p].address);
       
         if(result == -1){
+          $("#spinner").hide();
           return;
         }
 
@@ -2393,12 +2489,15 @@ window.app = new Vue({
       app._data.alertMessaje = 'Compilation completed successfully';
       app._data.type ='success';
       app._data.dismissCountDown = app._data.dismissSecs;
+      var date = new Date();
+      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
       app._data.instructions = instructions;
       
       this.reset();
 
       address = 0;
+      $("#spinner").hide();
     },
 
 
@@ -3537,25 +3636,34 @@ window.app = new Vue({
     /*FUNCIONES DE EJECUCION*/
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
-
+      $("#spinner").show();
       if(instructions.length == 0){
+        $("#spinner").hide();
         app._data.alertMessaje = 'No instructions in memory';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
       }
 
       /*Verifica que el programa no ha finalizado ya*/
       if(executionIndex < -1){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The program has finished';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
       }
       else if(executionIndex == -1){
+        $("#spinner").hide();
         app._data.alertMessaje = 'The program has finished with errors';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
       }
 
@@ -3693,9 +3801,12 @@ window.app = new Vue({
           error = 1;
           instructions[executionIndex]._rowVariant = 'danger';
           executionIndex = -1;
+          $("#spinner").hide();
           app._data.alertMessaje = 'Syntax Error';
           app._data.type ='danger';
           app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         }
       }
       
@@ -3719,9 +3830,12 @@ window.app = new Vue({
     
       if(executionIndex >= instructions.length){
         executionIndex = -2;
+        $("#spinner").hide();
         app._data.alertMessaje = 'The execution of the program has finished';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       }
       else{
         if(error != 1){
@@ -3732,6 +3846,7 @@ window.app = new Vue({
 
     /*Funcion que ejecuta todo el programa*/
     executeProgram(){
+      $("#spinner").show();
       var iter1 = 1;
       while(executionIndex >= 0){
         if(instructions[executionIndex].Break == true && iter1 == 0){
@@ -3742,10 +3857,12 @@ window.app = new Vue({
           iter1 = 0;
         }
       }
+      $("#spinner").hide();
     },
 
     /*Funcion que resetea la ejecucion*/
     reset(){
+      $("#spinner").show();
       for (var i = 0; i < instructions.length; i++) {
         instructions[i]._rowVariant = '';
       }
@@ -3788,6 +3905,7 @@ window.app = new Vue({
           memory[i].Binary[j].Bin = memory[i].Binary[j].DefBin;
         }
       }
+      $("#spinner").hide();
     },
 
     /*Funcion que lee de los registro*/
@@ -3797,6 +3915,8 @@ window.app = new Vue({
         app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         executionIndex = -1;
         return;
       }
@@ -3817,6 +3937,8 @@ window.app = new Vue({
           app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
           app._data.type ='danger';
           app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           executionIndex = -1;
           return;
         }
@@ -3840,6 +3962,8 @@ window.app = new Vue({
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type ='danger';
             app._data.dismissCountDown = app._data.dismissSecs;
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
 
@@ -3862,6 +3986,8 @@ window.app = new Vue({
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type ='danger';
             app._data.dismissCountDown = app._data.dismissSecs;
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
           architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
