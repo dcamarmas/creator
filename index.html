@@ -38,7 +38,13 @@
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand href="#" style="color: #2196F3;"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
+            <b-navbar-brand href="#" style="color: #2196F3;" id="popoverInfo"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
+
+            <b-popover target="popoverInfo" triggers="click blur">
+              <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="showNotification" @click=""></span> Show Notifications</b-button>
+              <br>
+              <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="showNotification" @click=""></span> About as</b-button>
+            </b-popover>
 
             <b-navbar-nav>
                 <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>
@@ -139,7 +145,7 @@
                     </div>
 
                     <div class="compMenu">
-                      <b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;"></b-form-input>
+                      <b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;" disabled></b-form-input>
                     </div>
                   </div>
 
@@ -475,10 +481,14 @@
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
                                   <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
-                                    <option value="reg">reg</option>
+                                    <option value="INT-Reg">INT-Reg</option>
+                                    <option value="FP-Reg">FP-Reg</option>
+                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
                                     <option value="inm">inm</option>
                                     <option value="address">address</option>
-                                    <option value="(reg)">reg-add</option>
+                                    <option value="(INT-Reg)">INT-Reg-add</option>
+                                    <option value="(FP-Reg)">FP-Reg-add</option>
+                                    <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                     <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                   </b-form-select>
                                   <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -589,10 +599,14 @@
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
                                 <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
-                                  <option value="reg">reg</option>
+                                  <option value="INT-Reg">INT-Reg</option>
+                                  <option value="FP-Reg">FP-Reg</option>
+                                  <option value="Ctrl-Reg">Ctrl-Reg</option>
                                   <option value="inm">inm</option>
                                   <option value="address">address</option>
-                                  <option value="(reg)">reg-addr</option>
+                                  <option value="(INT-Reg)">INT-Reg-add</option>
+                                  <option value="(FP-Reg)">FP-Reg-add</option>
+                                  <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                   <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                 </b-form-select>
                                 <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -791,10 +805,14 @@
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
                                   <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
-                                    <option value="reg">reg</option>
+                                    <option value="INT-Reg">INT-Reg</option>
+                                    <option value="FP-Reg">FP-Reg</option>
+                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
                                     <option value="inm">inm</option>
                                     <option value="address">address</option>
-                                    <option value="(reg)">reg-addr</option>
+                                    <option value="(INT-Reg)">INT-Reg-add</option>
+                                    <option value="(FP-Reg)">FP-Reg-add</option>
+                                    <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                   </b-form-select>
                                 </b-form-group>
                               </div>
@@ -888,10 +906,14 @@
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
                                 <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
-                                  <option value="reg">reg</option>
+                                  <option value="INT-Reg">INT-Reg</option>
+                                  <option value="FP-Reg">FP-Reg</option>
+                                  <option value="Ctrl-Reg">Ctrl-Reg</option>
                                   <option value="inm">inm</option>
                                   <option value="address">address</option>
-                                  <option value="(reg)">reg-addr</option>
+                                  <option value="(INT-Reg)">INT-Reg-add</option>
+                                  <option value="(FP-Reg)">FP-Reg-add</option>
+                                  <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                 </b-form-select>
                               </b-form-group>
                             </div>
