@@ -32,6 +32,42 @@ hr {
   opacity: 1;
 }
 
+@media only screen and (min-width: 540px) and (max-width: 960px){
+  .spinner {
+    display: block;
+    position: fixed;
+    z-index: 2;
+    top: 45%;
+    right: 44%;
+    margin-top: -..px;
+    margin-right: -..px;
+    background: white; 
+    border: 1px solid #A9A9A9;
+    -moz-border-radius: 9px;
+    -webkit-border-radius:9px;
+    padding: 10px;
+    opacity: 1;
+  }
+}
+
+@media only screen and (max-width: 540px) {
+  .spinner {
+    display: block;
+    position: fixed;
+    z-index: 2;
+    top: 50%;
+    right: 39%;
+    margin-top: -..px;
+    margin-right: -..px;
+    background: white; 
+    border: 1px solid #A9A9A9;
+    -moz-border-radius: 9px;
+    -webkit-border-radius:9px;
+    padding: 10px;
+    opacity: 1;
+  }
+}
+
 .buttonBackground{
   background-color: white;
 }
