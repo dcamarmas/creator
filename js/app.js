@@ -1715,6 +1715,7 @@ window.app = new Vue({
       var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition);
 
       if(result == -1){
+        $(".loading").hide();
         return;
       }
 
@@ -1817,6 +1818,7 @@ window.app = new Vue({
       var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition);
 
       if(result == -1){
+        $(".loading").hide();
         return;
       }
 
@@ -1888,7 +1890,6 @@ window.app = new Vue({
     },
 
     pseudoDefValidator(name, definition){
-      $(".loading").show();
       console.log(definition)
 
       var re = new RegExp("^\n+");
@@ -1927,7 +1928,7 @@ window.app = new Vue({
                   if(architecture.instructions[i].fields[z].type != "cop"){
                     numFields++;
                   }
-                  console.log(architecture.instructions[i].fields[z].type)
+
                   if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                     var found = false;
                     for (var a = 0; a < architecture.components.length; a++){
@@ -1949,17 +1950,123 @@ window.app = new Vue({
                     }
 
                     if(!found){
-                      $(".loading").hide();
                       app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                       app._data.type ='danger';
                       app._data.dismissCountDownMod = app._data.dismissSecsMod;
                       return -1;
                     }
                   }
+
+                  if(architecture.instructions[i].fields[z].type == "inm"){
+                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+
+                    if(instructionParts[z].match(/^0x/)){
+                      var value = instructionParts[z].split("x");
+                      console.log(isNaN(parseInt(instructionParts[z], 16)))
+                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
+                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+
+                      if(value[1].length*4 > fieldsLength){
+                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+                    }
+                    else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
+                      if(isNaN(parseFloat(instructionParts[z])) == true){
+                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+
+                      if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
+                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+                    }
+                    else if(isNaN(parseInt(instructionParts[z]))){
+
+                    }
+                    else {
+                      var numAux = parseInt(instructionParts[z], 10);
+                      if(isNaN(parseInt(instructionParts[z])) == true){
+                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+
+                      if((numAux.toString(2)).length > fieldsLength){
+                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+                    }
+                  }
+
+                  if(architecture.instructions[i].fields[z].type == "address"){
+                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+
+                    if(instructionParts[z].match(/^0x/)){
+                      var value = instructionParts[z].split("x");
+                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
+                        app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+
+                      if(value[1].length*4 > fieldsLength){
+                        app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
+                        app._data.type ='danger';
+                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        return -1;
+                      }
+
+                      
+                    }
+                  }
+
+                  if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
+                    var found = false;
+
+                    for (var a = 0; a < architecture.components.length; a++){
+                      for (var b = 0; b < architecture.components[a].elements.length; b++){
+                        if("($" + architecture.components[a].elements[b].name + ")" == instructionParts[z]){
+                          found = true;
+                        }
+                      }
+                    }
+
+                    for (var a = 0; a < architecture.pseudoinstructions.length; a++){
+                      if(architecture.pseudoinstructions[a].name == name){
+                        for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
+                          if("(" + architecture.pseudoinstructions[a].fields[b].name + ")" == instructionParts[z]){
+                            found = true;
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  if(!found){
+                    app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+                    app._data.type ='danger';
+                    app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                    return -1;
+                  }
                 }
 
                 if(numFields != instructionParts.length){
-                  $(".loading").hide();
                   app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                   app._data.type ='danger';
                   app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1968,7 +2075,6 @@ window.app = new Vue({
               }
             }
             if(!found){
-              $(".loading").hide();
               app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
               app._data.type ='danger';
               app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -1984,6 +2090,14 @@ window.app = new Vue({
       }
       else{
         var instructions = definition.split(";");
+        console.log(instructions.length)
+
+        if(instructions.length == 1){
+          app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          return -1;
+        }
 
         for (var j = 0; j < instructions.length-1; j++){
           var re = new RegExp("^ +");
@@ -2003,6 +2117,7 @@ window.app = new Vue({
                 if(architecture.instructions[i].fields[z].type != "cop"){
                   numFields++;
                 }
+
                 if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                   var found = false;
                   for (var a = 0; a < architecture.components.length; a++){
@@ -2024,17 +2139,123 @@ window.app = new Vue({
                   }
 
                   if(!found){
-                    $(".loading").hide();
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type ='danger';
                     app._data.dismissCountDownMod = app._data.dismissSecsMod;
                     return -1;
                   }
                 }
+
+                if(architecture.instructions[i].fields[z].type == "inm"){
+                  var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+
+                  if(instructionParts[z].match(/^0x/)){
+                    var value = instructionParts[z].split("x");
+                    console.log(isNaN(parseInt(instructionParts[z], 16)))
+                    if(isNaN(parseInt(instructionParts[z], 16)) == true){
+                      app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+
+                    if(value[1].length*4 > fieldsLength){
+                      app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+                  }
+                  else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
+                    if(isNaN(parseFloat(instructionParts[z])) == true){
+                      app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+
+                    if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
+                      app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+                  }
+                  else if(isNaN(parseInt(instructionParts[z]))){
+
+                  }
+                  else {
+                    var numAux = parseInt(instructionParts[z], 10);
+                    if(isNaN(parseInt(instructionParts[z])) == true){
+                      app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+
+                    if((numAux.toString(2)).length > fieldsLength){
+                      app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+                  }
+                }
+
+                if(architecture.instructions[i].fields[z].type == "address"){
+                  var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+
+                  if(instructionParts[z].match(/^0x/)){
+                    var value = instructionParts[z].split("x");
+                    if(isNaN(parseInt(instructionParts[z], 16)) == true){
+                      app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+
+                    if(value[1].length*4 > fieldsLength){
+                      app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
+                      app._data.type ='danger';
+                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      return -1;
+                    }
+
+                    
+                  }
+                }
+
+                if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
+                  var found = false;
+
+                  for (var a = 0; a < architecture.components.length; a++){
+                    for (var b = 0; b < architecture.components[a].elements.length; b++){
+                      if("($" + architecture.components[a].elements[b].name + ")" == instructionParts[z]){
+                        found = true;
+                      }
+                    }
+                  }
+
+                  for (var a = 0; a < architecture.pseudoinstructions.length; a++){
+                    if(architecture.pseudoinstructions[a].name == name){
+                      for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
+                        if("(" + architecture.pseudoinstructions[a].fields[b].name + ")" == instructionParts[z]){
+                          found = true;
+                        }
+                      }
+                    }
+                  }
+                }
+
+                if(!found){
+                  app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+                  app._data.type ='danger';
+                  app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                  return -1;
+                }
               }
 
               if(numFields != instructionParts.length){
-                $(".loading").hide();
                 app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                 app._data.type ='danger';
                 app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -2043,7 +2264,6 @@ window.app = new Vue({
             }
           }
           if(!found){
-            $(".loading").hide();
             app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
             app._data.type ='danger';
             app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -2051,7 +2271,6 @@ window.app = new Vue({
           }
         }
       }
-      $(".loading").hide();
       return 0;
     },
 
