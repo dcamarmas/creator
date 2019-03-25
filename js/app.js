@@ -338,6 +338,8 @@ window.app = new Vue({
     arch_available: architecture_available,
     /*Background de cada uno de los cards del menu*/
     back_card: back_card,
+    /*Fecha copia de seguidad*/
+    date_copy:'',
     /*Nombre del fichero a cargar*/
     load_arch: '',
     /*Nombre del fichero a guardar*/
@@ -602,7 +604,7 @@ window.app = new Vue({
     },
 
     /*PAGINA CARGA ARQUITECTURA*/
-    /*Carga las arquitecturas que hay disponibles*/
+    /*Carga las arquitecturas que hay disponibles y comprueba si hay una copia de seguridad*/
     load_arch_available(){
       $.getJSON('architecture/available_arch.json', function(cfg){
         architecture_available = cfg;
@@ -631,6 +633,59 @@ window.app = new Vue({
           back_card[i].background = "default";
         }
       }
+    },
+
+    /*Muestra modal si hay copia de seguridad*/
+    backupCopyModal(){
+      if (typeof(Storage) !== "undefined") {
+        if(localStorage.getItem("architecture_copy") != null && localStorage.getItem("assembly_copy") != null && localStorage.getItem("date_copy") != null){
+          this.date_copy = localStorage.getItem("date_copy")
+          this.$refs.copyRef.show();
+        }
+      }
+    },
+
+    /*Carga la copia de seguridad*/
+    load_copy(){
+      $(".loading").show();
+      architecture = JSON.parse(localStorage.getItem("architecture_copy"));
+      app._data.architecture = architecture;
+      textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
+
+      architecture_hash = [];
+      for (var i = 0; i < architecture.components.length; i++) {
+        architecture_hash.push({name: architecture.components[i].name, index: i}); 
+        app._data.architecture_hash = architecture_hash;
+      }
+
+      this.reset();
+
+      $("#architecture_menu").hide();
+      $("#simulator").show();
+      $("#save_btn_arch").show();
+      $("#assembly_btn_arch").show();
+      $("#sim_btn_arch").show();
+      $("#load_arch").hide();
+      $("#load_menu_arch").hide();
+      $("#view_components").show();
+      $(".loading").hide();
+
+      this.$refs.copyRef.hide();
+
+      app._data.alertMessaje = 'The backup has been loaded correctly';
+      app._data.type ='success';
+      app._data.dismissCountDown = app._data.dismissSecs;
+      var date = new Date();
+      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+    },
+
+    /*Elimina la copia de seguridad*/
+    remove_copy(){
+      localStorage.removeItem("architecture_copy");
+      localStorage.removeItem("assembly_copy");
+      localStorage.removeItem("date_copy");
+
+      this.$refs.copyRef.hide();
     },
 
     /*Carga la arquitectura seleccionada*/
@@ -1025,11 +1080,13 @@ window.app = new Vue({
       for(var j=0; j < architecture.components[comp].elements.length; j++){
         if(elem == architecture.components[comp].elements[j].name){
           this.formArchitecture.name = elem;
-          this.formArchitecture.defValue = (architecture.components[comp].elements[j].default_value).toString();
           this.formArchitecture.properties = architecture.components[comp].elements[j].properties;
           if(this.modalEditElement.double_precision == true){
             this.formArchitecture.simple1 = architecture.components[comp].elements[j].simple_reg[0];
             this.formArchitecture.simple2 = architecture.components[comp].elements[j].simple_reg[1];
+          }
+          else{
+            this.formArchitecture.defValue = (architecture.components[comp].elements[j].default_value).toString();
           }
         }
       }
@@ -2541,6 +2598,17 @@ window.app = new Vue({
       var existsInstruction = true;
       var pseudoinstruccion = false;
 
+      /*Guarda en la memoria del navegador una copia de seguidad*/
+      if (typeof(Storage) !== "undefined") {
+        var auxArch = JSON.stringify(architecture, null, 2);
+        var date = new Date();
+        var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+
+        localStorage.setItem("architecture_copy", auxArch);
+        localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
+        localStorage.setItem("date_copy", auxDate);
+      }
+
       this.first_token();
 
       if(this.get_token() == null){
@@ -4030,6 +4098,7 @@ window.app = new Vue({
       }
       
       if(executionIndex == -1){
+        $(".loading").hide();
         error = 1;
       }
 
@@ -4061,6 +4130,8 @@ window.app = new Vue({
           instructions[executionIndex]._rowVariant = 'success';
         }
       }
+
+      $(".loading").hide();
     },
 
     /*Funcion que ejecuta todo el programa*/
@@ -4357,7 +4428,11 @@ window.app = new Vue({
 
   created(){
     this.load_arch_available();
-  }
+  },
+
+   mounted(){
+    this.backupCopyModal();
+  },
 })
 
 /*Cambia la vision de los registros*/
@@ -4378,7 +4453,8 @@ $("#selectData").change(function(){
 /*Codemirror, text area ensamblador*/
 // initialize codemirror for assembly
 editor_cfg = {
-  lineNumbers: true
+  lineNumbers: true,
+  autoRefresh:true,
 } ;
 
 textarea_assembly_obj = document.getElementById("textarea_assembly");
@@ -4387,6 +4463,5 @@ textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor
 
 textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
 
-textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n\n");
 textarea_assembly_editor.setSize("auto", "550px");
-textarea_assembly_editor.refresh();
