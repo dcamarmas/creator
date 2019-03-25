@@ -28,6 +28,8 @@
     <script src="external/codemirror/keymap/sublime.js"></script>
     <script src="external/codemirror/mode/gas/gas.js"></script>
     <script src="external/codemirror/mode/javascript/javascript.js"></script>
+    <script src="external/codemirror/addon/display/autorefresh.js"></script>
+
   </head>
 
   <body>
@@ -46,72 +48,66 @@
             </div>
           </div>
 
+          <!-- Information -->
+          <b-modal id="notifications" title="Notifications" hide-footer scrollable>
+            <b-alert show :variant="item.color" v-for="item in notifications">
+              <h6><span class="fa fa-info-circle" v-if="item.color!='danger'"></span><span class="fa fa-warning" v-if="item.color=='danger'"></span> {{item.mess}}</h6>
+              <h6>{{item.time}}   -   {{item.date}}</h6>
+            </b-alert>
+          </b-modal>
+          
+          <b-modal id="about" hide-footer scrollable>
+            <b-card-group>
+              <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>
+                <b-card-text>
+                  <div style="height: 50px;">
+                    <h6>Félix García Carballeira</h6>
+                  </div>
+                  <hr>
+                  <a><span class="fab fa-linkedin-square"></span> linkedin</a>
+                  <hr>
+                  <a href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira'><span class="fab fa-researchgate"></span> r-gate</a>
+                  <hr>
+                  <a><span class="fab fa-github"></span> github</a>
+                </b-card-text>
+              </b-card>
+
+              <b-card img-src="./images/author_acaldero.png" img-alt="author_acaldero" img-top>
+                <b-card-text>
+                  <div style="height: 50px;">
+                    <h6>Alejandro Calderón Mateos</h6>
+                  </div>
+                  <hr>
+                  <a href='https://www.linkedin.com/in/alejandro-calderon-mateos/'><span class="fab fa-linkedin-square"></span> linkedin</a>
+                  <hr>
+                  <a href='https://www.researchgate.net/profile/Alejandro_Calderon2'><span class="fab fa-researchgate"></span> r-gate</a>
+                  <hr>
+                  <a href='https://github.com/acaldero/wepsim'><span class="fab fa-github"></span> github</a>
+                </b-card-text>
+              </b-card>
+
+              <b-card img-src="./images/author_dcamarmas.png" img-alt="author_dcamarmas" img-top>
+                <b-card-text>
+                  <div style="height: 50px;">
+                    <h6>Diego Camarmas Alonso</h6>
+                  </div>
+                  <hr>
+                  <a><span class="fab fa-linkedin-square"></span> linkedin</a>
+                  <hr>
+                  <a><span class="fab fa-researchgate"></span> r-gate</a>
+                  <hr>
+                  <a href='https://github.com/dcamarmas'><span class="fab fa-github"></span> github</a>
+                </b-card-text>
+              </b-card>
+            </b-card-group>
+          </b-modal>
+
           <!-- 1 navbar -->
           <b-navbar toggleable="sm" class="header">
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand href="#" style="color: #2196F3;" id="popoverInfo"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
-
-            <b-popover target="popoverInfo" triggers="click blur">
-              <div class="col-lg-12 col-sm-12">
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications></span> Show Notifications</b-button>
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about></span> About us</b-button>
-              </div>
-            </b-popover>
-
-            <b-modal id="notifications" title="Notifications" hide-footer scrollable>
-              <b-alert show :variant="item.color" v-for="item in notifications">
-                <h6>{{item.mess}}</h6>
-                <h6>{{item.time}}   -   {{item.date}}</h6>
-              </b-alert>
-            </b-modal>
-
-            <b-modal id="about" hide-footer scrollable>
-              <b-card-group>
-                <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>
-                  <b-card-text>
-                    <div style="height: 50px;">
-                      <h6>Félix García Carballeira</h6>
-                    </div>
-                    <hr>
-                    <a><span class="fab fa-linkedin-square"></span> linkedin</a>
-                    <hr>
-                    <a href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira'><span class="fab fa-researchgate"></span> r-gate</a>
-                    <hr>
-                    <a><span class="fab fa-github"></span> github</a>
-                  </b-card-text>
-                </b-card>
-
-                <b-card img-src="./images/author_acaldero.png" img-alt="author_acaldero" img-top>
-                  <b-card-text>
-                    <div style="height: 50px;">
-                      <h6>Alejandro Calderón Mateos</h6>
-                    </div>
-                    <hr>
-                    <a href='https://www.linkedin.com/in/alejandro-calderon-mateos/'><span class="fab fa-linkedin-square"></span> linkedin</a>
-                    <hr>
-                    <a href='https://www.researchgate.net/profile/Alejandro_Calderon2'><span class="fab fa-researchgate"></span> r-gate</a>
-                    <hr>
-                    <a href='https://github.com/acaldero/wepsim'><span class="fab fa-github"></span> github</a>
-                  </b-card-text>
-                </b-card>
-
-                <b-card img-src="./images/author_dcamarmas.png" img-alt="author_dcamarmas" img-top>
-                  <b-card-text>
-                    <div style="height: 50px;">
-                      <h6>Diego Camarmas Alonso</h6>
-                    </div>
-                    <hr>
-                    <a><span class="fab fa-linkedin-square"></span> linkedin</a>
-                    <hr>
-                    <a><span class="fab fa-researchgate"></span> r-gate</a>
-                    <hr>
-                    <a href='https://github.com/dcamarmas'><span class="fab fa-github"></span> github</a>
-                  </b-card-text>
-                </b-card>
-              </b-card-group>
-            </b-modal>
+            <b-navbar-brand href="#" style="color: #2196F3;"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
 
             <b-navbar-nav>
                 <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>
@@ -129,7 +125,7 @@
         </header>
 
         <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" class="principalAlert">
-        	<span class="fa fa-info-circle"></span> {{alertMessaje}}
+        	<span class="fa fa-info-circle" v-if="type!='danger'"></span><span class="fa fa-warning" v-if="type=='danger'"></span> {{alertMessaje}}
 		    </b-alert>
 
         <div class="contenedor row menu_cards" id="architecture_menu">
@@ -148,28 +144,38 @@
               </div>
             </div>
 
-            <div class="col-lg-6 col-sm-12 nopadding">
+            <div class="col-lg-4 col-sm-12 nopadding">
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-2 col-sm-2 buttons">
+                  <div class="col-lg-4 col-sm-2 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fa fa-download"></span> Save</b-button>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-5 col-sm-12 nopadding">
             	<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                	<div class="col-lg-6 col-sm-6 buttons">
+                	<div class="col-lg-4 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch"><span class="fa fa-gear"></span> Configuration</b-button>
                   </div>
-              		<div class="col-lg-6 col-sm-6 buttons">
-                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
+              		<div class="col-lg-4 col-sm-4 buttons">
+                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>
               		</div>
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_arch" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
+                  </div>
             		</div>
               </div>
             </div>
+
+            <b-popover target="info_arch" triggers="click blur">
+              <div class="col-lg-12 col-sm-12">
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications></span> Show Notifications</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about></span> About us</b-button>
+              </div>
+            </b-popover>
           </div>
 
         	<div class="contenedor menu row">
@@ -196,6 +202,19 @@
               </div>
             </div>
 
+            <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
+              <h6>A backup is available</h6>
+              <h6>Date: {{date_copy}}</h6>
+              <div class="col-lg-12 col-sm-12 row nomargin">
+                <div class="col-lg-6 col-sm-6">
+                  <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" @click="remove_copy">Discard</b-button>
+                </div>
+                <div class="col-lg-6 col-sm-6">
+                  <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" @click="load_copy">Load</b-button>
+                </div>
+              </div>
+            </b-modal>
+
             <div class="col-lg-12 col-sm-12" id="view_components" style="display:none;">
               <b-tabs>
                 <b-tab title="Components" active>
@@ -211,8 +230,9 @@
                       <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset architecture</b-button>
                     </div>
 
-                    <div class="compMenu">
-                      <b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;" disabled></b-form-input>
+                    <div class="compMenu" style="padding: 0.7%;">
+                      <!--<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;" disabled></b-form-input>-->
+                      <h6>Architecture of {{number_bits}} bits</h6>
                     </div>
                   </div>
 
@@ -1132,26 +1152,42 @@
 	              </div>
 	            </div>
 
-	            <div class="col-lg-4 col-sm-12">
+	            <div class="col-lg-3 col-sm-12">
 
 	            </div>
 
-	            <div class="col-lg-5 col-sm-12 nopadding">
-	              <div class="col-lg-12 col-sm-12">
-	                <div class="col-lg-12 col-sm-12 buttons row">
-	                	<div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>
-	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
-                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm">Examples</b-button>
-	                  </div>
-	                  <div class="col-lg-4 col-sm-4 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block btn-sm" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
-	                  </div>
-	                </div>
-	              </div>
-	            </div>
+              <div class="col-lg-6 col-sm-12 nopadding">
+                <div class="col-lg-12 col-sm-12">
+                  <div class="col-lg-12 col-sm-12 buttons row">
+                    <div class="col-lg-3 col-sm-3 buttons">
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.examples>Examples</b-button>
+                    </div>
+
+                    <b-modal id="examples" title="Examples" hide-footer scrollable>
+            
+                    </b-modal>
+
+                    <div class="col-lg-3 col-sm-3 buttons">
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>
+                    </div>
+                    <div class="col-lg-3 col-sm-3 buttons">
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_sim" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>
+                    </div>
+                    <div class="col-lg-3 col-sm-3 buttons">
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_sim" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
+                    </div>
+
+                    <b-popover target="info_sim" triggers="click blur">
+                      <div class="col-lg-12 col-sm-12">
+                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications></span> Show Notifications</b-button>
+                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about></span> About us</b-button>
+                      </div>
+                    </b-popover>
+                  </div>
+                </div>
+              </div>
 	          </div>
+
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
@@ -1425,29 +1461,39 @@
               </div>
             </div>
 
-            <div class="col-lg-4 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 nopadding">
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-3 col-sm-4 buttons">
+                  <div class="col-lg-12 col-sm-12 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fa fa-sign-in"></span> Compile</b-button>
                   </div>
-                  <div class="col-lg-9 col-sm-4 buttons">
+                  <!--<div class="col-lg-9 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="show_assembly"><span class="fa fa-microchip"></span> Show Main Memory</b-button>
-                  </div>
+                  </div>-->
                 </div>
               </div>
             </div>
 
-            <div class="col-lg-3 col-sm-12 nopadding">
-            	<div class="col-lg-12 col-sm-12">
+            <div class="col-lg-5 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                	<div class="col-lg-8 col-sm-8 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_assembly"><span class="fa fa-gear"></span> Configuration</b-button>
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_ass"><span class="fa fa-gear"></span> Configuration</b-button>
                   </div>
-              		<div class="col-lg-4 col-sm-4 buttons">
-                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_assembly" style="background-color:#D4DB17;"><span class="fa fa-exclamation-circle"></span> Help</b-button>
-              		</div>
-            		</div>
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_ass" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>
+                  </div>
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_ass" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
+                  </div>
+
+                  <b-popover target="info_ass" triggers="click blur">
+                    <div class="col-lg-12 col-sm-12">
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications></span> Show Notifications</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about></span> About us</b-button>
+                    </div>
+                  </b-popover>
+                </div>
               </div>
             </div>
           </div>
