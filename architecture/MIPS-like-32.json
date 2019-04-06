@@ -1,7 +1,7 @@
 {
   "components": [
     {
-      "name": "Integer control registers",
+      "name": "Control registers",
       "type": "control",
       "double_precision": false,
       "elements": [
@@ -67,6 +67,46 @@
         },
         {
           "name": "LO",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FIR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FCSR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FCCR",
+          "nbits": "32",
+          "value": 0,
+          "default_value": 0,
+          "properties": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "FEXR",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -394,53 +434,6 @@
         },
         {
           "name": "ra",
-          "nbits": "32",
-          "value": 0,
-          "default_value": 0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Floating point control registers",
-      "type": "control",
-      "double_precision": false,
-      "elements": [
-        {
-          "name": "FIR",
-          "nbits": "32",
-          "value": 0,
-          "default_value": 0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "FCSR",
-          "nbits": "32",
-          "value": 0,
-          "default_value": 0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "FCCR",
-          "nbits": "32",
-          "value": 0,
-          "default_value": 0,
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "FEXR",
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -1000,8 +993,9 @@
       "co": "000000",
       "cop": "100000",
       "nwords": 1,
-      "signature": "add,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "add reg1 reg2 reg3",
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "add,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "add $reg1 $reg2 $reg3",
       "fields": [
         {
           "name": "add",
@@ -1041,8 +1035,9 @@
       "co": "001000",
       "cop": null,
       "nwords": 1,
-      "signature": "addi,INT-Reg,INT-Reg,inm",
-      "signatureRaw": "addi reg1 reg2 val",
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "addi,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "addi $reg1 $reg2 val",
       "fields": [
         {
           "name": "addi",
@@ -1076,8 +1071,9 @@
       "co": "000000",
       "cop": "100100",
       "nwords": 1,
-      "signature": "and,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "and reg1 reg2 reg3",
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "and,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "and $reg1 $reg2 $reg3",
       "fields": [
         {
           "name": "and",
@@ -1117,8 +1113,9 @@
       "co": "001100",
       "cop": null,
       "nwords": 1,
-      "signature": "andi,INT-Reg,INT-Reg,inm",
-      "signatureRaw": "andi reg1 reg2 val",
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "andi,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "andi $reg1 $reg2 val",
       "fields": [
         {
           "name": "andi",
@@ -1152,6 +1149,7 @@
       "co": "000100",
       "cop": null,
       "nwords": 1,
+      "signature_definition": "F0 F1",
       "signature": "b,inm",
       "signatureRaw": "b val",
       "fields": [
@@ -1175,8 +1173,9 @@
       "co": "000100",
       "cop": null,
       "nwords": 1,
-      "signature": "beq,INT-Reg,INT-Reg,inm",
-      "signatureRaw": "beq reg1 reg2 val",
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "beq,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "beq $reg1 $reg2 val",
       "fields": [
         {
           "name": "beq",
@@ -1210,8 +1209,9 @@
       "co": "000101",
       "cop": null,
       "nwords": 1,
-      "signature": "bne,INT-Reg,INT-Reg,inm",
-      "signatureRaw": "bne reg1 reg2 val",
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "bne,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "bne $reg1 $reg2 val",
       "fields": [
         {
           "name": "bne",
@@ -1245,8 +1245,9 @@
       "co": "000000",
       "cop": "011010",
       "nwords": 1,
-      "signature": "div,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "div reg1 reg2 reg3",
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "div,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "div $reg1 $reg2 $reg3",
       "fields": [
         {
           "name": "div",
@@ -1286,8 +1287,9 @@
       "co": "000102",
       "cop": null,
       "nwords": 1,
-      "signature": "lw,INT-Reg,inm,(INT-Reg)",
-      "signatureRaw": "lw reg1 val (reg2)",
+      "signature_definition": "F0 $F1 F2 ($F3)",
+      "signature": "lw,$INT-Reg,inm,($INT-Reg)",
+      "signatureRaw": "lw $reg1 val ($reg2)",
       "fields": [
         {
           "name": "lw",
@@ -1309,7 +1311,7 @@
         },
         {
           "name": "reg2",
-          "type": "(INT-Reg)",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         }
@@ -1321,8 +1323,9 @@
       "co": "011100",
       "cop": "000010",
       "nwords": 1,
-      "signature": "mul,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "mul reg1 reg2 reg3",
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "mul,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "mul $reg1 $reg2 $reg3",
       "fields": [
         {
           "name": "mul",
@@ -1362,6 +1365,7 @@
       "co": "000000",
       "cop": "000000",
       "nwords": 1,
+      "signature_definition": "F0",
       "signature": "nop",
       "signatureRaw": "nop",
       "fields": [
@@ -1385,8 +1389,9 @@
       "co": "000000",
       "cop": "100101",
       "nwords": 1,
-      "signature": "or,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "or reg1 reg2 reg3",
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "or,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "or $reg1 $reg2 $reg3",
       "fields": [
         {
           "name": "or",
@@ -1426,8 +1431,9 @@
       "co": "001101",
       "cop": null,
       "nwords": 1,
-      "signature": "ori,INT-Reg,INT-Reg,inm",
-      "signatureRaw": "ori reg1 reg2 val",
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "ori,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "ori $reg1 $reg2 val",
       "fields": [
         {
           "name": "ori",
@@ -1461,8 +1467,9 @@
       "co": "000000",
       "cop": "100010",
       "nwords": 1,
-      "signature": "sub,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "sub reg1 reg2 reg3",
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "sub,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "sub $reg1 $reg2 $reg3",
       "fields": [
         {
           "name": "sub",
@@ -1502,8 +1509,9 @@
       "co": "000103",
       "cop": null,
       "nwords": 1,
-      "signature": "sw,INT-Reg,inm,(INT-Reg)",
-      "signatureRaw": "sw reg1 val (reg2)",
+      "signature_definition": "F0 $F1 F2 ($F3)",
+      "signature": "sw,$INT-Reg,$inm,($INT-Reg)",
+      "signatureRaw": "sw $reg1 val ($reg2)",
       "fields": [
         {
           "name": "sw",
@@ -1525,7 +1533,7 @@
         },
         {
           "name": "reg2",
-          "type": "(INT-Reg)",
+          "type": "INT-Reg",
           "startbit": 25,
           "stopbit": 21
         }
@@ -1537,8 +1545,9 @@
       "co": "000000",
       "cop": "100110",
       "nwords": 1,
-      "signature": "xor,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "xor reg1 reg2 reg3",
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "xor,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "xor $reg1 $reg2 $reg3",
       "fields": [
         {
           "name": "xor",
@@ -1578,8 +1587,9 @@
       "co": "001110",
       "cop": null,
       "nwords": 1,
-      "signature": "xori,INT-Reg,INT-Reg,inm",
-      "signatureRaw": "xori reg1 reg2 val",
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "xori,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "xori $reg1 $reg2 val",
       "fields": [
         {
           "name": "xori",
@@ -1613,8 +1623,9 @@
       "co": "001111",
       "cop": null,
       "nwords": 1,
-      "signature": "lui,INT-Reg,inm",
-      "signatureRaw": "lui reg1 val",
+      "signature_definition": "F0 $F1 F2",
+      "signature": "lui,$INT-Reg,inm",
+      "signatureRaw": "lui $reg1 val",
       "fields": [
         {
           "name": "lui",
@@ -1642,8 +1653,9 @@
     {
       "name": "move",
       "nwords": 1,
-      "signature": "move,INT-Reg,INT-Reg",
-      "signatureRaw": "move reg1 reg2",
+      "signature_definition": "move $F0 $F1",
+      "signature": "move,$INT-Reg,$INT-Reg",
+      "signatureRaw": "move $reg1 $reg2",
       "fields": [
         {
           "name": "reg1",
@@ -1663,8 +1675,9 @@
     {
       "name": "addi",
       "nwords": 1,
-      "signature": "addi,INT-Reg,INT-Reg,inm",
-      "signatureRaw": "addi reg1 reg2 val",
+      "signature_definition": "addi $F0 $F1 F2",
+      "signature": "addi,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "addi $reg1 $reg2 val",
       "fields": [
         {
           "name": "reg1",
@@ -1685,7 +1698,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add reg1 reg2 $at;"
+      "definition": "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"
     }
   ],
   "directives": [

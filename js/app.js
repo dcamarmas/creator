@@ -13,7 +13,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  {name: "Control registers", type: "control", double_precision: false, elements:[
+  /*{name: "Control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -112,9 +112,9 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}
+    ]}*/
   ], instructions:[
-    {name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
+    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
@@ -223,9 +223,9 @@ var architecture = {components:[
       {name: "lui", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=val<<16"},
+    ], definition: "reg1=val<<16"},*/
   ],pseudoinstructions:[
-    {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
+    /*{name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       ], definition: "add reg1 $r0 reg2;"},
@@ -233,9 +233,9 @@ var architecture = {components:[
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},*/
   ], directives:[
-    {name:".kdata", kindof:"segment", size:0 },
+    /*{name:".kdata", kindof:"segment", size:0 },
     {name:".ktext", kindof:"segment", size:0 },
     {name:".data", kindof:"segment", size:0 },
     {name:".text", kindof:"segment", size:0 },
@@ -245,7 +245,7 @@ var architecture = {components:[
     {name:".space", kindof:"datatype", size:1 },
     {name:".ascii", kindof:"datatype", size:1 },
     {name:".asciiz", kindof:"datatype", size:1 },
-    {name:".align", kindof:"datatype", size:0 },
+    {name:".align", kindof:"datatype", size:0 },*/
   ]};
 
 var componentsTypes = [
@@ -760,7 +760,7 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        //architecture = cfg;
+        architecture = cfg;
         app._data.architecture = architecture;
 
         architecture_hash = [];
