@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <title>WepSim-Console</title>
+
+    <!-- Required Stylesheets -->
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
+    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="external/codemirror/codemirror.css">
+
+    <!-- Required scripts -->
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script>
+
+    <script src="external/codemirror/codemirror.js"></script>
+    <script src="external/codemirror/keymap/vim.js"></script>
+    <script src="external/codemirror/keymap/sublime.js"></script>
+    <script src="external/codemirror/mode/gas/gas.js"></script>
+    <script src="external/codemirror/mode/javascript/javascript.js"></script>
+    <script src="external/codemirror/addon/display/autorefresh.js"></script>
+
+  </head>
+
+  <body>
+    <div id="app">
+      <template>
+        <!--<div class="contenedor" id="console">
+          <div class="contenedor menu row">
+            <div class="col-lg-12 col-sm-12 row">
+              <div class="col-lg-2 col-sm-2">
+                <b-img src="./images/monitor2.png" fluid alt="Monitor"></b-img>
+              </div>
+              <div class="col-lg-10 col-sm-10">
+                <textarea id="textarea_display" rows="5" class="code-scroll-y nomargin">
+                </textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="contenedor menu row">
+            <div class="col-lg-12 col-sm-12 row">
+              <div class="col-lg-2 col-sm-2">
+                <b-img src="./images/keyboard1.png" fluid alt="keyboard1"></b-img>
+              </div>
+              <div class="col-lg-12 col-sm-12">
+                <textarea id="textarea_keyboard" rows="5" class="code-scroll-y">
+                </textarea>
+              </div>
+            </div>
+          </div>
+        </div>-->
+
+
+        <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%;">
+          <div class="col-lg-2 col-sm-2">
+            <b-img src="./images/monitor2.png" fluid alt="Monitor"></b-img>
+          </div>
+          <div class="col-lg-12 col-sm-12">
+            <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled></b-form-textarea>
+          </div>
+        </div>
+
+        <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%;">
+          <div class="col-lg-4 col-sm-4">
+            <b-img src="./images/keyboard1.png" fluid alt="Keyboard"></b-img>
+          </div>
+          <div class="col-lg-12 col-sm-12">
+            <b-form-textarea id="textarea_keyboard" v-model="keyboard" rows="5"></b-form-textarea>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <script src="js/app.js"></script>
+
+  </body>
+</html>
