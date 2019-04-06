@@ -107,7 +107,7 @@
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand href="#" style="color: #2196F3;"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3;"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
 
             <b-navbar-nav>
                 <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>
@@ -134,6 +134,9 @@
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-6 col-sm-6 buttons" id="load_arch_btn_arch">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm load_Arch_btn btn_arch" v-b-modal.load_arch>Load Architecture</b-button>
+                  </div>
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;">Assembly</b-button>
                   </div>
@@ -154,14 +157,22 @@
               </div>
             </div>
 
+            <b-modal id="load_arch" title="Load Architecture" @ok="read_arch">
+              <b-form-input v-model="name_arch" placeholder="Enter the name of the architecture"></b-form-input>
+              <br>
+              <b-form-textarea v-model="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+              <br>
+              <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json"></b-form-file>
+            </b-modal>
+
             <div class="col-lg-5 col-sm-12 nopadding">
             	<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                 	<div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch"><span class="fa fa-gear"></span> Configuration</b-button>
+                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch"><span class="fa fa-gear"></span> Configuration</b-button>-->
                   </div>
               		<div class="col-lg-4 col-sm-4 buttons">
-                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>
+                		<!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
               		</div>
                   <div class="col-lg-4 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_arch" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
@@ -183,33 +194,42 @@
               <div class="col-lg-12 col-sm-12 row nopadding nomargin">
                 <div class="col-lg-1 col-sm-1"></div>
                 <div class="col-lg-10 col-sm-10">
-                  <b-card-group deck>
-                    <b-card :title=item.name title-tag="h6" :img-src=item.img :img-alt=item.alt img-top v-for="(item, index) in arch_available" @click="load_arch_select(item.name)" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer;">
-                        <b-card-text style="text-align: justify; font-size: 10pt;">
-                          {{item.description}}
-                        </b-card-text>
-                    </b-card>
-                  </b-card-group>
+
+                  <b-list-group>
+                    <b-list-group-item>
+                      <b-card no-body class="overflow-hidden" v-for="(item, index) in arch_available" @click="load_arch_select(item.name)" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
+                        <b-row no-gutters>
+                          <b-col md="3">
+                            <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
+                          </b-col>
+                          <b-col md="9">
+                            <b-card-body :title=item.name title-tag="h4">
+                              <b-card-text style="text-align: justify; font-size: 11pt;">
+                                {{item.description}}
+                              </b-card-text>
+                              <b-button class="btn btn-outline-danger btn-sm buttonBackground" @click.stop="remove_cache_arch(index)" v-if="default_arch(item.name) == true"><span class="fa fa-trash-o"></span> Delete</b-button>
+                            </b-card-body>
+                          </b-col>
+                        </b-row>
+                      </b-card>
+
+                    </b-list-group-item>
+                  </b-list-group>
+
                 </div>
                 <div class="col-lg-1 col-sm-1"></div>
               </div>
               <br>
-              <h5>Select the architecture to load:</h5>
-              <div class="col-lg-12 col-sm-12" style="margin-bottom: 3%;">
-                <div class="col-lg-12 col-sm-12" style="z-index: 0;">
-                  <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" @change="read_arch"></b-form-file>
-                </div>
-              </div>
             </div>
 
             <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
               <h6>A backup is available</h6>
               <h6>Date: {{date_copy}}</h6>
               <div class="col-lg-12 col-sm-12 row nomargin">
-                <div class="col-lg-6 col-sm-6">
+                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
                   <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" @click="remove_copy">Discard</b-button>
                 </div>
-                <div class="col-lg-6 col-sm-6">
+                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
                   <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" @click="load_copy">Load</b-button>
                 </div>
               </div>
@@ -251,6 +271,10 @@
                         <b-collapse :id="item.index.toString()" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
                           <b-card-body>
                              <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
+                              <template slot="ID" slot-scope="row">
+                                {{element_id(architecture.components[item.index].elements[row.index].name, architecture.components[item.index].type, architecture.components[item.index].double_precision)}}
+                              </template>
+
                               <template slot="properties" slot-scope="row">
 
                                 <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'read' || architecture.components[item.index].elements[row.index].properties[1] == 'read'"> Read </b-form-checkbox>
@@ -262,17 +286,18 @@
                                 <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'write' && architecture.components[item.index].elements[row.index].properties[1] != 'write'"> Write </b-form-checkbox>
 
                               </template>
+
                               <template slot="actions" slot-scope="row">
                                 <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
                                 <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
                               </template>
                              </b-table>
 
-                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New {{item.name}}</b-button>
+                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New Element</b-button>
 
-                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit {{item.name}}</b-button>
+                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit Component</b-button>
 
-                            <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete {{item.name}}</b-button>
+                            <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete Component</b-button>
 
                           </b-card-body>
                         </b-collapse>
@@ -304,6 +329,10 @@
                       <b-form >
                         <b-form-group label="Name:">
                           <b-form-input type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
+                          </b-form-input>
+                        </b-form-group>
+                        <b-form-group label="ID:">
+                          <b-form-input type="text" v-model="formArchitecture.id" required size="sm" disabled>
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="Default value:" v-if="modalNewElement.double_precision == false">
@@ -339,6 +368,10 @@
                       <b-form>
                         <b-form-group label="Name:">
                           <b-form-input type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                          </b-form-input>
+                        </b-form-group>
+                        <b-form-group label="ID:">
+                          <b-form-input type="text" v-model="formArchitecture.id" required size="sm" disabled>
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="Default value:" v-if="modalEditElement.double_precision == false">
@@ -379,7 +412,7 @@
                   </div>
 
                   <!-- Nuevo componente -->
-                  <b-modal id ="new_component" title = "New component" ok-title="Create" @ok="newComponentVerify" v-model="showNewComponent">
+                  <b-modal id ="new_component" title = "New Component" ok-title="Create" @ok="newComponentVerify" v-model="showNewComponent">
 
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                       <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -573,9 +606,6 @@
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
                                     <option value="inm">inm</option>
                                     <option value="address">address</option>
-                                    <option value="(INT-Reg)">INT-Reg-add</option>
-                                    <option value="(FP-Reg)">FP-Reg-add</option>
-                                    <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                     <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                   </b-form-select>
                                   <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -611,6 +641,18 @@
                         </div>
 
                         <div id="editInstForm3" v-if="instructionFormPage == 3">
+                          <b-form-group label="Instruction Signature Definition:">
+                            <b-form-input type="text" v-model="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Instruction Signature:">
+                            <b-form-input type="text" v-model="formInstruction.signature" disabled required size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Instruction Signature Raw:">
+                            <b-form-input type="text" v-model="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
+                          </b-form-group>
+                        </div>
+
+                        <div id="editInstForm4" v-if="instructionFormPage == 4">
                           <b-form-group label="Assembly Definition:">
                             <b-form-textarea v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
                             </b-form-textarea>
@@ -619,12 +661,12 @@
                       </b-form>
 
                       <hr>
-                      <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
+                      <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="4" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
                     </b-modal>
                   </div>
 
                   <!-- Formulario nueva instruccion -->
-                  <b-modal size="lg" id ="new_instruction" title = "New instruction" ok-title="Create" @ok="newInstVerify" v-model="showNewInstruction">
+                  <b-modal size="lg" id ="new_instruction" title = "New Instruction" ok-title="Create" @ok="newInstVerify" v-model="showNewInstruction">
 
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                       <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -691,9 +733,6 @@
                                   <option value="Ctrl-Reg">Ctrl-Reg</option>
                                   <option value="inm">inm</option>
                                   <option value="address">address</option>
-                                  <option value="(INT-Reg)">INT-Reg-add</option>
-                                  <option value="(FP-Reg)">FP-Reg-add</option>
-                                  <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                   <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                 </b-form-select>
                                 <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -729,6 +768,18 @@
                       </div>
 
                       <div id="newInstForm3" v-if="instructionFormPage == 3">
+                        <b-form-group label="Assembly Signature Definition:">
+                          <b-form-input type="text" v-model="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label="Assembly Signature:">
+                          <b-form-input type="text" v-model="formInstruction.signature" disabled required size="sm"></b-form-input>
+                        </b-form-group>
+                        <b-form-group label="Assembly Signature Raw:">
+                          <b-form-input type="text" v-model="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
+                        </b-form-group>
+                      </div>
+
+                      <div id="newInstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Assembly Definition:">
                           <b-form-textarea v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
                           </b-form-textarea>
@@ -737,7 +788,7 @@
                     </b-form>
 
                     <hr>
-                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
+                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="4" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
 
                   </b-modal >
                 </b-tab>
@@ -897,9 +948,6 @@
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
                                     <option value="inm">inm</option>
                                     <option value="address">address</option>
-                                    <option value="(INT-Reg)">INT-Reg-add</option>
-                                    <option value="(FP-Reg)">FP-Reg-add</option>
-                                    <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                   </b-form-select>
                                 </b-form-group>
                               </div>
@@ -920,7 +968,19 @@
                         </div>
 
                         <div id="editPseudoinstForm3" v-if="instructionFormPage == 3">
-                          <b-form-group label="Assembly Definition:">
+                          <b-form-group label="Pseudoinstruction Signature Definition:">
+                            <b-form-input type="text" v-model="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Pseudoinstruction Signature:">
+                            <b-form-input type="text" v-model="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Pseudoinstruction Signature Raw:">
+                            <b-form-input type="text" v-model="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
+                          </b-form-group>
+                        </div>
+
+                        <div id="editPseudoinstForm4" v-if="instructionFormPage == 4">
+                          <b-form-group label="Pseudoinstruction Definition:">
                             <b-form-textarea v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                             </b-form-textarea>
                           </b-form-group>
@@ -928,12 +988,12 @@
                       </b-form>
 
                       <hr>
-                      <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
+                      <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="4" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
                     </b-modal>
                   </div>
 
                   <!-- Formulario nueva pseudoinstruccion -->
-                  <b-modal size="lg" title = "New pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction" id="new_pseudoinstruction">
+                  <b-modal size="lg" title = "New Pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction" id="new_pseudoinstruction">
 
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                       <span class="fa fa-info-circle"></span> {{alertMessaje}}
@@ -998,9 +1058,6 @@
                                   <option value="Ctrl-Reg">Ctrl-Reg</option>
                                   <option value="inm">inm</option>
                                   <option value="address">address</option>
-                                  <option value="(INT-Reg)">INT-Reg-add</option>
-                                  <option value="(FP-Reg)">FP-Reg-add</option>
-                                  <option value="(Ctrl-Reg)">Ctrl-Reg-add</option>
                                 </b-form-select>
                               </b-form-group>
                             </div>
@@ -1021,7 +1078,19 @@
                       </div>
 
                       <div id="newPseudoinstForm3" v-if="instructionFormPage == 3">
-                        <b-form-group label="Assembly Definition:">
+                        <b-form-group label="Pseudoinstruction Signature Definition:">
+                            <b-form-input type="text" v-model="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Pseudoinstruction Signature:">
+                            <b-form-input type="text" v-model="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Pseudoinstruction Signature Raw:">
+                            <b-form-input type="text" v-model="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
+                          </b-form-group>
+                      </div>
+
+                      <div id="newPseudoinstForm4" v-if="instructionFormPage == 4">
+                        <b-form-group label="Pseudoinstruction Definition:">
                           <b-form-textarea v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                           </b-form-textarea>
                         </b-form-group>
@@ -1029,7 +1098,7 @@
                     </b-form>
 
                     <hr>
-                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="3" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
+                    <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="4" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
 
                   </b-modal >
                 </b-tab>
@@ -1048,7 +1117,7 @@
                     </div>
                   </div>
 
-                  <b-modal size="lg" id ="new_directive" title = "New directive" ok-title="Create" @ok="newDirVerify($event)" ref="newDir">
+                  <b-modal size="lg" id ="new_directive" title = "New Directive" ok-title="Create" @ok="newDirVerify($event)" ref="newDir">
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
                       <span class="fa fa-info-circle"></span> {{alertMessaje}}
                     </b-alert>
@@ -1153,27 +1222,25 @@
 	            </div>
 
 	            <div class="col-lg-3 col-sm-12">
+                <div class="col-lg-6 col-sm-6 buttons">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.examples>Examples</b-button>
+                </div>
 
+                <b-modal id="examples" title="Examples" hide-footer scrollable>
+        
+                </b-modal>
 	            </div>
 
               <div class="col-lg-6 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12">
                   <div class="col-lg-12 col-sm-12 buttons row">
-                    <div class="col-lg-3 col-sm-3 buttons">
-                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.examples>Examples</b-button>
+                    <div class="col-lg-4 col-sm-4 buttons">
+                      <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>-->
                     </div>
-
-                    <b-modal id="examples" title="Examples" hide-footer scrollable>
-            
-                    </b-modal>
-
-                    <div class="col-lg-3 col-sm-3 buttons">
-                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>
+                    <div class="col-lg-4 col-sm-4 buttons">
+                      <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_sim" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
                     </div>
-                    <div class="col-lg-3 col-sm-3 buttons">
-                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_sim" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>
-                    </div>
-                    <div class="col-lg-3 col-sm-3 buttons">
+                    <div class="col-lg-4 col-sm-4 buttons">
                       <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_sim" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
                     </div>
 
@@ -1250,10 +1317,7 @@
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm">
-                      <span class="fa fa-refresh"></span>
-                      Refresh 
-                    </b-button>
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" @click="open_console"><span class="fa fa-desktop"></span> Console</b-button>
                   </div>
                 </div>
                 <hr>
@@ -1478,10 +1542,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_ass"><span class="fa fa-gear"></span> Configuration</b-button>
+                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_ass"><span class="fa fa-gear"></span> Configuration</b-button>-->
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_ass" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>
+                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_ass" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_ass" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>

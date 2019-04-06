@@ -4,12 +4,16 @@ var architecture_available = [];
 /*Almacena el color de fondo de cada card*/
 var back_card = [];
 
+/*Listado de arquitecturas cargadas*/
+var load_architectures_available = [];
+var load_architectures = [];
+
 /*tabla hash de la arquitectura*/
 var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Integer control registers", type: "control", double_precision: false, elements:[
+  {name: "Control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -17,6 +21,11 @@ var architecture = {components:[
       {name:"STATUS", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+
+      {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
+      {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     ]},
     {name: "Integer registers", type: "integer", double_precision: false, elements:[
       {name:"r0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -51,12 +60,6 @@ var architecture = {components:[
       {name:"sp", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"s8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"ra", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    ]},
-    {name: "Floating point control registers", type: "control", double_precision: false, elements:[
-      {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
     ]},
     {name: "Simple floating point registers",type: "floating point", double_precision: false, elements:[
       {name:"FG0", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
@@ -109,130 +112,130 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}*/
+    ]}
   ], instructions:[
-    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature: "add,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "add reg1 reg2 reg3", fields: [
+    {name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2+reg3"},
-    {name: "addi", co: "001000", cop: null, nwords: 1, signature: "addi,INT-Reg,INT-Reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
+    {name: "addi", co: "001000", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "addi,$INT-Reg,$INT-Reg,inm", signatureRaw: "addi $reg1 $reg2 val", fields: [
       {name: "addi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2+val"},
-    {name: "and", co: "000000", cop: "100100", nwords: 1, signature: "and,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "and reg1 reg2 reg3", fields: [
+    {name: "and", co: "000000", cop: "100100", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "and,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "and $reg1 $reg2 $reg3", fields: [
       {name: "and", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2&reg3"},
-    {name: "andi", co: "001100", cop: null, nwords: 1, signature: "andi,INT-Reg,INT-Reg,inm", signatureRaw: "andi reg1 reg2 val", fields: [
+    {name: "andi", co: "001100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "andi,$INT-Reg,$INT-Reg,inm", signatureRaw: "andi $reg1 $reg2 val", fields: [
       {name: "andi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2&val"},
-    {name: "b", co: "000100", cop: null, nwords: 1, signature: "b,inm", signatureRaw: "b val", fields: [
+    {name: "b", co: "000100", cop: null, nwords: 1, signature_definition: "F0 F1", signature: "b,inm", signatureRaw: "b val", fields: [
       {name: "b", type: "co", startbit: 31, stopbit: 26},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "PC=val"},
-    {name: "beq", co: "000100", cop: null, nwords: 1, signature: "beq,INT-Reg,INT-Reg,inm", signatureRaw: "beq reg1 reg2 val", fields: [
+    {name: "beq", co: "000100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "beq,$INT-Reg,$INT-Reg,inm", signatureRaw: "beq $reg1 $reg2 val", fields: [
       {name: "beq", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "if(reg1 == reg2){PC=val}"},
-    {name: "bne", co: "000101", cop: null, nwords: 1, signature: "bne,INT-Reg,INT-Reg,inm", signatureRaw: "bne reg1 reg2 val", fields: [
+    {name: "bne", co: "000101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "bne,$INT-Reg,$INT-Reg,inm", signatureRaw: "bne $reg1 $reg2 val", fields: [
       {name: "bne", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "if(reg1 != reg2){PC=val}"},
-    {name: "div", co: "000000", cop: "011010", nwords: 1, signature: "div,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "div reg1 reg2 reg3", fields: [
+    {name: "div", co: "000000", cop: "011010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "div,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "div $reg1 $reg2 $reg3", fields: [
       {name: "div", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2/reg3"},
-    {name: "lw", co: "000102", cop: null, nwords: 1, signature: "lw,INT-Reg,inm,(INT-Reg)", signatureRaw: "lw reg1 val (reg2)", fields: [
+    {name: "lw", co: "000102", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "lw,$INT-Reg,inm,($INT-Reg)", signatureRaw: "lw $reg1 val ($reg2)", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      {name: "reg2", type: "(INT-Reg)", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 25, stopbit: 21},
     ], definition: "reg1=MP.w.(val+reg2)"},
-    {name: "mul", co: "011100", cop: "000010", nwords: 1, signature: "mul,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "mul reg1 reg2 reg3", fields: [
+    {name: "mul", co: "011100", cop: "000010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "mul,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "mul $reg1 $reg2 $reg3", fields: [
       {name: "mul", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2*reg3"},
-    {name: "nop", co: "000000", cop: "000000", nwords: 1, signature: "nop", signatureRaw: "nop", fields: [
+    {name: "nop", co: "000000", cop: "000000", nwords: 1, signature_definition: "F0", signature: "nop", signatureRaw: "nop", fields: [
       {name: "nop", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: ""},
-    {name: "or", co: "000000", cop: "100101", nwords: 1, signature: "or,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "or reg1 reg2 reg3", fields: [
+    {name: "or", co: "000000", cop: "100101", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "or,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "or $reg1 $reg2 $reg3", fields: [
       {name: "or", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2|reg3"},
-    {name: "ori", co: "001101", cop: null, nwords: 1, signature: "ori,INT-Reg,INT-Reg,inm", signatureRaw: "ori reg1 reg2 val", fields: [
+    {name: "ori", co: "001101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "ori,$INT-Reg,$INT-Reg,inm", signatureRaw: "ori $reg1 $reg2 val", fields: [
       {name: "ori", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2|val"},
-    {name: "sub", co: "000000", cop: "100010", nwords: 1, signature: "sub,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "sub reg1 reg2 reg3", fields: [
+    {name: "sub", co: "000000", cop: "100010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "sub,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "sub $reg1 $reg2 $reg3", fields: [
       {name: "sub", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2-reg3"},
-    {name: "sw", co: "000103", cop: null, nwords: 1, signature: "sw,INT-Reg,inm,(INT-Reg)", signatureRaw: "sw reg1 val (reg2)", fields: [
+    {name: "sw", co: "000103", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "sw,$INT-Reg,$inm,($INT-Reg)", signatureRaw: "sw $reg1 val ($reg2)", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      {name: "reg2", type: "(INT-Reg)", startbit: 25, stopbit: 21},
+      {name: "reg2", type: "INT-Reg", startbit: 25, stopbit: 21},
     ], definition: "MP.w.(val+reg2)=reg1"},
-    {name: "xor", co: "000000", cop: "100110", nwords: 1, signature: "xor,INT-Reg,INT-Reg,INT-Reg", signatureRaw: "xor reg1 reg2 reg3", fields: [
+    {name: "xor", co: "000000", cop: "100110", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "xor,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "xor $reg1 $reg2 $reg3", fields: [
       {name: "xor", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2^reg3"},
-    {name: "xori", co: "001110", cop: null, nwords: 1, signature: "xori,INT-Reg,INT-Reg,inm", signatureRaw: "xori reg1 reg2 val", fields: [
+    {name: "xori", co: "001110", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "xori,$INT-Reg,$INT-Reg,inm", signatureRaw: "xori $reg1 $reg2 val", fields: [
       {name: "xori", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2^val"},
-    {name: "lui", co: "001111", cop: null, nwords: 1, signature: "lui,INT-Reg,inm", signatureRaw: "lui reg1 val", fields: [
+    {name: "lui", co: "001111", cop: null, nwords: 1, signature_definition: "F0 $F1 F2", signature: "lui,$INT-Reg,inm", signatureRaw: "lui $reg1 val", fields: [
       {name: "lui", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=val<<16"},*/
+    ], definition: "reg1=val<<16"},
   ],pseudoinstructions:[
-    /*{name: "move", nwords: 1, signature: "move,INT-Reg,INT-Reg", signatureRaw: "move reg1 reg2", fields: [
+    {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       ], definition: "add reg1 $r0 reg2;"},
-    {name: "addi", nwords: 1, signature: "addi,INT-Reg,INT-Reg,inm", signatureRaw: "addi reg1 reg2 val", fields: [
+    {name: "addi", nwords: 1, signature_definition: "addi $F0 $F1 F2", signature: "addi,$INT-Reg,$INT-Reg,inm", signatureRaw: "addi $reg1 $reg2 val", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add reg1 reg2 $at;"},*/
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},
   ], directives:[
-    /*{name:".kdata", kindof:"segment", size:0 },
+    {name:".kdata", kindof:"segment", size:0 },
     {name:".ktext", kindof:"segment", size:0 },
     {name:".data", kindof:"segment", size:0 },
     {name:".text", kindof:"segment", size:0 },
@@ -242,7 +245,7 @@ var architecture = {components:[
     {name:".space", kindof:"datatype", size:1 },
     {name:".ascii", kindof:"datatype", size:1 },
     {name:".asciiz", kindof:"datatype", size:1 },
-    {name:".align", kindof:"datatype", size:0 },*/
+    {name:".align", kindof:"datatype", size:0 },
   ]};
 
 var componentsTypes = [
@@ -284,7 +287,7 @@ var compileError =[
   {mess1: "Empty label", mess2: ""},
   {mess1: "Repeated tag: ", mess2: ""},
   {mess1: "Instruction '", mess2: "' not found"},
-  {mess1: "The registers should start with $", mess2: ""},
+  {mess1: "Incorrect signature --> ", mess2: ""},
   {mess1: "Register '", mess2: "' not found"},
   {mess1: "Immediate number '", mess2: "' is too big"},
   {mess1: "Immediate number '", mess2: "' is not valid"},
@@ -340,7 +343,9 @@ window.app = new Vue({
     back_card: back_card,
     /*Fecha copia de seguidad*/
     date_copy:'',
-    /*Nombre del fichero a cargar*/
+    /*Datos de la nueva arquitectura*/
+    name_arch: '',
+    description_arch: '',
     load_arch: '',
     /*Nombre del fichero a guardar*/
     name_arch_save: '',
@@ -355,10 +360,11 @@ window.app = new Vue({
     /*Listado de registros de coma flotante*/
     simple_reg:[],
     /*Campos de la tabla de componentes*/
-    archFields: ['name', 'nbits', 'value', 'default_value', 'properties', 'actions'],
+    archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
     /*Edicion de la arquitectura*/
     formArchitecture: {
       name: '',
+      id: '',
       type: '',
       defValue: '',
       properties: [],
@@ -425,11 +431,14 @@ window.app = new Vue({
       startBitField: [],
       stopBitField: [],
       assignedCop: false,
+      signature:'',
+      signatureRaw: '',
+      signature_definition: '',
       definition: '',
     },
     /*Barra de paginas formulario instrucciones*/
     instructionFormPage: 1,
-    instructionFormPageLink: ['#Principal', '#Fields', '#Definition'],
+    instructionFormPageLink: ['#Principal', '#Fields', '#Signature', '#Definition'],
     /*Variables para el selector de campos tabla*/
     instSel: '',
     /*Reset de las instrucciones*/
@@ -478,6 +487,9 @@ window.app = new Vue({
       typeField: [],
       startBitField: [],
       stopBitField: [],
+      signature:'',
+      signatureRaw: '',
+      signature_definition: '',
       definition: '',
     },
     /*Reset de las instrucciones*/
@@ -554,10 +566,13 @@ window.app = new Vue({
     newValue: '',
     /*Registros a mostrar*/
     register_type: 'integer',
+    /*Consola*/
+    display: '',
+    keyboard: '',
     
   },
   computed: {
-    
+
   },
   methods:{
     /*ALERTA GLOBAL*/
@@ -608,7 +623,24 @@ window.app = new Vue({
     load_arch_available(){
       $.getJSON('architecture/available_arch.json', function(cfg){
         architecture_available = cfg;
-        app._data.arch_available = cfg;
+        
+        if (typeof(Storage) !== "undefined") {
+          if(localStorage.getItem("load_architectures_available") != null){
+            var auxArch = localStorage.getItem("load_architectures_available");
+            var aux = JSON.parse(auxArch);
+
+            for (var i = 0; i < aux.length; i++) {
+              architecture_available.push(aux[i]);
+              load_architectures_available.push(aux[i]);
+
+              var auxArch2 = localStorage.getItem("load_architectures");
+              var aux2 = JSON.parse(auxArch2);
+              load_architectures.push(aux2[i]);
+            }
+          }
+        }
+
+        app._data.arch_available = architecture_available;
 
         for (var i = 0; i < architecture_available.length; i++) {
           back_card.push({name: architecture_available[i].name , background: "default"});
@@ -664,6 +696,7 @@ window.app = new Vue({
       $("#simulator").show();
       $("#save_btn_arch").show();
       $("#assembly_btn_arch").show();
+      $("#load_arch_btn_arch").hide();
       $("#sim_btn_arch").show();
       $("#load_arch").hide();
       $("#load_menu_arch").hide();
@@ -691,8 +724,43 @@ window.app = new Vue({
     /*Carga la arquitectura seleccionada*/
     load_arch_select(e){
       $(".loading").show();
+
+      for (var i = 0; i < load_architectures.length; i++) {
+        if(e == load_architectures[i].id){
+          architecture = JSON.parse(load_architectures[i].architecture);
+          app._data.architecture = architecture;
+
+          architecture_hash = [];
+          for (var i = 0; i < architecture.components.length; i++) {
+            architecture_hash.push({name: architecture.components[i].name, index: i}); 
+            app._data.architecture_hash = architecture_hash;
+          }
+
+          app._data.architecture_name = e;
+
+          $("#architecture_menu").hide();
+          $("#simulator").show();
+          $("#save_btn_arch").show();
+          $("#assembly_btn_arch").show();
+          $("#load_arch_btn_arch").hide();
+          $("#sim_btn_arch").show();
+          $("#load_arch").hide();
+          $("#load_menu_arch").hide();
+          $("#view_components").show();
+          $(".loading").hide();
+
+          app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          
+          return;
+        }
+      }
+
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        architecture = cfg;
+        //architecture = cfg;
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -707,6 +775,7 @@ window.app = new Vue({
         $("#simulator").show();
         $("#save_btn_arch").show();
         $("#assembly_btn_arch").show();
+        $("#load_arch_btn_arch").hide();
         $("#sim_btn_arch").show();
         $("#load_arch").hide();
         $("#load_menu_arch").hide();
@@ -737,31 +806,33 @@ window.app = new Vue({
       }
 
       function onFileLoaded(event) {
-        architecture = JSON.parse(event.currentTarget.result);
+        architecture_available.push({name: app._data.name_arch, img: "./images/personalized_logo.png", alt: app._data.name_arch + " logo" , id:"select_conf"+app._data.name_arch , description: app._data.description_arch});
+        load_architectures_available.push({name: app._data.name_arch, img: "./images/personalized_logo.png", alt: app._data.name_arch + " logo" , id:"select_conf"+app._data.name_arch , description: app._data.description_arch});
 
-        app._data.architecture = architecture;
+        back_card.push({name: architecture_available[architecture_available.length-1].name , background: "default"});
 
-        architecture_hash = [];
-        for (var i = 0; i < architecture.components.length; i++) {
-          architecture_hash.push({name: architecture.components[i].name, index: i}); 
-          app._data.architecture_hash = architecture_hash;
+        load_architectures.push({id: app._data.name_arch, architecture: event.currentTarget.result});
+
+        if (typeof(Storage) !== "undefined") {
+          var auxArch = JSON.stringify(load_architectures, null, 2);
+          localStorage.setItem("load_architectures", auxArch);
+
+          auxArch = JSON.stringify(load_architectures_available, null, 2);
+          localStorage.setItem("load_architectures_available", auxArch);
         }
 
-        $("#architecture_menu").hide();
-        $("#simulator").show();
-        $("#save_btn_arch").show();
-        $("#assembly_btn_arch").show();
-        $("#sim_btn_arch").show();
-        $("#load_arch").hide();
-        $("#load_menu_arch").hide();
-        $("#view_components").show();
-        $(".loading").hide();
-        
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
         var date = new Date();
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});       }
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});
+        
+        app._data.name_arch = '';
+        app._data.description_arch = '';
+        app._data.load_arch = '';
+
+        $(".loading").hide();
+      }
     },
 
     /*Guarda la arquitectura actual en un JSON*/
@@ -800,9 +871,64 @@ window.app = new Vue({
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
 
+    remove_cache_arch(index){
+
+      var id = architecture_available[index].name;
+
+      for (var i = 0; i < load_architectures.length; i++) {
+        if(load_architectures[i].id == id){
+          load_architectures.splice(i, 1);
+        }
+      }
+
+      for (var i = 0; i < load_architectures_available.length; i++) {
+        if(load_architectures_available[i].name == id){
+          load_architectures_available.splice(i, 1);
+        }
+      }
+
+      architecture_available.splice(index, 1);
+
+      var auxArch = JSON.stringify(load_architectures, null, 2);
+      localStorage.setItem("load_architectures", auxArch);
+
+      auxArch = JSON.stringify(load_architectures_available, null, 2);
+      localStorage.setItem("load_architectures_available", auxArch);
+
+      app._data.alertMessaje = 'Architecture deleted successfully';
+      app._data.type ='success';
+      app._data.dismissCountDown = app._data.dismissSecs;
+      var date = new Date();
+      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+    },
+
+    default_arch(item){
+      for (var i = 0; i < load_architectures_available.length; i++) {
+        if(load_architectures_available[i].name == item){
+          return true;
+        }
+      }
+      return false;
+    },
+
+    /*Asigna id a los registros*/
+    element_id(name, type, double){
+      var id = 0;
+      for(var i = 0; i < architecture.components.length; i++){
+        for(var j = 0; j < architecture.components[i].elements.length; j++){
+          if(architecture.components[i].elements[j].name == name){
+            return id;
+          }
+          if(architecture.components[i].type == type && architecture.components[i].double_precision == double){
+            id++;
+          }
+        }
+      }
+    },
+
     /*Modal de alerta de reset*/
     resetArchModal(elem, button){
-      this.modalResetArch.title = "Reset " + elem + " architecture";
+      this.modalResetArch.title = "Reset " + elem + " registers";
       this.modalResetArch.element = elem;
       this.$root.$emit('bv::show::modal', 'modalResetArch', button);
     },
@@ -821,7 +947,7 @@ window.app = new Vue({
         }
 
         $(".loading").hide();
-        app._data.alertMessaje = 'The architecture has been reset correctly';
+        app._data.alertMessaje = 'The registers has been reset correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
         var date = new Date();
@@ -876,7 +1002,7 @@ window.app = new Vue({
     editCompModal(comp, index, button){
       app._data.dismissCountDownMod = 0;
 
-      this.modalEditComponent.title = "Edit " + comp;
+      this.modalEditComponent.title = "Edit Component";
       this.modalEditComponent.element = comp;
 
       this.formArchitecture.name = comp;
@@ -924,7 +1050,7 @@ window.app = new Vue({
 
     /*Muestra el modal de confirmacion de borrado de un componente*/
     delCompModal(elem, button){
-      this.modalDeletComp.title = "Delete " + elem;
+      this.modalDeletComp.title = "Delete Component";
       this.modalDeletComp.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletComp', button);
     },
@@ -946,7 +1072,7 @@ window.app = new Vue({
     newElemModal(comp, index, button){
       app._data.dismissCountDownMod = 0;
 
-      this.modalNewElement.title = "New " + comp;
+      this.modalNewElement.title = "New element";
       this.modalNewElement.element = comp;
       this.modalNewElement.type = architecture.components[index].type;
       this.modalNewElement.double_precision = architecture.components[index].double_precision;
@@ -957,6 +1083,19 @@ window.app = new Vue({
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
           app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},)
+        }
+      }
+
+      var id = 0;
+      for(var i = 0; i < architecture.components.length; i++){
+        for(var j = 0; j < architecture.components[i].elements.length; j++){
+          if(architecture.components[i].name == comp && architecture.components[i].elements.length-1 == j){
+            id++;
+            this.formArchitecture.id = id;
+          }
+          if(architecture.components[i].type == architecture.components[index].type && architecture.components[i].double_precision == architecture.components[index].double_precision){
+            id++;
+          }
         }
       }
     },
@@ -1053,6 +1192,7 @@ window.app = new Vue({
           var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: aux_new, properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
           this.formArchitecture.name='';
+          this.formArchitecture.id ='';
           this.formArchitecture.defValue='';
           this.formArchitecture.properties=[];
           break;
@@ -1065,7 +1205,7 @@ window.app = new Vue({
     editElemModal(elem, comp, button){
       app._data.dismissCountDownMod = 0;
 
-      this.modalEditElement.title = "Edit " + elem;
+      this.modalEditElement.title = "Edit Element";
       this.modalEditElement.element = elem;
       this.modalEditElement.type = architecture.components[comp].type;
       this.modalEditElement.double_precision = architecture.components[comp].double_precision;
@@ -1090,6 +1230,19 @@ window.app = new Vue({
           }
         }
       }
+
+      var id = 0;
+      for(var i = 0; i < architecture.components.length; i++){
+        for(var j = 0; j < architecture.components[i].elements.length; j++){
+          if(architecture.components[i].elements[j].name == this.formArchitecture.name){
+            this.formArchitecture.id = id;
+          }
+          if(architecture.components[i].type == architecture.components[comp].type && architecture.components[i].double_precision == architecture.components[comp].double_precision){
+            id++;
+          }
+        }
+      }
+
       this.$root.$emit('bv::show::modal', 'modalEditElement', button);
     },
 
@@ -1171,6 +1324,7 @@ window.app = new Vue({
         }
       } 
       this.formArchitecture.name='';
+      this.formArchitecture.id='';
       this.formArchitecture.defValue='';
       this.formArchitecture.properties=[];
       this.formArchitecture.simple1='';
@@ -1180,7 +1334,7 @@ window.app = new Vue({
 
     /*Muestra el modal para confirmar el borrado*/
     delElemModal(elem, button){
-      this.modalDeletElement.title = "Delete " + elem;
+      this.modalDeletElement.title = "Delete Element";
       this.modalDeletElement.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
     },
@@ -1197,6 +1351,99 @@ window.app = new Vue({
     },
 
     /*PAGINA DE INSTRUCCIONES*/
+    /*Genera la signtura para las intrucciones*/
+    generateSignatureInst(){
+      var signature = this.formInstruction.signature_definition;
+
+      var re = new RegExp("^ +");
+      this.formInstruction.signature_definition= this.formInstruction.signature_definition.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      this.formInstruction.signature_definition = this.formInstruction.signature_definition.replace(re, " ");
+
+      re = new RegExp("^ +");
+      signature= signature.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signature = signature.replace(re, " ");
+
+      for (var z = 0; z < this.formInstruction.numfields; z++) {
+        re = new RegExp("[Ff]"+z, "g");
+
+        if(z == 0){
+          signature = signature.replace(re, this.formInstruction.name);
+        }
+        else{
+          signature = signature.replace(re, this.formInstruction.typeField[z]);
+        }
+      }
+
+      re = new RegExp(" ", "g");
+      signature = signature.replace(re , ",");
+
+
+      var signatureRaw = this.formInstruction.signature_definition;
+
+      re = new RegExp("^ +");
+      signatureRaw= signatureRaw.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signatureRaw = signatureRaw.replace(re, " ");
+
+      for (var z = 0; z < this.formInstruction.numfields; z++) {
+        re = new RegExp("[Ff]"+z, "g");
+
+        signatureRaw = signatureRaw.replace(re, this.formInstruction.nameField[z]);
+      }
+
+      this.formInstruction.signature = signature;
+      this.formInstruction.signatureRaw = signatureRaw;
+    },
+
+    generateSignaturePseudo(){
+      var signature = this.formPseudoinstruction.signature_definition;
+
+      var re = new RegExp("^ +");
+      this.formPseudoinstruction.signature_definition= this.formInstruction.signature_definition.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      this.formPseudoinstruction.signature_definition = this.formInstruction.signature_definition.replace(re, " ");
+
+      re = new RegExp("^ +");
+      signature= signature.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signature = signature.replace(re, " ");
+
+      for (var z = 0; z < this.formPseudoinstruction.numfields; z++) {
+        re = new RegExp("[Ff]"+z, "g");
+
+        signature = signature.replace(re, this.formPseudoinstruction.typeField[z]);
+      }
+
+      re = new RegExp(" ", "g");
+      signature = signature.replace(re , ",");
+
+
+      var signatureRaw = this.formPseudoinstruction.signature_definition;
+
+      re = new RegExp("^ +");
+      signatureRaw= signatureRaw.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signatureRaw = signatureRaw.replace(re, " ");
+
+      for (var z = 0; z < this.formPseudoinstruction.numfields; z++) {
+        re = new RegExp("[Ff]"+z, "g");
+
+        signatureRaw = signatureRaw.replace(re, this.formPseudoinstruction.nameField[z]);
+      }
+
+      this.formPseudoinstruction.signature = signature;
+      this.formPseudoinstruction.signatureRaw = signatureRaw;
+    },
+
+
     /*Visualizacion del modal con los campos de la instruccion*/
     viewFielsInst(elem, co, cop, button){
       $(".loading").show();
@@ -1209,9 +1456,7 @@ window.app = new Vue({
           this.formInstruction.co = architecture.instructions[i].co;
           app._data.modalViewFields.co = architecture.instructions[i].co;
           app._data.modalViewFields.cop = architecture.instructions[i].cop;
-          this.formInstruction.nwords = architecture.instructions[i].nwords;
           this.formInstruction.numfields = architecture.instructions[i].fields.length;
-          this.formInstruction.definition = architecture.instructions[i].definition;
 
           for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
             this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
@@ -1299,7 +1544,7 @@ window.app = new Vue({
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || empty == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1356,56 +1601,17 @@ window.app = new Vue({
 
       var cop = false;
 
-      var signature = this.formInstruction.name;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
-        if(this.formInstruction.typeField[z] != 'cop'){
-          if(z == 1){
-            signature = signature + ",";
-          }
-          signature = signature + this.formInstruction.typeField[z];
-          if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-            signature = signature + ',';
-          }
-        }
-        if(this.formInstruction.typeField[z] == 'cop'){
-          cop = true;
-          if(z<this.formInstruction.numfields-1){
-            signature = signature + ',';
-          }
-        }
-      }
+      this.generateSignatureInst();
 
-      var signatureRaw = this.formInstruction.name;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
-        if(this.formInstruction.typeField[z] != 'cop'){
-          if(z == 1){
-            signatureRaw = signatureRaw + ' ';
-          }
-          if(this.formInstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
-            signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
-            if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-              signatureRaw = signatureRaw + ' ';
-            } 
-          }
-          else{
-            signatureRaw = signatureRaw + this.formInstruction.nameField[z];
-            if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-              signatureRaw = signatureRaw + ' ';
-            } 
-          }
-        }
-        if(this.formInstruction.typeField[z] == 'cop'){
-          if(z<this.formInstruction.numfields-1){
-            signatureRaw = signatureRaw + ' ';
-          }
-        }
-      }
+      var signature = this.formInstruction.signature;
+      var signatureRaw = this.formInstruction.signatureRaw;
+
 
       if(cop == false){
         this.formInstruction.cop='';
       }
 
-      var newInstruction = {name: this.formInstruction.name, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
+      var newInstruction = {name: this.formInstruction.name, signature_definition: this.formInstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
       architecture.instructions.push(newInstruction);
 
       for (var i = 0; i < this.formInstruction.numfields; i++) {
@@ -1423,6 +1629,9 @@ window.app = new Vue({
       this.formInstruction.startBitField=[];
       this.formInstruction.stopBitField=[];
       this.formInstruction.definition='';
+      this.formInstruction.signature_definition='';
+      this.formInstruction.signature='';
+      this.formInstruction.signatureRaw='';
       this.formInstruction.assignedCop=false;
       this.instructionFormPage = 1;
       $(".loading").hide();
@@ -1431,7 +1640,7 @@ window.app = new Vue({
 
     /*Muestra el modal de confirmacion de borrado de una instruccion*/
     delInstModal(elem, index, button){
-      this.modalDeletInst.title = "Delete " + elem;
+      this.modalDeletInst.title = "Delete Instruction";
       this.modalDeletInst.element = elem;
       this.modalDeletInst.index = index;
       this.$root.$emit('bv::show::modal', 'modalDeletInst', button);
@@ -1446,7 +1655,7 @@ window.app = new Vue({
     editInstModal(elem, co, cop, button){
       app._data.dismissCountDownMod = 0;
 
-      this.modalEditInst.title = "Edit " + elem;
+      this.modalEditInst.title = "Edit Instruction";
       this.modalEditInst.element = elem;
       for (var i = 0; i < architecture.instructions.length; i++) {
         if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
@@ -1457,6 +1666,7 @@ window.app = new Vue({
           app._data.modalEditInst.cop = architecture.instructions[i].cop;
           this.formInstruction.nwords = architecture.instructions[i].nwords;
           this.formInstruction.numfields = architecture.instructions[i].fields.length;
+          this.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
           this.formInstruction.definition = architecture.instructions[i].definition;
 
           for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
@@ -1465,6 +1675,8 @@ window.app = new Vue({
             this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
             this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
           }
+
+          this.generateSignatureInst();
 
         }
       }
@@ -1520,7 +1732,7 @@ window.app = new Vue({
           empty = 1;
         }
       }
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.definition || empty == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1589,6 +1801,7 @@ window.app = new Vue({
           architecture.instructions[i].co = this.formInstruction.co;
           architecture.instructions[i].cop = this.formInstruction.cop;
           architecture.instructions[i].nwords = this.formInstruction.nwords;
+          architecture.instructions[i].signature_definition = this.formInstruction.signature_definition;
           architecture.instructions[i].definition = this.formInstruction.definition;
 
           for (var j = 0; j < this.formInstruction.numfields; j++){
@@ -1604,50 +1817,10 @@ window.app = new Vue({
             }
           }
 
-          var signature = this.formInstruction.name;
-          for (var z = 1; z < this.formInstruction.numfields; z++) {
-            if(z == 1){
-              signature = signature + ",";
-            }
-            if(this.formInstruction.typeField[z] != 'cop'){
-              signature = signature + this.formInstruction.typeField[z];
-              if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-                signature = signature + ',';
-              }
-            }
-            if(this.formInstruction.typeField[z] == 'cop'){
-              cop = true;
-              if(z<this.formInstruction.numfields-1){
-                signature = signature + ',';
-              }
-            }
-          }
+          this.generateSignatureInst();
 
-          var signatureRaw = this.formInstruction.name;
-          for (var z = 1; z < this.formInstruction.numfields; z++) {
-            if(this.formInstruction.typeField[z] != 'cop'){
-              if(z == 1){
-                signatureRaw = signatureRaw + ' ';
-              }
-              if(this.formPseudoinstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
-                signatureRaw = signatureRaw + '(' +this.formInstruction.nameField[z] + ')';
-                if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-                  signatureRaw = signatureRaw + ' ';
-                } 
-              }
-              else{
-                signatureRaw = signatureRaw + this.formInstruction.nameField[z];
-                if((z<this.formInstruction.numfields-1) && (this.formInstruction.typeField[z+1] != 'cop')){
-                  signatureRaw = signatureRaw + ' ';
-                } 
-              }
-            }
-            if(this.formInstruction.typeField[z] == 'cop'){
-              if(z<this.formInstruction.numfields-1){
-                signatureRaw = signatureRaw + ' ';
-              }
-            }
-          }
+          var signature = this.formInstruction.signature;
+          var signatureRaw = this.formInstruction.signatureRaw;
 
           if(exCop == false){
             architecture.instructions[i].cop='';
@@ -1672,6 +1845,9 @@ window.app = new Vue({
       this.formInstruction.typeField=[];
       this.formInstruction.startBitField=[];
       this.formInstruction.stopBitField=[];
+      this.formInstruction.signature_definition='';
+      this.formInstruction.signature='';
+      this.formInstruction.signatureRaw='';
       this.formInstruction.definition='';
       this.instructionFormPage = 1;
       $(".loading").hide();
@@ -1684,9 +1860,7 @@ window.app = new Vue({
       this.modalViewFields.element = elem;
       
       this.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
-      this.formPseudoinstruction.nwords = architecture.pseudoinstructions[index].nwords;
       this.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
-      this.formPseudoinstruction.definition = architecture.pseudoinstructions[index].definition;
 
       for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
         this.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
@@ -1722,7 +1896,7 @@ window.app = new Vue({
 
     /*Muestra el modal de confirmacion de borrado de una instruccion*/
     delPseudoinstModal(elem, index, button){
-      this.modalDeletPseudoinst.title = "Delete " + elem;
+      this.modalDeletPseudoinst.title = "Delete Pseudointruction";
       this.modalDeletPseudoinst.element = elem;
       this.modalDeletPseudoinst.index = index;
       this.$root.$emit('bv::show::modal', 'modalDeletPseudoinst', button);
@@ -1737,13 +1911,14 @@ window.app = new Vue({
     editPseudoinstModal(elem, index, button){
       app._data.dismissCountDownMod = 0;
 
-      this.modalEditPseudoinst.title = "Edit " + elem;
+      this.modalEditPseudoinst.title = "Edit Pseudoinstruction";
       this.modalEditPseudoinst.element = elem;
       this.modalEditPseudoinst.index = index;
       
       this.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
       this.formPseudoinstruction.nwords = architecture.pseudoinstructions[index].nwords;
       this.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
+      this.formPseudoinstruction.signature_definition = architecture.pseudoinstructions[index].signature_definition;
       this.formPseudoinstruction.definition = architecture.pseudoinstructions[index].definition;
 
       for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
@@ -1752,6 +1927,8 @@ window.app = new Vue({
         this.formPseudoinstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
         this.formPseudoinstruction.stopBitField[j] = architecture.pseudoinstructions[index].fields[j].stopbit;
       }
+
+      this.generateSignaturePseudo();
 
       this.$root.$emit('bv::show::modal', 'modalEditPseudoinst', button);
     },
@@ -1776,7 +1953,7 @@ window.app = new Vue({
         return;
       }
 
-      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
+      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1795,6 +1972,7 @@ window.app = new Vue({
       architecture.pseudoinstructions[index].name = this.formPseudoinstruction.name;
       architecture.pseudoinstructions[index].nwords = this.formPseudoinstruction.nwords;
       architecture.pseudoinstructions[index].definition = this.formPseudoinstruction.definition;
+      architecture.pseudoinstructions[index].signature_definition = this.formPseudoinstruction.signature_definition;
 
       for (var j = 0; j < this.formPseudoinstruction.numfields; j++){
         if(j < architecture.pseudoinstructions[index].fields.length){
@@ -1809,36 +1987,12 @@ window.app = new Vue({
         }
       }
 
-      var signature = this.formPseudoinstruction.name;
-      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
-        if(z == 1){
-          signature = signature + ",";
-        }
+      this.generateSignaturePseudo();
 
-        signature = signature + this.formPseudoinstruction.typeField[z];
-        if((z<this.formPseudoinstruction.numfields-1)){
-          signature = signature + ',';
-        }
-      }
+      var signature = this.formPseudoinstruction.signature;
+      var signatureRaw = this.formPseudoinstruction.signatureRaw;
 
-      var signatureRaw = this.formPseudoinstruction.name;
-      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
-        if(z == 1){
-          signatureRaw = signatureRaw + ' ';
-        }
-        if(this.formPseudoinstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
-          signatureRaw = signatureRaw + '(' +this.formPseudoinstruction.nameField[z] + ')';
-          if((z<this.formPseudoinstruction.numfields-1)){
-            signatureRaw = signatureRaw + ' ';
-          } 
-        }
-        else{
-          signatureRaw = signatureRaw + this.formPseudoinstruction.nameField[z];
-          if((z<this.formPseudoinstruction.numfields-1)){
-            signatureRaw = signatureRaw + ' ';
-          } 
-        }
-      }
+
 
       architecture.pseudoinstructions[index].signature = signature;
       architecture.pseudoinstructions[index].signatureRaw = signatureRaw;
@@ -1855,6 +2009,9 @@ window.app = new Vue({
       this.formPseudoinstruction.startBitField=[];
       this.formPseudoinstruction.stopBitField=[];
       this.formPseudoinstruction.definition='';
+      this.formPseudoinstruction.signature_definition='';
+      this.formPseudoinstruction.signature='';
+      this.formPseudoinstruction.signatureRaw='';
       this.instructionFormPage = 1;
       $(".loading").hide();
     },
@@ -1879,7 +2036,7 @@ window.app = new Vue({
         return;
       }
 
-      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.definition || vacio == 1) {
+      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1895,37 +2052,14 @@ window.app = new Vue({
 
       this.showNewPseudoinstruction = false;
 
-      var signature = this.formPseudoinstruction.name;
-      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
-        if(z == 1){
-          signature = signature + ",";
-        }
-        signature = signature + this.formPseudoinstruction.typeField[z];
-        if((z<this.formPseudoinstruction.numfields-1)){
-          signature = signature + ',';
-        }
-      }
+      this.generateSignaturePseudo();
 
-      var signatureRaw = this.formPseudoinstruction.name;
-      for (var z = 1; z < this.formPseudoinstruction.numfields; z++) {
-          if(z == 1){
-            signatureRaw = signatureRaw + ' ';
-          }
-          if(this.formPseudoinstruction.typeField[z] == '(INT-Reg)' || this.formInstruction.typeField[z] == '(FP-Reg)' || this.formInstruction.typeField[z] == '(Ctrl-Reg)'){
-            signatureRaw = signatureRaw + '(' +this.formPseudoinstruction.nameField[z] + ')';
-            if((z<this.formPseudoinstruction.numfields-1)){
-              signatureRaw = signatureRaw + ' ';
-            } 
-          }
-          else{
-            signatureRaw = signatureRaw + this.formPseudoinstruction.nameField[z];
-            if((z<this.formPseudoinstruction.numfields-1)){
-              signatureRaw = signatureRaw + ' ';
-            } 
-          }
-      }
+      var signature = this.formPseudoinstruction.signature;
+      var signatureRaw = this.formPseudoinstruction.signatureRaw;
 
-      var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
+
+
+      var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
       architecture.pseudoinstructions.push(newPseudoinstruction);
 
       for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
@@ -1941,13 +2075,15 @@ window.app = new Vue({
       this.formPseudoinstruction.startBitField=[];
       this.formPseudoinstruction.stopBitField=[];
       this.formPseudoinstruction.definition='';
+      this.formPseudoinstruction.signature_definition='';
+      this.formPseudoinstruction.signature='';
+      this.formPseudoinstruction.signatureRaw='';
       this.formPseudoinstruction.assignedCop=false;
       this.instructionFormPage = 1;
       $(".loading").hide();
     },
 
     pseudoDefValidator(name, definition){
-      console.log(definition)
 
       var re = new RegExp("^\n+");
       definition = definition.replace(re, "");
@@ -2705,6 +2841,7 @@ window.app = new Vue({
             var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0);
 
             if(result == -1){
+              $(".loading").hide();
               return;
             }
 
@@ -2816,10 +2953,10 @@ window.app = new Vue({
           var signatureRawParts = architecture.pseudoinstructions[i].signatureRaw.split(' ');
           var definition = architecture.pseudoinstructions[i].definition;
 
-          console.log(definition)
-
           for (var j = 1; j < signatureRawParts.length; j++){
-            re = new RegExp(signatureRawParts[j],"g");
+            var aux = signatureRawParts[j].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            re = new RegExp(aux,"g");
+
             definition = definition.replace(re, instructionParts[j]);
           }
 
@@ -2995,7 +3132,6 @@ window.app = new Vue({
       var validTagPC = true;
       var resultPseudo = -3;
 
-      console.log(instructionParts)
       console.log(label)
       console.log(line)
 
@@ -3007,11 +3143,49 @@ window.app = new Vue({
           var binary = "";
           binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
 
-          var instruction = "";
+          var instruction = architecture.instructions[i].signature_definition;
           var userInstruction = userInstruction;
 
-          signatureParts = architecture.instructions[i].signature.split(',');
-          signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
+          var signatureDef = architecture.instructions[i].signature_definition;
+          signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          re = new RegExp("[fF][0-9]", "g");
+          signatureDef = signatureDef.replace(re, "(.*?)");
+
+          re = new RegExp(",", "g");
+          var signature = architecture.instructions[i].signature.replace(re, " ");
+
+          re = new RegExp(signatureDef+"$")
+          var match = re.exec(signature);
+          var signatureParts = [];
+          for(var j = 1; j < match.length; j++){
+            signatureParts.push(match[j]);
+          }
+
+          match = re.exec(architecture.instructions[i].signatureRaw);
+          var signatureRawParts = [];
+          for(var j = 1; j < match.length; j++){
+            signatureRawParts.push(match[j]);
+          }
+
+          console.log(signatureParts)
+          console.log(signatureRawParts)
+
+          re = new RegExp(signatureDef+"$")
+          if(oriInstruction.search(re) == -1){
+            this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  
+            instructions = [];
+            pending_instructions = [];
+            return -1;
+          }
+
+          match = re.exec(oriInstruction);
+          instructionParts = [];
+          for(var j = 1; j < match.length; j++){
+            instructionParts.push(match[j]);
+          }
+          
+          console.log(instructionParts)
 
 
           for(var j = 0; j < signatureParts.length; j++){
@@ -3023,22 +3197,13 @@ window.app = new Vue({
 
                 var validReg = false;
 
-                if(token.charAt(0)!= '$'){
-                  this.compileError(3, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                  
-                  instructions = [];
-                  pending_instructions = [];
-                  return -1;
-                }
-
-                var auxToken = token.substring(1,token.length);
                 var regNum = 0;
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                   if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                     for(var z = 0; z < architecture_hash.length; z++){
                       for(var w = 0; w < architecture.components[z].elements.length; w++){
-                        if(auxToken == architecture.components[z].elements[w].name && architecture.components[z].type == "integer"){
+                        if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "integer"){
                           validReg = true;
                           regNum++;
 
@@ -3054,7 +3219,9 @@ window.app = new Vue({
                           }
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                          instruction = instruction + " " + token;
+                          //instruction = instruction + " " + token;
+                          re = RegExp("[fF][0-9]");
+                          instruction = instruction.replace(re, token);
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                           this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -3080,22 +3247,13 @@ window.app = new Vue({
 
                 var validReg = false;
 
-                if(token.charAt(0)!= '$'){
-                  this.compileError(3, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                  
-                  instructions = [];
-                  pending_instructions = [];
-                  return -1;
-                }
-
-                var auxToken = token.substring(1,token.length);
                 var regNum = 0;
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                   if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                     for(var z = 0; z < architecture_hash.length; z++){
                       for(var w = 0; w < architecture.components[z].elements.length; w++){
-                        if(auxToken == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point"){
+                        if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point"){
                           validReg = true;
                           regNum++;
 
@@ -3111,7 +3269,9 @@ window.app = new Vue({
                           }
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                          instruction = instruction + " " + token;
+                          //instruction = instruction + " " + token;
+                          re = RegExp("[fF][0-9]");
+                          instruction = instruction.replace(re, token);
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                           this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -3137,22 +3297,13 @@ window.app = new Vue({
 
                 var validReg = false;
 
-                if(token.charAt(0)!= '$'){
-                  this.compileError(3, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                  
-                  instructions = [];
-                  pending_instructions = [];
-                  return -1;
-                }
-
-                var auxToken = token.substring(1,token.length);
                 var regNum = 0;
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                   if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                     for(var z = 0; z < architecture_hash.length; z++){
                       for(var w = 0; w < architecture.components[z].elements.length; w++){
-                        if(auxToken == architecture.components[z].elements[w].name && architecture.components[z].type == "control"){
+                        if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "control"){
                           validReg = true;
                           regNum++;
 
@@ -3168,7 +3319,9 @@ window.app = new Vue({
                           }
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                          instruction = instruction + " " + token;
+                          //instruction = instruction + " " + token;
+                          re = RegExp("[fF][0-9]");
+                          instruction = instruction.replace(re, token);
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                           this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -3302,7 +3455,9 @@ window.app = new Vue({
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                     }
                     
-                    instruction = instruction + " " + token;
+                    //instruction = instruction + " " + token;
+                    re = RegExp("[fF][0-9]");
+                    instruction = instruction.replace(re, token);
                   }
                 }
 
@@ -3339,7 +3494,9 @@ window.app = new Vue({
                       addr = (parseInt(token, 16)).toString(2);
                     
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                      instruction = instruction + " " + token;
+                      //instruction = instruction + " " + token;
+                      re = RegExp("[fF][0-9]");
+                      instruction = instruction.replace(re, token);
                     }
                     else{
                       var validTag = false;
@@ -3349,7 +3506,9 @@ window.app = new Vue({
                             addr = (memory[z].Binary[w].Addr).toString(2);
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            instruction = instruction + " " + token;
+                            //instruction = instruction + " " + token;
+                            re = RegExp("[fF][0-9]");
+                            instruction = instruction.replace(re, token);
 
                             validTag = true;
                           }
@@ -3359,210 +3518,6 @@ window.app = new Vue({
                             instructions = [];
                             pending_instructions = [];
                             return -1;
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-
-                break;
-
-              case "(INT-Reg)":
-                token = instructionParts[j];
-
-                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
-                  if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
-                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-
-                    if(token.charAt(0) != '('){
-                      this.compileError(10, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      
-                      instructions = [];
-                      pending_instructions = [];
-                      return -1;
-                    }
-
-                    if(token.charAt(token.length-1) != ')'){
-                      this.compileError(11, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      
-                      instructions = [];
-                      pending_instructions = [];
-                      return -1;
-                    }
-                    
-                    re = /\((.*?)\)/;
-                    if (token.search(re) != -1){
-                      var match = re.exec(token);
-
-                      var auxToken = match[0].substring(1,match[0].length-1);
-                      var regNum = 0;
-
-                      validReg = false;
-
-                      for(var z = 0; z < architecture_hash.length; z++){
-                        for(var w = 0; w < architecture.components[z].elements.length; w++){
-                          if(auxToken == "$" + architecture.components[z].elements[w].name && architecture.components[z].type == "integer"){
-                            validReg = true;
-                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                            var reg = regNum;
-
-                            if(reg.toString(2).length > fieldsLength){
-                              this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                              instructions = [];
-                              pending_instructions = [];
-                              return -1;
-                            }
-
-                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            instruction = instruction + " " + token;
-                          }
-                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                            this.compileError(4, match[0], textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
-                            return -1;
-                          }
-                          if(architecture.components[z].type == "integer"){
-                            regNum++;
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-
-                break;
-
-              case "(FP-Reg)":
-                token = instructionParts[j];
-
-                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
-                  if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
-                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-
-                    if(token.charAt(0) != '('){
-                      this.compileError(10, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      
-                      instructions = [];
-                      pending_instructions = [];
-                      return -1;
-                    }
-
-                    if(token.charAt(token.length-1) != ')'){
-                      this.compileError(11, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      
-                      instructions = [];
-                      pending_instructions = [];
-                      return -1;
-                    }
-                    
-                    re = /\((.*?)\)/;
-                    if (token.search(re) != -1){
-                      var match = re.exec(token);
-
-                      var auxToken = match[0].substring(1,match[0].length-1);
-                      var regNum = 0;
-
-                      validReg = false;
-
-                      for(var z = 0; z < architecture_hash.length; z++){
-                        for(var w = 0; w < architecture.components[z].elements.length; w++){
-                          if(auxToken == "$" + architecture.components[z].elements[w].name && architecture.components[z].type == "floating point"){
-                            validReg = true;
-                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                            var reg = regNum;
-
-                            if(reg.toString(2).length > fieldsLength){
-                              this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                              instructions = [];
-                              pending_instructions = [];
-                              return -1;
-                            }
-
-                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            instruction = instruction + " " + token;
-                          }
-                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                            this.compileError(4, match[0], textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
-                            return -1;
-                          }
-                          if(architecture.components[z].type == "floating point"){
-                            regNum++;
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-
-                break;
-
-              case "(Ctrl-Reg)":
-                token = instructionParts[j];
-
-                for(var a = 0; a < architecture.instructions[i].fields.length; a++){
-                  if("(" + architecture.instructions[i].fields[a].name + ")" == signatureRawParts[j]){
-                    fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-
-                    if(token.charAt(0) != '('){
-                      this.compileError(10, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      
-                      instructions = [];
-                      pending_instructions = [];
-                      return -1;
-                    }
-
-                    if(token.charAt(token.length-1) != ')'){
-                      this.compileError(11, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      
-                      instructions = [];
-                      pending_instructions = [];
-                      return -1;
-                    }
-                    
-                    re = /\((.*?)\)/;
-                    if (token.search(re) != -1){
-                      var match = re.exec(token);
-
-                      var auxToken = match[0].substring(1,match[0].length-1);
-                      var regNum = 0;
-
-                      validReg = false;
-
-                      for(var z = 0; z < architecture_hash.length; z++){
-                        for(var w = 0; w < architecture.components[z].elements.length; w++){
-                          if(auxToken == "$" + architecture.components[z].elements[w].name && architecture.components[z].type == "control"){
-                            validReg = true;
-                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                            var reg = regNum;
-
-                            if(reg.toString(2).length > fieldsLength){
-                              this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                              instructions = [];
-                              pending_instructions = [];
-                              return -1;
-                            }
-
-                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            instruction = instruction + " " + token;
-                          }
-                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                            this.compileError(4, match[0], textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
-                            return -1;
-                          }
-                          if(architecture.components[z].type == "control"){
-                            regNum++;
                           }
                         }
                       }
@@ -3583,7 +3538,9 @@ window.app = new Vue({
                     
                     binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
 
-                    instruction = instruction + token;
+                    //instruction = instruction + token;
+                    re = RegExp("[fF][0-9]");
+                    instruction = instruction.replace(re, token);
                   }
 
                   if(architecture.instructions[i].fields[a].type == "cop"){
@@ -3696,6 +3653,11 @@ window.app = new Vue({
 
 
     /*PAGINA SIMULADOR*/
+    /*Abre la consola en una ventana*/
+    open_console(){
+      window.open("./console.html", "WepSim-Console", "width=720, height=auto");
+    },
+
     /*Funciones de los popover*/
     popoverId(i){
       return 'popoverValueContent' + i;
@@ -3970,6 +3932,8 @@ window.app = new Vue({
       var instructionExec = instructions[executionIndex].loaded;
 
       var instructionExecParts = instructionExec.split(' ');
+
+      var signatureDef;
       var signatureParts;
       var signatureRawParts;
       var nwords;
@@ -3980,8 +3944,33 @@ window.app = new Vue({
         var auxSig = architecture.instructions[i].signatureRaw.split(' ');
 
         if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
-          signatureParts = architecture.instructions[i].signature.split(',');
-          signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
+          //signatureParts = architecture.instructions[i].signature.split(',');
+          //signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
+
+          signatureDef = architecture.instructions[i].signature_definition;
+          signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          re = new RegExp("[fF][0-9]", "g");
+          signatureDef = signatureDef.replace(re, "(.*?)");
+
+          re = new RegExp(",", "g");
+          var signature = architecture.instructions[i].signature.replace(re, " ");
+
+          re = new RegExp(signatureDef+"$")
+          var match = re.exec(signature);
+          var signatureParts = [];
+          for(var j = 1; j < match.length; j++){
+            signatureParts.push(match[j]);
+          }
+
+          match = re.exec(architecture.instructions[i].signatureRaw);
+          var signatureRawParts = [];
+          for(var j = 1; j < match.length; j++){
+            signatureRawParts.push(match[j]);
+          }
+          
+          console.log(signatureParts)
+          console.log(signatureRawParts)
+
           auxDef = architecture.instructions[i].definition;
           nwords = architecture.instructions[i].nwords;
           break;
@@ -3993,15 +3982,19 @@ window.app = new Vue({
 
       console.log(auxDef)
 
+      re = new RegExp(signatureDef+"$")
+      var match = re.exec(instructionExec);
+      instructionExecParts = [];
+      for(var j = 1; j < match.length; j++){
+        instructionExecParts.push(match[j]);
+      }
+
+      console.log(instructionExecParts)
+
       /*Replaza los valores por el nombre de los registros*/
       for (var i = 1; i < signatureRawParts.length; i++){
         var re = new RegExp(signatureRawParts[i],"g");
-        if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "Ctrl-Reg"){
-          auxDef = auxDef.replace(re, instructionExecParts[i].substring(1, instructionExecParts[i].length));
-        }
-        else{
-          auxDef = auxDef.replace(re, instructionExecParts[i]);
-        }
+        auxDef = auxDef.replace(re, instructionExecParts[i]);
       }
 
       console.log(auxDef)
