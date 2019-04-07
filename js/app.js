@@ -680,6 +680,7 @@ window.app = new Vue({
     /*Carga la copia de seguridad*/
     load_copy(){
       $(".loading").show();
+      this.architecture_name = localStorage.getItem("arch_name");
       architecture = JSON.parse(localStorage.getItem("architecture_copy"));
       app._data.architecture = architecture;
       textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
@@ -955,6 +956,15 @@ window.app = new Vue({
       });
     },
 
+    emptyFormArch(){
+      this.formArchitecture.name = '';
+      this.formArchitecture.id = '';
+      this.formArchitecture.type = '';
+      this.formArchitecture.defValue = '';
+      this.formArchitecture.properties = [];
+      this.formArchitecture.precision = '';
+    },
+
     /*Comprueba que estan todos los campos del formulario de nuevo componente*/
     newComponentVerify(evt){
       $(".loading").show();
@@ -992,9 +1002,6 @@ window.app = new Vue({
       var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
       architecture_hash.push(newComponentHash);
 
-      this.formArchitecture.name='';
-      this.formArchitecture.type='';
-      this.formArchitecture.precision='';
       $(".loading").hide();
     },
 
@@ -1147,25 +1154,16 @@ window.app = new Vue({
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
           var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
-          this.formArchitecture.name='';
-          this.formArchitecture.defValue='';
-          this.formArchitecture.properties=[];
           break;
         }
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "control")){
           var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: ["read", "write"]};
           architecture.components[i].elements.push(newElement);
-          this.formArchitecture.name='';
-          this.formArchitecture.defValue='';
-          this.formArchitecture.properties=[];
           break;
         }
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
           var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
-          this.formArchitecture.name='';
-          this.formArchitecture.defValue='';
-          this.formArchitecture.properties=[];
           break;
         }
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
@@ -1191,10 +1189,6 @@ window.app = new Vue({
 
           var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: aux_new, properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
-          this.formArchitecture.name='';
-          this.formArchitecture.id ='';
-          this.formArchitecture.defValue='';
-          this.formArchitecture.properties=[];
           break;
         }
       }
@@ -1323,12 +1317,6 @@ window.app = new Vue({
           }
         }
       } 
-      this.formArchitecture.name='';
-      this.formArchitecture.id='';
-      this.formArchitecture.defValue='';
-      this.formArchitecture.properties=[];
-      this.formArchitecture.simple1='';
-      this.formArchitecture.simple2='';
       $(".loading").hide();
     },
 
@@ -1351,6 +1339,41 @@ window.app = new Vue({
     },
 
     /*PAGINA DE INSTRUCCIONES*/
+    /*Vacia el formulario de instrucciones*/
+    emptyFormInst(){
+      this.formInstruction.name = '';
+      this.formInstruction.co = '';
+      this.formInstruction.cop = '';
+      this.formInstruction.nwords = 1;
+      this.formInstruction.numfields = 1;
+      this.formInstruction.nameField = [];
+      this.formInstruction.typeField = [];
+      this.formInstruction.startBitField = [];
+      this.formInstruction.stopBitField = [];
+      this.formInstruction.assignedCop = false;
+      this.formInstruction.signature ='';
+      this.formInstruction.signatureRaw = '';
+      this.formInstruction.signature_definition = '';
+      this.formInstruction.definition = '';
+      this.instructionFormPage = 1;
+    },
+
+    /*Vacia el formulario de instrucciones*/
+    emptyFormPseudo(){
+      this.formPseudoinstruction.name = '';
+      this.formPseudoinstruction.nwords = 1;
+      this.formPseudoinstruction.numfields = 0;
+      this.formPseudoinstruction.nameField = [];
+      this.formPseudoinstruction.typeField = [];
+      this.formPseudoinstruction.startBitField = [];
+      this.formPseudoinstruction.stopBitField = [];
+      this.formPseudoinstruction.signature ='';
+      this.formPseudoinstruction.signatureRaw = '';
+      this.formPseudoinstruction.signature_definition = '';
+      this.formPseudoinstruction.definition = '';
+      this.instructionFormPage = 1;
+    },
+
     /*Genera la signtura para las intrucciones*/
     generateSignatureInst(){
       var signature = this.formInstruction.signature_definition;
@@ -1404,10 +1427,10 @@ window.app = new Vue({
       var signature = this.formPseudoinstruction.signature_definition;
 
       var re = new RegExp("^ +");
-      this.formPseudoinstruction.signature_definition= this.formInstruction.signature_definition.replace(re, "");
+      this.formPseudoinstruction.signature_definition = this.formPseudoinstruction.signature_definition.replace(re, "");
 
       re = new RegExp(" +", "g");
-      this.formPseudoinstruction.signature_definition = this.formInstruction.signature_definition.replace(re, " ");
+      this.formPseudoinstruction.signature_definition = this.formPseudoinstruction.signature_definition.replace(re, " ");
 
       re = new RegExp("^ +");
       signature= signature.replace(re, "");
@@ -1423,7 +1446,6 @@ window.app = new Vue({
 
       re = new RegExp(" ", "g");
       signature = signature.replace(re , ",");
-
 
       var signatureRaw = this.formPseudoinstruction.signature_definition;
 
@@ -1619,21 +1641,6 @@ window.app = new Vue({
         architecture.instructions[architecture.instructions.length-1].fields.push(newField);
       }
 
-      this.formInstruction.name='';
-      this.formInstruction.cop='';
-      this.formInstruction.co ='';
-      this.formInstruction.nwords =1;
-      this.formInstruction.numfields=1;
-      this.formInstruction.nameField=[];
-      this.formInstruction.typeField=[];
-      this.formInstruction.startBitField=[];
-      this.formInstruction.stopBitField=[];
-      this.formInstruction.definition='';
-      this.formInstruction.signature_definition='';
-      this.formInstruction.signature='';
-      this.formInstruction.signatureRaw='';
-      this.formInstruction.assignedCop=false;
-      this.instructionFormPage = 1;
       $(".loading").hide();
       
     },
@@ -1836,20 +1843,6 @@ window.app = new Vue({
         }
       }
 
-      this.formInstruction.name='';
-      this.formInstruction.cop='';
-      this.formInstruction.co ='';
-      this.formInstruction.nwords =1;
-      this.formInstruction.numfields=1;
-      this.formInstruction.nameField=[];
-      this.formInstruction.typeField=[];
-      this.formInstruction.startBitField=[];
-      this.formInstruction.stopBitField=[];
-      this.formInstruction.signature_definition='';
-      this.formInstruction.signature='';
-      this.formInstruction.signatureRaw='';
-      this.formInstruction.definition='';
-      this.instructionFormPage = 1;
       $(".loading").hide();
     },
 
@@ -2001,18 +1994,6 @@ window.app = new Vue({
         architecture.pseudoinstructions[index].fields.splice(this.formPseudoinstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formPseudoinstruction.numfields));
       }
 
-      this.formPseudoinstruction.name='';
-      this.formPseudoinstruction.nwords =1;
-      this.formPseudoinstruction.numfields=0;
-      this.formPseudoinstruction.nameField=[];
-      this.formPseudoinstruction.typeField=[];
-      this.formPseudoinstruction.startBitField=[];
-      this.formPseudoinstruction.stopBitField=[];
-      this.formPseudoinstruction.definition='';
-      this.formPseudoinstruction.signature_definition='';
-      this.formPseudoinstruction.signature='';
-      this.formPseudoinstruction.signatureRaw='';
-      this.instructionFormPage = 1;
       $(".loading").hide();
     },
 
@@ -2057,8 +2038,6 @@ window.app = new Vue({
       var signature = this.formPseudoinstruction.signature;
       var signatureRaw = this.formPseudoinstruction.signatureRaw;
 
-
-
       var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
       architecture.pseudoinstructions.push(newPseudoinstruction);
 
@@ -2067,19 +2046,6 @@ window.app = new Vue({
         architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(newField);
       }
 
-      this.formPseudoinstruction.name='';
-      this.formPseudoinstruction.nwords =1;
-      this.formPseudoinstruction.numfields=0;
-      this.formPseudoinstruction.nameField=[];
-      this.formPseudoinstruction.typeField=[];
-      this.formPseudoinstruction.startBitField=[];
-      this.formPseudoinstruction.stopBitField=[];
-      this.formPseudoinstruction.definition='';
-      this.formPseudoinstruction.signature_definition='';
-      this.formPseudoinstruction.signature='';
-      this.formPseudoinstruction.signatureRaw='';
-      this.formPseudoinstruction.assignedCop=false;
-      this.instructionFormPage = 1;
       $(".loading").hide();
     },
 
@@ -2101,8 +2067,17 @@ window.app = new Vue({
           console.log(code)
           var instructions = code[1].split(";");
 
+          console.log(instructions.length)
+
+          if(instructions.length == 1){
+            app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
+            app._data.type ='danger';
+            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            return -1;
+          }
+
           for (var j = 0; j < instructions.length-1; j++){
-            re = new RegExp("^ +");
+            var re = new RegExp("^ +");
             instructions[j] = instructions[j].replace(re, "");
 
             re = new RegExp(" +", "g");
@@ -2110,13 +2085,38 @@ window.app = new Vue({
 
             var instructionParts = instructions[j].split(" ");
 
-            console.log(instructionParts)
-
             var found = false;
             for (var i = 0; i < architecture.instructions.length; i++){
               if(architecture.instructions[i].name == instructionParts[0]){
                 found = true;
                 var numFields = 0;
+                var regId = 0;
+
+                signatureDef = architecture.instructions[i].signature_definition;
+                signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                re = new RegExp("[fF][0-9]+", "g");
+                signatureDef = signatureDef.replace(re, "(.*?)");
+
+                console.log(instructions[j])
+                console.log(signatureDef)
+
+                re = new RegExp(signatureDef+"$")
+                if(instructions[j].search(re) == -1){
+                  app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
+                  app._data.type ='danger';
+                  app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                  return -1;
+                }
+
+                re = new RegExp(signatureDef+"$")
+                var match = re.exec(instructions[j]);
+                var instructionParts = [];
+                for(var z = 1; z < match.length; z++){
+                  instructionParts.push(match[z]);
+                }
+
+                console.log(instructionParts)
+
                 for (var z = 0; z < architecture.instructions[i].fields.length; z++){
                   if(architecture.instructions[i].fields[z].type != "cop"){
                     numFields++;
@@ -2124,10 +2124,25 @@ window.app = new Vue({
 
                   if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                     var found = false;
+
+                    var id = -1;
+                    re = new RegExp("R[0-9]+");
+                    if(instructionParts[z].search(re) != -1){
+                      re = new RegExp("R(.*?)$");
+                      match = re.exec(instructionParts[z]);
+                      id = match[1];
+                    }
+
                     for (var a = 0; a < architecture.components.length; a++){
                       for (var b = 0; b < architecture.components[a].elements.length; b++){
-                        if("$" + architecture.components[a].elements[b].name == instructionParts[z]){
+                        if(architecture.components[a].elements[b].name == instructionParts[z]){
                           found = true;
+                        }
+                        if(architecture.components[a].type == "integer" && regId == id){
+                          found = true;
+                        }
+                        if(architecture.components[a].type == "integer"){
+                          regId++;
                         }
                       }
                     }
@@ -2224,8 +2239,6 @@ window.app = new Vue({
                         app._data.dismissCountDownMod = app._data.dismissSecsMod;
                         return -1;
                       }
-
-                      
                     }
                   }
 
@@ -2306,6 +2319,35 @@ window.app = new Vue({
             if(architecture.instructions[i].name == instructionParts[0]){
               found = true;
               var numFields = 0;
+              var regId = 0;
+
+
+
+              signatureDef = architecture.instructions[i].signature_definition;
+              signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+              re = new RegExp("[fF][0-9]+", "g");
+              signatureDef = signatureDef.replace(re, "(.*?)");
+
+              console.log(instructions[j])
+              console.log(signatureDef)
+
+              re = new RegExp(signatureDef+"$")
+              if(instructions[j].search(re) == -1){
+                app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
+                app._data.type ='danger';
+                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                return -1;
+              }
+
+              re = new RegExp(signatureDef+"$")
+              var match = re.exec(instructions[j]);
+              var instructionParts = [];
+              for(var z = 1; z < match.length; z++){
+                instructionParts.push(match[z]);
+              }
+
+              console.log(instructionParts)
+
               for (var z = 0; z < architecture.instructions[i].fields.length; z++){
                 if(architecture.instructions[i].fields[z].type != "cop"){
                   numFields++;
@@ -2313,10 +2355,25 @@ window.app = new Vue({
 
                 if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                   var found = false;
+
+                  var id = -1;
+                  re = new RegExp("R[0-9]+");
+                  if(instructionParts[z].search(re) != -1){
+                    re = new RegExp("R(.*?)$");
+                    match = re.exec(instructionParts[z]);
+                    id = match[1];
+                  }
+
                   for (var a = 0; a < architecture.components.length; a++){
                     for (var b = 0; b < architecture.components[a].elements.length; b++){
-                      if("$" + architecture.components[a].elements[b].name == instructionParts[z]){
+                      if(architecture.components[a].elements[b].name == instructionParts[z]){
                         found = true;
+                      }
+                      if(architecture.components[a].type == "integer" && regId == id){
+                        found = true;
+                      }
+                      if(architecture.components[a].type == "integer"){
+                        regId++;
                       }
                     }
                   }
@@ -2740,6 +2797,7 @@ window.app = new Vue({
         var date = new Date();
         var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
 
+        localStorage.setItem("arch_name", this.architecture_name);
         localStorage.setItem("architecture_copy", auxArch);
         localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
         localStorage.setItem("date_copy", auxDate);
@@ -3148,7 +3206,7 @@ window.app = new Vue({
 
           var signatureDef = architecture.instructions[i].signature_definition;
           signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          re = new RegExp("[fF][0-9]", "g");
+          re = new RegExp("[fF][0-9]+", "g");
           signatureDef = signatureDef.replace(re, "(.*?)");
 
           re = new RegExp(",", "g");
@@ -3195,6 +3253,14 @@ window.app = new Vue({
 
                 console.log(token)
 
+                var id = -1;
+                re = new RegExp("R[0-9]+");
+                if(token.search(re) != -1){
+                  re = new RegExp("R(.*?)$");
+                  match = re.exec(token);
+                  id = match[1];
+                }
+
                 var validReg = false;
 
                 var regNum = 0;
@@ -3220,7 +3286,26 @@ window.app = new Vue({
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           //instruction = instruction + " " + token;
-                          re = RegExp("[fF][0-9]");
+                          re = RegExp("[fF][0-9]+");
+                          instruction = instruction.replace(re, token);
+                        }
+                        else if(id == regNum){
+                          validReg = true;
+
+                          fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                          var reg = regNum;
+
+                          if(reg.toString(2).length > fieldsLength){
+                            this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                            instructions = [];
+                            pending_instructions = [];
+                            return -1;
+                          }
+
+                          binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                          //instruction = instruction + " " + token;
+                          re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -3230,9 +3315,8 @@ window.app = new Vue({
                           pending_instructions = [];
                           return -1;
                         }
-                        if(architecture.components[z].type == "integer"){
-                          regNum++;
-                        }
+
+                        regNum++;
                       }
                     }
                   }
@@ -3270,7 +3354,7 @@ window.app = new Vue({
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           //instruction = instruction + " " + token;
-                          re = RegExp("[fF][0-9]");
+                          re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -3320,7 +3404,7 @@ window.app = new Vue({
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           //instruction = instruction + " " + token;
-                          re = RegExp("[fF][0-9]");
+                          re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -3456,7 +3540,7 @@ window.app = new Vue({
                     }
                     
                     //instruction = instruction + " " + token;
-                    re = RegExp("[fF][0-9]");
+                    re = RegExp("[fF][0-9]+");
                     instruction = instruction.replace(re, token);
                   }
                 }
@@ -3495,7 +3579,7 @@ window.app = new Vue({
                     
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                       //instruction = instruction + " " + token;
-                      re = RegExp("[fF][0-9]");
+                      re = RegExp("[fF][0-9]+");
                       instruction = instruction.replace(re, token);
                     }
                     else{
@@ -3507,7 +3591,7 @@ window.app = new Vue({
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                             //instruction = instruction + " " + token;
-                            re = RegExp("[fF][0-9]");
+                            re = RegExp("[fF][0-9]+");
                             instruction = instruction.replace(re, token);
 
                             validTag = true;
@@ -3539,7 +3623,7 @@ window.app = new Vue({
                     binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
 
                     //instruction = instruction + token;
-                    re = RegExp("[fF][0-9]");
+                    re = RegExp("[fF][0-9]+");
                     instruction = instruction.replace(re, token);
                   }
 
@@ -3949,7 +4033,7 @@ window.app = new Vue({
 
           signatureDef = architecture.instructions[i].signature_definition;
           signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-          re = new RegExp("[fF][0-9]", "g");
+          re = new RegExp("[fF][0-9]+", "g");
           signatureDef = signatureDef.replace(re, "(.*?)");
 
           re = new RegExp(",", "g");
@@ -4001,6 +4085,7 @@ window.app = new Vue({
 
       /*Remplaza el nombre del registro por su variable*/
       var regIndex = 0;
+      var regNum = 0;
 
       for (var i = 0; i < architecture.components.length; i++){
         for (var j = 0; j < architecture.components[i].elements.length; j++){
@@ -4017,9 +4102,33 @@ window.app = new Vue({
             regIndex++;
           }
 
+          if(architecture.components[i].type == "integer"){
+            re = new RegExp("R"+regNum+" *=[^=]");
+            if (auxDef.search(re) != -1){
+              re = new RegExp("R"+regNum+" *=","g");
+
+              auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
+              auxDef = "var reg" + regIndex + "=null\n" + auxDef
+              auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
+              regIndex++;
+            }
+          }
+
           /*Si es un registro de lectura*/
           re = new RegExp(architecture.components[i].elements[j].name,"g");
           auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
+
+          if(architecture.components[i].type == "integer"){
+            re = new RegExp("R"+regNum+"[^0-9]","g");
+            if(auxDef.search(re) != -1){
+              re = new RegExp("R"+regNum,"g");
+              auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
+            }
+          }
+
+          if(architecture.components[i].type == "integer"){
+            regNum++;
+          }
         }
       }
 
@@ -4066,7 +4175,6 @@ window.app = new Vue({
       re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
       if (auxDef.search(re) != -1){
         var match = re.exec(auxDef);
-
         re = new RegExp("MP."+match[1]+"."+match[2],"g");
         auxDef = auxDef.replace(re, "this.readMemory('"+match[2]+"','"+match[1]+"')");
       }
