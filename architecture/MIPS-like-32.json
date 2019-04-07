@@ -1284,7 +1284,7 @@
     },
     {
       "name": "lw",
-      "co": "000102",
+      "co": "100011",
       "cop": null,
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
@@ -1506,7 +1506,7 @@
     },
     {
       "name": "sw",
-      "co": "000103",
+      "co": "101011",
       "cop": null,
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",

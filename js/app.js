@@ -163,7 +163,7 @@ var architecture = {components:[
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2/reg3"},
-    {name: "lw", co: "000102", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "lw,$INT-Reg,inm,($INT-Reg)", signatureRaw: "lw $reg1 val ($reg2)", fields: [
+    {name: "lw", co: "100011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "lw,$INT-Reg,inm,($INT-Reg)", signatureRaw: "lw $reg1 val ($reg2)", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
@@ -200,7 +200,7 @@ var architecture = {components:[
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2-reg3"},
-    {name: "sw", co: "000103", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "sw,$INT-Reg,$inm,($INT-Reg)", signatureRaw: "sw $reg1 val ($reg2)", fields: [
+    {name: "sw", co: "101011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "sw,$INT-Reg,$inm,($INT-Reg)", signatureRaw: "sw $reg1 val ($reg2)", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
@@ -297,6 +297,8 @@ var compileError =[
   {mess1: "This field '", mess2: "' must start with a '('"},
   {mess1: "This field '", mess2: "' must end with a ')'"},
   {mess1: "This field is too small to encode in binary '", mess2: ""},
+  {mess1: "This field is too small to encode in binary '", mess2: ""},
+  {mess1: "Incorrect definition '", mess2: ""},
 ];
 
 /*Notificaciones mostradas*/
@@ -3057,10 +3059,10 @@ window.app = new Vue({
               for (var j = 0; j < instructions.length-1; j++){
                 var aux;
                 if(j == 0){
-                  aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0)";
+                  aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0) == -1){error = true}";
                 }
                 else{
-                  aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "', ''," + line + ", false, 0)";
+                  aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "', ''," + line + ", false, 0) == -1){error = true}";
                 }
                 definition = definition.replace(instructions[j]+";", aux+";\n");
               }
@@ -3074,10 +3076,10 @@ window.app = new Vue({
             for (var j = 0; j < instructions.length-1; j++){
               var aux;
               if(j == 0){
-                aux = "this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0)";
+                aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0) == -1){error = true}";
               }
               else{
-                aux = "this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0)";
+                aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0) == -1){error = true}";
               }
               definition = definition.replace(instructions[j]+";", aux+";\n");
             }
@@ -3086,13 +3088,17 @@ window.app = new Vue({
           console.log(definition)
 
           try{
+            var error = false;
             eval(definition);
+            if(error == true){
+              return -2;
+            }
             console.log("finpseudo")
             return 0;
           }
           catch(e){
             if (e instanceof SyntaxError) {
-              return -1;
+              return -2;
             }
           }
 
@@ -3231,7 +3237,7 @@ window.app = new Vue({
           re = new RegExp(signatureDef+"$")
           if(oriInstruction.search(re) == -1){
             this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                  
+            
             instructions = [];
             pending_instructions = [];
             return -1;
@@ -3450,6 +3456,13 @@ window.app = new Vue({
                           return -1;
                         }
 
+                        if(resultPseudo == -2){
+                          this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
+
                       }
 
                       if(isNaN(parseInt(token, 16)) == true){
@@ -3467,6 +3480,13 @@ window.app = new Vue({
 
                         if(resultPseudo == -1){
                           this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
+
+                        if(resultPseudo == -2){
+                          this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                           instructions = [];
                           pending_instructions = [];
                           return -1;
@@ -3520,6 +3540,13 @@ window.app = new Vue({
 
                         if(resultPseudo == -1){
                           this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          instructions = [];
+                          pending_instructions = [];
+                          return -1;
+                        }
+
+                        if(resultPseudo == -2){
+                          this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                           instructions = [];
                           pending_instructions = [];
                           return -1;
