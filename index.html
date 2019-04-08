@@ -1128,8 +1128,8 @@
                         </b-form-input>
                       </b-form-group>
 
-                      <b-form-group label="Kindof:">
-                        <b-form-select :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
+                      <b-form-group label="action:">
+                        <b-form-select :options="actionTypes" required v-model="formDirective.action" :state="valid(formDirective.action)" size="sm"></b-form-select>
                       </b-form-group>
 
                       <b-form-group label="Size:">
@@ -1170,8 +1170,8 @@
                           </b-form-input>
                         </b-form-group>
 
-                        <b-form-group label="Kindof:">
-                          <b-form-select :options="kindofTypes" required v-model="formDirective.kindof" :state="valid(formDirective.kindof)" size="sm"></b-form-select>
+                        <b-form-group label="action:">
+                          <b-form-select :options="actionTypes" required v-model="formDirective.action" :state="valid(formDirective.action)" size="sm"></b-form-select>
                         </b-form-group>
 
                         <b-form-group label="Size:">
@@ -1488,7 +1488,7 @@
                       </h6>
                     </template>
                     <template slot="Value" slot-scope="row">
-                      
+                      <h6 style="font-size: 13px">{{row.item.Value}}</h6>
                     </template>
                   </b-table>
                 </div>

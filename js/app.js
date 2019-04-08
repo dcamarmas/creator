@@ -13,7 +13,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Control registers", type: "control", double_precision: false, elements:[
+  {name: "Control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -112,9 +112,9 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}*/
+    ]}
   ], instructions:[
-    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
+    {name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
@@ -223,9 +223,9 @@ var architecture = {components:[
       {name: "lui", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=val<<16"},*/
+    ], definition: "reg1=val<<16"},
   ],pseudoinstructions:[
-    /*{name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
+    {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       ], definition: "add reg1 $r0 reg2;"},
@@ -233,19 +233,25 @@ var architecture = {components:[
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},*/
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},
   ], directives:[
-    /*{name:".kdata", kindof:"segment", size:0 },
-    {name:".ktext", kindof:"segment", size:0 },
-    {name:".data", kindof:"segment", size:0 },
-    {name:".text", kindof:"segment", size:0 },
-    {name:".byte", kindof:"datatype", size:1 },
-    {name:".half", kindof:"datatype", size:2 },
-    {name:".word", kindof:"datatype", size:4 },
-    {name:".space", kindof:"datatype", size:1 },
-    {name:".ascii", kindof:"datatype", size:1 },
-    {name:".asciiz", kindof:"datatype", size:1 },
-    {name:".align", kindof:"datatype", size:0 },*/
+    {name:".kdata", action:"kernel_data_segment", size:null },
+    {name:".ktext", action:"kernel_code_segment", size:null },
+    {name:".data", action:"data_segment", size:null },
+    {name:".text", action:"code_segment", size:null },
+    {name:".main", action:"main_function", size:null },
+    {name:".globl", action:"global_symbol", size:null },
+    {name:".extern", action:"data_size", size:null },
+    {name:".byte", action:"byte", size:1 },
+    {name:".half", action:"half_word", size:2 },
+    {name:".word", action:"word", size:4 },
+    {name:".doubleword", action:"double_word", size:8 },
+    {name:".float", action:"float", size:4 },
+    {name:".double", action:"double", size:8 },
+    {name:".space", action:"space", size:1 },
+    {name:".ascii", action:"ascii_not_null_end", size:null },
+    {name:".asciiz", action:"ascii_null_end", size:null },
+    {name:".align", action:"aling", size:null },
   ]};
 
 var componentsTypes = [
@@ -254,13 +260,28 @@ var componentsTypes = [
   { text: 'Control', value: 'control' },
 ]
 
-var kindofTypes = [
-  { text: 'segment', value: 'segment' },
-  { text: 'datatype', value: 'datatype' },
+var actionTypes = [
+  { text: 'Kernel Data Segment', value: 'kernel_data_segment' },
+  { text: 'Kernel Code Segment', value: 'kernel_code_segment' },
+  { text: 'Data Segment', value: 'data_segment' },
+  { text: 'Code Segment', value: 'code_segment' },
+  { text: 'Main Segment', value: 'main_function' },
+  { text: 'Global Symbol', value: 'global_symbol' },
+  { text: 'Data Size', value: 'data_size' },
+  { text: 'Byte', value: 'byte' },
+  { text: 'Half Word', value: 'half_word' },
+  { text: 'Word', value: 'word' },
+  { text: 'Double Word', value: 'double_word' },
+  { text: 'Float', value: 'float' },
+  { text: 'Double', value: 'double' },
+  { text: 'Space', value: 'space' },
+  { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
+  { text: 'ASCII finished in null', value: 'ascii_null_end' },
+  { text: 'Aling', value: 'aling' },
 ]
 
 memory = [
-  {Address: 0x01000, Binary: [
+  /*{Address: 0x01000, Binary: [
     {Addr: 0x01000, DefBin: "01", Bin: "01", Tag: 'a'},
     {Addr: 0x01001, DefBin: "ff", Bin: "ff", Tag: null},
     {Addr: 0x01002, DefBin: "07", Bin: "07", Tag: null},
@@ -271,13 +292,16 @@ memory = [
     {Addr: 0x01005, DefBin: "65", Bin: "65", Tag: null},
     {Addr: 0x01006, DefBin: "6c", Bin: "6c", Tag: 'c'},
     {Addr: 0x01007, DefBin: "50", Bin: "50", Tag: null},
-  ]},
+  ]},*/
 ]
 
 var  instructions = []
 
 /*Direccion para la siguiente instruccion compilada*/
 var address = 0x0000;
+
+/*Direccion para el siguiente dato*/
+var data_address = 0x0000;
 
 /*Instrucciones pendientes de compilar*/
 var pending_instructions = [];
@@ -513,11 +537,11 @@ window.app = new Vue({
     },
 
     /*PAGINA DE DIRECTIVAS*/
-    directivesFields: ['name', 'kindof', 'size', 'actions'],
+    directivesFields: ['name', 'action', 'size', 'actions'],
 
     formDirective:{
       name: '',
-      kindof: '',
+      action: '',
       size: 0,
     },
     /*Reset de la arquitectura*/
@@ -530,7 +554,7 @@ window.app = new Vue({
       element: '',
     },
     /*Listado de tipos de componentes*/
-    kindofTypes:kindofTypes,
+    actionTypes:actionTypes,
 
     modalEditDirective:{
       title: '',
@@ -763,7 +787,7 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        architecture = cfg;
+        //architecture = cfg;
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -2583,7 +2607,7 @@ window.app = new Vue({
       for (var i = 0; i < architecture.directives.length; i++) {
         if(elem == architecture.directives[i].name){
           this.formDirective.name = architecture.directives[i].name;
-          this.formDirective.kindof = architecture.directives[i].kindof;
+          this.formDirective.action = architecture.directives[i].action;
           this.formDirective.size = architecture.directives[i].size;
         }
       }
@@ -2595,7 +2619,7 @@ window.app = new Vue({
     editDirVerify(evt, name){
       evt.preventDefault();
 
-      if (!this.formDirective.name || !this.formDirective.kindof || isNaN(parseInt(this.formDirective.size))) {
+      if (!this.formDirective.name || !this.formDirective.action || isNaN(parseInt(this.formDirective.size))) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -2620,11 +2644,11 @@ window.app = new Vue({
       for (var i = 0; i < architecture.directives.length; i++) {
         if(name == architecture.directives[i].name){
           architecture.directives[i].name = this.formDirective.name;
-          architecture.directives[i].kindof = this.formDirective.kindof;
+          architecture.directives[i].action = this.formDirective.action;
           architecture.directives[i].size = this.formDirective.size;
 
           this.formDirective.name = '';
-          this.formDirective.kindof = '';
+          this.formDirective.action = '';
           this.formDirective.size = 0;
 
           return;
@@ -2637,7 +2661,7 @@ window.app = new Vue({
 
       evt.preventDefault();
 
-      if (!this.formDirective.name || !this.formDirective.kindof || isNaN(parseInt(this.formDirective.size))) {
+      if (!this.formDirective.name || !this.formDirective.action || isNaN(parseInt(this.formDirective.size))) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
@@ -2659,11 +2683,11 @@ window.app = new Vue({
 
       this.$refs.newDir.hide();
 
-      var newDir = {name: this.formDirective.name, kindof: this.formDirective.kindof, size: this.formDirective.size};
+      var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
       architecture.directives.push(newDir);
 
       this.formDirective.name='';
-      this.formDirective.kindof='';
+      this.formDirective.action='';
       this.formDirective.size=0;
     },
     
@@ -2789,9 +2813,9 @@ window.app = new Vue({
       $(".loading").show();
       instructions = [];
       pending_instructions = [];
+      memory = [];
 
-      var existsInstruction = true;
-      var pseudoinstruccion = false;
+      var empty = false;
 
       /*Guarda en la memoria del navegador una copia de seguidad*/
       if (typeof(Storage) !== "undefined") {
@@ -2818,13 +2842,420 @@ window.app = new Vue({
         return;
       }
 
+      token = this.get_token();
+      console.log(token)
+
+      while(!empty){
+        token = this.get_token();
+        console.log(token)
+
+        if(token == null){
+          empty = true;
+          break;
+        }
+
+        var change = false;
+        for(var i = 0; i < architecture.directives.length; i++){
+          if(token == architecture.directives[i].name){
+            switch(architecture.directives[i].action){
+              case "kernel_data_segment":
+                console.log("kernel_data_segment")
+                var result = this.kernel_data_segment_compiler()
+                if(result == 0){
+                  change = true;
+                }
+                if(result == -1){
+                  tokenIndex = 0;
+                  instructions = [];
+                  memory = [];
+                  pending_instructions = [];
+                  address = 0x0000;
+                  data_address = 0x0000;
+                  return;
+                }
+                break;
+              case "kernel_code_segment":
+                console.log("kernel_code_segment")
+                var result = this.kernel_code_segment_compiler();
+                if(result == 0){
+                  change = true;
+                }
+                if(result == -1){
+                  tokenIndex = 0;
+                  instructions = [];
+                  memory = [];
+                  pending_instructions = [];
+                  address = 0x0000;
+                  data_address = 0x0000;
+                  return;
+                }
+                break;
+              case "data_segment":
+                console.log("data_segment")
+                var result = this.data_segment_compiler();
+                if(result == 0){
+                  change = true;
+                }
+                if(result == -1){
+                  tokenIndex = 0;
+                  instructions = [];
+                  memory = [];
+                  pending_instructions = [];
+                  address = 0x0000;
+                  data_address = 0x0000;
+                  return;
+                }
+                break;
+              case "code_segment":
+                console.log("code_segment")
+                var result = this.code_segment_compiler();
+                if(result == 0){
+                  change = true;
+                }
+                if(result == -1){
+                  tokenIndex = 0;
+                  instructions = [];
+                  memory = [];
+                  pending_instructions = [];
+                  address = 0x0000;
+                  data_address = 0x0000;
+                  return;
+                }
+                break;
+              default:
+                console.log("default")
+                empty = true;
+                break;
+            }
+          }
+
+          else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
+            empty = true;
+            app._data.alertMessaje = 'Invalid directive: ' + token;
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            $(".loading").hide();
+            tokenIndex = 0;
+            return;
+          }
+
+          
+        }
+      }
+
+      app._data.alertMessaje = 'Compilation completed successfully';
+      app._data.type ='success';
+      app._data.dismissCountDown = app._data.dismissSecs;
+      var date = new Date();
+      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+      tokenIndex = 0;
+      
+      this.reset();
+
+      address = 0x0000;
+      data_address = 0x0000;
+
+      $(".loading").hide();
+    },
+
+
+
+    kernel_data_segment_compiler(){
+
+    },
+
+    kernel_code_segment_compiler(){
+
+    },
+
+
+
+
+
+
+    data_segment_compiler(){
+      var existsData = true;
+
+      this.next_token();
+
+      while(existsData){
+        token = this.get_token();
+        console.log(token);
+
+        var label = "";
+
+        if(token == null){
+          break;
+        }
+
+        console.log(token)
+
+        var found = false;
+
+        if(token.search(/\:$/) != -1){
+          if(token.length == 1){
+            this.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+            $(".loading").hide();
+            instructions = [];
+            memory = [];
+            pending_instructions = [];
+            return -1;
+          }
+
+          for(var i = 0; i < memory.length; i++){
+            for(var j = 0; j < memory[i].Binary.length; j++){
+              if(memory[i].Binary[j].Tag == token.substring(0,token.length-1)){
+                this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                $(".loading").hide();
+                instructions = [];
+                memory = [];
+                pending_instructions = [];
+                return -1;
+              }
+            }
+          }
+
+          for(var i = 0; i < instructions.length; i++){
+            if(instructions[i].Label == token.substring(0,token.length-1)){
+              this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              $(".loading").hide();
+              instructions = [];
+              memory = [];
+              pending_instructions = [];
+              return -1;
+            } 
+          }
+
+          for(var i = 0; i < pending_instructions.length; i++){
+            if(pending_instructions[i].Label == token.substring(0,token.length-1)){
+              this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              $(".loading").hide();
+              instructions = [];
+              memory = [];
+              pending_instructions = [];
+              return -1;
+            } 
+          }
+
+          label = token.substring(0,token.length-1);
+          this.next_token();
+          token = this.get_token();
+        }
+
+        for(var j = 0; j < architecture.directives.length; j++){
+          if(token == architecture.directives[j].name){
+            switch(architecture.directives[j].action){
+              case "byte":
+                var isByte = true;
+
+                this.next_token();
+
+                while(isByte){
+                  token = this.get_token();
+
+                  console.log("byte")
+                  console.log(token)
+
+                  var auxToken = bigInt(parseInt(token) >>> 0, 10);
+                  var auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                  auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                  auxTokenString = auxTokenString.padStart(8, "0");
+
+                  console.log(auxTokenString)
+
+                  memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+
+                  for(var z = 0; z < 4; z++){
+                    if(z==0){
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Tag: label},);
+                    }
+                    else{
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Tag: null},);
+                    }
+                  }
+
+                  label = null;
+                  data_address = data_address +4;
+
+                  console.log("byte Terminado")
+
+                  this.next_token();
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  for(var z = 0; z < architecture.directives.length; z++){
+                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                      isByte = false;
+                    }
+                  }
+                }
+
+                break;
+              case "half_word":
+                console.log("half_word")
+
+                var ishalf = true;
+
+                this.next_token();
+
+                while(ishalf){
+                  token = this.get_token();
+
+                  console.log("half_word")
+                  console.log(token)
+
+                  var auxToken = bigInt(parseInt(token) >>> 0, 10);
+                  var auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                  auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                  auxTokenString = auxTokenString.padStart(8, "0");
+
+                  console.log(auxTokenString)
+
+                  memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+
+                  for(var z = 0; z < 4; z++){
+                    if(z==0){
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Tag: label},);
+                    }
+                    else{
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Tag: null},);
+                    }
+                  }
+
+                  label = null;
+                  data_address = data_address +4;
+
+                  console.log("byte Terminado")
+
+                  this.next_token();
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  for(var z = 0; z < architecture.directives.length; z++){
+                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                      ishalf = false;
+                    }
+                  }
+                }
+
+                break;
+              case "word":
+                var isWord = true;
+
+                this.next_token();
+                token = this.get_token();
+
+                while(isWord){
+                  console.log("word")
+                  console.log(token)
+
+                  var auxToken = bigInt(parseInt(token) >>> 0, 10);
+                  var auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                  auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                  auxTokenString = auxTokenString.padStart(8, "0");
+
+                  memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+
+                  for(var z = 0; z < 4; z++){
+                    if(z==0){
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Tag: label},);
+                    }
+                    else{
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*z)), auxTokenString.length-(2*z)), Tag: null},);
+                    }
+                  }
+
+                  label = null;
+                  data_address = data_address +4;
+
+                  console.log("word Terminado")
+
+                  this.next_token();
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  for(var z = 0; z < architecture.directives.length; z++){
+                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                      isWord = false;
+                    }
+                  }
+                  console.log(memory)
+                }
+
+                break;
+              case "double_word":
+                console.log("double_word")
+                console.log(label)
+
+                break;
+              case "float":
+                console.log("float")
+                console.log(label)
+
+                break;
+              case "double":
+                console.log("double")
+                console.log(label)
+
+                break;
+              case "ascii_not_null_end":
+                console.log("ascii_not_null_end")
+                console.log(label)
+
+                break;
+              case "ascii_null_end":
+                console.log("ascii_null_end")
+                console.log(label)
+
+                break;
+              default:
+                console.log("Default")
+                existsData = false;
+                break;
+            }
+          }
+        }
+      }
+
+      app._data.memory = memory;
+
+      return 0;
+    },
+
+
+
+
+
+
+    code_segment_compiler(){
+      var existsInstruction = true;
+      var pseudoinstruccion = false;
+
+      this.next_token();
+
       while(existsInstruction){
         var token = this.get_token();
+
+        /*NUEVO PROBAR*/
+        for(var i = 0; i < architecture.directives.length; i++){
+          if(token == architecture.directives[i].name){
+            app._data.instructions = instructions;
+            console.log(token)
+            console.log("directiva distinta de text")
+            return 0;
+          }
+        }
+
         var label = "";
         var validTagPC = true;
 
         if(token == null){
-          tokenIndex = 0;
           break;
         }
 
@@ -2838,7 +3269,20 @@ window.app = new Vue({
             $(".loading").hide();
             instructions = [];
             pending_instructions = [];
-            return;
+            return -1;
+          }
+
+          for(var i = 0; i < memory.length; i++){
+            for(var j = 0; j < memory[i].Binary.length; j++){
+              if(memory[i].Binary[j].Tag == token.substring(0,token.length-1)){
+                this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                $(".loading").hide();
+                instructions = [];
+                memory = [];
+                pending_instructions = [];
+                return -1;
+              }
+            }
           }
 
           for(var i = 0; i < instructions.length; i++){
@@ -2847,7 +3291,7 @@ window.app = new Vue({
               $(".loading").hide();
               instructions = [];
               pending_instructions = [];
-              return;
+              return -1;
             } 
           }
 
@@ -2857,7 +3301,7 @@ window.app = new Vue({
               $(".loading").hide();
               instructions = [];
               pending_instructions = [];
-              return;
+              return -1;
             } 
           }
 
@@ -2902,7 +3346,7 @@ window.app = new Vue({
 
             if(result == -1){
               $(".loading").hide();
-              return;
+              return -1;
             }
 
             this.next_token();
@@ -2939,7 +3383,7 @@ window.app = new Vue({
             $(".loading").hide();
             instructions = [];
             pending_instructions = [];
-            return;
+            return -1;
           }
 
           if(resultPseudo == -1){
@@ -2949,7 +3393,7 @@ window.app = new Vue({
             $(".loading").hide();
             instructions = [];
             pending_instructions = [];
-            return;
+            return -1;
           }
 
           this.next_token();
@@ -2965,27 +3409,18 @@ window.app = new Vue({
       
         if(result == -1){
           $(".loading").hide();
-          return;
+          return -1;
         }
-
       }
 
-      app._data.alertMessaje = 'Compilation completed successfully';
-      app._data.type ='success';
-      app._data.dismissCountDown = app._data.dismissSecs;
-      var date = new Date();
-      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+      console.log(tokenIndex)
+      token = this.get_token();
+      console.log(token)
 
       app._data.instructions = instructions;
-      
-      this.reset();
 
-      address = 0;
-      $(".loading").hide();
+      return 0;
     },
-
-
-
 
 
 
