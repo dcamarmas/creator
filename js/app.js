@@ -322,7 +322,11 @@ var compileError =[
   {mess1: "This field '", mess2: "' must end with a ')'"},
   {mess1: "This field is too small to encode in binary '", mess2: ""},
   {mess1: "This field is too small to encode in binary '", mess2: ""},
-  {mess1: "Incorrect definition '", mess2: ""},
+  {mess1: "Incorrect definition ", mess2: ""},
+  {mess1: "Invalid directive: ", mess2: ""},
+  {mess1: "Invalid data: ", mess2: " The data must be a number"},
+
+  
 ];
 
 /*Notificaciones mostradas*/
@@ -2869,8 +2873,11 @@ window.app = new Vue({
                   instructions = [];
                   memory = [];
                   pending_instructions = [];
+                  app._data.memory = memory;
+                  app._data.instructions = instructions;
                   address = 0x0000;
                   data_address = 0x0000;
+                  $(".loading").hide();
                   return;
                 }
                 break;
@@ -2885,8 +2892,11 @@ window.app = new Vue({
                   instructions = [];
                   memory = [];
                   pending_instructions = [];
+                  app._data.memory = memory;
+                  app._data.instructions = instructions;
                   address = 0x0000;
                   data_address = 0x0000;
+                  $(".loading").hide();
                   return;
                 }
                 break;
@@ -2901,8 +2911,11 @@ window.app = new Vue({
                   instructions = [];
                   memory = [];
                   pending_instructions = [];
+                  app._data.memory = memory;
+                  app._data.instructions = instructions;
                   address = 0x0000;
                   data_address = 0x0000;
+                  $(".loading").hide();
                   return;
                 }
                 break;
@@ -2917,8 +2930,11 @@ window.app = new Vue({
                   instructions = [];
                   memory = [];
                   pending_instructions = [];
+                  app._data.memory = memory;
+                  app._data.instructions = instructions;
                   address = 0x0000;
                   data_address = 0x0000;
+                  $(".loading").hide();
                   return;
                 }
                 break;
@@ -2931,11 +2947,7 @@ window.app = new Vue({
 
           else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
             empty = true;
-            app._data.alertMessaje = 'Invalid directive: ' + token;
-            app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            this.compileError(15, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
             $(".loading").hide();
             tokenIndex = 0;
             return;
@@ -2999,9 +3011,6 @@ window.app = new Vue({
           if(token.length == 1){
             this.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
             $(".loading").hide();
-            instructions = [];
-            memory = [];
-            pending_instructions = [];
             return -1;
           }
 
@@ -3010,9 +3019,6 @@ window.app = new Vue({
               if(memory[i].Binary[j].Tag == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 $(".loading").hide();
-                instructions = [];
-                memory = [];
-                pending_instructions = [];
                 return -1;
               }
             }
@@ -3022,9 +3028,6 @@ window.app = new Vue({
             if(instructions[i].Label == token.substring(0,token.length-1)){
               this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
               $(".loading").hide();
-              instructions = [];
-              memory = [];
-              pending_instructions = [];
               return -1;
             } 
           }
@@ -3033,9 +3036,6 @@ window.app = new Vue({
             if(pending_instructions[i].Label == token.substring(0,token.length-1)){
               this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
               $(".loading").hide();
-              instructions = [];
-              memory = [];
-              pending_instructions = [];
               return -1;
             } 
           }
@@ -3059,11 +3059,27 @@ window.app = new Vue({
                   console.log("byte")
                   console.log(token)
 
-                  var auxToken = bigInt(parseInt(token) >>> 0, 10);
-                  var auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
-                  auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
-                  auxTokenString = auxTokenString.padStart(8, "0");
+                  if(isNaN(parseInt(token))){
+                    this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
 
+                  var auxToken;
+                  var auxTokenString;
+                  if(token.match(/^0x/)){
+                    var value = token.split('x')
+                    auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.padStart(8, "0");
+                  }
+                  else{
+                    auxToken = bigInt(parseInt(token) >>> 0, 10);
+                    auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.padStart(8, "0");
+                  }
+                  
                   console.log(auxTokenString)
 
                   memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
@@ -3108,10 +3124,26 @@ window.app = new Vue({
                   console.log("half_word")
                   console.log(token)
 
-                  var auxToken = bigInt(parseInt(token) >>> 0, 10);
-                  var auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
-                  auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
-                  auxTokenString = auxTokenString.padStart(8, "0");
+                  if(isNaN(parseInt(token))){
+                    this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  var auxToken;
+                  var auxTokenString;
+                  if(token.match(/^0x/)){
+                    var value = token.split('x')
+                    auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.padStart(8, "0");
+                  }
+                  else{
+                    auxToken = bigInt(parseInt(token) >>> 0, 10);
+                    auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.padStart(8, "0");
+                  }
 
                   console.log(auxTokenString)
 
@@ -3154,10 +3186,26 @@ window.app = new Vue({
                   console.log("word")
                   console.log(token)
 
-                  var auxToken = bigInt(parseInt(token) >>> 0, 10);
-                  var auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
-                  auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
-                  auxTokenString = auxTokenString.padStart(8, "0");
+                  if(isNaN(parseInt(token))){
+                    this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  var auxToken;
+                  var auxTokenString;
+                  if(token.match(/^0x/)){
+                    var value = token.split('x')
+                    auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.padStart(8, "0");
+                  }
+                  else{
+                    auxToken = bigInt(parseInt(token) >>> 0, 10);
+                    auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.padStart(8, "0");
+                  }
 
                   memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
 
@@ -3267,8 +3315,6 @@ window.app = new Vue({
           if(token.length == 1){
             this.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
             $(".loading").hide();
-            instructions = [];
-            pending_instructions = [];
             return -1;
           }
 
@@ -3277,9 +3323,6 @@ window.app = new Vue({
               if(memory[i].Binary[j].Tag == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 $(".loading").hide();
-                instructions = [];
-                memory = [];
-                pending_instructions = [];
                 return -1;
               }
             }
@@ -3289,8 +3332,6 @@ window.app = new Vue({
             if(instructions[i].Label == token.substring(0,token.length-1)){
               this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
               $(".loading").hide();
-              instructions = [];
-              pending_instructions = [];
               return -1;
             } 
           }
@@ -3299,8 +3340,6 @@ window.app = new Vue({
             if(pending_instructions[i].Label == token.substring(0,token.length-1)){
               this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
               $(".loading").hide();
-              instructions = [];
-              pending_instructions = [];
               return -1;
             } 
           }
@@ -3383,6 +3422,7 @@ window.app = new Vue({
             $(".loading").hide();
             instructions = [];
             pending_instructions = [];
+            memory = [];
             return -1;
           }
 
@@ -3393,6 +3433,7 @@ window.app = new Vue({
             $(".loading").hide();
             instructions = [];
             pending_instructions = [];
+            memory = [];
             return -1;
           }
 
@@ -3672,9 +3713,6 @@ window.app = new Vue({
           re = new RegExp(signatureDef+"$")
           if(oriInstruction.search(re) == -1){
             this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-            
-            instructions = [];
-            pending_instructions = [];
             return -1;
           }
 
@@ -3719,9 +3757,6 @@ window.app = new Vue({
 
                           if(reg.toString(2).length > fieldsLength){
                             this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
                             return -1;
                           }
 
@@ -3738,9 +3773,6 @@ window.app = new Vue({
 
                           if(reg.toString(2).length > fieldsLength){
                             this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
                             return -1;
                           }
 
@@ -3751,9 +3783,6 @@ window.app = new Vue({
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                           this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
 
@@ -3787,9 +3816,6 @@ window.app = new Vue({
 
                           if(reg.toString(2).length > fieldsLength){
                             this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
                             return -1;
                           }
 
@@ -3800,9 +3826,6 @@ window.app = new Vue({
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                           this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
                         if(architecture.components[z].type == "floating point"){
@@ -3837,9 +3860,6 @@ window.app = new Vue({
 
                           if(reg.toString(2).length > fieldsLength){
                             this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
                             return -1;
                           }
 
@@ -3850,9 +3870,6 @@ window.app = new Vue({
                         }
                         else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                           this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
                         if(architecture.components[z].type == "control"){
@@ -3886,15 +3903,11 @@ window.app = new Vue({
 
                         if(resultPseudo == -1){
                           this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
 
                         if(resultPseudo == -2){
                           this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
 
@@ -3902,8 +3915,6 @@ window.app = new Vue({
 
                       if(isNaN(parseInt(token, 16)) == true){
                         this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        instructions = [];
-                        pending_instructions = [];
                         return -1;
                       }
 
@@ -3915,23 +3926,17 @@ window.app = new Vue({
 
                         if(resultPseudo == -1){
                           this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
 
                         if(resultPseudo == -2){
                           this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
                       }
 
                       if(isNaN(parseFloat(token)) == true){
                         this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        instructions = [];
-                        pending_instructions = [];
                         return -1;
                       }
 
@@ -3960,9 +3965,6 @@ window.app = new Vue({
                           validTagPC = false;
                           if(pending == true){
                             this.compileError(7, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
                             return -1;
                           }
                         }  
@@ -3975,23 +3977,17 @@ window.app = new Vue({
 
                         if(resultPseudo == -1){
                           this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
 
                         if(resultPseudo == -2){
                           this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                          instructions = [];
-                          pending_instructions = [];
                           return -1;
                         }
                       }
 
                       if(isNaN(parseInt(token)) == true && resultPseudo == -3){
                         this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        instructions = [];
-                        pending_instructions = [];
                         return -1;
                       }
 
@@ -4023,17 +4019,11 @@ window.app = new Vue({
 
                       if(value[1].length*4 > fieldsLength){
                         this.compileError(8, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                        instructions = [];
-                        pending_instructions = [];
                         return -1;
                       }
 
                       if(isNaN(parseInt(token, 16)) == true){
                         this.compileError(9, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                        instructions = [];
-                        pending_instructions = [];
                         return -1;
                       }
 
@@ -4060,9 +4050,6 @@ window.app = new Vue({
                           }
                           if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
                             this.compileError(7, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-                            instructions = [];
-                            pending_instructions = [];
                             return -1;
                           }
                         }
