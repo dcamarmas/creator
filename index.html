@@ -158,11 +158,11 @@
             </div>
 
             <b-modal id="load_arch" title="Load Architecture" @ok="read_arch">
-              <b-form-input v-model="name_arch" placeholder="Enter the name of the architecture"></b-form-input>
+              <b-form-input v-model="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
               <br>
               <b-form-textarea v-model="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
               <br>
-              <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json"></b-form-file>
+              <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
             </b-modal>
 
             <div class="col-lg-5 col-sm-12 nopadding">
@@ -197,7 +197,7 @@
 
                   <b-list-group>
                     <b-list-group-item>
-                      <b-card no-body class="overflow-hidden" v-for="(item, index) in arch_available" @click="load_arch_select(item.name)" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
+                      <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @click="load_arch_select(item.name)" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters>
                           <b-col md="3">
                             <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
@@ -207,7 +207,13 @@
                               <b-card-text style="text-align: justify; font-size: 11pt;">
                                 {{item.description}}
                               </b-card-text>
-                              <b-button class="btn btn-outline-danger btn-sm buttonBackground" @click.stop="remove_cache_arch(index)" v-if="default_arch(item.name) == true"><span class="fa fa-trash-o"></span> Delete</b-button>
+                              <b-button class="btn btn-outline-danger btn-sm buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true"><span class="fa fa-trash-o"></span> Delete</b-button>
+
+                              <!-- Borrar arquitectura -->
+                              <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
+                                <h6>Are you sure you want to delete the architecture?</h6>
+                              </b-modal >
+
                             </b-card-body>
                           </b-col>
                         </b-row>
@@ -251,7 +257,6 @@
                     </div>
 
                     <div class="compMenu" style="padding: 0.7%;">
-                      <!--<b-form-input v-model="number_bits" type="number" min="1" placeholder="Enter the number of bits" class="form-control border border-secondary form-control-sm buttonBackground"  style="background-color: white; color: black;" disabled></b-form-input>-->
                       <h6>Architecture of {{number_bits}} bits</h6>
                     </div>
                   </div>
@@ -1264,6 +1269,10 @@
                       <br v-if="row.item.Break == null">
                       <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
                     </div>
+                  </template>
+
+                  <template slot="Label" slot-scope="row">
+                    <b-badge pill variant="info">{{row.item.Label}}</b-badge>
                   </template>
 
                   <template slot="User Instructions" slot-scope="row">

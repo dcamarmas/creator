@@ -224,11 +224,16 @@ var architecture = {components:[
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=val<<16"},
+
+    {name: "syscall", co: "000000", cop: "001100", nwords: 1, signature_definition: "F0", signature: "syscall", signatureRaw: "syscall", fields: [
+      {name: "syscall", type: "co", startbit: 31, stopbit: 26},
+      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
+    ], definition: "switch(v0){}"},
   ],pseudoinstructions:[
     {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      ], definition: "add reg1 $r0 reg2;"},
+      ], definition: "add $reg1 $r0 $reg2;"},
     {name: "addi", nwords: 1, signature_definition: "addi $F0 $F1 F2", signature: "addi,$INT-Reg,$INT-Reg,inm", signatureRaw: "addi $reg1 $reg2 val", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
@@ -324,9 +329,7 @@ var compileError =[
   {mess1: "This field is too small to encode in binary '", mess2: ""},
   {mess1: "Incorrect definition ", mess2: ""},
   {mess1: "Invalid directive: ", mess2: ""},
-  {mess1: "Invalid data: ", mess2: " The data must be a number"},
-
-  
+  {mess1: "Invalid data: ", mess2: " The data must be a number"},  
 ];
 
 /*Notificaciones mostradas*/
@@ -377,6 +380,11 @@ window.app = new Vue({
     name_arch: '',
     description_arch: '',
     load_arch: '',
+    /*Borrado de una arquitectura*/
+    modalDeletArch:{
+      title: '',
+      index: 0,
+    },
     /*Nombre del fichero a guardar*/
     name_arch_save: '',
     /*Numero de bits de la arquitectura*/
@@ -754,7 +762,10 @@ window.app = new Vue({
 
     /*Carga la arquitectura seleccionada*/
     load_arch_select(e){
+
       $(".loading").show();
+
+      console.log("cargando")
 
       for (var i = 0; i < load_architectures.length; i++) {
         if(e == load_architectures[i].id){
@@ -815,6 +826,15 @@ window.app = new Vue({
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+      })
+
+      .fail(function() {
+        $(".loading").hide();
+        app._data.alertMessaje = 'The selected architecture has not been loaded correctly';
+        app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -902,6 +922,16 @@ window.app = new Vue({
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
 
+    modal_remove_cache_arch(index, elem, button){
+      console.log(index)
+      console.log(elem)
+      console.log(button)
+
+      this.modalDeletArch.title = "Delete Architecture";
+      this.modalDeletArch.index = index;
+      this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
+    },
+
     remove_cache_arch(index){
 
       var id = architecture_available[index].name;
@@ -967,6 +997,30 @@ window.app = new Vue({
     /*Resetea la arquitectura*/
     resetArchitecture(arch){
       $(".loading").show();
+
+      for (var i = 0; i < load_architectures.length; i++) {
+        if(arch == load_architectures[i].id){
+          var auxArch = JSON.parse(load_architectures[i].architecture);
+          architecture.components = auxArch.components;
+          app._data.architecture = architecture;
+
+          architecture_hash = [];
+          for (var i = 0; i < architecture.components.length; i++) {
+            architecture_hash.push({name: architecture.components[i].name, index: i}); 
+            app._data.architecture_hash = architecture_hash;
+          }
+
+          $(".loading").hide();
+          app._data.alertMessaje = 'The registers has been reset correctly';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          
+          return;
+        }
+      }
+
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.components = cfg.components;
         app._data.architecture = architecture;
@@ -1533,6 +1587,24 @@ window.app = new Vue({
 
     resetInstructions(arch){
       $(".loading").show();
+
+      for (var i = 0; i < load_architectures.length; i++) {
+        if(arch == load_architectures[i].id){
+          var auxArch = JSON.parse(load_architectures[i].architecture);
+          architecture.instructions = auxArch.instructions;
+          app._data.architecture = architecture;
+
+          $(".loading").hide();
+          app._data.alertMessaje = 'The instruction set has been reset correctly';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          
+          return;
+        }
+      }
+
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.instructions = cfg.instructions;
         app._data.architecture = architecture;
@@ -1904,6 +1976,24 @@ window.app = new Vue({
 
     resetPseudoinstructionsModal(arch){
       $(".loading").show();
+
+      for (var i = 0; i < load_architectures.length; i++) {
+        if(arch == load_architectures[i].id){
+          var auxArch = JSON.parse(load_architectures[i].architecture);
+          architecture.pseudoinstructions = auxArch.pseudoinstructions;
+          app._data.architecture = architecture;
+
+          $(".loading").hide();
+          app._data.alertMessaje = 'The registers has been reset correctly';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          
+          return;
+        }
+      }
+
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.pseudoinstructions = cfg.pseudoinstructions;
         app._data.architecture = architecture;
@@ -2080,14 +2170,13 @@ window.app = new Vue({
     },
 
     pseudoDefValidator(name, definition){
-
       var re = new RegExp("^\n+");
       definition = definition.replace(re, "");
       
       re = new RegExp("\n+", "g");
       definition = definition.replace(re, "");
 
-      console.log(definition)
+      var newDefinition = definition;
 
       re = /{([^}]*)}/g;
       var code = re.exec(definition);
@@ -2551,6 +2640,8 @@ window.app = new Vue({
           }
         }
       }
+
+      this.formPseudoinstruction.definition = newDefinition;
       return 0;
     },
 
@@ -2573,10 +2664,30 @@ window.app = new Vue({
     },
 
     resetDirectives(arch){
+      $(".loading").show();
+
+      for (var i = 0; i < load_architectures.length; i++) {
+        if(arch == load_architectures[i].id){
+          var auxArch = JSON.parse(load_architectures[i].architecture);
+          architecture.directives = auxArch.directives;
+          app._data.architecture = architecture;
+
+          $(".loading").hide();
+          app._data.alertMessaje = 'The directive set has been reset correctly';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          
+          return;
+        }
+      }
+
       $.getJSON('architecture/'+arch+'.json', function(cfg){
         architecture.directives = cfg.directives;
         app._data.architecture = architecture;
 
+        $(".loading").hide();
         app._data.alertMessaje = 'The directive set has been reset correctly';
         app._data.type ='success';
         app._data.dismissCountDown = app._data.dismissSecs;
@@ -3056,24 +3167,36 @@ window.app = new Vue({
                 while(isByte){
                   token = this.get_token();
 
+                  re = new RegExp(",", "g")
+                  token = token.replace(re, "");
+
                   console.log("byte")
                   console.log(token)
-
-                  if(isNaN(parseInt(token))){
-                    this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
-                    return -1;
-                  }
 
                   var auxToken;
                   var auxTokenString;
                   if(token.match(/^0x/)){
                     var value = token.split('x')
+
+                    re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
+                    if(value[1].search(re) == -1){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
                   else{
+                    var re = new RegExp("[0-9]{"+token.length+"}","g");
+                    if(token.search(re) == -1){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     auxToken = bigInt(parseInt(token) >>> 0, 10);
                     auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
@@ -3110,6 +3233,8 @@ window.app = new Vue({
                   }
                 }
 
+                j=0;
+
                 break;
               case "half_word":
                 console.log("half_word")
@@ -3121,24 +3246,36 @@ window.app = new Vue({
                 while(ishalf){
                   token = this.get_token();
 
+                  re = new RegExp(",", "g")
+                  token = token.replace(re, "");
+
                   console.log("half_word")
                   console.log(token)
-
-                  if(isNaN(parseInt(token))){
-                    this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
-                    return -1;
-                  }
 
                   var auxToken;
                   var auxTokenString;
                   if(token.match(/^0x/)){
                     var value = token.split('x')
+
+                    var re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
+                    if(value[1].search(re) == -1){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
                   else{
+                    var re = new RegExp("[0-9]{"+token.length+"}","g");
+                    if(token.search(re) == -1){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     auxToken = bigInt(parseInt(token) >>> 0, 10);
                     auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
@@ -3175,32 +3312,48 @@ window.app = new Vue({
                   }
                 }
 
+                j=0;
+
                 break;
               case "word":
                 var isWord = true;
 
                 this.next_token();
-                token = this.get_token();
 
                 while(isWord){
                   console.log("word")
-                  console.log(token)
 
-                  if(isNaN(parseInt(token))){
-                    this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
-                    return -1;
-                  }
+                  token = this.get_token();
+
+                  re = new RegExp(",", "g")
+                  token = token.replace(re, "");
+
+                  console.log(token)
 
                   var auxToken;
                   var auxTokenString;
                   if(token.match(/^0x/)){
-                    var value = token.split('x')
+                    var value = token.split('x');
+
+                    var re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
+                    if(value[1].search(re) == -1){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
                   else{
+                    var re = new RegExp("[0-9]{"+token.length+"}","g");
+                    if(token.search(re) == -1){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     auxToken = bigInt(parseInt(token) >>> 0, 10);
                     auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
@@ -3236,6 +3389,8 @@ window.app = new Vue({
                   console.log(memory)
                 }
 
+                j=0;
+
                 break;
               case "double_word":
                 console.log("double_word")
@@ -3268,6 +3423,12 @@ window.app = new Vue({
                 break;
             }
           }
+
+          else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
+            app._data.memory = memory;
+            return;
+          }
+        
         }
       }
 
@@ -4568,7 +4729,7 @@ window.app = new Vue({
           auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
 
           if(architecture.components[i].type == "integer"){
-            re = new RegExp("R"+regNum+"[^0-9]","g");
+            re = new RegExp("R"+regNum,"g");
             if(auxDef.search(re) != -1){
               re = new RegExp("R"+regNum,"g");
               auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
