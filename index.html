@@ -197,27 +197,31 @@
 
                   <b-list-group>
                     <b-list-group-item>
-                      <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @click="load_arch_select(item.name)" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
+                      <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters>
                           <b-col md="3">
                             <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
                           </b-col>
-                          <b-col md="9">
+
+                          <b-col md="7" @click="load_arch_select(item.name)">
                             <b-card-body :title=item.name title-tag="h4">
                               <b-card-text style="text-align: justify; font-size: 11pt;">
                                 {{item.description}}
                               </b-card-text>
-                              <b-button class="btn btn-outline-danger btn-sm buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true"><span class="fa fa-trash-o"></span> Delete</b-button>
-
-                              <!-- Borrar arquitectura -->
-                              <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
-                                <h6>Are you sure you want to delete the architecture?</h6>
-                              </b-modal >
-
                             </b-card-body>
                           </b-col>
+
+                          <b-col md="2">
+                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="fa fa-trash-o"></span> Delete</b-button>
+                          </b-col>
+
                         </b-row>
                       </b-card>
+
+                      <!-- Borrar arquitectura -->
+                      <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
+                        <h6>Are you sure you want to delete the architecture?</h6>
+                      </b-modal >
 
                     </b-list-group-item>
                   </b-list-group>
