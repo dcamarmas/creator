@@ -1,6 +1,6 @@
 [
   {
-    "name": "MIPS-like-32",
+    "name": "MIPS-32-like",
     "img": "./images/mips_logo.png",
     "alt":"MIPS logo",
     "id": "select_confMIPS",
