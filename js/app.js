@@ -329,7 +329,10 @@ var compileError =[
   {mess1: "This field is too small to encode in binary '", mess2: ""},
   {mess1: "Incorrect definition ", mess2: ""},
   {mess1: "Invalid directive: ", mess2: ""},
-  {mess1: "Invalid data: ", mess2: " The data must be a number"},  
+  {mess1: "Invalid data: ", mess2: " The data must be a number"}, 
+  {mess1: 'The string of characters must start with "', mess2: ""}, 
+  {mess1: "Number '", mess2: "' is too big"},
+  {mess1: "Number '", mess2: "' is empty"},
 ];
 
 /*Notificaciones mostradas*/
@@ -3186,19 +3189,34 @@ window.app = new Vue({
                     }
 
                     auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
+                    if(value[1].length == 0){
+                      this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(auxTokenString.length > 2*architecture.directives[j].size){
+                      this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
                   else{
                     var re = new RegExp("[0-9]{"+token.length+"}","g");
                     if(token.search(re) == -1){
-                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
                       return -1;
                     }
 
                     auxToken = bigInt(parseInt(token) >>> 0, 10);
                     auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    if(auxTokenString.length > 2*architecture.directives[j].size){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
@@ -3265,6 +3283,16 @@ window.app = new Vue({
                     }
 
                     auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
+                    if(value[1].length == 0){
+                      this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(auxTokenString.length > 2*architecture.directives[j].size){
+                      this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
@@ -3278,6 +3306,11 @@ window.app = new Vue({
 
                     auxToken = bigInt(parseInt(token) >>> 0, 10);
                     auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    if(auxTokenString.length > 2*architecture.directives[j].size){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
@@ -3343,6 +3376,16 @@ window.app = new Vue({
                     }
 
                     auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
+                    if(value[1].length == 0){
+                      this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(auxTokenString.length > 2*architecture.directives[j].size){
+                      this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
@@ -3356,6 +3399,11 @@ window.app = new Vue({
 
                     auxToken = bigInt(parseInt(token) >>> 0, 10);
                     auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    if(auxTokenString.length > 2*architecture.directives[j].size){
+                      this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                     auxTokenString = auxTokenString.padStart(8, "0");
                   }
@@ -3409,12 +3457,267 @@ window.app = new Vue({
                 break;
               case "ascii_not_null_end":
                 console.log("ascii_not_null_end")
-                console.log(label)
+
+                var isAscii = true;
+
+                this.next_token();
+
+                while(isAscii){
+                  console.log("ascii_not_null_end")
+
+                  token = this.get_token();
+                  console.log(token)
+
+                  if(token == null){
+                    break;
+                  }
+
+                  re = new RegExp('^"');
+                  console.log(re)
+                  if(token.search(re) == -1){
+                    this.compileError(17, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  var string = "";
+
+                  var final = false;
+
+                  
+                  re = new RegExp('"$');
+                  console.log(re)
+                  console.log(token)
+                  if(token.search(re) == -1){
+                    string = token.substring(1, token.length);
+                  }
+                  else{
+                    string = token.substring(1, token.length-1);
+                    final = true;
+                  }
+                  
+                  while(final == false){
+                    this.next_token();
+                    token = this.get_token();
+
+                    if(token == null){
+                      break;
+                    }
+
+                    re = new RegExp('^"');
+                    console.log(re)
+                    if(token.search(re) != -1 && final == false){
+                      string = string + " ";
+                      final = true;
+                    }
+
+                    re = new RegExp('"$');
+                    console.log(re)
+                    if(token.search(re) != -1 && final == false){
+                      final = true;
+                      string = string + " " + token.substring(0, token.length-1);
+                    }
+
+                    if(final == false){
+                      string = string + " " + token;
+                      final = false;
+                    }
+                  }
+
+                  console.log(string);
+
+
+                  for(var i = 0; i < string.length-1; i=i+4){
+                    memory.push({Address: data_address, Binary: [], Value: string});
+
+                    for(var z = 0; z < 4; z++){
+                      if((z+i) < string.length){
+                        if(z==0){
+                          (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Tag: label},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Tag: null},);
+                        }
+                      }
+                      else{
+                        (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: "00", Bin: "00", Tag: null},);
+                      }
+                    }
+
+                    label = null;
+                    data_address = data_address + 4;
+
+                  }
+
+                  console.log("ascii_not_null_end Terminado")
+
+                  this.next_token();
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  for(var z = 0; z < architecture.directives.length; z++){
+                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                      isAscii = false;
+                    }
+                  }
+                  console.log(memory)
+                }
+
+                j=0;
 
                 break;
               case "ascii_null_end":
                 console.log("ascii_null_end")
-                console.log(label)
+                
+                var isAscii = true;
+
+                this.next_token();
+
+                while(isAscii){
+                  console.log("ascii_null_end")
+
+                  token = this.get_token();
+                  console.log(token)
+
+                  if(token == null){
+                    break;
+                  }
+
+                  re = new RegExp('^"');
+                  console.log(re)
+                  if(token.search(re) == -1){
+                    this.compileError(17, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  var string = "";
+
+                  var final = false;
+
+                  
+                  re = new RegExp('"$');
+                  console.log(re)
+                  console.log(token)
+                  if(token.search(re) == -1){
+                    string = token.substring(1, token.length);
+                  }
+                  else{
+                    string = token.substring(1, token.length-1);
+                    final = true;
+                  }
+                  
+                  while(final == false){
+                    this.next_token();
+                    token = this.get_token();
+
+                    if(token == null){
+                      break;
+                    }
+
+                    re = new RegExp('^"');
+                    console.log(re)
+                    if(token.search(re) != -1 && final == false){
+                      string = string + " ";
+                      final = true;
+                    }
+
+                    re = new RegExp('"$');
+                    console.log(re)
+                    if(token.search(re) != -1 && final == false){
+                      final = true;
+                      string = string + " " + token.substring(0, token.length-1);
+                    }
+
+                    if(final == false){
+                      string = string + " " + token;
+                      final = false;
+                    }
+                  }
+
+                  string = string;
+
+                  console.log(string);
+
+
+                  for(var i = 0; i < string.length+1; i=i+4){
+                    memory.push({Address: data_address, Binary: [], Value: string});
+
+                    for(var z = 0; z < 4; z++){
+                      if((z+i) < string.length){
+                        if(z==0){
+                          (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Tag: label},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i+z).toString(16)).padStart(2, "0"), Tag: null},);
+                        }
+                      }
+                      else{
+                        (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: "00", Bin: "00", Tag: null},);
+                      }
+                    }
+
+                    label = null;
+                    data_address = data_address + 4;
+
+                  }
+
+                  console.log("ascii_null_end Terminado")
+
+                  this.next_token();
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  for(var z = 0; z < architecture.directives.length; z++){
+                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                      isAscii = false;
+                    }
+                  }
+                  console.log(memory)
+                }
+
+                j=0;
+
+                break;
+              case "space":
+                console.log("space")
+
+                this.next_token();
+                token = this.get_token();
+                console.log(token)
+
+                var re = new RegExp("[0-9]{"+token.length+"}","g");
+                if(token.search(re) == -1){
+                  this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  $(".loading").hide();
+                  return -1;
+                }
+
+                var auxToken = parseInt(token) * architecture.directives[j].size;
+
+                for(var i = 0; i < auxToken; i=i+4){
+                  memory.push({Address: data_address, Binary: [], Value: ""});
+
+                  for(var z = 0; z < 4; z++){
+                    if(z==0){
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: "00", Bin: "00", Tag: label},);
+                    }
+                    else{
+                      (memory[memory.length-1].Binary).push({Addr: (data_address+z), DefBin: "00", Bin: "00", Tag: null},);
+                    }
+                  }
+
+                  label = null;
+                  data_address = data_address + 4;
+
+                }
+
+                this.next_token();
+                token = this.get_token();
+
+                console.log("space Terminado")
 
                 break;
               default:

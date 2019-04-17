@@ -199,7 +199,7 @@
                     <b-list-group-item>
                       <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters>
-                          <b-col md="3">
+                          <b-col md="3" @click="load_arch_select(item.name)">
                             <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
                           </b-col>
 
