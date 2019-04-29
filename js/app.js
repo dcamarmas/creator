@@ -245,6 +245,7 @@ var architecture = {components:[
     {name:".data", action:"data_segment", size:null },
     {name:".text", action:"code_segment", size:null },
     {name:".main", action:"main_function", size:null },
+    {name:".kmain", action:"kmain_function", size:null },
     {name:".globl", action:"global_symbol", size:null },
     {name:".extern", action:"data_size", size:null },
     {name:".byte", action:"byte", size:1 },
@@ -256,7 +257,7 @@ var architecture = {components:[
     {name:".space", action:"space", size:1 },
     {name:".ascii", action:"ascii_not_null_end", size:null },
     {name:".asciiz", action:"ascii_null_end", size:null },
-    {name:".align", action:"aling", size:null },
+    {name:".align", action:"align", size:null },
   ]};
 
 var componentsTypes = [
@@ -285,6 +286,13 @@ var actionTypes = [
   { text: 'Aling', value: 'aling' },
 ]
 
+
+
+
+
+
+kernel_memory = []
+
 memory = [
   /*{Address: 0x01000, Binary: [
     {Addr: 0x01000, DefBin: "01", Bin: "01", Tag: 'a'},
@@ -300,12 +308,15 @@ memory = [
   ]},*/
 ]
 
+var  kernel_instructions = []
+
 var  instructions = []
 
 /*Direccion para la siguiente instruccion compilada*/
 var address = 0x0000;
 
-/*Direccion para el siguiente dato*/
+/*Direccion para el siguiente dato y align*/
+var align = 0;
 var data_address = 0x0000;
 
 /*Instrucciones pendientes de compilar*/
@@ -333,6 +344,9 @@ var compileError =[
   {mess1: 'The string of characters must start with "', mess2: ""}, 
   {mess1: "Number '", mess2: "' is too big"},
   {mess1: "Number '", mess2: "' is empty"},
+  {mess1: "The text segment should start with '", mess2: "'"},
+  {mess1: "The data must be aligned", mess2: ""},
+  {mess1: "The number should be positive '", mess2: "'"},
 ];
 
 /*Notificaciones mostradas*/
@@ -512,10 +526,6 @@ window.app = new Vue({
     showNewInstruction: false,
     showEditInstruction: false,
 
-    /*Asignacion de valores de la tabla de instrucciones*/
-    archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
-    instructions: instructions,
-
 
     /*PAGINA DE PSEUDOINSTRUCCIONES*/
     pseudoinstFields: ['name', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
@@ -552,6 +562,10 @@ window.app = new Vue({
     },
 
     /*PAGINA DE DIRECTIVAS*/
+    /*Mostrar modal*/
+    showNewDirective: false,
+    showEditDirective: false,
+
     directivesFields: ['name', 'action', 'size', 'actions'],
 
     formDirective:{
@@ -586,6 +600,7 @@ window.app = new Vue({
     memFields: ['Address', 'Binary', 'Value'],
     /*Asignacion de valores de la tabla de memoria*/
     memory: memory,
+    kernel_memory: kernel_memory,
 
 
     /*CARGA Y LECTURA ENSAMBLADOR*/
@@ -610,6 +625,10 @@ window.app = new Vue({
     /*Consola*/
     display: '',
     keyboard: '',
+    /*Asignacion de valores de la tabla de instrucciones*/
+    archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
+    instructions: instructions,
+    kernel_instructions: kernel_instructions,
     
   },
   computed: {
@@ -2659,6 +2678,12 @@ window.app = new Vue({
 
 
     /*PAGINA DE DIRECTIVAS*/
+    emptyFormDirective(){
+      this.formDirective.name = '';
+      this.formDirective.action = '';
+      this.formDirective.size = 0;
+    },
+
     /*Modal de alerta de reset*/
     resetDirModal(elem, button){
       this.modalResetDir.title = "Reset " + elem + " directives";
@@ -2737,12 +2762,19 @@ window.app = new Vue({
     editDirVerify(evt, name){
       evt.preventDefault();
 
-      if (!this.formDirective.name || !this.formDirective.action || isNaN(parseInt(this.formDirective.size))) {
+      if (!this.formDirective.name || !this.formDirective.action) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } else {
-        this.editDirective(name);
+        if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
+          app._data.alertMessaje = 'Please complete all fields';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        }
+        else{
+          this.editDirective(name);
+        }
       }
     },
 
@@ -2757,18 +2789,13 @@ window.app = new Vue({
         }
       }
 
-      this.$refs.editDirective.hide();
+      this.showEditDirective = false;
 
       for (var i = 0; i < architecture.directives.length; i++) {
         if(name == architecture.directives[i].name){
           architecture.directives[i].name = this.formDirective.name;
           architecture.directives[i].action = this.formDirective.action;
           architecture.directives[i].size = this.formDirective.size;
-
-          this.formDirective.name = '';
-          this.formDirective.action = '';
-          this.formDirective.size = 0;
-
           return;
         }
       }
@@ -2779,12 +2806,19 @@ window.app = new Vue({
 
       evt.preventDefault();
 
-      if (!this.formDirective.name || !this.formDirective.action || isNaN(parseInt(this.formDirective.size))) {
+      if (!this.formDirective.name || !this.formDirective.action) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app._data.dismissCountDownMod = app._data.dismissSecsMod;
       } else {
-        this.newDirective();
+        if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
+          app._data.alertMessaje = 'Please complete all fields';
+          app._data.type ='danger';
+          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        }
+        else{
+          this.newDirective();
+        }
       }
     },
 
@@ -2799,14 +2833,10 @@ window.app = new Vue({
         }
       }
 
-      this.$refs.newDir.hide();
+      this.showNewDirective = false;
 
       var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
       architecture.directives.push(newDir);
-
-      this.formDirective.name='';
-      this.formDirective.action='';
-      this.formDirective.size=0;
     },
     
 
@@ -2929,9 +2959,13 @@ window.app = new Vue({
     /*Compilador*/
     assembly_compiler(){
       $(".loading").show();
+      kernel_instructions = [];
       instructions = [];
       pending_instructions = [];
+      kernel_memory = [];
       memory = [];
+
+      align = 0;
 
       var empty = false;
 
@@ -3202,7 +3236,7 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                   }
                   else{
-                    var re = new RegExp("[0-9]{"+token.length+"}","g");
+                    var re = new RegExp("[0-9-]{"+token.length+"}","g");
                     if(token.search(re) == -1){
                       this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3221,6 +3255,32 @@ window.app = new Vue({
                   console.log(auxTokenString)
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
+
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     if(data_address % 4 == 0){
 
                       memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
@@ -3319,7 +3379,7 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                   }
                   else{
-                    var re = new RegExp("[0-9]{"+token.length+"}","g");
+                    var re = new RegExp("[0-9-]{"+token.length+"}","g");
                     if(token.search(re) == -1){
                       this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3339,6 +3399,32 @@ window.app = new Vue({
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
                     console.log((auxTokenString.length/2))
+
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
+                    if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
 
                     if(data_address % 4 == 0){
                       memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
@@ -3436,7 +3522,7 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                   }
                   else{
-                    var re = new RegExp("[0-9]{"+token.length+"}","g");
+                    var re = new RegExp("[0-9-]{"+token.length+"}","g");
                     if(token.search(re) == -1){
                       this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3456,6 +3542,31 @@ window.app = new Vue({
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
                     console.log((auxTokenString.length/2))
+
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
 
                     if(data_address % 4 == 0){
                       memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
@@ -3554,7 +3665,7 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                   }
                   else{
-                    var re = new RegExp("[0-9]{"+token.length+"}","g");
+                    var re = new RegExp("[0-9-]{"+token.length+"}","g");
                     if(token.search(re) == -1){
                       this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3574,6 +3685,31 @@ window.app = new Vue({
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
                     console.log((auxTokenString.length/2))
+
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
 
                     if(data_address % 4 == 0){
                       memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
@@ -3672,7 +3808,7 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                   }
                   else{
-                    var re = new RegExp("[0-9.]{"+token.length+"}","g");
+                    var re = new RegExp("[0-9.-]{"+token.length+"}","g");
                     if(token.search(re) == -1){
                       this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3692,6 +3828,31 @@ window.app = new Vue({
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
                     console.log((auxTokenString.length/2))
+
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
 
                     if(data_address % 4 == 0){
                       memory.push({Address: data_address, Binary: [], Value: token});
@@ -3790,7 +3951,7 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
                   }
                   else{
-                    var re = new RegExp("[0-9.]{"+token.length+"}","g");
+                    var re = new RegExp("[0-9.-]{"+token.length+"}","g");
                     if(token.search(re) == -1){
                       this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3810,6 +3971,31 @@ window.app = new Vue({
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
                     console.log((auxTokenString.length/2))
+
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+                    if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
 
                     if(data_address % 4 == 0){
                       memory.push({Address: data_address, Binary: [], Value: token});
@@ -3941,6 +4127,29 @@ window.app = new Vue({
                   for(var i = 0; i < string.length; i++){
                     console.log(string.length)
 
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      console.log("sds")
+                      console.log(data_address)
+
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % 4 != 0 && i == 0){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     if(data_address % 4 == 0){
                       memory.push({Address: data_address, Binary: [], Value: string});
 
@@ -4071,6 +4280,26 @@ window.app = new Vue({
                   for(var i = 0; i < string.length + 1; i++){
                     console.log(string.length)
 
+                    /*ALIGN*/
+                    if((data_address % align) != 0 && i == 0 && align != 0){
+                      while((data_address % align) != 0){
+                        if(data_address % 4 == 0){
+                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        else{
+                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        }
+                        data_address++;
+                      }
+                    }
+
+                    if(data_address % 4 != 0 && i == 0){
+                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
                     if(data_address % 4 == 0){
                       memory.push({Address: data_address, Binary: [], Value: string});
 
@@ -4144,9 +4373,15 @@ window.app = new Vue({
                 token = this.get_token();
                 console.log(token)
 
-                var re = new RegExp("[0-9]{"+token.length+"}","g");
+                var re = new RegExp("[0-9-]{"+token.length+"}","g");
                 if(token.search(re) == -1){
                   this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  $(".loading").hide();
+                  return -1;
+                }
+
+                if(parseInt(token) < 0){
+                  this.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                   $(".loading").hide();
                   return -1;
                 }
@@ -4154,6 +4389,32 @@ window.app = new Vue({
                 var auxToken = parseInt(token) * architecture.directives[j].size;
 
                 for(var i = 0; i < auxToken; i++){
+
+                  /*ALIGN*/
+                  if((data_address % align) != 0 && i == 0 && align != 0){
+                    while((data_address % align) != 0){
+                      if(data_address % 4 == 0){
+                        memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                        (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                      }
+                      else{
+                        (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                      }
+                      data_address++;
+                    }
+                  }
+
+                  if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                    this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+                  if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
+                    this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
                   if(data_address % 4 == 0){
                     memory.push({Address: data_address, Binary: [], Value: string});
 
@@ -4196,6 +4457,36 @@ window.app = new Vue({
                 console.log("space Terminado")
 
                 break;
+              case "align":
+                console.log("align")
+
+                this.next_token();
+                token = this.get_token();
+                console.log(token)
+
+                var re = new RegExp("[0-9-]{"+token.length+"}","g");
+                if(token.search(re) == -1){
+                  this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  $(".loading").hide();
+                  return -1;
+                }
+
+                if(parseInt(token) < 0){
+                  this.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  $(".loading").hide();
+                  return -1;
+                }
+
+                console.log(align)
+                align = Math.pow(2, parseInt(token));
+                console.log(align)
+
+                this.next_token();
+                token = this.get_token();
+
+                console.log("align Terminado")
+
+                break;
               default:
                 console.log("Default")
                 existsData = false;
@@ -4226,9 +4517,23 @@ window.app = new Vue({
       var pseudoinstruccion = false;
 
       this.next_token();
+      var token = this.get_token();
+
+      var main = null;
+      for(var i = 0; i < architecture.directives.length; i++){
+        if(architecture.directives[i].action == "main_function"){
+          main = architecture.directives[i].name;
+        }
+      }
+      if(token != main && main != null){
+        this.compileError(20, main, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+        $(".loading").hide();
+        return -1;
+      }
+      this.next_token();
 
       while(existsInstruction){
-        var token = this.get_token();
+        token = this.get_token();
 
         /*NUEVO PROBAR*/
         for(var i = 0; i < architecture.directives.length; i++){
