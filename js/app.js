@@ -13,7 +13,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  {name: "Control registers", type: "control", double_precision: false, elements:[
+  /*{name: "Control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -112,9 +112,9 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}
+    ]}*/
   ], instructions:[
-    {name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
+    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
@@ -228,9 +228,9 @@ var architecture = {components:[
     {name: "syscall", co: "000000", cop: "001100", nwords: 1, signature_definition: "F0", signature: "syscall", signatureRaw: "syscall", fields: [
       {name: "syscall", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "switch(v0){}"},
+    ], definition: "switch(v0){}"},*/
   ],pseudoinstructions:[
-    {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
+    /*{name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       ], definition: "add $reg1 $r0 $reg2;"},
@@ -238,9 +238,9 @@ var architecture = {components:[
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},*/
   ], directives:[
-    {name:".kdata", action:"kernel_data_segment", size:null },
+    /*{name:".kdata", action:"kernel_data_segment", size:null },
     {name:".ktext", action:"kernel_code_segment", size:null },
     {name:".data", action:"data_segment", size:null },
     {name:".text", action:"code_segment", size:null },
@@ -257,7 +257,7 @@ var architecture = {components:[
     {name:".space", action:"space", size:1 },
     {name:".ascii", action:"ascii_not_null_end", size:null },
     {name:".asciiz", action:"ascii_null_end", size:null },
-    {name:".align", action:"align", size:null },
+    {name:".align", action:"align", size:null },*/
   ]};
 
 var componentsTypes = [
@@ -347,6 +347,9 @@ var compileError =[
   {mess1: "The text segment should start with '", mess2: "'"},
   {mess1: "The data must be aligned", mess2: ""},
   {mess1: "The number should be positive '", mess2: "'"},
+  {mess1: "Empty directive", mess2: ""},
+  {mess1: "After the comma you should go a blank --> ", mess2: ""},
+
 ];
 
 /*Notificaciones mostradas*/
@@ -741,7 +744,10 @@ window.app = new Vue({
     load_copy(){
       $(".loading").show();
       this.architecture_name = localStorage.getItem("arch_name");
-      architecture = JSON.parse(localStorage.getItem("architecture_copy"));
+      
+      var auxArchitecture = JSON.parse(localStorage.getItem("architecture_copy"));
+      architecture = bigInt_deserialize(auxArchitecture);
+
       app._data.architecture = architecture;
       textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
 
@@ -791,7 +797,9 @@ window.app = new Vue({
 
       for (var i = 0; i < load_architectures.length; i++) {
         if(e == load_architectures[i].id){
-          architecture = JSON.parse(load_architectures[i].architecture);
+          var auxArchitecture = JSON.parse(load_architectures[i].architecture);
+          architecture = bigInt_deserialize(auxArchitecture);
+
           app._data.architecture = architecture;
 
           architecture_hash = [];
@@ -824,7 +832,9 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        //architecture = cfg;
+        var auxArchitecture = cfg;
+
+        architecture = bigInt_deserialize(auxArchitecture);
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -912,7 +922,9 @@ window.app = new Vue({
     arch_save(){
       $(".loading").show();
 
-      var textToWrite = JSON.stringify(architecture, null, 2);
+      var auxArchitecture = bigInt_serialize(architecture);
+
+      var textToWrite = JSON.stringify(auxArchitecture, null, 2);
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
       var fileNameToSaveAs;
 
@@ -1023,7 +1035,9 @@ window.app = new Vue({
       for (var i = 0; i < load_architectures.length; i++) {
         if(arch == load_architectures[i].id){
           var auxArch = JSON.parse(load_architectures[i].architecture);
-          architecture.components = auxArch.components;
+          var auxArchitecture = bigInt_deserialize(auxArch);
+
+          architecture.components = auxArchitecture.components;
           app._data.architecture = architecture;
 
           architecture_hash = [];
@@ -2971,7 +2985,10 @@ window.app = new Vue({
 
       /*Guarda en la memoria del navegador una copia de seguidad*/
       if (typeof(Storage) !== "undefined") {
-        var auxArch = JSON.stringify(architecture, null, 2);
+
+        var auxArchitecture = bigInt_serialize(architecture);
+        var auxArch = JSON.stringify(auxArchitecture, null, 2);
+
         var date = new Date();
         var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
 
@@ -3204,6 +3221,19 @@ window.app = new Vue({
                 while(isByte){
                   token = this.get_token();
 
+                  if(token == null){
+                    this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
                   re = new RegExp(",", "g");
                   token = token.replace(re, "");
 
@@ -3242,8 +3272,8 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxToken = parseInt(token);
-                    auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    auxToken = parseInt(token) >>> 0;
+                    auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                     if(auxTokenString.length > 2*architecture.directives[j].size){
                       this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3297,6 +3327,10 @@ window.app = new Vue({
                     
                     }
                     else{
+                      if(auxTokenString.length <= 4){
+                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                      }
+
                       if(i == 0){
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
@@ -3347,6 +3381,19 @@ window.app = new Vue({
                 while(ishalf){
                   token = this.get_token();
 
+                  if(token == null){
+                    this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
                   re = new RegExp(",", "g")
                   token = token.replace(re, "");
 
@@ -3385,8 +3432,8 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxToken = parseInt(token);
-                    auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    auxToken = parseInt(token) >>> 0;
+                    auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                     if(auxTokenString.length > 2*architecture.directives[j].size){
                       this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3441,6 +3488,10 @@ window.app = new Vue({
                     
                     }
                     else{
+                      if(auxTokenString.length <= 4 && i == 0){
+                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                      }
+
                       if(i == 0){
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
@@ -3491,6 +3542,19 @@ window.app = new Vue({
 
                   token = this.get_token();
 
+                  if(token == null){
+                    this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
                   re = new RegExp(",", "g")
                   token = token.replace(re, "");
 
@@ -3528,8 +3592,8 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxToken = parseInt(token);
-                    auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    auxToken = parseInt(token) >>> 0;
+                    auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                     if(auxTokenString.length > 2*architecture.directives[j].size){
                       this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3583,6 +3647,10 @@ window.app = new Vue({
                     
                     }
                     else{
+                      if(auxTokenString.length <= 4){
+                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                      }
+
                       if(i == 0){
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
@@ -3634,6 +3702,19 @@ window.app = new Vue({
 
                   token = this.get_token();
 
+                  if(token == null){
+                    this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
                   re = new RegExp(",", "g")
                   token = token.replace(re, "");
 
@@ -3671,8 +3752,8 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxToken = parseInt(token);
-                    auxTokenString = (auxToken.toString(16)).padStart(2*architecture.directives[j].size, "0");
+                    auxToken = parseInt(token) >>> 0;
+                    auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                     if(auxTokenString.length > 2*architecture.directives[j].size){
                       this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -3726,6 +3807,10 @@ window.app = new Vue({
                     
                     }
                     else{
+                      if(auxTokenString.length <= 4){
+                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                      }
+
                       if(i == 0){
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
@@ -3776,6 +3861,19 @@ window.app = new Vue({
                   console.log("float")
 
                   token = this.get_token();
+
+                  if(token == null){
+                    this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
 
                   re = new RegExp(",", "g")
                   token = token.replace(re, "");
@@ -3869,6 +3967,10 @@ window.app = new Vue({
                     
                     }
                     else{
+                      if(auxTokenString.length <= 4){
+                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                      }
+
                       if(i == 0){
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
@@ -3919,6 +4021,19 @@ window.app = new Vue({
                   console.log("double")
 
                   token = this.get_token();
+
+                  if(token == null){
+                    this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
 
                   re = new RegExp(",", "g")
                   token = token.replace(re, "");
@@ -4012,6 +4127,10 @@ window.app = new Vue({
                     
                     }
                     else{
+                      if(auxTokenString.length <= 4){
+                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                      }
+
                       if(i == 0){
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
@@ -4129,9 +4248,6 @@ window.app = new Vue({
 
                     /*ALIGN*/
                     if((data_address % align) != 0 && i == 0 && align != 0){
-                      console.log("sds")
-                      console.log(data_address)
-
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
                           memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
@@ -4373,6 +4489,12 @@ window.app = new Vue({
                 token = this.get_token();
                 console.log(token)
 
+                if(token == null){
+                  this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  $(".loading").hide();
+                  return -1;
+                }
+
                 var re = new RegExp("[0-9-]{"+token.length+"}","g");
                 if(token.search(re) == -1){
                   this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -4463,6 +4585,12 @@ window.app = new Vue({
                 this.next_token();
                 token = this.get_token();
                 console.log(token)
+
+                if(token == null){
+                  this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  $(".loading").hide();
+                  return -1;
+                }
 
                 var re = new RegExp("[0-9-]{"+token.length+"}","g");
                 if(token.search(re) == -1){
@@ -5503,6 +5631,8 @@ window.app = new Vue({
 	    var i, result = "";
 	    var dv = new DataView(new ArrayBuffer(4));
 
+      number = parseInt(number.toString());
+
 	    dv.setFloat32(0, number, false);
 
 	    for (i = 0; i < 4; i++) {
@@ -5782,7 +5912,7 @@ window.app = new Vue({
 
 
       /*Llamadas al sistema*/
-      var compIndex;
+      /*var compIndex;
       var elemIndex;
 
       re = new RegExp("(.*?)\((.*?)\)\)");
@@ -5800,7 +5930,7 @@ window.app = new Vue({
           }
         }
         auxDef = auxDef.replace(re, "syscall("+match[1]+","+compIndex+" , "+elemIndex+")");
-      }
+      }*/
 
 
 
@@ -5994,7 +6124,6 @@ window.app = new Vue({
             var aux_value;
             var aux_sim1;
             var aux_sim2;
-
             for (var a = 0; a < architecture_hash.length; a++) {
               for (var b = 0; b < architecture.components[a].elements.length; b++) {
                 if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
@@ -6018,6 +6147,7 @@ window.app = new Vue({
           memory[i].Binary[j].Bin = memory[i].Binary[j].DefBin;
         }
       }
+
       $(".loading").hide();
     },
 
@@ -6319,6 +6449,48 @@ $("#selectData").change(function(){
     $("#memory").hide();
   }
 });
+
+/*Transforma los bigint en string*/
+function bigInt_serialize(object){
+  var auxObject = object;
+
+  for (var i = 0; i < architecture.components.length; i++){
+    for (var j = 0; j < architecture.components[i].elements.length; j++){
+      var aux = architecture.components[i].elements[j].value;
+      var auxString = aux.toString();
+      auxObject.components[i].elements[j].value = auxString;
+
+      if(architecture.components[i].double_precision != true){
+        var aux = architecture.components[i].elements[j].default_value;
+        var auxString = aux.toString();
+        auxObject.components[i].elements[j].default_value = auxString;
+      }
+    }
+  }
+
+  return auxObject;
+}
+
+/*Transforma string en bigint*/
+function bigInt_deserialize(object){
+  var auxObject = object;
+
+  for (var i = 0; i < auxObject.components.length; i++){
+    for (var j = 0; j < auxObject.components[i].elements.length; j++){
+      var aux = auxObject.components[i].elements[j].value;
+      var auxBigInt = bigInt(aux).value;
+      auxObject.components[i].elements[j].value = auxBigInt;
+
+      if(auxObject.components[i].double_precision != true){
+        var aux = auxObject.components[i].elements[j].default_value;
+        var auxBigInt = bigInt(aux).value;
+        auxObject.components[i].elements[j].default_value = auxBigInt;
+      }
+    }
+  }
+
+  return auxObject;
+}
 
 /*Codemirror, text area ensamblador*/
 // initialize codemirror for assembly

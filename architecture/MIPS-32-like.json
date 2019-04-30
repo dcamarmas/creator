@@ -1647,6 +1647,30 @@
         }
       ],
       "definition": "reg1=val<<16"
+    },
+    {
+      "name": "syscall",
+      "co": "000000",
+      "cop": "001100",
+      "nwords": 1,
+      "signature_definition": "F0",
+      "signature": "syscall",
+      "signatureRaw": "syscall",
+      "fields": [
+        {
+          "name": "syscall",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": "switch(v0){}"
     }
   ],
   "pseudoinstructions": [
@@ -1670,7 +1694,7 @@
           "stopbit": 16
         }
       ],
-      "definition": "add reg1 $r0 reg2;"
+      "definition": "add $reg1 $r0 $reg2;"
     },
     {
       "name": "addi",
@@ -1704,58 +1728,93 @@
   "directives": [
     {
       "name": ".kdata",
-      "kindof": "segment",
-      "size": 0
+      "action": "kernel_data_segment",
+      "size": null
     },
     {
       "name": ".ktext",
-      "kindof": "segment",
-      "size": 0
+      "action": "kernel_code_segment",
+      "size": null
     },
     {
       "name": ".data",
-      "kindof": "segment",
-      "size": 0
+      "action": "data_segment",
+      "size": null
     },
     {
       "name": ".text",
-      "kindof": "segment",
-      "size": 0
+      "action": "code_segment",
+      "size": null
+    },
+    {
+      "name": ".main",
+      "action": "main_function",
+      "size": null
+    },
+    {
+      "name": ".kmain",
+      "action": "kmain_function",
+      "size": null
+    },
+    {
+      "name": ".globl",
+      "action": "global_symbol",
+      "size": null
+    },
+    {
+      "name": ".extern",
+      "action": "data_size",
+      "size": null
     },
     {
       "name": ".byte",
-      "kindof": "datatype",
+      "action": "byte",
       "size": 1
     },
     {
       "name": ".half",
-      "kindof": "datatype",
+      "action": "half_word",
       "size": 2
     },
     {
       "name": ".word",
-      "kindof": "datatype",
+      "action": "word",
       "size": 4
     },
     {
+      "name": ".doubleword",
+      "action": "double_word",
+      "size": 8
+    },
+    {
+      "name": ".float",
+      "action": "float",
+      "size": 4
+    },
+    {
+      "name": ".double",
+      "action": "double",
+      "size": 8
+    },
+    {
       "name": ".space",
-      "kindof": "datatype",
+      "action": "space",
       "size": 1
     },
     {
       "name": ".ascii",
-      "kindof": "datatype",
-      "size": 1
+      "action": "ascii_not_null_end",
+      "size": null
     },
     {
       "name": ".asciiz",
-      "kindof": "datatype",
-      "size": 1
+      "action": "ascii_null_end",
+      "size": null
     },
     {
       "name": ".align",
-      "kindof": "datatype",
-      "size": 0
+      "action": "align",
+      "size": null
     }
   ]
 }
