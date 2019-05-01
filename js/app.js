@@ -4189,6 +4189,16 @@ window.app = new Vue({
                     break;
                   }
 
+                  re = new RegExp('(.)","(.)');
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp(",", "g")
+                  token = token.replace(re, "");
+
                   re = new RegExp('^"');
                   console.log(re)
                   if(token.search(re) == -1){
@@ -4220,6 +4230,18 @@ window.app = new Vue({
                     if(token == null){
                       break;
                     }
+
+                    re = new RegExp('(.)","(.)');
+                    console.log(re)
+                    if(token.search(re) != -1){
+                      this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
+                    re = new RegExp(",", "g")
+                    token = token.replace(re, "");
+
 
                     re = new RegExp('^"');
                     console.log(re)
@@ -4267,7 +4289,7 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: string});
+                      memory.push({Address: data_address, Binary: [], Value: string.charAt(i)});
 
                       if(i == 0){
                         (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
@@ -4283,10 +4305,12 @@ window.app = new Vue({
                     else{
                       if(i == 0){
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                        memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
                         label = null;
                       }
                       else{
                         (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                        memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
                       }
 
                       data_address++;
@@ -4337,6 +4361,16 @@ window.app = new Vue({
                     break;
                   }
 
+                  re = new RegExp('(.)","(.)');
+                  if(token.search(re) != -1){
+                    this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    $(".loading").hide();
+                    return -1;
+                  }
+
+                  re = new RegExp(",", "g")
+                  token = token.replace(re, "");
+
                   re = new RegExp('^"');
                   console.log(re)
                   if(token.search(re) == -1){
@@ -4368,6 +4402,16 @@ window.app = new Vue({
                     if(token == null){
                       break;
                     }
+
+                    re = new RegExp('(.)","(.)');
+                    if(token.search(re) != -1){
+                      this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                      $(".loading").hide();
+                      return -1;
+                    }
+
+                    re = new RegExp(",", "g")
+                    token = token.replace(re, "");
 
                     re = new RegExp('^"');
                     console.log(re)
@@ -4417,7 +4461,7 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: string});
+                      memory.push({Address: data_address, Binary: [], Value: string.charAt(i)});
 
                       if(i < string.length){
                         if(i == 0){
@@ -4440,10 +4484,12 @@ window.app = new Vue({
                       if(i < string.length){
                         if(i == 0){
                           (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                          memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
                           label = null;
                         }
                         else{
                           (memory[memory.length-1].Binary).splice(data_address%4, 0, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                          memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
                         }
                       }
                       else{
