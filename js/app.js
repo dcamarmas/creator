@@ -338,7 +338,7 @@ var compileError =[
   {mess1: "This field '", mess2: "' must end with a ')'"},
   {mess1: "This field is too small to encode in binary '", mess2: ""},
   {mess1: "This field is too small to encode in binary '", mess2: ""},
-  {mess1: "Incorrect definition ", mess2: ""},
+  {mess1: "Incorrect pseudoinstruction definition ", mess2: ""},
   {mess1: "Invalid directive: ", mess2: ""},
   {mess1: "Invalid data: ", mess2: " The data must be a number"}, 
   {mess1: 'The string of characters must start with "', mess2: ""}, 
@@ -4709,12 +4709,9 @@ window.app = new Vue({
       while(existsInstruction){
         token = this.get_token();
 
-        /*NUEVO PROBAR*/
         for(var i = 0; i < architecture.directives.length; i++){
           if(token == architecture.directives[i].name){
             app._data.instructions = instructions;
-            console.log(token)
-            console.log("directiva distinta de text")
             return 0;
           }
         }
@@ -4827,7 +4824,6 @@ window.app = new Vue({
                 token = this.get_token();
                 instruction = instruction + " " + token;
               }
-
               resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
             }
           }
@@ -4873,7 +4869,6 @@ window.app = new Vue({
         }
       }
 
-      console.log(tokenIndex)
       token = this.get_token();
       console.log(token)
 
@@ -4986,6 +4981,7 @@ window.app = new Vue({
             var error = false;
             eval(definition);
             if(error == true){
+              console.log("Error pseudo")
               return -2;
             }
             console.log("finpseudo")
@@ -5128,7 +5124,6 @@ window.app = new Vue({
 
           console.log(signatureParts)
           console.log(signatureRawParts)
-
           re = new RegExp(signatureDef+"$")
           if(oriInstruction.search(re) == -1){
             this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5393,7 +5388,6 @@ window.app = new Vue({
                       var numAux = parseInt(token, 10);
                       if((numAux.toString(2)).length > fieldsLength){
                         resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
-
                         if(resultPseudo == -1){
                           this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                           return -1;
@@ -5571,8 +5565,6 @@ window.app = new Vue({
       }
 
       this.modalAssemblyError.error = compileError[error].mess1 + token + compileError[error].mess2;
-
-      tokenIndex = 0;
     },
 
 
