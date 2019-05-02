@@ -13,7 +13,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Control registers", type: "control", double_precision: false, elements:[
+  {name: "Control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -112,9 +112,9 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}*/
+    ]}
   ], instructions:[
-    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
+    {name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
@@ -228,9 +228,9 @@ var architecture = {components:[
     {name: "syscall", co: "000000", cop: "001100", nwords: 1, signature_definition: "F0", signature: "syscall", signatureRaw: "syscall", fields: [
       {name: "syscall", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "switch(v0){}"},*/
+    ], definition: "switch(v0){case 1:print_int(a0);break;case 2:print_float(f12);break;case 3:print_double(f12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(f0);break;case 7:read_double(f0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"},
   ],pseudoinstructions:[
-    /*{name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
+    {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       ], definition: "add $reg1 $r0 $reg2;"},
@@ -238,9 +238,9 @@ var architecture = {components:[
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},*/
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},
   ], directives:[
-    /*{name:".kdata", action:"kernel_data_segment", size:null },
+    {name:".kdata", action:"kernel_data_segment", size:null },
     {name:".ktext", action:"kernel_code_segment", size:null },
     {name:".data", action:"data_segment", size:null },
     {name:".text", action:"code_segment", size:null },
@@ -257,7 +257,7 @@ var architecture = {components:[
     {name:".space", action:"space", size:1 },
     {name:".ascii", action:"ascii_not_null_end", size:null },
     {name:".asciiz", action:"ascii_null_end", size:null },
-    {name:".align", action:"align", size:null },*/
+    {name:".align", action:"align", size:null },
   ]};
 
 var componentsTypes = [
@@ -285,6 +285,8 @@ var actionTypes = [
   { text: 'ASCII finished in null', value: 'ascii_null_end' },
   { text: 'Aling', value: 'aling' },
 ]
+
+var syscall = ["print_int", "print_float", "print_double", "print_string","read_int", "read_float", "read_double", "read_string", "sbrk", "exit", "print_char", "read_char"];
 
 
 
@@ -832,9 +834,9 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        var auxArchitecture = cfg;
+        /*var auxArchitecture = cfg;
 
-        architecture = bigInt_deserialize(auxArchitecture);
+        architecture = bigInt_deserialize(auxArchitecture);*/
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -5901,7 +5903,7 @@ window.app = new Vue({
           re = new RegExp(",", "g");
           var signature = architecture.instructions[i].signature.replace(re, " ");
 
-          re = new RegExp(signatureDef+"$")
+          re = new RegExp(signatureDef+"$");
           var match = re.exec(signature);
           var signatureParts = [];
           for(var j = 1; j < match.length; j++){
@@ -5950,14 +5952,27 @@ window.app = new Vue({
 
 
       /*Llamadas al sistema*/
-      /*var compIndex;
+      var compIndex;
       var elemIndex;
+      var compIndex2;
+      var elemIndex2;
+      console.log(auxDef)
+      /*//re = new RegExp("(.*?)\((.*?)\)");
 
-      re = new RegExp("(.*?)\((.*?)\)\)");
-      
+      //re = /(.*?)\((.*?)\)/;
+      var aux = syscall[0] + "\((.*?)\)";
+      re = new RegExp(aux +"$");
       while(auxDef.search(re) != -1){
+        console.log(auxDef)
+        console.log(re)
         match = re.exec(auxDef);
-        console.log(match)
+        console.log(match[1])
+
+        for (var i = 0; i < syscall.length; i++){
+          if(syscall[i] == match[1]){
+            call = match[1];
+          }
+        }
 
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
@@ -5967,8 +5982,173 @@ window.app = new Vue({
             }
           }
         }
-        auxDef = auxDef.replace(re, "syscall("+match[1]+","+compIndex+" , "+elemIndex+")");
+
+        if(call != null){
+          auxDef = auxDef.replace(re, "syscall("+call+","+compIndex+" , "+elemIndex+")");
+        }
       }*/
+
+      /*for (var i = 0; i < syscall.length; i++){
+        var re = new RegExp(syscall[i]+"(.*?)", "g");
+        match = re.exec(auxDef);
+        console.log(match)
+        console.log(re);
+        auxDef = auxDef.replace(re, "this." + syscall[i]);
+      }*/
+
+      re = /print_int\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('print_int',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /print_float\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('print_float',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /print_double\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('print_double',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /print_string\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('print_string',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /read_int\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('read_int',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /read_float\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('read_float',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /read_double\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('read_double',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /read_string\((.*?)\)/
+      match = re.exec(auxDef);
+      re = new RegExp(" ", "g");
+      match[1] = match[1].replace(re, "");
+
+
+      var auxMatch = match[1].split(',');
+
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(auxMatch[0] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(auxMatch[1] == architecture.components[i].elements[j].name){
+            compIndex2 = i;
+            elemIndex2 = j;
+          }
+        }
+      }
+      re = /read_string\((.*?)\)/
+      auxDef = auxDef.replace(re, "syscall('read_string',"+compIndex+" , "+elemIndex+","+compIndex2+" , "+elemIndex2+")");
+
+      re = /sbrk\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('sbrk',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /exit/
+      auxDef = auxDef.replace(re, "syscall('exit', null, null, null, null)");
+
+      re = /print_char\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('print_char',"+compIndex+" , "+elemIndex+", null, null)");
+
+      re = /read_char\((.*?)\)/
+      match = re.exec(auxDef);
+      for (var i = 0; i < architecture.components.length; i++){
+        for (var j = 0; j < architecture.components[i].elements.length; j++){
+          if(match[1] == architecture.components[i].elements[j].name){
+            compIndex = i;
+            elemIndex = j;
+          }
+        }
+      }
+      auxDef = auxDef.replace(re, "syscall('read_char',"+compIndex+" , "+elemIndex+", null, null)");
+
+
+      console.log(auxDef)
 
 
 
@@ -6404,30 +6584,37 @@ window.app = new Vue({
       }
     },
 
-    syscall(action, indexComp, indexElem){
+    syscall(action, indexComp, indexElem, indexComp2, indexElem2){
       switch(action){
         case "print_int":
           var int = architecture.components[indexComp].elements[indexElem].value;
           this.display = this.display + "\n" + int;
+          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           break;
         case "print_float":
           var int = architecture.components[indexComp].elements[indexElem].value;
           this.display = this.display + "\n" + int;
+          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           break;
         case "print_double":
           var int = architecture.components[indexComp].elements[indexElem].value;
           this.display = this.display + "\n" + int;
+          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           break;
         case "print_string":
           
+
           break;
         case "read_int":
+          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           this.writeRegister(this.keyboard, indexComp, indexElem);
           break;
         case "read_float":
+          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           this.writeRegister(this.keyboard, indexComp, indexElem);
           break;
         case "read_double":
+          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           this.writeRegister(this.keyboard, indexComp, indexElem);
           break;
         case "":
@@ -6443,6 +6630,7 @@ window.app = new Vue({
         case "print_char":
           var int = architecture.components[indexComp].elements[indexElem].value;
           this.display = this.display + "\n" + int;
+          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           break;
         case "read_char":
 
