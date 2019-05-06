@@ -2945,17 +2945,19 @@ window.app = new Vue({
         index++;
       }
 
-      while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
-        index++;
-      }
-
-      if(assembly.charAt(index) == '#'){
-        while((assembly.charAt(index) != '\n') && (index < assembly.length)){
+      while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length) ){
+        while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
           index++;
         }
 
-        while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
-          index++;
+        if(assembly.charAt(index) == '#'){
+          while((assembly.charAt(index) != '\n') && (index < assembly.length)){
+            index++;
+          }
+
+          while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+            index++;
+          }
         }
       }
       tokenIndex = index;
@@ -2966,9 +2968,22 @@ window.app = new Vue({
       var assembly = textarea_assembly_editor.getValue();
       var index = tokenIndex;
 
-      while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
-        index++;
+      while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length)){
+        while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+          index++;
+        }
+
+        if(assembly.charAt(index) == '#'){
+          while((assembly.charAt(index) != '\n') && (index < assembly.length)){
+            index++;
+          }
+
+          while(((assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+            index++;
+          }
+        }
       }
+
       tokenIndex = index;
     },
 
@@ -5935,8 +5950,17 @@ window.app = new Vue({
 
       /*Replaza los valores por el nombre de los registros*/
       for (var i = 1; i < signatureRawParts.length; i++){
+        /*if(signatureParts[i] == "inm"){
+          var re = new RegExp(signatureRawParts[i],"g");
+          auxDef = auxDef.replace(re, "bigInt(" + instructionExecParts[i] + ").value");
+        }
+        else{
+          var re = new RegExp(signatureRawParts[i],"g");
+          auxDef = auxDef.replace(re, instructionExecParts[i]);
+        }*/
         var re = new RegExp(signatureRawParts[i],"g");
         auxDef = auxDef.replace(re, instructionExecParts[i]);
+        
       }
 
       console.log(auxDef)
@@ -6367,6 +6391,7 @@ window.app = new Vue({
       }
 
       console.log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()))
+      //return architecture.components[indexComp].elements[indexElem].value;
       return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
     },
 
