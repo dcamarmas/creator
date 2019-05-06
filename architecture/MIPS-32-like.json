@@ -1670,7 +1670,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "switch(v0){case 1:print_int(a0);break;case 2:print_float(f12);break;case 3:print_double(f12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(f0);break;case 7:read_double(f0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"
+      "definition": "switch(v0){case 1:print_int(a0);break;case 2:print_float(FG12);break;case 3:print_double(FP12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(FG0);break;case 7:read_double(FP0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"
     }
   ],
   "pseudoinstructions": [
