@@ -228,7 +228,7 @@ var architecture = {components:[
     {name: "syscall", co: "000000", cop: "001100", nwords: 1, signature_definition: "F0", signature: "syscall", signatureRaw: "syscall", fields: [
       {name: "syscall", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "switch(v0){case 1:print_int(a0);break;case 2:print_float(f12);break;case 3:print_double(f12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(f0);break;case 7:read_double(f0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"},*/
+    ], definition: "switch(v0){case 1:print_int(a0);break;case 2:print_float(FG12);break;case 3:print_double(FP12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(FG0);break;case 7:read_double(FP0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"},*/
   ],pseudoinstructions:[
     /*{name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
@@ -272,6 +272,7 @@ var actionTypes = [
   { text: 'Data Segment', value: 'data_segment' },
   { text: 'Code Segment', value: 'code_segment' },
   { text: 'Main Segment', value: 'main_function' },
+  { text: 'Kernel Main Segment', value: 'kmain_function' },
   { text: 'Global Symbol', value: 'global_symbol' },
   { text: 'Data Size', value: 'data_size' },
   { text: 'Byte', value: 'byte' },
@@ -283,10 +284,8 @@ var actionTypes = [
   { text: 'Space', value: 'space' },
   { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
   { text: 'ASCII finished in null', value: 'ascii_null_end' },
-  { text: 'Aling', value: 'aling' },
+  { text: 'Align', value: 'align' },
 ]
-
-var syscall = ["print_int", "print_float", "print_double", "print_string","read_int", "read_float", "read_double", "read_string", "sbrk", "exit", "print_char", "read_char"];
 
 
 
@@ -924,7 +923,8 @@ window.app = new Vue({
     arch_save(){
       $(".loading").show();
 
-      var auxArchitecture = bigInt_serialize(architecture);
+      var auxObject = jQuery.extend(true, {}, architecture);
+      var auxArchitecture = bigInt_serialize(auxObject);
 
       var textToWrite = JSON.stringify(auxArchitecture, null, 2);
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
@@ -1060,7 +1060,11 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+arch+'.json', function(cfg){
-        architecture.components = cfg.components;
+        var auxArchitecture = cfg;
+
+        var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+        architecture.components = auxArchitecture2.components;
+
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -1629,8 +1633,11 @@ window.app = new Vue({
       for (var i = 0; i < load_architectures.length; i++) {
         if(arch == load_architectures[i].id){
           var auxArch = JSON.parse(load_architectures[i].architecture);
-          architecture.instructions = auxArch.instructions;
+          var auxArchitecture = bigInt_deserialize(auxArch);
+
+          architecture.instructions = auxArchitecture.instructions;
           app._data.architecture = architecture;
+
 
           $(".loading").hide();
           app._data.alertMessaje = 'The instruction set has been reset correctly';
@@ -1644,7 +1651,11 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+arch+'.json', function(cfg){
-        architecture.instructions = cfg.instructions;
+        var auxArchitecture = cfg;
+
+        var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+        architecture.instructions = auxArchitecture2.instructions;
+
         app._data.architecture = architecture;
 
         $(".loading").hide();
@@ -2018,7 +2029,9 @@ window.app = new Vue({
       for (var i = 0; i < load_architectures.length; i++) {
         if(arch == load_architectures[i].id){
           var auxArch = JSON.parse(load_architectures[i].architecture);
-          architecture.pseudoinstructions = auxArch.pseudoinstructions;
+          var auxArchitecture = bigInt_deserialize(auxArch);
+
+          architecture.pseudoinstructions = auxArchitecture.pseudoinstructions;
           app._data.architecture = architecture;
 
           $(".loading").hide();
@@ -2033,7 +2046,11 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+arch+'.json', function(cfg){
-        architecture.pseudoinstructions = cfg.pseudoinstructions;
+        var auxArchitecture = cfg;
+
+        var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+        architecture.pseudoinstructions = auxArchitecture2.pseudoinstructions;
+
         app._data.architecture = architecture;
 
         $(".loading").hide();
@@ -2097,7 +2114,7 @@ window.app = new Vue({
         }
       }
 
-      var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition);
+      var result = this.pseudoDefValidator(inst, this.formPseudoinstruction.definition, this.formPseudoinstruction.nameField);
 
       if(result == -1){
         $(".loading").hide();
@@ -2168,7 +2185,7 @@ window.app = new Vue({
         }
       }
 
-      var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition);
+      var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition, this.formPseudoinstruction.nameField);
 
       if(result == -1){
         $(".loading").hide();
@@ -2207,7 +2224,7 @@ window.app = new Vue({
       $(".loading").hide();
     },
 
-    pseudoDefValidator(name, definition){
+    pseudoDefValidator(name, definition, fields){
       var re = new RegExp("^\n+");
       definition = definition.replace(re, "");
       
@@ -2304,13 +2321,10 @@ window.app = new Vue({
                       }
                     }
 
-                    for (var a = 0; a < architecture.pseudoinstructions.length; a++){
-                      if(architecture.pseudoinstructions[a].name == name){
-                        for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
-                          if(architecture.pseudoinstructions[a].fields[b].name == instructionParts[z]){
-                            found = true;
-                          }
-                        }
+                    for (var b = 0; b < fields.length; b++){
+                      console.log(fields[b]);
+                      if(fields[b] == instructionParts[z]){
+                        found = true;
                       }
                     }
 
@@ -2535,13 +2549,10 @@ window.app = new Vue({
                     }
                   }
 
-                  for (var a = 0; a < architecture.pseudoinstructions.length; a++){
-                    if(architecture.pseudoinstructions[a].name == name){
-                      for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
-                        if(architecture.pseudoinstructions[a].fields[b].name == instructionParts[z]){
-                          found = true;
-                        }
-                      }
+                  for (var b = 0; b < fields.length; b++){
+                    console.log(fields[b]);
+                    if(fields[b] == instructionParts[z]){
+                      found = true;
                     }
                   }
 
@@ -2713,7 +2724,9 @@ window.app = new Vue({
       for (var i = 0; i < load_architectures.length; i++) {
         if(arch == load_architectures[i].id){
           var auxArch = JSON.parse(load_architectures[i].architecture);
-          architecture.directives = auxArch.directives;
+          var auxArchitecture = bigInt_deserialize(auxArch);
+
+          architecture.directives = auxArchitecture.directives;
           app._data.architecture = architecture;
 
           $(".loading").hide();
@@ -2728,7 +2741,11 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+arch+'.json', function(cfg){
-        architecture.directives = cfg.directives;
+        var auxArchitecture = cfg;
+
+        var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+        architecture.directives = auxArchitecture2.directives;
+
         app._data.architecture = architecture;
 
         $(".loading").hide();
@@ -2811,7 +2828,12 @@ window.app = new Vue({
         if(name == architecture.directives[i].name){
           architecture.directives[i].name = this.formDirective.name;
           architecture.directives[i].action = this.formDirective.action;
-          architecture.directives[i].size = this.formDirective.size;
+          if(this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space'){
+            architecture.directives[i].size = this.formDirective.size;
+          }
+          else{
+            architecture.directives[i].size = null;
+          }
           return;
         }
       }
@@ -2850,6 +2872,9 @@ window.app = new Vue({
       }
 
       this.showNewDirective = false;
+      if(this.formDirective.action != 'byte' && this.formDirective.action != 'half_word' && this.formDirective.action != 'word' && this.formDirective.action != 'double_word' && this.formDirective.action != 'float' && this.formDirective.action != 'double' && this.formDirective.action != 'space'){
+        this.formDirective.size = null;
+      }
 
       var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
       architecture.directives.push(newDir);
@@ -3001,9 +3026,10 @@ window.app = new Vue({
       var empty = false;
 
       /*Guarda en la memoria del navegador una copia de seguidad*/
-      /*if (typeof(Storage) !== "undefined") {
+      if (typeof(Storage) !== "undefined") {
+        var auxObject = jQuery.extend(true, {}, architecture);
 
-        var auxArchitecture = bigInt_serialize(architecture);
+        var auxArchitecture = bigInt_serialize(auxObject);
         var auxArch = JSON.stringify(auxArchitecture, null, 2);
 
         var date = new Date();
@@ -3013,7 +3039,7 @@ window.app = new Vue({
         localStorage.setItem("architecture_copy", auxArch);
         localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
         localStorage.setItem("date_copy", auxDate);
-      }*/
+      }
 
       this.first_token();
 
@@ -6188,13 +6214,13 @@ window.app = new Vue({
           }
 
           /*Si es un registro de lectura*/
-          /*re = new RegExp("([^a-zA-Z0-9])" + architecture.components[i].elements[j].name + "([^a-zA-Z0-9])");
+          re = new RegExp("([^a-zA-Z0-9])" + architecture.components[i].elements[j].name);
           while(auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-            auxDef = auxDef.replace(re, match[1] + "this.readRegister("+i+" ,"+j+")" + match[2]);
-          }*/
-          re = new RegExp(architecture.components[i].elements[j].name);
-          auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
+            auxDef = auxDef.replace(re, match[1] + "this.readRegister("+i+" ,"+j+")");
+          }
+          /*re = new RegExp(architecture.components[i].elements[j].name);
+          auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");*/
 
           if(architecture.components[i].type == "integer"){
             re = new RegExp("R"+regNum,"g");
@@ -6317,8 +6343,19 @@ window.app = new Vue({
     executeProgram(){
       $(".loading").show();
       var iter1 = 1;
+      if(instructions.length == 0){
+        $(".loading").hide();
+        app._data.alertMessaje = 'No instructions in memory';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        return;
+      }
+
       while(executionIndex >= 0){
         if(instructions[executionIndex].Break == true && iter1 == 0){
+          $(".loading").hide();
           return;
         }
         else{
@@ -6596,19 +6633,22 @@ window.app = new Vue({
     syscall(action, indexComp, indexElem, indexComp2, indexElem2){
       switch(action){
         case "print_int":
-          var int = architecture.components[indexComp].elements[indexElem].value;
-          this.display = this.display + "\n" + int;
+          var value = architecture.components[indexComp].elements[indexElem].value;
+          app._data.display = app._data.display + "\n" + value;
           window.open("./console.html", "WepSim-Console", "width=720, height=auto");
+          console.log(app._data.display);
           break;
         case "print_float":
-          var int = architecture.components[indexComp].elements[indexElem].value;
-          this.display = this.display + "\n" + int;
+          var value = architecture.components[indexComp].elements[indexElem].value;
+          app._data.display = app._data.display + "\n" + value;
           window.open("./console.html", "WepSim-Console", "width=720, height=auto");
+          console.log(app._data.display);
           break;
         case "print_double":
-          var int = architecture.components[indexComp].elements[indexElem].value;
-          this.display = this.display + "\n" + int;
+          var value = architecture.components[indexComp].elements[indexElem].value;
+          app._data.display = app._data.display + "\n" + value;
           window.open("./console.html", "WepSim-Console", "width=720, height=auto");
+          console.log(app._data.display);
           break;
         case "print_string":
           
@@ -6637,8 +6677,8 @@ window.app = new Vue({
           executionIndex = instructions.length + 1;
           break;
         case "print_char":
-          var int = architecture.components[indexComp].elements[indexElem].value;
-          this.display = this.display + "\n" + int;
+          var value = architecture.components[indexComp].elements[indexElem].value;
+          this.display = this.display + "\n" + value;
           window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           break;
         case "read_char":
@@ -6687,7 +6727,7 @@ $("#selectData").change(function(){
 
 /*Transforma los bigint en string*/
 function bigInt_serialize(object){
-  var auxObject = object;
+  var auxObject = jQuery.extend(true, {}, object);
 
   for (var i = 0; i < architecture.components.length; i++){
     for (var j = 0; j < architecture.components[i].elements.length; j++){
@@ -6736,9 +6776,11 @@ editor_cfg = {
 
 textarea_assembly_obj = document.getElementById("textarea_assembly");
 
-textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
+if(textarea_assembly_obj != null){
+  textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
 
-textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
+  textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
 
-textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n\n");
-textarea_assembly_editor.setSize("auto", "550px");
+  textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+  textarea_assembly_editor.setSize("auto", "550px");
+}
