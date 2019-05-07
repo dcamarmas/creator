@@ -260,8 +260,8 @@
                       <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset architecture</b-button>
                     </div>
 
-                    <div class="compMenu" style="padding: 0.7%;">
-                      <h6>Architecture of {{number_bits}} bits</h6>
+                    <div class="compMenu">
+                      <b-form-input v-model="number_bits" type="number" min="0" placeholder="Enter bits of architecture" size="sm"></b-form-input>
                     </div>
                   </div>
 
