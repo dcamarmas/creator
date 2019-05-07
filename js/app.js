@@ -5607,11 +5607,11 @@ window.app = new Vue({
 
 
               if(pending == false){
-                /*instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', binary: binary});
+                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', binary: binary});
               
-                if(address % 4 == 0){
+                /*if(address % 4 == 0){
                   memory.push({Address: address, Binary: [], Value: userInstruction});
-
+                  console.log(hex)
                   if(i == 0){
                     (memory[memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Bin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Tag: label},);
                   }
