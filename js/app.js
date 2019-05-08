@@ -5609,40 +5609,108 @@ window.app = new Vue({
               if(pending == false){
                 instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', binary: binary});
               
-                /*if(address % 4 == 0){
-                  memory.push({Address: address, Binary: [], Value: userInstruction});
-                  console.log(hex)
-                  if(i == 0){
-                    (memory[memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Bin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Tag: label},);
+                for(var a = 0; a < hex.length/2; a++){
+                  if(auxAddr % 4 == 0){
+                    memory.push({Address: auxAddr, Binary: [], Value: instruction});
+                    if(label == ""){
+                      label=null;
+                    }
+                    
+                    if(a == 0){
+                      (memory[memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+                    }
+                    else{
+                      (memory[memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+                    }
+
+                    auxAddr++;
                   }
                   else{
-                    (memory[memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Bin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Tag: null},);
-                  }
+                    console.log(hex)
+                    if(a == 0){
+                      console.log(label);
+                      (memory[memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+                    }
+                    else{
+                      (memory[memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+                    }
 
-                  auxAddr++;
-                
+                    auxAddr++;
+                  }
                 }
-                else{
-                  if(i == 0){
-                    (memory[memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Bin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Tag: label},);
+
+                console.log(memory)
+
+                if(memory[memory.length-1].Binary.length < 4){
+                  var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  for(var b = 0; b < num_iter; b++){
+                    (memory[memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
                   }
-                  else{
-                    (memory[memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Bin: hex.substring(hex.length-(2+(2*i)), hex.length-(2*i)), Tag: null},);
-                  }
+                }
 
-                  auxAddr++;
-                }*/
-
-
-
-
-
-
+                app._data.memory = memory;
               }
               else{
                 for(var pos = 0; pos < instructions.length; pos++){
                   if(parseInt(instructions[pos].Address, 16) > pendingAddress){
                     instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
+                    
+                    auxAddr = pendingAddress;
+
+                    for(var a = 0; a < hex.length/2; a++){
+                      if(label == ""){
+                        label=null;
+                      }
+
+                      if(auxAddr % 4 == 0){
+                        memory.splice(pos, 0,{Address: auxAddr, Binary: [], Value: instruction});
+                        if(a == 0){
+                          (memory[pos].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+                        }
+                        else{
+                          (memory[pos].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+                        }
+
+                        auxAddr++;
+                      }
+                      else{
+                        console.log(hex)
+                        if(a == 0){
+                          (memory[pos].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+                        }
+                        else{
+                          (memory[pos].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+                        }
+
+                        auxAddr++;
+                      }
+                    }
+                    
+                    console.log(memory)
+
+                    if(memory[pos].Binary.length < 4){
+                      var num_iter = 4 - memory[pos].Binary.length;
+                      for(var b = 0; b < num_iter; b++){
+                        (memory[pos].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      }
+                    }
+
+                    app._data.memory = memory;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     break;
                   }
                 }
