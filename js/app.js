@@ -329,6 +329,7 @@ var memory = [];
 var memory_tag = [];
 var instructions = [];
 var instructions_tag = [];
+var data = [];
 
 /*Instrucciones pendientes de compilar*/
 var pending_instructions = [];
@@ -3015,6 +3016,7 @@ window.app = new Vue({
       pending_instructions = [];
       kernel_memory = [];
       memory = [];
+      data = [];
 
       align = 0;
 
@@ -3074,13 +3076,16 @@ window.app = new Vue({
                 }
                 if(result == -1){
                   tokenIndex = 0;
+                  kernel_instructions = [];
                   instructions = [];
-                  memory = [];
                   pending_instructions = [];
+                  kernel_memory = [];
+                  memory = [];
+                  data = [];
                   app._data.memory = memory;
                   app._data.instructions = instructions;
-                  address = 0x0000;
-                  data_address = 0x0000;
+                  address = 0x00004000;
+                  data_address = 0x00000000;
                   $(".loading").hide();
                   return;
                 }
@@ -3093,13 +3098,16 @@ window.app = new Vue({
                 }
                 if(result == -1){
                   tokenIndex = 0;
+                  kernel_instructions = [];
                   instructions = [];
-                  memory = [];
                   pending_instructions = [];
+                  kernel_memory = [];
+                  memory = [];
+                  data = [];
                   app._data.memory = memory;
                   app._data.instructions = instructions;
-                  address = 0x0000;
-                  data_address = 0x0000;
+                  address = 0x00004000;
+                  data_address = 0x00000000;
                   $(".loading").hide();
                   return;
                 }
@@ -3112,13 +3120,16 @@ window.app = new Vue({
                 }
                 if(result == -1){
                   tokenIndex = 0;
+                  kernel_instructions = [];
                   instructions = [];
-                  memory = [];
                   pending_instructions = [];
+                  kernel_memory = [];
+                  memory = [];
+                  data = [];
                   app._data.memory = memory;
                   app._data.instructions = instructions;
-                  address = 0x0000;
-                  data_address = 0x0000;
+                  address = 0x00004000;
+                  data_address = 0x00000000;
                   $(".loading").hide();
                   return;
                 }
@@ -3131,13 +3142,16 @@ window.app = new Vue({
                 }
                 if(result == -1){
                   tokenIndex = 0;
+                  kernel_instructions = [];
                   instructions = [];
-                  memory = [];
                   pending_instructions = [];
+                  kernel_memory = [];
+                  memory = [];
+                  data = [];
                   app._data.memory = memory;
                   app._data.instructions = instructions;
-                  address = 0x0000;
-                  data_address = 0x0000;
+                  address = 0x00004000;
+                  data_address = 0x00000000;
                   $(".loading").hide();
                   return;
                 }
@@ -3155,11 +3169,28 @@ window.app = new Vue({
             $(".loading").hide();
             tokenIndex = 0;
             return;
-          }
-
-          
+          } 
         }
       }
+
+      data_address = address;
+
+      console.log(data)
+
+      for(var i = 0; i < data.length; i++){
+        data[i].Address = data_address;
+        for(var j = 0; j < data[i].Binary.length; j++){
+          data[i].Binary[j].Addr = data_address;
+          if(data[i].Binary[j].Tag != null){
+            memory_tag.push({tag: data[i].Binary[j].Tag, addr: data_address});
+          }
+          data_address++;
+        }
+        memory.push(data[i]);
+      }
+
+      app._data.memory = memory;
+
 
       app._data.alertMessaje = 'Compilation completed successfully';
       app._data.type ='success';
@@ -3175,8 +3206,8 @@ window.app = new Vue({
       /*ASIGNACION PILA TEMPORAL*/
       architecture.components[1].elements[29].value = bigInt(stack_address).value;
 
-      address = 0x0000;
-      data_address = 0x0000;
+      address = 0x00004000;
+      data_address = 0x00000000;
 
       $(".loading").hide();
     },
@@ -3222,9 +3253,9 @@ window.app = new Vue({
             return -1;
           }
 
-          for(var i = 0; i < memory.length; i++){
-            for(var j = 0; j < memory[i].Binary.length; j++){
-              if(memory[i].Binary[j].Tag == token.substring(0,token.length-1)){
+          for(var i = 0; i < data.length; i++){
+            for(var j = 0; j < data[i].Binary.length; j++){
+              if(data[i].Binary[j].Tag == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 $(".loading").hide();
                 return -1;
@@ -3333,13 +3364,17 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -3351,19 +3386,14 @@ window.app = new Vue({
 
                     if(data_address % 4 == 0){
 
-                      memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                      data.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
-                        console.log("nuevo")
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
-                        console.log("nuevo")
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -3371,40 +3401,33 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                        data[data.length-1].Value = parseInt(auxTokenString, 16) + " " + data[data.length-1].Value;
                       }
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
-                        console.log("no nuevo");
-                        console.log(memory[memory.length-1].Binary.length);
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
-                        console.log("no nuevo");
-                        console.log(memory[memory.length-1].Binary[data_address%4]);
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        console.log(data[data.length-1].Binary[data_address%4]);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + i), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + i), DefBin: "00", Bin: "00", Tag: null},);
                       console.log("padding");
-                      console.log({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null})
                     }
                   }
 
-                  console.log(memory)
+                  console.log(data)
 
                   console.log("byte Terminado")
 
@@ -3503,13 +3526,17 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -3520,17 +3547,14 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                      data.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -3538,34 +3562,31 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4 && i == 0){
-                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                        data[data.length-1].Value = parseInt(auxTokenString, 16) + " " + data[data.length-1].Value;
                       }
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(memory)
+                  console.log(data)
 
                   console.log("half Terminado")
 
@@ -3663,13 +3684,17 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -3680,17 +3705,14 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                      data.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -3698,34 +3720,31 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                        data[data.length-1].Value = parseInt(auxTokenString, 16) + " " + data[data.length-1].Value;
                       }
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(memory)
+                  console.log(data)
 
                   console.log("word Terminado")
 
@@ -3739,7 +3758,7 @@ window.app = new Vue({
                       isWord = false;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
                 }
 
                 j=0;
@@ -3824,13 +3843,17 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -3841,17 +3864,14 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
+                      data.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -3859,34 +3879,31 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                        data[data.length-1].Value = parseInt(auxTokenString, 16) + " " + data[data.length-1].Value;
                       }
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(memory)
+                  console.log(data)
 
                   console.log("double word Terminado")
 
@@ -3900,7 +3917,7 @@ window.app = new Vue({
                       isDoubleWord = false;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
                 }
 
                 j=0;
@@ -3985,13 +4002,17 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -4002,17 +4023,14 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: token});
+                      data.push({Address: data_address, Binary: [], Value: token});
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -4020,34 +4038,31 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                        data[data.length-1].Value = parseInt(auxTokenString, 16) + " " + data[data.length-1].Value;
                       }
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(memory)
+                  console.log(data)
 
                   console.log("float Terminado")
 
@@ -4061,7 +4076,7 @@ window.app = new Vue({
                       isFloat = false;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
                 }
 
                 j=0;
@@ -4146,13 +4161,17 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -4163,17 +4182,14 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: token});
+                      data.push({Address: data_address, Binary: [], Value: token});
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -4181,34 +4197,31 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        memory[memory.length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory.length-1].Value;
+                        data[data.length-1].Value = parseInt(auxTokenString, 16) + " " + data[data.length-1].Value;
                       }
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(memory)
+                  console.log(data)
 
                   console.log("double Terminado")
 
@@ -4222,7 +4235,7 @@ window.app = new Vue({
                       isDouble = false;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
                 }
 
                 j=0;
@@ -4324,17 +4337,22 @@ window.app = new Vue({
                   for(var i = 0; i < string.length; i++){
                     console.log(string.length)
 
+
                     /*ALIGN*/
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -4345,17 +4363,14 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: string.charAt(i)});
+                      data.push({Address: data_address, Binary: [], Value: string.charAt(i)});
 
                       if(i == 0){
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
                       }
 
                       data_address++;
@@ -4363,28 +4378,25 @@ window.app = new Vue({
                     }
                     else{
                       if(i == 0){
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                        memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
-                        if(label != null){
-                          memory_tag.push({tag: label, addr: data_address});
-                        }
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                        data[data.length-1].Value = string.charAt(i) + " " + data[data.length-1].Value;
                         label = null;
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                        memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                        data[data.length-1].Value = string.charAt(i) + " " + data[data.length-1].Value;
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4400,7 +4412,7 @@ window.app = new Vue({
                       isAscii = false;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
                 }
 
                 j=0;
@@ -4506,13 +4518,17 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data.push({Address: data_address, Binary: [], Value: null});
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
+                        }
+                        else if(data[data.length-1].Binary.length == 4){
+                          data_address++;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          data_address++;
                         }
-                        data_address++;
                       }
                     }
 
@@ -4523,22 +4539,19 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      memory.push({Address: data_address, Binary: [], Value: string.charAt(i)});
+                      data.push({Address: data_address, Binary: [], Value: string.charAt(i)});
 
                       if(i < string.length){
                         if(i == 0){
-                          (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                          if(label != null){
-                            memory_tag.push({tag: label, addr: data_address});
-                          }
+                          (data[data.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
                           label = null;
                         }
                         else{
-                          (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                          (data[data.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
                         }
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                       }
 
                       data_address++;
@@ -4548,33 +4561,30 @@ window.app = new Vue({
                     else{
                       if(i < string.length){
                         if(i == 0){
-                          (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                          memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
-                          if(label != null){
-                            memory_tag.push({tag: label, addr: data_address});
-                          }
+                          (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                          data[data.length-1].Value = string.charAt(i) + " " + data[data.length-1].Value;
                           label = null;
                         }
                         else{
-                          (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                          memory[memory.length-1].Value = string.charAt(i) + " " + memory[memory.length-1].Value;
+                          (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                          data[data.length-1].Value = string.charAt(i) + " " + data[data.length-1].Value;
                         }
                       }
                       else{
-                        (memory[memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                        (data[data.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
 
-                  console.log(memory)
+                  console.log(data)
 
 
-                  if(memory[memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory.length-1].Binary.length;
+                  if(data[data.length-1].Binary.length < 4){
+                    var num_iter = 4 - data[data.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4590,7 +4600,7 @@ window.app = new Vue({
                       isAscii = false;
                     }
                   }
-                  console.log(memory)
+                  console.log(data)
                 }
 
                 j=0;
@@ -4630,13 +4640,17 @@ window.app = new Vue({
                   if((data_address % align) != 0 && i == 0 && align != 0){
                     while((data_address % align) != 0){
                       if(data_address % 4 == 0){
-                        memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16)});
-                        (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        data.push({Address: data_address, Binary: [], Value: null});
+                        (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        data_address++;
+                      }
+                      else if(data[data.length-1].Binary.length == 4){
+                        data_address++;
                       }
                       else{
-                        (memory[memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        (data[data.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        data_address++;
                       }
-                      data_address++;
                     }
                   }
 
@@ -4652,17 +4666,14 @@ window.app = new Vue({
                   }
 
                   if(data_address % 4 == 0){
-                    memory.push({Address: data_address, Binary: [], Value: string});
+                    data.push({Address: data_address, Binary: [], Value: string});
 
                     if(i == 0){
-                      (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
-                      if(label != null){
-                        memory_tag.push({tag: label, addr: data_address});
-                      }
+                      (data[data.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
                       label = null;
                     }
                     else{
-                      (memory[memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                     }
 
                     data_address++;
@@ -4670,26 +4681,23 @@ window.app = new Vue({
                   }
                   else{
                     if(i == 0){
-                      (memory[memory.length-1].Binary).splice(data_address, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
-                      if(label != null){
-                        memory_tag.push({tag: label, addr: data_address});
-                      }
+                      (data[data.length-1].Binary).splice(data_address, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
                       label = null;
                     }
                     else{
-                      (memory[memory.length-1].Binary).splice(data_address, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                      (data[data.length-1].Binary).splice(data_address, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                     }
 
                     data_address++;
                   }
                 }
 
-                console.log(memory)
+                console.log(data)
 
-                if(memory[memory.length-1].Binary.length < 4){
-                  var num_iter = 4 - memory[memory.length-1].Binary.length;
+                if(data[data.length-1].Binary.length < 4){
+                  var num_iter = 4 - data[data.length-1].Binary.length;
                   for(var i = 0; i < num_iter; i++){
-                    (memory[memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                    (data[data.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
                   }
                 }
 
@@ -4743,14 +4751,11 @@ window.app = new Vue({
           }
 
           else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-            app._data.memory = memory;
             return;
           }
         
         }
       }
-
-      app._data.memory = memory;
 
       return 0;
     },
@@ -5615,7 +5620,7 @@ window.app = new Vue({
                     if(label == ""){
                       label=null;
                     }
-                    
+
                     if(a == 0){
                       (memory[memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
                     }
@@ -5626,7 +5631,6 @@ window.app = new Vue({
                     auxAddr++;
                   }
                   else{
-                    console.log(hex)
                     if(a == 0){
                       console.log(label);
                       (memory[memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
@@ -5639,8 +5643,6 @@ window.app = new Vue({
                   }
                 }
 
-                console.log(memory)
-
                 if(memory[memory.length-1].Binary.length < 4){
                   var num_iter = 4 - memory[memory.length-1].Binary.length;
                   for(var b = 0; b < num_iter; b++){
@@ -5649,6 +5651,8 @@ window.app = new Vue({
                 }
 
                 app._data.memory = memory;
+
+                address = address + (4*architecture.instructions[i].nwords);
               }
               else{
                 for(var pos = 0; pos < instructions.length; pos++){
@@ -5674,7 +5678,6 @@ window.app = new Vue({
                         auxAddr++;
                       }
                       else{
-                        console.log(hex)
                         if(a == 0){
                           (memory[pos].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
                         }
@@ -5685,8 +5688,7 @@ window.app = new Vue({
                         auxAddr++;
                       }
                     }
-                    
-                    console.log(memory)
+      
 
                     if(memory[pos].Binary.length < 4){
                       var num_iter = 4 - memory[pos].Binary.length;
@@ -5697,25 +5699,12 @@ window.app = new Vue({
 
                     app._data.memory = memory;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     break;
                   }
                 }
               }
-              address = address + (4*architecture.instructions[i].nwords);
+
+              console.log(address.toString(16));
 
               console.log(instructions)
             }
