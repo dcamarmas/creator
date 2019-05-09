@@ -331,8 +331,9 @@ var instructions = [];
 var instructions_tag = [];
 var data = [];
 
-/*Instrucciones pendientes de compilar*/
+/*Instrucciones pendientes de compilar o validar por la etiqueta*/
 var pending_instructions = [];
+var pending_tags = [];
 
 /*Direccion memoria*/
 /*Instrucciones*/
@@ -3014,6 +3015,7 @@ window.app = new Vue({
       kernel_instructions = [];
       instructions = [];
       pending_instructions = [];
+      pending_tags = [];
       kernel_memory = [];
       memory = [];
       data = [];
@@ -3079,6 +3081,7 @@ window.app = new Vue({
                   kernel_instructions = [];
                   instructions = [];
                   pending_instructions = [];
+                  pending_tags = [];
                   kernel_memory = [];
                   memory = [];
                   data = [];
@@ -3101,6 +3104,7 @@ window.app = new Vue({
                   kernel_instructions = [];
                   instructions = [];
                   pending_instructions = [];
+                  pending_tags = [];
                   kernel_memory = [];
                   memory = [];
                   data = [];
@@ -3123,6 +3127,7 @@ window.app = new Vue({
                   kernel_instructions = [];
                   instructions = [];
                   pending_instructions = [];
+                  pending_tags = [];
                   kernel_memory = [];
                   memory = [];
                   data = [];
@@ -3145,6 +3150,7 @@ window.app = new Vue({
                   kernel_instructions = [];
                   instructions = [];
                   pending_instructions = [];
+                  pending_tags = [];
                   kernel_memory = [];
                   memory = [];
                   data = [];
@@ -3190,6 +3196,22 @@ window.app = new Vue({
       }
 
       app._data.memory = memory;
+
+      var found = false;
+
+      for(var i = 0; i < pending_tags.length; i++){
+        for (var j = 0; j < memory.length && found == false; j++){
+          for (var z = 0; z < memory[j].Binary.length && found == false; z++){
+            if(memory[j].Binary[z].Tag == pending_tags[i].Label){
+              found = true;
+              break;
+            }
+          }
+        }
+        if(found == false){
+          this.compileError(7, pending_tags[i].Label, pending_tags[i].Index);
+        }
+      }
 
 
       app._data.alertMessaje = 'Compilation completed successfully';
@@ -4790,6 +4812,17 @@ window.app = new Vue({
 
         for(var i = 0; i < architecture.directives.length; i++){
           if(token == architecture.directives[i].name){
+            for(var p = 0; p < pending_instructions.length; p++){
+              console.log("PENDING      " + pending_instructions[p].instruction)
+              console.log(pending_instructions[p].Label)
+
+              var result = this.instruction_compiler(pending_instructions[p].instruction, pending_instructions[p].instruction, pending_instructions[p].Label, pending_instructions[p].line, true, pending_instructions[p].address);
+            
+              if(result == -1){
+                $(".loading").hide();
+                return -1;
+              }
+            }
             app._data.instructions = instructions;
             return 0;
           }
@@ -5174,6 +5207,9 @@ window.app = new Vue({
           continue;
         }
         else{
+          var pending_tag = false;
+          var tag = "";
+
           var binary = "";
           binary = binary.padStart(architecture.instructions[i].nwords * 32, "0");
 
@@ -5534,6 +5570,10 @@ window.app = new Vue({
                     }
                     else{
                       var validTag = false;
+                      if(memory.length == 0){
+                        pending_tag = true;
+                        tag = token;
+                      }
                       for (var z = 0; z < memory.length; z++){
                         for (var w = 0; w < memory[z].Binary.length; w++){
                           if(token == memory[z].Binary[w].Tag){
@@ -5543,12 +5583,13 @@ window.app = new Vue({
                             //instruction = instruction + " " + token;
                             re = RegExp("[fF][0-9]+");
                             instruction = instruction.replace(re, token);
-
                             validTag = true;
                           }
                           if(z == memory.length-1 && w == memory[z].Binary.length-1 && validTag == false){
-                            this.compileError(7, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                            return -1;
+                            //this.compileError(7, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            pending_tag = true;
+                            tag = token;
+                            //return -1;
                           }
                         }
                       }
@@ -5612,6 +5653,10 @@ window.app = new Vue({
 
 
               if(pending == false){
+                if(pending_tag == true){
+                  pending_tags.push({Index: textarea_assembly_editor.posFromIndex(tokenIndex).line, Label: tag});
+                }
+
                 instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', binary: binary});
               
                 for(var a = 0; a < hex.length/2; a++){
@@ -6731,6 +6776,30 @@ window.app = new Vue({
               }
               return;
             }
+          }
+        }
+
+        /*NUEVO PROBAR*/
+        for (var i = 0; i < memory.length; i++){
+          if(memory[i].Address > parseInt(addr, 16)){
+            console.log("AQUI1");
+            memory.splice(i, 0, {Address: parseInt(addr, 16), Binary: [], Value: null});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (memory[i].Binary).push({Addr: parseInt(addr, 16) + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+              charIndex = charIndex - 2;
+            }
+            return;
+          }
+          else if(i == memory.length-1){
+            console.log("AQUI2");
+            memory.push({Address: parseInt(addr, 16), Binary: [], Value: null});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (memory[i+1].Binary).push({Addr: parseInt(addr, 16) + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+              charIndex = charIndex - 2;
+            }
+            return;
           }
         }
       }
