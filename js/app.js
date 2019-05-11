@@ -3225,8 +3225,11 @@ window.app = new Vue({
       this.reset();
 
 
-      /*ASIGNACION PILA TEMPORAL*/
+      /*ASIGNACION PILA TEMPORAL PC*/
       architecture.components[1].elements[29].value = bigInt(stack_address).value;
+      architecture.components[0].elements[0].value = bigInt(0x00004000).value;
+      architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
+      architecture.components[0].elements[0].default_value = bigInt(0x00004000).value;
 
       address = 0x00004000;
       data_address = 0x00000000;
@@ -6608,6 +6611,7 @@ window.app = new Vue({
         app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
+        instructions[executionIndex]._rowVariant = 'danger';
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         executionIndex = -1;
@@ -6631,6 +6635,7 @@ window.app = new Vue({
           app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
           app._data.type ='danger';
           app._data.dismissCountDown = app._data.dismissSecs;
+          instructions[executionIndex]._rowVariant = 'danger';
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           executionIndex = -1;
@@ -6782,7 +6787,6 @@ window.app = new Vue({
         /*NUEVO PROBAR*/
         for (var i = 0; i < memory.length; i++){
           if(memory[i].Address > parseInt(addr, 16)){
-            console.log("AQUI1");
             memory.splice(i, 0, {Address: parseInt(addr, 16), Binary: [], Value: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
@@ -6792,7 +6796,6 @@ window.app = new Vue({
             return;
           }
           else if(i == memory.length-1){
-            console.log("AQUI2");
             memory.push({Address: parseInt(addr, 16), Binary: [], Value: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
