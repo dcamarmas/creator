@@ -3014,10 +3014,12 @@ window.app = new Vue({
       $(".loading").show();
       kernel_instructions = [];
       instructions = [];
+      instructions_tag = [];
       pending_instructions = [];
       pending_tags = [];
       kernel_memory = [];
       memory = [];
+      memory_tag = [];
       data = [];
 
       align = 0;
@@ -4827,6 +4829,13 @@ window.app = new Vue({
               }
             }
             app._data.instructions = instructions;
+
+            for(var i = 0; i < instructions.length; i++){
+              if(instructions[i].Label != ""){
+                instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
+              }
+            }
+
             return 0;
           }
         }
@@ -4977,7 +4986,6 @@ window.app = new Vue({
         console.log(pending_instructions[p].Label)
 
         var result = this.instruction_compiler(pending_instructions[p].instruction, pending_instructions[p].instruction, pending_instructions[p].Label, pending_instructions[p].line, true, pending_instructions[p].address);
-      
         if(result == -1){
           $(".loading").hide();
           return -1;
