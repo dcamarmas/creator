@@ -13,7 +13,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  /*{name: "Control registers", type: "control", double_precision: false, elements:[
+  {name: "Control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -112,125 +112,125 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}*/
+    ]}
   ], instructions:[
-    /*{name: "add", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
+    {name: "add", type: "Arithmetic integer", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2+reg3"},
-    {name: "addi", co: "001000", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "addi,$INT-Reg,$INT-Reg,inm", signatureRaw: "addi $reg1 $reg2 val", fields: [
+    {name: "addi", type: "Arithmetic integer", co: "001000", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "addi,$INT-Reg,$INT-Reg,inm", signatureRaw: "addi $reg1 $reg2 val", fields: [
       {name: "addi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2+val"},
-    {name: "and", co: "000000", cop: "100100", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "and,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "and $reg1 $reg2 $reg3", fields: [
+    {name: "and", type: "Logic", co: "000000", cop: "100100", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "and,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "and $reg1 $reg2 $reg3", fields: [
       {name: "and", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2&reg3"},
-    {name: "andi", co: "001100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "andi,$INT-Reg,$INT-Reg,inm", signatureRaw: "andi $reg1 $reg2 val", fields: [
+    {name: "andi", type: "Logic", co: "001100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "andi,$INT-Reg,$INT-Reg,inm", signatureRaw: "andi $reg1 $reg2 val", fields: [
       {name: "andi", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2&val"},
-    {name: "b", co: "000100", cop: null, nwords: 1, signature_definition: "F0 F1", signature: "b,inm", signatureRaw: "b val", fields: [
+    {name: "b", type: "Unconditional bifurcation", co: "000100", cop: null, nwords: 1, signature_definition: "F0 F1", signature: "b,inm", signatureRaw: "b val", fields: [
       {name: "b", type: "co", startbit: 31, stopbit: 26},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "PC=val"},
-    {name: "beq", co: "000100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "beq,$INT-Reg,$INT-Reg,inm", signatureRaw: "beq $reg1 $reg2 val", fields: [
+    {name: "beq", type: "Conditional bifurcation", co: "000100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "beq,$INT-Reg,$INT-Reg,inm", signatureRaw: "beq $reg1 $reg2 val", fields: [
       {name: "beq", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "if(reg1 == reg2){PC=val}"},
-    {name: "bne", co: "000101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "bne,$INT-Reg,$INT-Reg,inm", signatureRaw: "bne $reg1 $reg2 val", fields: [
+    {name: "bne", type: "Conditional bifurcation", co: "000101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "bne,$INT-Reg,$INT-Reg,inm", signatureRaw: "bne $reg1 $reg2 val", fields: [
       {name: "bne", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "if(reg1 != reg2){PC=val}"},
-    {name: "div", co: "000000", cop: "011010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "div,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "div $reg1 $reg2 $reg3", fields: [
+    {name: "div", type: "Arithmetic integer", co: "000000", cop: "011010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "div,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "div $reg1 $reg2 $reg3", fields: [
       {name: "div", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2/reg3"},
-    {name: "lw", co: "100011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "lw,$INT-Reg,inm,($INT-Reg)", signatureRaw: "lw $reg1 val ($reg2)", fields: [
+    {name: "lw", type: "Memory access", co: "100011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "lw,$INT-Reg,inm,($INT-Reg)", signatureRaw: "lw $reg1 val ($reg2)", fields: [
       {name: "lw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
       {name: "reg2", type: "INT-Reg", startbit: 25, stopbit: 21},
     ], definition: "reg1=MP.w.(val+reg2)"},
-    {name: "mul", co: "011100", cop: "000010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "mul,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "mul $reg1 $reg2 $reg3", fields: [
+    {name: "mul", type: "Arithmetic integer", co: "011100", cop: "000010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "mul,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "mul $reg1 $reg2 $reg3", fields: [
       {name: "mul", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2*reg3"},
-    {name: "nop", co: "000000", cop: "000000", nwords: 1, signature_definition: "F0", signature: "nop", signatureRaw: "nop", fields: [
+    {name: "nop", type: "Logic", co: "000000", cop: "000000", nwords: 1, signature_definition: "F0", signature: "nop", signatureRaw: "nop", fields: [
       {name: "nop", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: ""},
-    {name: "or", co: "000000", cop: "100101", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "or,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "or $reg1 $reg2 $reg3", fields: [
+    {name: "or", type: "Logic", co: "000000", cop: "100101", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "or,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "or $reg1 $reg2 $reg3", fields: [
       {name: "or", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2|reg3"},
-    {name: "ori", co: "001101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "ori,$INT-Reg,$INT-Reg,inm", signatureRaw: "ori $reg1 $reg2 val", fields: [
+    {name: "ori", type: "Logic", co: "001101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "ori,$INT-Reg,$INT-Reg,inm", signatureRaw: "ori $reg1 $reg2 val", fields: [
       {name: "ori", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2|val"},
-    {name: "sub", co: "000000", cop: "100010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "sub,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "sub $reg1 $reg2 $reg3", fields: [
+    {name: "sub", type: "Arithmetic integer", co: "000000", cop: "100010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "sub,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "sub $reg1 $reg2 $reg3", fields: [
       {name: "sub", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2-reg3"},
-    {name: "sw", co: "101011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "sw,$INT-Reg,$inm,($INT-Reg)", signatureRaw: "sw $reg1 val ($reg2)", fields: [
+    {name: "sw", type: "Memory access", co: "101011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "sw,$INT-Reg,$inm,($INT-Reg)", signatureRaw: "sw $reg1 val ($reg2)", fields: [
       {name: "sw", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
       {name: "reg2", type: "INT-Reg", startbit: 25, stopbit: 21},
     ], definition: "MP.w.(val+reg2)=reg1"},
-    {name: "xor", co: "000000", cop: "100110", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "xor,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "xor $reg1 $reg2 $reg3", fields: [
+    {name: "xor", type: "Logic", co: "000000", cop: "100110", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "xor,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "xor $reg1 $reg2 $reg3", fields: [
       {name: "xor", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
     ], definition: "reg1=reg2^reg3"},
-    {name: "xori", co: "001110", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "xori,$INT-Reg,$INT-Reg,inm", signatureRaw: "xori $reg1 $reg2 val", fields: [
+    {name: "xori", type: "Logic", co: "001110", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "xori,$INT-Reg,$INT-Reg,inm", signatureRaw: "xori $reg1 $reg2 val", fields: [
       {name: "xori", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=reg2^val"},
-    {name: "lui", co: "001111", cop: null, nwords: 1, signature_definition: "F0 $F1 F2", signature: "lui,$INT-Reg,inm", signatureRaw: "lui $reg1 val", fields: [
+    {name: "lui", type: "Other", co: "001111", cop: null, nwords: 1, signature_definition: "F0 $F1 F2", signature: "lui,$INT-Reg,inm", signatureRaw: "lui $reg1 val", fields: [
       {name: "lui", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
     ], definition: "reg1=val<<16"},
 
-    {name: "syscall", co: "000000", cop: "001100", nwords: 1, signature_definition: "F0", signature: "syscall", signatureRaw: "syscall", fields: [
+    {name: "syscall", type: "Syscall", co: "000000", cop: "001100", nwords: 1, signature_definition: "F0", signature: "syscall", signatureRaw: "syscall", fields: [
       {name: "syscall", type: "co", startbit: 31, stopbit: 26},
       {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "switch(v0){case 1:print_int(a0);break;case 2:print_float(FG12);break;case 3:print_double(FP12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(FG0);break;case 7:read_double(FP0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"},*/
+    ], definition: "switch(v0){case 1:print_int(a0);break;case 2:print_float(FG12);break;case 3:print_double(FP12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(FG0);break;case 7:read_double(FP0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"},
   ],pseudoinstructions:[
-    /*{name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
+    {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       ], definition: "add $reg1 $r0 $reg2;"},
@@ -238,14 +238,10 @@ var architecture = {components:[
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},*/
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},
   ], directives:[
-    /*{name:".kdata", action:"kernel_data_segment", size:null },
-    {name:".ktext", action:"kernel_code_segment", size:null },
     {name:".data", action:"data_segment", size:null },
     {name:".text", action:"code_segment", size:null },
-    {name:".main", action:"main_function", size:null },
-    {name:".kmain", action:"kmain_function", size:null },
     {name:".globl", action:"global_symbol", size:null },
     {name:".extern", action:"data_size", size:null },
     {name:".byte", action:"byte", size:1 },
@@ -257,7 +253,7 @@ var architecture = {components:[
     {name:".space", action:"space", size:1 },
     {name:".ascii", action:"ascii_not_null_end", size:null },
     {name:".asciiz", action:"ascii_null_end", size:null },
-    {name:".align", action:"align", size:null },*/
+    {name:".align", action:"align", size:null },
   ]};
 
 var componentsTypes = [
@@ -266,13 +262,25 @@ var componentsTypes = [
   { text: 'Control', value: 'control' },
 ]
 
+var instructionsTypes = [
+  { text: 'Arithmetic integer', value: 'Arithmetic integer' },
+  { text: 'Arithmetic floating point', value: 'Arithmetic floating point' },
+  { text: 'Logic', value: 'Logic' },
+  { text: 'Transfer between registers', value: 'Transfer between registers' },
+  { text: 'Memory access', value: 'Memory access' },
+  { text: 'Comparison', value: 'Comparison' },
+  { text: 'I/O', value: 'I/O' },
+  { text: 'Syscall', value: 'Syscall' },
+  { text: 'Control', value: 'Control' },
+  { text: 'Function call', value: 'Function call' },
+  { text: 'Conditional bifurcation', value: 'Conditional bifurcation' },
+  { text: 'Unconditional bifurcation', value: 'Unconditional bifurcation' },
+  { text: 'Other', value: 'Other' },
+]
+
 var actionTypes = [
-  { text: 'Kernel Data Segment', value: 'kernel_data_segment' },
-  { text: 'Kernel Code Segment', value: 'kernel_code_segment' },
   { text: 'Data Segment', value: 'data_segment' },
   { text: 'Code Segment', value: 'code_segment' },
-  { text: 'Main Segment', value: 'main_function' },
-  { text: 'Kernel Main Segment', value: 'kmain_function' },
   { text: 'Global Symbol', value: 'global_symbol' },
   { text: 'Data Size', value: 'data_size' },
   { text: 'Byte', value: 'byte' },
@@ -320,11 +328,6 @@ var compileError =[
 
 
 /*Estructuras instrucciones y memoria*/
-var kernel_memory = [];
-var kernel_memory_tag = [];
-var kernel_instructions = [];
-var kernel_instructions_tag = [];
-
 var memory = [];
 var memory_tag = [];
 var instructions = [];
@@ -338,13 +341,30 @@ var pending_tags = [];
 /*Direccion memoria*/
 /*Instrucciones*/
 var address = 0x00004000;
-var kernel_address = 0x00000000;
 /*Datos*/
 var align = 0;
 var data_address = 0x0000;
-var kernel_data_address = 0x0000;
 /*Pila*/
 var stack_address = 0x00004FFF;
+
+
+/*Estadisticas*/
+var totalStats = 0;
+var stats = [
+  { type: 'Arithmetic integer', number_instructions: 0, percentage: 0, abbreviation: "AI" },
+  { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0, abbreviation: "AFP" },
+  { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log" },
+  { type: 'Transfer between registers', number_instructions: 0, percentage: 0, abbreviation: "Trans" },
+  { type: 'Memory access', number_instructions: 0, percentage: 0, abbreviation: "Mem" },
+  { type: 'Comparison', number_instructions: 0, percentage: 0, abbreviation: "Comp" },
+  { type: 'I/O', number_instructions: 0, percentage: 0, abbreviation: "I/O" },
+  { type: 'Syscall', number_instructions: 0, percentage: 0, abbreviation: "Sys" },
+  { type: 'Control', number_instructions: 0, percentage: 0, abbreviation: "Ctrl" },
+  { type: 'Function call', number_instructions: 0, percentage: 0, abbreviation: "FC" },
+  { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0, abbreviation: "CB" },
+  { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0, abbreviation: "UB" },
+  { type: 'Other', number_instructions: 0, percentage: 0, abbreviation: "Oth" },
+];
 
 
 
@@ -394,6 +414,8 @@ window.app = new Vue({
     back_card: back_card,
     /*Fecha copia de seguidad*/
     date_copy:'',
+    /*Mostrar modal nueva arquitectura*/
+    showLoadArch: false,
     /*Datos de la nueva arquitectura*/
     name_arch: '',
     description_arch: '',
@@ -478,6 +500,7 @@ window.app = new Vue({
     /*Edicion de las instrucciones*/
     formInstruction: {
       name: '',
+      type: '',
       co: '',
       cop: '',
       nwords: 1,
@@ -492,6 +515,8 @@ window.app = new Vue({
       signature_definition: '',
       definition: '',
     },
+    /*Tipos de instrucciones*/
+    instructionsTypes: instructionsTypes,
     /*Barra de paginas formulario instrucciones*/
     instructionFormPage: 1,
     instructionFormPageLink: ['#Principal', '#Fields', '#Signature', '#Definition'],
@@ -601,8 +626,6 @@ window.app = new Vue({
     memFields: ['Address', 'Binary', 'Value'],
     /*Asignacion de valores de la tabla de memoria*/
     memory: memory,
-    kernel_memory: kernel_memory,
-
 
     /*CARGA Y LECTURA ENSAMBLADOR*/
     /*Variables donde se guardan los ficheros cargados*/
@@ -623,13 +646,33 @@ window.app = new Vue({
     newValue: '',
     /*Registros a mostrar*/
     register_type: 'integer',
+    /*Estadisticas*/
+    stats: stats,
+    statsFields: {
+      type: {
+        label: 'Type',
+        sortable: true
+      },
+      number_instructions: {
+        label: 'Number of instructions',
+        sortable: true
+      },
+      percentage: {
+        label: 'Percentage',
+        sortable: true
+      },
+      abbreviation: {
+        label: 'Abbreviation',
+        sortable: false
+      },
+    },
+
     /*Consola*/
     display: '',
     keyboard: '',
     /*Asignacion de valores de la tabla de instrucciones*/
     archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
     instructions: instructions,
-    kernel_instructions: kernel_instructions,
     
   },
   computed: {
@@ -830,9 +873,9 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        var auxArchitecture = cfg;
+        /*var auxArchitecture = cfg;
 
-        architecture = bigInt_deserialize(auxArchitecture);
+        architecture = bigInt_deserialize(auxArchitecture);*/
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -863,8 +906,8 @@ window.app = new Vue({
 
       .fail(function() {
         $(".loading").hide();
-        app._data.alertMessaje = 'The selected architecture has not been loaded correctly';
-        app._data.type ='danger';
+        app._data.alertMessaje = 'The selected architecture is not currently available';
+        app._data.type ='info';
         app._data.dismissCountDown = app._data.dismissSecs;
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -874,6 +917,17 @@ window.app = new Vue({
     /*Lectura del JSON de la arquitectura seleccionada*/
     read_arch(e){
       $(".loading").show();
+
+      e.preventDefault();
+      if(!this.name_arch || !this.load_arch){
+        $(".loading").hide();
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type ='danger';
+        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        return;
+      }
+
+      this.showLoadArch = false;
 
       var file;
       var reader;
@@ -1465,6 +1519,7 @@ window.app = new Vue({
     /*Vacia el formulario de instrucciones*/
     emptyFormInst(){
       this.formInstruction.name = '';
+      this.formInstruction.type = '';
       this.formInstruction.co = '';
       this.formInstruction.cop = '';
       this.formInstruction.nwords = 1;
@@ -1714,7 +1769,7 @@ window.app = new Vue({
         }
       }
 
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1781,7 +1836,7 @@ window.app = new Vue({
         this.formInstruction.cop='';
       }
 
-      var newInstruction = {name: this.formInstruction.name, signature_definition: this.formInstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
+      var newInstruction = {name: this.formInstruction.name, type: this.formInstruction.type, signature_definition: this.formInstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
       architecture.instructions.push(newInstruction);
 
       for (var i = 0; i < this.formInstruction.numfields; i++) {
@@ -1815,6 +1870,7 @@ window.app = new Vue({
       for (var i = 0; i < architecture.instructions.length; i++) {
         if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
           this.formInstruction.name = architecture.instructions[i].name;
+          this.formInstruction.type = architecture.instructions[i].type;
           this.formInstruction.cop = architecture.instructions[i].cop;
           this.formInstruction.co = architecture.instructions[i].co;
           app._data.modalEditInst.co = architecture.instructions[i].co;
@@ -1887,7 +1943,7 @@ window.app = new Vue({
           empty = 1;
         }
       }
-      if (!this.formInstruction.name || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
+      if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
@@ -1953,6 +2009,7 @@ window.app = new Vue({
       for (var i = 0; i < architecture.instructions.length; i++){
         if(architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop){
           architecture.instructions[i].name = this.formInstruction.name;
+          architecture.instructions[i].type = this.formInstruction.type;
           architecture.instructions[i].co = this.formInstruction.co;
           architecture.instructions[i].cop = this.formInstruction.cop;
           architecture.instructions[i].nwords = this.formInstruction.nwords;
@@ -3012,15 +3069,19 @@ window.app = new Vue({
     /*Compilador*/
     assembly_compiler(){
       $(".loading").show();
-      kernel_instructions = [];
       instructions = [];
       instructions_tag = [];
       pending_instructions = [];
       pending_tags = [];
-      kernel_memory = [];
       memory = [];
       memory_tag = [];
       data = [];
+
+      totalStats=0;
+      for (var i = 0; i < stats.length; i++){
+        stats[i].percentage = 0;
+        stats[i].number_instructions = 0;
+      }
 
       align = 0;
 
@@ -3072,52 +3133,6 @@ window.app = new Vue({
         for(var i = 0; i < architecture.directives.length; i++){
           if(token == architecture.directives[i].name){
             switch(architecture.directives[i].action){
-              case "kernel_data_segment":
-                console.log("kernel_data_segment")
-                var result = this.kernel_data_segment_compiler()
-                if(result == 0){
-                  change = true;
-                }
-                if(result == -1){
-                  tokenIndex = 0;
-                  kernel_instructions = [];
-                  instructions = [];
-                  pending_instructions = [];
-                  pending_tags = [];
-                  kernel_memory = [];
-                  memory = [];
-                  data = [];
-                  app._data.memory = memory;
-                  app._data.instructions = instructions;
-                  address = 0x00004000;
-                  data_address = 0x00000000;
-                  $(".loading").hide();
-                  return;
-                }
-                break;
-              case "kernel_code_segment":
-                console.log("kernel_code_segment")
-                var result = this.kernel_code_segment_compiler();
-                if(result == 0){
-                  change = true;
-                }
-                if(result == -1){
-                  tokenIndex = 0;
-                  kernel_instructions = [];
-                  instructions = [];
-                  pending_instructions = [];
-                  pending_tags = [];
-                  kernel_memory = [];
-                  memory = [];
-                  data = [];
-                  app._data.memory = memory;
-                  app._data.instructions = instructions;
-                  address = 0x00004000;
-                  data_address = 0x00000000;
-                  $(".loading").hide();
-                  return;
-                }
-                break;
               case "data_segment":
                 console.log("data_segment")
                 var result = this.data_segment_compiler();
@@ -3126,11 +3141,9 @@ window.app = new Vue({
                 }
                 if(result == -1){
                   tokenIndex = 0;
-                  kernel_instructions = [];
                   instructions = [];
                   pending_instructions = [];
                   pending_tags = [];
-                  kernel_memory = [];
                   memory = [];
                   data = [];
                   app._data.memory = memory;
@@ -3149,11 +3162,9 @@ window.app = new Vue({
                 }
                 if(result == -1){
                   tokenIndex = 0;
-                  kernel_instructions = [];
                   instructions = [];
                   pending_instructions = [];
                   pending_tags = [];
-                  kernel_memory = [];
                   memory = [];
                   data = [];
                   app._data.memory = memory;
@@ -3239,15 +3250,6 @@ window.app = new Vue({
       $(".loading").hide();
     },
 
-
-
-    kernel_data_segment_compiler(){
-
-    },
-
-    kernel_code_segment_compiler(){
-
-    },
 
 
 
@@ -4797,20 +4799,6 @@ window.app = new Vue({
       var pseudoinstruccion = false;
 
       this.next_token();
-      var token = this.get_token();
-
-      var main = null;
-      for(var i = 0; i < architecture.directives.length; i++){
-        if(architecture.directives[i].action == "main_function"){
-          main = architecture.directives[i].name;
-        }
-      }
-      if(token != main && main != null){
-        this.compileError(20, main, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-        $(".loading").hide();
-        return -1;
-      }
-      this.next_token();
 
       while(existsInstruction){
         token = this.get_token();
@@ -5273,9 +5261,9 @@ window.app = new Vue({
                 console.log(token)
 
                 var id = -1;
-                re = new RegExp("R[0-9]+");
+                re = new RegExp("[0-9]+");
                 if(token.search(re) != -1){
-                  re = new RegExp("R(.*?)$");
+                  re = new RegExp("(.*?)$");
                   match = re.exec(token);
                   id = match[1];
                 }
@@ -5823,11 +5811,6 @@ window.app = new Vue({
 
 
     /*PAGINA SIMULADOR*/
-    /*Abre la consola en una ventana*/
-    open_console(){
-      window.open("./console.html", "WepSim-Console", "width=720, height=auto");
-    },
-
     /*Funciones de los popover*/
     popoverId(i){
       return 'popoverValueContent' + i;
@@ -6088,6 +6071,27 @@ window.app = new Vue({
         return;
       }
 
+      /*Etiqueta main*/
+      if(executionIndex == 0){
+        for (var i = 0; i < instructions.length; i++) {
+          if(instructions[i].Label == "main"){
+            instructions[executionIndex]._rowVariant = 'success';
+            architecture.components[0].elements[0].value = bigInt(parseInt(instructions[i].Address, 16)).value;
+            break;
+          }
+          else if(i == instructions.length-1){
+            $(".loading").hide();
+            app._data.alertMessaje = 'Label "main" not found';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            executionIndex = -1;
+            return;
+          }
+        }
+      }
+
       var error = 0;
       var index;
 
@@ -6114,10 +6118,13 @@ window.app = new Vue({
       /*Busca la instruccion a ejecutar y coge la definicion*/
       for (var i = 0; i < architecture.instructions.length; i++) {
         var auxSig = architecture.instructions[i].signatureRaw.split(' ');
+        var type;
 
         if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
           //signatureParts = architecture.instructions[i].signature.split(',');
           //signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
+
+          type = architecture.instructions[i].type;
 
           signatureDef = architecture.instructions[i].signature_definition;
           signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -6173,9 +6180,22 @@ window.app = new Vue({
           var re = new RegExp(signatureRawParts[i],"g");
           auxDef = auxDef.replace(re, instructionExecParts[i]);
         }*/
-        var re = new RegExp(signatureRawParts[i],"g");
-        auxDef = auxDef.replace(re, instructionExecParts[i]);
-        
+
+        if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "Ctrl-Reg"){
+          re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
+          if(instructionExecParts[i].search(re) != -1){
+            var re = new RegExp(signatureRawParts[i],"g");
+            auxDef = auxDef.replace(re, "R" + instructionExecParts[i]);
+          }
+          else{
+            var re = new RegExp(signatureRawParts[i],"g");
+            auxDef = auxDef.replace(re, instructionExecParts[i]);
+          }
+        }
+        else{
+          var re = new RegExp(signatureRawParts[i],"g");
+          auxDef = auxDef.replace(re, instructionExecParts[i]);
+        }
       }
 
       console.log(auxDef)
@@ -6487,13 +6507,25 @@ window.app = new Vue({
           instructions[executionIndex]._rowVariant = 'danger';
           executionIndex = -1;
           $(".loading").hide();
-          app._data.alertMessaje = 'Syntax Error';
+          app._data.alertMessaje = 'The definition of the instruction contains errors, please review it';
           app._data.type ='danger';
           app._data.dismissCountDown = app._data.dismissSecs;
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         }
       }
+
+      /*Actualizacion estaditicas*/
+      for (var i = 0; i < stats.length; i++){
+        if(type == stats[i].type){
+          stats[i].number_instructions++;
+          totalStats++;
+        }
+      }
+      for (var i = 0; i < stats.length; i++){
+        stats[i].percentage = (stats[i].number_instructions/totalStats)*100;
+      }
+
       
       if(executionIndex == -1){
         console.log("-1");
@@ -6571,8 +6603,12 @@ window.app = new Vue({
         instructions[i]._rowVariant = '';
       }
       executionIndex = 0;
-      if(instructions.length > 0){
-        instructions[executionIndex]._rowVariant = 'success';
+      
+      /*Reset estadisticas*/
+      totalStats=0;
+      for (var i = 0; i < stats.length; i++){
+        stats[i].percentage = 0;
+        stats[i].number_instructions = 0;
       }
 
       for (var i = 0; i < architecture_hash.length; i++) {
@@ -6860,35 +6896,26 @@ window.app = new Vue({
         case "print_int":
           var value = architecture.components[indexComp].elements[indexElem].value;
           app._data.display = app._data.display + "\n" + value;
-          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
-          console.log(app._data.display);
           break;
         case "print_float":
           var value = architecture.components[indexComp].elements[indexElem].value;
           app._data.display = app._data.display + "\n" + value;
-          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
-          console.log(app._data.display);
           break;
         case "print_double":
           var value = architecture.components[indexComp].elements[indexElem].value;
           app._data.display = app._data.display + "\n" + value;
-          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
-          console.log(app._data.display);
           break;
         case "print_string":
           
 
           break;
         case "read_int":
-          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           this.writeRegister(this.keyboard, indexComp, indexElem);
           break;
         case "read_float":
-          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           this.writeRegister(this.keyboard, indexComp, indexElem);
           break;
         case "read_double":
-          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           this.writeRegister(this.keyboard, indexComp, indexElem);
           break;
         case "":
@@ -6903,9 +6930,12 @@ window.app = new Vue({
           console.log(executionIndex);
           break;
         case "print_char":
-          var value = architecture.components[indexComp].elements[indexElem].value;
+          var aux = architecture.components[indexComp].elements[indexElem].value;
+          var aux2 = aux.toString(16);
+          var length = aux2.length;
+
+          var value = aux2.substring(length-2, length);
           this.display = this.display + "\n" + value;
-          window.open("./console.html", "WepSim-Console", "width=720, height=auto");
           break;
         case "read_char":
 
@@ -6943,11 +6973,13 @@ $("#selectData").change(function(){
     app._data.register_type = 'floating point';
     $("#registers").show();
     $("#memory").hide();
+    $("#stats").hide();
   }
   if(value == "CPU-INT Registers") {
     app._data.register_type = 'integer';
     $("#registers").show();
     $("#memory").hide();
+    $("#stats").hide();
   }
 });
 

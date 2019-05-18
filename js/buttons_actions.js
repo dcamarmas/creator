@@ -21,9 +21,17 @@ $(".arch_btn").click(function(){
 $("#memory_btn").click(function(){
   $("#registers").hide();
   $("#memory").show();
+  $("#stats").hide();
 });
 
 $("#selectData").click(function(){
   $("#registers").show();
   $("#memory").hide();
+  $("#stats").hide();
+});
+
+$("#stats_btn").click(function(){
+  $("#registers").hide();
+  $("#memory").hide();
+  $("#stats").show();
 });

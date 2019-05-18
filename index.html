@@ -50,6 +50,7 @@
 
           <!-- Information -->
           <b-modal id="notifications" title="Notifications" hide-footer scrollable>
+            <h6 v-if="notifications.length == 0">There's no notification at the moment</h6>
             <b-alert show :variant="item.color" v-for="item in notifications">
               <h6><span class="fa fa-info-circle" v-if="item.color!='danger'"></span><span class="fa fa-warning" v-if="item.color=='danger'"></span> {{item.mess}}</h6>
               <h6>{{item.time}}   -   {{item.date}}</h6>
@@ -107,7 +108,7 @@
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand style="color: #2196F3;"><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3;" href="."><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
 
             <b-navbar-nav>
                 <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>
@@ -157,12 +158,17 @@
               </div>
             </div>
 
-            <b-modal id="load_arch" title="Load Architecture" @ok="read_arch">
-              <b-form-input v-model="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
-              <br>
-              <b-form-textarea v-model="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
-              <br>
-              <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
+            <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
+              <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
+                <span class="fa fa-info-circle"></span> {{alertMessaje}}
+              </b-alert>
+              <b-form>
+                <b-form-input v-model="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
+                <br>
+                <b-form-textarea v-model="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+                <br>
+                <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
+              </b-form>
             </b-modal>
 
             <div class="col-lg-5 col-sm-12 nopadding">
@@ -561,6 +567,11 @@
                             </b-form-input>
                           </b-form-group>
 
+                          <b-form-group label="Type:">
+                            <b-form-select v-model="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
+                            </b-form-input>
+                          </b-form-group>
+
                           <b-form-group label="Number of Words:">
                             <b-form-input type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
                             </b-form-input>
@@ -685,6 +696,11 @@
                       <div id="newInstForm1" v-if="instructionFormPage == 1">
                         <b-form-group label="Name:">
                           <b-form-input type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                          </b-form-input>
+                        </b-form-group>
+
+                        <b-form-group label="Type:">
+                          <b-form-select v-model="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
                           </b-form-input>
                         </b-form-group>
 
@@ -1141,7 +1157,7 @@
                         <b-form-select :options="actionTypes" required v-model="formDirective.action" :state="valid(formDirective.action)" size="sm"></b-form-select>
                       </b-form-group>
 
-                      <b-form-group label="Size:" v-if="formDirective.action != '' && formDirective.action != 'kernel_data_segment' && formDirective.action != 'kernel_code_segment' && formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
+                      <b-form-group label="Size:" v-if="formDirective.action != '' && formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
                         <b-form-input type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
                         </b-form-input>
                       </b-form-group>
@@ -1183,7 +1199,7 @@
                           <b-form-select :options="actionTypes" required v-model="formDirective.action" :state="valid(formDirective.action)" size="sm"></b-form-select>
                         </b-form-group>
 
-                        <b-form-group label="Size:" v-if="formDirective.action != 'kernel_data_segment' && formDirective.action != 'kernel_code_segment' && formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
+                        <b-form-group label="Size:" v-if="formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
                           <b-form-input type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
                           </b-form-input>
                         </b-form-group>
@@ -1191,6 +1207,10 @@
                       </b-form>
                     </b-modal >
                   </div>
+                </b-tab>
+                <b-tab title="Memory Layout">
+                  
+
                 </b-tab>
               </b-tabs>
             </div>
@@ -1267,55 +1287,28 @@
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
-                <b-tabs content-class="mt-3">
-                  <b-tab title="Instructions">
-                    <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;">
-                      <template slot="Break" slot-scope="row">
-                        <div class="break" :id="row.index">
-                          <br v-if="row.item.Break == null">
-                          <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
-                        </div>
-                      </template>
 
-                      <template slot="Label" slot-scope="row">
-                        <b-badge pill variant="info">{{row.item.Label}}</b-badge>
-                      </template>
+                <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;">
+                  <template slot="Break" slot-scope="row">
+                    <div class="break" :id="row.index">
+                      <br v-if="row.item.Break == null">
+                      <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
+                    </div>
+                  </template>
 
-                      <template slot="User Instructions" slot-scope="row">
-                        {{row.item.user}}
-                      </template>
+                  <template slot="Label" slot-scope="row">
+                    <b-badge pill variant="info">{{row.item.Label}}</b-badge>
+                  </template>
 
-                      <template slot="Loaded Instructions" slot-scope="row">
-                        {{row.item.loaded}}
-                      </template> 
-                    </b-table>
-                  </b-tab>
+                  <template slot="User Instructions" slot-scope="row">
+                    {{row.item.user}}
+                  </template>
 
-                  <b-tab title="Kernel Instructions">
-                    <b-table striped small hover :items="kernel_instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;">
-                      <template slot="Break" slot-scope="row">
-                        <div class="break" :id="row.index">
-                          <br v-if="row.item.Break == null">
-                          <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
-                        </div>
-                      </template>
+                  <template slot="Loaded Instructions" slot-scope="row">
+                    {{row.item.loaded}}
+                  </template> 
+                </b-table>
 
-                      <template slot="Label" slot-scope="row">
-                        <b-badge pill variant="info">{{row.item.Label}}</b-badge>
-                      </template>
-
-                      <template slot="User Instructions" slot-scope="row">
-                        {{row.item.user}}
-                      </template>
-
-                      <template slot="Loaded Instructions" slot-scope="row">
-                        {{row.item.loaded}}
-                      </template> 
-                    </b-table>
-                  </b-tab>
-
-                </b-tabs>
-              
               </div>
             </div>
 
@@ -1350,7 +1343,6 @@
                   	<select class="form-control border border-secondary form-control-sm" style="background-color: white; color: black, " id="selectData">
                       <option value="CPU-INT Registers">  CPU-INT Registers</option>
                       <option value="CPU-FP Registers">  CPU-FP Registers</option>
-                      <option value="CPU-Stats">  CPU-Stats</option>
                     </select>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
@@ -1359,7 +1351,7 @@
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" @click="open_console"><span class="fa fa-desktop"></span> Console</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="stats_btn"><span class=" fa fa-bar-chart"></span> Stats</b-button>
                   </div>
                 </div>
                 <hr>
@@ -1517,45 +1509,72 @@
               <!-- MM-Memory-->
               <div class="col-lg-12 col-sm-12" id="memory" style="display:none;">
                 <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                  <b-tabs content-class="mt-3">
-                    <b-tab title="Memory">
-                      <b-table striped small hover :items="memory" :fields="memFields" class="memory_table">
-                        <template slot="Address" slot-scope="row">
-                          <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
-                        </template>
-                        <template slot="Binary" slot-scope="row">
-                          <h6 style="font-size: 13px">
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[3].Tag}}</b-badge>
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[2].Tag}}</b-badge>
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[1].Tag}}</b-badge>
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[0].Tag}}</b-badge>
-                          </h6>
-                        </template>
-                        <template slot="Value" slot-scope="row">
-                          <h6 style="font-size: 13px">{{row.item.Value}}</h6>
-                        </template>
-                      </b-table>
-                    </b-tab>
-                    <b-tab title="Kernel Memory">
-                      <b-table striped small hover :items="kernel_memory" :fields="memFields" class="memory_table">
-                        <template slot="Address" slot-scope="row">
-                          <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
-                        </template>
-                        <template slot="Binary" slot-scope="row">
-                          <h6 style="font-size: 13px">
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[3].Tag}}</b-badge>
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[2].Tag}}</b-badge>
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[1].Tag}}</b-badge>
-                            <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[0].Tag}}</b-badge>
-                          </h6>
-                        </template>
-                        <template slot="Value" slot-scope="row">
-                          <h6 style="font-size: 13px">{{row.item.Value}}</h6>
-                        </template>
-                      </b-table>
-                    </b-tab>
-                  </b-tabs>
+
+                  <b-table striped small hover :items="memory" :fields="memFields" class="memory_table">
+                    <template slot="Address" slot-scope="row">
+                      <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
+                    </template>
+                    <template slot="Binary" slot-scope="row">
+                      <h6 style="font-size: 13px">
+                        <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[3].Tag}}</b-badge>
+                        <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[2].Tag}}</b-badge>
+                        <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[1].Tag}}</b-badge>
+                        <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[0].Tag}}</b-badge>
+                      </h6>
+                    </template>
+                    <template slot="Value" slot-scope="row">
+                      <h6 style="font-size: 13px">{{row.item.Value}}</h6>
+                    </template>
+                  </b-table>
                   
+                </div>
+              </div>
+
+              <!-- Stats--->
+              <div class="col-lg-12 col-sm-12" id="stats" style="display:none;">
+                <div class="col-lg-12 col-sm-12">
+
+                  <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table"></b-table>
+                  <br>
+                  <h6>Graphic</h6>
+                  <b-progress class="mb-3">
+                    <b-progress-bar :value="stats[0].percentage" style="background:red;">{{stats[0].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[1].percentage" style="background:blue;">{{stats[1].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[2].percentage" style="background:yellow;">{{stats[2].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[3].percentage" style="background:purple;">{{stats[3].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[4].percentage" style="background:green;">{{stats[4].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[5].percentage" style="background:orange;">{{stats[5].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[6].percentage" style="background:gray;">{{stats[6].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[7].percentage" style="background:pink;">{{stats[7].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[8].percentage" style="background:teal;">{{stats[8].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[9].percentage" style="background:black;">{{stats[9].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[10].percentage" style="background:lime;">{{stats[10].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[11].percentage" style="background:indigo;">{{stats[11].abbreviation}}</b-progress-bar>
+                    <b-progress-bar :value="stats[12].percentage" style="background:cyan;">{{stats[12].abbreviation}}</b-progress-bar>
+                  </b-progress>
+                  
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6 col-sm-12" style="margin-bottom: 2%; margin-top: 2%;">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-2 col-sm-2">
+                  <b-img src="./images/monitor2.png" fluid alt="Monitor"></b-img>
+                </div>
+                <div class="col-lg-12 col-sm-12">
+                  <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled></b-form-textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6 col-sm-12" style="margin-bottom: 2%; margin-top: 2%;">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-4 col-sm-4">
+                  <b-img src="./images/keyboard1.png" fluid alt="Keyboard"></b-img>
+                </div>
+                <div class="col-lg-12 col-sm-12">
+                  <b-form-textarea id="textarea_keyboard" v-model="keyboard" rows="5"></b-form-textarea>
                 </div>
               </div>
             </div>
