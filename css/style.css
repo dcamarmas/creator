@@ -204,6 +204,17 @@ hr {
   padding: 2px;
 }
 
+.memoryLayout{
+  width: 100%;
+  text-align: center;
+}
+
+.noBorder{
+  border-top: 0px;
+  border-bottom: 0px;
+  border-right: 0px;
+}
+
 .principalAlert{
   z-index:40;
   position: fixed;
