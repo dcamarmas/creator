@@ -1224,17 +1224,17 @@
                         <b-list-group horizontal>
                           <b-list-group-item variant="info" class="memoryLayout"><br>.text<br></b-list-group-item>
                           <b-list-group-item class="memoryLayout noBorder">
-                            <b-form-input type="number" v-model="architecture.memory_layout[0].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 0)"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[0].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 0)" v-if="architecture.memory_layout.length > 0"></b-form-input>
                             <br>
-                            <b-form-input type="number" v-model="architecture.memory_layout[1].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 1)"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[1].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 1)" v-if="architecture.memory_layout.length > 0"></b-form-input>
                           </b-list-group-item>
                         </b-list-group>
 
                         <b-list-group horizontal>
                           <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder"><b-form-input type="number" v-model="architecture.memory_layout[2].value" required placeholder="Enter name" size="sm" @change="memoryLayoutVerify(architecture_name, 2)"></b-form-input>
+                          <b-list-group-item class="memoryLayout noBorder"><b-form-input type="number" v-model="architecture.memory_layout[2].value" required placeholder="Enter name" size="sm" @change="memoryLayoutVerify(architecture_name, 2)" v-if="architecture.memory_layout.length > 0"></b-form-input>
                             <br>
-                            <b-form-input type="number" v-model="architecture.memory_layout[3].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 3)"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[3].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 3)" v-if="architecture.memory_layout.length > 0"></b-form-input>
                           </b-list-group-item>
                         </b-list-group>
 
@@ -1248,9 +1248,9 @@
                         <b-list-group horizontal>
                           <b-list-group-item variant="success" class="memoryLayout"><br>stack<br></b-list-group-item>
                           <b-list-group-item class="memoryLayout noBorder">
-                            <b-form-input type="number" v-model="architecture.memory_layout[4].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 4)"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[4].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 4)" v-if="architecture.memory_layout.length > 0"></b-form-input>
                             <br>
-                            <b-form-input type="number" v-model="architecture.memory_layout[5].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 5)"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[5].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 5)" v-if="architecture.memory_layout.length > 0"></b-form-input>
                           </b-list-group-item>
                         </b-list-group>
                       </b-list-group>
@@ -1428,7 +1428,7 @@
 												    </tr>
 												    <tr>
 												      <td>Signed</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item2.value).toString(10) >> 0}}</b-badge></td>
+												      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge></td>
 												    </tr>
 												    <tr>
 												      <td>Unsig.</td>
