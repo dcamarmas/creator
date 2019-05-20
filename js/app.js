@@ -13,7 +13,7 @@ var architecture_hash = [];
 
 /*Arquitectura cargada*/
 var architecture = {components:[
-  {name: "Control registers", type: "control", double_precision: false, elements:[
+  /*{name: "Control registers", type: "control", double_precision: false, elements:[
       {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
       {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
@@ -112,9 +112,9 @@ var architecture = {components:[
       {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
       {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
       {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}
+    ]}*/
   ], instructions:[
-    {name: "add", type: "Arithmetic integer", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
+    /*{name: "add", type: "Arithmetic integer", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
       {name: "add", type: "co", startbit: 31, stopbit: 26},
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
@@ -238,9 +238,9 @@ var architecture = {components:[
       {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
       {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
       {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},
+      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},*/
   ], directives:[
-    {name:".data", action:"data_segment", size:null },
+    /*{name:".data", action:"data_segment", size:null },
     {name:".text", action:"code_segment", size:null },
     {name:".globl", action:"global_symbol", size:null },
     {name:".extern", action:"data_size", size:null },
@@ -253,14 +253,14 @@ var architecture = {components:[
     {name:".space", action:"space", size:1 },
     {name:".ascii", action:"ascii_not_null_end", size:null },
     {name:".asciiz", action:"ascii_null_end", size:null },
-    {name:".align", action:"align", size:null },
+    {name:".align", action:"align", size:null },*/
   ], memory_layout:[
-    {name:"text start", value: 0x00000000},
+    /*{name:"text start", value: 0x00000000},
     {name:"text end", value: 0x00003FFF},
     {name:"data start", value: 0x00004000},
     {name:"data end", value: 0x00007FFF},
     {name:"stack start", value: 0x00008000},
-    {name:"stack end", value: 0xFFFFFFFF},
+    {name:"stack end", value: 0xFFFFFFFF},*/
   ]};
 
 var componentsTypes = [
@@ -888,9 +888,9 @@ window.app = new Vue({
       }
 
       $.getJSON('architecture/'+e+'.json', function(cfg){
-        /*var auxArchitecture = cfg;
+        var auxArchitecture = cfg;
 
-        architecture = bigInt_deserialize(auxArchitecture);*/
+        architecture = bigInt_deserialize(auxArchitecture);
         app._data.architecture = architecture;
 
         architecture_hash = [];
@@ -3192,9 +3192,9 @@ window.app = new Vue({
       data = [];
 
       /*Asignacion direcciones de memoria*/
-      address = architecture.memory_layout[0].value;
-      data_address = architecture.memory_layout[2].value;
-      stack_address = architecture.memory_layout[4].value;
+      address = parseInt(architecture.memory_layout[0].value);
+      data_address = parseInt(architecture.memory_layout[2].value);
+      stack_address = parseInt(architecture.memory_layout[4].value);
 
       /*ASIGNACION PILA TEMPORAL PC*/
       architecture.components[1].elements[29].value = bigInt(stack_address).value;
@@ -5119,22 +5119,39 @@ window.app = new Vue({
 
             existsInstruction = false;
             tokenIndex = 0;
-            address = 0;
-            $(".loading").hide();
             instructions = [];
             pending_instructions = [];
+            pending_tags = [];
             data_memory = [];
+            memory_tag = [];
+            instructions_memory = [];
+            stack_memory = [];
+            data = [];
+            app._data.data_memory = data_memory;
+            instructions_memory = instructions_memory;
+            stack_memory = stack_memory;
+            app._data.instructions = instructions;
+            $(".loading").hide();
             return -1;
           }
 
           if(resultPseudo == -1){
+
             existsInstruction = false;
             tokenIndex = 0;
-            address = 0;
-            $(".loading").hide();
             instructions = [];
             pending_instructions = [];
+            pending_tags = [];
             data_memory = [];
+            memory_tag = [];
+            instructions_memory = [];
+            stack_memory = [];
+            data = [];
+            app._data.data_memory = data_memory;
+            instructions_memory = instructions_memory;
+            stack_memory = stack_memory;
+            app._data.instructions = instructions;
+            $(".loading").hide();
             return -1;
           }
 
@@ -5652,7 +5669,6 @@ window.app = new Vue({
                       for (var z = 0; z < instructions.length; z++){
                         if(token == instructions[z].Label){
                           var addr = (parseInt(instructions[z].Address, 16)).toString(2);
-
 
                           if(addr.length > (1 + architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit)){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -7290,15 +7306,17 @@ function bigInt_serialize(object){
   var auxObject = jQuery.extend(true, {}, object);
 
   for (var i = 0; i < architecture.components.length; i++){
-    for (var j = 0; j < architecture.components[i].elements.length; j++){
-      var aux = architecture.components[i].elements[j].value;
-      var auxString = aux.toString();
-      auxObject.components[i].elements[j].value = auxString;
-
-      if(architecture.components[i].double_precision != true){
-        var aux = architecture.components[i].elements[j].default_value;
+    if(architecture.components[i].type != "floating point"){
+      for (var j = 0; j < architecture.components[i].elements.length; j++){
+        var aux = architecture.components[i].elements[j].value;
         var auxString = aux.toString();
-        auxObject.components[i].elements[j].default_value = auxString;
+        auxObject.components[i].elements[j].value = auxString;
+
+        if(architecture.components[i].double_precision != true){
+          var aux = architecture.components[i].elements[j].default_value;
+          var auxString = aux.toString();
+          auxObject.components[i].elements[j].default_value = auxString;
+        }
       }
     }
   }
@@ -7311,15 +7329,17 @@ function bigInt_deserialize(object){
   var auxObject = object;
 
   for (var i = 0; i < auxObject.components.length; i++){
-    for (var j = 0; j < auxObject.components[i].elements.length; j++){
-      var aux = auxObject.components[i].elements[j].value;
-      var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-      auxObject.components[i].elements[j].value = auxBigInt;
-
-      if(auxObject.components[i].double_precision != true){
-        var aux = auxObject.components[i].elements[j].default_value;
+    if(auxObject.components[i].type != "floating point"){
+      for (var j = 0; j < auxObject.components[i].elements.length; j++){
+        var aux = auxObject.components[i].elements[j].value;
         var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-        auxObject.components[i].elements[j].default_value = auxBigInt;
+        auxObject.components[i].elements[j].value = auxBigInt;
+
+        if(auxObject.components[i].double_precision != true){
+          var aux = auxObject.components[i].elements[j].default_value;
+          var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
+          auxObject.components[i].elements[j].default_value = auxBigInt;
+        }
       }
     }
   }
