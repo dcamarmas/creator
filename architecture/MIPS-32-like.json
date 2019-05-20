@@ -990,6 +990,7 @@
   "instructions": [
     {
       "name": "add",
+      "type": "Arithmetic integer",
       "co": "000000",
       "cop": "100000",
       "nwords": 1,
@@ -1032,6 +1033,7 @@
     },
     {
       "name": "addi",
+      "type": "Arithmetic integer",
       "co": "001000",
       "cop": null,
       "nwords": 1,
@@ -1068,6 +1070,7 @@
     },
     {
       "name": "and",
+      "type": "Logic",
       "co": "000000",
       "cop": "100100",
       "nwords": 1,
@@ -1110,6 +1113,7 @@
     },
     {
       "name": "andi",
+      "type": "Logic",
       "co": "001100",
       "cop": null,
       "nwords": 1,
@@ -1146,6 +1150,7 @@
     },
     {
       "name": "b",
+      "type": "Unconditional bifurcation",
       "co": "000100",
       "cop": null,
       "nwords": 1,
@@ -1170,6 +1175,7 @@
     },
     {
       "name": "beq",
+      "type": "Conditional bifurcation",
       "co": "000100",
       "cop": null,
       "nwords": 1,
@@ -1206,6 +1212,7 @@
     },
     {
       "name": "bne",
+      "type": "Conditional bifurcation",
       "co": "000101",
       "cop": null,
       "nwords": 1,
@@ -1242,6 +1249,7 @@
     },
     {
       "name": "div",
+      "type": "Arithmetic integer",
       "co": "000000",
       "cop": "011010",
       "nwords": 1,
@@ -1284,6 +1292,7 @@
     },
     {
       "name": "lw",
+      "type": "Memory access",
       "co": "100011",
       "cop": null,
       "nwords": 1,
@@ -1320,6 +1329,7 @@
     },
     {
       "name": "mul",
+      "type": "Arithmetic integer",
       "co": "011100",
       "cop": "000010",
       "nwords": 1,
@@ -1362,6 +1372,7 @@
     },
     {
       "name": "nop",
+      "type": "Logic",
       "co": "000000",
       "cop": "000000",
       "nwords": 1,
@@ -1386,6 +1397,7 @@
     },
     {
       "name": "or",
+      "type": "Logic",
       "co": "000000",
       "cop": "100101",
       "nwords": 1,
@@ -1428,6 +1440,7 @@
     },
     {
       "name": "ori",
+      "type": "Logic",
       "co": "001101",
       "cop": null,
       "nwords": 1,
@@ -1464,6 +1477,7 @@
     },
     {
       "name": "sub",
+      "type": "Arithmetic integer",
       "co": "000000",
       "cop": "100010",
       "nwords": 1,
@@ -1506,6 +1520,7 @@
     },
     {
       "name": "sw",
+      "type": "Memory access",
       "co": "101011",
       "cop": null,
       "nwords": 1,
@@ -1542,6 +1557,7 @@
     },
     {
       "name": "xor",
+      "type": "Logic",
       "co": "000000",
       "cop": "100110",
       "nwords": 1,
@@ -1584,6 +1600,7 @@
     },
     {
       "name": "xori",
+      "type": "Logic",
       "co": "001110",
       "cop": null,
       "nwords": 1,
@@ -1620,6 +1637,7 @@
     },
     {
       "name": "lui",
+      "type": "Other",
       "co": "001111",
       "cop": null,
       "nwords": 1,
@@ -1650,6 +1668,7 @@
     },
     {
       "name": "syscall",
+      "type": "Syscall",
       "co": "000000",
       "cop": "001100",
       "nwords": 1,
@@ -1727,16 +1746,6 @@
   ],
   "directives": [
     {
-      "name": ".kdata",
-      "action": "kernel_data_segment",
-      "size": null
-    },
-    {
-      "name": ".ktext",
-      "action": "kernel_code_segment",
-      "size": null
-    },
-    {
       "name": ".data",
       "action": "data_segment",
       "size": null
@@ -1744,16 +1753,6 @@
     {
       "name": ".text",
       "action": "code_segment",
-      "size": null
-    },
-    {
-      "name": ".main",
-      "action": "main_function",
-      "size": null
-    },
-    {
-      "name": ".kmain",
-      "action": "kmain_function",
       "size": null
     },
     {
@@ -1815,6 +1814,32 @@
       "name": ".align",
       "action": "align",
       "size": null
+    }
+  ],
+  "memory_layout": [
+    {
+      "name": "text start",
+      "value": 0
+    },
+    {
+      "name": "text end",
+      "value": 16383
+    },
+    {
+      "name": "data start",
+      "value": 16384
+    },
+    {
+      "name": "data end",
+      "value": 32767
+    },
+    {
+      "name": "stack start",
+      "value": 32768
+    },
+    {
+      "name": "stack end",
+      "value": 4294967295
     }
   ]
 }

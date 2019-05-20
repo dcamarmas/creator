@@ -151,8 +151,13 @@
             <div class="col-lg-4 col-sm-12 nopadding">
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-2 buttons">
+                  <div class="col-lg-4 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fa fa-download"></span> Save</b-button>
+                  </div>
+                  <div class="col-lg-8 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm"  id="advanced_mode" style="display:none;" @click="change_mode">
+                      Advanced Mode: {{advanced_mode}}
+                    </b-button>
                   </div>
                 </div>
               </div>
@@ -253,7 +258,7 @@
 
             <div class="col-lg-12 col-sm-12" id="view_components" style="display:none;">
               <b-tabs>
-                <b-tab title="Components" active>
+                <b-tab title="Components" v-if="advanced_mode == true">
                   <br>
                   <h6>Components of the architecture:</h6>
 
@@ -450,7 +455,7 @@
                   </b-modal >
                 </b-tab>
 
-                <b-tab title="Instructions Definition" >
+                <b-tab title="Instructions Definition" v-if="advanced_mode == true">
                   <br>
                   <h6>Instruction set:</h6>
 
@@ -818,7 +823,7 @@
                   </b-modal >
                 </b-tab>
 
-                <b-tab title="Pseudoinstructions Definition" >
+                <b-tab title="Pseudoinstructions Definition" v-if="advanced_mode == true">
                   <br>
                   <h6>Pseudoinstructions set:</h6>
 
@@ -1128,7 +1133,7 @@
                   </b-modal >
                 </b-tab>
 
-                <b-tab title="Directives Definition" >
+                <b-tab title="Directives Definition" v-if="advanced_mode == true">
                   <br>
                   <h6>Directives set:</h6>
 
@@ -1208,7 +1213,8 @@
                     </b-modal >
                   </div>
                 </b-tab>
-                <b-tab title="Memory Layout">
+
+                <b-tab title="Memory Layout" active>
                   <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%; margin-bottom: 3%;">
                     <div class="col-lg-3 col-sm-12">
 
@@ -1218,35 +1224,33 @@
                         <b-list-group horizontal>
                           <b-list-group-item variant="info" class="memoryLayout"><br>.text<br></b-list-group-item>
                           <b-list-group-item class="memoryLayout noBorder">
-                            <b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[0].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 0)"></b-form-input>
                             <br>
-                            <b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[1].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 1)"></b-form-input>
                           </b-list-group-item>
                         </b-list-group>
 
                         <b-list-group horizontal>
                           <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder"><b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
+                          <b-list-group-item class="memoryLayout noBorder"><b-form-input type="number" v-model="architecture.memory_layout[2].value" required placeholder="Enter name" size="sm" @change="memoryLayoutVerify(architecture_name, 2)"></b-form-input>
                             <br>
-                            <b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[3].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 3)"></b-form-input>
                           </b-list-group-item>
                         </b-list-group>
 
                         <b-list-group horizontal>
-                          <b-list-group-item variant="secondary" class="memoryLayout"><br>...<br></b-list-group-item>
+                          <b-list-group-item variant="secondary" class="memoryLayout"><br>...<br><br></b-list-group-item>
                           <b-list-group-item class="memoryLayout noBorder">
-                            <b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
-                            <br>
-                            <b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
+                            
                           </b-list-group-item>
                         </b-list-group>
 
                         <b-list-group horizontal>
                           <b-list-group-item variant="success" class="memoryLayout"><br>stack<br></b-list-group-item>
                           <b-list-group-item class="memoryLayout noBorder">
-                            <b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[4].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 4)"></b-form-input>
                             <br>
-                            <b-form-input type="text" v-model="formDirective.name" required placeholder="Enter name" size="sm"></b-form-input>
+                            <b-form-input type="number" v-model="architecture.memory_layout[5].value" required size="sm" @change="memoryLayoutVerify(architecture_name, 5)"></b-form-input>
                           </b-list-group-item>
                         </b-list-group>
                       </b-list-group>
@@ -1553,26 +1557,77 @@
 
               <!-- MM-Memory-->
               <div class="col-lg-12 col-sm-12" id="memory" style="display:none;">
-                <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
+                <b-tabs content-class="mt-3">
+                  <b-tab title="Data" active>
+                    <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
 
-                  <b-table striped small hover :items="memory" :fields="memFields" class="memory_table">
-                    <template slot="Address" slot-scope="row">
-                      <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
-                    </template>
-                    <template slot="Binary" slot-scope="row">
-                      <h6 style="font-size: 13px">
-                        <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[3].Tag}}</b-badge>
-                        <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[2].Tag}}</b-badge>
-                        <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[1].Tag}}</b-badge>
-                        <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[0].Tag}}</b-badge>
-                      </h6>
-                    </template>
-                    <template slot="Value" slot-scope="row">
-                      <h6 style="font-size: 13px">{{row.item.Value}}</h6>
-                    </template>
-                  </b-table>
-                  
-                </div>
+                      <b-table striped small hover :items="data_memory" :fields="memFields" class="memory_table">
+                        <template slot="Address" slot-scope="row">
+                          <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
+                        </template>
+                        <template slot="Binary" slot-scope="row">
+                          <h6 style="font-size: 13px">
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[3].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[2].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[1].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[0].Tag}}</b-badge>
+                          </h6>
+                        </template>
+                        <template slot="Value" slot-scope="row">
+                          <h6 style="font-size: 13px">{{row.item.Value}}</h6>
+                        </template>
+                      </b-table>
+                      
+                    </div>
+                  </b-tab>
+
+                  <b-tab title="Text">
+                    <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
+                      <b-table striped small hover :items="instructions_memory" :fields="memFields" class="memory_table">
+                        <template slot="Address" slot-scope="row">
+                          <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
+                        </template>
+                        <template slot="Binary" slot-scope="row">
+                          <h6 style="font-size: 13px">
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[3].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[2].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[1].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[0].Tag}}</b-badge>
+                          </h6>
+                        </template>
+                        <template slot="Value" slot-scope="row">
+                          <h6 style="font-size: 13px">{{row.item.Value}}</h6>
+                        </template>
+                      </b-table>
+                    </div>
+                  </b-tab>
+
+                  <b-tab title="Stack">
+                    <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
+                      <b-table striped small hover :items="stack_memory" :fields="memFields" class="memory_table">
+                        <template slot="Address" slot-scope="row">
+                          <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
+                        </template>
+                        <template slot="Binary" slot-scope="row">
+                          <h6 style="font-size: 13px">
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[3].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[2].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[1].Tag}}</b-badge>
+                            <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin}}</span> <b-badge pill variant="info">{{row.item.Binary[0].Tag}}</b-badge>
+                          </h6>
+                        </template>
+                        <template slot="Value" slot-scope="row">
+                          <h6 style="font-size: 13px">{{row.item.Value}}</h6>
+                        </template>
+                      </b-table>
+                    </div>
+                  </b-tab>
+
+
+
+
+
+                </b-tabs>
               </div>
 
               <!-- Stats--->
