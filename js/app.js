@@ -388,6 +388,9 @@ var tokenIndex = 0;
 /*Indice de ejecucion*/
 var executionIndex = 0;
 
+/*Escritura terminal finalizada*/
+var consoleMutex = false;
+
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
 
@@ -3274,9 +3277,9 @@ window.app = new Vue({
                   instructions_memory = [];
                   stack_memory = [];
                   data = [];
+                  app._data.instructions_memory = instructions_memory;
                   app._data.data_memory = data_memory;
-                  instructions_memory = instructions_memory;
-                  stack_memory = stack_memory;
+                  app._data.stack_memory = stack_memory;
                   app._data.instructions = instructions;
                   $(".loading").hide();
                   return;
@@ -3298,10 +3301,10 @@ window.app = new Vue({
                   instructions_memory = [];
                   stack_memory = [];
                   data = [];
-                  app._data.data_memory = data_memory;
-                  instructions_memory = instructions_memory;
-                  stack_memory = stack_memory;
                   app._data.instructions = instructions;
+                  app._data.instructions_memory = instructions_memory;
+                  app._data.data_memory = data_memory;
+                  app._data.stack_memory = stack_memory;
                   $(".loading").hide();
                   return;
                 }
@@ -3334,10 +3337,10 @@ window.app = new Vue({
           instructions_memory = [];
           stack_memory = [];
           data = [];
-          app._data.data_memory = data_memory;
-          instructions_memory = instructions_memory;
-          stack_memory = stack_memory;
           app._data.instructions = instructions;
+          app._data.instructions_memory = instructions_memory;
+          app._data.data_memory = data_memory;
+          app._data.stack_memory = stack_memory;
 
           app._data.alertMessaje = 'Data overflow';
           app._data.type ='danger';
@@ -3362,10 +3365,10 @@ window.app = new Vue({
           instructions_memory = [];
           stack_memory = [];
           data = [];
-          app._data.data_memory = data_memory;
-          instructions_memory = instructions_memory;
-          stack_memory = stack_memory;
           app._data.instructions = instructions;
+          app._data.instructions_memory = instructions_memory;
+          app._data.data_memory = data_memory;
+          app._data.stack_memory = stack_memory;
 
           app._data.alertMessaje = 'Instruction overflow';
           app._data.type ='danger';
@@ -6228,6 +6231,11 @@ window.app = new Vue({
     },
 
     /*FUNCIONES DE EJECUCION*/
+    /*Escritura de la terminal terminada*/
+    consoleEnter(){
+      consoleMutex = true;
+    },
+
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
       $(".loading").show();
@@ -7201,11 +7209,6 @@ window.app = new Vue({
             return;
           }
         }
-
-
-
-
-
       }
     },
 
@@ -7224,24 +7227,157 @@ window.app = new Vue({
           app._data.display = app._data.display + "\n" + value;
           break;
         case "print_string":
-          
+          app._data.display = app._data.display + "\n";
+          var addr = architecture.components[indexComp].elements[indexElem].value;
+
+          for (var i = 0; i < data_memory.length; i++){
+            for (var j = 0; j < data_memory[i].Binary.length; j++){
+              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr){
+                for (var i; i < data_memory.length; i++){
+                  for (var j = 0; j < data_memory[i].Binary.length; j++){
+                    app._data.display = app._data.display + String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16));
+                    if(data_memory[i].Binary[j].Bin == 20 || data_memory[i].Binary[j].Bin == 0){
+                      return
+                    }
+                    else if(i == data_memory.length-1 && j == data_memory[i].Binary.length-1){
+                      return;
+                    }
+                  }
+                }
+              }
+            }
+          }
 
           break;
         case "read_int":
-          this.writeRegister(this.keyboard, indexComp, indexElem);
+          /*while(consoleMutex == false){
+            console.log("esperando");
+          }
+
+          console.log("fuera");*/
+
+          consoleMutex = false;
+
+          var value = parseInt(this.keyboard);
+          console.log(value)
+          this.writeRegister(value, indexComp, indexElem);
+          this.keyboard = "";
           break;
         case "read_float":
-          this.writeRegister(this.keyboard, indexComp, indexElem);
+
+          var value = parseFloat(this.keyboard, 10);
+          console.log(value);
+          this.writeRegister(value, indexComp, indexElem);
+          this.keyboard = "";
           break;
         case "read_double":
-          this.writeRegister(this.keyboard, indexComp, indexElem);
-          break;
-        case "":
 
+          var value = parseFloat(this.keyboard, 10);
+          console.log(value)
+          this.writeRegister(value, indexComp, indexElem);
+          this.keyboard = "";
+          break;
+        case "read_string":
+          var addr = architecture.components[indexComp].elements[indexElem].value;
+          var value = "";
+          var valueIndex = 0;
+
+          console.log(this.keyboard.length)
+          console.log(this.keyboard)
+          console.log(architecture.components[indexComp2].elements[indexElem2].value);
+          for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++){
+            console.log(this.keyboard.charAt(i))
+            value = value + this.keyboard.charAt(i);
+          }
+
+          console.log(value)
+
+          for (var i = 0; i < data_memory.length; i++){
+            for (var j = 0; j < data_memory[i].Binary.length; j++){
+              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr){
+                console.log("jk")
+                for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
+                  console.log(data_memory[i].Binary[j].Bin);
+                  data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                  console.log(data_memory[i].Binary[j].Bin);
+                  valueIndex++;
+                }
+
+                if((i+1) < data_memory.length && valueIndex < value.length){
+                  i++;
+                  for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
+                    data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                    valueIndex++;
+                  }
+                }
+                else{
+                  console.log("NO")
+                  data_memory.push({Address: data_address, Binary: [], Value: null});
+                  i++;
+                  for (var z = 0; z < 4; z++){
+                    (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: 0, Tag: null},);
+                    data_address++;
+                  }
+                }
+              }
+            }
+          }
+
+          if(valueIndex == value.length){
+            console.log("sssss")
+            this.keyboard = "";
+            return;
+          }
+
+          var auxAddr = parseInt(addr);
+
+          while(valueIndex < value.length){
+            data_memory.push({Address: auxAddr, Binary: [], Value: ""});
+            for (var z = 0; z < 4; z++){
+              if(valueIndex > value.length-1){
+                (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              else{
+                (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
+              }
+              auxAddr++;
+              valueIndex++;
+            }
+            i++;
+          }
+
+          app._data.data_memory = data_memory;
+          
+          this.keyboard = "";
           break;
         case "sbrk":
+          var aux_addr = architecture.memory_layout[3].value;
 
+          if((parseInt(architecture.components[indexComp].elements[indexElem].value))%4 != 0){
+            app._data.alertMessaje = 'The memory must be aligned';
+            app._data.type ='danger';
+            app._data.dismissCountDown = app._data.dismissSecs;
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            executionIndex = -1;
+            return;
+          }
 
+          for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
+            data_memory.push({Address: aux_addr, Binary: [], Value: null});
+            for (var z = 0; z < 4; z++){
+              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr, DefBin: 0, Bin: 0, Tag: null},);
+              aux_addr++;
+            }
+          }
+
+          app._data.data_memory = data_memory;
+          architecture.memory_layout[3].value = aux_addr-1;
+          this.architecture.memory_layout[3].value = aux_addr-1;
+        
           break;
         case "exit":
           executionIndex = instructions.length + 1;
@@ -7253,10 +7389,12 @@ window.app = new Vue({
           var length = aux2.length;
 
           var value = aux2.substring(length-2, length);
-          this.display = this.display + "\n" + value;
+          this.display = this.display + "\n" + String.fromCharCode(parseInt(value, 16));
           break;
         case "read_char":
-
+          var value = (this.keyboard).charCodeAt(0);
+          this.writeRegister(value, indexComp, indexElem);
+          this.keyboard = "";
           break;
       }
 
