@@ -3526,6 +3526,13 @@ window.app = new Vue({
         }
       }
 
+      /*Inicializar pila*/
+      stack_memory.push({Address: stack_address, Binary: [], Value: null});
+      for(var i = 0; i<4; i++){
+        (stack_memory[stack_memory.length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
+      }
+      this.stack_memory = stack_memory;
+
 
 
       app._data.alertMessaje = 'Compilation completed successfully';
