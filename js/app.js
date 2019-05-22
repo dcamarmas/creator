@@ -7506,42 +7506,63 @@ window.app = new Vue({
           var value = "";
           var valueIndex = 0;
 
-          console.log(this.keyboard.length)
-          console.log(this.keyboard)
-          console.log(architecture.components[indexComp2].elements[indexElem2].value);
           for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++){
-            console.log(this.keyboard.charAt(i))
             value = value + this.keyboard.charAt(i);
           }
 
-          console.log(value)
+          var auxAddr = data_address;
 
-          for (var i = 0; i < data_memory.length; i++){
+          for (var i = 0; i < data_memory.length && this.keyboard.length > 0; i++){
             for (var j = 0; j < data_memory[i].Binary.length; j++){
               var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
               if(aux == addr){
-                console.log("jk")
                 for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
-                  console.log(data_memory[i].Binary[j].Bin);
                   data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                  console.log(data_memory[i].Binary[j].Bin);
+                  auxAddr = data_memory[i].Binary[j].Addr;
                   valueIndex++;
                 }
+
+                data_memory[i].Value = "";
+                for (var j = 0; j < data_memory[i].Binary.length; j++){
+                  data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
+                }
+
+                
 
                 if((i+1) < data_memory.length && valueIndex < value.length){
                   i++;
                   for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
                     data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                    auxAddr = data_memory[i].Binary[j].Addr;
                     valueIndex++;
                   }
+
+                  data_memory[i].Value = "";
+                  for (var j = 0; j < data_memory[i].Binary.length; j++){
+                    data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
+                  }
+
                 }
                 else{
-                  console.log("NO")
+                  data_address = auxAddr;
+
                   data_memory.push({Address: data_address, Binary: [], Value: null});
                   i++;
                   for (var z = 0; z < 4; z++){
-                    (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: 0, Tag: null},);
-                    data_address++;
+                    if(valueIndex < value.length){
+                      (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                      valueIndex++;
+                      data_address++;
+                    }
+                    else{
+                      (data_memory[i].Binary).push({Addr: data_address, DefBin: 0, Bin: 0, Tag: null},);
+                      data_address++;
+                    }
+                  }
+                  
+                  data_memory[i].Value = "";
+                  for (var j = 0; j < data_memory[i].Binary.length; j++){
+                    data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
                   }
                 }
               }
@@ -7549,23 +7570,19 @@ window.app = new Vue({
           }
 
           if(valueIndex == value.length){
-            console.log("sssss")
             this.keyboard = "";
             return;
           }
-          /*PASA POR AQUI addr mal*/
+
           var auxAddr = parseInt(addr);
-          console.log(auxAddr)
 
           while(valueIndex < value.length){
             data_memory.push({Address: auxAddr, Binary: [], Value: ""});
             for (var z = 0; z < 4; z++){
               if(valueIndex > value.length-1){
-                console.log("a");
                 (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: 0, Tag: null},);
               }
               else{
-                console.log("b");
                 (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
                 data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
               }
