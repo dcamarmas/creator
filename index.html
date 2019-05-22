@@ -1304,8 +1304,10 @@
                   <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.examples>Examples</b-button>
                 </div>
 
-                <b-modal id="examples" title="Examples" hide-footer scrollable>
-        
+                <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
+                  <b-list-group>
+                    <b-list-group-item button v-for="item in example_available" @click="load_example(item.id)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+                  </b-list-group>
                 </b-modal>
 	            </div>
 
@@ -1726,10 +1728,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_binary_btn" v-b-modal.load_assembly><span class="fa fa-upload"></span> Load binary</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_binary_btn" v-b-modal.load_binary><span class="fa fa-upload"></span> Load binary</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_binary_btn" v-b-modal.save_assembly><span class="fa fa-download"></span> Save binary</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_binary_btn" v-b-modal.save_binary><span class="fa fa-download"></span> Save binary</b-button>
                   </div>
                 </div>
               </div>
@@ -1755,13 +1757,26 @@
           </div>
 
           <div class="contenedor menu row">
-          	<div class="col-lg-12 col-sm-12">
+          	<div class="col-lg-12 col-sm-12" v-if="load_binary==false">
           		<h5>Assembly:</h5>
           	</div>
-          	<div class="col-lg-12 col-sm-12">
+          	<div class="col-lg-12 col-sm-12" v-if="load_binary==false">
           		<textarea id="textarea_assembly" rows="14" class="code-scroll-y">
   						</textarea>
           	</div>
+            <div class="col-lg-8 col-sm-8" v-if="load_binary==true">
+              <h5>Assembly:</h5>
+            </div>
+            <div class="col-lg-4 col-sm-4" v-if="load_binary==true">
+              <h5>Binary tags:</h5>
+            </div>
+            <div class="col-lg-8 col-sm-8" v-if="load_binary==true">
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y">
+              </textarea>
+            </div>
+            <div class="col-lg-4 col-sm-4" v-if="load_binary==true">
+              <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table"></b-table>
+            </div>
           </div>
 
           <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File" @ok="assembly_update">
@@ -1776,6 +1791,19 @@
                 placeholder="File name where assembly will be saved">
             </b-form-input>
 				  </b-modal>
+
+          <b-modal  id = "load_binary"   title = "Load Binary" ok-title="Load from this File" @ok="binary_update">
+            <p> Please select the binary file to be loaded </p> 
+            <b-form-file v-model="name_binary_load" :state="Boolean(name_binary_load)" placeholder="Choose a file..." accept=".json" @change="binary_load" id="binary_file"></b-form-file>
+          </b-modal>
+
+          <b-modal  id = "save_binary"   title = "Save Binary" ok-title="Save to File" @ok="binary_save">
+            <p> Please write the file name: </p> 
+            <b-form-input v-model="name_binary_save"
+                type="text"
+                placeholder="File name where binary will be saved">
+            </b-form-input>
+          </b-modal>
 
           <!--Modal error al compilar-->
           <b-modal  id = "modalAssemblyError" title = "Assembly Code Error" ref="errorAssembly" hide-footer>

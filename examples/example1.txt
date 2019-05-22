@@ -1,0 +1,30 @@
+.data
+	byte: .byte 0x51, 2, -3, 4, 5
+    .align 1
+	half: .half 15, -16, 0x5125
+    .align 2
+	word: .word 155, -165
+    .align 3
+    doubleword: .doubleword 561615, 56161
+    .align 2
+	float: .float 56546.561, 5665.65
+    double: .double 656.6516, 5565456.5664651
+	space: .space 6
+  	ascii: .ascii "hola mundo"
+    asciiz: .asciiz "hola mundo"
+
+
+.text
+main:
+	beq $5 $a1 b
+	c: addi $a0 $a1 10	#oihewfolfjoijioerg
+	addi $a0 $a1 100
+	beq $a0 $a1 b
+	addi $a0 $a1 1000 #bjksvdnlnknvdjvfd
+	beq $a0 $a1 c#kjdslvfkjlfbf
+	b: addi $a0 $a1 15265
+	addi $a0 $a1 10
+	mul $4 $a0 $a0
+
+	addi $a0 $a1 105525452
+	move $4 $0

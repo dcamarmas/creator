@@ -1,6 +1,9 @@
 /*Listado de arquitecturas disponibles*/
 var architecture_available = [];
 
+/*Listado de ejemplos disponibles*/
+var example_available = [];
+
 /*Almacena el color de fondo de cada card*/
 var back_card = [];
 
@@ -336,11 +339,12 @@ var compileError =[
 
 /*Estructuras instrucciones y memoria*/
 var data_memory = [];
-var data_memory_tag = [];
+var data_tag = [];
 var instructions_memory = [];
 var stack_memory = [];
 var instructions = [];
 var instructions_tag = [];
+var instructions_binary = [];
 var data = [];
 
 /*Instrucciones pendientes de compilar o validar por la etiqueta*/
@@ -393,6 +397,11 @@ var consoleMutex = false;
 
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
+
+/*Variables que gestionan el binario*/
+var extern = [];
+var code_binary = '';
+var update_binary = '';
 
 function destroyClickedElement(event) {
   document.body.removeChild(event.target);
@@ -655,9 +664,19 @@ window.app = new Vue({
       code3: '',
       error:'',
     },
+    /*Binario cargado*/
+    memFields: ['Address', 'Binary', 'Value'],
+    load_binary: false,
+    update_binary: update_binary,
+    /*Nombre del fichero binario a guardar*/
+    name_binary_save: '',
+    /*Nombre del fichero binario a cargar*/
+    name_binary_load: '',
 
 
     /*PAGINA SIMULADOR*/
+    /*Ejemplos Disponibles*/
+    example_available: example_available,
     /*Nuevo valor del registro*/
     newValue: '',
     /*Registros a mostrar*/
@@ -3114,6 +3133,68 @@ window.app = new Vue({
       $(".loading").hide();
     },
 
+    binary_save(){
+      $(".loading").show();
+
+      var aux = {instructions_binary: instructions_binary, data_tag: data_tag, instructions_tag: instructions_tag};
+
+      var textToWrite = JSON.stringify(aux, null, 2);
+      var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
+      var fileNameToSaveAs;
+
+      if(this.name_arch_save == ''){
+        fileNameToSaveAs = "binary.json";
+      }
+      else{
+        fileNameToSaveAs = this.name_binary_save + ".json";
+      }
+
+      var downloadLink = document.createElement("a");
+      downloadLink.download = fileNameToSaveAs;
+      downloadLink.innerHTML = "My Hidden Link";
+
+      window.URL = window.URL || window.webkitURL;
+
+      downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+      downloadLink.onclick = destroyClickedElement;
+      downloadLink.style.display = "none";
+      document.body.appendChild(downloadLink);
+
+      downloadLink.click();
+
+      $(".loading").hide();
+      app._data.alertMessaje = 'Save binary';
+      app._data.type ='success';
+      app._data.dismissCountDown = app._data.dismissSecs;
+      var date = new Date();
+      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+    },
+
+    binary_load(e){
+      $(".loading").show();
+      var file;
+      var reader;
+      var files = document.getElementById('binary_file').files;
+      for (var i = 0; i < files.length; i++) {
+        file = files[i];
+        reader = new FileReader();
+        reader.onloadend = onFileLoaded;
+        reader.readAsBinaryString(file);
+      }
+
+      function onFileLoaded(event) {
+        code_binary = event.currentTarget.result;
+      }
+
+      $(".loading").hide();
+     },
+
+    binary_update(){
+      update_binary = JSON.parse(code_binary);
+      this.update_binary = update_binary;
+      this.load_binary = true;
+    },
+
     /*Lee un token*/
     get_token(){
       var assembly = textarea_assembly_editor.getValue();
@@ -3189,8 +3270,10 @@ window.app = new Vue({
       pending_instructions = [];
       pending_tags = [];
       data_memory = [];
-      memory_tag = [];
+      data_tag = [];
+      instructions_binary =[];
       instructions_memory = [];
+      extern = [];
       stack_memory = [];
       data = [];
 
@@ -3273,10 +3356,12 @@ window.app = new Vue({
                   pending_instructions = [];
                   pending_tags = [];
                   data_memory = [];
-                  memory_tag = [];
+                  data_tag = [];
+                  instructions_binary = [];
                   instructions_memory = [];
                   stack_memory = [];
                   data = [];
+                  extern = [];
                   app._data.instructions_memory = instructions_memory;
                   app._data.data_memory = data_memory;
                   app._data.stack_memory = stack_memory;
@@ -3297,8 +3382,10 @@ window.app = new Vue({
                   pending_instructions = [];
                   pending_tags = [];
                   data_memory = [];
-                  memory_tag = [];
+                  data_tag = [];
+                  instructions_binary = [];
                   instructions_memory = [];
+                  extern = [];
                   stack_memory = [];
                   data = [];
                   app._data.instructions = instructions;
@@ -3308,6 +3395,13 @@ window.app = new Vue({
                   $(".loading").hide();
                   return;
                 }
+                break;
+              case "global_symbol":
+                this.next_token();
+                token = this.get_token();
+                extern.push(token);
+                change = true;
+                this.next_token();
                 break;
               default:
                 console.log("default")
@@ -3333,8 +3427,10 @@ window.app = new Vue({
           pending_instructions = [];
           pending_tags = [];
           data_memory = [];
-          memory_tag = [];
+          data_tag = [];
+          instructions_binary = [];
           instructions_memory = [];
+          extern = [];
           stack_memory = [];
           data = [];
           app._data.instructions = instructions;
@@ -3361,8 +3457,10 @@ window.app = new Vue({
           pending_instructions = [];
           pending_tags = [];
           data_memory = [];
-          memory_tag = [];
+          data_tag = [];
+          instructions_binary = [];
           instructions_memory = [];
+          extern = [];
           stack_memory = [];
           data = [];
           app._data.instructions = instructions;
@@ -3397,6 +3495,37 @@ window.app = new Vue({
           this.compileError(7, pending_tags[i].Label, pending_tags[i].Index);
         }
       }
+
+      /*Guarda los binarios que estan definidos como globales*/
+      for(var i = 0; i < instructions_binary.length; i++){
+        if(instructions_binary[i].Label == "" || extern.length == 0){
+          instructions_binary.splice(i, 1);
+          i--;
+        }
+        else{
+          for(var j = 0; j < extern.length; j++){
+            if(extern[j] == instructions_binary[i].Label){
+              i++;
+              while(instructions_binary[i].Label == "" && i < instructions_binary.length){
+                if(i < instructions_binary.length-1){
+                  i++;
+                }
+                else{
+                  i++;
+                  break;
+                }
+              }
+              i--;
+              break;
+            }
+            else if(j == extern.length-1){
+              instructions_binary.splice(i, 1);
+              i--;
+            }
+          }
+        }
+      }
+
 
 
       app._data.alertMessaje = 'Compilation completed successfully';
@@ -3595,6 +3724,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -3611,6 +3743,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -3756,6 +3891,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -3772,6 +3910,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -3914,6 +4055,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -3930,6 +4074,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4073,6 +4220,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4089,6 +4239,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4232,6 +4385,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4248,6 +4404,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4391,6 +4550,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4407,6 +4569,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4572,6 +4737,9 @@ window.app = new Vue({
 
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4585,6 +4753,9 @@ window.app = new Vue({
                       if(i == 0){
                         (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
                         data_memory[data_memory.length-1].Value = string.charAt(i) + " " + data_memory[data_memory.length-1].Value;
+                        if(label != null){
+                          data_tag.push({tag: label, addr: data_address});
+                        }
                         label = null;
                       }
                       else{
@@ -4749,6 +4920,9 @@ window.app = new Vue({
                       if(i < string.length){
                         if(i == 0){
                           (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                          if(label != null){
+                            data_tag.push({tag: label, addr: data_address});
+                          }
                           label = null;
                         }
                         else{
@@ -4768,7 +4942,10 @@ window.app = new Vue({
                         if(i == 0){
                           (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
                           data_memory[data_memory.length-1].Value = string.charAt(i) + " " + data_memory[data_memory.length-1].Value;
-                          label = null;
+                          if(label != null){
+                            data_tag.push({tag: label, addr: data_address});
+                          }
+                          abel = null;
                         }
                         else{
                           (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
@@ -4875,6 +5052,9 @@ window.app = new Vue({
 
                     if(i == 0){
                       (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
+                      if(label != null){
+                        data_tag.push({tag: label, addr: data_address});
+                      }
                       label = null;
                     }
                     else{
@@ -4887,6 +5067,9 @@ window.app = new Vue({
                   else{
                     if(i == 0){
                       (data_memory[data_memory.length-1].Binary).splice(data_address, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
+                      if(label != null){
+                        data_tag.push({tag: label, addr: data_address});
+                      }
                       label = null;
                     }
                     else{
@@ -5126,8 +5309,10 @@ window.app = new Vue({
             pending_instructions = [];
             pending_tags = [];
             data_memory = [];
-            memory_tag = [];
+            data_tag = [];
+            instructions_binary = [];
             instructions_memory = [];
+            extern = [];
             stack_memory = [];
             data = [];
             app._data.data_memory = data_memory;
@@ -5146,8 +5331,10 @@ window.app = new Vue({
             pending_instructions = [];
             pending_tags = [];
             data_memory = [];
-            memory_tag = [];
+            data_tag = [];
+            instructions_binary = [];
             instructions_memory = [];
+            extern = [];
             stack_memory = [];
             data = [];
             app._data.data_memory = data_memory;
@@ -5822,7 +6009,12 @@ window.app = new Vue({
           if(validTagPC == false && resultPseudo == -3){
             console.log("pendiente")
 
-            pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, instIndex: i, line: textarea_assembly_editor.posFromIndex(tokenIndex).line});
+            var padding = "";
+            padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
+
+            binary = binary + padding;
+
+            pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, instIndex: i, binary: binary ,line: textarea_assembly_editor.posFromIndex(tokenIndex).line});
 
             address = address + (4*architecture.instructions[i].nwords);
 
@@ -5849,8 +6041,9 @@ window.app = new Vue({
                   pending_tags.push({Index: textarea_assembly_editor.posFromIndex(tokenIndex).line, Label: tag});
                 }
 
-                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', binary: binary});
-              
+                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
+                instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: ''});
+
                 for(var a = 0; a < hex.length/2; a++){
                   if(auxAddr % 4 == 0){
                     instructions_memory.push({Address: auxAddr, Binary: [], Value: instruction});
@@ -5895,7 +6088,8 @@ window.app = new Vue({
                 for(var pos = 0; pos < instructions.length; pos++){
                   if(parseInt(instructions[pos].Address, 16) > pendingAddress){
                     instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: ''});
-                    
+                    instructions_binary.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: binary, user: null, _rowVariant: ''});
+
                     auxAddr = pendingAddress;
 
                     for(var a = 0; a < hex.length/2; a++){
@@ -6231,6 +6425,35 @@ window.app = new Vue({
     },
 
     /*FUNCIONES DE EJECUCION*/
+    /*Ejemplos disponibles*/
+    load_examples_available(){
+      $.getJSON('examples/available_example.json', function(cfg){
+        example_available = cfg;
+
+        app._data.example_available = example_available;
+      })
+    },
+
+    load_example(id){
+      this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+          code_assembly = this.responseText;
+          textarea_assembly_editor.setValue(code_assembly);
+
+          app._data.alertMessaje = ' The selected example has been loaded correctly';
+          app._data.type ='success';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
+        }
+      };
+      xhttp.open("GET", "examples/"+id+".txt", true);
+      xhttp.send();
+    },
+
     /*Escritura de la terminal terminada*/
     consoleEnter(){
       consoleMutex = true;
@@ -7330,16 +7553,19 @@ window.app = new Vue({
             this.keyboard = "";
             return;
           }
-
+          /*PASA POR AQUI addr mal*/
           var auxAddr = parseInt(addr);
+          console.log(auxAddr)
 
           while(valueIndex < value.length){
             data_memory.push({Address: auxAddr, Binary: [], Value: ""});
             for (var z = 0; z < 4; z++){
               if(valueIndex > value.length-1){
+                console.log("a");
                 (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: 0, Tag: null},);
               }
               else{
+                console.log("b");
                 (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
                 data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
               }
@@ -7415,6 +7641,7 @@ window.app = new Vue({
 
   created(){
     this.load_arch_available();
+    this.load_examples_available();
   },
 
    mounted(){
