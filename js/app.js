@@ -390,6 +390,7 @@ var notifications = [];
 var tokenIndex = 0;
 
 /*Indice de ejecucion*/
+var stopExecution = false;
 var executionIndex = 0;
 
 /*Escritura terminal finalizada*/
@@ -3119,8 +3120,12 @@ window.app = new Vue({
       $(".loading").hide();
     },
 
-    binary_save(){
+    library_save(){
       $(".loading").show();
+
+      if(this.assembly_compiler() == -1){
+      	return;
+      };
 
       var aux = {instructions_binary: instructions_binary, data_tag: data_tag, instructions_tag: instructions_tag};
 
@@ -3156,7 +3161,7 @@ window.app = new Vue({
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
 
-    binary_load(e){
+    library_load(e){
       $(".loading").show();
       var file;
       var reader;
@@ -3175,7 +3180,7 @@ window.app = new Vue({
       $(".loading").hide();
      },
 
-    binary_update(){
+    library_update(){
       update_binary = JSON.parse(code_binary);
       this.update_binary = update_binary;
       this.load_binary = true;
@@ -3331,7 +3336,7 @@ window.app = new Vue({
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         
-        return;
+        return -1;
       }
 
       token = this.get_token();
@@ -3374,7 +3379,7 @@ window.app = new Vue({
                   app._data.stack_memory = stack_memory;
                   app._data.instructions = instructions;
                   $(".loading").hide();
-                  return;
+                  return -1;
                 }
                 break;
               case "code_segment":
@@ -3400,7 +3405,7 @@ window.app = new Vue({
                   app._data.data_memory = data_memory;
                   app._data.stack_memory = stack_memory;
                   $(".loading").hide();
-                  return;
+                  return -1;
                 }
                 break;
               case "global_symbol":
@@ -3422,7 +3427,7 @@ window.app = new Vue({
             this.compileError(15, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
             $(".loading").hide();
             tokenIndex = 0;
-            return;
+            return -1;
           } 
         }
       }
@@ -3453,7 +3458,7 @@ window.app = new Vue({
 
 
           $(".loading").hide();
-          return;
+          return -1;
         }
       }
 
@@ -3483,7 +3488,7 @@ window.app = new Vue({
 
 
           $(".loading").hide();
-          return;
+          return -1;
         }
       }
 
@@ -7037,6 +7042,7 @@ window.app = new Vue({
     /*Funcion que ejecuta todo el programa*/
     executeProgram(){
       $(".loading").show();
+      stopExecution = false;
       var iter1 = 1;
       if(instructions.length == 0){
         $(".loading").hide();
@@ -7053,12 +7059,21 @@ window.app = new Vue({
           $(".loading").hide();
           return;
         }
+        else if(stopExecution == true){
+          $(".loading").hide();
+          return;
+        }
         else{
           this.executeInstruction();
           iter1 = 0;
         }
       }
       $(".loading").hide();
+    },
+
+    stopExecution(){
+    	console.log("STOP")
+    	stopExecution = true;
     },
 
     /*Funcion que resetea la ejecucion*/
@@ -7791,3 +7806,4 @@ if(textarea_assembly_obj != null){
   textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n\n");
   textarea_assembly_editor.setSize("auto", "550px");
 }
+

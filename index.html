@@ -159,10 +159,10 @@
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm load_Arch_btn btn_arch" v-b-modal.load_arch>Load Architecture</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;">Assembly</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;"><span class="fas fa-hashtag"></span>Assembly</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch" id="sim_btn_arch" style="display:none;">Simulator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch" id="sim_btn_arch" style="display:none;"><span class="fas fa-cogs"></span> Simulator</b-button>
                   </div>
                 </div>
               </div>
@@ -222,8 +222,8 @@
               </template>
 
               <div class="col-lg-12 col-sm-12">
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications></span> Show Notifications</b-button>
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about></span> About us</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
               </div>
             </b-popover>
           </div>
@@ -1338,26 +1338,39 @@
 	              <div class="col-lg-12 col-sm-12">
 	                <div class="col-lg-12 col-sm-12 buttons row">
 	                  <div class="col-lg-6 col-sm-6 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_sim">Architecture</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_sim"><span class="fas fa-sitemap"></span> Architecture</b-button>
 	                  </div>
 	                  <div class="col-lg-6 col-sm-6 buttons">
-	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim">Assembly</b-button>
+	                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim"><span class="fas fa-hashtag"></span> Assembly</b-button>
 	                  </div>
 	                </div>
 	              </div>
 	            </div>
 
-	            <div class="col-lg-3 col-sm-12">
-                <div class="col-lg-6 col-sm-6 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.examples>Examples</b-button>
-                </div>
+	            <div class="col-lg-3 col-sm-12 nopadding">
+                <div class="col-lg-12 col-sm-12">
+                  <div class="col-lg-12 col-sm-12 buttons row">
+                    <div class="col-lg-6 col-sm-6 buttons">
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.examples><spam class="far fa-file-alt"></spam> Examples</b-button>
+                    </div>
 
-                <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
-                  <b-list-group>
-                    <b-list-group-item button v-for="item in example_available" @click="load_example(item.id)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
-                  </b-list-group>
-                </b-modal>
-	            </div>
+                    <div class="col-lg-6 col-sm-6 buttons">
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
+                    </div>
+
+                    <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
+                      <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
+                      <b-list-group>
+                        <b-list-group-item button v-for="item in example_available" @click="load_example(item.id)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+                      </b-list-group>
+                    </b-modal>
+
+                    <b-modal id="calculator" title="Calculator" hide-footer>
+                      
+                    </b-modal>
+                  </div>
+  	            </div>
+              </div>
 
               <div class="col-lg-6 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12">
@@ -1382,8 +1395,8 @@
                       </template>
 
                       <div class="col-lg-12 col-sm-12">
-                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications>Show Notifications</b-button>
-                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about> About us</b-button>
+                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                       </div>
                     </b-popover>
                   </div>
@@ -1425,22 +1438,28 @@
             <div class="col-lg-5 col-sm-12">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
                       <span class="fa fa-power-off"></span>
                       Reset
                     </b-button>
                   </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeInstruction">
                       <span class="fa fa-fast-forward"></span>
                       Inst.
                     </b-button>
                   </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-3 col-sm-3 buttons">
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeProgram">
                       <span class="fa fa-play"></span>
                       Run
+                    </b-button>
+                  </div>
+                  <div class="col-lg-3 col-sm-3 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="stopExecution" id="stopExecution">
+                      <span class="fa fa-stop"></span>
+                      Stop
                     </b-button>
                   </div>
                 </div>
@@ -1455,7 +1474,7 @@
                     </select>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="memory_btn">
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="memory_btn"><span class="fas fa-memory"></span>
                       Memory 
                     </b-button>
                   </div>
@@ -1560,10 +1579,6 @@
 													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
 													    </tr>
 													    <tr>
-													      <td>Char</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8(((bin2hex(float2bin(item2.value)))))}}</b-badge></td>
-													    </tr>
-													    <tr>
 													      <td>Float</td>
 													      <td><b-badge style="background-color:#CEECF5; color:black;">{{item2.value}}</b-badge></td>
 													    </tr>
@@ -1613,10 +1628,6 @@
 													    <tr>
 													      <td>Unsig.</td>
 													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Char</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8(((bin2hex(double2bin(item2.value)))))}}</b-badge></td>
 													    </tr>
 													    <tr>
 													      <td>Float</td>
@@ -1775,10 +1786,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assembly">Architecture</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assembly"><span class="fas fa-sitemap"></span> Architecture</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly">Simulator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly"><span class="fas fa-cogs"></span> Simulator</b-button>
                   </div>
                 </div>
               </div>
@@ -1801,7 +1812,7 @@
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fa fa-sign-in"></span> Compile</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fa fa-sign-in"></span> Compile/Linked</b-button>
                   </div>
                 </div>
               </div>
@@ -1811,10 +1822,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_binary_btn" v-b-modal.load_binary><span class="fa fa-upload"></span> Load binary</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_binary_btn" v-b-modal.load_binary><span class="fa fa-upload"></span> Load Library</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_binary_btn" v-b-modal.save_binary><span class="fa fa-download"></span> Save binary</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_binary_btn" v-b-modal.save_binary><span class="fa fa-download"></span> Save Library</b-button>
                   </div>
                 </div>
               </div>
@@ -1838,8 +1849,8 @@
                     </template>
 
                     <div class="col-lg-12 col-sm-12">
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications></span> Show Notifications</b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about></span> About us</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
                   </b-popover>
                 </div>
@@ -1880,12 +1891,12 @@
             </b-form-input>
 				  </b-modal>
 
-          <b-modal  id = "load_binary"   title = "Load Binary" ok-title="Load from this File" @ok="binary_update">
+          <b-modal  id = "load_binary"   title = "Load Binary" ok-title="Load from this File" @ok="library_update">
             <p> Please select the binary file to be loaded </p> 
-            <b-form-file v-model="name_binary_load" :state="Boolean(name_binary_load)" placeholder="Choose a file..." accept=".json" @change="binary_load" id="binary_file"></b-form-file>
+            <b-form-file v-model="name_binary_load" :state="Boolean(name_binary_load)" placeholder="Choose a file..." accept=".json" @change="library_load" id="binary_file"></b-form-file>
           </b-modal>
 
-          <b-modal  id = "save_binary"   title = "Save Binary" ok-title="Save to File" @ok="binary_save">
+          <b-modal  id = "save_binary"   title = "Save Binary" ok-title="Save to File" @ok="library_save">
             <p> Please write the file name: </p> 
             <b-form-input v-model="name_binary_save"
                 type="text"
