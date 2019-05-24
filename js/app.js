@@ -1131,16 +1131,24 @@ window.app = new Vue({
       }
 
       for(var i = 0; i < 6; i++){
+        if(auxMemoryLayout[i].value < 0){
+          app._data.alertMessaje = 'The value can not be negative';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          return;
+        }
+        else if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
+          app._data.alertMessaje = 'The memory must be align';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          return;
+        }
         for(var j = i; j < 6; j++){
-          if(auxMemoryLayout[i].value < 0){
-            app._data.alertMessaje = 'The value can not be negative';
-            app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-            return;
-          }
-          else if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
+          if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
             app._data.alertMessaje = 'The segment can not be overlap';
             app._data.type ='danger';
             app._data.dismissCountDown = app._data.dismissSecs;
@@ -6036,6 +6044,11 @@ window.app = new Vue({
 
           if(validTagPC == false && resultPseudo == -3){
             console.log("pendiente")
+
+            if(pending == true){
+              this.compileError(7, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              return -1;
+            }
 
             var padding = "";
             padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
