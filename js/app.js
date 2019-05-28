@@ -258,12 +258,12 @@ var architecture = {components:[
     {name:".asciiz", action:"ascii_null_end", size:null },
     {name:".align", action:"align", size:null },*/
   ], memory_layout:[
-    /*{name:"text start", value: 0x00000000},
-    {name:"text end", value: 0x00003FFF},
-    {name:"data start", value: 0x00004000},
-    {name:"data end", value: 0x00007FFF},
-    {name:"stack start", value: 0x00008000},
-    {name:"stack end", value: 0xFFFFFFFF},*/
+    /*{name:"text start", value: 0},
+    {name:"text end", value: 2097151},
+    {name:"data start", value: 2097152},
+    {name:"data end", value: 96206015},
+    {name:"stack start", value: 268435452},
+    {name:"stack end", value: 268435455},*/
   ]};
 
 var componentsTypes = [
@@ -7087,8 +7087,8 @@ window.app = new Vue({
     executeProgram(){
       $(".loading").show();
       app._data.runExecution = true;
-
       stopExecution = false;
+
       var iter1 = 1;
       if(instructions.length == 0){
         $(".loading").hide();

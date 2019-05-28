@@ -1823,23 +1823,23 @@
     },
     {
       "name": "text end",
-      "value": 4095
+      "value": 2097151
     },
     {
       "name": "data start",
-      "value": 4096
+      "value": 2097152
     },
     {
       "name": "data end",
-      "value": 65535
+      "value": 96206015
     },
     {
       "name": "stack start",
-      "value": 262140
+      "value": 268435452
     },
     {
       "name": "stack end",
-      "value": 262143
+      "value": 268435455
     }
   ]
 }
