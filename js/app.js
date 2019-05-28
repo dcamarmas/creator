@@ -430,7 +430,7 @@ window.app = new Vue({
 
     /*PAGINA CARGA ARQUITECTURA*/
     /*Modo avanzado*/
-    advanced_mode: false,
+    advanced_mode: true,
     /*Configuraciones Disponibles*/
     arch_available: architecture_available,
     /*Background de cada uno de los cards del menu*/
@@ -678,6 +678,9 @@ window.app = new Vue({
 
 
     /*PAGINA SIMULADOR*/
+    /*Boton run o stop*/
+    runExecution: false,
+
     /*Ejemplos Disponibles*/
     example_available: example_available,
     /*Nuevo valor del registro*/
@@ -1013,11 +1016,11 @@ window.app = new Vue({
 
     /*Cambia el modo actual*/
     change_mode(){
-      if(this.advanced_mode == false){
-        this.advanced_mode = true;
+      if(app._data.advanced_mode == false){
+        app._data.advanced_mode = true;
       }
       else{
-        this.advanced_mode = false;
+        app._data.advanced_mode = false;
       }
     },
 
@@ -3127,7 +3130,21 @@ window.app = new Vue({
       	return;
       };
 
-      var aux = {instructions_binary: instructions_binary, data_tag: data_tag, instructions_tag: instructions_tag};
+      console.log(instructions_binary);
+      for (var i = 0; i < instructions_binary.length; i++){
+        console.log(instructions_binary[i].Label)
+        if(instructions_binary[i].Label == "main_symbol"){
+          $(".loading").hide();
+          app._data.alertMessaje = 'You can not use the "main" tag in a library';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          return;
+        }
+      }
+
+      var aux = {instructions_binary: instructions_binary, instructions_tag: instructions_tag};
 
       var textToWrite = JSON.stringify(aux, null, 2);
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
@@ -3508,35 +3525,72 @@ window.app = new Vue({
         }
       }
 
-      /*Guarda los binarios que estan definidos como globales*/
+      /*Guarda los binarios*/
       for(var i = 0; i < instructions_binary.length; i++){
-        if(instructions_binary[i].Label == "" || extern.length == 0){
-          instructions_binary.splice(i, 1);
-          i--;
+        if(extern.length == 0 && instructions_binary[i].Label != ""){
+          instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+        }
+        else{
+        	for(var j = 0; j < extern.length; j++){
+        		if(instructions_binary[i].Label != extern[j] && j == extern.length-1 && instructions_binary[i].Label != ""){
+        			instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+        		}
+        	}
+        }	
+      }
+
+      for(var i = 0; i < instructions_tag.length; i++){
+        if(extern.length == 0 && instructions_tag[i].tag != ""){
+          instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
         }
         else{
           for(var j = 0; j < extern.length; j++){
-            if(extern[j] == instructions_binary[i].Label){
-              i++;
-              while(instructions_binary[i].Label == "" && i < instructions_binary.length){
-                if(i < instructions_binary.length-1){
-                  i++;
-                }
-                else{
-                  i++;
-                  break;
-                }
-              }
-              i--;
-              break;
+            if(instructions_tag[i].tag != extern[j] && j == extern.length-1 && instructions_tag[i].tag != ""){
+              instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
             }
-            else if(j == extern.length-1){
-              instructions_binary.splice(i, 1);
-              i--;
+          }
+        } 
+      }
+
+      /*Añade al programa los binarios cargados*/
+      if(update_binary.instructions_binary != null){
+        for(var i = 0; i < update_binary.instructions_binary.length; i++){
+          for(var j = 0; j < instructions.length; j++){
+            if(update_binary.instructions_binary[i].Label == instructions[j].Label && instructions[j].Label != ""){
+              app._data.alertMessaje = 'Repeated tag:' + instructions[j].Label;
+              app._data.type ='danger';
+              app._data.dismissCountDown = app._data.dismissSecs;
+              var date = new Date();
+              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            
+              tokenIndex = 0;
+              instructions = [];
+              pending_instructions = [];
+              pending_tags = [];
+              data_memory = [];
+              data_tag = [];
+              instructions_binary = [];
+              instructions_memory = [];
+              extern = [];
+              stack_memory = [];
+              data = [];
+              app._data.instructions = instructions;
+              app._data.instructions_memory = instructions_memory;
+              app._data.data_memory = data_memory;
+              app._data.stack_memory = stack_memory;
+
+              $(".loading").hide();
+              return -1;
             }
+          }
+          instructions.push(update_binary.instructions_binary[i]);
+          if((i+1) < update_binary.instructions_binary.length){
+            instructions[instructions.length-1].Address = "0x"+(parseInt((instructions[instructions.length-2].Address), 16) + parseInt((update_binary.instructions_binary[i+1].Address), 16) - parseInt((update_binary.instructions_binary[i].Address), 16)).toString(16);
           }
         }
       }
+
+      app._data.instructions = instructions;
 
       /*Inicializar pila*/
       stack_memory.push({Address: stack_address, Binary: [], Value: null});
@@ -3556,16 +3610,6 @@ window.app = new Vue({
       tokenIndex = 0;
       
       this.reset();
-
-
-      /*ASIGNACION PILA TEMPORAL PC*/
-      /*architecture.components[1].elements[29].value = bigInt(stack_address).value;
-      architecture.components[0].elements[0].value = bigInt(0x00004000).value;
-      architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
-      architecture.components[0].elements[0].default_value = bigInt(0x00004000).value;
-
-      address = 0x00004000;
-      data_address = 0x00000000;*/
 
       address = architecture.memory_layout[0].value;
       data_address = architecture.memory_layout[2].value;
@@ -3949,7 +3993,7 @@ window.app = new Vue({
                   if(data_memory[data_memory.length-1].Binary.length < 4){
                     var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4114,7 +4158,7 @@ window.app = new Vue({
                   if(data_memory[data_memory.length-1].Binary.length < 4){
                     var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4280,7 +4324,7 @@ window.app = new Vue({
                   if(data_memory[data_memory.length-1].Binary.length < 4){
                     var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4446,7 +4490,7 @@ window.app = new Vue({
                   if(data_memory[data_memory.length-1].Binary.length < 4){
                     var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4612,7 +4656,7 @@ window.app = new Vue({
                   if(data_memory[data_memory.length-1].Binary.length < 4){
                     var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4799,7 +4843,7 @@ window.app = new Vue({
                   if(data_memory[data_memory.length-1].Binary.length < 4){
                     var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -4995,7 +5039,7 @@ window.app = new Vue({
                   if(data_memory[data_memory.length-1].Binary.length < 4){
                     var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -5114,7 +5158,7 @@ window.app = new Vue({
                 if(data_memory[data_memory.length-1].Binary.length < 4){
                   var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
                   for(var i = 0; i < num_iter; i++){
-                    (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                    (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                   }
                 }
 
@@ -6088,7 +6132,7 @@ window.app = new Vue({
                 }
 
                 instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true});
-                instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: ''});
+                instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
                 for(var a = 0; a < hex.length/2; a++){
                   if(auxAddr % 4 == 0){
@@ -6134,7 +6178,7 @@ window.app = new Vue({
                 for(var pos = 0; pos < instructions.length; pos++){
                   if(parseInt(instructions[pos].Address, 16) > pendingAddress){
                     instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true});
-                    instructions_binary.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: true});
+                    instructions_binary.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
                     auxAddr = pendingAddress;
 
@@ -7042,10 +7086,13 @@ window.app = new Vue({
     /*Funcion que ejecuta todo el programa*/
     executeProgram(){
       $(".loading").show();
+      app._data.runExecution = true;
+
       stopExecution = false;
       var iter1 = 1;
       if(instructions.length == 0){
         $(".loading").hide();
+        app._data.runExecution = false;
         app._data.alertMessaje = 'No instructions in memory';
         app._data.type ='danger';
         app._data.dismissCountDown = app._data.dismissSecs;
@@ -7057,9 +7104,11 @@ window.app = new Vue({
       while(executionIndex >= 0){
         if(instructions[executionIndex].Break == true && iter1 == 0){
           $(".loading").hide();
+          app._data.runExecution = false;
           return;
         }
         else if(stopExecution == true){
+          app._data.runExecution = false;
           $(".loading").hide();
           return;
         }
@@ -7068,11 +7117,13 @@ window.app = new Vue({
           iter1 = 0;
         }
       }
+      app._data.runExecution = false;
       $(".loading").hide();
     },
 
     stopExecution(){
     	console.log("STOP")
+      app._data.runExecution = false;
     	stopExecution = true;
     },
 
@@ -7234,54 +7285,145 @@ window.app = new Vue({
       var memValue = '';
 
       if (type == "w"){
-        for (var i = 0; i < data_memory.length; i++){
-          for (var j = 0; j < data_memory[i].Binary.length; j++){
-            var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-            if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-              for (var z = 0; z < data_memory[i].Binary.length; z++){
-                memValue = data_memory[i].Binary[z].Bin + memValue;
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          for (var i = 0; i < data_memory.length; i++){
+            for (var j = 0; j < data_memory[i].Binary.length; j++){
+              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
+                for (var z = 0; z < data_memory[i].Binary.length; z++){
+                  memValue = data_memory[i].Binary[z].Bin + memValue;
+                }
+                return bigInt(memValue, 16).value;
               }
-              return bigInt(memValue, 16).value;
             }
           }
+          return bigInt(0).value;
         }
-        return bigInt(0).value;
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          for (var i = 0; i < stack_memory.length; i++){
+            for (var j = 0; j < stack_memory[i].Binary.length; j++){
+              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                for (var z = 0; z < stack_memory[i].Binary.length; z++){
+                  memValue = stack_memory[i].Binary[z].Bin + memValue;
+                }
+                return bigInt(memValue, 16).value;
+              }
+            }
+          }
+          return bigInt(0).value;
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          instructions[executionIndex]._rowVariant = 'danger';
+          executionIndex = -1;
+          return;
+        }
+
       }
 
       if (type == "h"){
-        for (var i = 0; i < data_memory.length; i++){
-          for (var j = 0; j < data_memory[i].Binary.length; j++){
-            var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-            if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-              if(j < 2){
-                for (var z = 0; z < data_memory[i].Binary.length -2; z++){
-                  memValue = data_memory[i].Binary[z].Bin + memValue;
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          for (var i = 0; i < data_memory.length; i++){
+            for (var j = 0; j < data_memory[i].Binary.length; j++){
+              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
+                if(j < 2){
+                  for (var z = 0; z < data_memory[i].Binary.length -2; z++){
+                    memValue = data_memory[i].Binary[z].Bin + memValue;
+                  }
+                  return bigInt(memValue, 16).value;
                 }
-                return bigInt(memValue, 16).value;
-              }
-              else{
-                for (var z = 2; z < data_memory[i].Binary.length; z++){
-                  memValue = data_memory[i].Binary[z].Bin + memValue;
+                else{
+                  for (var z = 2; z < data_memory[i].Binary.length; z++){
+                    memValue = data_memory[i].Binary[z].Bin + memValue;
+                  }
+                  return bigInt(memValue, 16).value;
                 }
-                return bigInt(memValue, 16).value;
               }
             }
           }
+          return bigInt(0).value;
         }
-        return bigInt(0).value;
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          for (var i = 0; i < stack_memory.length; i++){
+            for (var j = 0; j < stack_memory[i].Binary.length; j++){
+              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                if(j < 2){
+                  for (var z = 0; z < stack_memory[i].Binary.length -2; z++){
+                    memValue = stack_memory[i].Binary[z].Bin + memValue;
+                  }
+                  return bigInt(memValue, 16).value;
+                }
+                else{
+                  for (var z = 2; z < stack_memory[i].Binary.length; z++){
+                    memValue = data_memory[i].Binary[z].Bin + memValue;
+                  }
+                  return bigInt(memValue, 16).value;
+                }
+              }
+            }
+          }
+          return bigInt(0).value;
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          instructions[executionIndex]._rowVariant = 'danger';
+          executionIndex = -1;
+          return;
+        }
       }
 
       if (type == "b"){
-        for (var i = 0; i < data_memory.length; i++){
-          for (var j = 0; j < data_memory[i].Binary.length; j++){
-            var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-            if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-              memValue = data_memory[i].Binary[j].Bin + memValue;
-              return bigInt(memValue, 16).value;
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          for (var i = 0; i < data_memory.length; i++){
+            for (var j = 0; j < data_memory[i].Binary.length; j++){
+              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
+                memValue = data_memory[i].Binary[j].Bin + memValue;
+                return bigInt(memValue, 16).value;
+              }
             }
           }
+          return bigInt(0).value;
         }
-        return bigInt(0).value;
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          for (var i = 0; i < stack_memory.length; i++){
+            for (var j = 0; j < stack_memory[i].Binary.length; j++){
+              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                memValue = stack_memory[i].Binary[j].Bin + memValue;
+                return bigInt(memValue, 16).value;
+              }
+            }
+          }
+          return bigInt(0).value;
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          instructions[executionIndex]._rowVariant = 'danger';
+          executionIndex = -1;
+          return;
+        }
       }
     },
 
@@ -7295,202 +7437,596 @@ window.app = new Vue({
       var memValue = (value.toString(16)).padStart(8, "0");
 
       if (type == "w"){
-        for (var i = 0; i < data_memory.length; i++){
-          for (var j = 0; j < data_memory[i].Binary.length; j++){
-            var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-            if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-              data_memory[i].Value = parseInt(memValue, 16);
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          for (var i = 0; i < data_memory.length; i++){
+            for (var j = 0; j < data_memory[i].Binary.length; j++){
+              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
+                data_memory[i].Value = parseInt(memValue, 16);
+                var charIndex = memValue.length-1;
+                for (var z = 0; z < data_memory[i].Binary.length; z++){
+                  data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  charIndex = charIndex - 2;
+                }
+                data_memory[i].Value = parseInt(memValue, 16);
+                app._data.data_memory = data_memory;
+                return;
+              }
+            }
+          }
+
+          for (var i = 0; i < data_memory.length; i++){
+            if(data_memory[i].Address > parseInt(addr, 16)){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
               var charIndex = memValue.length-1;
-              for (var z = 0; z < data_memory[i].Binary.length; z++){
-                data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+              for (var z = 0; z < 4; z++){
+                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
                 charIndex = charIndex - 2;
               }
-              data_memory[i].Value = parseInt(memValue, 16);
+              app._data.data_memory = data_memory;
+              return;
+            }
+            else if(i == data_memory.length-1){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+                charIndex = charIndex - 2;
+              }
+              app._data.data_memory = data_memory;
               return;
             }
           }
-        }
 
-        for (var i = 0; i < data_memory.length; i++){
-          if(data_memory[i].Address > parseInt(addr, 16)){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
-              charIndex = charIndex - 2;
-            }
-            return;
-          }
-          else if(i == data_memory.length-1){
+          if(data_memory.length == 0){
             var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
             data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
               charIndex = charIndex - 2;
             }
+            app._data.data_memory = data_memory;
             return;
           }
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          for (var i = 0; i < stack_memory.length; i++){
+            for (var j = 0; j < stack_memory[i].Binary.length; j++){
+              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+
+              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                stack_memory[i].Value = parseInt(memValue, 16);
+                var charIndex = memValue.length-1;
+                for (var z = 0; z < stack_memory[i].Binary.length; z++){
+                  stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  charIndex = charIndex - 2;
+                }
+                stack_memory[i].Value = parseInt(memValue, 16);
+                app._data.stack_memory = stack_memory;
+                return;
+              }
+            }
+          }
+
+          for (var i = 0; i < stack_memory.length; i++){
+            if(stack_memory[i].Address > parseInt(addr, 16)){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+                charIndex = charIndex - 2;
+              }
+              app._data.stack_memory = stack_memory;
+              return;
+            }
+            else if(i == stack_memory.length-1){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+                charIndex = charIndex - 2;
+              }
+              app._data.stack_memory = stack_memory;
+              return;
+            }
+          }
+
+          if(stack_memory.length == 0){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+              charIndex = charIndex - 2;
+            }
+            app._data.stack_memory = stack_memory;
+            return;
+          }
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          instructions[executionIndex]._rowVariant = 'danger';
+          executionIndex = -1;
+          return;
         }
       }
 
       if (type == "h"){
-        for (var i = 0; i < data_memory.length; i++){
-          for (var j = 0; j < data_memory[i].Binary.length; j++){
-            var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-            if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-               if(j < 2){
-                  var charIndex = memValue.length-1;
-                  for (var z = 0; z < data_memory[i].Binary.length - 2; z++){
-                    data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-
-                  data_memory[i].Value = null;
-                  for (var z = 3; z < 4; z=z-2){
-                    data_memory[i].Value = data_memory[i].Value + parseInt((data_memory[i].Binary[z].Bin + data_memory[i].Binary[z-1].Bin), 16) + " ";
-                  }
-
-                  return;
-                }
-                else{
-                  var charIndex = memValue.length-1;
-                  for (var z = 2; z < data_memory[i].Binary.length; z++){
-                    data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  return;
-                }
-            }
-          }
-        }
-
-        for (var i = 0; i < data_memory.length; i++){
-          if(data_memory[i].Address > parseInt(addr, 16)){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
-            }
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          for (var i = 0; i < data_memory.length; i++){
             for (var j = 0; j < data_memory[i].Binary.length; j++){
               var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
               if(aux == addr || data_memory[i].Binary[j].Tag == addr){
                  if(j < 2){
-                  var charIndex = memValue.length-1;
-                  for (var z = 0; z < data_memory[i].Binary.length - 2; z++){
-                    data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  data_memory[i].Value = "0 " + parseInt(memValue, 16); 
-                  return;
-                }
-                else{
-                  var charIndex = memValue.length-1;
-                  for (var z = 2; z < data_memory[i].Binary.length; z++){
-                    data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  data_memory[i].Value = parseInt(memValue, 16) + " 0";                 
-                  return;
-                }
-              }
-            }
-            return;
-          }
-          else if(i == data_memory.length-1){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
-            }
-            for (var j = 0; j < data_memory[i+1].Binary.length; j++){
-              var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i+1].Binary[j].Tag == addr){
-                 if(j < 2){
-                  var charIndex = memValue.length-1;
-                  for (var z = 0; z < data_memory[i+1].Binary.length - 2; z++){
-                    data_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  data_memory[i+1].Value = "0 " + parseInt(memValue, 16); 
-                  return;
-                }
-                else{
-                  var charIndex = memValue.length-1;
-                  for (var z = 2; z < data_memory[i].Binary.length; z++){
-                    data_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  data_memory[i+1].Value = parseInt(memValue, 16) + " 0"; 
-                  return;
-                }
-              }
-            }
-            return;
-          }
-        }
-      }
+                    var charIndex = memValue.length-1;
+                    for (var z = 0; z < data_memory[i].Binary.length - 2; z++){
+                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
 
-      if (type == "b"){
-        for (var i = 0; i < data_memory.length; i++){
-          for (var j = 0; j < data_memory[i].Binary.length; j++){
-            var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-            if(aux == addr || data_memory[i].Binary[j].Tag == addr){
+                    data_memory[i].Value = null;
+                    for (var z = 3; z < 4; z=z-2){
+                      data_memory[i].Value = data_memory[i].Value + parseInt((data_memory[i].Binary[z].Bin + data_memory[i].Binary[z-1].Bin), 16) + " ";
+                    }
+                    app._data.data_memory = data_memory;
+                    return;
+                  }
+                  else{
+                    var charIndex = memValue.length-1;
+                    for (var z = 2; z < data_memory[i].Binary.length; z++){
+                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    app._data.data_memory = data_memory;
+                    return;
+                  }
+              }
+            }
+          }
+
+          for (var i = 0; i < data_memory.length; i++){
+            if(data_memory[i].Address > parseInt(addr, 16)){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
-              data_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-              data_memory[i].Value = null;
-              for (var z = 3; z < 4; z--){
-                data_memory[i].Value = data_memory[i].Value + parseInt(data_memory[i].Binary[z].Bin, 16) + " ";
+              for (var z = 0; z < 4; z++){
+                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < data_memory[i].Binary.length; j++){
+                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+                if(aux == addr || data_memory[i].Binary[j].Tag == addr){
+                   if(j < 2){
+                    var charIndex = memValue.length-1;
+                    for (var z = 0; z < data_memory[i].Binary.length - 2; z++){
+                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    data_memory[i].Value = "0 " + parseInt(memValue, 16); 
+                    app._data.data_memory = data_memory;
+                    return;
+                  }
+                  else{
+                    var charIndex = memValue.length-1;
+                    for (var z = 2; z < data_memory[i].Binary.length; z++){
+                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    data_memory[i].Value = parseInt(memValue, 16) + " 0";    
+                    app._data.data_memory = data_memory;             
+                    return;
+                  }
+                }
+              }
+              return;
+            }
+            else if(i == data_memory.length-1){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < data_memory[i+1].Binary.length; j++){
+                var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
+                if(aux == addr || data_memory[i+1].Binary[j].Tag == addr){
+                   if(j < 2){
+                    var charIndex = memValue.length-1;
+                    for (var z = 0; z < data_memory[i+1].Binary.length - 2; z++){
+                      data_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    data_memory[i+1].Value = "0 " + parseInt(memValue, 16); 
+                    app._data.data_memory = data_memory;
+                    return;
+                  }
+                  else{
+                    var charIndex = memValue.length-1;
+                    for (var z = 2; z < data_memory[i].Binary.length; z++){
+                      data_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    data_memory[i+1].Value = parseInt(memValue, 16) + " 0"; 
+                    app._data.data_memory = data_memory;
+                    return;
+                  }
+                }
               }
               return;
             }
           }
-        }
 
-        for (var i = 0; i < data_memory.length; i++){
-          if(data_memory[i].Address > parseInt(addr, 16)){
+          if(data_memory.length == 0){
             var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
+            data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
             }
+            for (var j = 0; j < data_memory[data_memory.length-1].Binary.length; j++){
+              var aux = "0x"+(data_memory[data_memory.length-1].Binary[j].Addr).toString(16);
+              if(aux == addr || data_memory[data_memory.length-1].Binary[j].Tag == addr){
+                 if(j < 2){
+                  var charIndex = memValue.length-1;
+                  for (var z = 0; z < data_memory[data_memory.length-1].Binary.length - 2; z++){
+                    data_memory[data_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  data_memory[data_memory.length-1].Value = "0 " + parseInt(memValue, 16); 
+                  app._data.data_memory = data_memory;
+                  return;
+                }
+                else{
+                  var charIndex = memValue.length-1;
+                  for (var z = 2; z < data_memory[i].Binary.length; z++){
+                    data_memory[data_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  data_memory[data_memory.length-1].Value = parseInt(memValue, 16) + " 0"; 
+                  app._data.data_memory = data_memory;
+                  return;
+                }
+              }
+            }
+            return;
+          }
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          for (var i = 0; i < stack_memory.length; i++){
+            for (var j = 0; j < stack_memory[i].Binary.length; j++){
+              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                 if(j < 2){
+                    var charIndex = memValue.length-1;
+                    for (var z = 0; z < stack_memory[i].Binary.length - 2; z++){
+                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+
+                    stack_memory[i].Value = null;
+                    for (var z = 3; z < 4; z=z-2){
+                      stack_memory[i].Value = stack_memory[i].Value + parseInt((stack_memory[i].Binary[z].Bin + stack_memory[i].Binary[z-1].Bin), 16) + " ";
+                    }
+                    app._data.stack_memory = stack_memory;
+                    return;
+                  }
+                  else{
+                    var charIndex = memValue.length-1;
+                    for (var z = 2; z < stack_memory[i].Binary.length; z++){
+                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    app._data.stack_memory = stack_memory;
+                    return;
+                  }
+              }
+            }
+          }
+
+          for (var i = 0; i < stack_memory.length; i++){
+            if(stack_memory[i].Address > parseInt(addr, 16)){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < stack_memory[i].Binary.length; j++){
+                var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+                if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                   if(j < 2){
+                    var charIndex = memValue.length-1;
+                    for (var z = 0; z < stack_memory[i].Binary.length - 2; z++){
+                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    stack_memory[i].Value = "0 " + parseInt(memValue, 16); 
+                    app._data.stack_memory = stack_memory;
+                    return;
+                  }
+                  else{
+                    var charIndex = memValue.length-1;
+                    for (var z = 2; z < stack_memory[i].Binary.length; z++){
+                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    stack_memory[i].Value = parseInt(memValue, 16) + " 0";    
+                    app._data.stack_memory = stack_memory;             
+                    return;
+                  }
+                }
+              }
+              return;
+            }
+            else if(i == stack_memory.length-1){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < stack_memory[i+1].Binary.length; j++){
+                var aux = "0x"+(stack_memory[i+1].Binary[j].Addr).toString(16);
+                if(aux == addr || stack_memory[i+1].Binary[j].Tag == addr){
+                   if(j < 2){
+                    var charIndex = memValue.length-1;
+                    for (var z = 0; z < stack_memory[i+1].Binary.length - 2; z++){
+                      stack_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    stack_memory[i+1].Value = "0 " + parseInt(memValue, 16); 
+                    app._data.stack_memory = stack_memory;
+                    return;
+                  }
+                  else{
+                    var charIndex = memValue.length-1;
+                    for (var z = 2; z < stack_memory[i].Binary.length; z++){
+                      stack_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      charIndex = charIndex - 2;
+                    }
+                    stack_memory[i+1].Value = parseInt(memValue, 16) + " 0"; 
+                    app._data.stack_memory = stack_memory;
+                    return;
+                  }
+                }
+              }
+              app._data.stack_memory = stack_memory;
+              return;
+            }
+          }
+
+          if(stack_memory.length == 0){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+            }
+            for (var j = 0; j < stack_memory[stack_memory.length-1].Binary.length; j++){
+              var aux = "0x"+(stack_memory[stack_memory.length-1].Binary[j].Addr).toString(16);
+              if(aux == addr || stack_memory[stack_memory.length-1].Binary[j].Tag == addr){
+                 if(j < 2){
+                  var charIndex = memValue.length-1;
+                  for (var z = 0; z < stack_memory[stack_memory.length-1].Binary.length - 2; z++){
+                    stack_memory[stack_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  stack_memory[stack_memory.length-1].Value = "0 " + parseInt(memValue, 16); 
+                  app._data.stack_memory = stack_memory;
+                  return;
+                }
+                else{
+                  var charIndex = memValue.length-1;
+                  for (var z = 2; z < stack_memory[i].Binary.length; z++){
+                    stack_memory[stack_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  stack_memory[stack_memory.length-1].Value = parseInt(memValue, 16) + " 0"; 
+                  app._data.stack_memory = data_memory;
+                  return;
+                }
+              }
+            }
+            return;
+          }
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          instructions[executionIndex]._rowVariant = 'danger';
+          executionIndex = -1;
+          return;
+        }
+
+      }
+
+      if (type == "b"){
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          for (var i = 0; i < data_memory.length; i++){
             for (var j = 0; j < data_memory[i].Binary.length; j++){
               var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
               if(aux == addr || data_memory[i].Binary[j].Tag == addr){
                 var charIndex = memValue.length-1;
                 data_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                data_memory[i].Value = null;
                 for (var z = 3; z < 4; z--){
-                  data_memory[i+1].Value = data_memory[i+1].Value + parseInt(data_memory[i+1].Binary[z].Bin, 16) + " ";
+                  data_memory[i].Value = data_memory[i].Value + parseInt(data_memory[i].Binary[z].Bin, 16) + " ";
                 }
                 return;
               }
             }
-            return;
           }
-          else if(i == data_memory.length-1){
+
+          for (var i = 0; i < data_memory.length; i++){
+            if(data_memory[i].Address > parseInt(addr, 16)){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < data_memory[i].Binary.length; j++){
+                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+                if(aux == addr || data_memory[i].Binary[j].Tag == addr){
+                  var charIndex = memValue.length-1;
+                  data_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  for (var z = 3; z < 4; z--){
+                    data_memory[i+1].Value = data_memory[i+1].Value + parseInt(data_memory[i+1].Binary[z].Bin, 16) + " ";
+                  }
+                  return;
+                }
+              }
+              return;
+            }
+            else if(i == data_memory.length-1){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < data_memory[i+1].Binary.length; j++){
+                var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
+                if(aux == addr || data_memory[i+1].Binary[j].Tag == addr){
+                  var charIndex = memValue.length-1;
+                  data_memory[i+1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  for (var z = 3; z < 4; z--){
+                    data_memory[i+1].Value = data_memory[i+1].Value + parseInt(data_memory[i+1].Binary[z].Bin, 16) + " ";
+                  }
+                  return;
+                }
+              }
+              return;
+            }
+          }
+
+          if(data_memory.length == 0){
             var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
             data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
             }
-            for (var j = 0; j < data_memory[i+1].Binary.length; j++){
-              var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i+1].Binary[j].Tag == addr){
+            for (var j = 0; j < data_memory[data_memory.length-1].Binary.length; j++){
+              var aux = "0x"+(data_memory[data_memory.length-1].Binary[j].Addr).toString(16);
+              if(aux == addr || data_memory[data_memory.length-1].Binary[j].Tag == addr){
                 var charIndex = memValue.length-1;
-                data_memory[i+1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                data_memory[data_memory.length-1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
                 for (var z = 3; z < 4; z--){
-                  data_memory[i+1].Value = data_memory[i+1].Value + parseInt(data_memory[i+1].Binary[z].Bin, 16) + " ";
+                  data_memory[data_memory.length-1].Value = data_memory[data_memory.length-1].Value + parseInt(data_memory[data_memory.length-1].Binary[z].Bin, 16) + " ";
                 }
                 return;
               }
             }
             return;
           }
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          for (var i = 0; i < stack_memory.length; i++){
+            for (var j = 0; j < stack_memory[i].Binary.length; j++){
+              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                var charIndex = memValue.length-1;
+                stack_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                stack_memory[i].Value = null;
+                for (var z = 3; z < 4; z--){
+                  stack_memory[i].Value = stack_memory[i].Value + parseInt(stack_memory[i].Binary[z].Bin, 16) + " ";
+                }
+                return;
+              }
+            }
+          }
+
+          for (var i = 0; i < stack_memory.length; i++){
+            if(stack_memory[i].Address > parseInt(addr, 16)){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < stack_memory[i].Binary.length; j++){
+                var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+                if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+                  var charIndex = memValue.length-1;
+                  stack_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  for (var z = 3; z < 4; z--){
+                    stack_memory[i+1].Value = stack_memory[i+1].Value + parseInt(stack_memory[i+1].Binary[z].Bin, 16) + " ";
+                  }
+                  return;
+                }
+              }
+              return;
+            }
+            else if(i == stack_memory.length-1){
+              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < 4; z++){
+                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              }
+              for (var j = 0; j < stack_memory[i+1].Binary.length; j++){
+                var aux = "0x"+(stack_memory[i+1].Binary[j].Addr).toString(16);
+                if(aux == addr || stack_memory[i+1].Binary[j].Tag == addr){
+                  var charIndex = memValue.length-1;
+                  stack_memory[i+1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  for (var z = 3; z < 4; z--){
+                    stack_memory[i+1].Value = stack_memory[i+1].Value + parseInt(stack_memory[i+1].Binary[z].Bin, 16) + " ";
+                  }
+                  return;
+                }
+              }
+              return;
+            }
+          }
+
+          if(stack_memory.length == 0){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+            }
+            for (var j = 0; j < stack_memory[stack_memory.length-1].Binary.length; j++){
+              var aux = "0x"+(stack_memory[stack_memory.length-1].Binary[j].Addr).toString(16);
+              if(aux == addr || stack_memory[stack_memory.length-1].Binary[j].Tag == addr){
+                var charIndex = memValue.length-1;
+                stack_memory[stack_memory.length-1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                for (var z = 3; z < 4; z--){
+                  stack_memory[stack_memory.length-1].Value = stack_memory[stack_memory.length-1].Value + parseInt(stack_memory[stack_memory.length-1].Binary[z].Bin, 16) + " ";
+                }
+                return;
+              }
+            }
+            return;
+          }
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          instructions[executionIndex]._rowVariant = 'danger';
+          executionIndex = -1;
+          return;
         }
       }
     },
