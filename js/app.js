@@ -246,7 +246,6 @@ var architecture = {components:[
     /*{name:".data", action:"data_segment", size:null },
     {name:".text", action:"code_segment", size:null },
     {name:".globl", action:"global_symbol", size:null },
-    {name:".extern", action:"data_size", size:null },
     {name:".byte", action:"byte", size:1 },
     {name:".half", action:"half_word", size:2 },
     {name:".word", action:"word", size:4 },
@@ -390,7 +389,7 @@ var notifications = [];
 var tokenIndex = 0;
 
 /*Indice de ejecucion*/
-var stopExecution = false;
+var runExecution = false;
 var executionIndex = 0;
 
 /*Escritura terminal finalizada*/
@@ -3131,6 +3130,17 @@ window.app = new Vue({
       };
 
       console.log(instructions_binary);
+
+      if(data_memory.length != 0){
+        $(".loading").hide();
+        app._data.alertMessaje = 'You can not enter data in a library';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        return;
+      }
+
       for (var i = 0; i < instructions_binary.length; i++){
         console.log(instructions_binary[i].Label)
         if(instructions_binary[i].Label == "main_symbol"){
@@ -3511,20 +3521,6 @@ window.app = new Vue({
 
       var found = false;
 
-      for(var i = 0; i < pending_tags.length; i++){
-        for (var j = 0; j < data_memory.length && found == false; j++){
-          for (var z = 0; z < data_memory[j].Binary.length && found == false; z++){
-            if(data_memory[j].Binary[z].Tag == pending_tags[i].Label){
-              found = true;
-              break;
-            }
-          }
-        }
-        if(found == false){
-          this.compileError(7, pending_tags[i].Label, pending_tags[i].Index);
-        }
-      }
-
       /*Guarda los binarios*/
       for(var i = 0; i < instructions_binary.length; i++){
         if(extern.length == 0 && instructions_binary[i].Label != ""){
@@ -3583,12 +3579,47 @@ window.app = new Vue({
               return -1;
             }
           }
+
           instructions.push(update_binary.instructions_binary[i]);
-          if((i+1) < update_binary.instructions_binary.length){
-            instructions[instructions.length-1].Address = "0x"+(parseInt((instructions[instructions.length-2].Address), 16) + parseInt((update_binary.instructions_binary[i+1].Address), 16) - parseInt((update_binary.instructions_binary[i].Address), 16)).toString(16);
+          if(i< update_binary.instructions_binary.length){
+            var auxAddr = address;
+
+            if(i+1 < update_binary.instructions_binary.length){
+              address = address + parseInt((update_binary.instructions_binary[i+1].Address), 16) - parseInt((update_binary.instructions_binary[i].Address), 16);
+            }
+            
+            instructions[instructions.length-1].Address = "0x"+auxAddr.toString(16);
           }
         }
       }
+
+      if(update_binary.instructions_binary != null){
+        for(var j = 0; j<instructions.length; j++){
+          if(instructions[j].Label != ""){
+            for(var i = 0; i<update_binary.instructions_tag.length; i++){
+              if(instructions[j].Label == update_binary.instructions_tag[i].tag){
+                update_binary.instructions_tag[i].addr = instructions[j].Address;
+              }
+            }
+          }
+        }
+      }
+
+      /*Etiquetas pendientes*/
+      for(var i = 0; i < pending_tags.length; i++){
+        for (var j = 0; j < data_memory.length && found == false; j++){
+          for (var z = 0; z < data_memory[j].Binary.length && found == false; z++){
+            if(data_memory[j].Binary[z].Tag == pending_tags[i].Label){
+              found = true;
+              break;
+            }
+          }
+        }
+        if(found == false){
+          this.compileError(7, pending_tags[i].Label, pending_tags[i].Index);
+        }
+      }
+
 
       app._data.instructions = instructions;
 
@@ -5747,13 +5778,13 @@ window.app = new Vue({
                           regNum++;
 
                           fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                          var reg = regNum;
+                          var reg = w;
 
                           if(reg.toString(2).length > fieldsLength){
                             this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
                           }
-
+                          console.log(reg)
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           //instruction = instruction + " " + token;
                           re = RegExp("[fF][0-9]+");
@@ -6628,11 +6659,41 @@ window.app = new Vue({
       var signatureRawParts;
       var nwords;
       var auxDef;
+      var binary;
 
       /*Busca la instruccion a ejecutar y coge la definicion*/
       for (var i = 0; i < architecture.instructions.length; i++) {
         var auxSig = architecture.instructions[i].signatureRaw.split(' ');
         var type;
+        var auxIndex;
+
+        console.log("AQUI")
+        console.log(instructionExecParts[0])
+        console.log(instructionExecParts[0].substring(0,6))
+        console.log(architecture.instructions[i].co)
+
+        if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
+          if(architecture.instructions[i].cop != null){
+            for (var j = 0; j < architecture.instructions[i].fields.length; j++){
+              if (architecture.instructions[i].fields[j].type == "cop") {
+                if(architecture.instructions[i].cop == instructionExecParts[0].substring(((architecture.instructions[i].nwords*31) - architecture.instructions[i].fields[j].startbit), ((architecture.instructions[i].nwords*32) - architecture.instructions[i].fields[j].stopbit))){
+                  auxDef = architecture.instructions[i].definition;
+                  nwords = architecture.instructions[i].nwords;
+                  binary = true;
+                  auxIndex = i;
+                  break;
+                }
+              }
+            }
+          }
+          else{
+            auxDef = architecture.instructions[i].definition;
+            nwords = architecture.instructions[i].nwords;
+            binary = true;
+            auxIndex = i;
+            break;
+          }
+        }
 
         if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
           //signatureParts = architecture.instructions[i].signature.split(',');
@@ -6666,49 +6727,107 @@ window.app = new Vue({
 
           auxDef = architecture.instructions[i].definition;
           nwords = architecture.instructions[i].nwords;
+          binary = false;
           break;
         }
       }
+
 
       /*Incrementar PC*/
       architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bigInt((nwords * 4)).value;
 
       console.log(auxDef)
 
-      re = new RegExp(signatureDef+"$")
-      var match = re.exec(instructionExec);
-      instructionExecParts = [];
-      for(var j = 1; j < match.length; j++){
-        instructionExecParts.push(match[j]);
-      }
-
-      console.log(instructionExecParts)
-
-      /*Replaza los valores por el nombre de los registros*/
-      for (var i = 1; i < signatureRawParts.length; i++){
-        /*if(signatureParts[i] == "inm"){
-          var re = new RegExp(signatureRawParts[i],"g");
-          auxDef = auxDef.replace(re, "bigInt(" + instructionExecParts[i] + ").value");
+      if(binary == false){
+        re = new RegExp(signatureDef+"$")
+        var match = re.exec(instructionExec);
+        instructionExecParts = [];
+        for(var j = 1; j < match.length; j++){
+          instructionExecParts.push(match[j]);
         }
-        else{
-          var re = new RegExp(signatureRawParts[i],"g");
-          auxDef = auxDef.replace(re, instructionExecParts[i]);
-        }*/
 
-        if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "Ctrl-Reg"){
-          re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
-          if(instructionExecParts[i].search(re) != -1){
+        console.log(instructionExecParts)
+
+        /*Replaza los valores por el nombre de los registros*/
+        for (var i = 1; i < signatureRawParts.length; i++){
+          /*if(signatureParts[i] == "inm"){
             var re = new RegExp(signatureRawParts[i],"g");
-            auxDef = auxDef.replace(re, "R" + instructionExecParts[i]);
+            auxDef = auxDef.replace(re, "bigInt(" + instructionExecParts[i] + ").value");
+          }
+          else{
+            var re = new RegExp(signatureRawParts[i],"g");
+            auxDef = auxDef.replace(re, instructionExecParts[i]);
+          }*/
+
+          if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "Ctrl-Reg"){
+            re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
+            if(instructionExecParts[i].search(re) != -1){
+              var re = new RegExp(signatureRawParts[i],"g");
+              auxDef = auxDef.replace(re, "R" + instructionExecParts[i]);
+            }
+            else{
+              var re = new RegExp(signatureRawParts[i],"g");
+              auxDef = auxDef.replace(re, instructionExecParts[i]);
+            }
           }
           else{
             var re = new RegExp(signatureRawParts[i],"g");
             auxDef = auxDef.replace(re, instructionExecParts[i]);
           }
         }
-        else{
-          var re = new RegExp(signatureRawParts[i],"g");
-          auxDef = auxDef.replace(re, instructionExecParts[i]);
+      }
+
+      if(binary == true){
+        console.log("Binary")
+
+        for (var j = 0; j < architecture.instructions[auxIndex].fields.length; j++){
+          console.log(instructionExecParts[0]);
+          console.log(architecture.instructions[auxIndex].fields.length)
+          if(architecture.instructions[auxIndex].fields[j].type == "INT-Reg" || architecture.instructions[auxIndex].fields[j].type == "FP-Reg" || architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg") {
+            
+            console.log(instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit)));
+
+            for (var z = 0; z < architecture.components.length; z++){
+              console.log(architecture.components[z].type)
+              if(architecture.components[z].type == "control" && architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg"){
+                for (var w = 0; w < architecture.components[z].elements.length; w++){
+                  var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
+                  console.log(auxLength)
+                  console.log((w.toString(2)).padStart(auxLength, "0"))
+                  if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
+                  }
+                }
+              }
+              if(architecture.components[z].type == "integer" && architecture.instructions[auxIndex].fields[j].type == "INT-Reg"){
+                for (var w = 0; w < architecture.components[z].elements.length; w++){
+                  var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
+                  console.log(auxLength)
+                  console.log((w.toString(2)).padStart(auxLength, "0"))
+                  if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
+                    var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
+                  }
+                }
+              }
+              if(architecture.components[z].type == "floating point" && architecture.instructions[auxIndex].fields[j].type == "FP-Reg"){
+                for (var w = 0; w < architecture.components[z].elements.length; w++){
+                  var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
+                  console.log(auxLength)
+                  console.log((w.toString(2)).padStart(auxLength, "0"))
+                  if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
+                    var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
+                  }
+                }
+              }
+            }
+          }
+          if(architecture.instructions[auxIndex].fields[j].type == "inm"){
+            console.log("INM")
+          }
+          if(architecture.instructions[auxIndex].fields[j].type == "address"){
+            console.log("ADDR")
+          }
         }
       }
 
@@ -7085,9 +7204,9 @@ window.app = new Vue({
 
     /*Funcion que ejecuta todo el programa*/
     executeProgram(){
-      $(".loading").show();
+      /*$(".loading").show();
       app._data.runExecution = true;
-      stopExecution = false;
+      runExecution = false;
 
       var iter1 = 1;
       if(instructions.length == 0){
@@ -7107,7 +7226,7 @@ window.app = new Vue({
           app._data.runExecution = false;
           return;
         }
-        else if(stopExecution == true){
+        else if(runExecution == true){
           app._data.runExecution = false;
           $(".loading").hide();
           return;
@@ -7118,13 +7237,63 @@ window.app = new Vue({
         }
       }
       app._data.runExecution = false;
+      $(".loading").hide();*/
+
+      $(".loading").show();
+      app._data.runExecution = true;
+      this.runExecution = false;
+
+      var iter1 = 1;
+      if(instructions.length == 0){
+        $(".loading").hide();
+        app._data.alertMessaje = 'No instructions in memory';
+        app._data.type ='danger';
+        app._data.dismissCountDown = app._data.dismissSecs;
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        return;
+      }
+
+      $("#stopExecution").show();
+      $("#playExecution").hide();
+
+      this.programExecutionInst();
+
       $(".loading").hide();
     },
 
+    programExecutionInst(){
+      if(instructions[executionIndex].Break == true && iter1 == 0){
+        $(".loading").hide();
+        $("#stopExecution").hide();
+        $("#playExecution").show();
+        return;
+      }
+      else if(this.runExecution == true){
+        app._data.runExecution = false;
+        $("#stopExecution").hide();
+        $("#playExecution").show();
+        $(".loading").hide();
+        return;
+      }
+      else{
+        this.executeInstruction();
+        iter1 = 0;
+      }
+      
+      if(executionIndex > 0){
+        setTimeout(this.programExecutionInst, 25);
+      }
+      else{
+        $("#stopExecution").hide();
+        $("#playExecution").show();
+      }
+    },
+
+
     stopExecution(){
     	console.log("STOP")
-      app._data.runExecution = false;
-    	stopExecution = true;
+      app._data.runExecution = true;
     },
 
     /*Funcion que resetea la ejecucion*/

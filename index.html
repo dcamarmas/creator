@@ -1365,7 +1365,7 @@
                       </b-list-group>
                     </b-modal>
 
-                    <b-modal id="calculator" title="Calculator" hide-footer size="lg">
+                    <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
                       <div class="col-lg-12 col-12 row nomargin" style="padding-bottom: 3%;">
                         <div class="col-lg-3 col-3"></div>
                         <div class="col-lg-6 col-6">
@@ -1523,12 +1523,14 @@
                       Inst.
                     </b-button>
                   </div>
-                  <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeProgram">
-                      <span class="fa fa-play" v-if="runExecution == false"></span>
+                  <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeProgram" v-if="runExecution == false">
+                      <span class="fa fa-play"></span>
                       Run
                     </b-button>
-                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="stopExecution" id="stopExecution" v-if="runExecution == true">
+                  </div>
+                  <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
+                    <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="stopExecution">
                       <span class="fa fa-stop"></span>
                       Stop
                     </b-button>

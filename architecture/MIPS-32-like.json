@@ -1761,11 +1761,6 @@
       "size": null
     },
     {
-      "name": ".extern",
-      "action": "data_size",
-      "size": null
-    },
-    {
       "name": ".byte",
       "action": "byte",
       "size": 1
