@@ -176,7 +176,7 @@
                   </div>
                   <div class="col-lg-8 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm"  id="advanced_mode" style="display:none;" @click="change_mode">
-                      Advanced Mode: {{advanced_mode}}
+                      Advanced Mode: {{!advanced_mode}}
                     </b-button>
                   </div>
                 </div>
@@ -286,7 +286,74 @@
 
             <div class="col-lg-12 col-sm-12" id="view_components" style="display:none;">
               <b-tabs>
-                <b-tab title="Components" v-if="advanced_mode == true">
+                <b-tab title="Memory Layout" active>
+                  <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%; margin-bottom: 3%;">
+                    <div class="col-lg-4 col-sm-12">
+
+                      <h6>.text Start:</h6>
+                      <b-form-input type="text" v-model="memory_layout[0]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <h6>.text End:</h6>
+                      <b-form-input type="text" v-model="memory_layout[1]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+
+                      <h6>.data Start:</h6>
+                      <b-form-input type="text" v-model="memory_layout[2]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <h6>.data End:</h6>
+                      <b-form-input type="text" v-model="memory_layout[3]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+
+                      <h6>.stack End:</h6>
+                      <b-form-input type="text" v-model="memory_layout[4]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <h6>.stack Start:</h6>
+                      <b-form-input type="text" v-model="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+
+                      <b-button class="btn btn-block btn-sm" variant="primary" style="margin-bottom: 5%;" @click="changeMemoryLayout">Change memory layout</b-button>
+
+                    </div>
+
+                    <div class="col-lg-2 col-sm-12 ">
+
+                    </div>  
+
+                    <div class="col-lg-6 col-sm-12 ">
+                      <b-list-group class="memoryLayout">
+                        <b-list-group horizontal>
+                          <b-list-group-item variant="info" class="memoryLayout"><br>.text<br></b-list-group-item>
+                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
+                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[0].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
+                            <br>
+                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[1].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
+                          </b-list-group-item>
+                        </b-list-group>
+
+                        <b-list-group horizontal>
+                          <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>
+                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
+                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[2].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
+                            <br>
+                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[3].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
+                          </b-list-group-item>
+                        </b-list-group>
+
+                        <b-list-group horizontal>
+                          <b-list-group-item variant="secondary" class="memoryLayout"><br>...<br><br></b-list-group-item>
+                          <b-list-group-item class="memoryLayout noBorder">
+                            
+                          </b-list-group-item>
+                        </b-list-group>
+
+                        <b-list-group horizontal>
+                          <b-list-group-item variant="success" class="memoryLayout"><br>stack<br></b-list-group-item>
+                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
+                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[4].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
+                            <br>
+                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[5].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
+                          </b-list-group-item>
+                        </b-list-group>
+                      </b-list-group>
+                    </div>
+                  </div>
+                </b-tab>
+
+                <b-tab title="Components" :disabled="advanced_mode">
                   <br>
                   <h6>Components of the architecture:</h6>
 
@@ -483,7 +550,7 @@
                   </b-modal >
                 </b-tab>
 
-                <b-tab title="Instructions Definition" v-if="advanced_mode == true">
+                <b-tab title="Instructions Definition" :disabled="advanced_mode">
                   <br>
                   <h6>Instruction set:</h6>
 
@@ -851,7 +918,7 @@
                   </b-modal >
                 </b-tab>
 
-                <b-tab title="Pseudoinstructions Definition" v-if="advanced_mode == true">
+                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode">
                   <br>
                   <h6>Pseudoinstructions set:</h6>
 
@@ -1161,7 +1228,7 @@
                   </b-modal >
                 </b-tab>
 
-                <b-tab title="Directives Definition" v-if="advanced_mode == true">
+                <b-tab title="Directives Definition" :disabled="advanced_mode">
                   <br>
                   <h6>Directives set:</h6>
 
@@ -1241,74 +1308,6 @@
                     </b-modal >
                   </div>
                 </b-tab>
-
-                <b-tab title="Memory Layout" active>
-                  <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%; margin-bottom: 3%;">
-                    <div class="col-lg-4 col-sm-12">
-
-                      <h6>.text Start:</h6>
-                      <b-form-input type="text" v-model="memory_layout[0]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-                      <h6>.text End:</h6>
-                      <b-form-input type="text" v-model="memory_layout[1]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-
-                      <h6>.data Start:</h6>
-                      <b-form-input type="text" v-model="memory_layout[2]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-                      <h6>.data End:</h6>
-                      <b-form-input type="text" v-model="memory_layout[3]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-
-                      <h6>.stack End:</h6>
-                      <b-form-input type="text" v-model="memory_layout[4]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-                      <h6>.stack Start:</h6>
-                      <b-form-input type="text" v-model="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-
-                      <b-button class="btn btn-block btn-sm" variant="primary" style="margin-bottom: 5%;" @click="changeMemoryLayout">Change memory layout</b-button>
-
-                    </div>
-
-                    <div class="col-lg-2 col-sm-12 ">
-
-                    </div>  
-
-                    <div class="col-lg-6 col-sm-12 ">
-                      <b-list-group class="memoryLayout">
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="info" class="memoryLayout"><br>.text<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
-                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[0].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
-                            <br>
-                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[1].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
-                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[2].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
-                            <br>
-                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[3].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="secondary" class="memoryLayout"><br>...<br><br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder">
-                            
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="success" class="memoryLayout"><br>stack<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
-                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[4].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
-                            <br>
-                            <h6 v-if="architecture.memory_layout.length > 0">0x{{((architecture.memory_layout[5].value).toString(16)).padStart(8, "0").toUpperCase()}}</h6>
-                          </b-list-group-item>
-                        </b-list-group>
-                      </b-list-group>
-                    </div>
-                  </div>
-
-                </b-tab>
               </b-tabs>
             </div>
           </div>
@@ -1384,7 +1383,7 @@
                       <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
                         <div class="col-lg-2 col-2"></div>
                         <div class="col-lg-6 col-8">
-                          <b-form-input class="form-control form-control-sm"></b-form-input>
+                          <b-form-input class="form-control form-control-sm" v-model="calculator.hexadecimal"></b-form-input>
                         </div>
                         <div class="col-lg-4"></div>
                       </div>
@@ -1402,13 +1401,13 @@
                         <div class="col-lg-8 col-12 nopadding">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign"></b-form-input>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.exponent"></b-form-input>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.mantissa"></b-form-input>
                             </div>
                           </div>
                         </div>
@@ -1421,7 +1420,7 @@
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%; text-align: center;">
                               <span class="fa fa-long-arrow-down" style=" padding: 1%;"></span>
-                              <h5>-1<sup>1</sup>   * </h5>
+                              <h5>-1<sup>{{calculator.sign}}</sup>   * </h5>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%; text-align: center;">
                               <span class="fa fa-long-arrow-down" style=" padding: 1%;"></span>
@@ -1434,7 +1433,7 @@
                           </div>
                         </div>
                         <div class="col-lg-3" style="padding-top: 3%">
-                              <b-form-input class="form-control form-control-sm"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.decimal"></b-form-input>
                         </div>
                       </div>
 
