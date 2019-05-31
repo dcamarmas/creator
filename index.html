@@ -9,19 +9,18 @@
     <title>WepSim</title>
 
     <!-- Required Stylesheets -->
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"/>
-    <link type="text/css" rel="stylesheet" href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css"/>
-    <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link type="text/css" rel="stylesheet" href="external/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="external/bootstrap-vue.css"/>
+    <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
 
     <!-- Required scripts -->
-    <script src="https://unpkg.com/vue"></script>
-    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
-    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script>
+    <script src="external/vue"></script>
+    <script src="external/polyfill.min.js"></script>
+    <script src="external/bootstrap-vue.js"></script>
+    <script src="external/jquery.min.js"></script>
+    <script src="external/BigInteger.min.js"></script>
 
     <script src="external/codemirror/codemirror.js"></script>
     <script src="external/codemirror/keymap/vim.js"></script>
@@ -72,7 +71,7 @@
           <b-modal id="notifications" title="Notifications" hide-footer scrollable>
             <h6 v-if="notifications.length == 0">There's no notification at the moment</h6>
             <b-alert show :variant="item.color" v-for="item in notifications">
-              <h6><span class="fa fa-info-circle" v-if="item.color!='danger'"></span><span class="fa fa-warning" v-if="item.color=='danger'"></span> {{item.mess}}</h6>
+              <h6><span class="fas fa-info-circle" v-if="item.color!='danger'"></span><span class="fas fa-exclamation-triangle" v-if="item.color=='danger'"></span> {{item.mess}}</h6>
               <h6>{{item.time}}   -   {{item.date}}</h6>
             </b-alert>
           </b-modal>
@@ -146,7 +145,7 @@
         </header>
 
         <b-alert :show="dismissCountDown" dismissible :variant="type" @dismissed="dismissCountDown=0" @dismiss-count-down="countDownChanged" class="principalAlert">
-        	<span class="fa fa-info-circle" v-if="type!='danger'"></span><span class="fa fa-warning" v-if="type=='danger'"></span> {{alertMessaje}}
+        	<span class="fas fa-info-circle" v-if="type!='danger'"></span><span class="fas fa-exclamation-triangle" v-if="type=='danger'"></span> {{alertMessaje}}
 		    </b-alert>
 
         <div class="contenedor row menu_cards" id="architecture_menu">
@@ -172,7 +171,7 @@
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fa fa-download"></span> Save</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fas fa-download"></span> Save</b-button>
                   </div>
                   <div class="col-lg-8 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm"  id="advanced_mode" style="display:none;" @click="change_mode">
@@ -185,7 +184,7 @@
 
             <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
               <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                <span class="fas fa-info-circle"></span> {{alertMessaje}}
               </b-alert>
               <b-form>
                 <b-form-input v-model="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
@@ -206,7 +205,7 @@
                 		<!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
               		</div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_arch" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_arch" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
             		</div>
               </div>
@@ -251,7 +250,7 @@
                           </b-col>
 
                           <b-col md="2">
-                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="fa fa-trash-o"></span> Delete</b-button>
+                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
                           </b-col>
 
                         </b-row>
@@ -359,11 +358,11 @@
 
                   <div class="col-lg-12 col-sm-12 row">
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fa fa-plus-circle"></span> New component</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fas fa-plus-circle"></span> New component</b-button>
                     </div>
 
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset architecture</b-button>
+                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset architecture</b-button>
                     </div>
 
                     <div class="compMenu">
@@ -403,16 +402,16 @@
                               </template>
 
                               <template slot="actions" slot-scope="row">
-                                <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-                                <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                                <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
+                                <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
                               </template>
                              </b-table>
 
-                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fa fa-plus-circle"></span> New Element</b-button>
+                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fas fa-plus-circle"></span> New Element</b-button>
 
-                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="fa fa-edit"></span> Edit Component</b-button>
+                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="far fa-edit"></span> Edit Component</b-button>
 
-                            <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="fa fa-trash-o"></span> Delete Component</b-button>
+                            <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="far fa-trash-alt"></span> Delete Component</b-button>
 
                           </b-card-body>
                         </b-collapse>
@@ -423,7 +422,7 @@
                     <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" v-model="showEditComponent" @hidden="emptyFormArch">
 
                       <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                        <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        <span class="fas fa-info-circle"></span> {{alertMessaje}}
                       </b-alert>
 
                       <b-form>
@@ -438,7 +437,7 @@
                     <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Create" @ok="newElementVerify($event, modalNewElement.element)" v-model="showNewElement" @hidden="emptyFormArch">
 
                       <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                        <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        <span class="fas fa-info-circle"></span> {{alertMessaje}}
                       </b-alert>
 
                       <b-form >
@@ -477,7 +476,7 @@
                     <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" v-model="showEditElement" @hidden="emptyFormArch">
 
                       <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                        <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        <span class="fas fa-info-circle"></span> {{alertMessaje}}
                       </b-alert>
 
                       <b-form>
@@ -530,7 +529,7 @@
                   <b-modal id ="new_component" title = "New Component" ok-title="Create" @ok="newComponentVerify" v-model="showNewComponent" @hidden="emptyFormArch">
 
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                      <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                      <span class="fas fa-info-circle"></span> {{alertMessaje}}
                     </b-alert>
 
                     <b-form>
@@ -554,9 +553,9 @@
                   <br>
                   <h6>Instruction set:</h6>
 
-                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fa fa-plus-circle"></span> New instruction</b-button>
+                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fas fa-plus-circle"></span> New instruction</b-button>
 
-                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset Instructions</b-button>
+                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset Instructions</b-button>
 
                   <!-- Resetea las instrucciones -->
                   <b-modal id ="modalResetInst" :title="modalResetInst.title" ok-variant="danger" ok-title="Reset" @ok="resetInstructions(modalResetInst.element)">
@@ -570,8 +569,8 @@
                       </template>
 
                       <template slot="actions" slot-scope="row">
-                        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
+                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
                     </b-table>
 
@@ -657,7 +656,7 @@
                     <!-- Formulario para editar una instruccion -->
                     <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Edit" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" v-model="showEditInstruction" @hidden="emptyFormInst">
                       <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                        <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        <span class="fas fa-info-circle"></span> {{alertMessaje}}
                       </b-alert>
 
                       <b-form>
@@ -789,7 +788,7 @@
                   <b-modal size="lg" id ="new_instruction" title = "New Instruction" ok-title="Create" @ok="newInstVerify" v-model="showNewInstruction" @hidden="emptyFormInst">
 
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                      <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                      <span class="fas fa-info-circle"></span> {{alertMessaje}}
                     </b-alert>
 
                     <b-form>
@@ -922,9 +921,9 @@
                   <br>
                   <h6>Pseudoinstructions set:</h6>
 
-                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newPseudoinstructionsBtn" v-b-modal.new_pseudoinstruction> <span class="fa fa-plus-circle"></span> New pseudoinstructions</b-button>
+                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newPseudoinstructionsBtn" v-b-modal.new_pseudoinstruction> <span class="fas fa-plus-circle"></span> New pseudoinstructions</b-button>
 
-                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetPseudoinstructions" @click="resetPseudoinstModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset pseudoinstructions</b-button>
+                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetPseudoinstructions" @click="resetPseudoinstModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset pseudoinstructions</b-button>
 
                   <!-- Resetea las pseudoinstrucciones -->
                   <b-modal id ="modalResetPseudoinst" :title="modalResetPseudoinst.title" ok-variant="danger" ok-title="Reset" @ok="resetPseudoinstructionsModal(modalResetPseudoinst.element)">
@@ -938,8 +937,8 @@
                       </template>
 
                       <template slot="actions" slot-scope="row">
-                        <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                        <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
+                        <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
                     </b-table>
 
@@ -1011,7 +1010,7 @@
                     <!-- Formulario para editar una pseudoinstruccion -->
                     <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Edit" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.index)" v-model="showEditPseudoinstruction" @hidden="emptyFormPseudo">
                       <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                        <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        <span class="fas fa-info-circle"></span> {{alertMessaje}}
                       </b-alert>
 
                       <b-form>
@@ -1121,7 +1120,7 @@
                   <b-modal size="lg" title = "New Pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction" id="new_pseudoinstruction" @hidden="emptyFormPseudo">
 
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                      <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                      <span class="fas fa-info-circle"></span> {{alertMessaje}}
                     </b-alert>
 
                     <b-form>
@@ -1234,17 +1233,17 @@
 
                   <div class="col-lg-12 col-sm-12 row">
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newDirectiveBtn" v-b-modal.new_directive> <span class="fa fa-plus-circle"></span> New directive</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newDirectiveBtn" v-b-modal.new_directive> <span class="fas fa-plus-circle"></span> New directive</b-button>
                     </div>
 
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetDirectives" @click="resetDirModal(architecture_name, $event)"> <span class="fa fa-power-off"></span> Reset directives</b-button>
+                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetDirectives" @click="resetDirModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset directives</b-button>
                     </div>
                   </div>
 
                   <b-modal size="lg" id ="new_directive" title = "New Directive" ok-title="Create" @ok="newDirVerify($event)" v-model="showNewDirective" @hidden="emptyFormDirective">
                     <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                      <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                      <span class="fas fa-info-circle"></span> {{alertMessaje}}
                     </b-alert>
 
                     <b-form>
@@ -1272,8 +1271,8 @@
                   <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
                     <b-table small :items="architecture.directives" :fields="directivesFields" class="instruction_table">
                       <template slot="actions" slot-scope="row" class="">
-                        <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="fa fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="fa fa-trash-o"></span> Delete</b-button> 
+                        <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
+                        <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
                     </b-table>
 
@@ -1286,7 +1285,7 @@
                     <b-modal id ="modalEditDirective" :title = "modalEditDirective.title" ok-title="Edit" @ok="editDirVerify($event, modalEditDirective.element)" v-model="showEditDirective" @hidden="emptyFormDirective">
 
                       <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed;">
-                        <span class="fa fa-info-circle"></span> {{alertMessaje}}
+                        <span class="fas fa-info-circle"></span> {{alertMessaje}}
                       </b-alert>
 
                       <b-form>
@@ -1419,16 +1418,16 @@
                         <div class="col-lg-8 col-12 nopadding">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%; text-align: center;">
-                              <span class="fa fa-long-arrow-down" style=" padding: 1%;"></span>
+                              <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
                               <h5>-1<sup>{{calculator.sign}}</sup>   * </h5>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%; text-align: center;">
-                              <span class="fa fa-long-arrow-down" style=" padding: 1%;"></span>
+                              <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
                               <h5 v-if="calculator.bits == 32">2<sup>{{parseInt(bin2hex(calculator.exponent), 16)}}-127</sup>   * </h5>
                               <h5 v-if="calculator.bits == 64">2<sup>{{parseInt(bin2hex(calculator.exponent), 16)}}-1023</sup>   * </h5>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%; text-align: center;">
-                              <span class="fa fa-long-arrow-down" style=" padding: 1%;"></span>
+                              <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
                               <h5>0.56161165161 = </h5>
                             </div>
                           </div>
@@ -1455,7 +1454,7 @@
                       <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_sim" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
                     </div>
                     <div class="col-lg-4 col-sm-4 buttons">
-                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_sim" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
+                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                     </div>
 
                     <b-popover target="info_sim" triggers="click blur">
@@ -1517,25 +1516,25 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
                     <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
-                      <span class="fa fa-power-off"></span>
+                      <span class="fas fa-power-off"></span>
                       Reset
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeInstruction">
-                      <span class="fa fa-fast-forward"></span>
+                      <span class="fas fa-fast-forward"></span>
                       Inst.
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeProgram" v-if="runExecution == false">
-                      <span class="fa fa-play"></span>
+                      <span class="fas fa-play"></span>
                       Run
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
                     <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="stopExecution">
-                      <span class="fa fa-stop"></span>
+                      <span class="fas fa-stop"></span>
                       Stop
                     </b-button>
                   </div>
@@ -1556,7 +1555,7 @@
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="stats_btn"><span class=" fa fa-bar-chart"></span> Stats</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="stats_btn"><span class=" fas fa-bar-chart"></span> Stats</b-button>
                   </div>
                 </div>
                 <hr>
@@ -1851,7 +1850,7 @@
                 </div>
               </div>
               <div class="col-lg-4 col-sm-4">
-                <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 2%;" @click="consoleEnter"><span class="fa fa-send-o"></span> Enter</b-button>
+                <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 2%;" @click="consoleEnter"><span class="fas fa-paper-plane"></span> Enter</b-button>
               </div>
             </div>
         </div>
@@ -1876,10 +1875,10 @@
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly_btn" v-b-modal.load_assembly><span class="fa fa-upload"></span> Load</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly_btn" v-b-modal.load_assembly><span class="fas fa-upload"></span> Load</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly_btn" v-b-modal.save_assembly><span class="fa fa-download"></span> Save</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly_btn" v-b-modal.save_assembly><span class="fas fa-download"></span> Save</b-button>
                   </div>
                 </div>
               </div>
@@ -1889,7 +1888,7 @@
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fa fa-sign-in"></span> Compile/Linked</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fas fa-sign-in-alt"></span> Compile/Linked</b-button>
                   </div>
                 </div>
               </div>
@@ -1899,10 +1898,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_binary_btn" v-b-modal.load_binary><span class="fa fa-upload"></span> Load Library</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_binary_btn" v-b-modal.load_binary><span class="fas fa-upload"></span> Load Library</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_binary_btn" v-b-modal.save_binary><span class="fa fa-download"></span> Save Library</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_binary_btn" v-b-modal.save_binary><span class="fas fa-download"></span> Save Library</b-button>
                   </div>
                 </div>
               </div>
@@ -1913,7 +1912,7 @@
                 <div class="col-lg-12 col-sm-12 buttons row">
                   
                   <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_ass" style="background-color:#D4DB17;"><span class="fa fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_ass" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
 
                   <b-popover target="info_ass" triggers="click blur">
