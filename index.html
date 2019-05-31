@@ -1370,10 +1370,10 @@
                         <div class="col-lg-6 col-6">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-6 col-6 nopadding">
-                              <b-button class="btn btn-block btn-sm" variant ="primary">32 bit</b-button>
+                              <b-button class="btn btn-block btn-sm" variant ="primary" @click="changeBitsCalculator(0)">32 bit</b-button>
                             </div>
                             <div class="col-lg-6 col-6 nopadding">
-                              <b-button class="btn btn-block btn-sm"variant ="outline-primary">64 bit</b-button>
+                              <b-button class="btn btn-block btn-sm"variant ="outline-primary" @click="changeBitsCalculator(1)">64 bit</b-button>
                             </div>
                           </div>
                         </div>
@@ -1383,7 +1383,7 @@
                       <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
                         <div class="col-lg-2 col-2"></div>
                         <div class="col-lg-6 col-8">
-                          <b-form-input class="form-control form-control-sm" v-model="calculator.hexadecimal"></b-form-input>
+                          <b-form-input class="form-control form-control-sm" v-model="calculator.hexadecimal" @change="calculatorFunct(0)"></b-form-input>
                         </div>
                         <div class="col-lg-4"></div>
                       </div>
@@ -1401,13 +1401,13 @@
                         <div class="col-lg-8 col-12 nopadding">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign" @change="calculatorFunct(1)"></b-form-input>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.exponent"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.exponent" @change="calculatorFunct(1)"></b-form-input>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.mantissa"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.mantissa" @change="calculatorFunct(1)"></b-form-input>
                             </div>
                           </div>
                         </div>
@@ -1424,7 +1424,8 @@
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%; text-align: center;">
                               <span class="fa fa-long-arrow-down" style=" padding: 1%;"></span>
-                              <h5>2<sup>-127</sup>   * </h5>
+                              <h5 v-if="calculator.bits == 32">2<sup>{{parseInt(bin2hex(calculator.exponent), 16)}}-127</sup>   * </h5>
+                              <h5 v-if="calculator.bits == 64">2<sup>{{parseInt(bin2hex(calculator.exponent), 16)}}-1023</sup>   * </h5>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%; text-align: center;">
                               <span class="fa fa-long-arrow-down" style=" padding: 1%;"></span>
@@ -1433,7 +1434,7 @@
                           </div>
                         </div>
                         <div class="col-lg-3" style="padding-top: 3%">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.decimal"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.decimal" @change="calculatorFunct(2)"></b-form-input>
                         </div>
                       </div>
 
@@ -1481,26 +1482,30 @@
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
 
                 <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;">
-                  <template slot="Break" slot-scope="row">
-                    <div class="break" :id="row.index">
-                      <br v-if="row.item.Break == null">
-                      <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
-                    </div>
-                  </template>
+                    <template slot="Break" slot-scope="row">
+                      <div class="break" :id="row.index">
+                        <br v-if="row.item.Break == null">
+                        <img alt="Break" src="./images/stop_classic.gif" style="height:3vh" v-if="row.item.Break == true">
+                      </div>
+                    </template>
 
-                  <template slot="Label" slot-scope="row">
-                    <b-badge pill variant="info">{{row.item.Label}}</b-badge>
-                  </template>
+                    <template slot="Address" slot-scope="row">
+                      <h6>{{row.item.Address}}</h6>
+                    </template>
 
-                  <template slot="User Instructions" slot-scope="row">
-                    <h6 v-if="row.item.visible == true">{{row.item.user}}</h6>
-                    <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
-                  </template>
+                    <template slot="Label" slot-scope="row">
+                      <b-badge pill variant="info">{{row.item.Label}}</b-badge>
+                    </template>
 
-                  <template slot="Loaded Instructions" slot-scope="row">
-                    <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
-                    <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
-                  </template> 
+                    <template slot="User Instructions" slot-scope="row">
+                      <h6 v-if="row.item.visible == true">{{row.item.user}}</h6>
+                      <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
+                    </template>
+
+                    <template slot="Loaded Instructions" slot-scope="row">
+                      <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
+                      <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
+                    </template> 
                 </b-table>
 
               </div>
@@ -1948,7 +1953,7 @@
             <div class="col-lg-2 col-sm-12" v-if="load_binary==true">
               <h5>Library tags:</h5>
               <b-list-group>
-                <b-list-group-item v-for="item in update_binary.instructions_tag"><b-badge pill variant="primary">{{item.tag}}</b-badge></b-list-group-item>
+                <b-list-group-item v-for="item in update_binary.instructions_tag" v-if="item.globl==true"><b-badge pill variant="primary">{{item.tag}}</b-badge></b-list-group-item>
               </b-list-group>
             </div>
           </div>

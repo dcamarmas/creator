@@ -680,11 +680,11 @@ window.app = new Vue({
     /*Calculadora*/
     calculator: {
       bits: 32,
-      hexadecimal: "0x12345678",
-      sign: "0",
-      exponent: "00000000",
-      mantissa: "00000000000000000000000",
-      decimal: 323,
+      hexadecimal: "",
+      sign: "",
+      exponent: "",
+      mantissa: "",
+      decimal: "",
     },
 
 
@@ -731,6 +731,106 @@ window.app = new Vue({
 
   },
   methods:{
+    changeBitsCalculator(index){
+      if(index == 0){
+        this.calculator.bits = 32;
+      }
+      if(index == 1){
+        this.calculator.bits = 64;
+      }
+    },
+
+    calculatorFunct(index){
+      switch(index){
+        case 0:
+          var hex = this.calculator.hexadecimal;
+          var float;
+          var binary;
+
+          if(this.calculator.bits == 32){
+            float = this.hex2float(hex);
+            binary = this.float2bin(float);
+
+            this.calculator.decimal = float;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 9);
+            this.calculator.mantissa = binary.substring(9, 32);
+          }
+          if(this.calculator.bits == 64){
+            float = this.hex2double(hex);
+            binary = this.double2bin(float);
+
+            this.calculator.decimal = float;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 12);
+            this.calculator.mantissa = binary.substring(12, 64);
+          }
+
+          break;
+        case 1:
+          var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+
+          if(this.calculator.bits == 32){
+            float = this.hex2float(this.bin2hex(binary));
+            hexadecimal = this.bin2hex(binary);
+
+            this.calculator.decimal = float;
+            this.calculator.hexadecimal = hexadecimal;
+          }
+          if(this.calculator.bits == 64){
+            double = this.hex2double("0x" + this.bin2hex(binary));
+            hexadecimal = this.bin2hex(binary);
+
+            this.calculator.decimal = double;
+            this.calculator.hexadecimal = hexadecimal;
+          }
+
+          break;
+        case 2:
+          var float = parseFloat(this.calculator.decimal, 10);
+          var binary;
+          var hexadecimal;
+
+          if(this.calculator.bits == 32){
+            hexadecimal = "0x"+ this.bin2hex(this.float2bin(float));
+            binary = this.float2bin(float);
+
+            this.calculator.hexadecimal = hexadecimal;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 9);
+            this.calculator.mantissa = binary.substring(9, 32);
+          }
+
+          if(this.calculator.bits == 64){
+            hexadecimal = "0x"+ this.bin2hex(this.double2bin(float));
+            binary = this.double2bin(float);
+
+            this.calculator.hexadecimal = hexadecimal;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 12);
+            this.calculator.mantissa = binary.substring(12, 64);
+          }
+
+          break;
+      }
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /*ALERTA GLOBAL*/
     countDownChanged (dismissCountDown) {
       this.dismissCountDown = dismissCountDown;
@@ -3331,6 +3431,20 @@ window.app = new Vue({
       if(update_binary.instructions_binary != null){
         for(var i = 0; i < update_binary.instructions_binary.length; i++){
           instructions.push(update_binary.instructions_binary[i]);
+          if(update_binary.instructions_binary[i].globl == false){
+            instructions[instructions.length-1].Label = "";
+            instructions[instructions.length-1].hide = true;
+          }
+          else if(i == 0){
+            instructions[instructions.length-1].hide = false;
+          }
+          else if(update_binary.instructions_binary[i].globl == null){
+            instructions[instructions.length-1].hide = true;
+          }
+          else{
+            instructions[instructions.length-1].hide = false;
+          }
+
           address = parseInt(instructions[instructions.length-1].Address, 16) + 4;
         }
       }
@@ -3484,66 +3598,6 @@ window.app = new Vue({
         }
       }
 
-      if(data_memory.length > 0){
-        if(data_memory[data_memory.length-1].Binary[3].Addr > architecture.memory_layout[3].value){
-          tokenIndex = 0;
-          instructions = [];
-          pending_instructions = [];
-          pending_tags = [];
-          data_memory = [];
-          data_tag = [];
-          instructions_binary = [];
-          instructions_memory = [];
-          extern = [];
-          stack_memory = [];
-          data = [];
-          app._data.instructions = instructions;
-          app._data.instructions_memory = instructions_memory;
-          app._data.data_memory = data_memory;
-          app._data.stack_memory = stack_memory;
-
-          app._data.alertMessaje = 'Data overflow';
-          app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-
-          $(".loading").hide();
-          return -1;
-        }
-      }
-
-      if(instructions_memory.length > 0){
-        if(instructions_memory[instructions_memory.length-1].Binary[3].Addr > architecture.memory_layout[1].value){
-          tokenIndex = 0;
-          instructions = [];
-          pending_instructions = [];
-          pending_tags = [];
-          data_memory = [];
-          data_tag = [];
-          instructions_binary = [];
-          instructions_memory = [];
-          extern = [];
-          stack_memory = [];
-          data = [];
-          app._data.instructions = instructions;
-          app._data.instructions_memory = instructions_memory;
-          app._data.data_memory = data_memory;
-          app._data.stack_memory = stack_memory;
-
-          app._data.alertMessaje = 'Instruction overflow';
-          app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-
-          $(".loading").hide();
-          return -1;
-        }
-      }
-
       var found = false;
 
       if(update_binary.instructions_binary != null){
@@ -3670,16 +3724,178 @@ window.app = new Vue({
         }
       }
 
+      /*Introduce las instrucciones compiladas en el segmento de texto*/
+      if(update_binary.instructions_binary != null){
+        for (var i = 0; i < update_binary.instructions_binary.length; i++){
+          var hex = this.bin2hex(update_binary.instructions_binary[i].loaded);
+          var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
+          var label = update_binary.instructions_binary[i].Label;
+
+          for(var a = 0; a < hex.length/2; a++){
+            if(auxAddr % 4 == 0){
+              instructions_memory.push({Address: auxAddr, Binary: [], Value: "********"});
+              if(label == ""){
+                label=null;
+              }
+
+              if(a == 0){
+                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+              }
+              else{
+                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+              }
+
+              auxAddr++;
+            }
+            else{
+              if(a == 0){
+                console.log(label);
+                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+              }
+              else{
+                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+              }
+
+              auxAddr++;
+            }
+          }
+
+          if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
+            var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
+            for(var b = 0; b < num_iter; b++){
+              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
+            }
+          }
+
+          app._data.instructions_memory = instructions_memory;
+        }
+      }
+
+      for (var i = 0; i < instructions_binary.length; i++){
+        var hex = this.bin2hex(instructions_binary[i].loaded);
+        var auxAddr = parseInt(instructions_binary[i].Address, 16);
+        var label = instructions_binary[i].Label;
+        var binNum = 0;
+
+        if(update_binary.instructions_binary != null){
+          binNum = update_binary.instructions_binary.length
+        }
+
+        for(var a = 0; a < hex.length/2; a++){
+          if(auxAddr % 4 == 0){
+            instructions_memory.push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded});
+            if(label == ""){
+              label=null;
+            }
+
+            if(a == 0){
+              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+            }
+            else{
+              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+            }
+
+            auxAddr++;
+          }
+          else{
+            if(a == 0){
+              console.log(label);
+              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+            }
+            else{
+              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+            }
+
+            auxAddr++;
+          }
+        }
+
+        if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
+          var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
+          for(var b = 0; b < num_iter; b++){
+            (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
+          }
+        }
+
+        app._data.instructions_memory = instructions_memory;
+      }
+
+      /*Verifica solapamiento*/
+      if(data_memory.length > 0){
+        if(data_memory[data_memory.length-1].Binary[3].Addr > architecture.memory_layout[3].value){
+          tokenIndex = 0;
+          instructions = [];
+          pending_instructions = [];
+          pending_tags = [];
+          data_memory = [];
+          data_tag = [];
+          instructions_binary = [];
+          instructions_memory = [];
+          extern = [];
+          stack_memory = [];
+          data = [];
+          app._data.instructions = instructions;
+          app._data.instructions_memory = instructions_memory;
+          app._data.data_memory = data_memory;
+          app._data.stack_memory = stack_memory;
+
+          app._data.alertMessaje = 'Data overflow';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+
+          $(".loading").hide();
+          return -1;
+        }
+      }
+
+      if(instructions_memory.length > 0){
+        if(instructions_memory[instructions_memory.length-1].Binary[3].Addr > architecture.memory_layout[1].value){
+          tokenIndex = 0;
+          instructions = [];
+          pending_instructions = [];
+          pending_tags = [];
+          data_memory = [];
+          data_tag = [];
+          instructions_binary = [];
+          instructions_memory = [];
+          extern = [];
+          stack_memory = [];
+          data = [];
+          app._data.instructions = instructions;
+          app._data.instructions_memory = instructions_memory;
+          app._data.data_memory = data_memory;
+          app._data.stack_memory = stack_memory;
+
+          app._data.alertMessaje = 'Instruction overflow';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+
+          $(".loading").hide();
+          return -1;
+        }
+      }
+
       /*Guarda los binarios*/
       for(var i = 0; i < instructions_binary.length; i++){
         if(extern.length == 0 && instructions_binary[i].Label != ""){
           instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+          instructions_binary[i].globl = false;
         }
         else{
         	for(var j = 0; j < extern.length; j++){
         		if(instructions_binary[i].Label != extern[j] && j == extern.length-1 && instructions_binary[i].Label != ""){
         			instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+              instructions_binary[i].globl = false;
         		}
+            else if(instructions_binary[i].Label == extern[j]){
+              instructions_binary[i].globl = true;
+            }
         	}
         }	
       }
@@ -3687,11 +3903,16 @@ window.app = new Vue({
       for(var i = 0; i < instructions_tag.length; i++){
         if(extern.length == 0 && instructions_tag[i].tag != ""){
           instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
+          instructions_tag[i].globl = false;
         }
         else{
           for(var j = 0; j < extern.length; j++){
             if(instructions_tag[i].tag != extern[j] && j == extern.length-1 && instructions_tag[i].tag != ""){
               instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
+              instructions_tag[i].globl = false;
+            }
+            else if(instructions_tag[i].tag == extern[j]){
+              instructions_tag[i].globl = true;
             }
           }
         } 
@@ -5337,17 +5558,6 @@ window.app = new Vue({
 
         for(var i = 0; i < architecture.directives.length; i++){
           if(token == architecture.directives[i].name){
-            /*for(var p = 0; p < pending_instructions.length; p++){
-              console.log("PENDING      " + pending_instructions[p].instruction)
-              console.log(pending_instructions[p].Label)
-
-              var result = this.instruction_compiler(pending_instructions[p].instruction, pending_instructions[p].instruction, pending_instructions[p].Label, pending_instructions[p].line, true, pending_instructions[p].address);
-            
-              if(result == -1){
-                $(".loading").hide();
-                return -1;
-              }
-            }*/
             app._data.instructions = instructions;
 
             for(var i = 0; i < instructions.length; i++){
@@ -5395,14 +5605,6 @@ window.app = new Vue({
               return -1;
             } 
           }
-
-          /*for(var i = 0; i < pending_instructions.length; i++){
-            if(pending_instructions[i].Label == token.substring(0,token.length-1)){
-              this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              $(".loading").hide();
-              return -1;
-            } 
-          }*/
 
           label = token.substring(0,token.length-1);
           this.next_token();
@@ -6114,7 +6316,6 @@ window.app = new Vue({
                     fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                     
                     binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
-                    //instruction = instruction + token;
                     re = RegExp("[fF][0-9]+");
                     instruction = instruction.replace(re, token);
                   }
@@ -6150,95 +6351,18 @@ window.app = new Vue({
 
             if(pending == false){
 
-              instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true});
+              instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
               instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
-
-              for(var a = 0; a < hex.length/2; a++){
-                if(auxAddr % 4 == 0){
-                  instructions_memory.push({Address: auxAddr, Binary: [], Value: instruction});
-                  if(label == ""){
-                    label=null;
-                  }
-
-                  if(a == 0){
-                    (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                  }
-                  else{
-                    (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                  }
-
-                  auxAddr++;
-                }
-                else{
-                  if(a == 0){
-                    console.log(label);
-                    (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                  }
-                  else{
-                    (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                  }
-
-                  auxAddr++;
-                }
-              }
-
-              if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
-                var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
-                for(var b = 0; b < num_iter; b++){
-                  (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-                }
-              }
-
-              app._data.instructions_memory = instructions_memory;
 
               address = address + (4*architecture.instructions[i].nwords);
             }
             else{
               for(var pos = 0; pos < instructions.length; pos++){
                 if(parseInt(instructions[pos].Address, 16) > pendingAddress){
-                  instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true});
+                  instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
                   instructions_binary.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
                   auxAddr = pendingAddress;
-
-                  for(var a = 0; a < hex.length/2; a++){
-                    if(label == ""){
-                      label=null;
-                    }
-
-                    if(auxAddr % 4 == 0){
-                      instructions_memory.splice(pos, 0,{Address: auxAddr, Binary: [], Value: instruction});
-                      if(a == 0){
-                        (instructions_memory[pos].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                      }
-                      else{
-                        (instructions_memory[pos].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                      }
-
-                      auxAddr++;
-                    }
-                    else{
-                      if(a == 0){
-                        (instructions_memory[pos].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                      }
-                      else{
-                        (instructions_memory[pos].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                      }
-
-                      auxAddr++;
-                    }
-                  }
-    
-
-                  if(instructions_memory[pos].Binary.length < 4){
-                    var num_iter = 4 - instructions_memory[pos].Binary.length;
-                    for(var b = 0; b < num_iter; b++){
-                      (instructions_memory[pos].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-                    }
-                  }
-
-                  app._data.instructions_memory = instructions_memory;
-
                   break;
                 }
               }
@@ -6268,95 +6392,18 @@ window.app = new Vue({
 
               if(pending == false){
 
-                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true});
+                instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
                 instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
-
-                for(var a = 0; a < hex.length/2; a++){
-                  if(auxAddr % 4 == 0){
-                    instructions_memory.push({Address: auxAddr, Binary: [], Value: instruction});
-                    if(label == ""){
-                      label=null;
-                    }
-
-                    if(a == 0){
-                      (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                    }
-                    else{
-                      (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                    }
-
-                    auxAddr++;
-                  }
-                  else{
-                    if(a == 0){
-                      console.log(label);
-                      (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                    }
-                    else{
-                      (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                    }
-
-                    auxAddr++;
-                  }
-                }
-
-                if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
-                  var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
-                  for(var b = 0; b < num_iter; b++){
-                    (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-                  }
-                }
-
-                app._data.instructions_memory = instructions_memory;
 
                 address = address + (4*architecture.instructions[i].nwords);
               }
               else{
                 for(var pos = 0; pos < instructions.length; pos++){
                   if(parseInt(instructions[pos].Address, 16) > pendingAddress){
-                    instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true});
+                    instructions.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
                     instructions_binary.splice(pos, 0, { Break: null, Address: "0x" + pendingAddress.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
                     auxAddr = pendingAddress;
-
-                    for(var a = 0; a < hex.length/2; a++){
-                      if(label == ""){
-                        label=null;
-                      }
-
-                      if(auxAddr % 4 == 0){
-                        instructions_memory.splice(pos, 0,{Address: auxAddr, Binary: [], Value: instruction});
-                        if(a == 0){
-                          (instructions_memory[pos].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                        }
-                        else{
-                          (instructions_memory[pos].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                        }
-
-                        auxAddr++;
-                      }
-                      else{
-                        if(a == 0){
-                          (instructions_memory[pos].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-                        }
-                        else{
-                          (instructions_memory[pos].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-                        }
-
-                        auxAddr++;
-                      }
-                    }
-      
-
-                    if(instructions_memory[pos].Binary.length < 4){
-                      var num_iter = 4 - instructions_memory[pos].Binary.length;
-                      for(var b = 0; b < num_iter; b++){
-                        (instructions_memory[pos].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-                      }
-                    }
-
-                    app._data.instructions_memory = instructions_memory;
-
                     break;
                   }
                 }
@@ -6773,11 +6820,6 @@ window.app = new Vue({
         var type;
         var auxIndex;
 
-        console.log("AQUI")
-        console.log(instructionExecParts[0])
-        console.log(instructionExecParts[0].substring(0,6))
-        console.log(architecture.instructions[i].co)
-
         if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
           if(architecture.instructions[i].cop != null){
             for (var j = 0; j < architecture.instructions[i].fields.length; j++){
@@ -6796,6 +6838,7 @@ window.app = new Vue({
             auxDef = architecture.instructions[i].definition;
             nwords = architecture.instructions[i].nwords;
             binary = true;
+            type = architecture.instructions[i].type;
             auxIndex = i;
             break;
           }
@@ -7314,41 +7357,6 @@ window.app = new Vue({
 
     /*Funcion que ejecuta todo el programa*/
     executeProgram(){
-      /*$(".loading").show();
-      app._data.runExecution = true;
-      runExecution = false;
-
-      var iter1 = 1;
-      if(instructions.length == 0){
-        $(".loading").hide();
-        app._data.runExecution = false;
-        app._data.alertMessaje = 'No instructions in memory';
-        app._data.type ='danger';
-        app._data.dismissCountDown = app._data.dismissSecs;
-        var date = new Date();
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-        return;
-      }
-
-      while(executionIndex >= 0){
-        if(instructions[executionIndex].Break == true && iter1 == 0){
-          $(".loading").hide();
-          app._data.runExecution = false;
-          return;
-        }
-        else if(runExecution == true){
-          app._data.runExecution = false;
-          $(".loading").hide();
-          return;
-        }
-        else{
-          this.executeInstruction();
-          iter1 = 0;
-        }
-      }
-      app._data.runExecution = false;
-      $(".loading").hide();*/
-
       $(".loading").show();
       app._data.runExecution = true;
       this.runExecution = false;
