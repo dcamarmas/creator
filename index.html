@@ -60,7 +60,7 @@
           <div id="spinnerBack" class="spinnerBack loading" style="display:none"></div>
           <div id="spinner" class="spinner loading" style="text-align: center; display:none">
             <div style="display: inline-block; opacity: 1;">
-              <b-spinner variant="primary" style="width: 3rem; height: 3rem;"/>
+              <b-spinner variant="primary" style="width: 3rem; height: 3rem;"></b-spinner>
             </div>
             <div>
               <span class="text-primary"><strong>Loading...</strong></span>
@@ -84,9 +84,9 @@
                     <h6>Félix García Carballeira</h6>
                   </div>
                   <hr>
-                  <a><span class="fab fa-linkedin-square"></span> linkedin</a>
+                  <a><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira'><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
                   <a><span class="fab fa-github"></span> github</a>
                 </b-card-text>
@@ -98,11 +98,11 @@
                     <h6>Alejandro Calderón Mateos</h6>
                   </div>
                   <hr>
-                  <a href='https://www.linkedin.com/in/alejandro-calderon-mateos/'><span class="fab fa-linkedin-square"></span> linkedin</a>
+                  <a href='https://www.linkedin.com/in/alejandro-calderon-mateos/' target="_blank"><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a href='https://www.researchgate.net/profile/Alejandro_Calderon2'><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a href='https://www.researchgate.net/profile/Alejandro_Calderon2' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a href='https://github.com/acaldero/wepsim'><span class="fab fa-github"></span> github</a>
+                  <a href='https://github.com/acaldero/wepsim' target="_blank"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
 
@@ -112,11 +112,11 @@
                     <h6>Diego Camarmas Alonso</h6>
                   </div>
                   <hr>
-                  <a><span class="fab fa-linkedin-square"></span> linkedin</a>
+                  <a><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
                   <a><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a href='https://github.com/dcamarmas'><span class="fab fa-github"></span> github</a>
+                  <a href='https://github.com/dcamarmas' target="_blank"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
             </b-card-group>
@@ -136,8 +136,8 @@
             <b-collapse is-nav id="nav_collapse">
 
               <b-navbar-nav class="ml-auto">
-                <b-nav-item><img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
-                <b-nav-item><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
+                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
+                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
               </b-navbar-nav>
 
             </b-collapse>
@@ -221,8 +221,8 @@
               </template>
 
               <div class="col-lg-12 col-sm-12">
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
               </div>
             </b-popover>
           </div>
@@ -668,7 +668,6 @@
 
                           <b-form-group label="Type:">
                             <b-form-select v-model="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
-                            </b-form-input>
                           </b-form-group>
 
                           <b-form-group label="Number of Words:">
@@ -800,7 +799,6 @@
 
                         <b-form-group label="Type:">
                           <b-form-select v-model="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
-                          </b-form-input>
                         </b-form-group>
 
                         <b-form-group label="Number of Words:">
@@ -1315,7 +1313,6 @@
             <h6>Enter the name of the architecture to save:</h6>
             <br>
             <b-form-input v-model="name_arch_save" type="text" placeholder="Enter the name" class="form-control form-control-sm" style="background-color: white; color: black," :state="valid(name_arch_save)"></b-form-input>
-            </div>
           </b-modal>
 
         </div>
@@ -1405,7 +1402,7 @@
                         <div class="col-lg-8 col-12 nopadding">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign" :maxlength="calculator.lengthSign"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign"></b-form-input>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%;">
                               <b-form-input class="form-control form-control-sm" v-model="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent"></b-form-input>
@@ -1423,16 +1420,16 @@
                         <div class="col-lg-8 col-12 nopadding">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%; text-align: center;">
-                              <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
+                              <span class="fas fa-long-arrow-alt-down" style=" padding: 1%;"></span>
                               <h5>-1<sup>{{calculator.sign}}</sup>   * </h5>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%; text-align: center;">
-                              <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
+                              <span class="fas fa-long-arrow-alt-down" style=" padding: 1%;"></span>
                               <h5 v-if="calculator.bits == 32">2<sup>{{calculator.exponentDec}}-127</sup>   * </h5>
                               <h5 v-if="calculator.bits == 64">2<sup>{{calculator.exponentDec}}-1023</sup>   * </h5>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%; text-align: center;">
-                              <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
+                              <span class="fas fa-long-arrow-alt-down" style=" padding: 1%;"></span>
                               <h5>{{calculator.mantissaDec}} = </h5>
                             </div>
                           </div>
@@ -1442,7 +1439,9 @@
                         </div>
                       </div>
 
-
+                      <div class="col-lg-12 col-12">
+                        <b-button class="btn btn-sm btn-block" variant="primary">Convert</b-button>
+                      </div>
 
                     </b-modal>
                   </div>
@@ -1472,8 +1471,8 @@
                       </template>
 
                       <div class="col-lg-12 col-sm-12">
-                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                        <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                       </div>
                     </b-popover>
                   </div>
@@ -1485,7 +1484,7 @@
             <div class="col-lg-7 col-sm-12">
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
 
-                <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;">
+                <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;" :filter-function=filter filter=" ">
                     <template slot="Break" slot-scope="row">
                       <div class="break" :id="row.index">
                         <br v-if="row.item.Break == null">
@@ -1560,7 +1559,7 @@
                     </b-button>
                   </div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="stats_btn"><span class=" fas fa-bar-chart"></span> Stats</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="stats_btn"><span class=" fas fa-chart-bar"></span> Stats</b-button>
                   </div>
                 </div>
                 <hr>
@@ -1760,7 +1759,7 @@
 
                   <b-tab title="Text">
                     <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                      <b-table striped small hover :items="instructions_memory" :fields="memFields" class="memory_table">
+                      <b-table striped small hover :items="instructions_memory" :fields="memFields" class="memory_table" :filter-function=filter filter=" ">
                         <template slot="Address" slot-scope="row">
                           <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
                         </template>
@@ -1930,8 +1929,8 @@
                     </template>
 
                     <div class="col-lg-12 col-sm-12">
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showNotification" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" id="showAbout" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
                   </b-popover>
                 </div>

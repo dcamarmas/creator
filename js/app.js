@@ -736,240 +736,17 @@ window.app = new Vue({
     
   },
   computed: {
-
+    
   },
   methods:{
-    /*Funciones calculadora*/
-    changeBitsCalculator(index){
-      if(index == 0){
-        this.calculator.bits = 32;
-        this.calculator.variant32 = "primary";
-        this.calculator.variant64 = "outline-primary";
-        this.calculator.lengthHexadecimal = 8;
-        this.calculator.lengthSign = 1;
-        this.calculator.lengthExponent = 8;
-        this.calculator.lengthMantissa = 23;
+    filter(row, filter){
+      if(row.hide == true){
+        return false;
       }
-      if(index == 1){
-        this.calculator.bits = 64;
-        this.calculator.variant64 = "primary";
-        this.calculator.variant32 = "outline-primary";
-        this.calculator.lengthHexadecimal = 16;
-        this.calculator.lengthSign = 1;
-        this.calculator.lengthExponent = 11;
-        this.calculator.lengthMantissa = 52;
-      }
-
-      this.calculator.hexadecimal = "";
-      this.calculator.sign = "";
-      this.calculator.exponent = "";
-      this.calculator.mantissa = "";
-      this.calculator.decimal = "";
-    },
-
-    calculatorFunct(index){
-      switch(index){
-        case 0:
-          var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
-          var float;
-          var binary;
-
-          if(this.calculator.bits == 32){
-            var re = /[0-9A-Fa-f]{8}/g;
-            if(!re.test(hex)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
-
-              this.calculator.sign = "";
-              this.calculator.exponent = "";
-              this.calculator.mantissa = "";
-              this.calculator.exponentDec = "";
-              this.calculator.mantissaDec = 0;
-              this.calculator.decimal = "";
-              return;
-            }
-
-            float = this.hex2float("0x" + hex);
-            binary = this.float2bin(float).padStart(this.calculator.bits, "0");
-
-            this.calculator.decimal = float;
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 9);
-            this.calculator.mantissa = binary.substring(9, 32);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
-          }
-          if(this.calculator.bits == 64){
-            var re = /[0-9A-Fa-f]{16}/g;
-            if(!re.test(hex)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
-
-              this.calculator.sign = "";
-              this.calculator.exponent = "";
-              this.calculator.mantissa = "";
-              this.calculator.exponentDec = "";
-              this.calculator.mantissaDec = 0;
-              this.calculator.decimal = "";
-              return;
-            }
-
-            float = this.hex2double("0x"+hex);
-            binary = this.double2bin(float);
-
-            this.calculator.decimal = float;
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 12);
-            this.calculator.mantissa = binary.substring(12, 64);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
-          }
-
-          break;
-        case 1:
-          if(this.calculator.bits == 32){
-            this.calculator.sign = this.calculator.sign.padStart(1, "0");
-            this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
-            this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
-
-            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-
-            var re = /[0-1]{32}/g;
-            if(!re.test(binary)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
-
-              this.calculator.hexadecimal = "";
-              this.calculator.decimal = "";
-              this.calculator.exponentDec = "";
-              this.calculator.mantissaDec = 0;
-              return;
-            }
-
-            float = this.hex2float("0x" + this.bin2hex(binary));
-            hexadecimal = this.bin2hex(binary);
-
-            this.calculator.decimal = float;
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
-          }
-          if(this.calculator.bits == 64){
-            this.calculator.sign = this.calculator.sign.padStart(1, "0");
-            this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
-            this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
-
-            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-
-            var re = /[0-1]{64}/g;
-            if(!re.test(binary)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
-
-              this.calculator.hexadecimal = "";
-              this.calculator.decimal = "";
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-              return;
-            }
-
-            double = this.hex2double("0x" + this.bin2hex(binary));
-            hexadecimal = this.bin2hex(binary);
-
-            this.calculator.decimal = double;
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-          }
-
-          break;
-        case 2:
-          var float = parseFloat(this.calculator.decimal, 10);
-          var binary;
-          var hexadecimal;
-
-          if(this.calculator.bits == 32){
-            hexadecimal = "0x"+ this.bin2hex(this.float2bin(float));
-            binary = this.float2bin(float);
-
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 9);
-            this.calculator.mantissa = binary.substring(9, 32);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
-          }
-
-          if(this.calculator.bits == 64){
-            hexadecimal = "0x"+ this.bin2hex(this.double2bin(float));
-            binary = this.double2bin(float);
-
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 12);
-            this.calculator.mantissa = binary.substring(12, 64);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
-          }
-
-          break;
+      else{
+        return true;
       }
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /*ALERTA GLOBAL*/
     countDownChanged (dismissCountDown) {
       this.dismissCountDown = dismissCountDown;
@@ -3570,12 +3347,15 @@ window.app = new Vue({
       if(update_binary.instructions_binary != null){
         for(var i = 0; i < update_binary.instructions_binary.length; i++){
           instructions.push(update_binary.instructions_binary[i]);
-          if(update_binary.instructions_binary[i].globl == false){
+          if(i == 0){
+            instructions[instructions.length-1].hide = false;
+            if(update_binary.instructions_binary[i].globl == false){
+              instructions[instructions.length-1].Label = "";
+            }
+          }
+          else if(update_binary.instructions_binary[i].globl == false){
             instructions[instructions.length-1].Label = "";
             instructions[instructions.length-1].hide = true;
-          }
-          else if(i == 0){
-            instructions[instructions.length-1].hide = false;
           }
           else if(update_binary.instructions_binary[i].globl == null){
             instructions[instructions.length-1].hide = true;
@@ -3869,10 +3649,28 @@ window.app = new Vue({
           var hex = this.bin2hex(update_binary.instructions_binary[i].loaded);
           var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
           var label = update_binary.instructions_binary[i].Label;
+          var hide;
+
+          if(i == 0){
+            hide = false;
+            if(update_binary.instructions_binary[i].globl == false){
+              label = "";
+            }
+          }
+          else if(update_binary.instructions_binary[i].globl == false){
+            label = "";
+            hide = true;
+          }
+          else if(update_binary.instructions_binary[i].globl == null){
+            hide = true;
+          }
+          else{
+            hide = false;
+          }
 
           for(var a = 0; a < hex.length/2; a++){
             if(auxAddr % 4 == 0){
-              instructions_memory.push({Address: auxAddr, Binary: [], Value: "********"});
+              instructions_memory.push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
               if(label == ""){
                 label=null;
               }
@@ -3922,7 +3720,7 @@ window.app = new Vue({
 
         for(var a = 0; a < hex.length/2; a++){
           if(auxAddr % 4 == 0){
-            instructions_memory.push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded});
+            instructions_memory.push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
             if(label == ""){
               label=null;
             }
@@ -4193,7 +3991,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   else{
                     var re = new RegExp("[0-9-]{"+token.length+"}","g");
@@ -4209,7 +4007,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
                   console.log(auxTokenString)
@@ -4361,7 +4159,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   else{
                     var re = new RegExp("[0-9-]{"+token.length+"}","g");
@@ -4377,7 +4175,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
                   console.log(auxTokenString)
@@ -4526,7 +4324,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   else{
                     var re = new RegExp("[0-9-]{"+token.length+"}","g");
@@ -4542,7 +4340,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
                   console.log(auxTokenString)
@@ -4692,7 +4490,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   else{
                     var re = new RegExp("[0-9-]{"+token.length+"}","g");
@@ -4708,7 +4506,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
                   console.log(auxTokenString)
@@ -4858,7 +4656,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   else{
                     var re = new RegExp("[0-9.-]{"+token.length+"}","g");
@@ -4874,7 +4672,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
                   console.log(auxTokenString)
@@ -5024,7 +4822,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   else{
                     var re = new RegExp("[0-9.-]{"+token.length+"}","g");
@@ -5040,7 +4838,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
-                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.lenght);
+                    auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
                   console.log(auxTokenString)
@@ -6043,42 +5841,28 @@ window.app = new Vue({
 
         if(field.match(/^0x/)){
           var binNum = (parseInt(field, 16).toString(2));
-          binNum = binNum.substring(31-startBit, 31-endBit);
+          binNum = binNum.padStart(32, '0');
+          binNum = binNum.substring(32-startBit, 32-endBit);
           var hexNum = "0x" + this.bin2hex(binNum);
-
           return hexNum;
         }
         else if (field.match(/^(\d)+\.(\d)+/)){
           var binNum = this.float2bin(parseFloat(field));
-          binNum = binNum.substring(31-startBit, 31-endBit);
+          binNum = binNum.padStart(32, '0');
+          binNum = binNum.substring(32-startBit, 32-endBit);
           var hexNum = "0x" + this.bin2hex(binNum);
-
           return hexNum;
         }
         else {
           var binNum = (parseInt(field, 10)).toString(2);
-          binNum = binNum.substring(31-startBit, 31-endBit);
+          binNum = binNum.padStart(32, '0');
+          binNum = binNum.substring(32-startBit, 32-endBit);
           var hexNum = "0x" + this.bin2hex(binNum);
-
           return hexNum;
         }
       }
-
       return -1;
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -8674,7 +8458,222 @@ window.app = new Vue({
         instructions[index].Break = null;
         app._data.instructions[index].Break = null;
       }
-    }
+    },
+
+    /*Funciones calculadora*/
+    changeBitsCalculator(index){
+      if(index == 0){
+        this.calculator.bits = 32;
+        this.calculator.variant32 = "primary";
+        this.calculator.variant64 = "outline-primary";
+        this.calculator.lengthHexadecimal = 8;
+        this.calculator.lengthSign = 1;
+        this.calculator.lengthExponent = 8;
+        this.calculator.lengthMantissa = 23;
+      }
+      if(index == 1){
+        this.calculator.bits = 64;
+        this.calculator.variant64 = "primary";
+        this.calculator.variant32 = "outline-primary";
+        this.calculator.lengthHexadecimal = 16;
+        this.calculator.lengthSign = 1;
+        this.calculator.lengthExponent = 11;
+        this.calculator.lengthMantissa = 52;
+      }
+
+      this.calculator.hexadecimal = "";
+      this.calculator.sign = "";
+      this.calculator.exponent = "";
+      this.calculator.mantissa = "";
+      this.calculator.decimal = "";
+    },
+
+    calculatorFunct(index){
+      switch(index){
+        case 0:
+          var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
+          var float;
+          var binary;
+
+          if(this.calculator.bits == 32){
+            var re = /[0-9A-Fa-f]{8}/g;
+            if(!re.test(hex)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.sign = "";
+              this.calculator.exponent = "";
+              this.calculator.mantissa = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              this.calculator.decimal = "";
+              return;
+            }
+
+            float = this.hex2float("0x" + hex);
+            binary = this.float2bin(float).padStart(this.calculator.bits, "0");
+
+            this.calculator.decimal = float;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 9);
+            this.calculator.mantissa = binary.substring(9, 32);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+          if(this.calculator.bits == 64){
+            var re = /[0-9A-Fa-f]{16}/g;
+            if(!re.test(hex)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.sign = "";
+              this.calculator.exponent = "";
+              this.calculator.mantissa = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              this.calculator.decimal = "";
+              return;
+            }
+
+            float = this.hex2double("0x"+hex);
+            binary = this.double2bin(float);
+
+            this.calculator.decimal = float;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 12);
+            this.calculator.mantissa = binary.substring(12, 64);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+
+          break;
+        case 1:
+          if(this.calculator.bits == 32){
+            this.calculator.sign = this.calculator.sign.padStart(1, "0");
+            this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
+            this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
+
+            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+
+            var re = /[0-1]{32}/g;
+            if(!re.test(binary)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.hexadecimal = "";
+              this.calculator.decimal = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              return;
+            }
+
+            float = this.hex2float("0x" + this.bin2hex(binary));
+            hexadecimal = this.bin2hex(binary);
+
+            this.calculator.decimal = float;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+          if(this.calculator.bits == 64){
+            this.calculator.sign = this.calculator.sign.padStart(1, "0");
+            this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
+            this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
+
+            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+
+            var re = /[0-1]{64}/g;
+            if(!re.test(binary)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.hexadecimal = "";
+              this.calculator.decimal = "";
+              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+              this.calculator.mantissaDec = 0;
+
+              var j = 0;
+              for (var i = 0; i < this.calculator.mantissa.length; i++) {
+                j--;
+                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+              }
+              return;
+            }
+
+            double = this.hex2double("0x" + this.bin2hex(binary));
+            hexadecimal = this.bin2hex(binary);
+
+            this.calculator.decimal = double;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+          }
+
+          break;
+        case 2:
+          var float = parseFloat(this.calculator.decimal, 10);
+          var binary;
+          var hexadecimal;
+
+          if(this.calculator.bits == 32){
+            hexadecimal = "0x"+ this.bin2hex(this.float2bin(float));
+            binary = this.float2bin(float);
+
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 9);
+            this.calculator.mantissa = binary.substring(9, 32);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+
+          if(this.calculator.bits == 64){
+            hexadecimal = "0x"+ this.bin2hex(this.double2bin(float));
+            binary = this.double2bin(float);
+
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 12);
+            this.calculator.mantissa = binary.substring(12, 64);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+
+          break;
+      }
+    },
 
   },
 
