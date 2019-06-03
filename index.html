@@ -1364,15 +1364,20 @@
                     </b-modal>
 
                     <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
+
+                      <b-alert :show="dismissCountDownMod" dismissible :variant="type" @dismissed="dismissCountDownMod=0" @dismiss-count-down="countDownChangedMod" style=" position: fixed; z-index: 50">
+                        <span class="fas fa-info-circle"></span> {{alertMessaje}}
+                      </b-alert>
+
                       <div class="col-lg-12 col-12 row nomargin" style="padding-bottom: 3%;">
                         <div class="col-lg-3 col-3"></div>
                         <div class="col-lg-6 col-6">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-6 col-6 nopadding">
-                              <b-button class="btn btn-block btn-sm" variant ="primary" @click="changeBitsCalculator(0)">32 bit</b-button>
+                              <b-button class="btn btn-block btn-sm" :variant = "calculator.variant32" @click="changeBitsCalculator(0)">32 bit</b-button>
                             </div>
                             <div class="col-lg-6 col-6 nopadding">
-                              <b-button class="btn btn-block btn-sm"variant ="outline-primary" @click="changeBitsCalculator(1)">64 bit</b-button>
+                              <b-button class="btn btn-block btn-sm" :variant = "calculator.variant64" @click="changeBitsCalculator(1)">64 bit</b-button>
                             </div>
                           </div>
                         </div>
@@ -1382,7 +1387,7 @@
                       <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
                         <div class="col-lg-2 col-2"></div>
                         <div class="col-lg-6 col-8">
-                          <b-form-input class="form-control form-control-sm" v-model="calculator.hexadecimal" @change="calculatorFunct(0)"></b-form-input>
+                          <b-form-input class="form-control form-control-sm" v-model="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter hexadecimal" :maxlength="calculator.lengthHexadecimal"></b-form-input>
                         </div>
                         <div class="col-lg-4"></div>
                       </div>
@@ -1400,13 +1405,13 @@
                         <div class="col-lg-8 col-12 nopadding">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign" @change="calculatorFunct(1)"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign" :maxlength="calculator.lengthSign"></b-form-input>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.exponent" @change="calculatorFunct(1)"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent"></b-form-input>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.mantissa" @change="calculatorFunct(1)"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.mantissa" @change="calculatorFunct(1)" placeholder="Enter mantissa" :maxlength="calculator.lengthMantissa"></b-form-input>
                             </div>
                           </div>
                         </div>
@@ -1423,17 +1428,17 @@
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%; text-align: center;">
                               <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
-                              <h5 v-if="calculator.bits == 32">2<sup>{{parseInt(bin2hex(calculator.exponent), 16)}}-127</sup>   * </h5>
-                              <h5 v-if="calculator.bits == 64">2<sup>{{parseInt(bin2hex(calculator.exponent), 16)}}-1023</sup>   * </h5>
+                              <h5 v-if="calculator.bits == 32">2<sup>{{calculator.exponentDec}}-127</sup>   * </h5>
+                              <h5 v-if="calculator.bits == 64">2<sup>{{calculator.exponentDec}}-1023</sup>   * </h5>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%; text-align: center;">
                               <span class="far fa-long-arrow-down" style=" padding: 1%;"></span>
-                              <h5>0.56161165161 = </h5>
+                              <h5>{{calculator.mantissaDec}} = </h5>
                             </div>
                           </div>
                         </div>
                         <div class="col-lg-3" style="padding-top: 3%">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.decimal" @change="calculatorFunct(2)"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-model="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal"></b-form-input>
                         </div>
                       </div>
 
