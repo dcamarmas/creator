@@ -684,7 +684,15 @@ window.app = new Vue({
       sign: "",
       exponent: "",
       mantissa: "",
+      mantisaDec: 0,
+      exponentDec: "",
       decimal: "",
+      variant32: "primary",
+      variant64: "outline-primary",
+      lengthHexadecimal: 8,
+      lengthSign: 1,
+      lengthExponent: 8,
+      lengthMantissa: 23,
     },
 
 
@@ -731,58 +739,173 @@ window.app = new Vue({
 
   },
   methods:{
+    /*Funciones calculadora*/
     changeBitsCalculator(index){
       if(index == 0){
         this.calculator.bits = 32;
+        this.calculator.variant32 = "primary";
+        this.calculator.variant64 = "outline-primary";
+        this.calculator.lengthHexadecimal = 8;
+        this.calculator.lengthSign = 1;
+        this.calculator.lengthExponent = 8;
+        this.calculator.lengthMantissa = 23;
       }
       if(index == 1){
         this.calculator.bits = 64;
+        this.calculator.variant64 = "primary";
+        this.calculator.variant32 = "outline-primary";
+        this.calculator.lengthHexadecimal = 16;
+        this.calculator.lengthSign = 1;
+        this.calculator.lengthExponent = 11;
+        this.calculator.lengthMantissa = 52;
       }
+
+      this.calculator.hexadecimal = "";
+      this.calculator.sign = "";
+      this.calculator.exponent = "";
+      this.calculator.mantissa = "";
+      this.calculator.decimal = "";
     },
 
     calculatorFunct(index){
       switch(index){
         case 0:
-          var hex = this.calculator.hexadecimal;
+          var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
           var float;
           var binary;
 
           if(this.calculator.bits == 32){
-            float = this.hex2float(hex);
-            binary = this.float2bin(float);
+            var re = /[0-9A-Fa-f]{8}/g;
+            if(!re.test(hex)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.sign = "";
+              this.calculator.exponent = "";
+              this.calculator.mantissa = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              this.calculator.decimal = "";
+              return;
+            }
+
+            float = this.hex2float("0x" + hex);
+            binary = this.float2bin(float).padStart(this.calculator.bits, "0");
 
             this.calculator.decimal = float;
             this.calculator.sign = binary.substring(0, 1);
             this.calculator.exponent = binary.substring(1, 9);
             this.calculator.mantissa = binary.substring(9, 32);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
           }
           if(this.calculator.bits == 64){
-            float = this.hex2double(hex);
+            var re = /[0-9A-Fa-f]{16}/g;
+            if(!re.test(hex)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.sign = "";
+              this.calculator.exponent = "";
+              this.calculator.mantissa = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              this.calculator.decimal = "";
+              return;
+            }
+
+            float = this.hex2double("0x"+hex);
             binary = this.double2bin(float);
 
             this.calculator.decimal = float;
             this.calculator.sign = binary.substring(0, 1);
             this.calculator.exponent = binary.substring(1, 12);
             this.calculator.mantissa = binary.substring(12, 64);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
           }
 
           break;
         case 1:
-          var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-
           if(this.calculator.bits == 32){
-            float = this.hex2float(this.bin2hex(binary));
+            this.calculator.sign = this.calculator.sign.padStart(1, "0");
+            this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
+            this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
+
+            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+
+            var re = /[0-1]{32}/g;
+            if(!re.test(binary)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.hexadecimal = "";
+              this.calculator.decimal = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              return;
+            }
+
+            float = this.hex2float("0x" + this.bin2hex(binary));
             hexadecimal = this.bin2hex(binary);
 
             this.calculator.decimal = float;
-            this.calculator.hexadecimal = hexadecimal;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
           }
           if(this.calculator.bits == 64){
+            this.calculator.sign = this.calculator.sign.padStart(1, "0");
+            this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
+            this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
+
+            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+
+            var re = /[0-1]{64}/g;
+            if(!re.test(binary)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type ='danger';
+              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+
+              this.calculator.hexadecimal = "";
+              this.calculator.decimal = "";
+              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+              this.calculator.mantissaDec = 0;
+
+              var j = 0;
+              for (var i = 0; i < this.calculator.mantissa.length; i++) {
+                j--;
+                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+              }
+              return;
+            }
+
             double = this.hex2double("0x" + this.bin2hex(binary));
             hexadecimal = this.bin2hex(binary);
 
             this.calculator.decimal = double;
-            this.calculator.hexadecimal = hexadecimal;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
           }
 
           break;
@@ -795,20 +918,36 @@ window.app = new Vue({
             hexadecimal = "0x"+ this.bin2hex(this.float2bin(float));
             binary = this.float2bin(float);
 
-            this.calculator.hexadecimal = hexadecimal;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
             this.calculator.sign = binary.substring(0, 1);
             this.calculator.exponent = binary.substring(1, 9);
             this.calculator.mantissa = binary.substring(9, 32);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
           }
 
           if(this.calculator.bits == 64){
             hexadecimal = "0x"+ this.bin2hex(this.double2bin(float));
             binary = this.double2bin(float);
 
-            this.calculator.hexadecimal = hexadecimal;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
             this.calculator.sign = binary.substring(0, 1);
             this.calculator.exponent = binary.substring(1, 12);
             this.calculator.mantissa = binary.substring(12, 64);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
           }
 
           break;
@@ -6542,7 +6681,7 @@ window.app = new Vue({
 	    var i, result = "";
 	    var dv = new DataView(new ArrayBuffer(4));
 
-      number = parseInt(number.toString());
+      //number = parseInt(number.toString());
 
 	    dv.setFloat32(0, number, false);
 
