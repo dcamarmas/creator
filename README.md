@@ -1,6 +1,6 @@
-# WepMIPS
+# CREATOR
 CREATOR
 
 Author: Diego Camarmas Alonso
 
-Link: https://dcamarmas.github.io/WepMIPS/
+Link: https://dcamarmas.github.io/CREATOR/
