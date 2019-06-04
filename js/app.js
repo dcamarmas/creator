@@ -394,6 +394,7 @@ var executionIndex = 0;
 
 /*Escritura terminal finalizada*/
 var consoleMutex = false;
+var mutexRead = false;
 
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
@@ -6661,7 +6662,7 @@ window.app = new Vue({
 
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
-
+      console.log(mutexRead)
       do{
         $(".loading").show();
         if(instructions.length == 0){
@@ -6688,6 +6689,15 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The program has finished with errors';
           app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          return;
+        }
+        else if(mutexRead == true){
+          $(".loading").hide();
+          app._data.alertMessaje = 'Write in the console please';
+          app._data.type ='info';
           app._data.dismissCountDown = app._data.dismissSecs;
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -7266,7 +7276,15 @@ window.app = new Vue({
 
         console.log(executionIndex);
 
-        if(executionIndex >= instructions.length){
+        if(executionIndex >= instructions.length && mutexRead == true){
+          for (var i = 0; i < instructions.length; i++) {
+            instructions[i]._rowVariant = '';
+          }
+
+          $(".loading").hide();
+          return;
+        }
+        else if(executionIndex >= instructions.length){
           for (var i = 0; i < instructions.length; i++) {
             instructions[i]._rowVariant = '';
           }
@@ -8294,64 +8312,81 @@ window.app = new Vue({
 
           break;
         case "read_int":
-          /*while(consoleMutex == false){
-            console.log("esperando");
+          mutexRead = true;
+          console.log(mutexRead)
+          if(consoleMutex == false){
+            setTimeout(this.syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
+          }
+          else{
+            var value = parseInt(this.keyboard);
+            console.log(value)
+            this.writeRegister(value, indexComp, indexElem);
+            this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            console.log(mutexRead)
+            break;
           }
 
-          console.log("fuera");*/
-
-          consoleMutex = false;
-
-          var value = parseInt(this.keyboard);
-          console.log(value)
-          this.writeRegister(value, indexComp, indexElem);
-          this.keyboard = "";
           break;
         case "read_float":
-
-          var value = parseFloat(this.keyboard, 10);
-          console.log(value);
-          this.writeRegister(value, indexComp, indexElem);
-          this.keyboard = "";
-          break;
-        case "read_double":
-
-          var value = parseFloat(this.keyboard, 10);
-          console.log(value)
-          this.writeRegister(value, indexComp, indexElem);
-          this.keyboard = "";
-          break;
-        case "read_string":
-          var addr = architecture.components[indexComp].elements[indexElem].value;
-          var value = "";
-          var valueIndex = 0;
-
-          for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++){
-            value = value + this.keyboard.charAt(i);
+          mutexRead = true;
+          console.log(mutexRead)
+          if(consoleMutex == false){
+            setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
+          }
+          else{
+            var value = parseFloat(this.keyboard, 10);
+            console.log(value);
+            this.writeRegister(value, indexComp, indexElem);
+            this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            console.log(mutexRead)
+            break;
           }
 
-          var auxAddr = data_address;
+          break;
+        case "read_double":
+          mutexRead = true;
+          console.log(mutexRead)
+          if(consoleMutex == false){
+            setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
+          }
+          else{
+            var value = parseFloat(this.keyboard, 10);
+            console.log(value)
+            this.writeRegister(value, indexComp, indexElem);
+            this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            console.log(mutexRead)
+            break;
+          }
 
-          for (var i = 0; i < data_memory.length && this.keyboard.length > 0; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr){
-                for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
-                  data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                  auxAddr = data_memory[i].Binary[j].Addr;
-                  valueIndex++;
-                }
+          break;
+        case "read_string":
+          mutexRead = true;
+          console.log(mutexRead)
+          if(consoleMutex == false){
+            setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
+          }
+          else{
+            var addr = architecture.components[indexComp].elements[indexElem].value;
+            var value = "";
+            var valueIndex = 0;
 
-                data_memory[i].Value = "";
-                for (var j = 0; j < data_memory[i].Binary.length; j++){
-                  data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-                }
+            for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++){
+              value = value + this.keyboard.charAt(i);
+            }
 
-                
+            var auxAddr = data_address;
 
-                if((i+1) < data_memory.length && valueIndex < value.length){
-                  i++;
-                  for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
+            for (var i = 0; i < data_memory.length && this.keyboard.length > 0; i++){
+              for (var j = 0; j < data_memory[i].Binary.length; j++){
+                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+                if(aux == addr){
+                  for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
                     data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
                     auxAddr = data_memory[i].Binary[j].Addr;
                     valueIndex++;
@@ -8362,59 +8397,80 @@ window.app = new Vue({
                     data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
                   }
 
+                  
+
+                  if((i+1) < data_memory.length && valueIndex < value.length){
+                    i++;
+                    for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
+                      data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                      auxAddr = data_memory[i].Binary[j].Addr;
+                      valueIndex++;
+                    }
+
+                    data_memory[i].Value = "";
+                    for (var j = 0; j < data_memory[i].Binary.length; j++){
+                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
+                    }
+
+                  }
+                  else{
+                    data_address = auxAddr;
+
+                    data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
+                    i++;
+                    for (var z = 0; z < 4; z++){
+                      if(valueIndex < value.length){
+                        (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                        valueIndex++;
+                        data_address++;
+                      }
+                      else{
+                        (data_memory[i].Binary).push({Addr: data_address, DefBin: 0, Bin: 0, Tag: null},);
+                        data_address++;
+                      }
+                    }
+                    
+                    data_memory[i].Value = "";
+                    for (var j = 0; j < data_memory[i].Binary.length; j++){
+                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
+                    }
+                  }
+                }
+              }
+            }
+
+            if(valueIndex == value.length){
+              this.keyboard = "";
+              return;
+            }
+
+            var auxAddr = parseInt(addr);
+
+            while(valueIndex < value.length){
+              data_memory.push({Address: auxAddr, Binary: [], Value: "", DefValue: ""});
+              for (var z = 0; z < 4; z++){
+                if(valueIndex > value.length-1){
+                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: 0, Tag: null},);
                 }
                 else{
-                  data_address = auxAddr;
-
-                  data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                  i++;
-                  for (var z = 0; z < 4; z++){
-                    if(valueIndex < value.length){
-                      (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                      valueIndex++;
-                      data_address++;
-                    }
-                    else{
-                      (data_memory[i].Binary).push({Addr: data_address, DefBin: 0, Bin: 0, Tag: null},);
-                      data_address++;
-                    }
-                  }
-                  
-                  data_memory[i].Value = "";
-                  for (var j = 0; j < data_memory[i].Binary.length; j++){
-                    data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-                  }
+                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                  data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
                 }
+                auxAddr++;
+                valueIndex++;
               }
+              i++;
             }
-          }
 
-          if(valueIndex == value.length){
+            app._data.data_memory = data_memory;
+            
             this.keyboard = "";
-            return;
+            consoleMutex = false;
+            mutexRead = false;
+            console.log(mutexRead)
+            break;
           }
 
-          var auxAddr = parseInt(addr);
-
-          while(valueIndex < value.length){
-            data_memory.push({Address: auxAddr, Binary: [], Value: "", DefValue: ""});
-            for (var z = 0; z < 4; z++){
-              if(valueIndex > value.length-1){
-                (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: 0, Tag: null},);
-              }
-              else{
-                (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
-              }
-              auxAddr++;
-              valueIndex++;
-            }
-            i++;
-          }
-
-          app._data.data_memory = data_memory;
-          
-          this.keyboard = "";
           break;
         case "sbrk":
           var aux_addr = architecture.memory_layout[3].value;
@@ -8455,9 +8511,21 @@ window.app = new Vue({
           this.display = this.display + "\n" + String.fromCharCode(parseInt(value, 16));
           break;
         case "read_char":
-          var value = (this.keyboard).charCodeAt(0);
-          this.writeRegister(value, indexComp, indexElem);
-          this.keyboard = "";
+          mutexRead = true;
+          console.log(mutexRead)
+          if(consoleMutex == false){
+            setTimeout(this.syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
+          }
+          else{
+            var value = (this.keyboard).charCodeAt(0);
+            this.writeRegister(value, indexComp, indexElem);
+            this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            console.log(mutexRead)
+            break;
+          }
+
           break;
       }
 
