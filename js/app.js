@@ -392,6 +392,7 @@ var tokenIndex = 0;
 var runExecution = false;
 var executionIndex = 0;
 var iter1 = 1;
+var executionInit = 1;
 
 /*Escritura terminal finalizada*/
 var consoleMutex = false;
@@ -3345,6 +3346,7 @@ window.app = new Vue({
       extern = [];
       stack_memory = [];
       data = [];
+      executionInit = 1;
 
       if(update_binary.instructions_binary != null){
         for(var i = 0; i < update_binary.instructions_binary.length; i++){
@@ -6664,7 +6666,11 @@ window.app = new Vue({
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
       console.log(mutexRead)
+
       do{
+        console.log(executionIndex)
+        console.log(architecture.components[0].elements[0].value)
+
         $(".loading").show();
         if(instructions.length == 0){
           $(".loading").hide();
@@ -6706,11 +6712,12 @@ window.app = new Vue({
         }
 
         /*Etiqueta main*/
-        if(executionIndex == 0){
+        if(executionInit == 1){
           for (var i = 0; i < instructions.length; i++) {
             if(instructions[i].Label == "main"){
               instructions[executionIndex]._rowVariant = 'success';
               architecture.components[0].elements[0].value = bigInt(parseInt(instructions[i].Address, 16)).value;
+              executionInit = 0;
               break;
             }
             else if(i == instructions.length-1){
@@ -6732,6 +6739,9 @@ window.app = new Vue({
         for (var i = 0; i < instructions.length; i++) {
           if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
             executionIndex = i;
+            console.log(instructions[executionIndex].hide)
+            console.log(executionIndex)
+            console.log(instructions[i].Address)
             if(instructions[executionIndex].hide == false){
               instructions[executionIndex]._rowVariant = 'info';
             }
