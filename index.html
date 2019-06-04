@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-    <title>WepSim</title>
+    <title>CREATOR</title>
 
     <!-- Required Stylesheets -->
     <link type="text/css" rel="stylesheet" href="external/bootstrap.min.css"/>
@@ -127,7 +127,7 @@
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand style="color: #2196F3;" href="."><h5>WepSim <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
 
             <b-navbar-nav>
                 <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>
@@ -1963,7 +1963,7 @@
 
           <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File" @ok="assembly_update">
 				    <p> Please select the assembly file to be loaded </p> 
-				    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." accept=".txt" @change="read_assembly" id="assembly_file"></b-form-file>
+				    <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." accept=".s" @change="read_assembly" id="assembly_file"></b-form-file>
 				  </b-modal>
 
 				  <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File" @ok="assembly_save">
@@ -1976,7 +1976,7 @@
 
           <b-modal  id = "load_binary"   title = "Load Binary" ok-title="Load from this File" @ok="library_update">
             <p> Please select the binary file to be loaded </p> 
-            <b-form-file v-model="name_binary_load" :state="Boolean(name_binary_load)" placeholder="Choose a file..." accept=".json" @change="library_load" id="binary_file"></b-form-file>
+            <b-form-file v-model="name_binary_load" :state="Boolean(name_binary_load)" placeholder="Choose a file..." accept=".o" @change="library_load" id="binary_file"></b-form-file>
           </b-modal>
 
           <b-modal  id = "save_binary"   title = "Save Binary" ok-title="Save to File" @ok="library_save">
