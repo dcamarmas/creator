@@ -391,6 +391,7 @@ var tokenIndex = 0;
 /*Indice de ejecucion*/
 var runExecution = false;
 var executionIndex = 0;
+var iter1 = 1;
 
 /*Escritura terminal finalizada*/
 var consoleMutex = false;
@@ -3130,10 +3131,10 @@ window.app = new Vue({
       var fileNameToSaveAs;
 
       if(this.save_assembly == ''){
-        fileNameToSaveAs = "assembly.txt";
+        fileNameToSaveAs = "assembly.s";
       }
       else{
-        fileNameToSaveAs = this.save_assembly + ".txt";
+        fileNameToSaveAs = this.save_assembly + ".s";
       }
 
       var downloadLink = document.createElement("a");
@@ -3190,10 +3191,10 @@ window.app = new Vue({
       var fileNameToSaveAs;
 
       if(this.name_arch_save == ''){
-        fileNameToSaveAs = "binary.json";
+        fileNameToSaveAs = "binary.o";
       }
       else{
-        fileNameToSaveAs = this.name_binary_save + ".json";
+        fileNameToSaveAs = this.name_binary_save + ".o";
       }
 
       var downloadLink = document.createElement("a");
@@ -5379,7 +5380,7 @@ window.app = new Vue({
                   }
 
                   if(data_address % 4 == 0){
-                    data_memory.push({Address: data_address, Binary: [], Value: string, DefValue: string});
+                    data_memory.push({Address: data_address, Binary: [], Value: string, DefValue: ""});
 
                     if(i == 0){
                       (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
@@ -7316,7 +7317,6 @@ window.app = new Vue({
       app._data.runExecution = true;
       this.runExecution = false;
 
-      var iter1 = 1;
       if(instructions.length == 0){
         $(".loading").hide();
         app._data.alertMessaje = 'No instructions in memory';
@@ -7326,6 +7326,25 @@ window.app = new Vue({
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
       }
+
+      if(executionIndex < -1){
+          $(".loading").hide();
+          app._data.alertMessaje = 'The program has finished';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          return;
+        }
+        else if(executionIndex == -1){
+          $(".loading").hide();
+          app._data.alertMessaje = 'The program has finished with errors';
+          app._data.type ='danger';
+          app._data.dismissCountDown = app._data.dismissSecs;
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          return;
+        }
 
       $("#stopExecution").show();
       $("#playExecution").hide();
@@ -7337,6 +7356,7 @@ window.app = new Vue({
 
     programExecutionInst(){
       if(instructions[executionIndex].Break == true && iter1 == 0){
+        iter1 = 1;
         $(".loading").hide();
         $("#stopExecution").hide();
         $("#playExecution").show();
@@ -7344,6 +7364,7 @@ window.app = new Vue({
       }
       else if(this.runExecution == true){
         app._data.runExecution = false;
+        iter1 = 1;
         $("#stopExecution").hide();
         $("#playExecution").show();
         $(".loading").hide();
@@ -7365,7 +7386,6 @@ window.app = new Vue({
 
 
     stopExecution(){
-    	console.log("STOP")
       app._data.runExecution = true;
     },
 

@@ -1,5 +1,5 @@
 # WepMIPS
-WepMIPS
+CREATOR
 
 Author: Diego Camarmas Alonso
 
