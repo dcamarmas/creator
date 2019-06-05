@@ -127,7 +127,7 @@
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
-            <b-navbar-brand style="color: #2196F3;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.0 </b-badge></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.3 </b-badge></h5></b-navbar-brand>
 
             <b-navbar-nav>
                 <b-nav-text style="color: #2196F3;"><h5>{{architecture_name}}</h5></b-nav-text>
@@ -304,7 +304,7 @@
                       <h6>.stack Start:</h6>
                       <b-form-input type="text" v-model="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
 
-                      <b-button class="btn btn-block btn-sm" variant="primary" style="margin-bottom: 5%;" @click="changeMemoryLayout">Change memory layout</b-button>
+                      <b-button class="btn btn-block btn-sm" variant="primary" style="margin-bottom: 5%;" @click="changeMemoryLayout"><span class="fas fa-exchange-alt"></span> Change memory layout</b-button>
 
                     </div>
 
@@ -1346,19 +1346,8 @@
                 <div class="col-lg-12 col-sm-12">
                   <div class="col-lg-12 col-sm-12 buttons row">
                     <div class="col-lg-6 col-sm-6 buttons">
-                      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.examples><span class="far fa-file-alt"></span> Examples</b-button>
-                    </div>
-
-                    <div class="col-lg-6 col-sm-6 buttons">
                       <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
                     </div>
-
-                    <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
-                      <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
-                      <b-list-group>
-                        <b-list-group-item button v-for="item in example_available" @click="load_example(item.id)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
-                      </b-list-group>
-                    </b-modal>
 
                     <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
 
@@ -1566,169 +1555,340 @@
               </div>
 
               <div class="col-lg-12 col-sm-12" id="registers">
-              	<div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
-              		<div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
-              			<!-- Estructura si los numeros son enteros -->
-	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
-	                    </b-button>
+                <b-tabs content-class="mt-3">
+                  <b-tab :title="nameTabReg" active>
+                    <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
+                      <div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
+                        <!-- Estructura si los numeros son enteros -->
+                        <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
-	                    <b-popover :target="popoverId(item2.name)" triggers="click blur" class="popover" >
-												
-                        <template slot="title">
-                          <b-button @click="closePopover" class="close" aria-label="Close">
-                            <span class="d-inline-block" aria-hidden="true">&times;</span>
+                             <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                           </b-button>
-                          {{item2.name}}
-                        </template>
 
-                        <table class="table table-bordered table-sm popoverText">
-												  <tbody>
-												    <tr>
-												      <td>Hex.</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge></td>
-												    </tr>
-												    <tr>
-												      <td>Binary</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}</b-badge></td>
-												    </tr>
-												    <tr>
-												      <td>Signed</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
-                                <b-badge style="background-color:#CEECF5; color:black;" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge></td>
-												    </tr>
-												    <tr>
-												      <td>Unsig.</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item2.value).toString(10) >>> 0}}</b-badge></td>
-												    </tr>
-												    <tr>
-												      <td>Char</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
-												    </tr>
-												    <tr>
-												      <td>Float</td>
-												      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
-												    </tr>
-												  </tbody>
-												</table>
+                          <b-popover :target="popoverId(item2.name)" triggers="click blur" class="popover" >
+                            <template slot="title">
+                              <b-button @click="closePopover" class="close" aria-label="Close">
+                                <span class="d-inline-block" aria-hidden="true">&times;</span>
+                              </b-button>
+                              {{item2.name}}
+                            </template>
 
-												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
-					            		</div>
-					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
-					            		</div>
-				            		</div>
-								      </b-popover>
-	                  </div>
+                            <table class="table table-bordered table-sm popoverText">
+                              <tbody>
+                                <tr>
+                                  <td>Hex.</td>
+                                  <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge></td>
+                                </tr>
+                                <tr>
+                                  <td>Binary</td>
+                                  <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}</b-badge></td>
+                                </tr>
+                                <tr>
+                                  <td>Signed</td>
+                                  <td><b-badge style="background-color:#CEECF5; color:black;" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                                    <b-badge style="background-color:#CEECF5; color:black;" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge></td>
+                                </tr>
+                                <tr>
+                                  <td>Unsig.</td>
+                                  <td><b-badge style="background-color:#CEECF5; color:black;">{{(item2.value).toString(10) >>> 0}}</b-badge></td>
+                                </tr>
+                                <tr>
+                                  <td>Char</td>
+                                  <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
+                                </tr>
+                                <tr>
+                                  <td>Float</td>
+                                  <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
+                                </tr>
+                              </tbody>
+                            </table>
 
-	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
-	                  	<!-- Estructura si los numeros son FP simple -->
-	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
-	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
-		                    </b-button>
+                            <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+                              <div class="col-lg-6 col-sm-6 popoverFooter">
+                                <b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+                              </div>
+                              <div class="col-lg-6 col-sm-6 popoverFooter">
+                                <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
+                              </div>
+                            </div>
+                          </b-popover>
+                        </div>
 
-		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
-
-                          <template slot="title">
-                            <b-button @click="closePopover" class="close" aria-label="Close">
-                              <span class="d-inline-block" aria-hidden="true">&times;</span>
+                        <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
+                          <!-- Estructura si los numeros son FP simple -->
+                          <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
+                            <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+                              {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                             </b-button>
-                            {{item2.name}}
-                          </template>
 
-													<table class="table table-bordered table-sm popoverText">
-													  <tbody>
-													    <tr>
-													      <td>Hex.</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(float2bin(item2.value))}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Binary</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{float2bin(item2.value)}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Signed</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >> 0}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Unsig.</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Float</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{item2.value}}</b-badge></td>
-													    </tr>
-													  </tbody>
-													</table>
+                            <b-popover :target="popoverId(item2.name)" triggers="click blur">
 
-													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
-						            		</div>
-						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
-						            		</div>
-					            		</div>
-									      </b-popover>
-	                  	</div>
+                              <template slot="title">
+                                <b-button @click="closePopover" class="close" aria-label="Close">
+                                  <span class="d-inline-block" aria-hidden="true">&times;</span>
+                                </b-button>
+                                {{item2.name}}
+                              </template>
 
-	                  	<!-- Estructura si los numeros son FP doble -->
-	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
-	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
-		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
-		                    </b-button>
+                              <table class="table table-bordered table-sm popoverText">
+                                <tbody>
+                                  <tr>
+                                    <td>Hex.</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(float2bin(item2.value))}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Binary</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{float2bin(item2.value)}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Signed</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >> 0}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Unsig.</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Float</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{item2.value}}</b-badge></td>
+                                  </tr>
+                                </tbody>
+                              </table>
 
-		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
+                              <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+                                <div class="col-lg-6 col-sm-6 popoverFooter">
+                                  <b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+                                </div>
+                                <div class="col-lg-6 col-sm-6 popoverFooter">
+                                  <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
+                                </div>
+                              </div>
+                            </b-popover>
+                          </div>
 
-                          <template slot="title">
-                            <b-button @click="closePopover" class="close" aria-label="Close">
-                              <span class="d-inline-block" aria-hidden="true">&times;</span>
+                          <!-- Estructura si los numeros son FP doble -->
+                          <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
+                            <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+                               {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                             </b-button>
-                            {{item2.name}}
-                          </template>
 
-													<table class="table table-bordered table-sm popoverText">
-													  <tbody>
-													    <tr>
-													      <td>Hex.</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(double2bin(item2.value))}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Binary</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{double2bin(item2.value)}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Signed</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >> 0}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Unsig.</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
-													    </tr>
-													    <tr>
-													      <td>Float</td>
-													      <td><b-badge style="background-color:#CEECF5; color:black;">{{item2.value}}</b-badge></td>
-													    </tr>
-													  </tbody>
-													</table>
+                            <b-popover :target="popoverId(item2.name)" triggers="click blur">
 
-													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
-						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
-						            		</div>
-						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
-						            		</div>
-					            		</div>
-									      </b-popover>
-	                  	</div> 
-	                  </div>
-	                </div>
-                </div>
+                              <template slot="title">
+                                <b-button @click="closePopover" class="close" aria-label="Close">
+                                  <span class="d-inline-block" aria-hidden="true">&times;</span>
+                                </b-button>
+                                {{item2.name}}
+                              </template>
+
+                              <table class="table table-bordered table-sm popoverText">
+                                <tbody>
+                                  <tr>
+                                    <td>Hex.</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(double2bin(item2.value))}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Binary</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{double2bin(item2.value)}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Signed</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >> 0}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Unsig.</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
+                                  </tr>
+                                  <tr>
+                                    <td>Float</td>
+                                    <td><b-badge style="background-color:#CEECF5; color:black;">{{item2.value}}</b-badge></td>
+                                  </tr>
+                                </tbody>
+                              </table>
+
+                              <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+                                <div class="col-lg-6 col-sm-6 popoverFooter">
+                                  <b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+                                </div>
+                                <div class="col-lg-6 col-sm-6 popoverFooter">
+                                  <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
+                                </div>
+                              </div>
+                            </b-popover>
+                          </div> 
+                        </div>
+                      </div>
+                    </div>
+                  </b-tab>
+
+                  <b-tab title="Hexadecimal">
+                  	<div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
+                  		<div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
+                  			<!-- Estructura si los numeros son enteros -->
+    	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
+    	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+    	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+    	                    </b-button>
+
+    	                    <b-popover :target="popoverId(item2.name)" triggers="click blur" class="popover" >
+    												
+                            <template slot="title">
+                              <b-button @click="closePopover" class="close" aria-label="Close">
+                                <span class="d-inline-block" aria-hidden="true">&times;</span>
+                              </b-button>
+                              {{item2.name}}
+                            </template>
+
+                            <table class="table table-bordered table-sm popoverText">
+    												  <tbody>
+    												    <tr>
+    												      <td>Hex.</td>
+    												      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge></td>
+    												    </tr>
+    												    <tr>
+    												      <td>Binary</td>
+    												      <td><b-badge style="background-color:#CEECF5; color:black;">{{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}</b-badge></td>
+    												    </tr>
+    												    <tr>
+    												      <td>Signed</td>
+    												      <td><b-badge style="background-color:#CEECF5; color:black;" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                                    <b-badge style="background-color:#CEECF5; color:black;" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge></td>
+    												    </tr>
+    												    <tr>
+    												      <td>Unsig.</td>
+    												      <td><b-badge style="background-color:#CEECF5; color:black;">{{(item2.value).toString(10) >>> 0}}</b-badge></td>
+    												    </tr>
+    												    <tr>
+    												      <td>Char</td>
+    												      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
+    												    </tr>
+    												    <tr>
+    												      <td>Float</td>
+    												      <td><b-badge style="background-color:#CEECF5; color:black;">{{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}</b-badge></td>
+    												    </tr>
+    												  </tbody>
+    												</table>
+
+    												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+    					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+    					            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+    					            		</div>
+    					            		<div class="col-lg-6 col-sm-6 popoverFooter">
+    					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
+    					            		</div>
+    				            		</div>
+    								      </b-popover>
+    	                  </div>
+
+    	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
+    	                  	<!-- Estructura si los numeros son FP simple -->
+    	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
+    	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+    	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
+    		                    </b-button>
+
+    		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
+
+                              <template slot="title">
+                                <b-button @click="closePopover" class="close" aria-label="Close">
+                                  <span class="d-inline-block" aria-hidden="true">&times;</span>
+                                </b-button>
+                                {{item2.name}}
+                              </template>
+
+    													<table class="table table-bordered table-sm popoverText">
+    													  <tbody>
+    													    <tr>
+    													      <td>Hex.</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(float2bin(item2.value))}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Binary</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{float2bin(item2.value)}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Signed</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >> 0}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Unsig.</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Float</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{item2.value}}</b-badge></td>
+    													    </tr>
+    													  </tbody>
+    													</table>
+
+    													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+    						            		<div class="col-lg-6 col-sm-6 popoverFooter">
+    						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+    						            		</div>
+    						            		<div class="col-lg-6 col-sm-6 popoverFooter">
+    						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
+    						            		</div>
+    					            		</div>
+    									      </b-popover>
+    	                  	</div>
+
+    	                  	<!-- Estructura si los numeros son FP doble -->
+    	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
+    	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+    		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
+    		                    </b-button>
+
+    		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
+
+                              <template slot="title">
+                                <b-button @click="closePopover" class="close" aria-label="Close">
+                                  <span class="d-inline-block" aria-hidden="true">&times;</span>
+                                </b-button>
+                                {{item2.name}}
+                              </template>
+
+    													<table class="table table-bordered table-sm popoverText">
+    													  <tbody>
+    													    <tr>
+    													      <td>Hex.</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{"0x"+ bin2hex(double2bin(item2.value))}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Binary</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{double2bin(item2.value)}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Signed</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >> 0}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Unsig.</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{parseInt(item2.value.toString(), 10) >>> 0}}</b-badge></td>
+    													    </tr>
+    													    <tr>
+    													      <td>Float</td>
+    													      <td><b-badge style="background-color:#CEECF5; color:black;">{{item2.value}}</b-badge></td>
+    													    </tr>
+    													  </tbody>
+    													</table>
+
+    													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+    						            		<div class="col-lg-6 col-sm-6 popoverFooter">
+    						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+    						            		</div>
+    						            		<div class="col-lg-6 col-sm-6 popoverFooter">
+    						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
+    						            		</div>
+    					            		</div>
+    									      </b-popover>
+    	                  	</div> 
+    	                  </div>
+    	                </div>
+                    </div>
+                  </b-tab>
+                </b-tabs>
               </div>
 
               <!-- MM-Memory-->
@@ -1798,11 +1958,6 @@
                       </b-table>
                     </div>
                   </b-tab>
-
-
-
-
-
                 </b-tabs>
               </div>
 
@@ -1853,8 +2008,15 @@
                   <b-form-textarea id="textarea_keyboard" v-model="keyboard" rows="5"></b-form-textarea>
                 </div>
               </div>
-              <div class="col-lg-4 col-sm-4">
-                <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 2%;" @click="consoleEnter"><span class="fas fa-paper-plane"></span> Enter</b-button>
+
+              <div class="col-lg-12 col-sm-12 row">
+                <div class="col-lg-8 col-sm-8">
+                 
+                </div>
+                <div class="col-lg-4 col-sm-4">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-paper-plane"></span> Enter</b-button>
+                </div>
+
               </div>
             </div>
         </div>
@@ -1877,16 +2039,21 @@
 
             <div class="col-lg-2 col-sm-12 nopadding">
 							<div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_assembly_btn" v-b-modal.load_assembly><span class="fas fa-upload"></span> Load</b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_assembly_btn" v-b-modal.save_assembly><span class="fas fa-download"></span> Save</b-button>
-                  </div>
-                </div>
+                <b-dropdown right text="File" size="sm" class="btn btn-block menuGroup btn-sm" variant="outline-secondary">
+                  <b-dropdown-item @click="newAssembly"><span class="fas fa-file"></span> New</b-dropdown-item>
+                  <b-dropdown-item v-b-modal.load_assembly><span class="fas fa-upload"></span> Load</b-dropdown-item>
+                  <b-dropdown-item v-b-modal.save_assembly><span class="fas fa-download"></span> Save</b-dropdown-item>
+                  <b-dropdown-item v-b-modal.examples><span class="far fa-file-alt"></span> Examples</b-dropdown-item>
+                </b-dropdown>
               </div>
             </div>
+
+            <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
+              <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
+              <b-list-group>
+                <b-list-group-item button v-for="item in example_available" @click="load_example(item.id)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+              </b-list-group>
+            </b-modal>
 
             <div class="col-lg-2 col-sm-12 nopadding">
 							<div class="col-lg-12 col-sm-12">
@@ -1898,17 +2065,15 @@
               </div>
             </div>
 
-            <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="load_binary_btn" v-b-modal.load_binary><span class="fas fa-upload"></span> Load Library</b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_binary_btn" v-b-modal.save_binary><span class="fas fa-download"></span> Save Library</b-button>
-                  </div>
-                </div>
-              </div>
+            <div class="col-lg-2 col-sm-12 nopadding">
+              <b-dropdown right text="Library" size="sm" class="btn btn-block menuGroup btn-sm" variant="outline-secondary">
+                <b-dropdown-item v-b-modal.save_binary><span class="fas fa-plus-square"></span> Create</b-dropdown-item>
+                <b-dropdown-item v-b-modal.load_binary><span class="fas fa-upload"></span> Load Library</b-dropdown-item>
+                <b-dropdown-item @click="removeLibrary"><span class="far fa-trash-alt"></span> Remove</b-dropdown-item>
+              </b-dropdown>
+            </div>
+
+            <div class="col-lg-1 col-sm-12 nopadding">
             </div>
 
             <div class="col-lg-2 col-sm-12 nopadding">
@@ -1939,7 +2104,7 @@
           </div>
 
           <div class="contenedor row">
-          	<div class="col-lg-12 col-sm-12" v-if="load_binary==false">
+          	<!--<div class="col-lg-12 col-sm-12" v-if="load_binary==false">
           		<h5>Assembly:</h5>
           	</div>
           	<div class="col-lg-12 col-sm-12" v-if="load_binary==false">
@@ -1954,6 +2119,19 @@
             </div>
 
             <div class="col-lg-2 col-sm-12" v-if="load_binary==true">
+              <h5>Library tags:</h5>
+              <b-list-group>
+                <b-list-group-item v-for="item in update_binary.instructions_tag" v-if="item.globl==true"><b-badge pill variant="primary">{{item.tag}}</b-badge></b-list-group-item>
+              </b-list-group>
+            </div>-->
+
+            <div class="col-lg-12 col-sm-12" id="divAssembly">
+              <h5>Assembly:</h5>
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y">
+              </textarea>
+            </div>
+
+            <div class="col-lg-0 col-sm-0" id="divTags">
               <h5>Library tags:</h5>
               <b-list-group>
                 <b-list-group-item v-for="item in update_binary.instructions_tag" v-if="item.globl==true"><b-badge pill variant="primary">{{item.tag}}</b-badge></b-list-group-item>
