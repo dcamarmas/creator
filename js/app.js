@@ -703,6 +703,8 @@ window.app = new Vue({
 
     /*Boton run o stop*/
     runExecution: false,
+    /*Tag registros*/
+    nameTabReg: 'Decimal',
     /*Ejemplos Disponibles*/
     example_available: example_available,
     /*Nuevo valor del registro*/
@@ -3101,7 +3103,11 @@ window.app = new Vue({
 
 
     /*PAGINA ENSAMBLADOR*/
-    /*Funciones de carga y descarga de ensamblador*/
+    /*Funciones de nuevo, carga y descarga de ensamblador*/
+    newAssembly(){
+      textarea_assembly_editor.setValue("");
+    },
+
     read_assembly(e){
       $(".loading").show();
       var file;
@@ -3191,7 +3197,7 @@ window.app = new Vue({
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
       var fileNameToSaveAs;
 
-      if(this.name_arch_save == ''){
+      if(this.name_binary_save == ''){
         fileNameToSaveAs = "binary.o";
       }
       else{
@@ -3241,7 +3247,17 @@ window.app = new Vue({
     library_update(){
       update_binary = JSON.parse(code_binary);
       this.update_binary = update_binary;
+      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+      $("#divTags").attr("class", "col-lg-2 col-sm-12");
       this.load_binary = true;
+    },
+
+    removeLibrary(){
+      update_binary = "";
+      this.update_binary = update_binary;
+      $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
+      $("#divTags").attr("class", "col-lg-0 col-sm-0");
+      this.load_binary = false;
     },
 
     /*Lee un token*/
@@ -3498,11 +3514,38 @@ window.app = new Vue({
                 }
                 break;
               case "global_symbol":
-                this.next_token();
+                /*this.next_token();
                 token = this.get_token();
                 extern.push(token);
                 change = true;
+                this.next_token();*/
+
+                var isGlobl = true;
+
                 this.next_token();
+
+                while(isGlobl){
+                  token = this.get_token();
+
+                  re = new RegExp(",", "g");
+                  token = token.replace(re, "");
+
+                  console.log(token)
+                  extern.push(token);
+                  change = true;
+
+                  this.next_token();
+                  token = this.get_token();
+
+                  console.log(token)
+
+                  for(var z = 0; z < architecture.directives.length; z++){
+                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                      isGlobl = false;
+                    }
+                  }
+                }
+
                 break;
               default:
                 console.log("default")
@@ -3824,6 +3867,7 @@ window.app = new Vue({
 
       /*Guarda los binarios*/
       for(var i = 0; i < instructions_binary.length; i++){
+        console.log(i)
         if(extern.length == 0 && instructions_binary[i].Label != ""){
           instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
           instructions_binary[i].globl = false;
@@ -3833,9 +3877,11 @@ window.app = new Vue({
         		if(instructions_binary[i].Label != extern[j] && j == extern.length-1 && instructions_binary[i].Label != ""){
         			instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
               instructions_binary[i].globl = false;
+              break;
         		}
             else if(instructions_binary[i].Label == extern[j]){
               instructions_binary[i].globl = true;
+              break;
             }
         	}
         }	
@@ -3845,15 +3891,18 @@ window.app = new Vue({
         if(extern.length == 0 && instructions_tag[i].tag != ""){
           instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
           instructions_tag[i].globl = false;
+          break;
         }
         else{
           for(var j = 0; j < extern.length; j++){
             if(instructions_tag[i].tag != extern[j] && j == extern.length-1 && instructions_tag[i].tag != ""){
               instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
               instructions_tag[i].globl = false;
+              break;
             }
             else if(instructions_tag[i].tag == extern[j]){
               instructions_tag[i].globl = true;
+              break;
             }
           }
         } 
@@ -4945,6 +4994,7 @@ window.app = new Vue({
                 console.log("ascii_not_null_end")
 
                 var isAscii = true;
+                var nextToken = 1;
 
                 this.next_token();
 
@@ -5024,6 +5074,13 @@ window.app = new Vue({
                     if(token.search(re) != -1 && final == false){
                       final = true;
                       string = string + " " + token.substring(0, token.length-1);
+                    }
+
+                    for(var z = 0; z < architecture.directives.length; z++){
+                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                        final = true;
+                        nextToken = 0;
+                      }
                     }
 
                     if(final == false){
@@ -5110,8 +5167,12 @@ window.app = new Vue({
 
                   console.log("ascii_not_null_end Terminado")
 
-                  this.next_token();
-                  token = this.get_token();
+                  if(nextToken == 1){
+                    this.next_token();
+                    token = this.get_token();
+                  }
+
+                  nextToken = 1;
 
                   console.log(token)
 
@@ -8804,12 +8865,14 @@ $("#selectData").change(function(){
   var value = document.getElementById("selectData").value;
   if(value == "CPU-FP Registers"){
     app._data.register_type = 'floating point';
+    app._data.nameTabReg = "Real";
     $("#registers").show();
     $("#memory").hide();
     $("#stats").hide();
   }
   if(value == "CPU-INT Registers") {
     app._data.register_type = 'integer';
+    app._data.nameTabReg = "Decimal";
     $("#registers").show();
     $("#memory").hide();
     $("#stats").hide();
