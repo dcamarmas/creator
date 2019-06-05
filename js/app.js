@@ -3249,6 +3249,7 @@ window.app = new Vue({
       this.update_binary = update_binary;
       $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
       $("#divTags").attr("class", "col-lg-2 col-sm-12");
+      $("#divTags").show();
       this.load_binary = true;
     },
 
@@ -3257,6 +3258,7 @@ window.app = new Vue({
       this.update_binary = update_binary;
       $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
       $("#divTags").attr("class", "col-lg-0 col-sm-0");
+      $("#divTags").hide();
       this.load_binary = false;
     },
 
