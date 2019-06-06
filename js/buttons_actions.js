@@ -22,16 +22,19 @@ $("#memory_btn").click(function(){
   $("#registers").hide();
   $("#memory").show();
   $("#stats").hide();
+  app._data.nameReg = 'Registers';
 });
 
 $("#selectData").click(function(){
   $("#registers").show();
   $("#memory").hide();
   $("#stats").hide();
+  app._data.nameReg = 'Registers';
 });
 
 $("#stats_btn").click(function(){
   $("#registers").hide();
   $("#memory").hide();
   $("#stats").show();
+  app._data.nameReg = 'Registers';
 });
