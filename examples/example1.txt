@@ -1,3 +1,6 @@
+#Example 1
+
+
 .data
 	byte: .byte 0x51, 2, -3, 4, 5
     .align 1
@@ -16,15 +19,17 @@
 
 .text
 main:
-	beq $5 $a1 b
-	c: addi $a0 $a1 10	#oihewfolfjoijioerg
-	addi $a0 $a1 100
-	beq $a0 $a1 b
-	addi $a0 $a1 1000 #bjksvdnlnknvdjvfd
-	beq $a0 $a1 c#kjdslvfkjlfbf
+	   addi $t0 $t0 100
+	d: bne $t0 $t1 b
+	c: addi $a0 $a0 10
+	   mul $a0 $a0 $4
+	   addi $v0 $v0 1
+	   syscall
+	   addi $v0 $v0 9
+	   syscall
+	   beq $a0 $t0 c
 	b: addi $a0 $a1 15265
-	addi $a0 $a1 10
-	mul $4 $a0 $a0
-
-	addi $a0 $a1 105525452
-	move $4 $0
+	   addi $a0 $a1 105525452
+	   move $5 $4
+	   addi $t1 $t1 100
+	   b d

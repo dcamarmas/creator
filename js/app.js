@@ -420,8 +420,6 @@ window.app = new Vue({
     /*ALERTA GLOBAL*/
     alertMessaje: '',
     type: '',
-    dismissSecs: 3,
-    dismissCountDown: 0,
 
     /*ALERTA MODAL*/
     dismissSecsMod: 3,
@@ -705,6 +703,7 @@ window.app = new Vue({
     runExecution: false,
     /*Tag registros*/
     nameTabReg: 'Decimal',
+    nameReg: 'INT Registers',
     /*Ejemplos Disponibles*/
     example_available: example_available,
     /*Nuevo valor del registro*/
@@ -751,15 +750,6 @@ window.app = new Vue({
       else{
         return true;
       }
-    },
-    /*ALERTA GLOBAL*/
-    countDownChanged (dismissCountDown) {
-      this.dismissCountDown = dismissCountDown;
-    },
-
-    /*ALERTA MODAL*/
-    countDownChangedMod (dismissCountDown) {
-      this.dismissCountDownMod = dismissCountDown;
     },
 
     /*Nombres de barra de paginacion*/
@@ -889,7 +879,11 @@ window.app = new Vue({
 
       app._data.alertMessaje = 'The backup has been loaded correctly';
       app._data.type ='success';
-      app._data.dismissCountDown = app._data.dismissSecs;
+      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -939,7 +933,11 @@ window.app = new Vue({
 
           app._data.alertMessaje = 'The selected architecture has been loaded correctly';
           app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -949,7 +947,6 @@ window.app = new Vue({
 
       $.getJSON('architecture/'+e+'.json', function(cfg){
         var auxArchitecture = cfg;
-
         architecture = bigInt_deserialize(auxArchitecture);
         app._data.architecture = architecture;
 
@@ -975,7 +972,13 @@ window.app = new Vue({
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
+
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       })
@@ -984,7 +987,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'The selected architecture is not currently available';
         app._data.type ='info';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
@@ -999,7 +1006,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         return;
       }
 
@@ -1034,7 +1045,11 @@ window.app = new Vue({
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
         app._data.type ='success';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});
         
@@ -1090,7 +1105,11 @@ window.app = new Vue({
       $(".loading").hide();
       app._data.alertMessaje = 'Save architecture';
       app._data.type ='success';
-      app._data.dismissCountDown = app._data.dismissSecs;
+      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -1131,7 +1150,11 @@ window.app = new Vue({
 
       app._data.alertMessaje = 'Architecture deleted successfully';
       app._data.type ='success';
-      app._data.dismissCountDown = app._data.dismissSecs;
+      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -1158,7 +1181,11 @@ window.app = new Vue({
           else{
             app._data.alertMessaje = 'The value must be a number';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -1170,7 +1197,11 @@ window.app = new Vue({
         if(auxMemoryLayout[i].value < 0){
           app._data.alertMessaje = 'The value can not be negative';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -1178,8 +1209,11 @@ window.app = new Vue({
         else if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
           app._data.alertMessaje = 'The memory must be align';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
-          var date = new Date();
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
@@ -1187,7 +1221,11 @@ window.app = new Vue({
           if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
             app._data.alertMessaje = 'The segment can not be overlap';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -1252,7 +1290,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The registers has been reset correctly';
           app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -1277,7 +1319,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'The registers has been reset correctly';
         app._data.type ='success';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
@@ -1300,7 +1346,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } else {
         this.newComponent()
       }
@@ -1312,7 +1362,11 @@ window.app = new Vue({
         if(this.formArchitecture.name == architecture_hash[i].name){
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -1353,7 +1407,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } else {
         this.editComponent(comp);
       }
@@ -1365,7 +1423,11 @@ window.app = new Vue({
         if((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -1441,19 +1503,31 @@ window.app = new Vue({
       if (!this.formArchitecture.name) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } else {
         if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
           $(".loading").hide();
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         }
         else if(isNaN(this.formArchitecture.defValue)){
           $(".loading").hide();
           app._data.alertMessaje = 'The default value must be a number';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         }
         else{
           this.newElement(comp);
@@ -1469,7 +1543,11 @@ window.app = new Vue({
             $(".loading").hide();
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             return;
           }
         } 
@@ -1575,13 +1653,21 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } 
       else if(isNaN(this.formArchitecture.defValue)){
         $(".loading").hide();
         app._data.alertMessaje = 'The default value must be a number';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else {
         this.editElement(comp);
@@ -1596,7 +1682,11 @@ window.app = new Vue({
             $(".loading").hide();
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             return;
           }
         } 
@@ -1844,7 +1934,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The instruction set has been reset correctly';
           app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -1863,7 +1957,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'The instruction set has been reset correctly';
         app._data.type ='success';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
@@ -1885,7 +1983,11 @@ window.app = new Vue({
               $(".loading").hide();
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
               return;
             }
 
@@ -1894,7 +1996,11 @@ window.app = new Vue({
                 $(".loading").hide();
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
-                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                 return;
               }
             }
@@ -1908,7 +2014,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -1923,25 +2033,41 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } 
       else if(isNaN(this.formInstruction.co)){
         $(".loading").hide();
         app._data.alertMessaje = 'The field co must be numbers';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else if(isNaN(this.formInstruction.cop)){
         $(".loading").hide();
         app._data.alertMessaje = 'The field cop must be numbers';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
         $(".loading").hide();
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else {
         this.newInstruction();
@@ -1956,7 +2082,11 @@ window.app = new Vue({
             $(".loading").hide();
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             return;
           }
         }
@@ -1967,7 +2097,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -2061,7 +2195,11 @@ window.app = new Vue({
               $(".loading").hide();
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
               return;
             }
 
@@ -2070,7 +2208,11 @@ window.app = new Vue({
                 $(".loading").hide();
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
-                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                 return;
               }
             }
@@ -2083,7 +2225,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -2097,25 +2243,41 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else if(isNaN(this.formInstruction.co)){
         $(".loading").hide();
         app._data.alertMessaje = 'The field co must be numbers';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else if(isNaN(this.formInstruction.cop)){
         $(".loading").hide();
         app._data.alertMessaje = 'The field cop must be numbers';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
         $(".loading").hide();
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else {
         this.editInstruction(inst, co, cop);
@@ -2138,7 +2300,11 @@ window.app = new Vue({
             $(".loading").hide();
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             return;
           }
         }
@@ -2149,7 +2315,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -2200,7 +2370,11 @@ window.app = new Vue({
 
       app._data.alertMessaje = 'The instruction has been modified, please check the definition of the pseudoinstructions';
       app._data.type ='info';
-      app._data.dismissCountDown = app._data.dismissSecs;
+      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -2247,7 +2421,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The registers has been reset correctly';
           app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -2266,7 +2444,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'The pseudoinstruction set has been reset correctly';
         app._data.type ='success';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
@@ -2335,7 +2517,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       }
       else {
         this.editPseudoinstruction(inst, index);
@@ -2406,7 +2592,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } 
       else {
         this.newPseudoinstruction();
@@ -2456,7 +2646,11 @@ window.app = new Vue({
           if(instructions.length == 1){
             app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
             app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             return -1;
           }
 
@@ -2488,7 +2682,11 @@ window.app = new Vue({
                 if(instructions[j].search(re) == -1){
                   app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
                   app._data.type ='danger';
-                  app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                  app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                   return -1;
                 }
 
@@ -2541,7 +2739,11 @@ window.app = new Vue({
                     if(!found){
                       app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
                   }
@@ -2555,14 +2757,22 @@ window.app = new Vue({
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
                     }
@@ -2570,14 +2780,22 @@ window.app = new Vue({
                       if(isNaN(parseFloat(instructionParts[z])) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
 
                       if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
                     }
@@ -2589,14 +2807,22 @@ window.app = new Vue({
                       if(isNaN(parseInt(instructionParts[z])) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
 
                       if((numAux.toString(2)).length > fieldsLength){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
                     }
@@ -2610,14 +2836,22 @@ window.app = new Vue({
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
                         app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
                         app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
-                        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                         return -1;
                       }
                     }
@@ -2648,7 +2882,11 @@ window.app = new Vue({
                   if(!found){
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type ='danger';
-                    app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                    app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                     return -1;
                   }
                 }
@@ -2656,7 +2894,11 @@ window.app = new Vue({
                 if(numFields != instructionParts.length){
                   app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                   app._data.type ='danger';
-                  app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                  app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                   return -1;
                 }
               }
@@ -2664,7 +2906,11 @@ window.app = new Vue({
             if(!found){
               app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
               app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
               return -1;
             }
           }
@@ -2682,7 +2928,11 @@ window.app = new Vue({
         if(instructions.length == 1){
           app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return -1;
         }
 
@@ -2716,7 +2966,11 @@ window.app = new Vue({
               if(instructions[j].search(re) == -1){
                 app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
                 app._data.type ='danger';
-                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                 return -1;
               }
 
@@ -2769,7 +3023,11 @@ window.app = new Vue({
                   if(!found){
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type ='danger';
-                    app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                    app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                     return -1;
                   }
                 }
@@ -2783,14 +3041,22 @@ window.app = new Vue({
                     if(isNaN(parseInt(instructionParts[z], 16)) == true){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
 
                     if(value[1].length*4 > fieldsLength){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
                   }
@@ -2798,14 +3064,22 @@ window.app = new Vue({
                     if(isNaN(parseFloat(instructionParts[z])) == true){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
 
                     if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
                   }
@@ -2817,14 +3091,22 @@ window.app = new Vue({
                     if(isNaN(parseInt(instructionParts[z])) == true){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
 
                     if((numAux.toString(2)).length > fieldsLength){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
                   }
@@ -2838,18 +3120,24 @@ window.app = new Vue({
                     if(isNaN(parseInt(instructionParts[z], 16)) == true){
                       app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
                     }
 
                     if(value[1].length*4 > fieldsLength){
                       app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
-                      app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                       return -1;
-                    }
-
-                    
+                    } 
                   }
                 }
 
@@ -2878,7 +3166,11 @@ window.app = new Vue({
                 if(!found){
                   app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                   app._data.type ='danger';
-                  app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                  app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                   return -1;
                 }
               }
@@ -2886,7 +3178,11 @@ window.app = new Vue({
               if(numFields != instructionParts.length){
                 app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                 app._data.type ='danger';
-                app._data.dismissCountDownMod = app._data.dismissSecsMod;
+                app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
                 return -1;
               }
             }
@@ -2894,7 +3190,11 @@ window.app = new Vue({
           if(!found){
             app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
             app._data.type ='danger';
-            app._data.dismissCountDownMod = app._data.dismissSecsMod;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             return -1;
           }
         }
@@ -2942,7 +3242,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The directive set has been reset correctly';
           app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -2961,7 +3265,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'The directive set has been reset correctly';
         app._data.type ='success';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
@@ -3008,12 +3316,20 @@ window.app = new Vue({
       if (!this.formDirective.name || !this.formDirective.action) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } else {
         if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         }
         else{
           this.editDirective(name);
@@ -3027,7 +3343,11 @@ window.app = new Vue({
         if((this.formDirective.name == architecture.directives[i].name) && (name != this.formDirective.name)){
           app._data.alertMessaje = 'The directive already exists';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -3057,12 +3377,20 @@ window.app = new Vue({
       if (!this.formDirective.name || !this.formDirective.action) {
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
-        app._data.dismissCountDownMod = app._data.dismissSecsMod;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       } else {
         if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         }
         else{
           this.newDirective();
@@ -3076,7 +3404,11 @@ window.app = new Vue({
         if(this.formDirective.name == architecture.directives[i].name){
           app._data.alertMessaje = 'The directive already exists';
           app._data.type ='danger';
-          app._data.dismissCountDownMod = app._data.dismissSecsMod;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           return;
         }
       }
@@ -3172,7 +3504,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'You can not enter data in a library';
         app._data.type ='danger';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
@@ -3184,7 +3520,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'You can not use the "main" tag in a library';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -3220,7 +3560,11 @@ window.app = new Vue({
       $(".loading").hide();
       app._data.alertMessaje = 'Save binary';
       app._data.type ='success';
-      app._data.dismissCountDown = app._data.dismissSecs;
+      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -3365,6 +3709,7 @@ window.app = new Vue({
       stack_memory = [];
       data = [];
       executionInit = 1;
+      mutexRead = false;
 
       if(update_binary.instructions_binary != null){
         for(var i = 0; i < update_binary.instructions_binary.length; i++){
@@ -3439,7 +3784,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'Please enter the assembly code before compiling';
         app._data.type ='danger';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         
@@ -3827,7 +4176,11 @@ window.app = new Vue({
 
           app._data.alertMessaje = 'Data overflow';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -3857,7 +4210,11 @@ window.app = new Vue({
 
           app._data.alertMessaje = 'Instruction overflow';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -3923,7 +4280,11 @@ window.app = new Vue({
 
       app._data.alertMessaje = 'Compilation completed successfully';
       app._data.type ='success';
-      app._data.dismissCountDown = app._data.dismissSecs;
+      app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -5047,6 +5408,7 @@ window.app = new Vue({
                   while(final == false){
                     this.next_token();
                     token = this.get_token();
+                    console.log(token)
 
                     if(token == null){
                       break;
@@ -5193,6 +5555,7 @@ window.app = new Vue({
                 console.log("ascii_null_end")
                 
                 var isAscii = true;
+                var nextToken = 1;
 
                 this.next_token();
 
@@ -5249,6 +5612,7 @@ window.app = new Vue({
                     }
 
                     re = new RegExp('(.)","(.)');
+                    console.log(re)
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -5257,6 +5621,7 @@ window.app = new Vue({
 
                     re = new RegExp(",", "g")
                     token = token.replace(re, "");
+
 
                     re = new RegExp('^"');
                     console.log(re)
@@ -5270,6 +5635,13 @@ window.app = new Vue({
                     if(token.search(re) != -1 && final == false){
                       final = true;
                       string = string + " " + token.substring(0, token.length-1);
+                    }
+
+                    for(var z = 0; z < architecture.directives.length; z++){
+                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                        final = true;
+                        nextToken = 0;
+                      }
                     }
 
                     if(final == false){
@@ -5369,8 +5741,12 @@ window.app = new Vue({
 
                   console.log("ascii_null_end Terminado")
 
-                  this.next_token();
-                  token = this.get_token();
+                  if(nextToken == 1){
+                    this.next_token();
+                    token = this.get_token();
+                  }
+
+                  nextToken = 1;
 
                   console.log(token)
 
@@ -6712,7 +7088,11 @@ window.app = new Vue({
 
           app._data.alertMessaje = ' The selected example has been loaded correctly';
           app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
         }
@@ -6739,7 +7119,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'No instructions in memory';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -6750,7 +7134,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The program has finished';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -6759,7 +7147,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The program has finished with errors';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -6768,7 +7160,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'Write in the console please';
           app._data.type ='info';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -6787,7 +7183,11 @@ window.app = new Vue({
               $(".loading").hide();
               app._data.alertMessaje = 'Label "main" not found';
               app._data.type ='danger';
-              app._data.dismissCountDown = app._data.dismissSecs;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
               var date = new Date();
               notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               executionIndex = -1;
@@ -7307,7 +7707,11 @@ window.app = new Vue({
             $(".loading").hide();
             app._data.alertMessaje = 'The definition of the instruction contains errors, please review it';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             $(".loading").hide();
@@ -7367,7 +7771,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The execution of the program has finished';
           app._data.type ='success';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           $(".loading").hide();
@@ -7394,7 +7802,11 @@ window.app = new Vue({
         $(".loading").hide();
         app._data.alertMessaje = 'No instructions in memory';
         app._data.type ='danger';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
@@ -7404,7 +7816,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The program has finished';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -7413,7 +7829,11 @@ window.app = new Vue({
           $(".loading").hide();
           app._data.alertMessaje = 'The program has finished with errors';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -7521,7 +7941,11 @@ window.app = new Vue({
       if(architecture.components[indexComp].elements[indexElem].properties[0] != "read" && architecture.components[indexComp].elements[indexElem].properties[1] != "read"){
         app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
         app._data.type ='danger';
-        app._data.dismissCountDown = app._data.dismissSecs;
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
         instructions[executionIndex]._rowVariant = 'danger';
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -7545,7 +7969,11 @@ window.app = new Vue({
         if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
           app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           instructions[executionIndex]._rowVariant = 'danger';
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -7571,7 +7999,11 @@ window.app = new Vue({
           if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -7595,7 +8027,11 @@ window.app = new Vue({
           if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -7653,7 +8089,11 @@ window.app = new Vue({
         if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -7713,7 +8153,11 @@ window.app = new Vue({
         if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -7752,7 +8196,11 @@ window.app = new Vue({
         if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -7888,7 +8336,11 @@ window.app = new Vue({
         if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8180,7 +8632,11 @@ window.app = new Vue({
         if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8356,7 +8812,11 @@ window.app = new Vue({
         if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
-          app._data.dismissCountDown = app._data.dismissSecs;
+          app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8473,12 +8933,15 @@ window.app = new Vue({
               value = value + this.keyboard.charAt(i);
             }
 
+            console.log(value)
+
             var auxAddr = data_address;
 
             for (var i = 0; i < data_memory.length && this.keyboard.length > 0; i++){
               for (var j = 0; j < data_memory[i].Binary.length; j++){
                 var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
                 if(aux == addr){
+                  console.log(i + "   " + j)
                   for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
                     data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
                     auxAddr = data_memory[i].Binary[j].Addr;
@@ -8490,7 +8953,7 @@ window.app = new Vue({
                     data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
                   }
 
-                  
+                  console.log(valueIndex)
 
                   if((i+1) < data_memory.length && valueIndex < value.length){
                     i++;
@@ -8506,9 +8969,8 @@ window.app = new Vue({
                     }
 
                   }
-                  else{
+                  else if(valueIndex < value.length){
                     data_address = auxAddr;
-
                     data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
                     i++;
                     for (var z = 0; z < 4; z++){
@@ -8571,7 +9033,11 @@ window.app = new Vue({
           if((parseInt(architecture.components[indexComp].elements[indexElem].value))%4 != 0){
             app._data.alertMessaje = 'The memory must be aligned';
             app._data.type ='danger';
-            app._data.dismissCountDown = app._data.dismissSecs;
+            app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             executionIndex = -1;
@@ -8675,7 +9141,11 @@ window.app = new Vue({
             if(!re.test(hex)){
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
 
               this.calculator.sign = "";
               this.calculator.exponent = "";
@@ -8707,7 +9177,11 @@ window.app = new Vue({
             if(!re.test(hex)){
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
 
               this.calculator.sign = "";
               this.calculator.exponent = "";
@@ -8748,7 +9222,11 @@ window.app = new Vue({
             if(!re.test(binary)){
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
 
               this.calculator.hexadecimal = "";
               this.calculator.decimal = "";
@@ -8782,7 +9260,11 @@ window.app = new Vue({
             if(!re.test(binary)){
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
-              app._data.dismissCountDownMod = app._data.dismissSecsMod;
+              app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center"
+        })
 
               this.calculator.hexadecimal = "";
               this.calculator.decimal = "";
@@ -8845,9 +9327,26 @@ window.app = new Vue({
               this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
             }
           }
-
           break;
       }
+    },
+
+    showIntReg(){
+      app._data.register_type = 'integer';
+      app._data.nameTabReg = "Decimal";
+      app._data.nameReg = 'INT Registers';
+      $("#registers").show();
+      $("#memory").hide();
+      $("#stats").hide();
+    },
+
+    showFpReg(){
+      app._data.register_type = 'floating point';
+      app._data.nameTabReg = "Real";
+      app._data.nameReg = 'FP Registers';
+      $("#registers").show();
+      $("#memory").hide();
+      $("#stats").hide();
     },
 
   },
@@ -8862,24 +9361,12 @@ window.app = new Vue({
   },
 })
 
-/*Cambia la vision de los registros*/
-$("#selectData").change(function(){
-  var value = document.getElementById("selectData").value;
-  if(value == "CPU-FP Registers"){
-    app._data.register_type = 'floating point';
-    app._data.nameTabReg = "Real";
-    $("#registers").show();
-    $("#memory").hide();
-    $("#stats").hide();
-  }
-  if(value == "CPU-INT Registers") {
-    app._data.register_type = 'integer';
-    app._data.nameTabReg = "Decimal";
-    $("#registers").show();
-    $("#memory").hide();
-    $("#stats").hide();
-  }
-});
+/*Alerta al cerrar pagina web*/
+window.onbeforeunload = confirmExit;
+function confirmExit()
+{
+  return "Ha intentado salir de esta pagina. Es posible que los cambios no se guarden.";
+}
 
 /*Transforma los bigint en string*/
 function bigInt_serialize(object){
