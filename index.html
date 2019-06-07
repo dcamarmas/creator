@@ -122,11 +122,11 @@
           </b-modal>
 
           <!-- 1 navbar -->
-          <b-navbar toggleable="sm" class="header" style="margin: 1px;">
+          <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
+
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.3 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-
-            <b-navbar-brand style="color: #2196F3;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.3 </b-badge><font style="padding-left: 12%;">{{architecture_name}}</font><br><font size="2" style="color: #383d41">didaCtic geneRic assEmbly progrAmming simulaTOR</font></h5></b-navbar-brand>
 
             <b-collapse is-nav id="nav_collapse">
               <b-navbar-nav class="ml-auto">
@@ -134,6 +134,7 @@
                 <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
               </b-navbar-nav>
             </b-collapse>
+
           </b-navbar>
         </header>
 
@@ -1984,7 +1985,7 @@
 
             <div class="col-lg-2 col-sm-12 nopadding">
 							<div class="col-lg-12 col-sm-12">
-                <b-dropdown right text="File" size="sm" class="btn btn-block menuGroup btn-sm" variant="outline-secondary">
+                <b-dropdown right text="File" size="sm" class="btn btn-block menuGroup btn-sm nopadding" variant="outline-secondary">
                   <b-dropdown-item @click="newAssembly"><span class="fas fa-file"></span> New</b-dropdown-item>
                   <b-dropdown-item v-b-modal.load_assembly><span class="fas fa-upload"></span> Load</b-dropdown-item>
                   <b-dropdown-item v-b-modal.save_assembly><span class="fas fa-download"></span> Save</b-dropdown-item>
@@ -2011,11 +2012,13 @@
             </div>
 
             <div class="col-lg-2 col-sm-12 nopadding">
-              <b-dropdown right text="Library" size="sm" class="btn btn-block menuGroup btn-sm" variant="outline-secondary">
-                <b-dropdown-item v-b-modal.save_binary><span class="fas fa-plus-square"></span> Create</b-dropdown-item>
-                <b-dropdown-item v-b-modal.load_binary><span class="fas fa-upload"></span> Load Library</b-dropdown-item>
-                <b-dropdown-item @click="removeLibrary"><span class="far fa-trash-alt"></span> Remove</b-dropdown-item>
-              </b-dropdown>
+              <div class="col-lg-12 col-sm-12">
+                <b-dropdown right text="Library" size="sm" class="btn btn-block menuGroup btn-sm nopadding" variant="outline-secondary">
+                  <b-dropdown-item v-b-modal.save_binary><span class="fas fa-plus-square"></span> Create</b-dropdown-item>
+                  <b-dropdown-item v-b-modal.load_binary><span class="fas fa-upload"></span> Load Library</b-dropdown-item>
+                  <b-dropdown-item @click="removeLibrary"><span class="far fa-trash-alt"></span> Remove</b-dropdown-item>
+                </b-dropdown>
+              </div>
             </div>
 
             <div class="col-lg-1 col-sm-12 nopadding">
