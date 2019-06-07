@@ -1506,13 +1506,13 @@
                       <div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
                         <!-- Estructura si los numeros son enteros -->
                         <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name + 'Int')">
                              {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
                              <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                           </b-button>
 
-                          <b-popover :target="popoverId(item2.name)" triggers="click blur" class="popover" >
+                          <b-popover :target="popoverId(item2.name + 'Int')" triggers="click blur" class="popover" >
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -1564,11 +1564,11 @@
                         <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
                           <!-- Estructura si los numeros son FP simple -->
                           <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
-                            <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+                            <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name + 'FP')">
                               {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                             </b-button>
 
-                            <b-popover :target="popoverId(item2.name)" triggers="click blur">
+                            <b-popover :target="popoverId(item2.name + 'FP')" triggers="click blur">
 
                               <template slot="title">
                                 <b-button @click="closePopover" class="close" aria-label="Close">
@@ -1615,11 +1615,11 @@
 
                           <!-- Estructura si los numeros son FP doble -->
                           <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
-                            <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+                            <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name + 'DFP')">
                                {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                             </b-button>
 
-                            <b-popover :target="popoverId(item2.name)" triggers="click blur">
+                            <b-popover :target="popoverId(item2.name + 'DFP')" triggers="click blur">
 
                               <template slot="title">
                                 <b-button @click="closePopover" class="close" aria-label="Close">
