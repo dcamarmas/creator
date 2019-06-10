@@ -397,6 +397,7 @@ var executionInit = 1;
 /*Escritura terminal finalizada*/
 var consoleMutex = false;
 var mutexRead = false;
+var newExecution = true;
 
 /*Variables que almacenan el codigo introducido*/
 var code_assembly = '';
@@ -880,10 +881,11 @@ window.app = new Vue({
       app._data.alertMessaje = 'The backup has been loaded correctly';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+        autoHideDelay: 1500,
+      })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -934,10 +936,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The selected architecture has been loaded correctly';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -976,7 +979,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
 
         var date = new Date();
@@ -990,7 +994,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -1009,7 +1014,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         return;
       }
@@ -1048,7 +1054,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});
@@ -1106,10 +1113,11 @@ window.app = new Vue({
       app._data.alertMessaje = 'Save architecture';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+				autoHideDelay: 1500,
+      })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -1153,7 +1161,8 @@ window.app = new Vue({
       app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -1182,10 +1191,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The value must be a number';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -1198,10 +1208,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The value can not be negative';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -1210,10 +1221,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The memory must be align';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
@@ -1222,10 +1234,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The segment can not be overlap';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -1291,10 +1304,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The registers has been reset correctly';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -1322,7 +1336,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -1349,7 +1364,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } else {
         this.newComponent()
@@ -1363,10 +1379,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -1410,7 +1427,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } else {
         this.editComponent(comp);
@@ -1424,10 +1442,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The component already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -1506,7 +1525,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } else {
         if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
@@ -1514,20 +1534,22 @@ window.app = new Vue({
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
         }
         else if(isNaN(this.formArchitecture.defValue)){
           $(".loading").hide();
           app._data.alertMessaje = 'The default value must be a number';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
         }
         else{
           this.newElement(comp);
@@ -1544,10 +1566,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             return;
           }
         } 
@@ -1656,7 +1679,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } 
       else if(isNaN(this.formArchitecture.defValue)){
@@ -1666,7 +1690,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else {
@@ -1683,10 +1708,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             return;
           }
         } 
@@ -1935,10 +1961,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The instruction set has been reset correctly';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -1960,7 +1987,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -1984,10 +2012,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
               return;
             }
 
@@ -1997,10 +2026,11 @@ window.app = new Vue({
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+				          variant: app._data.type,
+				          solid: true,
+				          toaster: "b-toaster-top-center",
+									autoHideDelay: 1500,
+				        })
                 return;
               }
             }
@@ -2015,10 +2045,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -2036,7 +2067,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } 
       else if(isNaN(this.formInstruction.co)){
@@ -2046,7 +2078,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else if(isNaN(this.formInstruction.cop)){
@@ -2056,7 +2089,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
@@ -2066,7 +2100,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else {
@@ -2083,10 +2118,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             return;
           }
         }
@@ -2098,10 +2134,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -2124,7 +2161,7 @@ window.app = new Vue({
       architecture.instructions.push(newInstruction);
 
       for (var i = 0; i < this.formInstruction.numfields; i++) {
-        var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: this.formInstruction.startBitField[i], stopbit: this.formInstruction.stopBitField[i]};
+        var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: parseInt(this.formInstruction.startBitField[i]), stopbit: parseInt(this.formInstruction.stopBitField[i])};
         architecture.instructions[architecture.instructions.length-1].fields.push(newField);
       }
 
@@ -2196,10 +2233,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
               return;
             }
 
@@ -2209,10 +2247,11 @@ window.app = new Vue({
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+				          variant: app._data.type,
+				          solid: true,
+				          toaster: "b-toaster-top-center",
+									autoHideDelay: 1500,
+				        })
                 return;
               }
             }
@@ -2226,10 +2265,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -2246,7 +2286,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else if(isNaN(this.formInstruction.co)){
@@ -2256,7 +2297,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else if(isNaN(this.formInstruction.cop)){
@@ -2266,7 +2308,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
@@ -2276,7 +2319,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else {
@@ -2301,10 +2345,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             return;
           }
         }
@@ -2316,10 +2361,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -2340,8 +2386,8 @@ window.app = new Vue({
             if(j < architecture.instructions[i].fields.length){
               architecture.instructions[i].fields[j].name = this.formInstruction.nameField[j];
               architecture.instructions[i].fields[j].type = this.formInstruction.typeField[j];
-              architecture.instructions[i].fields[j].startbit = this.formInstruction.startBitField[j];
-              architecture.instructions[i].fields[j].stopbit = this.formInstruction.stopBitField[j];
+              architecture.instructions[i].fields[j].startbit = parseInt(this.formInstruction.startBitField[j]);
+              architecture.instructions[i].fields[j].stopbit = parseInt(this.formInstruction.stopBitField[j]);
             }
             else{
               var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j]};
@@ -2371,10 +2417,11 @@ window.app = new Vue({
       app._data.alertMessaje = 'The instruction has been modified, please check the definition of the pseudoinstructions';
       app._data.type ='info';
       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+				autoHideDelay: 1500,
+      })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -2422,10 +2469,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The registers has been reset correctly';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -2447,7 +2495,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -2520,7 +2569,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       }
       else {
@@ -2595,7 +2645,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } 
       else {
@@ -2647,10 +2698,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             return -1;
           }
 
@@ -2683,10 +2735,11 @@ window.app = new Vue({
                   app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
                   app._data.type ='danger';
                   app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+					          variant: app._data.type,
+					          solid: true,
+					          toaster: "b-toaster-top-center",
+										autoHideDelay: 1500,
+					        })
                   return -1;
                 }
 
@@ -2740,10 +2793,11 @@ window.app = new Vue({
                       app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
                   }
@@ -2758,10 +2812,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
 
@@ -2769,10 +2824,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
                     }
@@ -2781,10 +2837,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
 
@@ -2792,10 +2849,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
                     }
@@ -2808,10 +2866,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
 
@@ -2819,10 +2878,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
                     }
@@ -2837,10 +2897,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
 
@@ -2848,10 +2909,11 @@ window.app = new Vue({
                         app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
                         app._data.type ='danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+								          variant: app._data.type,
+								          solid: true,
+								          toaster: "b-toaster-top-center",
+													autoHideDelay: 1500,
+								        })
                         return -1;
                       }
                     }
@@ -2883,10 +2945,11 @@ window.app = new Vue({
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type ='danger';
                     app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+						          variant: app._data.type,
+						          solid: true,
+						          toaster: "b-toaster-top-center",
+											autoHideDelay: 1500,
+						        })
                     return -1;
                   }
                 }
@@ -2895,10 +2958,11 @@ window.app = new Vue({
                   app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                   app._data.type ='danger';
                   app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+					          variant: app._data.type,
+					          solid: true,
+					          toaster: "b-toaster-top-center",
+										autoHideDelay: 1500,
+					        })
                   return -1;
                 }
               }
@@ -2907,10 +2971,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
               return -1;
             }
           }
@@ -2929,10 +2994,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return -1;
         }
 
@@ -2967,10 +3033,11 @@ window.app = new Vue({
                 app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
                 app._data.type ='danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+				          variant: app._data.type,
+				          solid: true,
+				          toaster: "b-toaster-top-center",
+									autoHideDelay: 1500,
+				        })
                 return -1;
               }
 
@@ -3024,10 +3091,11 @@ window.app = new Vue({
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type ='danger';
                     app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+						          variant: app._data.type,
+						          solid: true,
+						          toaster: "b-toaster-top-center",
+											autoHideDelay: 1500,
+						        })
                     return -1;
                   }
                 }
@@ -3042,10 +3110,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
 
@@ -3053,10 +3122,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
                   }
@@ -3065,10 +3135,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
 
@@ -3076,10 +3147,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
                   }
@@ -3092,10 +3164,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
 
@@ -3103,10 +3176,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
                   }
@@ -3121,10 +3195,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     }
 
@@ -3132,10 +3207,11 @@ window.app = new Vue({
                       app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
                       app._data.type ='danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+							          variant: app._data.type,
+							          solid: true,
+							          toaster: "b-toaster-top-center",
+												autoHideDelay: 1500,
+							        })
                       return -1;
                     } 
                   }
@@ -3167,10 +3243,11 @@ window.app = new Vue({
                   app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                   app._data.type ='danger';
                   app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+					          variant: app._data.type,
+					          solid: true,
+					          toaster: "b-toaster-top-center",
+										autoHideDelay: 1500,
+					        })
                   return -1;
                 }
               }
@@ -3179,10 +3256,11 @@ window.app = new Vue({
                 app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
                 app._data.type ='danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+				          variant: app._data.type,
+				          solid: true,
+				          toaster: "b-toaster-top-center",
+									autoHideDelay: 1500,
+				        })
                 return -1;
               }
             }
@@ -3191,10 +3269,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             return -1;
           }
         }
@@ -3243,10 +3322,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The directive set has been reset correctly';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -3268,7 +3348,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -3319,17 +3400,19 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } else {
         if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
         }
         else{
           this.editDirective(name);
@@ -3344,10 +3427,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The directive already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -3380,17 +3464,19 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
       } else {
         if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
         }
         else{
           this.newDirective();
@@ -3405,10 +3491,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The directive already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           return;
         }
       }
@@ -3507,7 +3594,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -3521,10 +3609,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'You can not use the "main" tag in a library';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -3561,10 +3650,11 @@ window.app = new Vue({
       app._data.alertMessaje = 'Save binary';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+				autoHideDelay: 1500,
+      })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -3787,7 +3877,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -4177,10 +4268,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Data overflow';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -4211,10 +4303,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Instruction overflow';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -4281,10 +4374,11 @@ window.app = new Vue({
       app._data.alertMessaje = 'Compilation completed successfully';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+				autoHideDelay: 1500,
+      })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -5477,11 +5571,11 @@ window.app = new Vue({
                       }
                     }
 
-                    if(data_address % 4 != 0 && i == 0){
+                    /*if(data_address % 4 != 0 && i == 0){
                       this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
                       return -1;
-                    }
+                    }*/
 
                     if(data_address % 4 == 0){
                       data_memory.push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i)});
@@ -5675,11 +5769,11 @@ window.app = new Vue({
                       }
                     }
 
-                    if(data_address % 4 != 0 && i == 0){
+                    /*if(data_address % 4 != 0 && i == 0){
                       this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
                       return -1;
-                    }
+                    }*/
 
                     if(data_address % 4 == 0){
                       data_memory.push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i)});
@@ -5767,6 +5861,7 @@ window.app = new Vue({
                 this.next_token();
                 token = this.get_token();
                 console.log(token)
+                console.log(label)
 
                 if(token == null){
                   this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5809,7 +5904,7 @@ window.app = new Vue({
                     }
                   }
 
-                  if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
+                  /*if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
                     this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     $(".loading").hide();
                     return -1;
@@ -5818,7 +5913,7 @@ window.app = new Vue({
                     this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     $(".loading").hide();
                     return -1;
-                  }
+                  }*/
 
                   if(data_address % 4 == 0){
                     data_memory.push({Address: data_address, Binary: [], Value: string, DefValue: ""});
@@ -5839,14 +5934,14 @@ window.app = new Vue({
                   }
                   else{
                     if(i == 0){
-                      (data_memory[data_memory.length-1].Binary).splice(data_address, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
+                      (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
                       if(label != null){
                         data_tag.push({tag: label, addr: data_address});
                       }
                       label = null;
                     }
                     else{
-                      (data_memory[data_memory.length-1].Binary).splice(data_address, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                      (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                     }
 
                     data_address++;
@@ -6412,8 +6507,17 @@ window.app = new Vue({
                             return -1;
                           }
                           console.log(reg)
+                          console.log((reg.toString(2)).padStart(fieldsLength, "0"))
+                          console.log(binary)
+                          console.log(binary.length)
+                          console.log(architecture.instructions[i].fields[a].startbit + 1)
+                          console.log(binary.length - (architecture.instructions[i].fields[a].startbit + 1))
+
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                           //instruction = instruction + " " + token;
+                          
+                          console.log(binary)
+
                           re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
                         }
@@ -6681,7 +6785,12 @@ window.app = new Vue({
                   if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                     fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                     
+                    console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"))
+
                     binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
+                    
+                    console.log(binary)
+
                     re = RegExp("[fF][0-9]+");
                     instruction = instruction.replace(re, token);
                   }
@@ -7089,10 +7198,11 @@ window.app = new Vue({
           app._data.alertMessaje = ' The selected example has been loaded correctly';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
         }
@@ -7101,14 +7211,20 @@ window.app = new Vue({
       xhttp.send();
     },
 
-    /*Escritura de la terminal terminada*/
+    /*Escritura de la terminal terminada y vaciado*/
     consoleEnter(){
       consoleMutex = true;
+    },
+
+    consoleClear(){
+    	this.keyboard = "";
+    	this.display = "";
     },
 
     /*Funcion que ejecuta instruccion a instruccion*/
     executeInstruction(){
       console.log(mutexRead)
+      newExecution = false;
 
       do{
         console.log(executionIndex)
@@ -7120,10 +7236,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'No instructions in memory';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -7135,10 +7252,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The program has finished';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -7148,25 +7266,17 @@ window.app = new Vue({
           app._data.alertMessaje = 'The program has finished with errors';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
         else if(mutexRead == true){
           $(".loading").hide();
-          app._data.alertMessaje = 'Write in the console please';
-          app._data.type ='info';
-          app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
 
@@ -7184,10 +7294,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'Label "main" not found';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
               var date = new Date();
               notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               executionIndex = -1;
@@ -7233,8 +7344,9 @@ window.app = new Vue({
           var type;
           var auxIndex;
 
+
           if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
-            if(architecture.instructions[i].cop != null){
+            if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != ''){
               for (var j = 0; j < architecture.instructions[i].fields.length; j++){
                 if (architecture.instructions[i].fields[j].type == "cop") {
                   if(architecture.instructions[i].cop == instructionExecParts[0].substring(((architecture.instructions[i].nwords*31) - architecture.instructions[i].fields[j].startbit), ((architecture.instructions[i].nwords*32) - architecture.instructions[i].fields[j].stopbit))){
@@ -7708,10 +7820,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The definition of the instruction contains errors, please review it';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             $(".loading").hide();
@@ -7772,10 +7885,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The execution of the program has finished';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           $(".loading").hide();
@@ -7786,6 +7900,7 @@ window.app = new Vue({
             instructions[executionIndex]._rowVariant = 'success';
           }
         }
+        console.log(executionIndex)
       }
       while(instructions[executionIndex].hide == true);
 
@@ -7805,7 +7920,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -7819,7 +7935,8 @@ window.app = new Vue({
           app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -7830,10 +7947,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The program has finished with errors';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -7848,7 +7966,14 @@ window.app = new Vue({
     },
 
     programExecutionInst(){
-      if(instructions[executionIndex].Break == true && iter1 == 0){
+    	if(mutexRead == true){
+      	iter1 = 1;
+        $(".loading").hide();
+        $("#stopExecution").hide();
+        $("#playExecution").show();
+        return;
+      }
+      else if(instructions[executionIndex].Break == true && iter1 == 0){
         iter1 = 1;
         $(".loading").hide();
         $("#stopExecution").hide();
@@ -7868,10 +7993,11 @@ window.app = new Vue({
         iter1 = 0;
       }
       
-      if(executionIndex > 0){
+      if(executionIndex >= 0){
         setTimeout(this.programExecutionInst, 25);
       }
       else{
+      	console.log(executionIndex)
         $("#stopExecution").hide();
         $("#playExecution").show();
       }
@@ -7896,6 +8022,12 @@ window.app = new Vue({
         stats[i].percentage = 0;
         stats[i].number_instructions = 0;
       }
+
+      /*Reset consola*/
+      this.keyboard = "";
+      this.display = "";
+      mutexRead = false;
+      newExecution = true;
 
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++) {
@@ -7944,7 +8076,8 @@ window.app = new Vue({
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
-          toaster: "b-toaster-top-center"
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
         })
         instructions[executionIndex]._rowVariant = 'danger';
         var date = new Date();
@@ -7970,10 +8103,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           instructions[executionIndex]._rowVariant = 'danger';
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -8000,10 +8134,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -8028,10 +8163,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -8090,10 +8226,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8154,10 +8291,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8197,10 +8335,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8337,10 +8476,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8633,10 +8773,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8813,10 +8954,11 @@ window.app = new Vue({
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8830,18 +8972,18 @@ window.app = new Vue({
       switch(action){
         case "print_int":
           var value = architecture.components[indexComp].elements[indexElem].value;
-          app._data.display = app._data.display + "\n" + value;
+          app._data.display = app._data.display + value;
           break;
         case "print_float":
           var value = architecture.components[indexComp].elements[indexElem].value;
-          app._data.display = app._data.display + "\n" + value;
+          app._data.display = app._data.display + value;
           break;
         case "print_double":
           var value = architecture.components[indexComp].elements[indexElem].value;
-          app._data.display = app._data.display + "\n" + value;
+          app._data.display = app._data.display + value;
           break;
         case "print_string":
-          app._data.display = app._data.display + "\n";
+          app._data.display = app._data.display;
           var addr = architecture.components[indexComp].elements[indexElem].value;
 
           for (var i = 0; i < data_memory.length; i++){
@@ -8867,6 +9009,12 @@ window.app = new Vue({
         case "read_int":
           mutexRead = true;
           console.log(mutexRead)
+          if(newExecution == true){
+          	this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            return;
+          }
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
           }
@@ -8877,7 +9025,26 @@ window.app = new Vue({
             this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
-            console.log(mutexRead)
+            if(executionIndex >= instructions.length){
+		          for (var i = 0; i < instructions.length; i++) {
+		            instructions[i]._rowVariant = '';
+		          }
+
+		          executionIndex = -2;
+		          $(".loading").hide();
+		          app._data.alertMessaje = 'The execution of the program has finished';
+		          app._data.type ='success';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          $(".loading").hide();
+		          return;
+		        }
             break;
           }
 
@@ -8885,6 +9052,12 @@ window.app = new Vue({
         case "read_float":
           mutexRead = true;
           console.log(mutexRead)
+          if(newExecution == true){
+          	this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            return;
+          }
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
           }
@@ -8895,7 +9068,26 @@ window.app = new Vue({
             this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
-            console.log(mutexRead)
+            if(executionIndex >= instructions.length){
+		          for (var i = 0; i < instructions.length; i++) {
+		            instructions[i]._rowVariant = '';
+		          }
+
+		          executionIndex = -2;
+		          $(".loading").hide();
+		          app._data.alertMessaje = 'The execution of the program has finished';
+		          app._data.type ='success';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          $(".loading").hide();
+		          return;
+		        }
             break;
           }
 
@@ -8903,6 +9095,12 @@ window.app = new Vue({
         case "read_double":
           mutexRead = true;
           console.log(mutexRead)
+          if(newExecution == true){
+          	this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            return;
+          }
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
           }
@@ -8913,7 +9111,26 @@ window.app = new Vue({
             this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
-            console.log(mutexRead)
+            if(executionIndex >= instructions.length){
+		          for (var i = 0; i < instructions.length; i++) {
+		            instructions[i]._rowVariant = '';
+		          }
+
+		          executionIndex = -2;
+		          $(".loading").hide();
+		          app._data.alertMessaje = 'The execution of the program has finished';
+		          app._data.type ='success';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          $(".loading").hide();
+		          return;
+		        }
             break;
           }
 
@@ -8921,7 +9138,14 @@ window.app = new Vue({
         case "read_string":
           mutexRead = true;
           console.log(mutexRead)
+          if(newExecution == true){
+          	this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            return;
+          }
           if(consoleMutex == false){
+          	console.log("<zdxfcghj")
             setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
           }
           else{
@@ -8996,6 +9220,28 @@ window.app = new Vue({
 
             if(valueIndex == value.length){
               this.keyboard = "";
+              consoleMutex = false;
+	            mutexRead = false;
+	            if(executionIndex >= instructions.length){
+			          for (var i = 0; i < instructions.length; i++) {
+			            instructions[i]._rowVariant = '';
+			          }
+
+			          executionIndex = -2;
+			          $(".loading").hide();
+			          app._data.alertMessaje = 'The execution of the program has finished';
+			          app._data.type ='success';
+			          app.$bvToast.toast(app._data.alertMessaje, {
+				          variant: app._data.type,
+				          solid: true,
+				          toaster: "b-toaster-top-center",
+									autoHideDelay: 1500,
+				        })
+			          var date = new Date();
+			          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+			          $(".loading").hide();
+			          return;
+			        }
               return;
             }
 
@@ -9022,7 +9268,26 @@ window.app = new Vue({
             this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
-            console.log(mutexRead)
+            if(executionIndex >= instructions.length){
+		          for (var i = 0; i < instructions.length; i++) {
+		            instructions[i]._rowVariant = '';
+		          }
+
+		          executionIndex = -2;
+		          $(".loading").hide();
+		          app._data.alertMessaje = 'The execution of the program has finished';
+		          app._data.type ='success';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          $(".loading").hide();
+		          return;
+		        }
             break;
           }
 
@@ -9034,10 +9299,11 @@ window.app = new Vue({
             app._data.alertMessaje = 'The memory must be aligned';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             executionIndex = -1;
@@ -9067,11 +9333,17 @@ window.app = new Vue({
           var length = aux2.length;
 
           var value = aux2.substring(length-2, length);
-          this.display = this.display + "\n" + String.fromCharCode(parseInt(value, 16));
+          this.display = this.display + String.fromCharCode(parseInt(value, 16));
           break;
         case "read_char":
           mutexRead = true;
           console.log(mutexRead)
+          if(newExecution == true){
+          	this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            return;
+          }
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
           }
@@ -9082,6 +9354,27 @@ window.app = new Vue({
             consoleMutex = false;
             mutexRead = false;
             console.log(mutexRead)
+
+            if(executionIndex >= instructions.length){
+		          for (var i = 0; i < instructions.length; i++) {
+		            instructions[i]._rowVariant = '';
+		          }
+
+		          executionIndex = -2;
+		          $(".loading").hide();
+		          app._data.alertMessaje = 'The execution of the program has finished';
+		          app._data.type ='success';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          $(".loading").hide();
+		          return;
+		        }
             break;
           }
 
@@ -9091,6 +9384,13 @@ window.app = new Vue({
     },
 
     breakPoint(record, index){
+    	for (var i = 0; i < instructions.length; i++) {
+    		if(instructions[i].Address == record.Address){
+    			index = i;
+    			break;
+    		}
+    	}
+
       if(instructions[index].Break == null){
         instructions[index].Break = true;
         app._data.instructions[index].Break = true;
@@ -9142,10 +9442,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
 
               this.calculator.sign = "";
               this.calculator.exponent = "";
@@ -9178,10 +9479,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
 
               this.calculator.sign = "";
               this.calculator.exponent = "";
@@ -9223,10 +9525,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
 
               this.calculator.hexadecimal = "";
               this.calculator.decimal = "";
@@ -9261,10 +9564,11 @@ window.app = new Vue({
               app._data.alertMessaje = 'Character not allowed';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center"
-        })
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
 
               this.calculator.hexadecimal = "";
               this.calculator.decimal = "";
