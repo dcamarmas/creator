@@ -124,7 +124,7 @@
           <!-- 1 navbar -->
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
 
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.3 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.4 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -406,7 +406,7 @@
                     </div>
 
                     <!-- Editar componente -->
-                    <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Edit" @ok="editCompVerify($event, modalEditComponent.element)" v-model="showEditComponent" @hidden="emptyFormArch">
+                    <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Save" @ok="editCompVerify($event, modalEditComponent.element)" v-model="showEditComponent" @hidden="emptyFormArch">
                       <b-form>
                         <b-form-group label="Name:">
                           <b-form-input type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
@@ -416,7 +416,7 @@
                     </b-modal >
 
                     <!-- Nuevo elemento -->
-                    <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Create" @ok="newElementVerify($event, modalNewElement.element)" v-model="showNewElement" @hidden="emptyFormArch">
+                    <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Save" @ok="newElementVerify($event, modalNewElement.element)" v-model="showNewElement" @hidden="emptyFormArch">
                       <b-form >
                         <b-form-group label="Name:">
                           <b-form-input type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
@@ -450,7 +450,7 @@
                     </b-modal >
 
                     <!-- Editar elemento -->
-                    <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Edit" @ok="editElementVerify($event, modalEditElement.element)" v-model="showEditElement" @hidden="emptyFormArch">
+                    <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Save" @ok="editElementVerify($event, modalEditElement.element)" v-model="showEditElement" @hidden="emptyFormArch">
                       <b-form>
                         <b-form-group label="Name:">
                           <b-form-input type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
@@ -498,7 +498,7 @@
                   </div>
 
                   <!-- Nuevo componente -->
-                  <b-modal id ="new_component" title = "New Component" ok-title="Create" @ok="newComponentVerify" v-model="showNewComponent" @hidden="emptyFormArch">
+                  <b-modal id ="new_component" title = "New Component" ok-title="Save" @ok="newComponentVerify" v-model="showNewComponent" @hidden="emptyFormArch">
                     <b-form>
                       <b-form-group label="Name:">
                         <b-form-input type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
@@ -621,7 +621,7 @@
                     </b-modal >
 
                     <!-- Formulario para editar una instruccion -->
-                    <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Edit" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" v-model="showEditInstruction" @hidden="emptyFormInst">
+                    <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Save" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" v-model="showEditInstruction" @hidden="emptyFormInst">
 
                       <b-form>
                         <div id="editInstForm1" v-if="instructionFormPage == 1">
@@ -748,7 +748,7 @@
                   </div>
 
                   <!-- Formulario nueva instruccion -->
-                  <b-modal size="lg" id ="new_instruction" title = "New Instruction" ok-title="Create" @ok="newInstVerify" v-model="showNewInstruction" @hidden="emptyFormInst">
+                  <b-modal size="lg" id ="new_instruction" title = "New Instruction" ok-title="Save" @ok="newInstVerify" v-model="showNewInstruction" @hidden="emptyFormInst">
 
                     <b-form>
                       <div id="newInstForm1" v-if="instructionFormPage == 1">
@@ -966,7 +966,7 @@
                     </b-modal >
 
                     <!-- Formulario para editar una pseudoinstruccion -->
-                    <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Edit" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.index)" v-model="showEditPseudoinstruction" @hidden="emptyFormPseudo">
+                    <b-modal size="lg" id ="modalEditPseudoinst" :title="modalEditPseudoinst.title" ok-title="Save" @ok="editPseudoinstVerify($event, modalEditPseudoinst.element, modalEditPseudoinst.index)" v-model="showEditPseudoinstruction" @hidden="emptyFormPseudo">
 
                       <b-form>
                         <div id="editPseudoinstForm1" v-if="instructionFormPage == 1">
@@ -1072,7 +1072,7 @@
                   </div>
 
                   <!-- Formulario nueva pseudoinstruccion -->
-                  <b-modal size="lg" title = "New Pseudoinstruction" ok-title="Create" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction" id="new_pseudoinstruction" @hidden="emptyFormPseudo">
+                  <b-modal size="lg" title = "New Pseudoinstruction" ok-title="Save" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction" id="new_pseudoinstruction" @hidden="emptyFormPseudo">
 
                     <b-form>
                       <div id="newPseudoinstForm1" v-if="instructionFormPage == 1">
@@ -1192,7 +1192,7 @@
                     </div>
                   </div>
 
-                  <b-modal size="lg" id ="new_directive" title = "New Directive" ok-title="Create" @ok="newDirVerify($event)" v-model="showNewDirective" @hidden="emptyFormDirective">
+                  <b-modal size="lg" id ="new_directive" title = "New Directive" ok-title="Save" @ok="newDirVerify($event)" v-model="showNewDirective" @hidden="emptyFormDirective">
 
                     <b-form>
                       <b-form-group label="Name:">
@@ -1230,7 +1230,7 @@
                     </b-modal >
 
                     <!-- Editar directiva -->
-                    <b-modal id ="modalEditDirective" :title = "modalEditDirective.title" ok-title="Edit" @ok="editDirVerify($event, modalEditDirective.element)" v-model="showEditDirective" @hidden="emptyFormDirective">
+                    <b-modal id ="modalEditDirective" :title = "modalEditDirective.title" ok-title="Save" @ok="editDirVerify($event, modalEditDirective.element)" v-model="showEditDirective" @hidden="emptyFormDirective">
 
                       <b-form>
                         <b-form-group label="Name:">
@@ -1440,6 +1440,7 @@
                       <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
                       <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
                     </template> 
+
                 </b-table>
 
               </div>
@@ -1956,8 +1957,11 @@
               </div>
 
               <div class="col-lg-12 col-sm-12 row">
-                <div class="col-lg-8 col-sm-8">
+                <div class="col-lg-4 col-sm-4">
                  
+                </div>
+                <div class="col-lg-4 col-sm-4">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleClear"><span class="fas fa-broom"></span> Clear</b-button>
                 </div>
                 <div class="col-lg-4 col-sm-4">
                   <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-paper-plane"></span> Enter</b-button>
