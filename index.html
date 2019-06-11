@@ -20,6 +20,7 @@
     <script src="external/bootstrap-vue.js"></script>
     <script src="external/jquery.min.js"></script>
     <script src="external/BigInteger.min.js"></script>
+    <script src="external/lodash.js"></script>
 
     <script src="external/codemirror/codemirror.js"></script>
     <script src="external/codemirror/keymap/vim.js"></script>
@@ -174,9 +175,9 @@
 
             <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
               <b-form>
-                <b-form-input v-model="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
+                <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
                 <br>
-                <b-form-textarea v-model="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+                <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
                 <br>
                 <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
               </b-form>
@@ -277,19 +278,19 @@
                     <div class="col-lg-4 col-sm-12">
 
                       <h6>.text Start:</h6>
-                      <b-form-input type="text" v-model="memory_layout[0]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <b-form-input type="text" v-on:input="debounce('memory_layout[0]', $event)" :value="memory_layout[0]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
                       <h6>.text End:</h6>
-                      <b-form-input type="text" v-model="memory_layout[1]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <b-form-input type="text" v-on:input="debounce('memory_layout[1]', $event)" :value="memory_layout[1]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
 
                       <h6>.data Start:</h6>
-                      <b-form-input type="text" v-model="memory_layout[2]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <b-form-input type="text" v-on:input="debounce('memory_layout[2]', $event)" :value="memory_layout[2]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
                       <h6>.data End:</h6>
-                      <b-form-input type="text" v-model="memory_layout[3]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <b-form-input type="text" v-on:input="debounce('memory_layout[3]', $event)" :value="memory_layout[3]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
 
                       <h6>.stack End:</h6>
-                      <b-form-input type="text" v-model="memory_layout[4]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <b-form-input type="text" v-on:input="debounce('memory_layout[4]', $event)" :value="memory_layout[4]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
                       <h6>.stack Start:</h6>
-                      <b-form-input type="text" v-model="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      <b-form-input type="text" v-on:input="debounce('memory_layout[5]', $event)" :value="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
 
                       <b-button class="btn btn-block btn-sm" variant="primary" style="margin-bottom: 5%;" @click="changeMemoryLayout"><span class="fas fa-exchange-alt"></span> Change memory layout</b-button>
 
@@ -353,7 +354,7 @@
                     </div>
 
                     <div class="compMenu">
-                      <b-form-input v-model="number_bits" type="number" min="0" placeholder="Enter bits of architecture" size="sm"></b-form-input>
+                      <b-form-input v-on:input="debounce('number_bits', $event)" :value="number_bits" type="number" min="0" placeholder="Enter bits of architecture" size="sm"></b-form-input>
                     </div>
                   </div>
 
@@ -409,7 +410,7 @@
                     <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Save" @ok="editCompVerify($event, modalEditComponent.element)" v-model="showEditComponent" @hidden="emptyFormArch">
                       <b-form>
                         <b-form-group label="Name:">
-                          <b-form-input type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
+                          <b-form-input type="text" :state="valid(formArchitecture.name)" v-on:input="debounce('formArchitecture.name', $event)" :value="formArchitecture.name" required placeholder="Enter name" size="sm">
                           </b-form-input>
                         </b-form-group>
                       </b-form>
@@ -419,15 +420,15 @@
                     <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Save" @ok="newElementVerify($event, modalNewElement.element)" v-model="showNewElement" @hidden="emptyFormArch">
                       <b-form >
                         <b-form-group label="Name:">
-                          <b-form-input type="text" :state="valid(formArchitecture.name)" v-model="formArchitecture.name" required placeholder="Enter name" size="sm">
+                          <b-form-input type="text" :state="valid(formArchitecture.name)" v-on:input="debounce('formArchitecture.name', $event)" :value="formArchitecture.name" required placeholder="Enter name" size="sm">
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="ID:">
-                          <b-form-input type="text" v-model="formArchitecture.id" required size="sm" disabled>
+                          <b-form-input type="text" v-on:input="debounce('formArchitecture.id', $event)" :value="formArchitecture.id" required size="sm" disabled>
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="Default value:" v-if="modalNewElement.double_precision == false">
-                          <b-form-input type="text" :state="valid(formArchitecture.defValue)" v-model="formArchitecture.defValue" required placeholder="Enter default value" size="sm">
+                          <b-form-input type="text" :state="valid(formArchitecture.defValue)" v-on:input="debounce('formArchitecture.defValue', $event)" :value="formArchitecture.defValue" required placeholder="Enter default value" size="sm">
                           </b-form-input>
                         </b-form-group>
                         <b-form-group v-if="modalNewElement.type != 'control'">
@@ -453,15 +454,15 @@
                     <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Save" @ok="editElementVerify($event, modalEditElement.element)" v-model="showEditElement" @hidden="emptyFormArch">
                       <b-form>
                         <b-form-group label="Name:">
-                          <b-form-input type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                          <b-form-input type="text" v-on:input="debounce('formArchitecture.name', $event)" :value="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="ID:">
-                          <b-form-input type="text" v-model="formArchitecture.id" required size="sm" disabled>
+                          <b-form-input type="text" v-on:input="debounce('formArchitecture.id', $event)" :value="formArchitecture.id" required size="sm" disabled>
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="Default value:" v-if="modalEditElement.double_precision == false">
-                          <b-form-input type="text" v-model="formArchitecture.defValue" required placeholder="Enter default value" :state="valid(formArchitecture.defValue)" size="sm">
+                          <b-form-input type="text" v-on:input="debounce('formArchitecture.defValue', $event)" :value="formArchitecture.defValue" required placeholder="Enter default value" :state="valid(formArchitecture.defValue)" size="sm">
                           </b-form-input>
                         </b-form-group>
                         <b-form-group>
@@ -501,7 +502,7 @@
                   <b-modal id ="new_component" title = "New Component" ok-title="Save" @ok="newComponentVerify" v-model="showNewComponent" @hidden="emptyFormArch">
                     <b-form>
                       <b-form-group label="Name:">
-                        <b-form-input type="text" v-model="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                        <b-form-input type="text" v-on:input="debounce('formArchitecture.name', $event)" :value="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
                         </b-form-input>
                       </b-form-group>
                       <b-form-group label="Type:">
@@ -626,21 +627,21 @@
                       <b-form>
                         <div id="editInstForm1" v-if="instructionFormPage == 1">
                           <b-form-group label="Name:">
-                            <b-form-input type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.name', $event)" :value="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
                             </b-form-input>
                           </b-form-group>
 
                           <b-form-group label="Type:">
-                            <b-form-select v-model="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
+                            <b-form-select v-on:input="debounce('formInstruction.type', $event)" :value="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
                           </b-form-group>
 
                           <b-form-group label="Number of Words:">
-                            <b-form-input type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                            <b-form-input type="number" min="1" v-on:input="debounce('formInstruction.nwords', $event)" :value="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
                             </b-form-input>
                           </b-form-group>
 
                           <b-form-group label="Number of fields: (Including co and cop)">
-                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                             </b-form-input>
                           </b-form-group>
                         </div>
@@ -674,7 +675,7 @@
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.nameField[i-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
                                   </b-form-input>
                                   <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
                                   </b-form-input>
@@ -696,25 +697,25 @@
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField[i-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField[i-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
                                 <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
                                 <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.cop', $event)" :value="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
@@ -724,19 +725,19 @@
 
                         <div id="editInstForm3" v-if="instructionFormPage == 3">
                           <b-form-group label="Instruction Signature Definition:">
-                            <b-form-input type="text" v-model="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.signature_definition', $event)" :value="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
                           </b-form-group>
                           <b-form-group label="Instruction Signature:">
-                            <b-form-input type="text" v-model="formInstruction.signature" disabled required size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.signature', $event)" :value="formInstruction.signature" disabled required size="sm"></b-form-input>
                           </b-form-group>
                           <b-form-group label="Instruction Signature Raw:">
-                            <b-form-input type="text" v-model="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.signatureRaw', $event)" :value="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
                           </b-form-group>
                         </div>
 
                         <div id="editInstForm4" v-if="instructionFormPage == 4">
                           <b-form-group label="Assembly Definition:">
-                            <b-form-textarea v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                            <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
                             </b-form-textarea>
                           </b-form-group>
                         </div>
@@ -753,7 +754,7 @@
                     <b-form>
                       <div id="newInstForm1" v-if="instructionFormPage == 1">
                         <b-form-group label="Name:">
-                          <b-form-input type="text" v-model="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                          <b-form-input type="text" v-on:input="debounce('formInstruction.name', $event)" :value="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
                           </b-form-input>
                         </b-form-group>
 
@@ -762,12 +763,12 @@
                         </b-form-group>
 
                         <b-form-group label="Number of Words:">
-                          <b-form-input type="number" min="1" v-model="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                          <b-form-input type="number" min="1" v-on:input="debounce('formInstruction.nwords', $event)" :value="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
                           </b-form-input>
                         </b-form-group>
 
                         <b-form-group label="Number of fields: (Including co and cop)">
-                          <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-model="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                          <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                           </b-form-input>
                         </b-form-group>
                       </div>
@@ -801,7 +802,7 @@
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
-                                <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                <b-form-input type="text" v-on:input="debounce('formInstruction.nameField[i-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
                                 </b-form-input>
                                 <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
                                 </b-form-input>
@@ -823,25 +824,25 @@
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField[i-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField[i-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
                             <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
                               <b-form-group>
-                                <b-form-input type="text" v-model="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
                             <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
                               <b-form-group>
-                                <b-form-input type="text" v-model="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
+                                <b-form-input type="text" v-on:input="debounce('formInstruction.cop', $event)" :value="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
@@ -851,19 +852,19 @@
 
                       <div id="newInstForm3" v-if="instructionFormPage == 3">
                         <b-form-group label="Assembly Signature Definition:">
-                          <b-form-input type="text" v-model="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
+                          <b-form-input type="text" v-on:input="debounce('formInstruction.signature_definition', $event)" :value="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
                         </b-form-group>
                         <b-form-group label="Assembly Signature:">
-                          <b-form-input type="text" v-model="formInstruction.signature" disabled required size="sm"></b-form-input>
+                          <b-form-input type="text" v-on:input="debounce('formInstruction.signature', $event)" :value="formInstruction.signature" disabled required size="sm"></b-form-input>
                         </b-form-group>
                         <b-form-group label="Assembly Signature Raw:">
-                          <b-form-input type="text" v-model="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
+                          <b-form-input type="text" v-on:input="debounce('formInstruction.signatureRaw', $event)" :value="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
                         </b-form-group>
                       </div>
 
                       <div id="newInstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Assembly Definition:">
-                          <b-form-textarea v-model="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                          <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
                           </b-form-textarea>
                         </b-form-group>
                       </div>
@@ -971,17 +972,17 @@
                       <b-form>
                         <div id="editPseudoinstForm1" v-if="instructionFormPage == 1">
                           <b-form-group label="Name:">
-                            <b-form-input type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
+                            <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.name', $event)" :value="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
                             </b-form-input>
                           </b-form-group>
 
                           <b-form-group label="Number of Words:">
-                            <b-form-input type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
+                            <b-form-input type="number" min="1" v-on:input="debounce('formPseudoinstruction.nwords', $event)" :value="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
                             </b-form-input>
                           </b-form-group>
 
                           <b-form-group label="Number of fields: ">
-                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
+                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
                             </b-form-input>
                           </b-form-group>
                         </div>
@@ -1015,7 +1016,7 @@
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
+                                  <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.nameField[i-1]', $event)" :value="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
@@ -1032,13 +1033,13 @@
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.startBitField[i-1]', $event)" :value="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.stopBitField[i-1]', $event)" :value="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
@@ -1048,19 +1049,19 @@
 
                         <div id="editPseudoinstForm3" v-if="instructionFormPage == 3">
                           <b-form-group label="Pseudoinstruction Signature Definition:">
-                            <b-form-input type="text" v-model="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signature_definition', $event)" :value="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
                           </b-form-group>
                           <b-form-group label="Pseudoinstruction Signature:">
-                            <b-form-input type="text" v-model="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signature', $event)" :value="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
                           </b-form-group>
                           <b-form-group label="Pseudoinstruction Signature Raw:">
-                            <b-form-input type="text" v-model="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signatureRaw', $event)" :value="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
                           </b-form-group>
                         </div>
 
                         <div id="editPseudoinstForm4" v-if="instructionFormPage == 4">
                           <b-form-group label="Pseudoinstruction Definition:">
-                            <b-form-textarea v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                            <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                             </b-form-textarea>
                           </b-form-group>
                         </div>
@@ -1077,17 +1078,17 @@
                     <b-form>
                       <div id="newPseudoinstForm1" v-if="instructionFormPage == 1">
                         <b-form-group label="Name:">
-                          <b-form-input type="text" v-model="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
+                          <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.name', $event)" :value="formPseudoinstruction.name" required placeholder="Enter name" :state="valid(formPseudoinstruction.name)" size="sm">
                           </b-form-input>
                         </b-form-group>
 
                         <b-form-group label="Number of Words:">
-                          <b-form-input type="number" min="1" v-model="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
+                          <b-form-input type="number" min="1" v-on:input="debounce('formPseudoinstruction.nwords', $event)" :value="formPseudoinstruction.nwords" required placeholder="Enter nwords" :state="valid(formPseudoinstruction.nwords)" size="sm">
                           </b-form-input>
                         </b-form-group>
 
                         <b-form-group label="Number of fields: ">
-                          <b-form-input type="number" min="0" :max="32 * formInstruction.nwords" v-model="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
+                          <b-form-input type="number" min="0" :max="32 * formInstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
                           </b-form-input>
                         </b-form-group>
                       </div>
@@ -1121,7 +1122,7 @@
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
-                                <b-form-input type="text" v-model="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
+                                <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.nameField[i-1]', $event)" :value="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
@@ -1138,13 +1139,13 @@
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
+                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.startBitField[i-1]', $event)" :value="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
+                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.stopBitField[i-1]', $event)" :value="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
                                 </b-form-input>
                               </b-form-group>
                             </div>
@@ -1154,19 +1155,19 @@
 
                       <div id="newPseudoinstForm3" v-if="instructionFormPage == 3">
                         <b-form-group label="Pseudoinstruction Signature Definition:">
-                            <b-form-input type="text" v-model="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
+                            <b-form-input type="text"  v-on:input="debounce('formPseudoinstruction.signature_definition', $event)" :value="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
                           </b-form-group>
                           <b-form-group label="Pseudoinstruction Signature:">
-                            <b-form-input type="text" v-model="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signature', $event)" :value="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
                           </b-form-group>
                           <b-form-group label="Pseudoinstruction Signature Raw:">
-                            <b-form-input type="text" v-model="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
+                            <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signatureRaw', $event)" :value="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
                           </b-form-group>
                       </div>
 
                       <div id="newPseudoinstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Pseudoinstruction Definition:">
-                          <b-form-textarea v-model="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                          <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
                           </b-form-textarea>
                         </b-form-group>
                       </div>
@@ -1196,7 +1197,7 @@
 
                     <b-form>
                       <b-form-group label="Name:">
-                        <b-form-input type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
+                        <b-form-input type="text" :state="valid(formDirective.name)" v-on:input="debounce('formDirective.name', $event)" :value="formDirective.name" required placeholder="Enter name" size="sm">
                         </b-form-input>
                       </b-form-group>
 
@@ -1205,7 +1206,7 @@
                       </b-form-group>
 
                       <b-form-group label="Size:" v-if="formDirective.action != '' && formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
-                        <b-form-input type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
+                        <b-form-input type="number" :state="valid(formDirective.size)" v-on:input="debounce('formDirective.size', $event)" :value="formDirective.size" required placeholder="Enter size" size="sm" min="0">
                         </b-form-input>
                       </b-form-group>
                     </b-form>
@@ -1234,7 +1235,7 @@
 
                       <b-form>
                         <b-form-group label="Name:">
-                          <b-form-input type="text" :state="valid(formDirective.name)" v-model="formDirective.name" required placeholder="Enter name" size="sm">
+                          <b-form-input type="text" :state="valid(formDirective.name)" v-on:input="debounce('formDirective.name', $event)" :value="formDirective.name" required placeholder="Enter name" size="sm">
                           </b-form-input>
                         </b-form-group>
 
@@ -1243,7 +1244,7 @@
                         </b-form-group>
 
                         <b-form-group label="Size:" v-if="formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
-                          <b-form-input type="number" :state="valid(formDirective.size)" v-model="formDirective.size" required placeholder="Enter size" size="sm" min="0">
+                          <b-form-input type="number" :state="valid(formDirective.size)" v-on:input="debounce('formDirective.size', $event)" :value="formDirective.size" required placeholder="Enter size" size="sm" min="0">
                           </b-form-input>
                         </b-form-group>
 
@@ -1258,7 +1259,7 @@
           <b-modal  id ="save_architecture"   title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
             <h6>Enter the name of the architecture to save:</h6>
             <br>
-            <b-form-input v-model="name_arch_save" type="text" placeholder="Enter the name" class="form-control form-control-sm" style="background-color: white; color: black," :state="valid(name_arch_save)"></b-form-input>
+            <b-form-input v-on:input="debounce('name_arch_save', $event)" :value="name_arch_save" type="text" placeholder="Enter the name" class="form-control form-control-sm" style="background-color: white; color: black," :state="valid(name_arch_save)"></b-form-input>
           </b-modal>
 
         </div>
@@ -1288,10 +1289,10 @@
 	              </div>
 	            </div>
 
-	            <div class="col-lg-3 col-sm-12 nopadding">
+	            <div class="col-lg-2 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12">
                   <div class="col-lg-12 col-sm-12 buttons row">
-                    <div class="col-lg-6 col-sm-6 buttons">
+                    <div class="col-lg-12 col-sm-12 buttons">
                       <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
                     </div>
 
@@ -1315,7 +1316,7 @@
                       <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
                         <div class="col-lg-2 col-2"></div>
                         <div class="col-lg-6 col-8">
-                          <b-form-input class="form-control form-control-sm" v-model="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter hexadecimal" :maxlength="calculator.lengthHexadecimal"></b-form-input>
+                          <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.hexadecimal', $event)" :value="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter hexadecimal" :maxlength="calculator.lengthHexadecimal"></b-form-input>
                         </div>
                         <div class="col-lg-4"></div>
                       </div>
@@ -1333,13 +1334,13 @@
                         <div class="col-lg-8 col-12 nopadding">
                           <div class="col-lg-12 col-12 row nomargin nopadding">
                             <div class="col-lg-2 col-2" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.sign', $event)" :value="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign"></b-form-input>
                             </div>
                             <div class="col-lg-4 col-4" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.exponent', $event)" :value="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent"></b-form-input>
                             </div>
                             <div class="col-lg-6 col-6" style="padding: 1%;">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.mantissa" @change="calculatorFunct(1)" placeholder="Enter mantissa" :maxlength="calculator.lengthMantissa"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.mantissa', $event)" :value="calculator.mantissa" @change="calculatorFunct(1)" placeholder="Enter mantissa" :maxlength="calculator.lengthMantissa"></b-form-input>
                             </div>
                           </div>
                         </div>
@@ -1366,7 +1367,7 @@
                           </div>
                         </div>
                         <div class="col-lg-3" style="padding-top: 3%">
-                              <b-form-input class="form-control form-control-sm" v-model="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal"></b-form-input>
+                              <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.decimal', $event)" :value="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal"></b-form-input>
                         </div>
                       </div>
 
@@ -1379,16 +1380,24 @@
   	            </div>
               </div>
 
-              <div class="col-lg-6 col-sm-12 nopadding">
+              <div class="col-lg-5 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12">
                   <div class="col-lg-12 col-sm-12 buttons row">
-                    <div class="col-lg-4 col-sm-4 buttons">
-                      <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_sim"><span class="fa fa-gear"></span> Configuration</b-button>-->
+
+                    <div class="col-lg-6 col-sm-6 buttons">
+                      <b-button class="btn btn-block btn-sm" variant="info" disabled>Current Instruction</b-button>
                     </div>
-                    <div class="col-lg-4 col-sm-4 buttons">
-                      <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_sim" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
+                    <div class="col-lg-6 col-sm-6 buttons">
+                      <b-button class="btn btn-block btn-sm" variant="success" disabled>Next Instruction</b-button>
                     </div>
-                    <div class="col-lg-4 col-sm-4 buttons">
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-2 col-sm-12 nopadding">
+                <div class="col-lg-12 col-sm-12">
+                  <div class="col-lg-12 col-sm-12 buttons">
+                    <div class="col-lg-12 col-sm-12 buttons">
                       <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                     </div>
 
@@ -1413,19 +1422,6 @@
 
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
-
-              <b-toast id="instruction_toast" variant="warning" solid v-model="instToast" toaster="b-toaster-top-center" no-auto-hide>
-                <div slot="toast-title" class="d-flex flex-grow-1 align-items-baseline">
-                  <strong class="mr-auto">Instruction table information</strong>
-                </div>
-                <strong class="mr-auto">Row color:</strong>
-                <br>
-                <br>
-                <b-badge variant="info" style="font-size: 12px;">Executed intruction</b-badge>
-                <br>
-                <b-badge variant="success" style="font-size: 12px;">Next instruction to execute</b-badge>
-              </b-toast>
-
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
 
                 <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;" :filter-function=filter filter=" ">
@@ -1572,7 +1568,7 @@
 
                             <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
                               </div>
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -1624,7 +1620,7 @@
 
                               <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                                 <div class="col-lg-6 col-sm-6 popoverFooter">
-                                  <b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+                                  <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
                                 </div>
                                 <div class="col-lg-6 col-sm-6 popoverFooter">
                                   <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -1675,7 +1671,7 @@
 
                               <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                                 <div class="col-lg-6 col-sm-6 popoverFooter">
-                                  <b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+                                  <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
                                 </div>
                                 <div class="col-lg-6 col-sm-6 popoverFooter">
                                   <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -1738,7 +1734,7 @@
 
     												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
     					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-    					            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+    					            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
     					            		</div>
     					            		<div class="col-lg-6 col-sm-6 popoverFooter">
     					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -1790,7 +1786,7 @@
 
     													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
     						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-    						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+    						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
     						            		</div>
     						            		<div class="col-lg-6 col-sm-6 popoverFooter">
     						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -1841,7 +1837,7 @@
 
     													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
     						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-    						            			<b-form-input v-model="newValue" type="text" size="sm"></b-form-input>
+    						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
     						            		</div>
     						            		<div class="col-lg-6 col-sm-6 popoverFooter">
     						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -1970,7 +1966,7 @@
                   <b-img src="./images/keyboard1.png" fluid alt="Keyboard"></b-img>
                 </div>
                 <div class="col-lg-12 col-sm-12">
-                  <b-form-textarea id="textarea_keyboard" v-model="keyboard" rows="5"></b-form-textarea>
+                  <b-form-textarea id="textarea_keyboard" v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5"></b-form-textarea>
                 </div>
               </div>
 
@@ -2116,7 +2112,7 @@
 
 				  <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File" @ok="assembly_save">
 				    <p> Please write the file name: </p> 
-				    <b-form-input v-model="save_assembly"
+				    <b-form-input v-on:input="debounce('save_assembly', $event)" :value="save_assembly"
                 type="text"
                 placeholder="File name where assembly will be saved">
             </b-form-input>
@@ -2129,7 +2125,7 @@
 
           <b-modal  id = "save_binary"   title = "Save Binary" ok-title="Save to File" @ok="library_save">
             <p> Please write the file name: </p> 
-            <b-form-input v-model="name_binary_save"
+            <b-form-input v-on:input="debounce('name_binary_save', $event)" :value="name_binary_save"
                 type="text"
                 placeholder="File name where binary will be saved">
             </b-form-input>

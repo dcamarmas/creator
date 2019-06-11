@@ -736,7 +736,6 @@ window.app = new Vue({
     display: '',
     keyboard: '',
     /*Asignacion de valores de la tabla de instrucciones*/
-    instToast: false,
     archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
     instructions: instructions,
     
@@ -4380,8 +4379,6 @@ window.app = new Vue({
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
-      app._data.instToast = true;
-
       tokenIndex = 0;
       
       this.reset();
@@ -5534,12 +5531,12 @@ window.app = new Vue({
                       string = string + " " + token.substring(0, token.length-1);
                     }
 
-                    for(var z = 0; z < architecture.directives.length; z++){
+                    /*for(var z = 0; z < architecture.directives.length; z++){
                       if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
                         final = true;
                         nextToken = 0;
                       }
-                    }
+                    }*/
 
                     if(final == false){
                       string = string + " " + token;
@@ -5570,12 +5567,6 @@ window.app = new Vue({
                         }
                       }
                     }
-
-                    /*if(data_address % 4 != 0 && i == 0){
-                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
-                      return -1;
-                    }*/
 
                     if(data_address % 4 == 0){
                       data_memory.push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i)});
@@ -5729,13 +5720,6 @@ window.app = new Vue({
                     if(token.search(re) != -1 && final == false){
                       final = true;
                       string = string + " " + token.substring(0, token.length-1);
-                    }
-
-                    for(var z = 0; z < architecture.directives.length; z++){
-                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                        final = true;
-                        nextToken = 0;
-                      }
                     }
 
                     if(final == false){
@@ -9652,6 +9636,10 @@ window.app = new Vue({
       $("#memory").hide();
       $("#stats").hide();
     },
+
+    debounce: _.debounce(function (param, e) {
+      eval("this." + param + "= '" + e + "'");
+    }, 500)
 
   },
 
