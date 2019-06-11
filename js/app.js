@@ -736,6 +736,7 @@ window.app = new Vue({
     display: '',
     keyboard: '',
     /*Asignacion de valores de la tabla de instrucciones*/
+    instToast: false,
     archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
     instructions: instructions,
     
@@ -4276,7 +4277,6 @@ window.app = new Vue({
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
-
           $(".loading").hide();
           return -1;
         }
@@ -4369,8 +4369,6 @@ window.app = new Vue({
       }
       this.stack_memory = stack_memory;
 
-
-
       app._data.alertMessaje = 'Compilation completed successfully';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
@@ -4381,6 +4379,8 @@ window.app = new Vue({
       })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+      app._data.instToast = true;
 
       tokenIndex = 0;
       
