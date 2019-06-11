@@ -1413,6 +1413,19 @@
 
             <!-- Tabla -->
             <div class="col-lg-7 col-sm-12">
+
+              <b-toast id="instruction_toast" variant="warning" solid v-model="instToast" toaster="b-toaster-top-center" no-auto-hide>
+                <div slot="toast-title" class="d-flex flex-grow-1 align-items-baseline">
+                  <strong class="mr-auto">Instruction table information</strong>
+                </div>
+                <strong class="mr-auto">Row color:</strong>
+                <br>
+                <br>
+                <b-badge variant="info" style="font-size: 12px;">Executed intruction</b-badge>
+                <br>
+                <b-badge variant="success" style="font-size: 12px;">Next instruction to execute</b-badge>
+              </b-toast>
+
               <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
 
                 <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;" :filter-function=filter filter=" ">
@@ -1437,6 +1450,11 @@
                     </template>
 
                     <template slot="Loaded Instructions" slot-scope="row">
+                      <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
+                      <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
+                    </template> 
+
+                    <template slot-scope="row">
                       <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
                       <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
                     </template> 
