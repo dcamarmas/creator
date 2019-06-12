@@ -1066,7 +1066,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+val"
+      "definition": "reg1=reg2+val;\n if('reg1.name'=='sp.name'){\n if((reg2+val)<stack_limit){\n stack_limit=reg2+val}}"
     },
     {
       "name": "and",

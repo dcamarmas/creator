@@ -3,4 +3,4 @@ CREATOR
 
 Author: Diego Camarmas Alonso
 
-Link: https://dcamarmas.github.io/CREATOR/
+Link: https://dcamarmas.github.io/creator/
