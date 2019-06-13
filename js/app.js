@@ -363,6 +363,7 @@ try{
 	var data_address;
 	/*Pila*/
 	var stack_address;
+	var backup_stack_address;
 
 
 	/*Estadisticas*/
@@ -869,6 +870,8 @@ try{
 	        app._data.architecture_hash = architecture_hash;
 	      }
 
+	      backup_stack_address = architecture.memory_layout[4].value;
+
 	      this.reset();
 
 	      $("#architecture_menu").hide();
@@ -926,6 +929,8 @@ try{
 	            app._data.architecture_hash = architecture_hash;
 	          }
 
+	          backup_stack_address = architecture.memory_layout[4].value;
+
 	          app._data.architecture_name = e;
 
 	          $("#architecture_menu").hide();
@@ -965,6 +970,8 @@ try{
 	          architecture_hash.push({name: architecture.components[i].name, index: i}); 
 	          app._data.architecture_hash = architecture_hash;
 	        }
+
+	        backup_stack_address = architecture.memory_layout[4].value;
 
 	        app._data.architecture_name = e;
 
@@ -4253,6 +4260,7 @@ try{
 	        app._data.instructions_memory = instructions_memory;
 	      }
 
+
 	      /*Verifica solapamiento*/
 	      if(data_memory.length > 0){
 	        if(data_memory[data_memory.length-1].Binary[3].Addr > architecture.memory_layout[3].value){
@@ -6371,21 +6379,22 @@ try{
 	        if(field.match(/^0x/)){
 	          var binNum = (parseInt(field, 16).toString(2));
 	          binNum = binNum.padStart(32, '0');
-	          binNum = binNum.substring(32-startBit, 32-endBit);
+	          binNum = binNum.substring(31-startBit, 32-endBit);
+	          console.log(binNum);
 	          var hexNum = "0x" + this.bin2hex(binNum);
 	          return hexNum;
 	        }
 	        else if (field.match(/^(\d)+\.(\d)+/)){
 	          var binNum = this.float2bin(parseFloat(field));
 	          binNum = binNum.padStart(32, '0');
-	          binNum = binNum.substring(32-startBit, 32-endBit);
+	          binNum = binNum.substring(31-startBit, 32-endBit);
 	          var hexNum = "0x" + this.bin2hex(binNum);
 	          return hexNum;
 	        }
 	        else {
-	          var binNum = (parseInt(field, 10)).toString(2);
+	          var binNum = (parseInt(field, 10) >>> 0).toString(2);
 	          binNum = binNum.padStart(32, '0');
-	          binNum = binNum.substring(32-startBit, 32-endBit);
+	          binNum = binNum.substring(31-startBit, 32-endBit);
 	          var hexNum = "0x" + this.bin2hex(binNum);
 	          return hexNum;
 	        }
@@ -6449,6 +6458,7 @@ try{
 	          console.log(signatureParts)
 	          console.log(signatureRawParts)
 	          re = new RegExp(signatureDef+"$")
+
 	          if(oriInstruction.search(re) == -1){
 	            this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
 	            return -1;
@@ -6644,7 +6654,6 @@ try{
 
 	                    if(token.match(/^0x/)){
 	                      var value = token.split("x");
-
 	                      if(value[1].length*4 > fieldsLength){
 	                        resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
@@ -6695,7 +6704,8 @@ try{
 	                      stopBit = architecture.instructions[i].fields[a].stopbit;
 	                    }
 	                    else {
-	                      var numAux = parseInt(token, 10);
+	                      var numAux = parseInt(token, 10) >>> 0;
+
 	                      if((numAux.toString(2)).length > fieldsLength){
 	                        resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 	                        if(resultPseudo == -1){
@@ -6714,9 +6724,14 @@ try{
 	                        return -1;
 	                      }
 
-	                      inm = (parseInt(token, 10)).toString(2);
+	                      inm = (parseInt(token, 10) >>> 0).toString(2);
 	                    }
 	                    if(validTagPC == true){
+	                    	if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
+                          this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
 	                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
 	                    }
 	                    
@@ -6806,6 +6821,7 @@ try{
 	            padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
 
 	            binary = binary + padding;
+
 	            var hex = this.bin2hex(binary);
 	            var auxAddr = address;
 
@@ -7757,14 +7773,18 @@ try{
 
             re = new RegExp("stack_limit *=","g");
 
-            auxDef = auxDef.replace(re, "architecture.memory_layout[4].value = ");
+            //auxDef = auxDef.replace(re, "architecture.memory_layout[4].value = ");
+
+            auxDef = auxDef.replace(re, "var stackLimit =");
+            auxDef = "var stackLimit = null\n" + auxDef
+            auxDef = auxDef + "\n this.writeStackLimit(stackLimit);"
           }
 
           /*Si se lee el stack_limit*/
           re = new RegExp("stack_limit");
           while(auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-            auxDef = auxDef.replace(re, architecture.memory_layout[4].value);
+            auxDef = auxDef.replace(re, architecture.memory_layout[4].value >>> 0);
           }
 
 	        console.log(auxDef)
@@ -8068,12 +8088,30 @@ try{
 	        }
 	      }
 
+	      console.log(backup_stack_address)
+
+	      architecture.memory_layout[4].value = backup_stack_address;
+
 	      for (var i = 0; i < data_memory.length; i++) {
 	        data_memory[i].Value = data_memory[i].DefValue;
 	        for (var j = 0; j < data_memory[i].Binary.length; j++) {
 	          data_memory[i].Binary[j].Bin = data_memory[i].Binary[j].DefBin;
 	        }
 	      }
+
+	      for (var i = 0; i < stack_memory.length; i++) {
+	        stack_memory[i].Value = stack_memory[i].DefValue;
+	        for (var j = 0; j < stack_memory[i].Binary.length; j++) {
+	          stack_memory[i].Binary[j].Bin = stack_memory[i].Binary[j].DefBin;
+	        }
+	      }
+
+	      for (var i = 0; i < instructions.length; i++) {
+          if(instructions[i].Label == "main"){
+            instructions[i]._rowVariant = 'success';
+          }
+        }
+
 
 	      $(".loading").hide();
 	    },
@@ -8394,7 +8432,7 @@ try{
 	              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
 	              var charIndex = memValue.length-1;
 	              for (var z = 0; z < 4; z++){
-	                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+	                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
 	                charIndex = charIndex - 2;
 	              }
 	              app._data.data_memory = data_memory;
@@ -8405,7 +8443,7 @@ try{
 	              data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
 	              var charIndex = memValue.length-1;
 	              for (var z = 0; z < 4; z++){
-	                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+	                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
 	                charIndex = charIndex - 2;
 	              }
 	              app._data.data_memory = data_memory;
@@ -8418,7 +8456,7 @@ try{
 	            data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
 	            var charIndex = memValue.length-1;
 	            for (var z = 0; z < 4; z++){
-	              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+	              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
 	              charIndex = charIndex - 2;
 	            }
 	            app._data.data_memory = data_memory;
@@ -8448,10 +8486,10 @@ try{
 	          for (var i = 0; i < stack_memory.length; i++){
 	            if(stack_memory[i].Address > parseInt(addr, 16)){
 	              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-	              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+	              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
 	              var charIndex = memValue.length-1;
 	              for (var z = 0; z < 4; z++){
-	                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+	                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
 	                charIndex = charIndex - 2;
 	              }
 	              app._data.stack_memory = stack_memory;
@@ -8459,10 +8497,10 @@ try{
 	            }
 	            else if(i == stack_memory.length-1){
 	              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-	              stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+	              stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
 	              var charIndex = memValue.length-1;
 	              for (var z = 0; z < 4; z++){
-	                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+	                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
 	                charIndex = charIndex - 2;
 	              }
 	              app._data.stack_memory = stack_memory;
@@ -8472,10 +8510,10 @@ try{
 
 	          if(stack_memory.length == 0){
 	            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-	            stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+	            stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
 	            var charIndex = memValue.length-1;
 	            for (var z = 0; z < 4; z++){
-	              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+	              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
 	              charIndex = charIndex - 2;
 	            }
 	            app._data.stack_memory = stack_memory;
@@ -8977,6 +9015,45 @@ try{
 	          return;
 	        }
 	      }
+	    },
+
+	    writeStackLimit(stackLimit){
+	    	console.log(stackLimit)
+	    	if(stackLimit != null){
+	    		if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
+	    			app._data.alertMessaje = 'Segmentation fault. You tried to write in the data segment';
+	          app._data.type ='danger';
+	          app.$bvToast.toast(app._data.alertMessaje, {
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
+	          var date = new Date();
+	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+	          instructions[executionIndex]._rowVariant = 'danger';
+	          executionIndex = -1;
+	          return;
+	    		}
+	    		else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
+	    			app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+	          app._data.type ='danger';
+	          app.$bvToast.toast(app._data.alertMessaje, {
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
+	          var date = new Date();
+	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+	          instructions[executionIndex]._rowVariant = 'danger';
+	          executionIndex = -1;
+	          return;
+	    		}
+	    		else{
+	    			architecture.memory_layout[4].value = stackLimit;
+	    		}
+		    }
 	    },
 
 	    syscall(action, indexComp, indexElem, indexComp2, indexElem2){

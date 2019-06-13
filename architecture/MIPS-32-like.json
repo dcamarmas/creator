@@ -1029,7 +1029,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+reg3"
+      "definition": "reg1=reg2+reg3;\n if('reg1.name'=='sp.name'){\n if((reg2+reg3)>>>0 < stack_limit){\n stack_limit=reg2+reg3 >>> 0\n}\n}"
     },
     {
       "name": "addi",
@@ -1066,7 +1066,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+val;\n if('reg1.name'=='sp.name'){\n if((reg2+val)<stack_limit){\n stack_limit=reg2+val}}"
+      "definition": "reg1=reg2+val;\n if('reg1.name'=='sp.name'){\n if((reg2+val)>>>0 < stack_limit){\n stack_limit=reg2+val >>> 0\n}\n}"
     },
     {
       "name": "and",
@@ -1689,7 +1689,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "switch(v0){case 1:print_int(a0);break;case 2:print_float(FG12);break;case 3:print_double(FP12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(FG0);break;case 7:read_double(FP0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"
+      "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(FG12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(FG0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
     }
   ],
   "pseudoinstructions": [
