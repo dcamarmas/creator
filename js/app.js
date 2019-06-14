@@ -8166,13 +8166,16 @@ try{
 
 	        architecture.components[indexComp].elements[indexElem].value = bigInt(parseInt(value) >>> 0, 10).value;
 
-	        var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+	        var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
+	        var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-	        $(button).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+	        $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+	        $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
 
 	        setTimeout(function() {
-	          $(button).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-	        }, 350);
+	          $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+	          $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+	        }, 850);
 	      }
 
 	      else if(architecture.components[indexComp].type =="floating point"){
@@ -8197,13 +8200,17 @@ try{
 
 	          this.updateDouble(indexComp, indexElem);
 
-	          var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+	          var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
+		        var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-	          $(button).attr("style", "background-color:#c2c2c2;");
 
-	          setTimeout(function() {
-	            $(button).attr("style", "background-color:#f5f5f5;");
-	          }, 350);
+		        $(buttonDec).attr("style", "background-color:#c2c2c2;");
+		        $(buttonHex).attr("style", "background-color:#c2c2c2;");
+
+		        setTimeout(function() {
+		          $(buttonDec).attr("style", "background-color:#f5f5f5;");
+		          $(buttonHex).attr("style", "background-color:#f5f5f5;");
+		        }, 850);
 	        }
 	        
 	        else if(architecture.components[indexComp].double_precision == true){
@@ -8225,13 +8232,16 @@ try{
 
 	          this.updateSimple(indexComp, indexElem);
 
-	          var button = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+	          var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
+		        var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-	          $(button).attr("style", "background-color:#c2c2c2;");
+		        $(buttonDec).attr("style", "background-color:#c2c2c2;");
+		        $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-	          setTimeout(function() {
-	            $(button).attr("style", "background-color:#f5f5f5;");
-	          }, 350);
+		        setTimeout(function() {
+		          $(buttonDec).attr("style", "background-color:#f5f5f5;");
+		          $(buttonHex).attr("style", "background-color:#f5f5f5;");
+		        }, 850);
 	        }
 	      }  
 	    },
@@ -9233,7 +9243,6 @@ try{
 	            return;
 	          }
 	          if(consoleMutex == false){
-	          	console.log("<zdxfcghj")
 	            setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
 	          }
 	          else{
@@ -9515,6 +9524,9 @@ try{
 	      this.calculator.exponent = "";
 	      this.calculator.mantissa = "";
 	      this.calculator.decimal = "";
+	      this.calculator.sign = "";
+	      this.calculator.exponentDec = "";
+	      this.calculator.mantissaDec = "";
 	    },
 
 	    calculatorFunct(index){
@@ -9685,7 +9697,7 @@ try{
 	          var hexadecimal;
 
 	          if(this.calculator.bits == 32){
-	            hexadecimal = "0x"+ this.bin2hex(this.float2bin(float));
+	            hexadecimal = this.bin2hex(this.float2bin(float));
 	            binary = this.float2bin(float);
 
 	            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
@@ -9703,7 +9715,7 @@ try{
 	          }
 
 	          if(this.calculator.bits == 64){
-	            hexadecimal = "0x"+ this.bin2hex(this.double2bin(float));
+	            hexadecimal = this.bin2hex(this.double2bin(float));
 	            binary = this.double2bin(float);
 
 	            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
@@ -9752,8 +9764,11 @@ try{
 	  created(){
 	    this.load_arch_available();
 	    this.load_examples_available();
+	  },
 
-	    /*PRUEBA, mira el tamaño de la pantalla para asignar el tiempo*/
+	   mounted(){
+	    this.backupCopyModal();
+
 	    if(screen.width > 768){
 	    	console.log("PC");
 	    	debounce_time = 500;
@@ -9762,10 +9777,6 @@ try{
 	    	console.log("NO PC");
 	    	debounce_time = 1000;
 	    }
-	  },
-
-	   mounted(){
-	    this.backupCopyModal();
 	  },
 	})
 

@@ -146,6 +146,11 @@ hr {
   font-size: 95%;
 }
 
+.modRegister{
+  background-color: #c2c2c2;
+  font-size: 95%;
+}
+
 .popover{
   max-width: 100%;
 }
