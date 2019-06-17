@@ -57,7 +57,7 @@
         <header>
 
           <!-- Cargando -->
-          <div id="spinnerBack" class="spinnerBack loading" style="display:none"></div>
+          <div id="spinnerBack" class="spinnerBack loading" style="display:none" ref="spinnerBack"></div>
           <div id="spinner" class="spinner loading" style="text-align: center; display:none">
             <div style="display: inline-block; opacity: 1;">
               <b-spinner variant="primary" style="width: 3rem; height: 3rem;"></b-spinner>
@@ -125,7 +125,7 @@
           <!-- 1 navbar -->
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
 
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.8 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.9 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -536,6 +536,10 @@
                         <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
                       </template>
 
+                      <template slot="definition" slot-scope="row">
+                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
+                      </template>
+
                       <template slot="actions" slot-scope="row">
                         <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
                         <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
@@ -893,6 +897,10 @@
                     <b-table small :items="architecture.pseudoinstructions" :fields="pseudoinstFields" class="instruction_table">
                       <template slot="fields" slot-scope="row">
                         <b-button @click.stop="viewFielsPseudo(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
+                      </template>
+
+                      <template slot="definition" slot-scope="row">
+                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
                       </template>
 
                       <template slot="actions" slot-scope="row">
@@ -1960,7 +1968,7 @@
                   <b-img src="./images/monitor2.png" fluid alt="Monitor"></b-img>
                 </div>
                 <div class="col-lg-12 col-sm-12">
-                  <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled></b-form-textarea>
+                  <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled no-resize></b-form-textarea>
                 </div>
               </div>
             </div>
@@ -1971,7 +1979,7 @@
                   <b-img src="./images/keyboard1.png" fluid alt="Keyboard"></b-img>
                 </div>
                 <div class="col-lg-12 col-sm-12">
-                  <b-form-textarea id="textarea_keyboard" v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5"></b-form-textarea>
+                  <b-form-textarea id="textarea_keyboard" v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" no-resize></b-form-textarea>
                 </div>
               </div>
 
