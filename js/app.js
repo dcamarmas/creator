@@ -907,8 +907,6 @@ window.app = new Vue({
 
       $(".loading").show();
 
-      console.log("cargando")
-
       for (var i = 0; i < load_architectures.length; i++) {
         if(e == load_architectures[i].id){
           var auxArchitecture = JSON.parse(load_architectures[i].architecture);
@@ -3798,608 +3796,610 @@ window.app = new Vue({
       /*console.log(this.$root)
      	this.$root.$forceUpdate();*/
 
-      instructions = [];
-      instructions_tag = [];
-      pending_instructions = [];
-      pending_tags = [];
-      data_memory = [];
-      data_tag = [];
-      instructions_binary =[];
-      instructions_memory = [];
-      extern = [];
-      stack_memory = [];
-      data = [];
-      executionInit = 1;
-      mutexRead = false;
+     	setTimeout(function(){
+	      instructions = [];
+	      instructions_tag = [];
+	      pending_instructions = [];
+	      pending_tags = [];
+	      data_memory = [];
+	      data_tag = [];
+	      instructions_binary =[];
+	      instructions_memory = [];
+	      extern = [];
+	      stack_memory = [];
+	      data = [];
+	      executionInit = 1;
+	      mutexRead = false;
 
-      if(update_binary.instructions_binary != null){
-        for(var i = 0; i < update_binary.instructions_binary.length; i++){
-          instructions.push(update_binary.instructions_binary[i]);
-          if(i == 0){
-            instructions[instructions.length-1].hide = false;
-            if(update_binary.instructions_binary[i].globl == false){
-              instructions[instructions.length-1].Label = "";
-            }
-          }
-          else if(update_binary.instructions_binary[i].globl == false){
-            instructions[instructions.length-1].Label = "";
-            instructions[instructions.length-1].hide = true;
-          }
-          else if(update_binary.instructions_binary[i].globl == null){
-            instructions[instructions.length-1].hide = true;
-          }
-          else{
-            instructions[instructions.length-1].hide = false;
-          }
+	      if(update_binary.instructions_binary != null){
+	        for(var i = 0; i < update_binary.instructions_binary.length; i++){
+	          instructions.push(update_binary.instructions_binary[i]);
+	          if(i == 0){
+	            instructions[instructions.length-1].hide = false;
+	            if(update_binary.instructions_binary[i].globl == false){
+	              instructions[instructions.length-1].Label = "";
+	            }
+	          }
+	          else if(update_binary.instructions_binary[i].globl == false){
+	            instructions[instructions.length-1].Label = "";
+	            instructions[instructions.length-1].hide = true;
+	          }
+	          else if(update_binary.instructions_binary[i].globl == null){
+	            instructions[instructions.length-1].hide = true;
+	          }
+	          else{
+	            instructions[instructions.length-1].hide = false;
+	          }
 
-          address = parseInt(instructions[instructions.length-1].Address, 16) + 4;
-        }
-      }
-      else{
-        address = parseInt(architecture.memory_layout[0].value);
-      }
+	          address = parseInt(instructions[instructions.length-1].Address, 16) + 4;
+	        }
+	      }
+	      else{
+	        address = parseInt(architecture.memory_layout[0].value);
+	      }
 
-      var numBinaries = instructions.length;
+	      var numBinaries = instructions.length;
 
 
-      /*Asignacion direcciones de memoria*/
-      //address = parseInt(architecture.memory_layout[0].value);
-      data_address = parseInt(architecture.memory_layout[2].value);
-      stack_address = parseInt(architecture.memory_layout[4].value);
+	      /*Asignacion direcciones de memoria*/
+	      //address = parseInt(architecture.memory_layout[0].value);
+	      data_address = parseInt(architecture.memory_layout[2].value);
+	      stack_address = parseInt(architecture.memory_layout[4].value);
 
-      /*ASIGNACION PILA TEMPORAL PC*/
-      architecture.components[1].elements[29].value = bigInt(stack_address).value;
-      architecture.components[0].elements[0].value = bigInt(address).value;
-      architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
-      architecture.components[0].elements[0].default_value = bigInt(address).value;
+	      /*ASIGNACION PILA TEMPORAL PC*/
+	      architecture.components[1].elements[29].value = bigInt(stack_address).value;
+	      architecture.components[0].elements[0].value = bigInt(address).value;
+	      architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
+	      architecture.components[0].elements[0].default_value = bigInt(address).value;
 
-      totalStats=0;
-      for (var i = 0; i < stats.length; i++){
-        stats[i].percentage = 0;
-        stats[i].number_instructions = 0;
-      }
+	      totalStats=0;
+	      for (var i = 0; i < stats.length; i++){
+	        stats[i].percentage = 0;
+	        stats[i].number_instructions = 0;
+	      }
 
-      align = 0;
+	      align = 0;
 
-      var empty = false;
+	      var empty = false;
 
-      /*Guarda en la memoria del navegador una copia de seguidad*/
-      if (typeof(Storage) !== "undefined") {
-        var auxObject = jQuery.extend(true, {}, architecture);
+	      /*Guarda en la memoria del navegador una copia de seguidad*/
+	      if (typeof(Storage) !== "undefined") {
+	        var auxObject = jQuery.extend(true, {}, architecture);
 
-        var auxArchitecture = bigInt_serialize(auxObject);
-        var auxArch = JSON.stringify(auxArchitecture, null, 2);
+	        var auxArchitecture = bigInt_serialize(auxObject);
+	        var auxArch = JSON.stringify(auxArchitecture, null, 2);
 
-        var date = new Date();
-        var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+	        var date = new Date();
+	        var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
 
-        localStorage.setItem("arch_name", this.architecture_name);
-        localStorage.setItem("architecture_copy", auxArch);
-        localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
-        localStorage.setItem("date_copy", auxDate);
-      }
+	        localStorage.setItem("arch_name", this.architecture_name);
+	        localStorage.setItem("architecture_copy", auxArch);
+	        localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
+	        localStorage.setItem("date_copy", auxDate);
+	      }
 
-      this.first_token();
+	      app.first_token();
 
-      if(this.get_token() == null){
-        $(".loading").hide();
-        app._data.alertMessaje = 'Please enter the assembly code before compiling';
-        app._data.type ='danger';
-        app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
+	      if(app.get_token() == null){
+	        $(".loading").hide();
+	        app._data.alertMessaje = 'Please enter the assembly code before compiling';
+	        app._data.type ='danger';
+	        app.$bvToast.toast(app._data.alertMessaje, {
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
+	        var date = new Date();
+	        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+	        
+	        return -1;
+	      }
+
+	      token = app.get_token();
+	      console.log(token)
+
+	      while(!empty){
+	        token = app.get_token();
+	        console.log(token)
+
+	        if(token == null){
+	          empty = true;
+	          break;
+	        }
+
+	        var change = false;
+
+	        for(var i = 0; i < architecture.directives.length; i++){
+	          if(token == architecture.directives[i].name){
+	            switch(architecture.directives[i].action){
+	              case "data_segment":
+	                console.log("data_segment")
+	                var result = app.data_segment_compiler();
+	                if(result == 0){
+	                  change = true;
+	                }
+	                if(result == -1){
+	                  tokenIndex = 0;
+	                  instructions = [];
+	                  pending_instructions = [];
+	                  pending_tags = [];
+	                  data_memory = [];
+	                  data_tag = [];
+	                  instructions_binary = [];
+	                  instructions_memory = [];
+	                  stack_memory = [];
+	                  data = [];
+	                  extern = [];
+	                  app._data.instructions_memory = instructions_memory;
+	                  app._data.data_memory = data_memory;
+	                  app._data.stack_memory = stack_memory;
+	                  app._data.instructions = instructions;
+	                  $(".loading").hide();
+	                  return -1;
+	                }
+	                break;
+	              case "code_segment":
+	                console.log("code_segment")
+	                var result = app.code_segment_compiler();
+	                if(result == 0){
+	                  change = true;
+	                }
+	                if(result == -1){
+	                  tokenIndex = 0;
+	                  instructions = [];
+	                  pending_instructions = [];
+	                  pending_tags = [];
+	                  data_memory = [];
+	                  data_tag = [];
+	                  instructions_binary = [];
+	                  instructions_memory = [];
+	                  extern = [];
+	                  stack_memory = [];
+	                  data = [];
+	                  app._data.instructions = instructions;
+	                  app._data.instructions_memory = instructions_memory;
+	                  app._data.data_memory = data_memory;
+	                  app._data.stack_memory = stack_memory;
+	                  $(".loading").hide();
+	                  return -1;
+	                }
+	                break;
+	              case "global_symbol":
+	                /*this.next_token();
+	                token = this.get_token();
+	                extern.push(token);
+	                change = true;
+	                this.next_token();*/
+
+	                var isGlobl = true;
+
+	                app.next_token();
+
+	                while(isGlobl){
+	                  token = app.get_token();
+
+	                  re = new RegExp(",", "g");
+	                  token = token.replace(re, "");
+
+	                  console.log(token)
+	                  extern.push(token);
+	                  change = true;
+
+	                  app.next_token();
+	                  token = app.get_token();
+
+	                  console.log(token)
+
+	                  for(var z = 0; z < architecture.directives.length; z++){
+	                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+	                      isGlobl = false;
+	                    }
+	                  }
+	                }
+
+	                break;
+	              default:
+	                console.log("default")
+	                empty = true;
+	                break;
+	            }
+	          }
+
+	          else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
+	            empty = true;
+	            app.compileError(15, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+	            $(".loading").hide();
+	            tokenIndex = 0;
+	            return -1;
+	          } 
+	        }
+	      }
+
+	      var found = false;
+
+	      if(update_binary.instructions_binary != null){
+	        for(var j = 0; j<instructions.length; j++){
+	          if(instructions[j].Label != ""){
+	            for(var i = 0; i<update_binary.instructions_tag.length; i++){
+	              if(instructions[j].Label == update_binary.instructions_tag[i].tag){
+	                update_binary.instructions_tag[i].addr = instructions[j].Address;
+	              }
+	            }
+	          }
+	        }
+	      }
+
+	      /*Instrucciones pendientes de revisar etiqueta*/
+	      for(var i = 0; i < pending_instructions.length; i++){
+	        var exit = 0;
+	        var signatureParts = pending_instructions[i].signature;
+	        var signatureRawParts = pending_instructions[i].signatureRaw;
+	        var instructionParts = (pending_instructions[i].instruction).split(' ');
+	        for (var j = 0; j < signatureParts.length && exit == 0; j++){
+	          if(signatureParts[j] == "inm" || signatureParts[j] == "address"){
+	            for (var z = 0; z < instructions.length && exit == 0; z++){
+	              if(instructions[z].Label == instructionParts[j]){
+	                var addr = instructions[z].Address;
+
+	                var bin = parseInt(addr, 16).toString(2);
+	                var startbit = pending_instructions[i].startBit;
+	                var stopbit = pending_instructions[i].stopBit;
+
+	                instructionParts[j] = addr;
+	                var newInstruction = "";
+	                for (var w = 0; w < instructionParts.length; w++) {
+	                  if(w == instructionParts.length-1){
+	                    newInstruction = newInstruction + instructionParts[w];
+	                  }
+	                  else{
+	                    newInstruction = newInstruction + instructionParts[w] + " ";
+	                  }
+	                }
+	                for (var w = 0; w < instructions.length && exit == 0; w++) {
+	                  var aux = "0x" + (pending_instructions[i].address).toString(16);
+	                  if(aux == instructions[w].Address){
+	                    instructions[w].loaded = newInstruction;
+	                  }
+	                }
+
+	                for (var w = 0; w < instructions.length && exit == 0; w++) {
+	                  var aux = "0x" + (pending_instructions[i].address).toString(16);
+	                  if(aux == instructions[w].Address){
+	                    instructions[w].loaded = newInstruction;
+	                    var fieldsLength = startbit - stopbit + 1;
+	                    console.log(w)
+	                    console.log(numBinaries)
+	                    console.log(w - numBinaries)
+	                    instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+	                    exit = 1;
+	                  }
+	                }
+	              }
+	            }
+
+	            for (var z = 0; z < data_memory.length && exit == 0; z++){
+	              for (var p = 0; p < data_memory[z].Binary.length && exit == 0; p++){
+	                if(instructionParts[j] == data_memory[z].Binary[p].Tag){
+	                  var addr = (data_memory[z].Binary[p].Addr);
+
+	                  var bin = parseInt(addr, 16).toString(2);
+	                  var startbit = pending_instructions[i].startBit;
+	                  var stopbit = pending_instructions[i].stopBit;
+
+	                  instructionParts[j] = addr;
+	                  var newInstruction = "";
+	                  for (var w = 0; w < instructionParts.length; w++) {
+	                    if(w == instructionParts.length-1){
+	                      newInstruction = newInstruction + instructionParts[w];
+	                    }
+	                    else{
+	                      newInstruction = newInstruction + instructionParts[w] + " ";
+	                    }
+	                  }
+	                  for (var w = 0; w < instructions.length && exit == 0; w++) {
+	                    var aux = "0x" + (pending_instructions[i].address).toString(16);
+	                    if(aux == instructions[w].Address){
+	                      instructions[w].loaded = newInstruction;
+	                    }
+	                  }
+
+	                  for (var w = 0; w < instructions.length && exit == 0; w++) {
+	                    var aux = "0x" + (pending_instructions[i].address).toString(16);
+	                    if(aux == instructions[w].Address){
+	                      instructions[w].loaded = newInstruction;
+	                      var fieldsLength = startbit - stopbit + 1;
+	                      instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+	                      exit = 1;
+	                    }
+	                  }
+
+	                }
+	              }
+	            }
+
+	            if(exit == 0){
+	              app.compileError(7, instructionParts[j], pending_instructions[i].line);
+	              tokenIndex = 0;
+	              instructions = [];
+	              pending_instructions = [];
+	              pending_tags = [];
+	              data_memory = [];
+	              data_tag = [];
+	              instructions_binary = [];
+	              instructions_memory = [];
+	              stack_memory = [];
+	              data = [];
+	              extern = [];
+	              app._data.instructions_memory = instructions_memory;
+	              app._data.data_memory = data_memory;
+	              app._data.stack_memory = stack_memory;
+	              app._data.instructions = instructions;
+	              $(".loading").hide();
+	              return -1;
+	            }
+	          }
+	        }
+	      }
+
+	      /*Introduce las instrucciones compiladas en el segmento de texto*/
+	      if(update_binary.instructions_binary != null){
+	        for (var i = 0; i < update_binary.instructions_binary.length; i++){
+	          var hex = app.bin2hex(update_binary.instructions_binary[i].loaded);
+	          var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
+	          var label = update_binary.instructions_binary[i].Label;
+	          var hide;
+
+	          if(i == 0){
+	            hide = false;
+	            if(update_binary.instructions_binary[i].globl == false){
+	              label = "";
+	            }
+	          }
+	          else if(update_binary.instructions_binary[i].globl == false){
+	            label = "";
+	            hide = true;
+	          }
+	          else if(update_binary.instructions_binary[i].globl == null){
+	            hide = true;
+	          }
+	          else{
+	            hide = false;
+	          }
+
+	          for(var a = 0; a < hex.length/2; a++){
+	            if(auxAddr % 4 == 0){
+	              instructions_memory.push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
+	              if(label == ""){
+	                label=null;
+	              }
+
+	              if(a == 0){
+	                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+	              }
+	              else{
+	                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+	              }
+
+	              auxAddr++;
+	            }
+	            else{
+	              if(a == 0){
+	                console.log(label);
+	                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+	              }
+	              else{
+	                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+	              }
+
+	              auxAddr++;
+	            }
+	          }
+
+	          if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
+	            var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
+	            for(var b = 0; b < num_iter; b++){
+	              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
+	            }
+	          }
+
+	          app._data.instructions_memory = instructions_memory;
+	        }
+	      }
+
+	      for (var i = 0; i < instructions_binary.length; i++){
+	        var hex = app.bin2hex(instructions_binary[i].loaded);
+	        var auxAddr = parseInt(instructions_binary[i].Address, 16);
+	        var label = instructions_binary[i].Label;
+	        var binNum = 0;
+
+	        if(update_binary.instructions_binary != null){
+	          binNum = update_binary.instructions_binary.length
+	        }
+
+	        for(var a = 0; a < hex.length/2; a++){
+	          if(auxAddr % 4 == 0){
+	            instructions_memory.push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
+	            if(label == ""){
+	              label=null;
+	            }
+
+	            if(a == 0){
+	              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+	            }
+	            else{
+	              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+	            }
+
+	            auxAddr++;
+	          }
+	          else{
+	            if(a == 0){
+	              console.log(label);
+	              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+	            }
+	            else{
+	              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+	            }
+
+	            auxAddr++;
+	          }
+	        }
+
+	        if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
+	          var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
+	          for(var b = 0; b < num_iter; b++){
+	            (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
+	          }
+	        }
+
+	        app._data.instructions_memory = instructions_memory;
+	      }
+
+
+	      /*Verifica solapamiento*/
+	      if(data_memory.length > 0){
+	        if(data_memory[data_memory.length-1].Binary[3].Addr > architecture.memory_layout[3].value){
+	          tokenIndex = 0;
+	          instructions = [];
+	          pending_instructions = [];
+	          pending_tags = [];
+	          data_memory = [];
+	          data_tag = [];
+	          instructions_binary = [];
+	          instructions_memory = [];
+	          extern = [];
+	          stack_memory = [];
+	          data = [];
+	          app._data.instructions = instructions;
+	          app._data.instructions_memory = instructions_memory;
+	          app._data.data_memory = data_memory;
+	          app._data.stack_memory = stack_memory;
+
+	          app._data.alertMessaje = 'Data overflow';
+	          app._data.type ='danger';
+	          app.$bvToast.toast(app._data.alertMessaje, {
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
+	          var date = new Date();
+	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+	          $(".loading").hide();
+	          return -1;
+	        }
+	      }
+
+	      if(instructions_memory.length > 0){
+	        if(instructions_memory[instructions_memory.length-1].Binary[3].Addr > architecture.memory_layout[1].value){
+	          tokenIndex = 0;
+	          instructions = [];
+	          pending_instructions = [];
+	          pending_tags = [];
+	          data_memory = [];
+	          data_tag = [];
+	          instructions_binary = [];
+	          instructions_memory = [];
+	          extern = [];
+	          stack_memory = [];
+	          data = [];
+	          app._data.instructions = instructions;
+	          app._data.instructions_memory = instructions_memory;
+	          app._data.data_memory = data_memory;
+	          app._data.stack_memory = stack_memory;
+
+	          app._data.alertMessaje = 'Instruction overflow';
+	          app._data.type ='danger';
+	          app.$bvToast.toast(app._data.alertMessaje, {
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
+	          var date = new Date();
+	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+
+	          $(".loading").hide();
+	          return -1;
+	        }
+	      }
+
+	      /*Guarda los binarios*/
+	      for(var i = 0; i < instructions_binary.length; i++){
+	        console.log(i)
+	        if(extern.length == 0 && instructions_binary[i].Label != ""){
+	          instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+	          instructions_binary[i].globl = false;
+	        }
+	        else{
+	        	for(var j = 0; j < extern.length; j++){
+	        		if(instructions_binary[i].Label != extern[j] && j == extern.length-1 && instructions_binary[i].Label != ""){
+	        			instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+	              instructions_binary[i].globl = false;
+	              break;
+	        		}
+	            else if(instructions_binary[i].Label == extern[j]){
+	              instructions_binary[i].globl = true;
+	              break;
+	            }
+	        	}
+	        }	
+	      }
+
+	      for(var i = 0; i < instructions_tag.length; i++){
+	        if(extern.length == 0 && instructions_tag[i].tag != ""){
+	          instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
+	          instructions_tag[i].globl = false;
+	          break;
+	        }
+	        else{
+	          for(var j = 0; j < extern.length; j++){
+	            if(instructions_tag[i].tag != extern[j] && j == extern.length-1 && instructions_tag[i].tag != ""){
+	              instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
+	              instructions_tag[i].globl = false;
+	              break;
+	            }
+	            else if(instructions_tag[i].tag == extern[j]){
+	              instructions_tag[i].globl = true;
+	              break;
+	            }
+	          }
+	        } 
+	      }
+
+	      app._data.instructions = instructions;
+
+	      /*Inicializar pila*/
+	      stack_memory.push({Address: stack_address, Binary: [], Value: null});
+	      for(var i = 0; i<4; i++){
+	        (stack_memory[stack_memory.length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
+	      }
+	      this.stack_memory = stack_memory;
+
+	      app._data.alertMessaje = 'Compilation completed successfully';
+	      app._data.type ='success';
+	      app.$bvToast.toast(app._data.alertMessaje, {
+	        variant: app._data.type,
+	        solid: true,
+	        toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
-        var date = new Date();
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-        
-        return -1;
-      }
+	      })
+	      var date = new Date();
+	      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
-      token = this.get_token();
-      console.log(token)
+	      tokenIndex = 0;
+	      
+	      app.reset();
 
-      while(!empty){
-        token = this.get_token();
-        console.log(token)
+	      address = architecture.memory_layout[0].value;
+	      data_address = architecture.memory_layout[2].value;
+	      stack_address = architecture.memory_layout[4].value;
 
-        if(token == null){
-          empty = true;
-          break;
-        }
-
-        var change = false;
-
-        for(var i = 0; i < architecture.directives.length; i++){
-          if(token == architecture.directives[i].name){
-            switch(architecture.directives[i].action){
-              case "data_segment":
-                console.log("data_segment")
-                var result = this.data_segment_compiler();
-                if(result == 0){
-                  change = true;
-                }
-                if(result == -1){
-                  tokenIndex = 0;
-                  instructions = [];
-                  pending_instructions = [];
-                  pending_tags = [];
-                  data_memory = [];
-                  data_tag = [];
-                  instructions_binary = [];
-                  instructions_memory = [];
-                  stack_memory = [];
-                  data = [];
-                  extern = [];
-                  app._data.instructions_memory = instructions_memory;
-                  app._data.data_memory = data_memory;
-                  app._data.stack_memory = stack_memory;
-                  app._data.instructions = instructions;
-                  $(".loading").hide();
-                  return -1;
-                }
-                break;
-              case "code_segment":
-                console.log("code_segment")
-                var result = this.code_segment_compiler();
-                if(result == 0){
-                  change = true;
-                }
-                if(result == -1){
-                  tokenIndex = 0;
-                  instructions = [];
-                  pending_instructions = [];
-                  pending_tags = [];
-                  data_memory = [];
-                  data_tag = [];
-                  instructions_binary = [];
-                  instructions_memory = [];
-                  extern = [];
-                  stack_memory = [];
-                  data = [];
-                  app._data.instructions = instructions;
-                  app._data.instructions_memory = instructions_memory;
-                  app._data.data_memory = data_memory;
-                  app._data.stack_memory = stack_memory;
-                  $(".loading").hide();
-                  return -1;
-                }
-                break;
-              case "global_symbol":
-                /*this.next_token();
-                token = this.get_token();
-                extern.push(token);
-                change = true;
-                this.next_token();*/
-
-                var isGlobl = true;
-
-                this.next_token();
-
-                while(isGlobl){
-                  token = this.get_token();
-
-                  re = new RegExp(",", "g");
-                  token = token.replace(re, "");
-
-                  console.log(token)
-                  extern.push(token);
-                  change = true;
-
-                  this.next_token();
-                  token = this.get_token();
-
-                  console.log(token)
-
-                  for(var z = 0; z < architecture.directives.length; z++){
-                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                      isGlobl = false;
-                    }
-                  }
-                }
-
-                break;
-              default:
-                console.log("default")
-                empty = true;
-                break;
-            }
-          }
-
-          else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
-            empty = true;
-            this.compileError(15, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-            $(".loading").hide();
-            tokenIndex = 0;
-            return -1;
-          } 
-        }
-      }
-
-      var found = false;
-
-      if(update_binary.instructions_binary != null){
-        for(var j = 0; j<instructions.length; j++){
-          if(instructions[j].Label != ""){
-            for(var i = 0; i<update_binary.instructions_tag.length; i++){
-              if(instructions[j].Label == update_binary.instructions_tag[i].tag){
-                update_binary.instructions_tag[i].addr = instructions[j].Address;
-              }
-            }
-          }
-        }
-      }
-
-      /*Instrucciones pendientes de revisar etiqueta*/
-      for(var i = 0; i < pending_instructions.length; i++){
-        var exit = 0;
-        var signatureParts = pending_instructions[i].signature;
-        var signatureRawParts = pending_instructions[i].signatureRaw;
-        var instructionParts = (pending_instructions[i].instruction).split(' ');
-        for (var j = 0; j < signatureParts.length && exit == 0; j++){
-          if(signatureParts[j] == "inm" || signatureParts[j] == "address"){
-            for (var z = 0; z < instructions.length && exit == 0; z++){
-              if(instructions[z].Label == instructionParts[j]){
-                var addr = instructions[z].Address;
-
-                var bin = parseInt(addr, 16).toString(2);
-                var startbit = pending_instructions[i].startBit;
-                var stopbit = pending_instructions[i].stopBit;
-
-                instructionParts[j] = addr;
-                var newInstruction = "";
-                for (var w = 0; w < instructionParts.length; w++) {
-                  if(w == instructionParts.length-1){
-                    newInstruction = newInstruction + instructionParts[w];
-                  }
-                  else{
-                    newInstruction = newInstruction + instructionParts[w] + " ";
-                  }
-                }
-                for (var w = 0; w < instructions.length && exit == 0; w++) {
-                  var aux = "0x" + (pending_instructions[i].address).toString(16);
-                  if(aux == instructions[w].Address){
-                    instructions[w].loaded = newInstruction;
-                  }
-                }
-
-                for (var w = 0; w < instructions.length && exit == 0; w++) {
-                  var aux = "0x" + (pending_instructions[i].address).toString(16);
-                  if(aux == instructions[w].Address){
-                    instructions[w].loaded = newInstruction;
-                    var fieldsLength = startbit - stopbit + 1;
-                    console.log(w)
-                    console.log(numBinaries)
-                    console.log(w - numBinaries)
-                    instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                    exit = 1;
-                  }
-                }
-              }
-            }
-
-            for (var z = 0; z < data_memory.length && exit == 0; z++){
-              for (var p = 0; p < data_memory[z].Binary.length && exit == 0; p++){
-                if(instructionParts[j] == data_memory[z].Binary[p].Tag){
-                  var addr = (data_memory[z].Binary[p].Addr);
-
-                  var bin = parseInt(addr, 16).toString(2);
-                  var startbit = pending_instructions[i].startBit;
-                  var stopbit = pending_instructions[i].stopBit;
-
-                  instructionParts[j] = addr;
-                  var newInstruction = "";
-                  for (var w = 0; w < instructionParts.length; w++) {
-                    if(w == instructionParts.length-1){
-                      newInstruction = newInstruction + instructionParts[w];
-                    }
-                    else{
-                      newInstruction = newInstruction + instructionParts[w] + " ";
-                    }
-                  }
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                    }
-                  }
-
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                      var fieldsLength = startbit - stopbit + 1;
-                      instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                      exit = 1;
-                    }
-                  }
-
-                }
-              }
-            }
-
-            if(exit == 0){
-              this.compileError(7, instructionParts[j], pending_instructions[i].line);
-              tokenIndex = 0;
-              instructions = [];
-              pending_instructions = [];
-              pending_tags = [];
-              data_memory = [];
-              data_tag = [];
-              instructions_binary = [];
-              instructions_memory = [];
-              stack_memory = [];
-              data = [];
-              extern = [];
-              app._data.instructions_memory = instructions_memory;
-              app._data.data_memory = data_memory;
-              app._data.stack_memory = stack_memory;
-              app._data.instructions = instructions;
-              $(".loading").hide();
-              return -1;
-            }
-          }
-        }
-      }
-
-      /*Introduce las instrucciones compiladas en el segmento de texto*/
-      if(update_binary.instructions_binary != null){
-        for (var i = 0; i < update_binary.instructions_binary.length; i++){
-          var hex = this.bin2hex(update_binary.instructions_binary[i].loaded);
-          var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
-          var label = update_binary.instructions_binary[i].Label;
-          var hide;
-
-          if(i == 0){
-            hide = false;
-            if(update_binary.instructions_binary[i].globl == false){
-              label = "";
-            }
-          }
-          else if(update_binary.instructions_binary[i].globl == false){
-            label = "";
-            hide = true;
-          }
-          else if(update_binary.instructions_binary[i].globl == null){
-            hide = true;
-          }
-          else{
-            hide = false;
-          }
-
-          for(var a = 0; a < hex.length/2; a++){
-            if(auxAddr % 4 == 0){
-              instructions_memory.push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
-              if(label == ""){
-                label=null;
-              }
-
-              if(a == 0){
-                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-              }
-              else{
-                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-              }
-
-              auxAddr++;
-            }
-            else{
-              if(a == 0){
-                console.log(label);
-                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-              }
-              else{
-                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-              }
-
-              auxAddr++;
-            }
-          }
-
-          if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
-            var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
-            for(var b = 0; b < num_iter; b++){
-              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
-            }
-          }
-
-          app._data.instructions_memory = instructions_memory;
-        }
-      }
-
-      for (var i = 0; i < instructions_binary.length; i++){
-        var hex = this.bin2hex(instructions_binary[i].loaded);
-        var auxAddr = parseInt(instructions_binary[i].Address, 16);
-        var label = instructions_binary[i].Label;
-        var binNum = 0;
-
-        if(update_binary.instructions_binary != null){
-          binNum = update_binary.instructions_binary.length
-        }
-
-        for(var a = 0; a < hex.length/2; a++){
-          if(auxAddr % 4 == 0){
-            instructions_memory.push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
-            if(label == ""){
-              label=null;
-            }
-
-            if(a == 0){
-              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-            }
-            else{
-              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-            }
-
-            auxAddr++;
-          }
-          else{
-            if(a == 0){
-              console.log(label);
-              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-            }
-            else{
-              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-            }
-
-            auxAddr++;
-          }
-        }
-
-        if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
-          var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
-          for(var b = 0; b < num_iter; b++){
-            (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-          }
-        }
-
-        app._data.instructions_memory = instructions_memory;
-      }
-
-
-      /*Verifica solapamiento*/
-      if(data_memory.length > 0){
-        if(data_memory[data_memory.length-1].Binary[3].Addr > architecture.memory_layout[3].value){
-          tokenIndex = 0;
-          instructions = [];
-          pending_instructions = [];
-          pending_tags = [];
-          data_memory = [];
-          data_tag = [];
-          instructions_binary = [];
-          instructions_memory = [];
-          extern = [];
-          stack_memory = [];
-          data = [];
-          app._data.instructions = instructions;
-          app._data.instructions_memory = instructions_memory;
-          app._data.data_memory = data_memory;
-          app._data.stack_memory = stack_memory;
-
-          app._data.alertMessaje = 'Data overflow';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-          $(".loading").hide();
-          return -1;
-        }
-      }
-
-      if(instructions_memory.length > 0){
-        if(instructions_memory[instructions_memory.length-1].Binary[3].Addr > architecture.memory_layout[1].value){
-          tokenIndex = 0;
-          instructions = [];
-          pending_instructions = [];
-          pending_tags = [];
-          data_memory = [];
-          data_tag = [];
-          instructions_binary = [];
-          instructions_memory = [];
-          extern = [];
-          stack_memory = [];
-          data = [];
-          app._data.instructions = instructions;
-          app._data.instructions_memory = instructions_memory;
-          app._data.data_memory = data_memory;
-          app._data.stack_memory = stack_memory;
-
-          app._data.alertMessaje = 'Instruction overflow';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-
-          $(".loading").hide();
-          return -1;
-        }
-      }
-
-      /*Guarda los binarios*/
-      for(var i = 0; i < instructions_binary.length; i++){
-        console.log(i)
-        if(extern.length == 0 && instructions_binary[i].Label != ""){
-          instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
-          instructions_binary[i].globl = false;
-        }
-        else{
-        	for(var j = 0; j < extern.length; j++){
-        		if(instructions_binary[i].Label != extern[j] && j == extern.length-1 && instructions_binary[i].Label != ""){
-        			instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
-              instructions_binary[i].globl = false;
-              break;
-        		}
-            else if(instructions_binary[i].Label == extern[j]){
-              instructions_binary[i].globl = true;
-              break;
-            }
-        	}
-        }	
-      }
-
-      for(var i = 0; i < instructions_tag.length; i++){
-        if(extern.length == 0 && instructions_tag[i].tag != ""){
-          instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
-          instructions_tag[i].globl = false;
-          break;
-        }
-        else{
-          for(var j = 0; j < extern.length; j++){
-            if(instructions_tag[i].tag != extern[j] && j == extern.length-1 && instructions_tag[i].tag != ""){
-              instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
-              instructions_tag[i].globl = false;
-              break;
-            }
-            else if(instructions_tag[i].tag == extern[j]){
-              instructions_tag[i].globl = true;
-              break;
-            }
-          }
-        } 
-      }
-
-      app._data.instructions = instructions;
-
-      /*Inicializar pila*/
-      stack_memory.push({Address: stack_address, Binary: [], Value: null});
-      for(var i = 0; i<4; i++){
-        (stack_memory[stack_memory.length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
-      }
-      this.stack_memory = stack_memory;
-
-      app._data.alertMessaje = 'Compilation completed successfully';
-      app._data.type ='success';
-      app.$bvToast.toast(app._data.alertMessaje, {
-        variant: app._data.type,
-        solid: true,
-        toaster: "b-toaster-top-center",
-				autoHideDelay: 1500,
-      })
-      var date = new Date();
-      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-      tokenIndex = 0;
-      
-      this.reset();
-
-      address = architecture.memory_layout[0].value;
-      data_address = architecture.memory_layout[2].value;
-      stack_address = architecture.memory_layout[4].value;
-
-      $(".loading").hide();
+      	$(".loading").hide();
+      }, 100);
     },
 
 
@@ -8034,78 +8034,79 @@ window.app = new Vue({
     /*Funcion que resetea la ejecucion*/
     reset(){
       $(".loading").show();
-      for (var i = 0; i < instructions.length; i++) {
-        instructions[i]._rowVariant = '';
-      }
-      executionIndex = 0;
-      
-      /*Reset estadisticas*/
-      totalStats=0;
-      for (var i = 0; i < stats.length; i++){
-        stats[i].percentage = 0;
-        stats[i].number_instructions = 0;
-      }
+      setTimeout(function(){
+	      for (var i = 0; i < instructions.length; i++) {
+	        instructions[i]._rowVariant = '';
+	      }
+	      executionIndex = 0;
+	      
+	      /*Reset estadisticas*/
+	      totalStats=0;
+	      for (var i = 0; i < stats.length; i++){
+	        stats[i].percentage = 0;
+	        stats[i].number_instructions = 0;
+	      }
 
-      /*Reset consola*/
-      this.keyboard = "";
-      this.display = "";
-      mutexRead = false;
-      newExecution = true;
+	      /*Reset consola*/
+	      this.keyboard = "";
+	      this.display = "";
+	      mutexRead = false;
+	      newExecution = true;
 
-      for (var i = 0; i < architecture_hash.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-          if(architecture.components[i].double_precision == false){
-            architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
-          }
+	      for (var i = 0; i < architecture_hash.length; i++) {
+	        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+	          if(architecture.components[i].double_precision == false){
+	            architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
+	          }
 
-          else{
-            var aux_value;
-            var aux_sim1;
-            var aux_sim2;
-            for (var a = 0; a < architecture_hash.length; a++) {
-              for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-                  aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                }
-                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-                  aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                }
-              }
-            }
+	          else{
+	            var aux_value;
+	            var aux_sim1;
+	            var aux_sim2;
+	            for (var a = 0; a < architecture_hash.length; a++) {
+	              for (var b = 0; b < architecture.components[a].elements.length; b++) {
+	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+	                  aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+	                }
+	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+	                  aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+	                }
+	              }
+	            }
 
-            aux_value = aux_sim1 + aux_sim2;
+	            aux_value = aux_sim1 + aux_sim2;
 
-            architecture.components[i].elements[j].value = this.hex2double("0x" + aux_value);
-          }
-        }
-      }
+	            architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
+	          }
+	        }
+	      }
 
-      console.log(backup_stack_address)
+	      console.log(backup_stack_address)
 
-      architecture.memory_layout[4].value = backup_stack_address;
+	      architecture.memory_layout[4].value = backup_stack_address;
 
-      for (var i = 0; i < data_memory.length; i++) {
-        data_memory[i].Value = data_memory[i].DefValue;
-        for (var j = 0; j < data_memory[i].Binary.length; j++) {
-          data_memory[i].Binary[j].Bin = data_memory[i].Binary[j].DefBin;
-        }
-      }
+	      for (var i = 0; i < data_memory.length; i++) {
+	        data_memory[i].Value = data_memory[i].DefValue;
+	        for (var j = 0; j < data_memory[i].Binary.length; j++) {
+	          data_memory[i].Binary[j].Bin = data_memory[i].Binary[j].DefBin;
+	        }
+	      }
 
-      for (var i = 0; i < stack_memory.length; i++) {
-        stack_memory[i].Value = stack_memory[i].DefValue;
-        for (var j = 0; j < stack_memory[i].Binary.length; j++) {
-          stack_memory[i].Binary[j].Bin = stack_memory[i].Binary[j].DefBin;
-        }
-      }
+	      for (var i = 0; i < stack_memory.length; i++) {
+	        stack_memory[i].Value = stack_memory[i].DefValue;
+	        for (var j = 0; j < stack_memory[i].Binary.length; j++) {
+	          stack_memory[i].Binary[j].Bin = stack_memory[i].Binary[j].DefBin;
+	        }
+	      }
 
-      for (var i = 0; i < instructions.length; i++) {
-        if(instructions[i].Label == "main"){
-          instructions[i]._rowVariant = 'success';
-        }
-      }
+	      for (var i = 0; i < instructions.length; i++) {
+	        if(instructions[i].Label == "main"){
+	          instructions[i]._rowVariant = 'success';
+	        }
+	      }
 
-
-      $(".loading").hide();
+	      $(".loading").hide();
+      }, 100);
     },
 
     /*Funcion que lee de los registro*/
