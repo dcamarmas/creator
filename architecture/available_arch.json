@@ -14,10 +14,10 @@
     "description": "ARM is a family of reduced instruction set computing (RISC) architectures for computer processors, configured for various environments."
   },
   {
-    "name": "80x80-like",
-    "img": "./images/80x80_logo.png",
-    "alt":"80x80 logo",
-    "id": "select_conf80x80",
+    "name": "80x86-like",
+    "img": "./images/80x86_logo.png",
+    "alt":"80x86 logo",
+    "id": "select_conf80x86",
     "description": ""
   }
 ]

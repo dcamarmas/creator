@@ -4377,7 +4377,7 @@ window.app = new Vue({
 	      for(var i = 0; i<4; i++){
 	        (stack_memory[stack_memory.length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
 	      }
-	      this.stack_memory = stack_memory;
+	      app._data.stack_memory = stack_memory;
 
 	      app._data.alertMessaje = 'Compilation completed successfully';
 	      app._data.type ='success';
@@ -7992,30 +7992,32 @@ window.app = new Vue({
     },
 
     programExecutionInst(){
-    	if(mutexRead == true){
-      	iter1 = 1;
-        $("#stopExecution").hide();
-        $("#playExecution").show();
-        return;
+    	for (var i = 0; i < 10 && executionIndex >= 0; i++) {
+	    	if(mutexRead == true){
+	      	iter1 = 1;
+	        $("#stopExecution").hide();
+	        $("#playExecution").show();
+	        return;
+	      }
+	      else if(instructions[executionIndex].Break == true && iter1 == 0){
+	        iter1 = 1;
+	        $("#stopExecution").hide();
+	        $("#playExecution").show();
+	        return;
+	      }
+	      else if(this.runExecution == true){
+	        app._data.runExecution = false;
+	        iter1 = 1;
+	        $("#stopExecution").hide();
+	        $("#playExecution").show();
+	        return;
+	      }
+	      else{
+	        this.executeInstruction();
+	        iter1 = 0;
+	      }
       }
-      else if(instructions[executionIndex].Break == true && iter1 == 0){
-        iter1 = 1;
-        $("#stopExecution").hide();
-        $("#playExecution").show();
-        return;
-      }
-      else if(this.runExecution == true){
-        app._data.runExecution = false;
-        iter1 = 1;
-        $("#stopExecution").hide();
-        $("#playExecution").show();
-        return;
-      }
-      else{
-        this.executeInstruction();
-        iter1 = 0;
-      }
-      
+
       if(executionIndex >= 0){
         setTimeout(this.programExecutionInst, 25);
       }
@@ -9255,11 +9257,11 @@ window.app = new Vue({
               for (var j = 0; j < data_memory[i].Binary.length; j++){
                 var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
                 if(aux == addr){
-                  console.log(i + "   " + j)
                   for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
                     data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
                     auxAddr = data_memory[i].Binary[j].Addr;
                     valueIndex++;
+                    addr++;
                   }
 
                   data_memory[i].Value = "";
@@ -9267,14 +9269,13 @@ window.app = new Vue({
                     data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
                   }
 
-                  console.log(valueIndex)
-
                   if((i+1) < data_memory.length && valueIndex < value.length){
                     i++;
                     for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
                       data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
                       auxAddr = data_memory[i].Binary[j].Addr;
                       valueIndex++;
+                      addr++;
                     }
 
                     data_memory[i].Value = "";
