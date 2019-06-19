@@ -3966,11 +3966,6 @@ window.app = new Vue({
 	                }
 	                break;
 	              case "global_symbol":
-	                /*this.next_token();
-	                token = this.get_token();
-	                extern.push(token);
-	                change = true;
-	                this.next_token();*/
 
 	                var isGlobl = true;
 
@@ -4329,7 +4324,6 @@ window.app = new Vue({
 
 	      /*Guarda los binarios*/
 	      for(var i = 0; i < instructions_binary.length; i++){
-	        console.log(i)
 	        if(extern.length == 0 && instructions_binary[i].Label != ""){
 	          instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
 	          instructions_binary[i].globl = false;
@@ -4399,7 +4393,7 @@ window.app = new Vue({
 	      stack_address = architecture.memory_layout[4].value;
 
       	$(".loading").hide();
-      }, 100);
+      }, 25);
     },
 
 
@@ -6020,7 +6014,6 @@ window.app = new Vue({
 
     code_segment_compiler(){
       var existsInstruction = true;
-      var pseudoinstruccion = false;
 
       this.next_token();
 
@@ -6087,6 +6080,9 @@ window.app = new Vue({
           }
         }
 
+        var re = new RegExp(",+$");
+        token = token.replace(re, "");
+
         for(var i = 0; i < architecture.instructions.length; i++){
           if(architecture.instructions[i].name != token){
             continue;
@@ -6151,6 +6147,10 @@ window.app = new Vue({
               for (var i = 0; i < numToken; i++){
                 this.next_token();
                 token = this.get_token();
+
+                var re = new RegExp(",+$");
+                token = token.replace(re, "");
+
                 instruction = instruction + " " + token;
               }
               resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -8050,8 +8050,8 @@ window.app = new Vue({
 	      }
 
 	      /*Reset consola*/
-	      this.keyboard = "";
-	      this.display = "";
+	      app._data.keyboard = "";
+	      app._data.display = "";
 	      mutexRead = false;
 	      newExecution = true;
 
@@ -8083,9 +8083,7 @@ window.app = new Vue({
 	        }
 	      }
 
-	      console.log(backup_stack_address)
-
-	      architecture.memory_layout[4].value = backup_stack_address;
+	      //architecture.memory_layout[4].value = backup_stack_address;
 
 	      for (var i = 0; i < data_memory.length; i++) {
 	        data_memory[i].Value = data_memory[i].DefValue;
@@ -8108,7 +8106,7 @@ window.app = new Vue({
 	      }
 
 	      $(".loading").hide();
-      }, 100);
+      }, 25);
     },
 
     /*Funcion que lee de los registro*/
@@ -8434,7 +8432,7 @@ window.app = new Vue({
           for (var i = 0; i < data_memory.length; i++){
             if(data_memory[i].Address > parseInt(addr, 16)){
               var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
                 (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
@@ -8445,7 +8443,7 @@ window.app = new Vue({
             }
             else if(i == data_memory.length-1){
               var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+              data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
                 (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
@@ -8458,7 +8456,7 @@ window.app = new Vue({
 
           if(data_memory.length == 0){
             var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: parseInt(memValue, 16)});
+            data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
               (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
@@ -8582,7 +8580,7 @@ window.app = new Vue({
               data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < data_memory[i].Binary.length; j++){
                 var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
@@ -8616,7 +8614,7 @@ window.app = new Vue({
               data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < data_memory[i+1].Binary.length; j++){
                 var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
@@ -8652,7 +8650,7 @@ window.app = new Vue({
             data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
             }
             for (var j = 0; j < data_memory[data_memory.length-1].Binary.length; j++){
               var aux = "0x"+(data_memory[data_memory.length-1].Binary[j].Addr).toString(16);
@@ -8721,7 +8719,7 @@ window.app = new Vue({
               stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < stack_memory[i].Binary.length; j++){
                 var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
@@ -8755,7 +8753,7 @@ window.app = new Vue({
               stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < stack_memory[i+1].Binary.length; j++){
                 var aux = "0x"+(stack_memory[i+1].Binary[j].Addr).toString(16);
@@ -8792,7 +8790,7 @@ window.app = new Vue({
             stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
             }
             for (var j = 0; j < stack_memory[stack_memory.length-1].Binary.length; j++){
               var aux = "0x"+(stack_memory[stack_memory.length-1].Binary[j].Addr).toString(16);
@@ -8864,7 +8862,7 @@ window.app = new Vue({
               data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < data_memory[i].Binary.length; j++){
                 var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
@@ -8884,7 +8882,7 @@ window.app = new Vue({
               data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < data_memory[i+1].Binary.length; j++){
                 var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
@@ -8906,7 +8904,7 @@ window.app = new Vue({
             data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
             }
             for (var j = 0; j < data_memory[data_memory.length-1].Binary.length; j++){
               var aux = "0x"+(data_memory[data_memory.length-1].Binary[j].Addr).toString(16);
@@ -8945,7 +8943,7 @@ window.app = new Vue({
               stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < stack_memory[i].Binary.length; j++){
                 var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
@@ -8965,7 +8963,7 @@ window.app = new Vue({
               stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
               }
               for (var j = 0; j < stack_memory[i+1].Binary.length; j++){
                 var aux = "0x"+(stack_memory[i+1].Binary[j].Addr).toString(16);
@@ -8987,7 +8985,7 @@ window.app = new Vue({
             stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: 0, Bin: 0, Tag: null},);
+              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
             }
             for (var j = 0; j < stack_memory[stack_memory.length-1].Binary.length; j++){
               var aux = "0x"+(stack_memory[stack_memory.length-1].Binary[j].Addr).toString(16);
@@ -9056,7 +9054,26 @@ window.app = new Vue({
           return;
     		}
     		else{
-    			architecture.memory_layout[4].value = stackLimit;
+    			if(stackLimit < architecture.memory_layout[4].value){
+	    			var diff = architecture.memory_layout[4].value - stackLimit;
+	    			var auxStackLimit = stackLimit;
+
+	    			for (var i = 0; i < (diff/4); i++){
+	            stack_memory.splice(0, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null});
+	            for (var z = 0; z < 4; z++){
+	              (stack_memory[0].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+	              auxStackLimit++;
+	            }
+	          }
+	        }
+	        else if(stackLimit > architecture.memory_layout[4].value){
+	    			var diff = stackLimit - architecture.memory_layout[4].value;
+
+	    			for (var i = 0; i < (diff/4); i++){
+	            stack_memory.splice(0, 1);
+	          }
+	        }
+          architecture.memory_layout[4].value = stackLimit;
     		}
 	    }
     },
@@ -9076,27 +9093,66 @@ window.app = new Vue({
           app._data.display = app._data.display + value;
           break;
         case "print_string":
-          app._data.display = app._data.display;
           var addr = architecture.components[indexComp].elements[indexElem].value;
 
-          for (var i = 0; i < data_memory.length; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr){
-                for (var i; i < data_memory.length; i++){
-                  for (var j = 0; j < data_memory[i].Binary.length; j++){
-                    app._data.display = app._data.display + String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16));
-                    if(data_memory[i].Binary[j].Bin == 20 || data_memory[i].Binary[j].Bin == 0){
-                      return
-                    }
-                    else if(i == data_memory.length-1 && j == data_memory[i].Binary.length-1){
-                      return;
-                    }
-                  }
-                }
-              }
-            }
-          }
+          if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+	          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+	          app._data.type ='danger';
+	          app.$bvToast.toast(app._data.alertMessaje, {
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        })
+	          var date = new Date();
+	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+	          instructions[executionIndex]._rowVariant = 'danger';
+	          executionIndex = -1;
+	          this.keyboard = "";
+	          return;
+	        }
+
+	        if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+	          for (var i = 0; i < data_memory.length; i++){
+	            for (var j = 0; j < data_memory[i].Binary.length; j++){
+	              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+	              if(aux == addr){
+	                for (var i; i < data_memory.length; i++){
+	                  for (var j = 0; j < data_memory[i].Binary.length; j++){
+	                    app._data.display = app._data.display + String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16));
+	                    if(data_memory[i].Binary[j].Bin == 0){
+	                      return
+	                    }
+	                    else if(i == data_memory.length-1 && j == data_memory[i].Binary.length-1){
+	                      return;
+	                    }
+	                  }
+	                }
+	              }
+	            }
+	          }
+	        }
+
+	        if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+	          for (var i = 0; i < stack_memory.length; i++){
+	            for (var j = 0; j < stack_memory[i].Binary.length; j++){
+	              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+	              if(aux == addr){
+	                for (var i; i < stack_memory.length; i++){
+	                  for (var j = 0; j < stack_memory[i].Binary.length; j++){
+	                    app._data.display = app._data.display + String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16));
+	                    if(stack_memory[i].Binary[j].Bin == 0){
+	                      return
+	                    }
+	                    else if(i == stack_memory.length-1 && j == stack_memory[i].Binary.length-1){
+	                      return;
+	                    }
+	                  }
+	                }
+	              }
+	            }
+	          }
+	        }
 
           break;
         case "read_int":
@@ -9253,65 +9309,129 @@ window.app = new Vue({
 
             var auxAddr = data_address;
 
-            for (var i = 0; i < data_memory.length && this.keyboard.length > 0; i++){
-              for (var j = 0; j < data_memory[i].Binary.length; j++){
-                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-                if(aux == addr){
-                  for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
-                    data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                    auxAddr = data_memory[i].Binary[j].Addr;
-                    valueIndex++;
-                    addr++;
-                  }
+            if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+		          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+		          app._data.type ='danger';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          instructions[executionIndex-1]._rowVariant = 'danger';
+		          executionIndex = -1;
+		          this.keyboard = "";
+		          return;
+		        }
 
-                  data_memory[i].Value = "";
-                  for (var j = 0; j < data_memory[i].Binary.length; j++){
-                    data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-                  }
+		        if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+	            for (var i = 0; i < data_memory.length && this.keyboard.length > 0; i++){
+	              for (var j = 0; j < data_memory[i].Binary.length; j++){
+	                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
+	                if(aux == addr){
+	                  for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
+	                    data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+	                    auxAddr = data_memory[i].Binary[j].Addr;
+	                    valueIndex++;
+	                    addr++;
+	                  }
 
-                  if((i+1) < data_memory.length && valueIndex < value.length){
-                    i++;
-                    for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
-                      data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                      auxAddr = data_memory[i].Binary[j].Addr;
-                      valueIndex++;
-                      addr++;
-                    }
+	                  data_memory[i].Value = "";
+	                  for (var j = 0; j < data_memory[i].Binary.length; j++){
+	                    data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
+	                  }
 
-                    data_memory[i].Value = "";
-                    for (var j = 0; j < data_memory[i].Binary.length; j++){
-                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-                    }
+	                  if((i+1) < data_memory.length && valueIndex < value.length){
+	                    i++;
+	                    for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
+	                      data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+	                      auxAddr = data_memory[i].Binary[j].Addr;
+	                      valueIndex++;
+	                      addr++;
+	                    }
 
-                  }
-                  else if(valueIndex < value.length){
-                    data_address = auxAddr;
-                    data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                    i++;
-                    for (var z = 0; z < 4; z++){
-                      if(valueIndex < value.length){
-                        (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                        valueIndex++;
-                        data_address++;
-                      }
-                      else{
-                        (data_memory[i].Binary).push({Addr: data_address, DefBin: 0, Bin: 0, Tag: null},);
-                        data_address++;
-                      }
-                    }
-                    
-                    data_memory[i].Value = "";
-                    for (var j = 0; j < data_memory[i].Binary.length; j++){
-                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-                    }
-                  }
-                }
-              }
-            }
+	                    data_memory[i].Value = "";
+	                    for (var j = 0; j < data_memory[i].Binary.length; j++){
+	                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
+	                    }
 
-            if(valueIndex == value.length){
-              this.keyboard = "";
-              consoleMutex = false;
+	                  }
+	                  else if(valueIndex < value.length){
+	                    data_address = auxAddr;
+	                    data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
+	                    i++;
+	                    for (var z = 0; z < 4; z++){
+	                      if(valueIndex < value.length){
+	                        (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+	                        valueIndex++;
+	                        data_address++;
+	                      }
+	                      else{
+	                        (data_memory[i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+	                        data_address++;
+	                      }
+	                    }
+	                    
+	                    data_memory[i].Value = "";
+	                    for (var j = 0; j < data_memory[i].Binary.length; j++){
+	                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
+	                    }
+	                  }
+	                }
+	              }
+	            }
+
+	            if(valueIndex == value.length){
+	              this.keyboard = "";
+	              consoleMutex = false;
+		            mutexRead = false;
+		            if(executionIndex >= instructions.length){
+				          for (var i = 0; i < instructions.length; i++) {
+				            instructions[i]._rowVariant = '';
+				          }
+
+				          executionIndex = -2;
+				          $(".loading").hide();
+				          app._data.alertMessaje = 'The execution of the program has finished';
+				          app._data.type ='success';
+				          app.$bvToast.toast(app._data.alertMessaje, {
+					          variant: app._data.type,
+					          solid: true,
+					          toaster: "b-toaster-top-center",
+										autoHideDelay: 1500,
+					        })
+				          var date = new Date();
+				          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+				          $(".loading").hide();
+				          return;
+				        }
+	              return;
+	            }
+
+	            var auxAddr = parseInt(addr);
+
+	            while(valueIndex < value.length){
+	              data_memory.push({Address: auxAddr, Binary: [], Value: "", DefValue: ""});
+	              for (var z = 0; z < 4; z++){
+	                if(valueIndex > value.length-1){
+	                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
+	                }
+	                else{
+	                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+	                  data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
+	                }
+	                auxAddr++;
+	                valueIndex++;
+	              }
+	              i++;
+	            }
+
+	            app._data.data_memory = data_memory;
+	            
+	            this.keyboard = "";
+	            consoleMutex = false;
 	            mutexRead = false;
 	            if(executionIndex >= instructions.length){
 			          for (var i = 0; i < instructions.length; i++) {
@@ -9333,52 +9453,137 @@ window.app = new Vue({
 			          $(".loading").hide();
 			          return;
 			        }
-              return;
-            }
+			      }
 
-            var auxAddr = parseInt(addr);
+			      if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+	            for (var i = 0; i < stack_memory.length && this.keyboard.length > 0; i++){
+	              for (var j = 0; j < stack_memory[i].Binary.length; j++){
+	                var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
+	                if(aux == addr){
+	                  for (var j = j; j < stack_memory[i].Binary.length && valueIndex < value.length; j++){
+	                    stack_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+	                    auxAddr = stack_memory[i].Binary[j].Addr;
+	                    valueIndex++;
+	                    addr++;
+	                  }
 
-            while(valueIndex < value.length){
-              data_memory.push({Address: auxAddr, Binary: [], Value: "", DefValue: ""});
-              for (var z = 0; z < 4; z++){
-                if(valueIndex > value.length-1){
-                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: 0, Tag: null},);
-                }
-                else{
-                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: 0, Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                  data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
-                }
-                auxAddr++;
-                valueIndex++;
-              }
-              i++;
-            }
+	                  stack_memory[i].Value = "";
+	                  for (var j = 0; j < stack_memory[i].Binary.length; j++){
+	                    stack_memory[i].Value = String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16)) + " " + stack_memory[i].Value;
+	                  }
 
-            app._data.data_memory = data_memory;
-            
-            this.keyboard = "";
-            consoleMutex = false;
-            mutexRead = false;
-            if(executionIndex >= instructions.length){
-		          for (var i = 0; i < instructions.length; i++) {
-		            instructions[i]._rowVariant = '';
-		          }
+	                  if((i+1) < stack_memory.length && valueIndex < value.length){
+	                    i++;
+	                    for (var j = 0; j < stack_memory[i].Binary.length && valueIndex < value.length; j++){
+	                      stack_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+	                      auxAddr = stack_memory[i].Binary[j].Addr;
+	                      valueIndex++;
+	                      addr++;
+	                    }
 
-		          executionIndex = -2;
-		          $(".loading").hide();
-		          app._data.alertMessaje = 'The execution of the program has finished';
-		          app._data.type ='success';
-		          app.$bvToast.toast(app._data.alertMessaje, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-								autoHideDelay: 1500,
-			        })
-		          var date = new Date();
-		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          $(".loading").hide();
-		          return;
-		        }
+	                    stack_memory[i].Value = "";
+	                    for (var j = 0; j < stack_memory[i].Binary.length; j++){
+	                      stack_memory[i].Value = String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16)) + " " + stack_memory[i].Value;
+	                    }
+
+	                  }
+	                  else if(valueIndex < value.length){
+	                    data_address = auxAddr;
+	                    stack_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
+	                    i++;
+	                    for (var z = 0; z < 4; z++){
+	                      if(valueIndex < value.length){
+	                        (stack_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+	                        valueIndex++;
+	                        data_address++;
+	                      }
+	                      else{
+	                        (stack_memory[i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+	                        data_address++;
+	                      }
+	                    }
+	                    
+	                    stack_memory[i].Value = "";
+	                    for (var j = 0; j < stack_memory[i].Binary.length; j++){
+	                      stack_memory[i].Value = String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16)) + " " + stack_memory[i].Value;
+	                    }
+	                  }
+	                }
+	              }
+	            }
+
+	            if(valueIndex == value.length){
+	              this.keyboard = "";
+	              consoleMutex = false;
+		            mutexRead = false;
+		            if(executionIndex >= instructions.length){
+				          for (var i = 0; i < instructions.length; i++) {
+				            instructions[i]._rowVariant = '';
+				          }
+
+				          executionIndex = -2;
+				          $(".loading").hide();
+				          app._data.alertMessaje = 'The execution of the program has finished';
+				          app._data.type ='success';
+				          app.$bvToast.toast(app._data.alertMessaje, {
+					          variant: app._data.type,
+					          solid: true,
+					          toaster: "b-toaster-top-center",
+										autoHideDelay: 1500,
+					        })
+				          var date = new Date();
+				          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+				          $(".loading").hide();
+				          return;
+				        }
+	              return;
+	            }
+
+	            var auxAddr = parseInt(addr);
+
+	            while(valueIndex < value.length){
+	              stack_memory.push({Address: auxAddr, Binary: [], Value: "", DefValue: ""});
+	              for (var z = 0; z < 4; z++){
+	                if(valueIndex > value.length-1){
+	                  (stack_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
+	                }
+	                else{
+	                  (stack_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+	                  stack_memory[i].Value = value.charAt(valueIndex) + " " + stack_memory[i].Value;
+	                }
+	                auxAddr++;
+	                valueIndex++;
+	              }
+	              i++;
+	            }
+
+	            app._data.stack_memory = stack_memory;
+	            
+	            this.keyboard = "";
+	            consoleMutex = false;
+	            mutexRead = false;
+	            if(executionIndex >= instructions.length){
+			          for (var i = 0; i < instructions.length; i++) {
+			            instructions[i]._rowVariant = '';
+			          }
+
+			          executionIndex = -2;
+			          $(".loading").hide();
+			          app._data.alertMessaje = 'The execution of the program has finished';
+			          app._data.type ='success';
+			          app.$bvToast.toast(app._data.alertMessaje, {
+				          variant: app._data.type,
+				          solid: true,
+				          toaster: "b-toaster-top-center",
+									autoHideDelay: 1500,
+				        })
+			          var date = new Date();
+			          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+			          $(".loading").hide();
+			          return;
+			        }
+			      }
+
             break;
           }
 
@@ -9396,6 +9601,7 @@ window.app = new Vue({
 							autoHideDelay: 1500,
 		        })
             var date = new Date();
+            instructions[executionIndex]._rowVariant = 'danger';
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             executionIndex = -1;
             return;
@@ -9404,7 +9610,7 @@ window.app = new Vue({
           for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
             data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
             for (var z = 0; z < 4; z++){
-              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr, DefBin: 0, Bin: 0, Tag: null},);
+              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
               aux_addr++;
             }
           }
@@ -9503,6 +9709,7 @@ window.app = new Vue({
         this.calculator.lengthExponent = 8;
         this.calculator.lengthMantissa = 23;
       }
+
       if(index == 1){
         this.calculator.bits = 64;
         this.calculator.variant64 = "primary";
@@ -9831,18 +10038,16 @@ if(textarea_assembly_obj != null){
 
   textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
 
-  textarea_assembly_editor.setValue("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+  textarea_assembly_editor.setValue("");
   textarea_assembly_editor.setSize("auto", "550px");
 }
 
 /*Funcion que determina el tiempo de espera de refresco dependiendo del dispositivo que se utiliza*/
 function getDebounceTime(){
 	if(screen.width > 768){
-  	console.log("PC");
   	return 500;
   }
   else{
-  	console.log("NO PC");
   	return 1000;
   }
 }
