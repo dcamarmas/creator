@@ -1029,7 +1029,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+reg3;\nif('reg1.name'=='sp.name'){\n\t if((reg2+reg3)>>>0 < stack_limit){\n\t\t stack_limit=reg2+reg3 >>> 0\n\t}\n}"
+      "definition": "reg1=reg2+reg3;\nif('reg1.name'=='sp.name'){\n\t if((reg2+reg3)>>>0 != stack_limit){\n\t\t stack_limit=reg2+reg3 >>> 0\n\t}\n}"
     },
     {
       "name": "addi",
@@ -1066,7 +1066,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+val;\nif('reg1.name'=='sp.name'){\n\t if((reg2+val)>>>0 < stack_limit){\n\t\t stack_limit=reg2+val >>> 0\n\t}\n}"
+      "definition": "reg1=reg2+val;\nif('reg1.name'=='sp.name'){\n\t if((reg2+val)>>>0 != stack_limit){\n\t\t stack_limit=reg2+val >>> 0\n\t}\n}"
     },
     {
       "name": "and",
