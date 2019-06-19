@@ -1,0 +1,22 @@
+.data
+	byte: .byte 0x51, 2, -3
+    .align 2
+	word: .word 155, -165
+	space: .space 20
+
+.text
+main:
+	   addi $t0 $t0 100
+	d: bne $t0 $t1 b
+	c: addi $a0 $r0 space
+	   addi $a1 $r0 11
+	   addi $v0 $r0 8
+	   syscall
+	   addi $v0 $r0 4
+       addi $a0 $r0 space
+	   syscall
+	   addi $v0 $r0 10
+       syscall
+	b: addi $t1 $0 105525452
+	   move $t2 $t1
+	   b c
