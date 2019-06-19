@@ -3,5 +3,10 @@
     "name": "Example 1",
     "id": "example1",
     "description": "Ejemplo 1"
+  },
+  {
+    "name": "Example 2",
+    "id": "example2",
+    "description": "Ejemplo 2"
   }
 ]
