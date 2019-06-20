@@ -335,10 +335,9 @@ var compileError =[
 
 
 /*Estructuras instrucciones y memoria*/
-var data_memory = [];
+var memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
+var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
 var data_tag = [];
-var instructions_memory = [];
-var stack_memory = [];
 var instructions = [];
 var instructions_tag = [];
 var instructions_binary = [];
@@ -357,6 +356,7 @@ var data_address;
 /*Pila*/
 var stack_address;
 var backup_stack_address;
+var backup_data_address;
 
 
 /*Estadisticas*/
@@ -518,7 +518,7 @@ window.app = new Vue({
     showEditElement: false,
 
     /*PAGINA MEMORY LAYOUT*/
-    memory_layout: ["", "", "", "", ""],
+    memory_layout: ["", "", "", "", "", ""],
 
 
     /*PAGINA DE INSTRUCCIONES*/
@@ -651,9 +651,7 @@ window.app = new Vue({
     /*Campos tabla memoria*/
     memFields: ['Address', 'Binary', 'Value'],
     /*Asignacion de valores de la tabla de memoria*/
-    data_memory: data_memory,
-    instructions_memory: instructions_memory,
-    stack_memory: stack_memory,
+    memory: memory,
 
     /*CARGA Y LECTURA ENSAMBLADOR*/
     /*Variables donde se guardan los ficheros cargados*/
@@ -864,6 +862,7 @@ window.app = new Vue({
       }
 
       backup_stack_address = architecture.memory_layout[4].value;
+      backup_data_address = architecture.memory_layout[3].value;
 
       this.reset();
 
@@ -921,6 +920,7 @@ window.app = new Vue({
           }
 
           backup_stack_address = architecture.memory_layout[4].value;
+          backup_data_address = architecture.memory_layout[3].value;
 
           app._data.architecture_name = e;
 
@@ -963,6 +963,7 @@ window.app = new Vue({
         }
 
         backup_stack_address = architecture.memory_layout[4].value;
+        backup_data_address = architecture.memory_layout[3].value;
 
         app._data.architecture_name = e;
 
@@ -1191,6 +1192,20 @@ window.app = new Vue({
         if(this.memory_layout[i] != "" && this.memory_layout[i] != null){
           if(!isNaN(parseInt(this.memory_layout[i]))){
             auxMemoryLayout[i].value = parseInt(this.memory_layout[i]);
+            if(auxMemoryLayout[i].value < 0){
+		          app._data.alertMessaje = 'The value can not be negative';
+		          app._data.type ='danger';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          return;
+		        }
+		        app._data.memory_layout[i] = "";
           }
           else{
             app._data.alertMessaje = 'The value must be a number';
@@ -1209,20 +1224,7 @@ window.app = new Vue({
       }
 
       for(var i = 0; i < 6; i++){
-        if(auxMemoryLayout[i].value < 0){
-          app._data.alertMessaje = 'The value can not be negative';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-          return;
-        }
-        else if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
+        if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
           app._data.alertMessaje = 'The memory must be align';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -1231,6 +1233,7 @@ window.app = new Vue({
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
 	        })
+	        var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
@@ -1251,17 +1254,14 @@ window.app = new Vue({
         }
       }
 
-      console.log(auxMemoryLayout);
-
       for(var i = 0; i < 6; i++){
         architecture.memory_layout[i].value = auxMemoryLayout[i].value;
       }
 
       app._data.architecture = architecture;
 
-      for(var i = 0; i < this.memory_layout.length; i++){
-        this.memory_layout[i] = "";
-      }
+      backup_stack_address = architecture.memory_layout[4].value;
+	    backup_data_address = architecture.memory_layout[3].value;
     },
 
 
@@ -3592,7 +3592,7 @@ window.app = new Vue({
 
       console.log(instructions_binary);
 
-      if(data_memory.length != 0){
+      if(memory[memory_hash[0]].length != 0){
         $(".loading").hide();
         app._data.alertMessaje = 'You can not enter data in a library';
         app._data.type ='danger';
@@ -3801,12 +3801,12 @@ window.app = new Vue({
 	      instructions_tag = [];
 	      pending_instructions = [];
 	      pending_tags = [];
-	      data_memory = [];
+	      memory[memory_hash[0]] = [];
 	      data_tag = [];
 	      instructions_binary =[];
-	      instructions_memory = [];
+	      memory[memory_hash[1]] = [];
 	      extern = [];
-	      stack_memory = [];
+	      memory[memory_hash[2]] = [];
 	      data = [];
 	      executionInit = 1;
 	      mutexRead = false;
@@ -3924,16 +3924,16 @@ window.app = new Vue({
 	                  instructions = [];
 	                  pending_instructions = [];
 	                  pending_tags = [];
-	                  data_memory = [];
+	                  memory[memory_hash[0]] = [];
 	                  data_tag = [];
 	                  instructions_binary = [];
-	                  instructions_memory = [];
-	                  stack_memory = [];
+	                  memory[memory_hash[1]] = [];
+	                  memory[memory_hash[2]] = [];
 	                  data = [];
 	                  extern = [];
-	                  app._data.instructions_memory = instructions_memory;
-	                  app._data.data_memory = data_memory;
-	                  app._data.stack_memory = stack_memory;
+	                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+	                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+	                  app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 	                  app._data.instructions = instructions;
 	                  $(".loading").hide();
 	                  return -1;
@@ -3950,17 +3950,17 @@ window.app = new Vue({
 	                  instructions = [];
 	                  pending_instructions = [];
 	                  pending_tags = [];
-	                  data_memory = [];
+	                  memory[memory_hash[0]] = [];
 	                  data_tag = [];
 	                  instructions_binary = [];
-	                  instructions_memory = [];
+	                  memory[memory_hash[1]] = [];
 	                  extern = [];
-	                  stack_memory = [];
+	                  memory[memory_hash[2]] = [];
 	                  data = [];
 	                  app._data.instructions = instructions;
-	                  app._data.instructions_memory = instructions_memory;
-	                  app._data.data_memory = data_memory;
-	                  app._data.stack_memory = stack_memory;
+	                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+	                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+	                  app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 	                  $(".loading").hide();
 	                  return -1;
 	                }
@@ -4073,10 +4073,10 @@ window.app = new Vue({
 	              }
 	            }
 
-	            for (var z = 0; z < data_memory.length && exit == 0; z++){
-	              for (var p = 0; p < data_memory[z].Binary.length && exit == 0; p++){
-	                if(instructionParts[j] == data_memory[z].Binary[p].Tag){
-	                  var addr = (data_memory[z].Binary[p].Addr);
+	            for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
+	              for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
+	                if(instructionParts[j] == memory[memory_hash[0]][z].Binary[p].Tag){
+	                  var addr = (memory[memory_hash[0]][z].Binary[p].Addr);
 
 	                  var bin = parseInt(addr, 16).toString(2);
 	                  var startbit = pending_instructions[i].startBit;
@@ -4119,16 +4119,16 @@ window.app = new Vue({
 	              instructions = [];
 	              pending_instructions = [];
 	              pending_tags = [];
-	              data_memory = [];
+	              memory[memory_hash[0]] = [];
 	              data_tag = [];
 	              instructions_binary = [];
-	              instructions_memory = [];
-	              stack_memory = [];
+	              memory[memory_hash[1]] = [];
+	              memory[memory_hash[2]] = [];
 	              data = [];
 	              extern = [];
-	              app._data.instructions_memory = instructions_memory;
-	              app._data.data_memory = data_memory;
-	              app._data.stack_memory = stack_memory;
+	              app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+	              app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+	              app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 	              app._data.instructions = instructions;
 	              $(".loading").hide();
 	              return -1;
@@ -4164,16 +4164,16 @@ window.app = new Vue({
 
 	          for(var a = 0; a < hex.length/2; a++){
 	            if(auxAddr % 4 == 0){
-	              instructions_memory.push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
+	              memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
 	              if(label == ""){
 	                label=null;
 	              }
 
 	              if(a == 0){
-	                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
 	              }
 	              else{
-	                (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
 	              }
 
 	              auxAddr++;
@@ -4181,24 +4181,24 @@ window.app = new Vue({
 	            else{
 	              if(a == 0){
 	                console.log(label);
-	                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
 	              }
 	              else{
-	                (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
 	              }
 
 	              auxAddr++;
 	            }
 	          }
 
-	          if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
-	            var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
+	          if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
+	            var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
 	            for(var b = 0; b < num_iter; b++){
-	              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
+	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
 	            }
 	          }
 
-	          app._data.instructions_memory = instructions_memory;
+	          app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
 	        }
 	      }
 
@@ -4214,16 +4214,16 @@ window.app = new Vue({
 
 	        for(var a = 0; a < hex.length/2; a++){
 	          if(auxAddr % 4 == 0){
-	            instructions_memory.push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
+	            memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
 	            if(label == ""){
 	              label=null;
 	            }
 
 	            if(a == 0){
-	              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
 	            }
 	            else{
-	              (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
 	            }
 
 	            auxAddr++;
@@ -4231,45 +4231,45 @@ window.app = new Vue({
 	          else{
 	            if(a == 0){
 	              console.log(label);
-	              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
 	            }
 	            else{
-	              (instructions_memory[instructions_memory.length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
 	            }
 
 	            auxAddr++;
 	          }
 	        }
 
-	        if(instructions_memory[instructions_memory.length-1].Binary.length < 4){
-	          var num_iter = 4 - instructions_memory[instructions_memory.length-1].Binary.length;
+	        if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
+	          var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
 	          for(var b = 0; b < num_iter; b++){
-	            (instructions_memory[instructions_memory.length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
+	            (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
 	          }
 	        }
 
-	        app._data.instructions_memory = instructions_memory;
+	        app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
 	      }
 
 
 	      /*Verifica solapamiento*/
-	      if(data_memory.length > 0){
-	        if(data_memory[data_memory.length-1].Binary[3].Addr > architecture.memory_layout[3].value){
+	      if(memory[memory_hash[0]].length > 0){
+	        if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
 	          tokenIndex = 0;
 	          instructions = [];
 	          pending_instructions = [];
 	          pending_tags = [];
-	          data_memory = [];
+	          memory[memory_hash[0]] = [];
 	          data_tag = [];
 	          instructions_binary = [];
-	          instructions_memory = [];
+	          memory[memory_hash[1]] = [];
 	          extern = [];
-	          stack_memory = [];
+	          memory[memory_hash[2]] = [];
 	          data = [];
 	          app._data.instructions = instructions;
-	          app._data.instructions_memory = instructions_memory;
-	          app._data.data_memory = data_memory;
-	          app._data.stack_memory = stack_memory;
+	          app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+	          app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+	          app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
 	          app._data.alertMessaje = 'Data overflow';
 	          app._data.type ='danger';
@@ -4287,23 +4287,23 @@ window.app = new Vue({
 	        }
 	      }
 
-	      if(instructions_memory.length > 0){
-	        if(instructions_memory[instructions_memory.length-1].Binary[3].Addr > architecture.memory_layout[1].value){
+	      if(memory[memory_hash[1]].length > 0){
+	        if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
 	          tokenIndex = 0;
 	          instructions = [];
 	          pending_instructions = [];
 	          pending_tags = [];
-	          data_memory = [];
+	          memory[memory_hash[0]] = [];
 	          data_tag = [];
 	          instructions_binary = [];
-	          instructions_memory = [];
+	          memory[memory_hash[1]] = [];
 	          extern = [];
-	          stack_memory = [];
+	          memory[memory_hash[2]] = [];
 	          data = [];
 	          app._data.instructions = instructions;
-	          app._data.instructions_memory = instructions_memory;
-	          app._data.data_memory = data_memory;
-	          app._data.stack_memory = stack_memory;
+	          app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+	          app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+	          app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
 	          app._data.alertMessaje = 'Instruction overflow';
 	          app._data.type ='danger';
@@ -4367,11 +4367,11 @@ window.app = new Vue({
 	      app._data.instructions = instructions;
 
 	      /*Inicializar pila*/
-	      stack_memory.push({Address: stack_address, Binary: [], Value: null});
+	      memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
 	      for(var i = 0; i<4; i++){
-	        (stack_memory[stack_memory.length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
+	        (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
 	      }
-	      app._data.stack_memory = stack_memory;
+	      app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
 	      app._data.alertMessaje = 'Compilation completed successfully';
 	      app._data.type ='success';
@@ -4531,15 +4531,15 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
@@ -4553,17 +4553,17 @@ window.app = new Vue({
 
                     if(data_address % 4 == 0){
 
-                      data_memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16)});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16), reset: false});
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -4571,37 +4571,37 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        data_memory[data_memory.length-1].Value = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].DefValue;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
-                        console.log(data_memory[data_memory.length-1].Binary[data_address%4]);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        console.log(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[data_address%4]);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + i), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + i), DefBin: "00", Bin: "00", Tag: null},);
                       console.log("padding");
                     }
                   }
 
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
                   console.log("byte Terminado")
 
@@ -4700,15 +4700,15 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
@@ -4721,17 +4721,17 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      data_memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16)});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16), reset: false});
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -4739,35 +4739,35 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4 && i == 0){
-                        data_memory[data_memory.length-1].Value = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].DefValue;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
                   console.log("half Terminado")
 
@@ -4865,15 +4865,15 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
@@ -4886,17 +4886,17 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      data_memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16)});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16), reset: false});
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -4904,35 +4904,35 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        data_memory[data_memory.length-1].Value = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].DefValue;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
                   console.log("word Terminado")
 
@@ -4946,7 +4946,7 @@ window.app = new Vue({
                       isWord = false;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
                 }
 
                 j=0;
@@ -5031,15 +5031,15 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
@@ -5052,17 +5052,17 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      data_memory.push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16)});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16), reset: false});
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -5070,35 +5070,35 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        data_memory[data_memory.length-1].Value = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].DefValue;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
                   console.log("double word Terminado")
 
@@ -5112,7 +5112,7 @@ window.app = new Vue({
                       isDoubleWord = false;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
                 }
 
                 j=0;
@@ -5197,15 +5197,15 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
@@ -5218,17 +5218,17 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      data_memory.push({Address: data_address, Binary: [], Value: token, DefValue: token});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: token, DefValue: token, reset: false});
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -5236,35 +5236,35 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        data_memory[data_memory.length-1].Value = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].DefValue;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
                   console.log("float Terminado")
 
@@ -5278,7 +5278,7 @@ window.app = new Vue({
                       isFloat = false;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
                 }
 
                 j=0;
@@ -5363,15 +5363,15 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
@@ -5384,17 +5384,17 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-                      data_memory.push({Address: data_address, Binary: [], Value: token, DefValue: token});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: token, DefValue: token, reset: false});
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
@@ -5402,35 +5402,35 @@ window.app = new Vue({
                     }
                     else{
                       if(auxTokenString.length <= 4){
-                        data_memory[data_memory.length-1].Value = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = parseInt(auxTokenString, 16) + " " + data_memory[data_memory.length-1].DefValue;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = parseInt(auxTokenString, 16) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
                   console.log("double Terminado")
 
@@ -5444,7 +5444,7 @@ window.app = new Vue({
                       isDouble = false;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
                 }
 
                 j=0;
@@ -5560,32 +5560,32 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
                     }
 
                     if(data_address % 4 == 0){
-                      data_memory.push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i)});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false});
 
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
                       }
 
                       data_address++;
@@ -5593,30 +5593,30 @@ window.app = new Vue({
                     }
                     else{
                       if(i == 0){
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                        data_memory[data_memory.length-1].Value = string.charAt(i) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = string.charAt(i) + " " + data_memory[data_memory.length-1].DefValue;
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                         if(label != null){
                           data_tag.push({tag: label, addr: data_address});
                         }
                         label = null;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                        data_memory[data_memory.length-1].Value = string.charAt(i) + " " + data_memory[data_memory.length-1].Value;
-                        data_memory[data_memory.length-1].DefValue = string.charAt(i) + " " + data_memory[data_memory.length-1].DefValue;
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
 
                       data_address++;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -5636,7 +5636,7 @@ window.app = new Vue({
                       isAscii = false;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
                 }
 
                 j=0;
@@ -5745,15 +5745,15 @@ window.app = new Vue({
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
-                        else if(data_memory[data_memory.length-1].Binary.length == 4){
+                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                           data_address++;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
                       }
@@ -5766,22 +5766,22 @@ window.app = new Vue({
                     }*/
 
                     if(data_address % 4 == 0){
-                      data_memory.push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i)});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false});
 
                       if(i < string.length){
                         if(i == 0){
-                          (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
                           if(label != null){
                             data_tag.push({tag: label, addr: data_address});
                           }
                           label = null;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
                         }
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                       }
 
                       data_address++;
@@ -5791,35 +5791,35 @@ window.app = new Vue({
                     else{
                       if(i < string.length){
                         if(i == 0){
-                          (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                          data_memory[data_memory.length-1].Value = string.charAt(i) + " " + data_memory[data_memory.length-1].Value;
-                          data_memory[data_memory.length-1].DefValue = string.charAt(i) + " " + data_memory[data_memory.length-1].DefValue;
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
+                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                           if(label != null){
                             data_tag.push({tag: label, addr: data_address});
                           }
                           abel = null;
                         }
                         else{
-                          (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                          data_memory[data_memory.length-1].Value = string.charAt(i) + " " + data_memory[data_memory.length-1].Value;
-                          data_memory[data_memory.length-1].DefValue = string.charAt(i) + " " + data_memory[data_memory.length-1].DefValue;
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
+                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                         }
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                       }
 
                       data_address++;
                     }
                   }
 
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
 
 
-                  if(data_memory[data_memory.length-1].Binary.length < 4){
-                    var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
 
@@ -5839,7 +5839,7 @@ window.app = new Vue({
                       isAscii = false;
                     }
                   }
-                  console.log(data_memory)
+                  console.log(memory[memory_hash[0]])
                 }
 
                 j=0;
@@ -5880,15 +5880,15 @@ window.app = new Vue({
                   if((data_address % align) != 0 && i == 0 && align != 0){
                     while((data_address % align) != 0){
                       if(data_address % 4 == 0){
-                        data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-                        (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                         data_address++;
                       }
-                      else if(data_memory[data_memory.length-1].Binary.length == 4){
+                      else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
                         data_address++;
                       }
                       else{
-                        (data_memory[data_memory.length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                         data_address++;
                       }
                     }
@@ -5906,17 +5906,17 @@ window.app = new Vue({
                   }*/
 
                   if(data_address % 4 == 0){
-                    data_memory.push({Address: data_address, Binary: [], Value: string, DefValue: ""});
+                    memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string, DefValue: "", reset: false});
 
                     if(i == 0){
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
                       if(label != null){
                         data_tag.push({tag: label, addr: data_address});
                       }
                       label = null;
                     }
                     else{
-                      (data_memory[data_memory.length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                     }
 
                     data_address++;
@@ -5924,26 +5924,26 @@ window.app = new Vue({
                   }
                   else{
                     if(i == 0){
-                      (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
                       if(label != null){
                         data_tag.push({tag: label, addr: data_address});
                       }
                       label = null;
                     }
                     else{
-                      (data_memory[data_memory.length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
                     }
 
                     data_address++;
                   }
                 }
 
-                console.log(data_memory)
+                console.log(memory[memory_hash[0]])
 
-                if(data_memory[data_memory.length-1].Binary.length < 4){
-                  var num_iter = 4 - data_memory[data_memory.length-1].Binary.length;
+                if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+                  var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                   for(var i = 0; i < num_iter; i++){
-                    (data_memory[data_memory.length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+                    (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                   }
                 }
 
@@ -5997,13 +5997,13 @@ window.app = new Vue({
           }
 
           else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-            app._data.data_memory = data_memory;
+            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
             return;
           }
         
         }
       }
-      app._data.data_memory = data_memory;
+      app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
       return 0;
     },
 
@@ -6052,9 +6052,9 @@ window.app = new Vue({
             return -1;
           }
 
-          for(var i = 0; i < data_memory.length; i++){
-            for(var j = 0; j < data_memory[i].Binary.length; j++){
-              if(data_memory[i].Binary[j].Tag == token.substring(0,token.length-1)){
+          for(var i = 0; i < memory[memory_hash[0]].length; i++){
+            for(var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++){
+              if(memory[memory_hash[0]][i].Binary[j].Tag == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 $(".loading").hide();
                 return -1;
@@ -6165,16 +6165,16 @@ window.app = new Vue({
             instructions = [];
             pending_instructions = [];
             pending_tags = [];
-            data_memory = [];
+            memory[memory_hash[0]] = [];
             data_tag = [];
             instructions_binary = [];
-            instructions_memory = [];
+            memory[memory_hash[1]] = [];
             extern = [];
-            stack_memory = [];
+            memory[memory_hash[2]] = [];
             data = [];
-            app._data.data_memory = data_memory;
-            instructions_memory = instructions_memory;
-            stack_memory = stack_memory;
+            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+            memory[memory_hash[1]] = memory[memory_hash[1]];
+            memory[memory_hash[2]] = memory[memory_hash[2]];
             app._data.instructions = instructions;
             $(".loading").hide();
             return -1;
@@ -6187,16 +6187,16 @@ window.app = new Vue({
             instructions = [];
             pending_instructions = [];
             pending_tags = [];
-            data_memory = [];
+            memory[memory_hash[0]] = [];
             data_tag = [];
             instructions_binary = [];
-            instructions_memory = [];
+            memory[memory_hash[1]] = [];
             extern = [];
-            stack_memory = [];
+            memory[memory_hash[2]] = [];
             data = [];
-            app._data.data_memory = data_memory;
-            instructions_memory = instructions_memory;
-            stack_memory = stack_memory;
+            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+            memory[memory_hash[1]] = memory[memory_hash[1]];
+            memory[memory_hash[2]] = memory[memory_hash[2]];
             app._data.instructions = instructions;
             $(".loading").hide();
             return -1;
@@ -7744,11 +7744,9 @@ window.app = new Vue({
               var match = re.exec(auxDef);
               auxDef = auxDef.replace(re, match[1] + "this.readRegister("+i+" ,"+j+")");
             }
-            /*re = new RegExp(architecture.components[i].elements[j].name);
-            auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");*/
 
             if(architecture.components[i].type == "integer"){
-              re = new RegExp("R"+regNum,"g");
+              re = new RegExp("R"+regNum+"[^0-9]","g");
               if(auxDef.search(re) != -1){
                 re = new RegExp("R"+regNum,"g");
                 auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
@@ -8083,20 +8081,33 @@ window.app = new Vue({
 	        }
 	      }
 
-	      //architecture.memory_layout[4].value = backup_stack_address;
+	      architecture.memory_layout[4].value = backup_stack_address;
+	      architecture.memory_layout[3].value = backup_data_address;
 
-	      for (var i = 0; i < data_memory.length; i++) {
-	        data_memory[i].Value = data_memory[i].DefValue;
-	        for (var j = 0; j < data_memory[i].Binary.length; j++) {
-	          data_memory[i].Binary[j].Bin = data_memory[i].Binary[j].DefBin;
-	        }
+	      for (var i = 0; i < memory[memory_hash[0]].length; i++) {
+	      	if(memory[memory_hash[0]][i].reset == true){
+	      		memory[memory_hash[0]].splice(i, 1);
+	      		i--;
+	      	}
+	        else{
+	        	memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
+		        for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
+		          memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
+		        }
+		      }
 	      }
 
-	      for (var i = 0; i < stack_memory.length; i++) {
-	        stack_memory[i].Value = stack_memory[i].DefValue;
-	        for (var j = 0; j < stack_memory[i].Binary.length; j++) {
-	          stack_memory[i].Binary[j].Bin = stack_memory[i].Binary[j].DefBin;
-	        }
+	      for (var i = 0; i < memory[memory_hash[2]].length; i++) {
+	      	if(memory[memory_hash[2]][i].reset == true){
+	      		memory[memory_hash[2]].splice(i, 1);
+	      		i--;
+	      	}
+	      	else{
+		        memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
+		        for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
+		          memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
+		        }
+		      }
 	      }
 
 	      for (var i = 0; i < instructions.length; i++) {
@@ -8242,39 +8253,10 @@ window.app = new Vue({
     /*Funcion que lee de memoria*/
     readMemory(addr, type){
       var memValue = '';
+      var index;
 
       if (type == "w"){
-        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-          for (var i = 0; i < data_memory.length; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                for (var z = 0; z < data_memory[i].Binary.length; z++){
-                  memValue = data_memory[i].Binary[z].Bin + memValue;
-                }
-                return bigInt(memValue, 16).value;
-              }
-            }
-          }
-          return bigInt(0).value;
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-          for (var i = 0; i < stack_memory.length; i++){
-            for (var j = 0; j < stack_memory[i].Binary.length; j++){
-              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
-                for (var z = 0; z < stack_memory[i].Binary.length; z++){
-                  memValue = stack_memory[i].Binary[z].Bin + memValue;
-                }
-                return bigInt(memValue, 16).value;
-              }
-            }
-          }
-          return bigInt(0).value;
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+      	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -8289,57 +8271,33 @@ window.app = new Vue({
           executionIndex = -1;
           return;
         }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          index = memory_hash[0];
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          index = memory_hash[2];
+
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          for (var j = 0; j < memory[index][i].Binary.length; j++){
+            var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+              for (var z = 0; z < memory[index][i].Binary.length; z++){
+                memValue = memory[index][i].Binary[z].Bin + memValue;
+              }
+              return bigInt(memValue, 16).value;
+            }
+          }
+        }
+        return bigInt(0).value;
 
       }
 
       if (type == "h"){
-        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-          for (var i = 0; i < data_memory.length; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                if(j < 2){
-                  for (var z = 0; z < data_memory[i].Binary.length -2; z++){
-                    memValue = data_memory[i].Binary[z].Bin + memValue;
-                  }
-                  return bigInt(memValue, 16).value;
-                }
-                else{
-                  for (var z = 2; z < data_memory[i].Binary.length; z++){
-                    memValue = data_memory[i].Binary[z].Bin + memValue;
-                  }
-                  return bigInt(memValue, 16).value;
-                }
-              }
-            }
-          }
-          return bigInt(0).value;
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-          for (var i = 0; i < stack_memory.length; i++){
-            for (var j = 0; j < stack_memory[i].Binary.length; j++){
-              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
-                if(j < 2){
-                  for (var z = 0; z < stack_memory[i].Binary.length -2; z++){
-                    memValue = stack_memory[i].Binary[z].Bin + memValue;
-                  }
-                  return bigInt(memValue, 16).value;
-                }
-                else{
-                  for (var z = 2; z < stack_memory[i].Binary.length; z++){
-                    memValue = data_memory[i].Binary[z].Bin + memValue;
-                  }
-                  return bigInt(memValue, 16).value;
-                }
-              }
-            }
-          }
-          return bigInt(0).value;
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+      	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -8354,36 +8312,39 @@ window.app = new Vue({
           executionIndex = -1;
           return;
         }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          index = memory_hash[0];
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          index = memory_hash[2];
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          for (var j = 0; j < memory[index][i].Binary.length; j++){
+            var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+              if(j < 2){
+                for (var z = 0; z < memory[index][i].Binary.length -2; z++){
+                  memValue = memory[index][i].Binary[z].Bin + memValue;
+                }
+                return bigInt(memValue, 16).value;
+              }
+              else{
+                for (var z = 2; z < memory[index][i].Binary.length; z++){
+                  memValue = memory[index][i].Binary[z].Bin + memValue;
+                }
+                return bigInt(memValue, 16).value;
+              }
+            }
+          }
+        }
+        return bigInt(0).value; 
       }
 
       if (type == "b"){
-        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-          for (var i = 0; i < data_memory.length; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                memValue = data_memory[i].Binary[j].Bin + memValue;
-                return bigInt(memValue, 16).value;
-              }
-            }
-          }
-          return bigInt(0).value;
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-          for (var i = 0; i < stack_memory.length; i++){
-            for (var j = 0; j < stack_memory[i].Binary.length; j++){
-              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
-                memValue = stack_memory[i].Binary[j].Bin + memValue;
-                return bigInt(memValue, 16).value;
-              }
-            }
-          }
-          return bigInt(0).value;
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+      	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -8398,6 +8359,27 @@ window.app = new Vue({
           executionIndex = -1;
           return;
         }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          index = memory_hash[0];
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          index = memory_hash[2];
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          for (var j = 0; j < memory[index][i].Binary.length; j++){
+            var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+              memValue = memory[index][i].Binary[j].Bin + memValue;
+              return bigInt(memValue, 16).value;
+            }
+          }
+        }
+        return bigInt(0).value;
+
+        
       }
     },
 
@@ -8409,122 +8391,10 @@ window.app = new Vue({
       }
 
       var memValue = (value.toString(16)).padStart(8, "0");
+      var index;
 
       if (type == "w"){
-        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-          for (var i = 0; i < data_memory.length; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                data_memory[i].Value = parseInt(memValue, 16);
-                var charIndex = memValue.length-1;
-                for (var z = 0; z < data_memory[i].Binary.length; z++){
-                  data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                  charIndex = charIndex - 2;
-                }
-                data_memory[i].Value = parseInt(memValue, 16);
-                app._data.data_memory = data_memory;
-                return;
-              }
-            }
-          }
-
-          for (var i = 0; i < data_memory.length; i++){
-            if(data_memory[i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
-                charIndex = charIndex - 2;
-              }
-              app._data.data_memory = data_memory;
-              return;
-            }
-            else if(i == data_memory.length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
-                charIndex = charIndex - 2;
-              }
-              app._data.data_memory = data_memory;
-              return;
-            }
-          }
-
-          if(data_memory.length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
-              charIndex = charIndex - 2;
-            }
-            app._data.data_memory = data_memory;
-            return;
-          }
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-          for (var i = 0; i < stack_memory.length; i++){
-            for (var j = 0; j < stack_memory[i].Binary.length; j++){
-              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-
-              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
-                stack_memory[i].Value = parseInt(memValue, 16);
-                var charIndex = memValue.length-1;
-                for (var z = 0; z < stack_memory[i].Binary.length; z++){
-                  stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                  charIndex = charIndex - 2;
-                }
-                stack_memory[i].Value = parseInt(memValue, 16);
-                app._data.stack_memory = stack_memory;
-                return;
-              }
-            }
-          }
-
-          for (var i = 0; i < stack_memory.length; i++){
-            if(stack_memory[i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
-                charIndex = charIndex - 2;
-              }
-              app._data.stack_memory = stack_memory;
-              return;
-            }
-            else if(i == stack_memory.length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
-                charIndex = charIndex - 2;
-              }
-              app._data.stack_memory = stack_memory;
-              return;
-            }
-          }
-
-          if(stack_memory.length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            stack_memory.push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
-              charIndex = charIndex - 2;
-            }
-            app._data.stack_memory = stack_memory;
-            return;
-          }
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+      	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -8537,291 +8407,74 @@ window.app = new Vue({
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
           executionIndex = -1;
+          return;
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          index = memory_hash[0];
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          index = memory_hash[2];
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          for (var j = 0; j < memory[index][i].Binary.length; j++){
+            var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+              memory[index][i].Value = parseInt(memValue, 16);
+              var charIndex = memValue.length-1;
+              for (var z = 0; z < memory[index][i].Binary.length; z++){
+                memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                charIndex = charIndex - 2;
+              }
+              memory[index][i].Value = parseInt(memValue, 16);
+              app._data.memory[index] = memory[index];
+              return;
+            }
+          }
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          if(memory[index][i].Address > parseInt(addr, 16)){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+              charIndex = charIndex - 2;
+            }
+            app._data.memory[index] = memory[index];
+            return;
+          }
+          else if(i == memory[index].length-1){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            memory[index].push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+              charIndex = charIndex - 2;
+            }
+            app._data.memory[index] = memory[index];
+            return;
+          }
+        }
+
+        if(memory[index].length == 0){
+          var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+          memory[index].push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
+          var charIndex = memValue.length-1;
+          for (var z = 0; z < 4; z++){
+            (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+            charIndex = charIndex - 2;
+          }
+          app._data.memory[index] = memory[index];
           return;
         }
       }
 
       if (type == "h"){
-        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-          for (var i = 0; i < data_memory.length; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                 if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < data_memory[i].Binary.length - 2; z++){
-                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-
-                    data_memory[i].Value = null;
-                    for (var z = 3; z < 4; z=z-2){
-                      data_memory[i].Value = data_memory[i].Value + parseInt((data_memory[i].Binary[z].Bin + data_memory[i].Binary[z-1].Bin), 16) + " ";
-                    }
-                    app._data.data_memory = data_memory;
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < data_memory[i].Binary.length; z++){
-                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    app._data.data_memory = data_memory;
-                    return;
-                  }
-              }
-            }
-          }
-
-          for (var i = 0; i < data_memory.length; i++){
-            if(data_memory[i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < data_memory[i].Binary.length; j++){
-                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-                if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                   if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < data_memory[i].Binary.length - 2; z++){
-                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    data_memory[i].Value = "0 " + parseInt(memValue, 16); 
-                    app._data.data_memory = data_memory;
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < data_memory[i].Binary.length; z++){
-                      data_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    data_memory[i].Value = parseInt(memValue, 16) + " 0";    
-                    app._data.data_memory = data_memory;             
-                    return;
-                  }
-                }
-              }
-              return;
-            }
-            else if(i == data_memory.length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < data_memory[i+1].Binary.length; j++){
-                var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
-                if(aux == addr || data_memory[i+1].Binary[j].Tag == addr){
-                   if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < data_memory[i+1].Binary.length - 2; z++){
-                      data_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    data_memory[i+1].Value = "0 " + parseInt(memValue, 16); 
-                    app._data.data_memory = data_memory;
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < data_memory[i].Binary.length; z++){
-                      data_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    data_memory[i+1].Value = parseInt(memValue, 16) + " 0"; 
-                    app._data.data_memory = data_memory;
-                    return;
-                  }
-                }
-              }
-              return;
-            }
-          }
-
-          if(data_memory.length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-            }
-            for (var j = 0; j < data_memory[data_memory.length-1].Binary.length; j++){
-              var aux = "0x"+(data_memory[data_memory.length-1].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[data_memory.length-1].Binary[j].Tag == addr){
-                 if(j < 2){
-                  var charIndex = memValue.length-1;
-                  for (var z = 0; z < data_memory[data_memory.length-1].Binary.length - 2; z++){
-                    data_memory[data_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  data_memory[data_memory.length-1].Value = "0 " + parseInt(memValue, 16); 
-                  app._data.data_memory = data_memory;
-                  return;
-                }
-                else{
-                  var charIndex = memValue.length-1;
-                  for (var z = 2; z < data_memory[i].Binary.length; z++){
-                    data_memory[data_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  data_memory[data_memory.length-1].Value = parseInt(memValue, 16) + " 0"; 
-                  app._data.data_memory = data_memory;
-                  return;
-                }
-              }
-            }
-            return;
-          }
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-          for (var i = 0; i < stack_memory.length; i++){
-            for (var j = 0; j < stack_memory[i].Binary.length; j++){
-              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
-                 if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < stack_memory[i].Binary.length - 2; z++){
-                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-
-                    stack_memory[i].Value = null;
-                    for (var z = 3; z < 4; z=z-2){
-                      stack_memory[i].Value = stack_memory[i].Value + parseInt((stack_memory[i].Binary[z].Bin + stack_memory[i].Binary[z-1].Bin), 16) + " ";
-                    }
-                    app._data.stack_memory = stack_memory;
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < stack_memory[i].Binary.length; z++){
-                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    app._data.stack_memory = stack_memory;
-                    return;
-                  }
-              }
-            }
-          }
-
-          for (var i = 0; i < stack_memory.length; i++){
-            if(stack_memory[i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < stack_memory[i].Binary.length; j++){
-                var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-                if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
-                   if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < stack_memory[i].Binary.length - 2; z++){
-                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    stack_memory[i].Value = "0 " + parseInt(memValue, 16); 
-                    app._data.stack_memory = stack_memory;
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < stack_memory[i].Binary.length; z++){
-                      stack_memory[i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    stack_memory[i].Value = parseInt(memValue, 16) + " 0";    
-                    app._data.stack_memory = stack_memory;             
-                    return;
-                  }
-                }
-              }
-              return;
-            }
-            else if(i == stack_memory.length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < stack_memory[i+1].Binary.length; j++){
-                var aux = "0x"+(stack_memory[i+1].Binary[j].Addr).toString(16);
-                if(aux == addr || stack_memory[i+1].Binary[j].Tag == addr){
-                   if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < stack_memory[i+1].Binary.length - 2; z++){
-                      stack_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    stack_memory[i+1].Value = "0 " + parseInt(memValue, 16); 
-                    app._data.stack_memory = stack_memory;
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < stack_memory[i].Binary.length; z++){
-                      stack_memory[i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                      charIndex = charIndex - 2;
-                    }
-                    stack_memory[i+1].Value = parseInt(memValue, 16) + " 0"; 
-                    app._data.stack_memory = stack_memory;
-                    return;
-                  }
-                }
-              }
-              app._data.stack_memory = stack_memory;
-              return;
-            }
-          }
-
-          if(stack_memory.length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-            }
-            for (var j = 0; j < stack_memory[stack_memory.length-1].Binary.length; j++){
-              var aux = "0x"+(stack_memory[stack_memory.length-1].Binary[j].Addr).toString(16);
-              if(aux == addr || stack_memory[stack_memory.length-1].Binary[j].Tag == addr){
-                 if(j < 2){
-                  var charIndex = memValue.length-1;
-                  for (var z = 0; z < stack_memory[stack_memory.length-1].Binary.length - 2; z++){
-                    stack_memory[stack_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  stack_memory[stack_memory.length-1].Value = "0 " + parseInt(memValue, 16); 
-                  app._data.stack_memory = stack_memory;
-                  return;
-                }
-                else{
-                  var charIndex = memValue.length-1;
-                  for (var z = 2; z < stack_memory[i].Binary.length; z++){
-                    stack_memory[stack_memory.length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                    charIndex = charIndex - 2;
-                  }
-                  stack_memory[stack_memory.length-1].Value = parseInt(memValue, 16) + " 0"; 
-                  app._data.stack_memory = data_memory;
-                  return;
-                }
-              }
-            }
-            return;
-          }
-        }
-
-        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+      	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -8837,172 +8490,154 @@ window.app = new Vue({
           return;
         }
 
-      }
-
-      if (type == "b"){
         if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-          for (var i = 0; i < data_memory.length; i++){
-            for (var j = 0; j < data_memory[i].Binary.length; j++){
-              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                var charIndex = memValue.length-1;
-                data_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                data_memory[i].Value = null;
-                for (var z = 3; z < 4; z--){
-                  data_memory[i].Value = data_memory[i].Value + parseInt(data_memory[i].Binary[z].Bin, 16) + " ";
-                }
-                return;
-              }
-            }
-          }
-
-          for (var i = 0; i < data_memory.length; i++){
-            if(data_memory[i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (data_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < data_memory[i].Binary.length; j++){
-                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-                if(aux == addr || data_memory[i].Binary[j].Tag == addr){
-                  var charIndex = memValue.length-1;
-                  data_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                  for (var z = 3; z < 4; z--){
-                    data_memory[i+1].Value = data_memory[i+1].Value + parseInt(data_memory[i+1].Binary[z].Bin, 16) + " ";
-                  }
-                  return;
-                }
-              }
-              return;
-            }
-            else if(i == data_memory.length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (data_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < data_memory[i+1].Binary.length; j++){
-                var aux = "0x"+(data_memory[i+1].Binary[j].Addr).toString(16);
-                if(aux == addr || data_memory[i+1].Binary[j].Tag == addr){
-                  var charIndex = memValue.length-1;
-                  data_memory[i+1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                  for (var z = 3; z < 4; z--){
-                    data_memory[i+1].Value = data_memory[i+1].Value + parseInt(data_memory[i+1].Binary[z].Bin, 16) + " ";
-                  }
-                  return;
-                }
-              }
-              return;
-            }
-          }
-
-          if(data_memory.length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-            }
-            for (var j = 0; j < data_memory[data_memory.length-1].Binary.length; j++){
-              var aux = "0x"+(data_memory[data_memory.length-1].Binary[j].Addr).toString(16);
-              if(aux == addr || data_memory[data_memory.length-1].Binary[j].Tag == addr){
-                var charIndex = memValue.length-1;
-                data_memory[data_memory.length-1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                for (var z = 3; z < 4; z--){
-                  data_memory[data_memory.length-1].Value = data_memory[data_memory.length-1].Value + parseInt(data_memory[data_memory.length-1].Binary[z].Bin, 16) + " ";
-                }
-                return;
-              }
-            }
-            return;
-          }
+          index = memory_hash[0];
         }
 
         if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-          for (var i = 0; i < stack_memory.length; i++){
-            for (var j = 0; j < stack_memory[i].Binary.length; j++){
-              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-              if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
+          index = memory_hash[2];
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          for (var j = 0; j < memory[index][i].Binary.length; j++){
+            var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+               if(j < 2){
                 var charIndex = memValue.length-1;
-                stack_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                stack_memory[i].Value = null;
-                for (var z = 3; z < 4; z--){
-                  stack_memory[i].Value = stack_memory[i].Value + parseInt(stack_memory[i].Binary[z].Bin, 16) + " ";
+                for (var z = 0; z < memory[index][i].Binary.length - 2; z++){
+                  memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  charIndex = charIndex - 2;
                 }
+
+                memory[index][i].Value = null;
+                for (var z = 3; z < 4; z=z-2){
+                  memory[index][i].Value = memory[index][i].Value + parseInt((memory[index][i].Binary[z].Bin + memory[index][i].Binary[z-1].Bin), 16) + " ";
+                }
+                app._data.memory[index] = memory[index];
+                return;
+              }
+              else{
+                var charIndex = memValue.length-1;
+                for (var z = 2; z < memory[index][i].Binary.length; z++){
+                  memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  charIndex = charIndex - 2;
+                }
+                app._data.memory[index] = memory[index];
                 return;
               }
             }
           }
+        }
 
-          for (var i = 0; i < stack_memory.length; i++){
-            if(stack_memory[i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              stack_memory.splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (stack_memory[i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < stack_memory[i].Binary.length; j++){
-                var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-                if(aux == addr || stack_memory[i].Binary[j].Tag == addr){
-                  var charIndex = memValue.length-1;
-                  stack_memory[i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                  for (var z = 3; z < 4; z--){
-                    stack_memory[i+1].Value = stack_memory[i+1].Value + parseInt(stack_memory[i+1].Binary[z].Bin, 16) + " ";
-                  }
-                  return;
-                }
-              }
-              return;
-            }
-            else if(i == stack_memory.length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (stack_memory[i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < stack_memory[i+1].Binary.length; j++){
-                var aux = "0x"+(stack_memory[i+1].Binary[j].Addr).toString(16);
-                if(aux == addr || stack_memory[i+1].Binary[j].Tag == addr){
-                  var charIndex = memValue.length-1;
-                  stack_memory[i+1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                  for (var z = 3; z < 4; z--){
-                    stack_memory[i+1].Value = stack_memory[i+1].Value + parseInt(stack_memory[i+1].Binary[z].Bin, 16) + " ";
-                  }
-                  return;
-                }
-              }
-              return;
-            }
-          }
-
-          if(stack_memory.length == 0){
+        for (var i = 0; i < memory[index].length; i++){
+          if(memory[index][i].Address > parseInt(addr, 16)){
             var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            stack_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+            memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (stack_memory[stack_memory.length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
+              (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
             }
-            for (var j = 0; j < stack_memory[stack_memory.length-1].Binary.length; j++){
-              var aux = "0x"+(stack_memory[stack_memory.length-1].Binary[j].Addr).toString(16);
-              if(aux == addr || stack_memory[stack_memory.length-1].Binary[j].Tag == addr){
-                var charIndex = memValue.length-1;
-                stack_memory[stack_memory.length-1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
-                for (var z = 3; z < 4; z--){
-                  stack_memory[stack_memory.length-1].Value = stack_memory[stack_memory.length-1].Value + parseInt(stack_memory[stack_memory.length-1].Binary[z].Bin, 16) + " ";
+            for (var j = 0; j < memory[index][i].Binary.length; j++){
+              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+                 if(j < 2){
+                  var charIndex = memValue.length-1;
+                  for (var z = 0; z < memory[index][i].Binary.length - 2; z++){
+                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  memory[index][i].Value = "0 " + parseInt(memValue, 16); 
+                  app._data.memory[index] = memory[index];
+                  return;
                 }
-                return;
+                else{
+                  var charIndex = memValue.length-1;
+                  for (var z = 2; z < memory[index][i].Binary.length; z++){
+                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  memory[index][i].Value = parseInt(memValue, 16) + " 0";    
+                  app._data.memory[index] = memory[index];             
+                  return;
+                }
+              }
+            }
+            return;
+          }
+          else if(i == memory[index].length-1){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
+            }
+            for (var j = 0; j < memory[index][i+1].Binary.length; j++){
+              var aux = "0x"+(memory[index][i+1].Binary[j].Addr).toString(16);
+              if(aux == addr || memory[index][i+1].Binary[j].Tag == addr){
+                 if(j < 2){
+                  var charIndex = memValue.length-1;
+                  for (var z = 0; z < memory[index][i+1].Binary.length - 2; z++){
+                    memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  memory[index][i+1].Value = "0 " + parseInt(memValue, 16); 
+                  app._data.memory[index] = memory[index];
+                  return;
+                }
+                else{
+                  var charIndex = memValue.length-1;
+                  for (var z = 2; z < memory[index][i].Binary.length; z++){
+                    memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    charIndex = charIndex - 2;
+                  }
+                  memory[index][i+1].Value = parseInt(memValue, 16) + " 0"; 
+                  app._data.memory[index] = memory[index];
+                  return;
+                }
               }
             }
             return;
           }
         }
 
-        if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+        if(memory[index].length == 0){
+          var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+          memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
+          var charIndex = memValue.length-1;
+          for (var z = 0; z < 4; z++){
+            (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
+          }
+          for (var j = 0; j < memory[index][memory[index].length-1].Binary.length; j++){
+            var aux = "0x"+(memory[index][memory[index].length-1].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][memory[index].length-1].Binary[j].Tag == addr){
+               if(j < 2){
+                var charIndex = memValue.length-1;
+                for (var z = 0; z < memory[index][memory[index].length-1].Binary.length - 2; z++){
+                  memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  charIndex = charIndex - 2;
+                }
+                memory[index][memory[index].length-1].Value = "0 " + parseInt(memValue, 16); 
+                app._data.memory[index] = memory[index];
+                return;
+              }
+              else{
+                var charIndex = memValue.length-1;
+                for (var z = 2; z < memory[index][i].Binary.length; z++){
+                  memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  charIndex = charIndex - 2;
+                }
+                memory[index][memory[index].length-1].Value = parseInt(memValue, 16) + " 0"; 
+                app._data.memory[index] = memory[index];
+                return;
+              }
+            }
+          }
+          return;
+        }
+      }
+
+      if (type == "b"){
+      	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -9015,6 +8650,93 @@ window.app = new Vue({
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
           executionIndex = -1;
+          return;
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          index = memory_hash[0];
+        }
+
+        if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          index = memory_hash[2];
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          for (var j = 0; j < memory[index][i].Binary.length; j++){
+            var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+              var charIndex = memValue.length-1;
+              memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+              memory[index][i].Value = null;
+              for (var z = 3; z < 4; z--){
+                memory[index][i].Value = memory[index][i].Value + parseInt(memory[index][i].Binary[z].Bin, 16) + " ";
+              }
+              return;
+            }
+          }
+        }
+
+        for (var i = 0; i < memory[index].length; i++){
+          if(memory[index][i].Address > parseInt(addr, 16)){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
+            }
+            for (var j = 0; j < memory[index][i].Binary.length; j++){
+              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+                var charIndex = memValue.length-1;
+                memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                for (var z = 3; z < 4; z--){
+                  memory[index][i+1].Value = memory[index][i+1].Value + parseInt(memory[index][i+1].Binary[z].Bin, 16) + " ";
+                }
+                return;
+              }
+            }
+            return;
+          }
+          else if(i == memory[index].length-1){
+            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
+            var charIndex = memValue.length-1;
+            for (var z = 0; z < 4; z++){
+              (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
+            }
+            for (var j = 0; j < memory[index][i+1].Binary.length; j++){
+              var aux = "0x"+(memory[index][i+1].Binary[j].Addr).toString(16);
+              if(aux == addr || memory[index][i+1].Binary[j].Tag == addr){
+                var charIndex = memValue.length-1;
+                memory[index][i+1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                for (var z = 3; z < 4; z--){
+                  memory[index][i+1].Value = memory[index][i+1].Value + parseInt(memory[index][i+1].Binary[z].Bin, 16) + " ";
+                }
+                return;
+              }
+            }
+            return;
+          }
+        }
+
+        if(memory[index].length == 0){
+          var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+          memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
+          var charIndex = memValue.length-1;
+          for (var z = 0; z < 4; z++){
+            (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
+          }
+          for (var j = 0; j < memory[index][memory[index].length-1].Binary.length; j++){
+            var aux = "0x"+(memory[index][memory[index].length-1].Binary[j].Addr).toString(16);
+            if(aux == addr || memory[index][memory[index].length-1].Binary[j].Tag == addr){
+              var charIndex = memValue.length-1;
+              memory[index][memory[index].length-1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+              for (var z = 3; z < 4; z--){
+                memory[index][memory[index].length-1].Value = memory[index][memory[index].length-1].Value + parseInt(memory[index][memory[index].length-1].Binary[z].Bin, 16) + " ";
+              }
+              return;
+            }
+          }
           return;
         }
       }
@@ -9059,9 +8781,9 @@ window.app = new Vue({
 	    			var auxStackLimit = stackLimit;
 
 	    			for (var i = 0; i < (diff/4); i++){
-	            stack_memory.splice(0, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null});
+	            memory[memory_hash[2]].splice(0, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
 	            for (var z = 0; z < 4; z++){
-	              (stack_memory[0].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+	              (memory[memory_hash[2]][0].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
 	              auxStackLimit++;
 	            }
 	          }
@@ -9070,7 +8792,7 @@ window.app = new Vue({
 	    			var diff = stackLimit - architecture.memory_layout[4].value;
 
 	    			for (var i = 0; i < (diff/4); i++){
-	            stack_memory.splice(0, 1);
+	            memory[memory_hash[2]].splice(0, 1);
 	          }
 	        }
           architecture.memory_layout[4].value = stackLimit;
@@ -9094,6 +8816,7 @@ window.app = new Vue({
           break;
         case "print_string":
           var addr = architecture.components[indexComp].elements[indexElem].value;
+          var index;
 
           if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
 	          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
@@ -9113,46 +8836,31 @@ window.app = new Vue({
 	        }
 
 	        if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-	          for (var i = 0; i < data_memory.length; i++){
-	            for (var j = 0; j < data_memory[i].Binary.length; j++){
-	              var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-	              if(aux == addr){
-	                for (var i; i < data_memory.length; i++){
-	                  for (var j = 0; j < data_memory[i].Binary.length; j++){
-	                    app._data.display = app._data.display + String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16));
-	                    if(data_memory[i].Binary[j].Bin == 0){
-	                      return
-	                    }
-	                    else if(i == data_memory.length-1 && j == data_memory[i].Binary.length-1){
-	                      return;
-	                    }
-	                  }
-	                }
-	              }
-	            }
-	          }
+	          index = memory_hash[0];
 	        }
 
 	        if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-	          for (var i = 0; i < stack_memory.length; i++){
-	            for (var j = 0; j < stack_memory[i].Binary.length; j++){
-	              var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-	              if(aux == addr){
-	                for (var i; i < stack_memory.length; i++){
-	                  for (var j = 0; j < stack_memory[i].Binary.length; j++){
-	                    app._data.display = app._data.display + String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16));
-	                    if(stack_memory[i].Binary[j].Bin == 0){
-	                      return
-	                    }
-	                    else if(i == stack_memory.length-1 && j == stack_memory[i].Binary.length-1){
-	                      return;
-	                    }
-	                  }
-	                }
-	              }
-	            }
-	          }
+	          index = memory_hash[2];
 	        }
+
+	        for (var i = 0; i < memory[index].length; i++){
+            for (var j = 0; j < memory[index][i].Binary.length; j++){
+              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+              if(aux == addr){
+                for (var i; i < memory[index].length; i++){
+                  for (var j = 0; j < memory[index][i].Binary.length; j++){
+                    app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16));
+                    if(memory[index][i].Binary[j].Bin == 0){
+                      return
+                    }
+                    else if(i == memory[index].length-1 && j == memory[index][i].Binary.length-1){
+                      return;
+                    }
+                  }
+                }
+              }
+            }
+          }
 
           break;
         case "read_int":
@@ -9308,6 +9016,7 @@ window.app = new Vue({
             console.log(value)
 
             var auxAddr = data_address;
+            var index;
 
             if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
 		          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
@@ -9327,240 +9036,72 @@ window.app = new Vue({
 		        }
 
 		        if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-	            for (var i = 0; i < data_memory.length && this.keyboard.length > 0; i++){
-	              for (var j = 0; j < data_memory[i].Binary.length; j++){
-	                var aux = "0x"+(data_memory[i].Binary[j].Addr).toString(16);
-	                if(aux == addr){
-	                  for (var j = j; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
-	                    data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-	                    auxAddr = data_memory[i].Binary[j].Addr;
-	                    valueIndex++;
-	                    addr++;
-	                  }
-
-	                  data_memory[i].Value = "";
-	                  for (var j = 0; j < data_memory[i].Binary.length; j++){
-	                    data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-	                  }
-
-	                  if((i+1) < data_memory.length && valueIndex < value.length){
-	                    i++;
-	                    for (var j = 0; j < data_memory[i].Binary.length && valueIndex < value.length; j++){
-	                      data_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-	                      auxAddr = data_memory[i].Binary[j].Addr;
-	                      valueIndex++;
-	                      addr++;
-	                    }
-
-	                    data_memory[i].Value = "";
-	                    for (var j = 0; j < data_memory[i].Binary.length; j++){
-	                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-	                    }
-
-	                  }
-	                  else if(valueIndex < value.length){
-	                    data_address = auxAddr;
-	                    data_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-	                    i++;
-	                    for (var z = 0; z < 4; z++){
-	                      if(valueIndex < value.length){
-	                        (data_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-	                        valueIndex++;
-	                        data_address++;
-	                      }
-	                      else{
-	                        (data_memory[i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-	                        data_address++;
-	                      }
-	                    }
-	                    
-	                    data_memory[i].Value = "";
-	                    for (var j = 0; j < data_memory[i].Binary.length; j++){
-	                      data_memory[i].Value = String.fromCharCode(parseInt(data_memory[i].Binary[j].Bin, 16)) + " " + data_memory[i].Value;
-	                    }
-	                  }
-	                }
-	              }
-	            }
-
-	            if(valueIndex == value.length){
-	              this.keyboard = "";
-	              consoleMutex = false;
-		            mutexRead = false;
-		            if(executionIndex >= instructions.length){
-				          for (var i = 0; i < instructions.length; i++) {
-				            instructions[i]._rowVariant = '';
-				          }
-
-				          executionIndex = -2;
-				          $(".loading").hide();
-				          app._data.alertMessaje = 'The execution of the program has finished';
-				          app._data.type ='success';
-				          app.$bvToast.toast(app._data.alertMessaje, {
-					          variant: app._data.type,
-					          solid: true,
-					          toaster: "b-toaster-top-center",
-										autoHideDelay: 1500,
-					        })
-				          var date = new Date();
-				          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-				          $(".loading").hide();
-				          return;
-				        }
-	              return;
-	            }
-
-	            var auxAddr = parseInt(addr);
-
-	            while(valueIndex < value.length){
-	              data_memory.push({Address: auxAddr, Binary: [], Value: "", DefValue: ""});
-	              for (var z = 0; z < 4; z++){
-	                if(valueIndex > value.length-1){
-	                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
-	                }
-	                else{
-	                  (data_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-	                  data_memory[i].Value = value.charAt(valueIndex) + " " + data_memory[i].Value;
-	                }
-	                auxAddr++;
-	                valueIndex++;
-	              }
-	              i++;
-	            }
-
-	            app._data.data_memory = data_memory;
-	            
-	            this.keyboard = "";
-	            consoleMutex = false;
-	            mutexRead = false;
-	            if(executionIndex >= instructions.length){
-			          for (var i = 0; i < instructions.length; i++) {
-			            instructions[i]._rowVariant = '';
-			          }
-
-			          executionIndex = -2;
-			          $(".loading").hide();
-			          app._data.alertMessaje = 'The execution of the program has finished';
-			          app._data.type ='success';
-			          app.$bvToast.toast(app._data.alertMessaje, {
-				          variant: app._data.type,
-				          solid: true,
-				          toaster: "b-toaster-top-center",
-									autoHideDelay: 1500,
-				        })
-			          var date = new Date();
-			          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-			          $(".loading").hide();
-			          return;
-			        }
+			        index = memory_hash[0];
 			      }
 
 			      if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-	            for (var i = 0; i < stack_memory.length && this.keyboard.length > 0; i++){
-	              for (var j = 0; j < stack_memory[i].Binary.length; j++){
-	                var aux = "0x"+(stack_memory[i].Binary[j].Addr).toString(16);
-	                if(aux == addr){
-	                  for (var j = j; j < stack_memory[i].Binary.length && valueIndex < value.length; j++){
-	                    stack_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-	                    auxAddr = stack_memory[i].Binary[j].Addr;
-	                    valueIndex++;
-	                    addr++;
-	                  }
+			        index = memory_hash[2];
+			      }
 
-	                  stack_memory[i].Value = "";
-	                  for (var j = 0; j < stack_memory[i].Binary.length; j++){
-	                    stack_memory[i].Value = String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16)) + " " + stack_memory[i].Value;
-	                  }
+			      for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
+              for (var j = 0; j < memory[index][i].Binary.length; j++){
+                var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+                if(aux == addr){
+                  for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+                    memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                    auxAddr = memory[index][i].Binary[j].Addr;
+                    valueIndex++;
+                    addr++;
+                  }
 
-	                  if((i+1) < stack_memory.length && valueIndex < value.length){
-	                    i++;
-	                    for (var j = 0; j < stack_memory[i].Binary.length && valueIndex < value.length; j++){
-	                      stack_memory[i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-	                      auxAddr = stack_memory[i].Binary[j].Addr;
-	                      valueIndex++;
-	                      addr++;
-	                    }
+                  memory[index][i].Value = "";
+                  for (var j = 0; j < memory[index][i].Binary.length; j++){
+                    memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                  }
 
-	                    stack_memory[i].Value = "";
-	                    for (var j = 0; j < stack_memory[i].Binary.length; j++){
-	                      stack_memory[i].Value = String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16)) + " " + stack_memory[i].Value;
-	                    }
+                  if((i+1) < memory[index].length && valueIndex < value.length){
+                    i++;
+                    for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+                      memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                      auxAddr = memory[index][i].Binary[j].Addr;
+                      valueIndex++;
+                      addr++;
+                    }
 
-	                  }
-	                  else if(valueIndex < value.length){
-	                    data_address = auxAddr;
-	                    stack_memory.push({Address: data_address, Binary: [], Value: null, DefValue: null});
-	                    i++;
-	                    for (var z = 0; z < 4; z++){
-	                      if(valueIndex < value.length){
-	                        (stack_memory[i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-	                        valueIndex++;
-	                        data_address++;
-	                      }
-	                      else{
-	                        (stack_memory[i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-	                        data_address++;
-	                      }
-	                    }
-	                    
-	                    stack_memory[i].Value = "";
-	                    for (var j = 0; j < stack_memory[i].Binary.length; j++){
-	                      stack_memory[i].Value = String.fromCharCode(parseInt(stack_memory[i].Binary[j].Bin, 16)) + " " + stack_memory[i].Value;
-	                    }
-	                  }
-	                }
-	              }
-	            }
+                    memory[index][i].Value = "";
+                    for (var j = 0; j < memory[index][i].Binary.length; j++){
+                      memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                    }
 
-	            if(valueIndex == value.length){
-	              this.keyboard = "";
-	              consoleMutex = false;
-		            mutexRead = false;
-		            if(executionIndex >= instructions.length){
-				          for (var i = 0; i < instructions.length; i++) {
-				            instructions[i]._rowVariant = '';
-				          }
+                  }
+                  else if(valueIndex < value.length){
+                    data_address = auxAddr;
+                    memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                    i++;
+                    for (var z = 0; z < 4; z++){
+                      if(valueIndex < value.length){
+                        (memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                        valueIndex++;
+                        data_address++;
+                      }
+                      else{
+                        (memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                        data_address++;
+                      }
+                    }
+                    
+                    memory[index][i].Value = "";
+                    for (var j = 0; j < memory[index][i].Binary.length; j++){
+                      memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                    }
+                  }
+                }
+              }
+            }
 
-				          executionIndex = -2;
-				          $(".loading").hide();
-				          app._data.alertMessaje = 'The execution of the program has finished';
-				          app._data.type ='success';
-				          app.$bvToast.toast(app._data.alertMessaje, {
-					          variant: app._data.type,
-					          solid: true,
-					          toaster: "b-toaster-top-center",
-										autoHideDelay: 1500,
-					        })
-				          var date = new Date();
-				          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-				          $(".loading").hide();
-				          return;
-				        }
-	              return;
-	            }
-
-	            var auxAddr = parseInt(addr);
-
-	            while(valueIndex < value.length){
-	              stack_memory.push({Address: auxAddr, Binary: [], Value: "", DefValue: ""});
-	              for (var z = 0; z < 4; z++){
-	                if(valueIndex > value.length-1){
-	                  (stack_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
-	                }
-	                else{
-	                  (stack_memory[i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-	                  stack_memory[i].Value = value.charAt(valueIndex) + " " + stack_memory[i].Value;
-	                }
-	                auxAddr++;
-	                valueIndex++;
-	              }
-	              i++;
-	            }
-
-	            app._data.stack_memory = stack_memory;
-	            
-	            this.keyboard = "";
-	            consoleMutex = false;
+            if(valueIndex == value.length){
+              this.keyboard = "";
+              consoleMutex = false;
 	            mutexRead = false;
 	            if(executionIndex >= instructions.length){
 			          for (var i = 0; i < instructions.length; i++) {
@@ -9582,7 +9123,52 @@ window.app = new Vue({
 			          $(".loading").hide();
 			          return;
 			        }
-			      }
+              return;
+            }
+
+            var auxAddr = parseInt(addr);
+
+            while(valueIndex < value.length){
+              memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
+              for (var z = 0; z < 4; z++){
+                if(valueIndex > value.length-1){
+                  (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
+                }
+                else{
+                  (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                  memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
+                }
+                auxAddr++;
+                valueIndex++;
+              }
+              i++;
+            }
+
+            app._data.memory[index] = memory[index];
+            
+            this.keyboard = "";
+            consoleMutex = false;
+            mutexRead = false;
+            if(executionIndex >= instructions.length){
+		          for (var i = 0; i < instructions.length; i++) {
+		            instructions[i]._rowVariant = '';
+		          }
+
+		          executionIndex = -2;
+		          $(".loading").hide();
+		          app._data.alertMessaje = 'The execution of the program has finished';
+		          app._data.type ='success';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        })
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          $(".loading").hide();
+		          return;
+		        }
 
             break;
           }
@@ -9608,14 +9194,14 @@ window.app = new Vue({
           }
 
           for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
-            data_memory.push({Address: aux_addr, Binary: [], Value: null, DefValue: null});
+            memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
             for (var z = 0; z < 4; z++){
-              (data_memory[data_memory.length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
+              (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
               aux_addr++;
             }
           }
 
-          app._data.data_memory = data_memory;
+          app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
           architecture.memory_layout[3].value = aux_addr-1;
           this.architecture.memory_layout[3].value = aux_addr-1;
         

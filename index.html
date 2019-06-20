@@ -125,7 +125,7 @@
           <!-- 1 navbar -->
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
 
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.10 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.12 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -1871,7 +1871,7 @@
                   <b-tab title="Data" active>
                     <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
 
-                      <b-table striped small hover :items="data_memory" :fields="memFields" class="memory_table">
+                      <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table">
                         <template slot="Address" slot-scope="row">
                           <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
                         </template>
@@ -1893,7 +1893,7 @@
 
                   <b-tab title="Text">
                     <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                      <b-table striped small hover :items="instructions_memory" :fields="memFields" class="memory_table" :filter-function=filter filter=" ">
+                      <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table" :filter-function=filter filter=" ">
                         <template slot="Address" slot-scope="row">
                           <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
                         </template>
@@ -1914,7 +1914,7 @@
 
                   <b-tab title="Stack">
                     <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                      <b-table striped small hover :items="stack_memory" :fields="memFields" class="memory_table">
+                      <b-table striped small hover :items="Object.values(memory)[2]" :fields="memFields" class="memory_table">
                         <template slot="Address" slot-scope="row">
                           <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
                         </template>
