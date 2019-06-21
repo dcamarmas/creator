@@ -1741,7 +1741,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"
+      "definition": "lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nadd $reg1 $reg2 $at;"
     }
   ],
   "directives": [
