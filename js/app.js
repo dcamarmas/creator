@@ -15,255 +15,7 @@ var load_architectures = [];
 var architecture_hash = [];
 
 /*Arquitectura cargada*/
-var architecture = {components:[
-  /*{name: "Control registers", type: "control", double_precision: false, elements:[
-      {name:"PC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"EPC", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"CAUSE", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"BADVADDR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"STATUS", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"HI", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"LO", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-
-      {name:"FIR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"FCSR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"FCCR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"FEXR", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    ]},
-    {name: "Integer registers", type: "integer", double_precision: false, elements:[
-      {name:"r0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"at", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"v0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"v1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"a0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"a1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"a2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"a3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s2", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s3", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s4", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s5", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s6", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s7", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"t9", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"k0", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"k1", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"gp", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"sp", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"s8", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-      {name:"ra", nbits:"32", value:0, default_value:0, properties: ["read", "write"]},
-    ]},
-    {name: "Simple floating point registers",type: "floating point", double_precision: false, elements:[
-      {name:"FG0", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG1", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG2", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG3", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG4", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG5", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG6", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG7", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG8", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG9", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG10", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG11", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG12", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG13", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG14", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG15", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG16", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG17", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG18", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG19", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG20", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG21", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG22", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG23", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG24", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG25", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG26", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG27", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG28", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG29", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG30", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-      {name:"FG31", nbits:"32", value:0.0, default_value:0.0, properties: ["read", "write"]},
-    ]},
-    {name: "Double floating point registers", type: "floating point", double_precision: true, elements:[
-      {name:"FP0", nbits:"64", value:0.0, simple_reg: ["FG0","FG1"], properties: ["read", "write"]},
-      {name:"FP2", nbits:"64", value:0.0, simple_reg: ["FG2","FG3"], properties: ["read", "write"]},
-      {name:"FP4", nbits:"64", value:0.0, simple_reg: ["FG4","FG5"], properties: ["read", "write"]},
-      {name:"FP6", nbits:"64", value:0.0, simple_reg: ["FG6","FG7"], properties: ["read", "write"]},
-      {name:"FP8", nbits:"64", value:0.0, simple_reg: ["FG8","FG9"], properties: ["read", "write"]},
-      {name:"FP10", nbits:"64", value:0.0, simple_reg: ["FG10","FG11"], properties: ["read", "write"]},
-      {name:"FP12", nbits:"64", value:0.0, simple_reg: ["FG12","FG13"], properties: ["read", "write"]},
-      {name:"FP14", nbits:"64", value:0.0, simple_reg: ["FG14","FG15"], properties: ["read", "write"]},
-      {name:"FP16", nbits:"64", value:0.0, simple_reg: ["FG16","FG17"], properties: ["read", "write"]},
-      {name:"FP18", nbits:"64", value:0.0, simple_reg: ["FG18","FG19"], properties: ["read", "write"]},
-      {name:"FP20", nbits:"64", value:0.0, simple_reg: ["FG20","FG21"], properties: ["read", "write"]},
-      {name:"FP22", nbits:"64", value:0.0, simple_reg: ["FG22","FG23"], properties: ["read", "write"]},
-      {name:"FP24", nbits:"64", value:0.0, simple_reg: ["FG24","FG25"], properties: ["read", "write"]},
-      {name:"FP26", nbits:"64", value:0.0, simple_reg: ["FG26","FG27"], properties: ["read", "write"]},
-      {name:"FP28", nbits:"64", value:0.0, simple_reg: ["FG28","FG29"], properties: ["read", "write"]},
-      {name:"FP30", nbits:"64", value:0.0, simple_reg: ["FG30","FG31"], properties: ["read", "write"]},
-    ]}*/
-  ], instructions:[
-    /*{name: "add", type: "Arithmetic integer", co: "000000", cop: "100000", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "add,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "add $reg1 $reg2 $reg3", fields: [
-      {name: "add", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2+reg3"},
-    {name: "addi", type: "Arithmetic integer", co: "001000", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "addi,$INT-Reg,$INT-Reg,inm", signatureRaw: "addi $reg1 $reg2 val", fields: [
-      {name: "addi", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2+val"},
-    {name: "and", type: "Logic", co: "000000", cop: "100100", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "and,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "and $reg1 $reg2 $reg3", fields: [
-      {name: "and", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2&reg3"},
-    {name: "andi", type: "Logic", co: "001100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "andi,$INT-Reg,$INT-Reg,inm", signatureRaw: "andi $reg1 $reg2 val", fields: [
-      {name: "andi", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2&val"},
-    {name: "b", type: "Unconditional bifurcation", co: "000100", cop: null, nwords: 1, signature_definition: "F0 F1", signature: "b,inm", signatureRaw: "b val", fields: [
-      {name: "b", type: "co", startbit: 31, stopbit: 26},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "PC=val"},
-    {name: "beq", type: "Conditional bifurcation", co: "000100", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "beq,$INT-Reg,$INT-Reg,inm", signatureRaw: "beq $reg1 $reg2 val", fields: [
-      {name: "beq", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "if(reg1 == reg2){PC=val}"},
-    {name: "bne", type: "Conditional bifurcation", co: "000101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "bne,$INT-Reg,$INT-Reg,inm", signatureRaw: "bne $reg1 $reg2 val", fields: [
-      {name: "bne", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "if(reg1 != reg2){PC=val}"},
-    {name: "div", type: "Arithmetic integer", co: "000000", cop: "011010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "div,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "div $reg1 $reg2 $reg3", fields: [
-      {name: "div", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2/reg3"},
-    {name: "lw", type: "Memory access", co: "100011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "lw,$INT-Reg,inm,($INT-Reg)", signatureRaw: "lw $reg1 val ($reg2)", fields: [
-      {name: "lw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      {name: "reg2", type: "INT-Reg", startbit: 25, stopbit: 21},
-    ], definition: "reg1=MP.w.(val+reg2)"},
-    {name: "mul", type: "Arithmetic integer", co: "011100", cop: "000010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "mul,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "mul $reg1 $reg2 $reg3", fields: [
-      {name: "mul", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2*reg3"},
-    {name: "nop", type: "Logic", co: "000000", cop: "000000", nwords: 1, signature_definition: "F0", signature: "nop", signatureRaw: "nop", fields: [
-      {name: "nop", type: "co", startbit: 31, stopbit: 26},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: ""},
-    {name: "or", type: "Logic", co: "000000", cop: "100101", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "or,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "or $reg1 $reg2 $reg3", fields: [
-      {name: "or", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2|reg3"},
-    {name: "ori", type: "Logic", co: "001101", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "ori,$INT-Reg,$INT-Reg,inm", signatureRaw: "ori $reg1 $reg2 val", fields: [
-      {name: "ori", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2|val"},
-    {name: "sub", type: "Arithmetic integer", co: "000000", cop: "100010", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "sub,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "sub $reg1 $reg2 $reg3", fields: [
-      {name: "sub", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2-reg3"},
-    {name: "sw", type: "Memory access", co: "101011", cop: null, nwords: 1, signature_definition: "F0 $F1 F2 ($F3)", signature: "sw,$INT-Reg,$inm,($INT-Reg)", signatureRaw: "sw $reg1 val ($reg2)", fields: [
-      {name: "sw", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      {name: "reg2", type: "INT-Reg", startbit: 25, stopbit: 21},
-    ], definition: "MP.w.(val+reg2)=reg1"},
-    {name: "xor", type: "Logic", co: "000000", cop: "100110", nwords: 1, signature_definition: "F0 $F1 $F2 $F3", signature: "xor,$INT-Reg,$INT-Reg,$INT-Reg", signatureRaw: "xor $reg1 $reg2 $reg3", fields: [
-      {name: "xor", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "reg3", type: "INT-Reg", startbit: 15, stopbit: 11},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "reg1=reg2^reg3"},
-    {name: "xori", type: "Logic", co: "001110", cop: null, nwords: 1, signature_definition: "F0 $F1 $F2 F3", signature: "xori,$INT-Reg,$INT-Reg,inm", signatureRaw: "xori $reg1 $reg2 val", fields: [
-      {name: "xori", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=reg2^val"},
-    {name: "lui", type: "Other", co: "001111", cop: null, nwords: 1, signature_definition: "F0 $F1 F2", signature: "lui,$INT-Reg,inm", signatureRaw: "lui $reg1 val", fields: [
-      {name: "lui", type: "co", startbit: 31, stopbit: 26},
-      {name: "reg1", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-    ], definition: "reg1=val<<16"},
-
-    {name: "syscall", type: "Syscall", co: "000000", cop: "001100", nwords: 1, signature_definition: "F0", signature: "syscall", signatureRaw: "syscall", fields: [
-      {name: "syscall", type: "co", startbit: 31, stopbit: 26},
-      {name: "cop", type: "cop", startbit: 5, stopbit: 0},
-    ], definition: "switch(v0){case 1:print_int(a0);break;case 2:print_float(FG12);break;case 3:print_double(FP12);break;case 4:print_string(a0);break;case 5:read_int(v0);break;case 6:read_float(FG0);break;case 7:read_double(FP0);break;case 8:read_string(a0, a1);break;case 9:sbrk(a0, v0);break;case 10:exit();break;case 11:print_char(a0);break;case 12:read_char(v0);break;}"},
-  ],pseudoinstructions:[
-    {name: "move", nwords: 1, signature_definition: "move $F0 $F1", signature: "move,$INT-Reg,$INT-Reg", signatureRaw: "move $reg1 $reg2", fields: [
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      ], definition: "add $reg1 $r0 $reg2;"},
-    {name: "addi", nwords: 1, signature_definition: "addi $F0 $F1 F2", signature: "addi,$INT-Reg,$INT-Reg,inm", signatureRaw: "addi $reg1 $reg2 val", fields: [
-      {name: "reg1", type: "INT-Reg", startbit: 25, stopbit: 21},
-      {name: "reg2", type: "INT-Reg", startbit: 20, stopbit: 16},
-      {name: "val", type: "inm", startbit: 15, stopbit: 0},
-      ], definition: "lui $at Field.3.(31,16); ori $at $at Field.3.(15,0); add $reg1 $reg2 $at;"},*/
-  ], directives:[
-    /*{name:".data", action:"data_segment", size:null },
-    {name:".text", action:"code_segment", size:null },
-    {name:".globl", action:"global_symbol", size:null },
-    {name:".byte", action:"byte", size:1 },
-    {name:".half", action:"half_word", size:2 },
-    {name:".word", action:"word", size:4 },
-    {name:".doubleword", action:"double_word", size:8 },
-    {name:".float", action:"float", size:4 },
-    {name:".double", action:"double", size:8 },
-    {name:".space", action:"space", size:1 },
-    {name:".ascii", action:"ascii_not_null_end", size:null },
-    {name:".asciiz", action:"ascii_null_end", size:null },
-    {name:".align", action:"align", size:null },*/
-  ], memory_layout:[
-    /*{name:"text start", value: 0},
-    {name:"text end", value: 2097151},
-    {name:"data start", value: 2097152},
-    {name:"data end", value: 96206015},
-    {name:"stack start", value: 268435452},
-    {name:"stack end", value: 268435455},*/
-  ]};
+var architecture = {components:[], instructions:[], directives:[], memory_layout:[]};
 
 var componentsTypes = [
   { text: 'Integer', value: 'integer' },
@@ -471,6 +223,7 @@ window.app = new Vue({
       properties: [],
       precision: '',
     },
+
     /*Reset de la arquitectura*/
     modalResetArch: {
       title: '',
@@ -518,6 +271,12 @@ window.app = new Vue({
     showEditElement: false,
 
     /*PAGINA MEMORY LAYOUT*/
+    /*Reset del memory layout*/
+    modalResetMem: {
+      title: '',
+      element: '',
+    },
+
     memory_layout: ["", "", "", "", "", ""],
 
 
@@ -846,7 +605,6 @@ window.app = new Vue({
 
     /*Carga la copia de seguridad*/
     load_copy(){
-      $(".loading").show();
       this.architecture_name = localStorage.getItem("arch_name");
       
       var auxArchitecture = JSON.parse(localStorage.getItem("architecture_copy"));
@@ -876,7 +634,6 @@ window.app = new Vue({
       $("#load_arch").hide();
       $("#load_menu_arch").hide();
       $("#view_components").show();
-      $(".loading").hide();
 
       this.$refs.copyRef.hide();
 
@@ -1086,8 +843,6 @@ window.app = new Vue({
 
     /*Guarda la arquitectura actual en un JSON*/
     arch_save(){
-      $(".loading").show();
-
       var auxObject = jQuery.extend(true, {}, architecture);
       var auxArchitecture = bigInt_serialize(auxObject);
 
@@ -1115,7 +870,6 @@ window.app = new Vue({
 
       downloadLink.click();
 
-      $(".loading").hide();
       app._data.alertMessaje = 'Save architecture';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
@@ -1129,10 +883,6 @@ window.app = new Vue({
     },
 
     modal_remove_cache_arch(index, elem, button){
-      console.log(index)
-      console.log(elem)
-      console.log(button)
-
       this.modalDeletArch.title = "Delete Architecture";
       this.modalDeletArch.index = index;
       this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
@@ -1165,11 +915,11 @@ window.app = new Vue({
       app._data.alertMessaje = 'Architecture deleted successfully';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-					autoHideDelay: 1500,
-        })
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+				autoHideDelay: 1500,
+      })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
@@ -1237,6 +987,7 @@ window.app = new Vue({
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
+
         for(var j = i; j < 6; j++){
           if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
             app._data.alertMessaje = 'The segment can not be overlap';
@@ -1264,6 +1015,70 @@ window.app = new Vue({
 	    backup_data_address = architecture.memory_layout[3].value;
     },
 
+    /*Modal de alerta de reset*/
+    resetMemModal(elem, button){
+      this.modalResetMem.title = "Reset memory layout";
+      this.modalResetMem.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalResetMem', button);
+    },
+
+    /*Resetea la arquitectura*/
+    resetMemory(arch){
+      $(".loading").show();
+
+      for (var i = 0; i < load_architectures.length; i++) {
+        if(arch == load_architectures[i].id){
+          var auxArch = JSON.parse(load_architectures[i].architecture);
+          var auxArchitecture = bigInt_deserialize(auxArch);
+
+          architecture.memory_layout = auxArchitecture.memory_layout;
+          app._data.architecture = architecture;
+
+          $(".loading").hide();
+          app._data.alertMessaje = 'The memory layout has been reset correctly';
+          app._data.type ='success';
+          app.$bvToast.toast(app._data.alertMessaje, {
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          
+          return;
+        }
+      }
+
+      $.getJSON('architecture/'+arch+'.json', function(cfg){
+        var auxArchitecture = cfg;
+
+        var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+        architecture.memory_layout = auxArchitecture2.memory_layout;
+        app._data.architecture = architecture;
+
+        $(".loading").hide();
+        app._data.alertMessaje = 'The memory layout has been reset correctly';
+        app._data.type ='success';
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
+        })
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+      });
+    },
+
+    emptyFormArch(){
+      this.formArchitecture.name = '';
+      this.formArchitecture.id = '';
+      this.formArchitecture.type = '';
+      this.formArchitecture.defValue = '';
+      this.formArchitecture.properties = [];
+      this.formArchitecture.precision = '';
+    },
 
     /*Asigna id a los registros*/
     element_id(name, type, double){
@@ -1360,10 +1175,8 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de nuevo componente*/
     newComponentVerify(evt){
-      $(".loading").show();
       evt.preventDefault();
       if (!this.formArchitecture.name || !this.formArchitecture.type) {
-        $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -1404,8 +1217,6 @@ window.app = new Vue({
       architecture.components.push(newComp);
       var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
       architecture_hash.push(newComponentHash);
-
-      $(".loading").hide();
     },
 
     /*Muestra el modal para editar un componente*/
@@ -1422,11 +1233,8 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar component*/
     editCompVerify(evt, comp){
-      $(".loading").show();
-
       evt.preventDefault();
       if (!this.formArchitecture.name) {
-        $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -1465,7 +1273,6 @@ window.app = new Vue({
         }
       }
       this.formArchitecture.name='';
-      $(".loading").hide();
     },
 
     /*Muestra el modal de confirmacion de borrado de un componente*/
@@ -1522,7 +1329,6 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de nuevo elemento*/
     newElementVerify(evt, comp){
-      $(".loading").show();
       evt.preventDefault();
       if (!this.formArchitecture.name) {
         app._data.alertMessaje = 'Please complete all fields';
@@ -1533,9 +1339,9 @@ window.app = new Vue({
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
         })
-      } else {
+      } 
+      else {
         if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
-          $(".loading").hide();
           app._data.alertMessaje = 'Please complete all fields';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -1546,7 +1352,6 @@ window.app = new Vue({
 	        })
         }
         else if(isNaN(this.formArchitecture.defValue)){
-          $(".loading").hide();
           app._data.alertMessaje = 'The default value must be a number';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -1567,7 +1372,6 @@ window.app = new Vue({
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if(this.formArchitecture.name == architecture.components[i].elements[j].name){
-            $(".loading").hide();
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
@@ -1625,7 +1429,6 @@ window.app = new Vue({
           break;
         }
       }
-      $(".loading").hide();
     },
     
     /*Muestra el modal de editar un elemento*/
@@ -1675,10 +1478,8 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar elemento*/
     editElementVerify(evt, comp){
-      $(".loading").show();
       evt.preventDefault();
       if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
-        $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -1689,7 +1490,6 @@ window.app = new Vue({
         })
       } 
       else if(isNaN(this.formArchitecture.defValue)){
-        $(".loading").hide();
         app._data.alertMessaje = 'The default value must be a number';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -1709,7 +1509,6 @@ window.app = new Vue({
       for (var i = 0; i < architecture_hash.length; i++) {
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
-            $(".loading").hide();
             app._data.alertMessaje = 'The element already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
@@ -1765,7 +1564,6 @@ window.app = new Vue({
           }
         }
       } 
-      $(".loading").hide();
     },
 
     /*Muestra el modal para confirmar el borrado*/
@@ -1917,7 +1715,6 @@ window.app = new Vue({
 
     /*Visualizacion del modal con los campos de la instruccion*/
     viewFielsInst(elem, co, cop, button){
-      $(".loading").show();
       this.modalViewFields.title = "Fields of " + elem;
       this.modalViewFields.element = elem;
       for (var i = 0; i < architecture.instructions.length; i++) {
@@ -1939,7 +1736,6 @@ window.app = new Vue({
         }
       }
 
-      $(".loading").hide();
       this.$root.$emit('bv::show::modal', 'modalViewFields', button);
     },
 
@@ -2002,7 +1798,6 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de nueva instruccion*/
     newInstVerify(evt){
-      $(".loading").show();
       evt.preventDefault();
 
       var empty = 0;
@@ -2013,7 +1808,6 @@ window.app = new Vue({
           }
           else{
             if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-              $(".loading").hide();
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
@@ -2027,7 +1821,6 @@ window.app = new Vue({
 
             for (var i = 0; i < this.formInstruction.cop.length; i++) {
               if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
-                $(".loading").hide();
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
@@ -2044,9 +1837,7 @@ window.app = new Vue({
       }
 
       for (var i = 0; i < this.formInstruction.co.length; i++) {
-        console.log(this.formInstruction.co.charAt(i))
         if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-          $(".loading").hide();
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -2066,7 +1857,6 @@ window.app = new Vue({
       }
 
       if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-        $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2077,7 +1867,6 @@ window.app = new Vue({
         })
       } 
       else if(isNaN(this.formInstruction.co)){
-        $(".loading").hide();
         app._data.alertMessaje = 'The field co must be numbers';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2088,7 +1877,6 @@ window.app = new Vue({
         })
       }
       else if(isNaN(this.formInstruction.cop)){
-        $(".loading").hide();
         app._data.alertMessaje = 'The field cop must be numbers';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2099,7 +1887,6 @@ window.app = new Vue({
         })
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-        $(".loading").hide();
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2119,7 +1906,6 @@ window.app = new Vue({
       for (var i = 0; i < architecture.instructions.length; i++) {
         if(this.formInstruction.co == architecture.instructions[i].co){
           if((!this.formInstruction.cop)){
-            $(".loading").hide();
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
@@ -2135,7 +1921,6 @@ window.app = new Vue({
 
       for (var i = 0; i < architecture.instructions.length; i++) {
         if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
-          $(".loading").hide();
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -2168,10 +1953,7 @@ window.app = new Vue({
       for (var i = 0; i < this.formInstruction.numfields; i++) {
         var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: parseInt(this.formInstruction.startBitField[i]), stopbit: parseInt(this.formInstruction.stopBitField[i])};
         architecture.instructions[architecture.instructions.length-1].fields.push(newField);
-      }
-
-      $(".loading").hide();
-      
+      }   
     },
 
     /*Muestra el modal de confirmacion de borrado de una instruccion*/
@@ -2223,7 +2005,6 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar instruccion*/
     editInstVerify(evt, inst, co, cop){
-      $(".loading").show();
       evt.preventDefault();
 
       var empty = 0;
@@ -2234,7 +2015,6 @@ window.app = new Vue({
           }
           else{
             if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-              $(".loading").hide();
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
@@ -2248,7 +2028,6 @@ window.app = new Vue({
 
             for (var i = 0; i < this.formInstruction.cop.length; i++) {
               if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
-                $(".loading").hide();
                 app._data.alertMessaje = 'The value of cop must be binary';
                 app._data.type ='danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
@@ -2266,7 +2045,6 @@ window.app = new Vue({
 
       for (var i = 0; i < this.formInstruction.co.length; i++) {
         if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-          $(".loading").hide();
           app._data.alertMessaje = 'The value of co must be binary';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -2285,7 +2063,6 @@ window.app = new Vue({
         }
       }
       if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-        $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2296,7 +2073,6 @@ window.app = new Vue({
         })
       }
       else if(isNaN(this.formInstruction.co)){
-        $(".loading").hide();
         app._data.alertMessaje = 'The field co must be numbers';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2307,7 +2083,6 @@ window.app = new Vue({
         })
       }
       else if(isNaN(this.formInstruction.cop)){
-        $(".loading").hide();
         app._data.alertMessaje = 'The field cop must be numbers';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2318,7 +2093,6 @@ window.app = new Vue({
         })
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-        $(".loading").hide();
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2346,7 +2120,6 @@ window.app = new Vue({
       for (var i = 0; i < architecture.instructions.length; i++) {
         if((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
           if(((!this.formInstruction.cop) || (exCop != true))){
-            $(".loading").hide();
             app._data.alertMessaje = 'The instruction already exists';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
@@ -2362,7 +2135,6 @@ window.app = new Vue({
 
       for (var i = 0; i < architecture.instructions.length && exCop == true ; i++) {
         if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
-          $(".loading").hide();
           app._data.alertMessaje = 'The instruction already exists';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -2429,8 +2201,6 @@ window.app = new Vue({
       })
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-      $(".loading").hide();
     },
 
     /*PAGINA DE PSEUDOINSTRUCCIONES*/
@@ -2549,7 +2319,6 @@ window.app = new Vue({
 
     /*Comprueba que estan todos los campos del formulario de editar instruccion*/
     editPseudoinstVerify(evt, inst, index){
-      $(".loading").show();
       evt.preventDefault();
 
       var vacio = 0;
@@ -2563,12 +2332,10 @@ window.app = new Vue({
       var result = this.pseudoDefValidator(inst, this.formPseudoinstruction.definition, this.formPseudoinstruction.nameField);
 
       if(result == -1){
-        $(".loading").hide();
         return;
       }
 
       if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
-        $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2619,13 +2386,10 @@ window.app = new Vue({
       if(architecture.pseudoinstructions[index].fields.length > this.formPseudoinstruction.numfields){
         architecture.pseudoinstructions[index].fields.splice(this.formPseudoinstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formPseudoinstruction.numfields));
       }
-
-      $(".loading").hide();
     },
 
     /*Comprueba que estan todos los campos del formulario de nueva pseudoinstruccion*/
     newPseudoinstVerify(evt){
-      $(".loading").show();
       evt.preventDefault();
 
       var vacio = 0;
@@ -2639,12 +2403,10 @@ window.app = new Vue({
       var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition, this.formPseudoinstruction.nameField);
 
       if(result == -1){
-        $(".loading").hide();
         return;
       }
 
       if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
-        $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -2676,8 +2438,6 @@ window.app = new Vue({
         var newField = {name: this.formPseudoinstruction.nameField[i], type: this.formPseudoinstruction.typeField[i], startbit: this.formPseudoinstruction.startBitField[i], stopbit: this.formPseudoinstruction.stopBitField[i]};
         architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(newField);
       }
-
-      $(".loading").hide();
     },
 
     pseudoDefValidator(name, definition, fields){
@@ -2696,9 +2456,6 @@ window.app = new Vue({
         while(code != null){
           console.log(code)
           var instructions = code[1].split(";");
-
-          console.log(instructions.length)
-
           if(instructions.length == 1){
             app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
             app._data.type ='danger';
@@ -2812,7 +2569,6 @@ window.app = new Vue({
 
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
-                      console.log(isNaN(parseInt(instructionParts[z], 16)))
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type ='danger';
@@ -3556,7 +3312,6 @@ window.app = new Vue({
     },
 
     assembly_save(){
-      $(".loading").show();
       var textToWrite = textarea_assembly_editor.getValue();
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
       var fileNameToSaveAs;
@@ -3580,20 +3335,14 @@ window.app = new Vue({
       document.body.appendChild(downloadLink);
 
       downloadLink.click();
-      $(".loading").hide();
     },
 
     library_save(){
-      $(".loading").show();
-
       if(this.assembly_compiler() == -1){
       	return;
-      };
-
-      console.log(instructions_binary);
+      }
 
       if(memory[memory_hash[0]].length != 0){
-        $(".loading").hide();
         app._data.alertMessaje = 'You can not enter data in a library';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -3610,7 +3359,6 @@ window.app = new Vue({
       for (var i = 0; i < instructions_binary.length; i++){
         console.log(instructions_binary[i].Label)
         if(instructions_binary[i].Label == "main_symbol"){
-          $(".loading").hide();
           app._data.alertMessaje = 'You can not use the "main" tag in a library';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -3651,7 +3399,6 @@ window.app = new Vue({
 
       downloadLink.click();
 
-      $(".loading").hide();
       app._data.alertMessaje = 'Save binary';
       app._data.type ='success';
       app.$bvToast.toast(app._data.alertMessaje, {
@@ -3665,7 +3412,6 @@ window.app = new Vue({
     },
 
     library_load(e){
-      $(".loading").show();
       var file;
       var reader;
       var files = document.getElementById('binary_file').files;
@@ -3679,9 +3425,7 @@ window.app = new Vue({
       function onFileLoaded(event) {
         code_binary = event.currentTarget.result;
       }
-
-      $(".loading").hide();
-     },
+    },
 
     library_update(){
       update_binary = JSON.parse(code_binary);
@@ -3792,9 +3536,6 @@ window.app = new Vue({
     /*Compilador*/
     assembly_compiler(){
       $(".loading").show();
-
-      /*console.log(this.$root)
-     	this.$root.$forceUpdate();*/
 
      	setTimeout(function(){
 	      instructions = [];
@@ -5537,13 +5278,6 @@ window.app = new Vue({
                       string = string + " " + token.substring(0, token.length-1);
                     }
 
-                    /*for(var z = 0; z < architecture.directives.length; z++){
-                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                        final = true;
-                        nextToken = 0;
-                      }
-                    }*/
-
                     if(final == false){
                       string = string + " " + token;
                       final = false;
@@ -5759,12 +5493,6 @@ window.app = new Vue({
                       }
                     }
 
-                    /*if(data_address % 4 != 0 && i == 0){
-                      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
-                      return -1;
-                    }*/
-
                     if(data_address % 4 == 0){
                       memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false});
 
@@ -5893,17 +5621,6 @@ window.app = new Vue({
                       }
                     }
                   }
-
-                  /*if(data_address % architecture.directives[j].size != 0 && i == 0 && architecture.directives[j].size < 4){
-                    this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
-                    return -1;
-                  }
-                  if(data_address % 4 != 0 && i == 0 && architecture.directives[j].size >= 4){
-                    this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
-                    return -1;
-                  }*/
 
                   if(data_address % 4 == 0){
                     memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string, DefValue: "", reset: false});
@@ -6253,6 +5970,9 @@ window.app = new Vue({
 
             definition = definition.replace(re, instructionParts[j]);
           }
+
+          re = new RegExp("\n","g");
+					definition = definition.replace(re, "");
 
           console.log(definition)
 
@@ -7238,7 +6958,6 @@ window.app = new Vue({
         console.log(architecture.components[0].elements[0].value)
 
         if(instructions.length == 0){
-          $(".loading").hide();
           app._data.alertMessaje = 'No instructions in memory';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -7254,7 +6973,6 @@ window.app = new Vue({
 
         /*Verifica que el programa no ha finalizado ya*/
         if(executionIndex < -1){
-          $(".loading").hide();
           app._data.alertMessaje = 'The program has finished';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -7268,7 +6986,6 @@ window.app = new Vue({
           return;
         }
         else if(executionIndex == -1){
-          $(".loading").hide();
           app._data.alertMessaje = 'The program has finished with errors';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -7295,7 +7012,6 @@ window.app = new Vue({
               break;
             }
             else if(i == instructions.length-1){
-              $(".loading").hide();
               app._data.alertMessaje = 'Label "main" not found';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
@@ -7375,9 +7091,6 @@ window.app = new Vue({
           }
 
           if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
-            //signatureParts = architecture.instructions[i].signature.split(',');
-            //signatureRawParts = architecture.instructions[i].signatureRaw.split(' ');
-
             type = architecture.instructions[i].type;
 
             signatureDef = architecture.instructions[i].signature_definition;
@@ -7810,8 +7523,6 @@ window.app = new Vue({
           auxDef = auxDef + "\n this.writeMemory(dir"+match[2]+",'"+match[2]+"','"+match[1]+"');"
         }
 
-        console.log("b");
-
         /*Replaces lectura en memoria por registro + desplazamiento*/
         re = /MP.([whb]).\((.*?)\)\)/;
         if (auxDef.search(re) != -1){
@@ -7822,7 +7533,6 @@ window.app = new Vue({
           re = /MP.[whb].\((.*?)\)\)/g;
           auxDef = auxDef.replace(re, "this.readMemory('0x"+auxDir.toString(16)+"', '"+match[1]+"')");
         }
-        console.log("c");
 
         /*Replaces lectura en memoria por direccion y etiqueta*/
         re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
@@ -7843,7 +7553,6 @@ window.app = new Vue({
             error = 1;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
-            $(".loading").hide();
             app._data.alertMessaje = 'The definition of the instruction contains errors, please review it';
             app._data.type ='danger';
             app.$bvToast.toast(app._data.alertMessaje, {
@@ -7854,7 +7563,6 @@ window.app = new Vue({
 		        })
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-            $(".loading").hide();
             return;
           }
         }
@@ -7872,8 +7580,6 @@ window.app = new Vue({
 
         
         if(executionIndex == -1){
-          console.log("-1");
-          $(".loading").hide();
           error = 1;
           return;
         }
@@ -7899,7 +7605,6 @@ window.app = new Vue({
             instructions[i]._rowVariant = '';
           }
 
-          $(".loading").hide();
           return;
         }
         else if(executionIndex >= instructions.length){
@@ -7908,7 +7613,6 @@ window.app = new Vue({
           }
 
           executionIndex = -2;
-          $(".loading").hide();
           app._data.alertMessaje = 'The execution of the program has finished';
           app._data.type ='success';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -7919,7 +7623,6 @@ window.app = new Vue({
 	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-          $(".loading").hide();
           return;
         }
         else{
@@ -7930,8 +7633,6 @@ window.app = new Vue({
         console.log(executionIndex)
       }
       while(instructions[executionIndex].hide == true);
-
-      $(".loading").hide();
     },
 
     /*Funcion que ejecuta todo el programa*/
@@ -7940,7 +7641,6 @@ window.app = new Vue({
       this.runExecution = false;
 
       if(instructions.length == 0){
-        $(".loading").hide();
         app._data.alertMessaje = 'No instructions in memory';
         app._data.type ='danger';
         app.$bvToast.toast(app._data.alertMessaje, {
@@ -7955,21 +7655,19 @@ window.app = new Vue({
       }
 
       if(executionIndex < -1){
-          $(".loading").hide();
           app._data.alertMessaje = 'The program has finished';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-					autoHideDelay: 1500,
-        })
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        })
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
         else if(executionIndex == -1){
-          $(".loading").hide();
           app._data.alertMessaje = 'The program has finished with errors';
           app._data.type ='danger';
           app.$bvToast.toast(app._data.alertMessaje, {
@@ -8020,7 +7718,6 @@ window.app = new Vue({
         setTimeout(this.programExecutionInst, 25);
       }
       else{
-      	console.log(executionIndex)
         $("#stopExecution").hide();
         $("#playExecution").show();
       }
@@ -8139,8 +7836,6 @@ window.app = new Vue({
         return;
       }
 
-      console.log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()))
-      //return architecture.components[indexComp].elements[indexElem].value;
       return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
     },
 
@@ -8183,7 +7878,6 @@ window.app = new Vue({
       }
 
       else if(architecture.components[indexComp].type =="floating point"){
-        console.log(architecture.components[indexComp].double_precision)
         if(architecture.components[indexComp].double_precision == false){
           /*Verifica que se puede escribir en el registro*/
           if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
@@ -8743,7 +8437,6 @@ window.app = new Vue({
     },
 
     writeStackLimit(stackLimit){
-    	console.log(stackLimit)
     	if(stackLimit != null){
     		if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
     			app._data.alertMessaje = 'Segmentation fault. You tried to write in the data segment';
@@ -8888,7 +8581,6 @@ window.app = new Vue({
 		          }
 
 		          executionIndex = -2;
-		          $(".loading").hide();
 		          app._data.alertMessaje = 'The execution of the program has finished';
 		          app._data.type ='success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
@@ -8899,7 +8591,6 @@ window.app = new Vue({
 			        })
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          $(".loading").hide();
 		          return;
 		        }
             break;
@@ -8931,7 +8622,6 @@ window.app = new Vue({
 		          }
 
 		          executionIndex = -2;
-		          $(".loading").hide();
 		          app._data.alertMessaje = 'The execution of the program has finished';
 		          app._data.type ='success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
@@ -8942,7 +8632,6 @@ window.app = new Vue({
 			        })
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          $(".loading").hide();
 		          return;
 		        }
             break;
@@ -8974,7 +8663,6 @@ window.app = new Vue({
 		          }
 
 		          executionIndex = -2;
-		          $(".loading").hide();
 		          app._data.alertMessaje = 'The execution of the program has finished';
 		          app._data.type ='success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
@@ -8985,7 +8673,6 @@ window.app = new Vue({
 			        })
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          $(".loading").hide();
 		          return;
 		        }
             break;
@@ -9109,7 +8796,6 @@ window.app = new Vue({
 			          }
 
 			          executionIndex = -2;
-			          $(".loading").hide();
 			          app._data.alertMessaje = 'The execution of the program has finished';
 			          app._data.type ='success';
 			          app.$bvToast.toast(app._data.alertMessaje, {
@@ -9120,7 +8806,6 @@ window.app = new Vue({
 				        })
 			          var date = new Date();
 			          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-			          $(".loading").hide();
 			          return;
 			        }
               return;
@@ -9155,7 +8840,6 @@ window.app = new Vue({
 		          }
 
 		          executionIndex = -2;
-		          $(".loading").hide();
 		          app._data.alertMessaje = 'The execution of the program has finished';
 		          app._data.type ='success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
@@ -9166,7 +8850,6 @@ window.app = new Vue({
 			        })
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          $(".loading").hide();
 		          return;
 		        }
 
@@ -9244,7 +8927,6 @@ window.app = new Vue({
 		          }
 
 		          executionIndex = -2;
-		          $(".loading").hide();
 		          app._data.alertMessaje = 'The execution of the program has finished';
 		          app._data.type ='success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
@@ -9255,7 +8937,6 @@ window.app = new Vue({
 			        })
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          $(".loading").hide();
 		          return;
 		        }
             break;
@@ -9541,7 +9222,6 @@ window.app = new Vue({
     },
 
     debounce: _.debounce(function (param, e) {
-    	console.log(e)
       eval("this." + param + "= '" + e + "'");
     }, getDebounceTime())
 
@@ -9559,8 +9239,7 @@ window.app = new Vue({
 
 /*Alerta al cerrar pagina web*/
 window.onbeforeunload = confirmExit;
-function confirmExit()
-{
+function confirmExit(){
   return "Ha intentado salir de esta pagina. Es posible que los cambios no se guarden.";
 }
 
@@ -9653,4 +9332,3 @@ Vue.config.errorHandler = function (err, vm, info) {
   	location.reload(true)
   }, 3000);
 }
-
