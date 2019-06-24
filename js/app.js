@@ -1,28 +1,49 @@
-/*Listado de arquitecturas disponibles*/
+/*
+ *  Copyright 2018-2019 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+
+/********************
+ * Global variables *
+ ********************/
+
+/*Architecture editor*/
+
+/*Available architectures*/
 var architecture_available = [];
-
-/*Listado de ejemplos disponibles*/
-var example_available = [];
-
-/*Almacena el color de fondo de cada card*/
-var back_card = [];
-
-/*Listado de arquitecturas cargadas*/
+/*New architectures*/
 var load_architectures_available = [];
 var load_architectures = [];
-
-/*tabla hash de la arquitectura*/
-var architecture_hash = [];
-
-/*Arquitectura cargada*/
+/*Architectures card background*/
+var back_card = [];
+/*Load architecture*/
 var architecture = {components:[], instructions:[], directives:[], memory_layout:[]};
-
+var architecture_hash = [];
+/*Components form select*/
 var componentsTypes = [
   { text: 'Integer', value: 'integer' },
   { text: 'Floating point', value: 'floating point' },
   { text: 'Control', value: 'control' },
-]
-
+];
+/*Intructions form select*/
 var instructionsTypes = [
   { text: 'Arithmetic integer', value: 'Arithmetic integer' },
   { text: 'Arithmetic floating point', value: 'Arithmetic floating point' },
@@ -37,8 +58,8 @@ var instructionsTypes = [
   { text: 'Conditional bifurcation', value: 'Conditional bifurcation' },
   { text: 'Unconditional bifurcation', value: 'Unconditional bifurcation' },
   { text: 'Other', value: 'Other' },
-]
-
+];
+/*Directives form select*/
 var actionTypes = [
   { text: 'Data Segment', value: 'data_segment' },
   { text: 'Code Segment', value: 'code_segment' },
@@ -53,65 +74,91 @@ var actionTypes = [
   { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
   { text: 'ASCII finished in null', value: 'ascii_null_end' },
   { text: 'Align', value: 'align' },
-]
-
-/*Mensajes de error compilador*/
-var compileError =[
-  {mess1: "Empty label", mess2: ""},
-  {mess1: "Repeated tag: ", mess2: ""},
-  {mess1: "Instruction '", mess2: "' not found"},
-  {mess1: "Incorrect signature --> ", mess2: ""},
-  {mess1: "Register '", mess2: "' not found"},
-  {mess1: "Immediate number '", mess2: "' is too big"},
-  {mess1: "Immediate number '", mess2: "' is not valid"},
-  {mess1: "Tag '", mess2: "' is not valid"},
-  {mess1: "Address '", mess2: "' is too big"},
-  {mess1: "Address '", mess2: "' is not valid"},
-  {mess1: "This field '", mess2: "' must start with a '('"},
-  {mess1: "This field '", mess2: "' must end with a ')'"},
-  {mess1: "This field is too small to encode in binary '", mess2: ""},
-  {mess1: "This field is too small to encode in binary '", mess2: ""},
-  {mess1: "Incorrect pseudoinstruction definition ", mess2: ""},
-  {mess1: "Invalid directive: ", mess2: ""},
-  {mess1: "Invalid data: ", mess2: " The data must be a number"}, 
-  {mess1: 'The string of characters must start with "', mess2: ""}, 
-  {mess1: "Number '", mess2: "' is too big"},
-  {mess1: "Number '", mess2: "' is empty"},
-  {mess1: "The text segment should start with '", mess2: "'"},
-  {mess1: "The data must be aligned", mess2: ""},
-  {mess1: "The number should be positive '", mess2: "'"},
-  {mess1: "Empty directive", mess2: ""},
-  {mess1: "After the comma you should go a blank --> ", mess2: ""},
 ];
 
 
 
-/*Estructuras instrucciones y memoria*/
+/*Compilator*/
+
+/*Assembly code textarea*/
+var code_assembly = '';
+/*Compilation index*/
+var tokenIndex = 0;
+/*Instructions memory address*/
+var address;
+/*Data memory address and data align*/
+var align = 0;
+var data_address;
+/*Stack memory address*/
+var stack_address;
+/*Backup memory address*/
+var backup_stack_address;
+var backup_data_address;
+/*Pending instructions and pending tags*/
+var pending_instructions = [];
+var pending_tags = [];
+/*Global functions*/
+var extern = [];
+/*Error code messages*/
+var compileError = [
+  { mess1: "Empty label", mess2: "" },
+  { mess1: "Repeated tag: ", mess2: "" },
+  { mess1: "Instruction '", mess2: "' not found" },
+  { mess1: "Incorrect signature --> ", mess2: "" },
+  { mess1: "Register '", mess2: "' not found" },
+  { mess1: "Immediate number '", mess2: "' is too big" },
+  { mess1: "Immediate number '", mess2: "' is not valid" },
+  { mess1: "Tag '", mess2: "' is not valid" },
+  { mess1: "Address '", mess2: "' is too big" },
+  { mess1: "Address '", mess2: "' is not valid" },
+  { mess1: "This field '", mess2: "' must start with a '('" },
+  { mess1: "This field '", mess2: "' must end with a ')'" },
+  { mess1: "This field is too small to encode in binary '", mess2: "" },
+  { mess1: "This field is too small to encode in binary '", mess2: "" },
+  { mess1: "Incorrect pseudoinstruction definition ", mess2: "" },
+  { mess1: "Invalid directive: ", mess2: "" },
+  { mess1: "Invalid data: ", mess2: " The data must be a number" }, 
+  { mess1: 'The string of characters must start with "', mess2: "" }, 
+  { mess1: "Number '", mess2: "' is too big" },
+  { mess1: "Number '", mess2: "' is empty" },
+  { mess1: "The text segment should start with '", mess2: "'" },
+  { mess1: "The data must be aligned", mess2: "" },
+  { mess1: "The number should be positive '", mess2: "'" },
+  { mess1: "Empty directive", mess2: "" },
+  { mess1: "After the comma you should go a blank --> ", mess2: "" },
+];
+
+
+
+/*Simulator*/
+
+/*Displayed notifications*/
+var notifications = [];
+/*Available examples*/
+var example_available = [];
+/*Execution*/
+var executionIndex = 0;
+var runExecution = false;
+var iter1 = 1;
+var executionInit = 1;
+/*Keyboard*/
+var consoleMutex = false;
+var mutexRead = false;
+var newExecution = true;
+/*Memory*/
 var memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
 var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
-var data_tag = [];
+/*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
 var instructions_binary = [];
+/*Data memory*/
 var data = [];
-
-/*Instrucciones pendientes de compilar o validar por la etiqueta*/
-var pending_instructions = [];
-var pending_tags = [];
-
-/*Direccion memoria*/
-/*Instrucciones*/
-var address;
-/*Datos*/
-var align = 0;
-var data_address;
-/*Pila*/
-var stack_address;
-var backup_stack_address;
-var backup_data_address;
-
-
-/*Estadisticas*/
+var data_tag = [];
+/*Binary*/
+var code_binary = '';
+var update_binary = '';
+/*Stats*/
 var totalStats = 0;
 var stats = [
   { type: 'Arithmetic integer', number_instructions: 0, percentage: 0, abbreviation: "AI" },
@@ -133,113 +180,83 @@ var stats = [
 
 
 
-/*Notificaciones mostradas*/
-var notifications = [];
-
-/*Indice de compilacion*/
-var tokenIndex = 0;
-
-/*Indice de ejecucion*/
-var runExecution = false;
-var executionIndex = 0;
-var iter1 = 1;
-var executionInit = 1;
-
-/*Escritura terminal finalizada*/
-var consoleMutex = false;
-var mutexRead = false;
-var newExecution = true;
-
-/*Variables que almacenan el codigo introducido*/
-var code_assembly = '';
-
-/*Variables que gestionan el binario*/
-var extern = [];
-var code_binary = '';
-var update_binary = '';
-
-function destroyClickedElement(event) {
-  document.body.removeChild(event.target);
-}
-
-function binaryStringToInt( b ) {
-    return parseInt(b, 2);
-}
+/****************
+ * Vue instance *
+ ****************/
 
 window.app = new Vue({
+
+	/*DOM ID*/
   el: "#app",
+
+
+  /*Vue data*/
   data: {
-    /*ALERTA GLOBAL*/
-    alertMessaje: '',
-    type: '',
+  	/*Architecture editor*/
 
-    /*ALERTA MODAL*/
-    dismissSecsMod: 3,
-    dismissCountDownMod: 0,
-
-    /*Todas las alertas*/
-    notifications: notifications,
-
-    /*PAGINA CARGA ARQUITECTURA*/
-    /*Modo avanzado*/
-    advanced_mode: true,
-    /*Configuraciones Disponibles*/
+  	/*Available architectures*/
     arch_available: architecture_available,
-    /*Background de cada uno de los cards del menu*/
+    /*Architectures card background*/
     back_card: back_card,
-    /*Fecha copia de seguidad*/
-    date_copy:'',
-    /*Mostrar modal nueva arquitectura*/
+		/*Backup date*/
+    date_copy: '',
+    /*New architecture modal*/
     showLoadArch: false,
-    /*Datos de la nueva arquitectura*/
+    /*New architecture form*/
     name_arch: '',
     description_arch: '',
     load_arch: '',
-    /*Borrado de una arquitectura*/
+    /*Delete architecture modal*/
     modalDeletArch:{
       title: '',
       index: 0,
     },
-    /*Nombre del fichero a guardar*/
-    name_arch_save: '',
-    /*Numero de bits de la arquitectura*/
+    /*Architecture name*/
+    architecture_name: '',
+    /*Architecture bits*/
     number_bits: 32,
-    /*Asingacion de la arquitectura empleada*/
+    /*Load architecture*/
     architecture: architecture,
-    /*Tabla hash arquitectura*/
     architecture_hash: architecture_hash,
-    /*Listado de tipos de componentes*/
-    componentsTypes:componentsTypes,
-    /*Listado de registros de coma flotante*/
-    simple_reg:[],
-    /*Campos de la tabla de componentes*/
-    archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
-    /*Edicion de la arquitectura*/
-    formArchitecture: {
-      name: '',
-      id: '',
-      type: '',
-      defValue: '',
-      properties: [],
-      precision: '',
+    /*Saved file name*/
+    name_arch_save: '',
+    /*Advanced mode*/
+    advanced_mode: true,
+    /*Memory layout form*/
+    memory_layout: ["", "", "", "", "", ""],
+    /*Memory layout reset*/
+    modalResetMem: {
+      title: '',
+      element: '',
     },
-
-    /*Reset de la arquitectura*/
+    /*Component table fields*/
+    archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
+    /*Components types*/
+    componentsTypes: componentsTypes,
+    /*Floating point registers*/
+    simple_reg: [],
+    /*Components reset*/
     modalResetArch: {
       title: '',
       element: '',
     },
-    /*Edicion de un componente*/
+    /*Modals components*/
+    showNewComponent: false,
+    showEditComponent: false,
+    /*Edit component modal*/
     modalEditComponent: {
       title: '',
       element: '',
     },
-    /*Borrado de un componente*/
+    /*Delete component modal*/
     modalDeletComp:{
       title: '',
       element: '',
     },
-    /*Nuevo elemento*/
+    /*Modals elements*/
+    showNewElement: false,
+    showEditElement: false,
+    /*New element modal*/
     modalNewElement:{
       title: '',
       element: '',
@@ -248,7 +265,7 @@ window.app = new Vue({
       simple1: '',
       simple2: '',
     },
-    /*Edicion de un elemento*/
+    /*Edit element modal*/
     modalEditElement:{
       title: '',
       element: '',
@@ -257,32 +274,56 @@ window.app = new Vue({
       simple1: '',
       simple2: '',
     },
-    /*Borrado de un elemento*/
+    /*Delete element modal*/
     modalDeletElement:{
       title: '',
       element: '',
     },
-    /*Nombre de la arquitectura*/
-    architecture_name: '',
-    /*Variables para mostrar modales*/
-    showNewComponent: false,
-    showEditComponent: false,
-    showNewElement: false,
-    showEditElement: false,
-
-    /*PAGINA MEMORY LAYOUT*/
-    /*Reset del memory layout*/
-    modalResetMem: {
+    /*Element form*/
+    formArchitecture: {
+      name: '',
+      id: '',
+      type: '',
+      defValue: '',
+      properties: [],
+      precision: '',
+    },
+    /*Instructions table fields*/
+    instFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+    /*Instructions types*/
+    instructionsTypes: instructionsTypes,
+    /*Instructions fields*/
+    modalViewFields:{
+      title: '',
+      element: '',
+      co: '',
+      cop: '',
+    },
+    /*Instructions reset*/
+    modalResetInst:{
       title: '',
       element: '',
     },
-
-    memory_layout: ["", "", "", "", "", ""],
-
-
-    /*PAGINA DE INSTRUCCIONES*/
-    instFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
-    /*Edicion de las instrucciones*/
+    /*Modals instructions*/
+    showNewInstruction: false,
+    showEditInstruction: false,
+    /*Modal pagination*/
+    instructionFormPage: 1,
+    instructionFormPageLink: ['#Principal', '#Fields', '#Signature', '#Definition'],
+    /*Edit instruction modal*/
+    modalEditInst:{
+      title: '',
+      element: '',
+      co: '',
+      cop: '',
+    },
+    /*Delete instruction modal*/
+    modalDeletInst:{
+      title: '',
+      element: '',
+      index: 0,
+    },
+    /*Instruction form*/
     formInstruction: {
       name: '',
       type: '',
@@ -295,52 +336,34 @@ window.app = new Vue({
       startBitField: [],
       stopBitField: [],
       assignedCop: false,
-      signature:'',
+      signature: '',
       signatureRaw: '',
       signature_definition: '',
       definition: '',
     },
-    /*Tipos de instrucciones*/
-    instructionsTypes: instructionsTypes,
-    /*Barra de paginas formulario instrucciones*/
-    instructionFormPage: 1,
-    instructionFormPageLink: ['#Principal', '#Fields', '#Signature', '#Definition'],
-    /*Variables para el selector de campos tabla*/
-    instSel: '',
-    /*Reset de las instrucciones*/
-    modalResetInst:{
+    /*Pseudoinstructions table fields*/
+    pseudoinstFields: ['name', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+    /*Pseudoinstructions reset*/
+    modalResetPseudoinst:{
       title: '',
       element: '',
     },
-    /*Borrado de una instruccion*/
-    modalDeletInst:{
+    /*Modals pseudoinstructions*/
+    showNewPseudoinstruction: false,
+    showEditPseudoinstruction: false,
+    /*Edit pseudoinstruction modal*/
+    modalEditPseudoinst:{
       title: '',
       element: '',
       index: 0,
     },
-    /*Edicion de una instruccion*/
-    modalEditInst:{
+    /*Delete pseudoinstruction modal*/
+    modalDeletPseudoinst:{
       title: '',
       element: '',
-      co: '',
-      cop: '',
+      index: 0,
     },
-    /*Campos instruccion*/
-    modalViewFields:{
-      title: '',
-      element: '',
-      co: '',
-      cop: '',
-    },
-
-    /*Mostrar modal*/
-    showNewInstruction: false,
-    showEditInstruction: false,
-
-
-    /*PAGINA DE PSEUDOINSTRUCCIONES*/
-    pseudoinstFields: ['name', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
-    /*Edicion de las instrucciones*/
+    /*Pseudoinstruction form*/
     formPseudoinstruction: {
       name: '',
       nwords: 1,
@@ -349,93 +372,75 @@ window.app = new Vue({
       typeField: [],
       startBitField: [],
       stopBitField: [],
-      signature:'',
+      signature: '',
       signatureRaw: '',
       signature_definition: '',
       definition: '',
     },
-    /*Reset de las instrucciones*/
-    modalResetPseudoinst:{
+    /*Directives table fields*/
+    directivesFields: ['name', 'action', 'size', 'actions'],
+    /*Directives types*/
+    actionTypes: actionTypes,
+    /*Directives reset*/
+    modalResetDir: {
       title: '',
       element: '',
     },
-    /*Borrado de una instruccion*/
-    modalDeletPseudoinst:{
-      title: '',
-      element: '',
-      index: 0,
-    },
-    /*Edicion de una instruccion*/
-    modalEditPseudoinst:{
-      title: '',
-      element: '',
-      index: 0,
-    },
-
-    /*PAGINA DE DIRECTIVAS*/
-    /*Mostrar modal*/
+    /*Modals directives*/
     showNewDirective: false,
     showEditDirective: false,
-
-    directivesFields: ['name', 'action', 'size', 'actions'],
-
+    /*Edit directive modal*/
+    modalEditDirective:{
+      title: '',
+      element: '',
+    },
+    /*Delete pseudoinstruction modal*/
+    modalDeletDir:{
+      title: '',
+      element: '',
+    },
+    /*Directive form*/
     formDirective:{
       name: '',
       action: '',
       size: 0,
     },
-    /*Reset de la arquitectura*/
-    modalResetDir: {
-      title: '',
-      element: '',
-    },
-    modalDeletDir:{
-      title: '',
-      element: '',
-    },
-    /*Listado de tipos de componentes*/
-    actionTypes:actionTypes,
-
-    modalEditDirective:{
-      title: '',
-      element: '',
-    },
-
-    /*Mostrar modal*/
-    showNewPseudoinstruction: false,
-    showEditPseudoinstruction: false,
+    
 
 
-    /*MEMORIA*/
-    /*Campos tabla memoria*/
-    memFields: ['Address', 'Binary', 'Value'],
-    /*Asignacion de valores de la tabla de memoria*/
-    memory: memory,
-
-    /*CARGA Y LECTURA ENSAMBLADOR*/
-    /*Variables donde se guardan los ficheros cargados*/
+    /*Compilator*/
+    
+    /*Available examples*/
+    example_available: example_available,
+    
     load_assembly: '',
-    /*Variables donde se guardan los nombre de los ficheros guardados*/
+    /*Saved file name*/
     save_assembly: '',
-    /*Modal error compilacion*/
+    /*Code error modal*/
     modalAssemblyError:{
       code1: '',
       code2: '',
       code3: '',
-      error:'',
+      error: '',
     },
-    /*Binario cargado*/
-    memFields: ['Address', 'Binary', 'Value'],
+    /*Binary code loaded*/
+    name_binary_load: '',
+    /*Load binary*/
     load_binary: false,
     update_binary: update_binary,
-    /*Nombre del fichero binario a guardar*/
+    /*Saved file name*/
     name_binary_save: '',
-    /*Nombre del fichero binario a cargar*/
-    name_binary_load: '',
+    
 
+    
+    /*Simulator*/
 
-    /*PAGINA SIMULADOR*/
-    /*Calculadora*/
+    /*Alert toasts content*/
+    alertMessaje: '',
+    type: '',
+    /*Displayed notifications*/
+    notifications: notifications,
+    /*Calculator*/
     calculator: {
       bits: 32,
       hexadecimal: "",
@@ -452,23 +457,24 @@ window.app = new Vue({
       lengthExponent: 8,
       lengthMantissa: 23,
     },
-
-
-
-
-    /*Boton run o stop*/
+    /*Run button*/
     runExecution: false,
-    /*Tag registros*/
+    /*Instrutions table fields*/
+    archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
+    /*Instructions memory*/
+    instructions: instructions,
+		/*Register type displayed*/
+    register_type: 'integer',
+    /*Register select*/
     nameTabReg: 'Decimal',
     nameReg: 'INT Registers',
-    /*Ejemplos Disponibles*/
-    example_available: example_available,
-    /*Nuevo valor del registro*/
+    /*Register form*/
     newValue: '',
-    /*Registros a mostrar*/
-    register_type: 'integer',
-    /*Estadisticas*/
-    stats: stats,
+    /*Memory table fields*/
+    memFields: ['Address', 'Binary', 'Value'],
+    /*Memory*/
+    memory: memory,
+    /*Stats table fields*/
     statsFields: {
       type: {
         label: 'Type',
@@ -487,75 +493,43 @@ window.app = new Vue({
         sortable: false
       },
     },
-
-    /*Consola*/
+    /*Stats*/
+    stats: stats,
+    /*Display*/
     display: '',
-    keyboard: '',
-    /*Asignacion de valores de la tabla de instrucciones*/
-    archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
-    instructions: instructions,
-    
+    /*Keyboard*/
+    keyboard: '', 
   },
-  computed: {
-    
+
+
+  /*Created vue instance*/
+  created(){
+    this.load_arch_available();
+    this.load_examples_available();
   },
+
+
+  /*Mounted vue instance*/
+  mounted(){
+    this.backupCopyModal();
+  },
+
+
+  /*Vue methods*/
   methods:{
+  	/*Architecture editor*/
 
-  	/*Filtro tala instrucciones*/
-    filter(row, filter){
-      if(row.hide == true){
-        return false;
-      }
-      else{
-        return true;
-      }
-    },
-
-    /*Nombres de barra de paginacion*/
-    linkGen (pageNum) {
-      return this.instructionFormPageLink[pageNum - 1]
-    },
-    pageGen (pageNum) {
-      return this.instructionFormPageLink[pageNum - 1].slice(1)
-    },
-
-    /*VALIDADOR FORMULARIOS*/
-    valid(value){
-      for (var i = 0; i <this.formInstruction.typeField.length; i++) {
-        if(this.formInstruction.typeField[i]=='cop'){
-          this.formInstruction.assignedCop = true;
-          break;
-        }
-        if(i == this.formInstruction.typeField.length-1){
-          this.formInstruction.assignedCop = false;
-        }
-      }
-
-      if(parseInt(value) != 0){
-        if(!value){
-          return false;
-        }
-        else{
-          return true;
-        }
-      }
-      else{
-        return true;
-      }
-    },
-
-    /*PAGINA CARGA ARQUITECTURA*/
-    /*Carga las arquitecturas que hay disponibles y comprueba si hay una copia de seguridad*/
+  	/*Load the available architectures and check if exists backup*/
     load_arch_available(){
       $.getJSON('architecture/available_arch.json', function(cfg){
         architecture_available = cfg;
         
-        if (typeof(Storage) !== "undefined") {
+        if (typeof(Storage) !== "undefined"){
           if(localStorage.getItem("load_architectures_available") != null){
             var auxArch = localStorage.getItem("load_architectures_available");
             var aux = JSON.parse(auxArch);
 
-            for (var i = 0; i < aux.length; i++) {
+            for (var i = 0; i < aux.length; i++){
               architecture_available.push(aux[i]);
               load_architectures_available.push(aux[i]);
 
@@ -568,16 +542,15 @@ window.app = new Vue({
 
         app._data.arch_available = architecture_available;
 
-        for (var i = 0; i < architecture_available.length; i++) {
+        for (var i = 0; i < architecture_available.length; i++){
           back_card.push({name: architecture_available[i].name , background: "default"});
         }
-      })
+      });
     },
-
-    /*Cambia el background del card seleccionado*/
+    /*Change the background of selected achitecture card*/
     change_background(name, type){
       if(type == 1){
-        for (var i = 0; i < back_card.length; i++) {
+        for (var i = 0; i < back_card.length; i++){
           if(name == back_card[i].name){
             back_card[i].background = "secondary";
           }
@@ -587,23 +560,21 @@ window.app = new Vue({
         }
       }
       if(type == 0){
-        for (var i = 0; i < back_card.length; i++) {
+        for (var i = 0; i < back_card.length; i++){
           back_card[i].background = "default";
         }
       }
     },
-
-    /*Muestra modal si hay copia de seguridad*/
+    /*Show backup modal*/
     backupCopyModal(){
-      if (typeof(Storage) !== "undefined") {
+      if (typeof(Storage) !== "undefined"){
         if(localStorage.getItem("architecture_copy") != null && localStorage.getItem("assembly_copy") != null && localStorage.getItem("date_copy") != null){
-          this.date_copy = localStorage.getItem("date_copy")
+          this.date_copy = localStorage.getItem("date_copy");
           this.$refs.copyRef.show();
         }
       }
     },
-
-    /*Carga la copia de seguridad*/
+    /*Load backup*/
     load_copy(){
       this.architecture_name = localStorage.getItem("arch_name");
       
@@ -614,7 +585,7 @@ window.app = new Vue({
       textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
 
       architecture_hash = [];
-      for (var i = 0; i < architecture.components.length; i++) {
+      for (var i = 0; i < architecture.components.length; i++){
         architecture_hash.push({name: architecture.components[i].name, index: i}); 
         app._data.architecture_hash = architecture_hash;
       }
@@ -638,32 +609,28 @@ window.app = new Vue({
       this.$refs.copyRef.hide();
 
       app._data.alertMessaje = 'The backup has been loaded correctly';
-      app._data.type ='success';
+      app._data.type = 'success';
       app.$bvToast.toast(app._data.alertMessaje, {
         variant: app._data.type,
         solid: true,
         toaster: "b-toaster-top-center",
         autoHideDelay: 1500,
-      })
+      });
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
-
-    /*Elimina la copia de seguridad*/
+    /*Delete backup*/
     remove_copy(){
       localStorage.removeItem("architecture_copy");
       localStorage.removeItem("assembly_copy");
       localStorage.removeItem("date_copy");
-
       this.$refs.copyRef.hide();
     },
-
-    /*Carga la arquitectura seleccionada*/
+    /*Load the selected architecture*/
     load_arch_select(e){
-
       $(".loading").show();
 
-      for (var i = 0; i < load_architectures.length; i++) {
+      for (var i = 0; i < load_architectures.length; i++){
         if(e == load_architectures[i].id){
           var auxArchitecture = JSON.parse(load_architectures[i].architecture);
           architecture = bigInt_deserialize(auxArchitecture);
@@ -671,7 +638,7 @@ window.app = new Vue({
           app._data.architecture = architecture;
 
           architecture_hash = [];
-          for (var i = 0; i < architecture.components.length; i++) {
+          for (var i = 0; i < architecture.components.length; i++){
             architecture_hash.push({name: architecture.components[i].name, index: i}); 
             app._data.architecture_hash = architecture_hash;
           }
@@ -694,13 +661,13 @@ window.app = new Vue({
           $(".loading").hide();
 
           app._data.alertMessaje = 'The selected architecture has been loaded correctly';
-          app._data.type ='success';
+          app._data.type = 'success';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -714,7 +681,7 @@ window.app = new Vue({
         app._data.architecture = architecture;
 
         architecture_hash = [];
-        for (var i = 0; i < architecture.components.length; i++) {
+        for (var i = 0; i < architecture.components.length; i++){
           architecture_hash.push({name: architecture.components[i].name, index: i}); 
           app._data.architecture_hash = architecture_hash;
         }
@@ -737,15 +704,13 @@ window.app = new Vue({
         $(".loading").hide();
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
-        app._data.type ='success';
-        
+        app._data.type = 'success';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
-
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       })
@@ -753,19 +718,18 @@ window.app = new Vue({
       .fail(function() {
         $(".loading").hide();
         app._data.alertMessaje = 'The selected architecture is not currently available';
-        app._data.type ='info';
+        app._data.type = 'info';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
-
-    /*Lectura del JSON de la arquitectura seleccionada*/
+    /*Read the JSON of new architecture*/
     read_arch(e){
       $(".loading").show();
 
@@ -773,13 +737,13 @@ window.app = new Vue({
       if(!this.name_arch || !this.load_arch){
         $(".loading").hide();
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         return;
       }
 
@@ -789,22 +753,20 @@ window.app = new Vue({
       var reader;
       var files = document.getElementById('arch_file').files;
 
-      for (var i = 0; i < files.length; i++) {
+      for (var i = 0; i < files.length; i++){
         file = files[i];
         reader = new FileReader();
         reader.onloadend = onFileLoaded;
         reader.readAsBinaryString(file);
       }
 
-      function onFileLoaded(event) {
+      function onFileLoaded(event){
         architecture_available.push({name: app._data.name_arch, img: "./images/personalized_logo.png", alt: app._data.name_arch + " logo" , id:"select_conf"+app._data.name_arch , description: app._data.description_arch});
         load_architectures_available.push({name: app._data.name_arch, img: "./images/personalized_logo.png", alt: app._data.name_arch + " logo" , id:"select_conf"+app._data.name_arch , description: app._data.description_arch});
-
         back_card.push({name: architecture_available[architecture_available.length-1].name , background: "default"});
-
         load_architectures.push({id: app._data.name_arch, architecture: event.currentTarget.result});
 
-        if (typeof(Storage) !== "undefined") {
+        if (typeof(Storage) !== "undefined"){
           var auxArch = JSON.stringify(load_architectures, null, 2);
           localStorage.setItem("load_architectures", auxArch);
 
@@ -813,13 +775,13 @@ window.app = new Vue({
         }
 
         app._data.alertMessaje = 'The selected architecture has been loaded correctly';
-        app._data.type ='success';
+        app._data.type = 'success';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});
         
@@ -830,18 +792,57 @@ window.app = new Vue({
         $(".loading").hide();
       }
     },
-
-    /*Cambia el modo actual*/
-    change_mode(){
-      if(app._data.advanced_mode == false){
-        app._data.advanced_mode = true;
+    /*Check if it is a new architecture*/
+    default_arch(item){
+      for (var i = 0; i < load_architectures_available.length; i++) {
+        if(load_architectures_available[i].name == item){
+          return true;
+        }
       }
-      else{
-        app._data.advanced_mode = false;
-      }
+      return false;
     },
+    /*Show remove architecture modal*/
+    modal_remove_cache_arch(index, elem, button){
+      this.modalDeletArch.title = "Delete Architecture";
+      this.modalDeletArch.index = index;
+      this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
+    },
+    /*Remove architecture*/
+    remove_cache_arch(index){
+      var id = architecture_available[index].name;
 
-    /*Guarda la arquitectura actual en un JSON*/
+      for (var i = 0; i < load_architectures.length; i++){
+        if(load_architectures[i].id == id){
+          load_architectures.splice(i, 1);
+        }
+      }
+
+      for (var i = 0; i < load_architectures_available.length; i++){
+        if(load_architectures_available[i].name == id){
+          load_architectures_available.splice(i, 1);
+        }
+      }
+
+      architecture_available.splice(index, 1);
+
+      var auxArch = JSON.stringify(load_architectures, null, 2);
+      localStorage.setItem("load_architectures", auxArch);
+
+      auxArch = JSON.stringify(load_architectures_available, null, 2);
+      localStorage.setItem("load_architectures_available", auxArch);
+
+      app._data.alertMessaje = 'Architecture deleted successfully';
+      app._data.type = 'success';
+      app.$bvToast.toast(app._data.alertMessaje, {
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+				autoHideDelay: 1500,
+      });
+      var date = new Date();
+      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+    },
+    /*Save the current architecture in a JSON file*/
     arch_save(){
       var auxObject = jQuery.extend(true, {}, architecture);
       var auxArchitecture = bigInt_serialize(auxObject);
@@ -871,162 +872,36 @@ window.app = new Vue({
       downloadLink.click();
 
       app._data.alertMessaje = 'Save architecture';
-      app._data.type ='success';
+      app._data.type = 'success';
       app.$bvToast.toast(app._data.alertMessaje, {
         variant: app._data.type,
         solid: true,
         toaster: "b-toaster-top-center",
 				autoHideDelay: 1500,
-      })
+      });
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
-
-    modal_remove_cache_arch(index, elem, button){
-      this.modalDeletArch.title = "Delete Architecture";
-      this.modalDeletArch.index = index;
-      this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
+    /*Change the execution mode of architecture editor*/
+    change_mode(){
+      if(app._data.advanced_mode == false){
+        app._data.advanced_mode = true;
+      }
+      else{
+        app._data.advanced_mode = false;
+      }
     },
-
-    remove_cache_arch(index){
-
-      var id = architecture_available[index].name;
-
-      for (var i = 0; i < load_architectures.length; i++) {
-        if(load_architectures[i].id == id){
-          load_architectures.splice(i, 1);
-        }
-      }
-
-      for (var i = 0; i < load_architectures_available.length; i++) {
-        if(load_architectures_available[i].name == id){
-          load_architectures_available.splice(i, 1);
-        }
-      }
-
-      architecture_available.splice(index, 1);
-
-      var auxArch = JSON.stringify(load_architectures, null, 2);
-      localStorage.setItem("load_architectures", auxArch);
-
-      auxArch = JSON.stringify(load_architectures_available, null, 2);
-      localStorage.setItem("load_architectures_available", auxArch);
-
-      app._data.alertMessaje = 'Architecture deleted successfully';
-      app._data.type ='success';
-      app.$bvToast.toast(app._data.alertMessaje, {
-        variant: app._data.type,
-        solid: true,
-        toaster: "b-toaster-top-center",
-				autoHideDelay: 1500,
-      })
-      var date = new Date();
-      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-    },
-
-    default_arch(item){
-      for (var i = 0; i < load_architectures_available.length; i++) {
-        if(load_architectures_available[i].name == item){
-          return true;
-        }
-      }
-      return false;
-    },
-
-    /*Verifica los cambios del memory layout*/
-    changeMemoryLayout(){
-
-      var auxMemoryLayout = jQuery.extend(true, {}, architecture.memory_layout);
-
-      for(var i = 0; i < this.memory_layout.length; i++){
-        if(this.memory_layout[i] != "" && this.memory_layout[i] != null){
-          if(!isNaN(parseInt(this.memory_layout[i]))){
-            auxMemoryLayout[i].value = parseInt(this.memory_layout[i]);
-            if(auxMemoryLayout[i].value < 0){
-		          app._data.alertMessaje = 'The value can not be negative';
-		          app._data.type ='danger';
-		          app.$bvToast.toast(app._data.alertMessaje, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-								autoHideDelay: 1500,
-			        })
-		          var date = new Date();
-		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          return;
-		        }
-		        app._data.memory_layout[i] = "";
-          }
-          else{
-            app._data.alertMessaje = 'The value must be a number';
-            app._data.type ='danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-		          variant: app._data.type,
-		          solid: true,
-		          toaster: "b-toaster-top-center",
-							autoHideDelay: 1500,
-		        })
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-            return;
-          }
-        }
-      }
-
-      for(var i = 0; i < 6; i++){
-        if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
-          app._data.alertMessaje = 'The memory must be align';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-	        var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-          return;
-        }
-
-        for(var j = i; j < 6; j++){
-          if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
-            app._data.alertMessaje = 'The segment can not be overlap';
-            app._data.type ='danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-		          variant: app._data.type,
-		          solid: true,
-		          toaster: "b-toaster-top-center",
-							autoHideDelay: 1500,
-		        })
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-            return;
-          }
-        }
-      }
-
-      for(var i = 0; i < 6; i++){
-        architecture.memory_layout[i].value = auxMemoryLayout[i].value;
-      }
-
-      app._data.architecture = architecture;
-
-      backup_stack_address = architecture.memory_layout[4].value;
-	    backup_data_address = architecture.memory_layout[3].value;
-    },
-
-    /*Modal de alerta de reset*/
+    /*Show reset modal of memory layout*/
     resetMemModal(elem, button){
       this.modalResetMem.title = "Reset memory layout";
       this.modalResetMem.element = elem;
       this.$root.$emit('bv::show::modal', 'modalResetMem', button);
     },
-
-    /*Resetea la arquitectura*/
+    /*Reset memory layout*/
     resetMemory(arch){
       $(".loading").show();
 
-      for (var i = 0; i < load_architectures.length; i++) {
+      for (var i = 0; i < load_architectures.length; i++){
         if(arch == load_architectures[i].id){
           var auxArch = JSON.parse(load_architectures[i].architecture);
           var auxArchitecture = bigInt_deserialize(auxArch);
@@ -1036,7 +911,7 @@ window.app = new Vue({
 
           $(".loading").hide();
           app._data.alertMessaje = 'The memory layout has been reset correctly';
-          app._data.type ='success';
+          app._data.type = 'success';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
@@ -1059,7 +934,7 @@ window.app = new Vue({
 
         $(".loading").hide();
         app._data.alertMessaje = 'The memory layout has been reset correctly';
-        app._data.type ='success';
+        app._data.type = 'success';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
@@ -1070,17 +945,91 @@ window.app = new Vue({
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
+    /*Check de memory layout changes*/
+    changeMemoryLayout(){
+      var auxMemoryLayout = jQuery.extend(true, {}, architecture.memory_layout);
 
-    emptyFormArch(){
-      this.formArchitecture.name = '';
-      this.formArchitecture.id = '';
-      this.formArchitecture.type = '';
-      this.formArchitecture.defValue = '';
-      this.formArchitecture.properties = [];
-      this.formArchitecture.precision = '';
+      for(var i = 0; i < this.memory_layout.length; i++){
+        if(this.memory_layout[i] != "" && this.memory_layout[i] != null){
+          if(!isNaN(parseInt(this.memory_layout[i]))){
+            auxMemoryLayout[i].value = parseInt(this.memory_layout[i]);
+            if(auxMemoryLayout[i].value < 0){
+		          app._data.alertMessaje = 'The value can not be negative';
+		          app._data.type = 'danger';
+		          app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        });
+		          var date = new Date();
+		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		          
+		          return;
+		        }
+		        app._data.memory_layout[i] = "";
+          }
+          else{
+            app._data.alertMessaje = 'The value must be a number';
+            app._data.type = 'danger';
+            app.$bvToast.toast(app._data.alertMessaje, {
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        });
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            
+            return;
+          }
+        }
+      }
+
+      for(var i = 0; i < 6; i++){
+        if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
+          app._data.alertMessaje = 'The memory must be align';
+          app._data.type = 'danger';
+          app.$bvToast.toast(app._data.alertMessaje, {
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        });
+	        var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          
+          return;
+        }
+
+        for(var j = i; j < 6; j++){
+          if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
+            app._data.alertMessaje = 'The segment can not be overlap';
+            app._data.type ='danger';
+            app.$bvToast.toast(app._data.alertMessaje, {
+		          variant: app._data.type,
+		          solid: true,
+		          toaster: "b-toaster-top-center",
+							autoHideDelay: 1500,
+		        });
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            
+            return;
+          }
+        }
+      }
+
+      for(var i = 0; i < 6; i++){
+        architecture.memory_layout[i].value = auxMemoryLayout[i].value;
+      }
+
+      app._data.architecture = architecture;
+
+      backup_stack_address = architecture.memory_layout[4].value;
+	    backup_data_address = architecture.memory_layout[3].value;
     },
-
-    /*Asigna id a los registros*/
+    /*Register ID assigment*/
     element_id(name, type, double){
       var id = 0;
       for(var i = 0; i < architecture.components.length; i++){
@@ -1094,19 +1043,17 @@ window.app = new Vue({
         }
       }
     },
-
-    /*Modal de alerta de reset*/
+    /*Show reset modal of components*/
     resetArchModal(elem, button){
       this.modalResetArch.title = "Reset " + elem + " registers";
       this.modalResetArch.element = elem;
       this.$root.$emit('bv::show::modal', 'modalResetArch', button);
     },
-
-    /*Resetea la arquitectura*/
+    /*Reset components*/
     resetArchitecture(arch){
       $(".loading").show();
 
-      for (var i = 0; i < load_architectures.length; i++) {
+      for (var i = 0; i < load_architectures.length; i++){
         if(arch == load_architectures[i].id){
           var auxArch = JSON.parse(load_architectures[i].architecture);
           var auxArchitecture = bigInt_deserialize(auxArch);
@@ -1122,13 +1069,13 @@ window.app = new Vue({
 
           $(".loading").hide();
           app._data.alertMessaje = 'The registers has been reset correctly';
-          app._data.type ='success';
+          app._data.type = 'success';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -1145,63 +1092,53 @@ window.app = new Vue({
         app._data.architecture = architecture;
 
         architecture_hash = [];
-        for (var i = 0; i < architecture.components.length; i++) {
+        for (var i = 0; i < architecture.components.length; i++){
           architecture_hash.push({name: architecture.components[i].name, index: i}); 
           app._data.architecture_hash = architecture_hash;
         }
 
         $(".loading").hide();
         app._data.alertMessaje = 'The registers has been reset correctly';
-        app._data.type ='success';
+        app._data.type = 'success';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
-
-    emptyFormArch(){
-      this.formArchitecture.name = '';
-      this.formArchitecture.id = '';
-      this.formArchitecture.type = '';
-      this.formArchitecture.defValue = '';
-      this.formArchitecture.properties = [];
-      this.formArchitecture.precision = '';
-    },
-
-    /*Comprueba que estan todos los campos del formulario de nuevo componente*/
+    /*Verify all field of new component*/
     newComponentVerify(evt){
       evt.preventDefault();
-      if (!this.formArchitecture.name || !this.formArchitecture.type) {
+      if (!this.formArchitecture.name || !this.formArchitecture.type){
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
-      } else {
-        this.newComponent()
+        });
+      } 
+      else{
+        this.newComponent();
       }
     },
-
-    /*Crea un nuevo componente*/
+    /*Create a new component*/
     newComponent(){
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         if(this.formArchitecture.name == architecture_hash[i].name){
           app._data.alertMessaje = 'The component already exists';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return;
         }
       }
@@ -1218,73 +1155,65 @@ window.app = new Vue({
       var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
       architecture_hash.push(newComponentHash);
     },
-
-    /*Muestra el modal para editar un componente*/
+    /*Show edit component modal*/
     editCompModal(comp, index, button){
-      app._data.dismissCountDownMod = 0;
-
       this.modalEditComponent.title = "Edit Component";
       this.modalEditComponent.element = comp;
-
       this.formArchitecture.name = comp;
-
       this.$root.$emit('bv::show::modal', 'modalEditComponent', button);
     },
-
-    /*Comprueba que estan todos los campos del formulario de editar component*/
+    /*Verify all field of modified component*/
     editCompVerify(evt, comp){
       evt.preventDefault();
-      if (!this.formArchitecture.name) {
+      if (!this.formArchitecture.name){
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
-      } else {
+        });
+      } 
+      else {
         this.editComponent(comp);
       }
     },
-
-    /*Edita un componente*/
+    /*Edit the component*/
     editComponent(comp){
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         if((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
           app._data.alertMessaje = 'The component already exists';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return;
         }
       }
 
       this.showEditComponent = false;
 
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         if(comp == architecture_hash[i].name){
           architecture_hash[i].name = this.formArchitecture.name;
           architecture.components[i].name = this.formArchitecture.name;
         }
       }
-      this.formArchitecture.name='';
+      this.formArchitecture.name ='';
     },
-
-    /*Muestra el modal de confirmacion de borrado de un componente*/
+    /*Show delete component modal*/
     delCompModal(elem, button){
       this.modalDeletComp.title = "Delete Component";
       this.modalDeletComp.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletComp', button);
     },
-
-    /*Borra un componente*/
+    /*Delete the component*/
     delComponent(comp){
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         if(comp == architecture_hash[i].name){
           architecture.components.splice(i,1);
           architecture_hash.splice(i,1);
@@ -1294,11 +1223,8 @@ window.app = new Vue({
         }
       }
     },
-
-    /*Muestra el modal para nuevo un elemento*/
+    /*Show new element modal*/
     newElemModal(comp, index, button){
-      app._data.dismissCountDownMod = 0;
-
       this.modalNewElement.title = "New element";
       this.modalNewElement.element = comp;
       this.modalNewElement.type = architecture.components[index].type;
@@ -1307,9 +1233,9 @@ window.app = new Vue({
       this.$root.$emit('bv::show::modal', 'modalNewElement', button);
 
       app._data.simple_reg = [];
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-          app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},)
+          app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
         }
       }
 
@@ -1326,60 +1252,58 @@ window.app = new Vue({
         }
       }
     },
-
-    /*Comprueba que estan todos los campos del formulario de nuevo elemento*/
+    /*Verify all field of new element*/
     newElementVerify(evt, comp){
       evt.preventDefault();
-      if (!this.formArchitecture.name) {
+      if (!this.formArchitecture.name){
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       } 
-      else {
+      else{
         if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
           app._data.alertMessaje = 'Please complete all fields';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
         }
         else if(isNaN(this.formArchitecture.defValue)){
           app._data.alertMessaje = 'The default value must be a number';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
         }
         else{
           this.newElement(comp);
         }
       }
     },
-
-    /*Crea un nuevo elemento*/
+    /*Create a new element*/
     newElement(comp){
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if(this.formArchitecture.name == architecture.components[i].elements[j].name){
             app._data.alertMessaje = 'The element already exists';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             return;
           }
         } 
@@ -1387,7 +1311,7 @@ window.app = new Vue({
 
       this.showNewElement = false;
 
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
           var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
           architecture.components[i].elements.push(newElement);
@@ -1405,12 +1329,11 @@ window.app = new Vue({
         }
         if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
           var aux_new;
-
           var aux_value;
           var aux_sim1;
           var aux_sim2;
 
-          for (var a = 0; a < architecture_hash.length; a++) {
+          for (var a = 0; a < architecture_hash.length; a++){
             for (var b = 0; b < architecture.components[a].elements.length; b++) {
               if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
                 aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
@@ -1430,20 +1353,17 @@ window.app = new Vue({
         }
       }
     },
-    
-    /*Muestra el modal de editar un elemento*/
+    /*Show edit element modal*/
     editElemModal(elem, comp, button){
-      app._data.dismissCountDownMod = 0;
-
       this.modalEditElement.title = "Edit Element";
       this.modalEditElement.element = elem;
       this.modalEditElement.type = architecture.components[comp].type;
       this.modalEditElement.double_precision = architecture.components[comp].double_precision;
 
       app._data.simple_reg = [];
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-          app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},)
+          app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
         }
       }
 
@@ -1475,48 +1395,46 @@ window.app = new Vue({
 
       this.$root.$emit('bv::show::modal', 'modalEditElement', button);
     },
-
-    /*Comprueba que estan todos los campos del formulario de editar elemento*/
+    /*Check all field of modified element*/
     editElementVerify(evt, comp){
       evt.preventDefault();
       if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       } 
       else if(isNaN(this.formArchitecture.defValue)){
         app._data.alertMessaje = 'The default value must be a number';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else {
         this.editElement(comp);
       }
     },
-
-    /*Edita un elemento*/
+    /*Modify element*/
     editElement(comp){
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         for (var j = 0; j < architecture.components[i].elements.length; j++){
           if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
             app._data.alertMessaje = 'The element already exists';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             return;
           }
         } 
@@ -1524,16 +1442,16 @@ window.app = new Vue({
 
       this.showEditElement = false;
 
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         for(var j=0; j < architecture.components[i].elements.length; j++){
           if(comp == architecture.components[i].elements[j].name){
             architecture.components[i].elements[j].name = this.formArchitecture.name;
             if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
-              architecture.components[i].elements[j].default_value= bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+              architecture.components[i].elements[j].default_value = bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
             }
             else{
               if(architecture.components[i].double_precision == false){
-                architecture.components[i].elements[j].default_value= parseFloat(this.formArchitecture.defValue, 10);
+                architecture.components[i].elements[j].default_value = parseFloat(this.formArchitecture.defValue, 10);
               }
               else{
                 
@@ -1565,17 +1483,15 @@ window.app = new Vue({
         }
       } 
     },
-
-    /*Muestra el modal para confirmar el borrado*/
+    /*Show delete element modal*/
     delElemModal(elem, button){
       this.modalDeletElement.title = "Delete Element";
       this.modalDeletElement.element = elem;
       this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
     },
-
-    /*Borra un elemento*/
+    /*Delete the element*/
     delElement(comp){
-      for (var i = 0; i < architecture_hash.length; i++) {
+      for (var i = 0; i < architecture_hash.length; i++){
         for(var j=0; j < architecture.components[i].elements.length; j++){
           if(comp == architecture.components[i].elements[j].name){
             architecture.components[i].elements.splice(j,1);
@@ -1583,173 +1499,26 @@ window.app = new Vue({
         }
       }
     },
-
-    /*PAGINA DE INSTRUCCIONES*/
-    /*Vacia el formulario de instrucciones*/
-    emptyFormInst(){
-      this.formInstruction.name = '';
-      this.formInstruction.type = '';
-      this.formInstruction.co = '';
-      this.formInstruction.cop = '';
-      this.formInstruction.nwords = 1;
-      this.formInstruction.numfields = 1;
-      this.formInstruction.nameField = [];
-      this.formInstruction.typeField = [];
-      this.formInstruction.startBitField = [];
-      this.formInstruction.stopBitField = [];
-      this.formInstruction.assignedCop = false;
-      this.formInstruction.signature ='';
-      this.formInstruction.signatureRaw = '';
-      this.formInstruction.signature_definition = '';
-      this.formInstruction.definition = '';
-      this.instructionFormPage = 1;
+    /*Empty form*/
+    emptyFormArch(){
+      this.formArchitecture.name = '';
+      this.formArchitecture.id = '';
+      this.formArchitecture.type = '';
+      this.formArchitecture.defValue = '';
+      this.formArchitecture.properties = [];
+      this.formArchitecture.precision = '';
     },
-
-    /*Vacia el formulario de instrucciones*/
-    emptyFormPseudo(){
-      this.formPseudoinstruction.name = '';
-      this.formPseudoinstruction.nwords = 1;
-      this.formPseudoinstruction.numfields = 0;
-      this.formPseudoinstruction.nameField = [];
-      this.formPseudoinstruction.typeField = [];
-      this.formPseudoinstruction.startBitField = [];
-      this.formPseudoinstruction.stopBitField = [];
-      this.formPseudoinstruction.signature ='';
-      this.formPseudoinstruction.signatureRaw = '';
-      this.formPseudoinstruction.signature_definition = '';
-      this.formPseudoinstruction.definition = '';
-      this.instructionFormPage = 1;
-    },
-
-    /*Genera la signtura para las intrucciones*/
-    generateSignatureInst(){
-      var signature = this.formInstruction.signature_definition;
-
-      var re = new RegExp("^ +");
-      this.formInstruction.signature_definition= this.formInstruction.signature_definition.replace(re, "");
-
-      re = new RegExp(" +", "g");
-      this.formInstruction.signature_definition = this.formInstruction.signature_definition.replace(re, " ");
-
-      re = new RegExp("^ +");
-      signature= signature.replace(re, "");
-
-      re = new RegExp(" +", "g");
-      signature = signature.replace(re, " ");
-
-      for (var z = 0; z < this.formInstruction.numfields; z++) {
-        re = new RegExp("[Ff]"+z, "g");
-
-        if(z == 0){
-          signature = signature.replace(re, this.formInstruction.name);
-        }
-        else{
-          signature = signature.replace(re, this.formInstruction.typeField[z]);
-        }
-      }
-
-      re = new RegExp(" ", "g");
-      signature = signature.replace(re , ",");
-
-
-      var signatureRaw = this.formInstruction.signature_definition;
-
-      re = new RegExp("^ +");
-      signatureRaw= signatureRaw.replace(re, "");
-
-      re = new RegExp(" +", "g");
-      signatureRaw = signatureRaw.replace(re, " ");
-
-      for (var z = 0; z < this.formInstruction.numfields; z++) {
-        re = new RegExp("[Ff]"+z, "g");
-
-        signatureRaw = signatureRaw.replace(re, this.formInstruction.nameField[z]);
-      }
-
-      this.formInstruction.signature = signature;
-      this.formInstruction.signatureRaw = signatureRaw;
-    },
-
-    generateSignaturePseudo(){
-      var signature = this.formPseudoinstruction.signature_definition;
-
-      var re = new RegExp("^ +");
-      this.formPseudoinstruction.signature_definition = this.formPseudoinstruction.signature_definition.replace(re, "");
-
-      re = new RegExp(" +", "g");
-      this.formPseudoinstruction.signature_definition = this.formPseudoinstruction.signature_definition.replace(re, " ");
-
-      re = new RegExp("^ +");
-      signature= signature.replace(re, "");
-
-      re = new RegExp(" +", "g");
-      signature = signature.replace(re, " ");
-
-      for (var z = 0; z < this.formPseudoinstruction.numfields; z++) {
-        re = new RegExp("[Ff]"+z, "g");
-
-        signature = signature.replace(re, this.formPseudoinstruction.typeField[z]);
-      }
-
-      re = new RegExp(" ", "g");
-      signature = signature.replace(re , ",");
-
-      var signatureRaw = this.formPseudoinstruction.signature_definition;
-
-      re = new RegExp("^ +");
-      signatureRaw= signatureRaw.replace(re, "");
-
-      re = new RegExp(" +", "g");
-      signatureRaw = signatureRaw.replace(re, " ");
-
-      for (var z = 0; z < this.formPseudoinstruction.numfields; z++) {
-        re = new RegExp("[Ff]"+z, "g");
-
-        signatureRaw = signatureRaw.replace(re, this.formPseudoinstruction.nameField[z]);
-      }
-
-      this.formPseudoinstruction.signature = signature;
-      this.formPseudoinstruction.signatureRaw = signatureRaw;
-    },
-
-
-    /*Visualizacion del modal con los campos de la instruccion*/
-    viewFielsInst(elem, co, cop, button){
-      this.modalViewFields.title = "Fields of " + elem;
-      this.modalViewFields.element = elem;
-      for (var i = 0; i < architecture.instructions.length; i++) {
-        if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
-          this.formInstruction.name = architecture.instructions[i].name;
-          this.formInstruction.cop = architecture.instructions[i].cop;
-          this.formInstruction.co = architecture.instructions[i].co;
-          app._data.modalViewFields.co = architecture.instructions[i].co;
-          app._data.modalViewFields.cop = architecture.instructions[i].cop;
-          this.formInstruction.numfields = architecture.instructions[i].fields.length;
-
-          for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
-            this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
-            this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
-            this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-            this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-          }
-
-        }
-      }
-
-      this.$root.$emit('bv::show::modal', 'modalViewFields', button);
-    },
-
-    /*Modal de alerta de reset*/
+    /*Show reset instructions modal*/
     resetInstModal(elem, button){
       this.modalResetInst.title = "Reset " + elem + " instructions";
       this.modalResetInst.element = elem;
       this.$root.$emit('bv::show::modal', 'modalResetInst', button);
     },
-
+    /*Reset instructions*/
     resetInstructions(arch){
       $(".loading").show();
 
-      for (var i = 0; i < load_architectures.length; i++) {
+      for (var i = 0; i < load_architectures.length; i++){
         if(arch == load_architectures[i].id){
           var auxArch = JSON.parse(load_architectures[i].architecture);
           var auxArchitecture = bigInt_deserialize(auxArch);
@@ -1757,16 +1526,15 @@ window.app = new Vue({
           architecture.instructions = auxArchitecture.instructions;
           app._data.architecture = architecture;
 
-
           $(".loading").hide();
           app._data.alertMessaje = 'The instruction set has been reset correctly';
-          app._data.type ='success';
+          app._data.type = 'success';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -1784,24 +1552,46 @@ window.app = new Vue({
 
         $(".loading").hide();
         app._data.alertMessaje = 'The instruction set has been reset correctly';
-        app._data.type ='success';
+        app._data.type = 'success';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
+    /*Show instruction fields modal*/
+    viewFielsInst(elem, co, cop, button){
+      this.modalViewFields.title = "Fields of " + elem;
+      this.modalViewFields.element = elem;
+      for (var i = 0; i < architecture.instructions.length; i++){
+        if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
+          this.formInstruction.name = architecture.instructions[i].name;
+          this.formInstruction.cop = architecture.instructions[i].cop;
+          this.formInstruction.co = architecture.instructions[i].co;
+          app._data.modalViewFields.co = architecture.instructions[i].co;
+          app._data.modalViewFields.cop = architecture.instructions[i].cop;
+          this.formInstruction.numfields = architecture.instructions[i].fields.length;
 
-    /*Comprueba que estan todos los campos del formulario de nueva instruccion*/
+          for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
+            this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
+            this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
+            this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+            this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+          }
+        }
+      }
+      this.$root.$emit('bv::show::modal', 'modalViewFields', button);
+    },
+    /*Verify all fields of new instructions*/
     newInstVerify(evt){
       evt.preventDefault();
 
       var empty = 0;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
+      for (var z = 1; z < this.formInstruction.numfields; z++){
         if(this.formInstruction.typeField[z] == 'cop'){
           if(!this.formInstruction.cop){
             empty = 1;
@@ -1809,26 +1599,26 @@ window.app = new Vue({
           else{
             if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
-              app._data.type ='danger';
+              app._data.type = 'danger';
               app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
               return;
             }
 
-            for (var i = 0; i < this.formInstruction.cop.length; i++) {
+            for (var i = 0; i < this.formInstruction.cop.length; i++){
               if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
                 app._data.alertMessaje = 'The value of cop must be binary';
-                app._data.type ='danger';
+                app._data.type = 'danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
 				          variant: app._data.type,
 				          solid: true,
 				          toaster: "b-toaster-top-center",
 									autoHideDelay: 1500,
-				        })
+				        });
                 return;
               }
             }
@@ -1836,21 +1626,21 @@ window.app = new Vue({
         }
       }
 
-      for (var i = 0; i < this.formInstruction.co.length; i++) {
+      for (var i = 0; i < this.formInstruction.co.length; i++){
         if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
           app._data.alertMessaje = 'The value of co must be binary';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return;
         }
       }
 
-      for (var i = 0; i < this.formInstruction.numfields; i++) {
+      for (var i = 0; i < this.formInstruction.numfields; i++){
         if(this.formInstruction.nameField.length <  this.formInstruction.numfields || this.formInstruction.typeField.length <  this.formInstruction.numfields || this.formInstruction.startBitField.length <  this.formInstruction.numfields || this.formInstruction.stopBitField.length <  this.formInstruction.numfields){
           empty = 1;
         }
@@ -1858,77 +1648,76 @@ window.app = new Vue({
 
       if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       } 
       else if(isNaN(this.formInstruction.co)){
         app._data.alertMessaje = 'The field co must be numbers';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else if(isNaN(this.formInstruction.cop)){
         app._data.alertMessaje = 'The field cop must be numbers';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else {
         this.newInstruction();
       }
     },
-
-    /*Inserta una nueva instruccion*/
+    /*Create a new instruction*/
     newInstruction(){
-      for (var i = 0; i < architecture.instructions.length; i++) {
+      for (var i = 0; i < architecture.instructions.length; i++){
         if(this.formInstruction.co == architecture.instructions[i].co){
           if((!this.formInstruction.cop)){
             app._data.alertMessaje = 'The instruction already exists';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             return;
           }
         }
       }
 
-      for (var i = 0; i < architecture.instructions.length; i++) {
+      for (var i = 0; i < architecture.instructions.length; i++){
         if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
           app._data.alertMessaje = 'The instruction already exists';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return;
         }
       }
@@ -1942,7 +1731,6 @@ window.app = new Vue({
       var signature = this.formInstruction.signature;
       var signatureRaw = this.formInstruction.signatureRaw;
 
-
       if(cop == false){
         this.formInstruction.cop='';
       }
@@ -1950,29 +1738,13 @@ window.app = new Vue({
       var newInstruction = {name: this.formInstruction.name, type: this.formInstruction.type, signature_definition: this.formInstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
       architecture.instructions.push(newInstruction);
 
-      for (var i = 0; i < this.formInstruction.numfields; i++) {
+      for (var i = 0; i < this.formInstruction.numfields; i++){
         var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: parseInt(this.formInstruction.startBitField[i]), stopbit: parseInt(this.formInstruction.stopBitField[i])};
         architecture.instructions[architecture.instructions.length-1].fields.push(newField);
       }   
     },
-
-    /*Muestra el modal de confirmacion de borrado de una instruccion*/
-    delInstModal(elem, index, button){
-      this.modalDeletInst.title = "Delete Instruction";
-      this.modalDeletInst.element = elem;
-      this.modalDeletInst.index = index;
-      this.$root.$emit('bv::show::modal', 'modalDeletInst', button);
-    },
-
-    /*Borra una instruccion*/
-    delInstruction(index){
-      architecture.instructions.splice(index,1);
-    },
-
-    /*Muestra el modal de editar instruccion*/
+    /*Show edit instruction modal*/
     editInstModal(elem, co, cop, button){
-      app._data.dismissCountDownMod = 0;
-
       this.modalEditInst.title = "Edit Instruction";
       this.modalEditInst.element = elem;
       for (var i = 0; i < architecture.instructions.length; i++) {
@@ -1994,21 +1766,17 @@ window.app = new Vue({
             this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
             this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
           }
-
           this.generateSignatureInst();
-
         }
       }
-
       this.$root.$emit('bv::show::modal', 'modalEditInst', button);
     },
-
-    /*Comprueba que estan todos los campos del formulario de editar instruccion*/
+    /*Check all fields of modify instruction*/
     editInstVerify(evt, inst, co, cop){
       evt.preventDefault();
 
       var empty = 0;
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
+      for (var z = 1; z < this.formInstruction.numfields; z++){
         if(this.formInstruction.typeField[z] == 'cop'){
           if(!this.formInstruction.cop){
             empty = 1;
@@ -2016,26 +1784,26 @@ window.app = new Vue({
           else{
             if((this.formInstruction.cop).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
               app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
-              app._data.type ='danger';
+              app._data.type = 'danger';
               app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
               return;
             }
 
-            for (var i = 0; i < this.formInstruction.cop.length; i++) {
+            for (var i = 0; i < this.formInstruction.cop.length; i++){
               if(this.formInstruction.cop.charAt(i) != "0" && this.formInstruction.cop.charAt(i) != "1"){
                 app._data.alertMessaje = 'The value of cop must be binary';
-                app._data.type ='danger';
+                app._data.type = 'danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
 				          variant: app._data.type,
 				          solid: true,
 				          toaster: "b-toaster-top-center",
 									autoHideDelay: 1500,
-				        })
+				        });
                 return;
               }
             }
@@ -2043,106 +1811,105 @@ window.app = new Vue({
         }
       }
 
-      for (var i = 0; i < this.formInstruction.co.length; i++) {
+      for (var i = 0; i < this.formInstruction.co.length; i++){
         if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
           app._data.alertMessaje = 'The value of co must be binary';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return;
         }
       }
 
-      for (var i = 0; i < this.formInstruction.numfields; i++) {
+      for (var i = 0; i < this.formInstruction.numfields; i++){
         if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
           empty = 1;
         }
       }
       if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else if(isNaN(this.formInstruction.co)){
         app._data.alertMessaje = 'The field co must be numbers';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else if(isNaN(this.formInstruction.cop)){
         app._data.alertMessaje = 'The field cop must be numbers';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
         app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else {
         this.editInstruction(inst, co, cop);
       }
     },
-
-    /*edita una instruccion*/
+    /*Edit de instruction*/
     editInstruction(comp, co, cop){
       var exCop = false;
 
-      for (var z = 1; z < this.formInstruction.numfields; z++) {
+      for (var z = 1; z < this.formInstruction.numfields; z++){
         if(this.formInstruction.typeField[z] == 'cop'){
           exCop = true;
         }
       }
 
-      for (var i = 0; i < architecture.instructions.length; i++) {
+      for (var i = 0; i < architecture.instructions.length; i++){
         if((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
           if(((!this.formInstruction.cop) || (exCop != true))){
             app._data.alertMessaje = 'The instruction already exists';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             return;
           }
         }
       }
 
-      for (var i = 0; i < architecture.instructions.length && exCop == true ; i++) {
+      for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
         if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
           app._data.alertMessaje = 'The instruction already exists';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return;
         }
       }
@@ -2187,23 +1954,171 @@ window.app = new Vue({
           if(architecture.instructions[i].fields.length > this.formInstruction.numfields){
             architecture.instructions[i].fields.splice(this.formInstruction.numfields, (architecture.instructions[i].fields.length - this.formInstruction.numfields));
           }
-
         }
       }
 
       app._data.alertMessaje = 'The instruction has been modified, please check the definition of the pseudoinstructions';
-      app._data.type ='info';
+      app._data.type = 'info';
       app.$bvToast.toast(app._data.alertMessaje, {
         variant: app._data.type,
         solid: true,
         toaster: "b-toaster-top-center",
 				autoHideDelay: 1500,
-      })
+      });
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
+    /*Show delete instruction modal*/
+    delInstModal(elem, index, button){
+      this.modalDeletInst.title = "Delete Instruction";
+      this.modalDeletInst.element = elem;
+      this.modalDeletInst.index = index;
+      this.$root.$emit('bv::show::modal', 'modalDeletInst', button);
+    },
+    /*Delete the instruction*/
+    delInstruction(index){
+      architecture.instructions.splice(index,1);
+    },
+    /*Generate the instruction signature*/
+    generateSignatureInst(){
+      var signature = this.formInstruction.signature_definition;
 
-    /*PAGINA DE PSEUDOINSTRUCCIONES*/
+      var re = new RegExp("^ +");
+      this.formInstruction.signature_definition= this.formInstruction.signature_definition.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      this.formInstruction.signature_definition = this.formInstruction.signature_definition.replace(re, " ");
+
+      re = new RegExp("^ +");
+      signature= signature.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signature = signature.replace(re, " ");
+
+      for (var z = 0; z < this.formInstruction.numfields; z++){
+        re = new RegExp("[Ff]"+z, "g");
+
+        if(z == 0){
+          signature = signature.replace(re, this.formInstruction.name);
+        }
+        else{
+          signature = signature.replace(re, this.formInstruction.typeField[z]);
+        }
+      }
+
+      re = new RegExp(" ", "g");
+      signature = signature.replace(re , ",");
+
+      var signatureRaw = this.formInstruction.signature_definition;
+
+      re = new RegExp("^ +");
+      signatureRaw= signatureRaw.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signatureRaw = signatureRaw.replace(re, " ");
+
+      for (var z = 0; z < this.formInstruction.numfields; z++){
+        re = new RegExp("[Ff]"+z, "g");
+        signatureRaw = signatureRaw.replace(re, this.formInstruction.nameField[z]);
+      }
+
+      this.formInstruction.signature = signature;
+      this.formInstruction.signatureRaw = signatureRaw;
+    },
+    /*Empty instruction form*/
+    emptyFormInst(){
+      this.formInstruction.name = '';
+      this.formInstruction.type = '';
+      this.formInstruction.co = '';
+      this.formInstruction.cop = '';
+      this.formInstruction.nwords = 1;
+      this.formInstruction.numfields = 1;
+      this.formInstruction.nameField = [];
+      this.formInstruction.typeField = [];
+      this.formInstruction.startBitField = [];
+      this.formInstruction.stopBitField = [];
+      this.formInstruction.assignedCop = false;
+      this.formInstruction.signature ='';
+      this.formInstruction.signatureRaw = '';
+      this.formInstruction.signature_definition = '';
+      this.formInstruction.definition = '';
+      this.instructionFormPage = 1;
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  	/*Filtro tala instrucciones*/
+    filter(row, filter){
+      if(row.hide == true){
+        return false;
+      }
+      else{
+        return true;
+      }
+    },
+
+    
+
+    
+
+
+
+
+
+
+
+    
 
     viewFielsPseudo(elem, index, button){
       this.modalViewFields.title = "Edit " + elem;
@@ -2293,8 +2208,6 @@ window.app = new Vue({
 
     /*Muestra el modal de editar instruccion*/
     editPseudoinstModal(elem, index, button){
-      app._data.dismissCountDownMod = 0;
-
       this.modalEditPseudoinst.title = "Edit Pseudoinstruction";
       this.modalEditPseudoinst.element = elem;
       this.modalEditPseudoinst.index = index;
@@ -3044,8 +2957,72 @@ window.app = new Vue({
       return 0;
     },
 
+    /*PAGINA DE PSEUDOINSTRUCCIONES*/
+    generateSignaturePseudo(){
+      var signature = this.formPseudoinstruction.signature_definition;
 
+      var re = new RegExp("^ +");
+      this.formPseudoinstruction.signature_definition = this.formPseudoinstruction.signature_definition.replace(re, "");
 
+      re = new RegExp(" +", "g");
+      this.formPseudoinstruction.signature_definition = this.formPseudoinstruction.signature_definition.replace(re, " ");
+
+      re = new RegExp("^ +");
+      signature= signature.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signature = signature.replace(re, " ");
+
+      for (var z = 0; z < this.formPseudoinstruction.numfields; z++) {
+        re = new RegExp("[Ff]"+z, "g");
+
+        signature = signature.replace(re, this.formPseudoinstruction.typeField[z]);
+      }
+
+      re = new RegExp(" ", "g");
+      signature = signature.replace(re , ",");
+
+      var signatureRaw = this.formPseudoinstruction.signature_definition;
+
+      re = new RegExp("^ +");
+      signatureRaw= signatureRaw.replace(re, "");
+
+      re = new RegExp(" +", "g");
+      signatureRaw = signatureRaw.replace(re, " ");
+
+      for (var z = 0; z < this.formPseudoinstruction.numfields; z++) {
+        re = new RegExp("[Ff]"+z, "g");
+
+        signatureRaw = signatureRaw.replace(re, this.formPseudoinstruction.nameField[z]);
+      }
+
+      this.formPseudoinstruction.signature = signature;
+      this.formPseudoinstruction.signatureRaw = signatureRaw;
+    },
+
+    /*Vacia el formulario de instrucciones*/
+    emptyFormPseudo(){
+      this.formPseudoinstruction.name = '';
+      this.formPseudoinstruction.nwords = 1;
+      this.formPseudoinstruction.numfields = 0;
+      this.formPseudoinstruction.nameField = [];
+      this.formPseudoinstruction.typeField = [];
+      this.formPseudoinstruction.startBitField = [];
+      this.formPseudoinstruction.stopBitField = [];
+      this.formPseudoinstruction.signature ='';
+      this.formPseudoinstruction.signatureRaw = '';
+      this.formPseudoinstruction.signature_definition = '';
+      this.formPseudoinstruction.definition = '';
+      this.instructionFormPage = 1;
+    },
+
+    /*Nombres de barra de paginacion*/
+    linkGen (pageNum) {
+      return this.instructionFormPageLink[pageNum - 1]
+    },
+    pageGen (pageNum) {
+      return this.instructionFormPageLink[pageNum - 1].slice(1)
+    },
 
 
 
@@ -3135,8 +3112,6 @@ window.app = new Vue({
 
     /*Muestra el modal de editar directiva*/
     editDirModal(elem, button){
-      app._data.dismissCountDownMod = 0;
-
       this.modalEditDirective.title = "Edit " + elem;
       this.modalEditDirective.element = elem;
 
@@ -3268,6 +3243,31 @@ window.app = new Vue({
 
       var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
       architecture.directives.push(newDir);
+    },
+
+    /*VALIDADOR FORMULARIOS*/
+    valid(value){
+      for (var i = 0; i <this.formInstruction.typeField.length; i++) {
+        if(this.formInstruction.typeField[i]=='cop'){
+          this.formInstruction.assignedCop = true;
+          break;
+        }
+        if(i == this.formInstruction.typeField.length-1){
+          this.formInstruction.assignedCop = false;
+        }
+      }
+
+      if(parseInt(value) != 0){
+        if(!value){
+          return false;
+        }
+        else{
+          return true;
+        }
+      }
+      else{
+        return true;
+      }
     },
     
 
@@ -9227,14 +9227,7 @@ window.app = new Vue({
 
   },
 
-  created(){
-    this.load_arch_available();
-    this.load_examples_available();
-  },
-
-  mounted(){
-    this.backupCopyModal();
-  },
+  
 })
 
 /*Alerta al cerrar pagina web*/
@@ -9331,4 +9324,12 @@ Vue.config.errorHandler = function (err, vm, info) {
   setTimeout(function(){
   	location.reload(true)
   }, 3000);
+}
+
+function destroyClickedElement(event) {
+  document.body.removeChild(event.target);
+}
+
+function binaryStringToInt( b ) {
+    return parseInt(b, 2);
 }
