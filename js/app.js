@@ -127,6 +127,20 @@ var compileError = [
   { mess1: "Empty directive", mess2: "" },
   { mess1: "After the comma you should go a blank --> ", mess2: "" },
 ];
+/*Codemirror*/
+editor_cfg = {
+  lineNumbers: true,
+  autoRefresh:true,
+} ;
+
+textarea_assembly_obj = document.getElementById("textarea_assembly");
+
+if(textarea_assembly_obj != null){
+  textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
+  textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
+  textarea_assembly_editor.setValue("");
+  textarea_assembly_editor.setSize("auto", "550px");
+}
 
 
 
@@ -1874,7 +1888,7 @@ window.app = new Vue({
         this.editInstruction(inst, co, cop);
       }
     },
-    /*Edit de instruction*/
+    /*Edit the instruction*/
     editInstruction(comp, co, cop){
       var exCop = false;
 
@@ -2044,82 +2058,7 @@ window.app = new Vue({
       this.formInstruction.definition = '';
       this.instructionFormPage = 1;
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  	/*Filtro tala instrucciones*/
-    filter(row, filter){
-      if(row.hide == true){
-        return false;
-      }
-      else{
-        return true;
-      }
-    },
-
-    
-
-    
-
-
-
-
-
-
-
-    
-
+    /*Show pseudoinstruction fields modal*/
     viewFielsPseudo(elem, index, button){
       this.modalViewFields.title = "Edit " + elem;
       this.modalViewFields.element = elem;
@@ -2127,7 +2066,7 @@ window.app = new Vue({
       this.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
       this.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
 
-      for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
+      for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++){
         this.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
         this.formPseudoinstruction.typeField[j] = architecture.pseudoinstructions[index].fields[j].type;
         this.formPseudoinstruction.startBitField[j] = architecture.pseudoinstructions[index].fields[j].startbit;
@@ -2136,14 +2075,13 @@ window.app = new Vue({
 
       this.$root.$emit('bv::show::modal', 'modalViewPseudoFields', button);
     },
-
-    /*Modal de alerta de reset*/
+    /*Show reset pseudoinstructions modal*/
     resetPseudoinstModal(elem, button){
       this.modalResetPseudoinst.title = "Reset " + elem + " pseudoinstructions";
       this.modalResetPseudoinst.element = elem;
       this.$root.$emit('bv::show::modal', 'modalResetPseudoinst', button);
     },
-
+    /*Reset pseudoinstructions*/
     resetPseudoinstructionsModal(arch){
       $(".loading").show();
 
@@ -2157,13 +2095,13 @@ window.app = new Vue({
 
           $(".loading").hide();
           app._data.alertMessaje = 'The registers has been reset correctly';
-          app._data.type ='success';
+          app._data.type = 'success';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           
@@ -2181,32 +2119,67 @@ window.app = new Vue({
 
         $(".loading").hide();
         app._data.alertMessaje = 'The pseudoinstruction set has been reset correctly';
-        app._data.type ='success';
+        app._data.type = 'success';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
+    /*Check all fields of new pseudoinstruction*/
+    newPseudoinstVerify(evt){
+      evt.preventDefault();
 
-    /*Muestra el modal de confirmacion de borrado de una instruccion*/
-    delPseudoinstModal(elem, index, button){
-      this.modalDeletPseudoinst.title = "Delete Pseudointruction";
-      this.modalDeletPseudoinst.element = elem;
-      this.modalDeletPseudoinst.index = index;
-      this.$root.$emit('bv::show::modal', 'modalDeletPseudoinst', button);
+      var vacio = 0;
+
+      for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
+        if(this.formPseudoinstruction.nameField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.typeField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.startBitField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.stopBitField.length <  this.formPseudoinstruction.numfields){
+          vacio = 1;
+        }
+      }
+
+      var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition, this.formPseudoinstruction.nameField);
+
+      if(result == -1){
+        return;
+      }
+
+      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type = 'danger';
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
+        });
+      } 
+      else {
+        this.newPseudoinstruction();
+      }
     },
+    /*Create a new pseudoinstruction*/
+    newPseudoinstruction(){
+      this.showNewPseudoinstruction = false;
 
-    /*Borra una instruccion*/
-    delPseudoinstruction(index){
-      architecture.pseudoinstructions.splice(index,1);
+      this.generateSignaturePseudo();
+
+      var signature = this.formPseudoinstruction.signature;
+      var signatureRaw = this.formPseudoinstruction.signatureRaw;
+
+      var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
+      architecture.pseudoinstructions.push(newPseudoinstruction);
+
+      for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
+        var newField = {name: this.formPseudoinstruction.nameField[i], type: this.formPseudoinstruction.typeField[i], startbit: this.formPseudoinstruction.startBitField[i], stopbit: this.formPseudoinstruction.stopBitField[i]};
+        architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(newField);
+      }
     },
-
-    /*Muestra el modal de editar instruccion*/
+    /*Show edit pseudoinstruction modal*/
     editPseudoinstModal(elem, index, button){
       this.modalEditPseudoinst.title = "Edit Pseudoinstruction";
       this.modalEditPseudoinst.element = elem;
@@ -2229,8 +2202,7 @@ window.app = new Vue({
 
       this.$root.$emit('bv::show::modal', 'modalEditPseudoinst', button);
     },
-
-    /*Comprueba que estan todos los campos del formulario de editar instruccion*/
+    /*Check all fields of modify pseudoinstruction*/
     editPseudoinstVerify(evt, inst, index){
       evt.preventDefault();
 
@@ -2250,20 +2222,19 @@ window.app = new Vue({
 
       if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
       }
       else {
         this.editPseudoinstruction(inst, index);
       }
     },
-
-    /*edita una instruccion*/
+    /*Edit the pseudoinstruction*/
     editPseudoinstruction(comp, index){
 
       this.showEditPseudoinstruction = false;
@@ -2291,8 +2262,6 @@ window.app = new Vue({
       var signature = this.formPseudoinstruction.signature;
       var signatureRaw = this.formPseudoinstruction.signatureRaw;
 
-
-
       architecture.pseudoinstructions[index].signature = signature;
       architecture.pseudoinstructions[index].signatureRaw = signatureRaw;
 
@@ -2300,59 +2269,18 @@ window.app = new Vue({
         architecture.pseudoinstructions[index].fields.splice(this.formPseudoinstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formPseudoinstruction.numfields));
       }
     },
-
-    /*Comprueba que estan todos los campos del formulario de nueva pseudoinstruccion*/
-    newPseudoinstVerify(evt){
-      evt.preventDefault();
-
-      var vacio = 0;
-
-      for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
-        if(this.formPseudoinstruction.nameField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.typeField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.startBitField.length <  this.formPseudoinstruction.numfields || this.formPseudoinstruction.stopBitField.length <  this.formPseudoinstruction.numfields){
-          vacio = 1;
-        }
-      }
-
-      var result = this.pseudoDefValidator(this.formPseudoinstruction.name, this.formPseudoinstruction.definition, this.formPseudoinstruction.nameField);
-
-      if(result == -1){
-        return;
-      }
-
-      if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
-        app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
-        app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-					autoHideDelay: 1500,
-        })
-      } 
-      else {
-        this.newPseudoinstruction();
-      }
+    /*Show delete pseudoinstruction modal*/
+    delPseudoinstModal(elem, index, button){
+      this.modalDeletPseudoinst.title = "Delete Pseudointruction";
+      this.modalDeletPseudoinst.element = elem;
+      this.modalDeletPseudoinst.index = index;
+      this.$root.$emit('bv::show::modal', 'modalDeletPseudoinst', button);
     },
-
-    /*Inserta una nueva pseudoinstruccion*/
-    newPseudoinstruction(){
-
-      this.showNewPseudoinstruction = false;
-
-      this.generateSignaturePseudo();
-
-      var signature = this.formPseudoinstruction.signature;
-      var signatureRaw = this.formPseudoinstruction.signatureRaw;
-
-      var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
-      architecture.pseudoinstructions.push(newPseudoinstruction);
-
-      for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
-        var newField = {name: this.formPseudoinstruction.nameField[i], type: this.formPseudoinstruction.typeField[i], startbit: this.formPseudoinstruction.startBitField[i], stopbit: this.formPseudoinstruction.stopBitField[i]};
-        architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(newField);
-      }
+    /*Delete the pseudoinstruction*/
+    delPseudoinstruction(index){
+      architecture.pseudoinstructions.splice(index,1);
     },
-
+    /*Verify the pseudoinstruction definition*/
     pseudoDefValidator(name, definition, fields){
       var re = new RegExp("^\n+");
       definition = definition.replace(re, "");
@@ -2371,13 +2299,13 @@ window.app = new Vue({
           var instructions = code[1].split(";");
           if(instructions.length == 1){
             app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             return -1;
           }
 
@@ -2408,13 +2336,13 @@ window.app = new Vue({
                 re = new RegExp(signatureDef+"$")
                 if(instructions[j].search(re) == -1){
                   app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
-                  app._data.type ='danger';
+                  app._data.type = 'danger';
                   app.$bvToast.toast(app._data.alertMessaje, {
 					          variant: app._data.type,
 					          solid: true,
 					          toaster: "b-toaster-top-center",
 										autoHideDelay: 1500,
-					        })
+					        });
                   return -1;
                 }
 
@@ -2466,13 +2394,13 @@ window.app = new Vue({
 
                     if(!found){
                       app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
                   }
@@ -2484,50 +2412,50 @@ window.app = new Vue({
                       var value = instructionParts[z].split("x");
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
                     }
                     else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
                       if(isNaN(parseFloat(instructionParts[z])) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
 
                       if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
                     }
@@ -2538,25 +2466,25 @@ window.app = new Vue({
                       var numAux = parseInt(instructionParts[z], 10);
                       if(isNaN(parseInt(instructionParts[z])) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
 
                       if((numAux.toString(2)).length > fieldsLength){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
                     }
@@ -2564,30 +2492,29 @@ window.app = new Vue({
 
                   if(architecture.instructions[i].fields[z].type == "address"){
                     var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
                         app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
                         app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
-                        app._data.type ='danger';
+                        app._data.type = 'danger';
                         app.$bvToast.toast(app._data.alertMessaje, {
 								          variant: app._data.type,
 								          solid: true,
 								          toaster: "b-toaster-top-center",
 													autoHideDelay: 1500,
-								        })
+								        });
                         return -1;
                       }
                     }
@@ -2595,7 +2522,6 @@ window.app = new Vue({
 
                   if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
                     var found = false;
-
                     for (var a = 0; a < architecture.components.length; a++){
                       for (var b = 0; b < architecture.components[a].elements.length; b++){
                         if("($" + architecture.components[a].elements[b].name + ")" == instructionParts[z]){
@@ -2617,39 +2543,39 @@ window.app = new Vue({
 
                   if(!found){
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-                    app._data.type ='danger';
+                    app._data.type = 'danger';
                     app.$bvToast.toast(app._data.alertMessaje, {
 						          variant: app._data.type,
 						          solid: true,
 						          toaster: "b-toaster-top-center",
 											autoHideDelay: 1500,
-						        })
+						        });
                     return -1;
                   }
                 }
 
                 if(numFields != instructionParts.length){
                   app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
-                  app._data.type ='danger';
+                  app._data.type = 'danger';
                   app.$bvToast.toast(app._data.alertMessaje, {
 					          variant: app._data.type,
 					          solid: true,
 					          toaster: "b-toaster-top-center",
 										autoHideDelay: 1500,
-					        })
+					        });
                   return -1;
                 }
               }
             }
             if(!found){
               app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
-              app._data.type ='danger';
+              app._data.type = 'danger';
               app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
               return -1;
             }
           }
@@ -2663,16 +2589,15 @@ window.app = new Vue({
       else{
         var instructions = definition.split(";");
         console.log(instructions.length)
-
         if(instructions.length == 1){
           app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return -1;
         }
 
@@ -2692,8 +2617,6 @@ window.app = new Vue({
               var numFields = 0;
               var regId = 0;
 
-
-
               signatureDef = architecture.instructions[i].signature_definition;
               signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
               re = new RegExp("[fF][0-9]+", "g");
@@ -2702,20 +2625,20 @@ window.app = new Vue({
               console.log(instructions[j])
               console.log(signatureDef)
 
-              re = new RegExp(signatureDef+"$")
+              re = new RegExp(signatureDef+"$");
               if(instructions[j].search(re) == -1){
                 app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
-                app._data.type ='danger';
+                app._data.type = 'danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
 				          variant: app._data.type,
 				          solid: true,
 				          toaster: "b-toaster-top-center",
 									autoHideDelay: 1500,
-				        })
+				        });
                 return -1;
               }
 
-              re = new RegExp(signatureDef+"$")
+              re = new RegExp(signatureDef+"$");
               var match = re.exec(instructions[j]);
               var instructionParts = [];
               for(var z = 1; z < match.length; z++){
@@ -2763,69 +2686,68 @@ window.app = new Vue({
 
                   if(!found){
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-                    app._data.type ='danger';
+                    app._data.type = 'danger';
                     app.$bvToast.toast(app._data.alertMessaje, {
 						          variant: app._data.type,
 						          solid: true,
 						          toaster: "b-toaster-top-center",
 											autoHideDelay: 1500,
-						        })
+						        });
                     return -1;
                   }
                 }
 
                 if(architecture.instructions[i].fields[z].type == "inm"){
                   var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-
                   if(instructionParts[z].match(/^0x/)){
                     var value = instructionParts[z].split("x");
-                    console.log(isNaN(parseInt(instructionParts[z], 16)))
+                    console.log(isNaN(parseInt(instructionParts[z], 16)));
                     if(isNaN(parseInt(instructionParts[z], 16)) == true){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
 
                     if(value[1].length*4 > fieldsLength){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
                   }
                   else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
                     if(isNaN(parseFloat(instructionParts[z])) == true){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
 
                     if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
                   }
@@ -2836,25 +2758,25 @@ window.app = new Vue({
                     var numAux = parseInt(instructionParts[z], 10);
                     if(isNaN(parseInt(instructionParts[z])) == true){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
 
                     if((numAux.toString(2)).length > fieldsLength){
                       app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
                   }
@@ -2862,30 +2784,29 @@ window.app = new Vue({
 
                 if(architecture.instructions[i].fields[z].type == "address"){
                   var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-
                   if(instructionParts[z].match(/^0x/)){
                     var value = instructionParts[z].split("x");
                     if(isNaN(parseInt(instructionParts[z], 16)) == true){
                       app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     }
 
                     if(value[1].length*4 > fieldsLength){
                       app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
-                      app._data.type ='danger';
+                      app._data.type = 'danger';
                       app.$bvToast.toast(app._data.alertMessaje, {
 							          variant: app._data.type,
 							          solid: true,
 							          toaster: "b-toaster-top-center",
 												autoHideDelay: 1500,
-							        })
+							        });
                       return -1;
                     } 
                   }
@@ -2893,7 +2814,6 @@ window.app = new Vue({
 
                 if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
                   var found = false;
-
                   for (var a = 0; a < architecture.components.length; a++){
                     for (var b = 0; b < architecture.components[a].elements.length; b++){
                       if("($" + architecture.components[a].elements[b].name + ")" == instructionParts[z]){
@@ -2915,39 +2835,39 @@ window.app = new Vue({
 
                 if(!found){
                   app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-                  app._data.type ='danger';
+                  app._data.type = 'danger';
                   app.$bvToast.toast(app._data.alertMessaje, {
 					          variant: app._data.type,
 					          solid: true,
 					          toaster: "b-toaster-top-center",
 										autoHideDelay: 1500,
-					        })
+					        });
                   return -1;
                 }
               }
 
               if(numFields != instructionParts.length){
                 app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
-                app._data.type ='danger';
+                app._data.type = 'danger';
                 app.$bvToast.toast(app._data.alertMessaje, {
 				          variant: app._data.type,
 				          solid: true,
 				          toaster: "b-toaster-top-center",
 									autoHideDelay: 1500,
-				        })
+				        });
                 return -1;
               }
             }
           }
           if(!found){
             app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             return -1;
           }
         }
@@ -2956,8 +2876,7 @@ window.app = new Vue({
       this.formPseudoinstruction.definition = newDefinition;
       return 0;
     },
-
-    /*PAGINA DE PSEUDOINSTRUCCIONES*/
+    /*Generate the pseudoinstruction signature*/
     generateSignaturePseudo(){
       var signature = this.formPseudoinstruction.signature_definition;
 
@@ -2999,8 +2918,7 @@ window.app = new Vue({
       this.formPseudoinstruction.signature = signature;
       this.formPseudoinstruction.signatureRaw = signatureRaw;
     },
-
-    /*Vacia el formulario de instrucciones*/
+    /*Empty pseudoinstruction form*/
     emptyFormPseudo(){
       this.formPseudoinstruction.name = '';
       this.formPseudoinstruction.nwords = 1;
@@ -3015,36 +2933,20 @@ window.app = new Vue({
       this.formPseudoinstruction.definition = '';
       this.instructionFormPage = 1;
     },
-
-    /*Nombres de barra de paginacion*/
+    /*Pagination bar names*/
     linkGen (pageNum) {
       return this.instructionFormPageLink[pageNum - 1]
     },
     pageGen (pageNum) {
       return this.instructionFormPageLink[pageNum - 1].slice(1)
     },
-
-
-
-
-
-
-
-
-    /*PAGINA DE DIRECTIVAS*/
-    emptyFormDirective(){
-      this.formDirective.name = '';
-      this.formDirective.action = '';
-      this.formDirective.size = 0;
-    },
-
-    /*Modal de alerta de reset*/
+    /*Show reset directive modal*/
     resetDirModal(elem, button){
       this.modalResetDir.title = "Reset " + elem + " directives";
       this.modalResetDir.element = elem;
       this.$root.$emit('bv::show::modal', 'modalResetDir', button);
     },
-
+    /*Reset directives*/
     resetDirectives(arch){
       $(".loading").show();
 
@@ -3058,16 +2960,15 @@ window.app = new Vue({
 
           $(".loading").hide();
           app._data.alertMessaje = 'The directive set has been reset correctly';
-          app._data.type ='success';
+          app._data.type = 'success';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-          
           return;
         }
       }
@@ -3082,92 +2983,127 @@ window.app = new Vue({
 
         $(".loading").hide();
         app._data.alertMessaje = 'The directive set has been reset correctly';
-        app._data.type ='success';
+        app._data.type = 'success';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       });
     },
+    /*Verify all fields of new directive*/
+    newDirVerify(evt){
+      evt.preventDefault();
 
-    /*Muestra el modal de confirmacion de borrado de una directiva*/
-    delDirModal(elem, button){
-      this.modalDeletDir.title = "Delete " + elem;
-      this.modalDeletDir.element = elem;
-      this.$root.$emit('bv::show::modal', 'modalDeletDir', button);
-    },
-
-    /*Borra una instruccion*/
-    delDirective(comp){
-      for (var i = 0; i < architecture.directives.length; i++) {
-        if(comp == architecture.directives[i].name){
-          architecture.directives.splice(i,1);
+      if (!this.formDirective.name || !this.formDirective.action) {
+        app._data.alertMessaje = 'Please complete all fields';
+        app._data.type = 'danger';
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
+        });
+      } 
+      else {
+        if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
+          app._data.alertMessaje = 'Please complete all fields';
+          app._data.type = 'danger';
+          app.$bvToast.toast(app._data.alertMessaje, {
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        });
+        }
+        else{
+          this.newDirective();
         }
       }
     },
+    /*Create new directive*/
+    newDirective(){
+      for (var i = 0; i < architecture.directives.length; i++) {
+        if(this.formDirective.name == architecture.directives[i].name){
+          app._data.alertMessaje = 'The directive already exists';
+          app._data.type = 'danger';
+          app.$bvToast.toast(app._data.alertMessaje, {
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        });
+          return;
+        }
+      }
 
-    /*Muestra el modal de editar directiva*/
+      this.showNewDirective = false;
+      if(this.formDirective.action != 'byte' && this.formDirective.action != 'half_word' && this.formDirective.action != 'word' && this.formDirective.action != 'double_word' && this.formDirective.action != 'float' && this.formDirective.action != 'double' && this.formDirective.action != 'space'){
+        this.formDirective.size = null;
+      }
+
+      var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
+      architecture.directives.push(newDir);
+    },
+    /*Show edit directive modal*/
     editDirModal(elem, button){
       this.modalEditDirective.title = "Edit " + elem;
       this.modalEditDirective.element = elem;
 
-      for (var i = 0; i < architecture.directives.length; i++) {
+      for (var i = 0; i < architecture.directives.length; i++){
         if(elem == architecture.directives[i].name){
           this.formDirective.name = architecture.directives[i].name;
           this.formDirective.action = architecture.directives[i].action;
           this.formDirective.size = architecture.directives[i].size;
         }
       }
-      
       this.$root.$emit('bv::show::modal', 'modalEditDirective', button);
     },
-
-    /*Verifica que se han completado todos los campos*/
+    /*Verify all fields of modify directive*/
     editDirVerify(evt, name){
       evt.preventDefault();
 
       if (!this.formDirective.name || !this.formDirective.action) {
         app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
-      } else {
+        });
+      } 
+      else {
         if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
           app._data.alertMessaje = 'Please complete all fields';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
         }
         else{
           this.editDirective(name);
         }
       }
     },
-
-    /*Edita la directiva*/
+    /*edit directive*/
     editDirective(name){
       for (var i = 0; i < architecture.directives.length; i++) {
         if((this.formDirective.name == architecture.directives[i].name) && (name != this.formDirective.name)){
           app._data.alertMessaje = 'The directive already exists';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           return;
         }
       }
@@ -3188,64 +3124,27 @@ window.app = new Vue({
         }
       }
     },
-
-    /*Verifica que se han completado todos los campos*/
-    newDirVerify(evt){
-
-      evt.preventDefault();
-
-      if (!this.formDirective.name || !this.formDirective.action) {
-        app._data.alertMessaje = 'Please complete all fields';
-        app._data.type ='danger';
-        app.$bvToast.toast(app._data.alertMessaje, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-					autoHideDelay: 1500,
-        })
-      } else {
-        if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
-          app._data.alertMessaje = 'Please complete all fields';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-        }
-        else{
-          this.newDirective();
-        }
-      }
+    /*Show delete directive modal*/
+    delDirModal(elem, button){
+      this.modalDeletDir.title = "Delete " + elem;
+      this.modalDeletDir.element = elem;
+      this.$root.$emit('bv::show::modal', 'modalDeletDir', button);
     },
-
-    /*Crea una nueva directiva*/
-    newDirective(){
+    /*Delete directive*/
+    delDirective(comp){
       for (var i = 0; i < architecture.directives.length; i++) {
-        if(this.formDirective.name == architecture.directives[i].name){
-          app._data.alertMessaje = 'The directive already exists';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-          return;
+        if(comp == architecture.directives[i].name){
+          architecture.directives.splice(i,1);
         }
       }
-
-      this.showNewDirective = false;
-      if(this.formDirective.action != 'byte' && this.formDirective.action != 'half_word' && this.formDirective.action != 'word' && this.formDirective.action != 'double_word' && this.formDirective.action != 'float' && this.formDirective.action != 'double' && this.formDirective.action != 'space'){
-        this.formDirective.size = null;
-      }
-
-      var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
-      architecture.directives.push(newDir);
     },
-
-    /*VALIDADOR FORMULARIOS*/
+    /*Empty directive form*/
+    emptyFormDirective(){
+      this.formDirective.name = '';
+      this.formDirective.action = '';
+      this.formDirective.size = 0;
+    },
+    /*Form validator*/
     valid(value){
       for (var i = 0; i <this.formInstruction.typeField.length; i++) {
         if(this.formInstruction.typeField[i]=='cop'){
@@ -3269,32 +3168,23 @@ window.app = new Vue({
         return true;
       }
     },
-    
 
 
 
+		/*Compilator*/
 
-
-
-
-
-
-
-
-
-    /*PAGINA ENSAMBLADOR*/
-    /*Funciones de nuevo, carga y descarga de ensamblador*/
+		/*Empty assembly textarea*/
     newAssembly(){
       textarea_assembly_editor.setValue("");
     },
-
+    /*Load external assembly code*/
     read_assembly(e){
       $(".loading").show();
       var file;
       var reader;
       var files = document.getElementById('assembly_file').files;
 
-      for (var i = 0; i < files.length; i++) {
+      for (var i = 0; i < files.length; i++){
         file = files[i];
         reader = new FileReader();
         reader.onloadend = onFileLoaded;
@@ -3306,11 +3196,10 @@ window.app = new Vue({
       }
       $(".loading").hide();
     },
-
     assembly_update(){
       textarea_assembly_editor.setValue(code_assembly);
     },
-
+    /*Save assembly code in a local file*/
     assembly_save(){
       var textToWrite = textarea_assembly_editor.getValue();
       var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
@@ -3336,7 +3225,39 @@ window.app = new Vue({
 
       downloadLink.click();
     },
+    /*Load the available examples*/
+    load_examples_available(){
+      $.getJSON('examples/available_example.json', function(cfg){
+        example_available = cfg;
+        app._data.example_available = example_available;
+      });
+    },
+    /*Load a selected example*/
+    load_example(id){
+      this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
 
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function(){
+        if (this.readyState == 4 && this.status == 200) {
+          code_assembly = this.responseText;
+          textarea_assembly_editor.setValue(code_assembly);
+
+          app._data.alertMessaje = ' The selected example has been loaded correctly';
+          app._data.type = 'success';
+          app.$bvToast.toast(app._data.alertMessaje, {
+	          variant: app._data.type,
+	          solid: true,
+	          toaster: "b-toaster-top-center",
+						autoHideDelay: 1500,
+	        });
+          var date = new Date();
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
+        }
+      };
+      xhttp.open("GET", "examples/"+id+".txt", true);
+      xhttp.send();
+    },
+    /*Save a binary in a local file*/
     library_save(){
       if(this.assembly_compiler() == -1){
       	return;
@@ -3344,13 +3265,13 @@ window.app = new Vue({
 
       if(memory[memory_hash[0]].length != 0){
         app._data.alertMessaje = 'You can not enter data in a library';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
@@ -3360,13 +3281,13 @@ window.app = new Vue({
         console.log(instructions_binary[i].Label)
         if(instructions_binary[i].Label == "main_symbol"){
           app._data.alertMessaje = 'You can not use the "main" tag in a library';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -3400,21 +3321,22 @@ window.app = new Vue({
       downloadLink.click();
 
       app._data.alertMessaje = 'Save binary';
-      app._data.type ='success';
+      app._data.type = 'success';
       app.$bvToast.toast(app._data.alertMessaje, {
         variant: app._data.type,
         solid: true,
         toaster: "b-toaster-top-center",
 				autoHideDelay: 1500,
-      })
+      });
       var date = new Date();
       notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
     },
-
+    /*Load binary file*/
     library_load(e){
       var file;
       var reader;
       var files = document.getElementById('binary_file').files;
+
       for (var i = 0; i < files.length; i++) {
         file = files[i];
         reader = new FileReader();
@@ -3426,7 +3348,6 @@ window.app = new Vue({
         code_binary = event.currentTarget.result;
       }
     },
-
     library_update(){
       update_binary = JSON.parse(code_binary);
       this.update_binary = update_binary;
@@ -3435,7 +3356,7 @@ window.app = new Vue({
       $("#divTags").show();
       this.load_binary = true;
     },
-
+    /*Remove a loaded binary*/
     removeLibrary(){
       update_binary = "";
       this.update_binary = update_binary;
@@ -3444,8 +3365,30 @@ window.app = new Vue({
       $("#divTags").hide();
       this.load_binary = false;
     },
+    /*Places the pointer in the first position*/
+    first_token(){
+      var assembly = textarea_assembly_editor.getValue();
+      var index = tokenIndex;
 
-    /*Lee un token*/
+      while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length)){
+        while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+          index++;
+        }
+
+        if(assembly.charAt(index) == '#'){
+          while((assembly.charAt(index) != '\n') && (index < assembly.length)){
+            index++;
+          }
+
+          while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+            index++;
+          }
+        }
+      }
+
+      tokenIndex = index;
+    },
+    /*Read token*/
     get_token(){
       var assembly = textarea_assembly_editor.getValue();
       var index = tokenIndex;
@@ -3472,8 +3415,7 @@ window.app = new Vue({
 
       return res;
     },
-
-    /*Avanza al siguente token*/
+    /*Places the pointer in the start of next token*/
     next_token(){
       var assembly = textarea_assembly_editor.getValue();
       var index = tokenIndex;
@@ -3508,32 +3450,7 @@ window.app = new Vue({
       }
       tokenIndex = index;
     },
-
-    /*Coloca el puntero en la primera posicion*/
-    first_token(){
-      var assembly = textarea_assembly_editor.getValue();
-      var index = tokenIndex;
-
-      while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length)){
-        while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
-          index++;
-        }
-
-        if(assembly.charAt(index) == '#'){
-          while((assembly.charAt(index) != '\n') && (index < assembly.length)){
-            index++;
-          }
-
-          while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
-            index++;
-          }
-        }
-      }
-
-      tokenIndex = index;
-    },
-
-    /*Compilador*/
+    /*Compile assembly code*/
     assembly_compiler(){
       $(".loading").show();
 
@@ -3582,28 +3499,26 @@ window.app = new Vue({
 	      var numBinaries = instructions.length;
 
 
-	      /*Asignacion direcciones de memoria*/
-	      //address = parseInt(architecture.memory_layout[0].value);
+	      /*Allocation of memory addresses*/
 	      data_address = parseInt(architecture.memory_layout[2].value);
 	      stack_address = parseInt(architecture.memory_layout[4].value);
 
-	      /*ASIGNACION PILA TEMPORAL PC*/
 	      architecture.components[1].elements[29].value = bigInt(stack_address).value;
 	      architecture.components[0].elements[0].value = bigInt(address).value;
 	      architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
 	      architecture.components[0].elements[0].default_value = bigInt(address).value;
 
-	      totalStats=0;
+	      /*Reset stats*/
+	      totalStats = 0;
 	      for (var i = 0; i < stats.length; i++){
 	        stats[i].percentage = 0;
 	        stats[i].number_instructions = 0;
 	      }
 
 	      align = 0;
-
 	      var empty = false;
 
-	      /*Guarda en la memoria del navegador una copia de seguidad*/
+	      /*Save a backup in the cache memory*/
 	      if (typeof(Storage) !== "undefined") {
 	        var auxObject = jQuery.extend(true, {}, architecture);
 
@@ -3619,21 +3534,21 @@ window.app = new Vue({
 	        localStorage.setItem("date_copy", auxDate);
 	      }
 
+	      /*Start of compilation*/
 	      app.first_token();
 
 	      if(app.get_token() == null){
 	        $(".loading").hide();
 	        app._data.alertMessaje = 'Please enter the assembly code before compiling';
-	        app._data.type ='danger';
+	        app._data.type = 'danger';
 	        app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
 	        var date = new Date();
 	        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-	        
 	        return -1;
 	      }
 
@@ -3709,7 +3624,6 @@ window.app = new Vue({
 	              case "global_symbol":
 
 	                var isGlobl = true;
-
 	                app.next_token();
 
 	                while(isGlobl){
@@ -3766,7 +3680,7 @@ window.app = new Vue({
 	        }
 	      }
 
-	      /*Instrucciones pendientes de revisar etiqueta*/
+	      /*Check pending instructions*/
 	      for(var i = 0; i < pending_instructions.length; i++){
 	        var exit = 0;
 	        var signatureParts = pending_instructions[i].signature;
@@ -3777,7 +3691,6 @@ window.app = new Vue({
 	            for (var z = 0; z < instructions.length && exit == 0; z++){
 	              if(instructions[z].Label == instructionParts[j]){
 	                var addr = instructions[z].Address;
-
 	                var bin = parseInt(addr, 16).toString(2);
 	                var startbit = pending_instructions[i].startBit;
 	                var stopbit = pending_instructions[i].stopBit;
@@ -3818,7 +3731,6 @@ window.app = new Vue({
 	              for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
 	                if(instructionParts[j] == memory[memory_hash[0]][z].Binary[p].Tag){
 	                  var addr = (memory[memory_hash[0]][z].Binary[p].Addr);
-
 	                  var bin = parseInt(addr, 16).toString(2);
 	                  var startbit = pending_instructions[i].startBit;
 	                  var stopbit = pending_instructions[i].stopBit;
@@ -3878,7 +3790,7 @@ window.app = new Vue({
 	        }
 	      }
 
-	      /*Introduce las instrucciones compiladas en el segmento de texto*/
+	      /*Enter the binary in the text segment*/
 	      if(update_binary.instructions_binary != null){
 	        for (var i = 0; i < update_binary.instructions_binary.length; i++){
 	          var hex = app.bin2hex(update_binary.instructions_binary[i].loaded);
@@ -3943,6 +3855,7 @@ window.app = new Vue({
 	        }
 	      }
 
+	      /*Enter the compilated instructions in the text segment*/
 	      for (var i = 0; i < instructions_binary.length; i++){
 	        var hex = app.bin2hex(instructions_binary[i].loaded);
 	        var auxAddr = parseInt(instructions_binary[i].Address, 16);
@@ -3959,7 +3872,6 @@ window.app = new Vue({
 	            if(label == ""){
 	              label=null;
 	            }
-
 	            if(a == 0){
 	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
 	            }
@@ -3988,12 +3900,11 @@ window.app = new Vue({
 	            (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
 	          }
 	        }
-
 	        app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
 	      }
 
 
-	      /*Verifica solapamiento*/
+	      /*Check for overlap*/
 	      if(memory[memory_hash[0]].length > 0){
 	        if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
 	          tokenIndex = 0;
@@ -4013,16 +3924,15 @@ window.app = new Vue({
 	          app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
 	          app._data.alertMessaje = 'Data overflow';
-	          app._data.type ='danger';
+	          app._data.type = 'danger';
 	          app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
 	          var date = new Date();
 	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
 	          $(".loading").hide();
 	          return -1;
 	        }
@@ -4047,23 +3957,21 @@ window.app = new Vue({
 	          app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
 	          app._data.alertMessaje = 'Instruction overflow';
-	          app._data.type ='danger';
+	          app._data.type = 'danger';
 	          app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
 	          var date = new Date();
 	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-
 	          $(".loading").hide();
 	          return -1;
 	        }
 	      }
 
-	      /*Guarda los binarios*/
+	      /*Save binary*/
 	      for(var i = 0; i < instructions_binary.length; i++){
 	        if(extern.length == 0 && instructions_binary[i].Label != ""){
 	          instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
@@ -4084,6 +3992,7 @@ window.app = new Vue({
 	        }	
 	      }
 
+	      /*Save tags*/
 	      for(var i = 0; i < instructions_tag.length; i++){
 	        if(extern.length == 0 && instructions_tag[i].tag != ""){
 	          instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
@@ -4107,21 +4016,23 @@ window.app = new Vue({
 
 	      app._data.instructions = instructions;
 
-	      /*Inicializar pila*/
+	      /*Initialize stack*/
 	      memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
+	      
 	      for(var i = 0; i<4; i++){
 	        (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
 	      }
+
 	      app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
 	      app._data.alertMessaje = 'Compilation completed successfully';
-	      app._data.type ='success';
+	      app._data.type = 'success';
 	      app.$bvToast.toast(app._data.alertMessaje, {
 	        variant: app._data.type,
 	        solid: true,
 	        toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-	      })
+	      });
 	      var date = new Date();
 	      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
@@ -4136,13 +4047,7 @@ window.app = new Vue({
       	$(".loading").hide();
       }, 25);
     },
-
-
-
-
-
-
-
+    /*Compile data segment*/
     data_segment_compiler(){
       var existsData = true;
 
@@ -4267,8 +4172,6 @@ window.app = new Vue({
                   console.log(auxTokenString)
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
-
-                    /*ALIGN*/
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -4293,7 +4196,6 @@ window.app = new Vue({
                     }
 
                     if(data_address % 4 == 0){
-
                       memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: parseInt(auxTokenString, 16), DefValue: parseInt(auxTokenString, 16), reset: false});
 
                       if(i == 0){
@@ -4308,7 +4210,6 @@ window.app = new Vue({
                       }
 
                       data_address++;
-                    
                     }
                     else{
                       if(auxTokenString.length <= 4){
@@ -4333,7 +4234,6 @@ window.app = new Vue({
                   }
                   console.log(memory[memory_hash[0]])
 
-
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                     var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
@@ -4342,14 +4242,13 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log(memory[memory_hash[0]])
-
-                  console.log("byte Terminado")
+                  console.log(memory[memory_hash[0]]);
+                  console.log("byte Terminado");
 
                   this.next_token();
                   token = this.get_token();
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
@@ -4384,11 +4283,11 @@ window.app = new Vue({
                     return -1;
                   }
 
-                  re = new RegExp(",", "g")
+                  re = new RegExp(",", "g");
                   token = token.replace(re, "");
 
-                  console.log("half_word")
-                  console.log(token)
+                  console.log("half_word");
+                  console.log(token);
 
                   var auxToken;
                   var auxTokenString;
@@ -4403,6 +4302,7 @@ window.app = new Vue({
                     }
 
                     auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
+
                     if(value[1].length == 0){
                       this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -4436,8 +4336,6 @@ window.app = new Vue({
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
                     console.log((auxTokenString.length/2))
-
-                    /*ALIGN*/
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -4476,7 +4374,6 @@ window.app = new Vue({
                       }
 
                       data_address++;
-                    
                     }
                     else{
                       if(auxTokenString.length <= 4 && i == 0){
@@ -4494,12 +4391,10 @@ window.app = new Vue({
                       else{
                         (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                       }
-
                       data_address++;
                     }
                   }
                   console.log(memory[memory_hash[0]])
-
 
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                     var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
@@ -4508,14 +4403,13 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log(memory[memory_hash[0]])
-
-                  console.log("half Terminado")
+                  console.log(memory[memory_hash[0]]);
+                  console.log("half Terminado");
 
                   this.next_token();
                   token = this.get_token();
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
@@ -4550,10 +4444,10 @@ window.app = new Vue({
                     return -1;
                   }
 
-                  re = new RegExp(",", "g")
+                  re = new RegExp(",", "g");
                   token = token.replace(re, "");
 
-                  console.log(token)
+                  console.log(token);
 
                   var auxToken;
                   var auxTokenString;
@@ -4600,9 +4494,7 @@ window.app = new Vue({
                   console.log(auxTokenString)
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
-                    console.log((auxTokenString.length/2))
-
-                    /*ALIGN*/
+                    console.log((auxTokenString.length/2));
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -4641,7 +4533,6 @@ window.app = new Vue({
                       }
 
                       data_address++;
-                    
                     }
                     else{
                       if(auxTokenString.length <= 4){
@@ -4665,7 +4556,6 @@ window.app = new Vue({
                   }
                   console.log(memory[memory_hash[0]])
 
-
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                     var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
                     for(var i = 0; i < num_iter; i++){
@@ -4673,21 +4563,20 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log(memory[memory_hash[0]])
-
-                  console.log("word Terminado")
+                  console.log(memory[memory_hash[0]]);
+                  console.log("word Terminado");
 
                   this.next_token();
                   token = this.get_token();
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
                       isWord = false;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
+                  console.log(memory[memory_hash[0]]);
                 }
 
                 j=0;
@@ -4699,7 +4588,7 @@ window.app = new Vue({
                 this.next_token();
 
                 while(isDoubleWord){
-                  console.log("word")
+                  console.log("word");
 
                   token = this.get_token();
 
@@ -4716,10 +4605,10 @@ window.app = new Vue({
                     return -1;
                   }
 
-                  re = new RegExp(",", "g")
+                  re = new RegExp(",", "g");
                   token = token.replace(re, "");
 
-                  console.log(token)
+                  console.log(token);
 
                   var auxToken;
                   var auxTokenString;
@@ -4767,8 +4656,6 @@ window.app = new Vue({
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
                     console.log((auxTokenString.length/2))
-
-                    /*ALIGN*/
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -4829,8 +4716,7 @@ window.app = new Vue({
                       data_address++;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
-
+                  console.log(memory[memory_hash[0]]);
 
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                     var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
@@ -4839,21 +4725,20 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log(memory[memory_hash[0]])
-
-                  console.log("double word Terminado")
+                  console.log(memory[memory_hash[0]]);
+                  console.log("double word Terminado");
 
                   this.next_token();
                   token = this.get_token();
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
                       isDoubleWord = false;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
+                  console.log(memory[memory_hash[0]]);
                 }
 
                 j=0;
@@ -4865,7 +4750,7 @@ window.app = new Vue({
                 this.next_token();
 
                 while(isFloat){
-                  console.log("float")
+                  console.log("float");
 
                   token = this.get_token();
 
@@ -4882,10 +4767,10 @@ window.app = new Vue({
                     return -1;
                   }
 
-                  re = new RegExp(",", "g")
+                  re = new RegExp(",", "g");
                   token = token.replace(re, "");
 
-                  console.log(token)
+                  console.log(token);
 
                   var auxToken;
                   var auxTokenString;
@@ -4929,12 +4814,11 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
-                  console.log(auxTokenString)
+                  console.log(auxTokenString);
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
-                    console.log((auxTokenString.length/2))
+                    console.log((auxTokenString.length/2));
 
-                    /*ALIGN*/
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -4995,7 +4879,7 @@ window.app = new Vue({
                       data_address++;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
+                  console.log(memory[memory_hash[0]]);
 
 
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
@@ -5005,21 +4889,20 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log(memory[memory_hash[0]])
-
-                  console.log("float Terminado")
+                  console.log(memory[memory_hash[0]]);
+                  console.log("float Terminado");
 
                   this.next_token();
                   token = this.get_token();
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
                       isFloat = false;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
+                  console.log(memory[memory_hash[0]]);
                 }
 
                 j=0;
@@ -5031,7 +4914,7 @@ window.app = new Vue({
                 this.next_token();
 
                 while(isDouble){
-                  console.log("double")
+                  console.log("double");
 
                   token = this.get_token();
 
@@ -5051,7 +4934,7 @@ window.app = new Vue({
                   re = new RegExp(",", "g")
                   token = token.replace(re, "");
 
-                  console.log(token)
+                  console.log(token);
 
                   var auxToken;
                   var auxTokenString;
@@ -5095,12 +4978,11 @@ window.app = new Vue({
                     auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                   }
                   
-                  console.log(auxTokenString)
+                  console.log(auxTokenString);
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
-                    console.log((auxTokenString.length/2))
+                    console.log((auxTokenString.length/2));
 
-                    /*ALIGN*/
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -5139,7 +5021,6 @@ window.app = new Vue({
                       }
 
                       data_address++;
-                    
                     }
                     else{
                       if(auxTokenString.length <= 4){
@@ -5161,8 +5042,7 @@ window.app = new Vue({
                       data_address++;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
-
+                  console.log(memory[memory_hash[0]]);
 
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                     var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
@@ -5171,28 +5051,27 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log(memory[memory_hash[0]])
-
-                  console.log("double Terminado")
+                  console.log(memory[memory_hash[0]]);
+                  console.log("double Terminado");
 
                   this.next_token();
                   token = this.get_token();
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
                       isDouble = false;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
+                  console.log(memory[memory_hash[0]]);
                 }
 
                 j=0;
 
                 break;
               case "ascii_not_null_end":
-                console.log("ascii_not_null_end")
+                console.log("ascii_not_null_end");
 
                 var isAscii = true;
                 var nextToken = 1;
@@ -5200,10 +5079,10 @@ window.app = new Vue({
                 this.next_token();
 
                 while(isAscii){
-                  console.log("ascii_not_null_end")
+                  console.log("ascii_not_null_end");
 
                   token = this.get_token();
-                  console.log(token)
+                  console.log(token);
 
                   if(token == null){
                     break;
@@ -5216,11 +5095,11 @@ window.app = new Vue({
                     return -1;
                   }
 
-                  re = new RegExp(",", "g")
+                  re = new RegExp(",", "g");
                   token = token.replace(re, "");
 
                   re = new RegExp('^"');
-                  console.log(re)
+                  console.log(re);
                   if(token.search(re) == -1){
                     this.compileError(17, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     $(".loading").hide();
@@ -5228,13 +5107,11 @@ window.app = new Vue({
                   }
 
                   var string = "";
-
                   var final = false;
 
-                  
                   re = new RegExp('"$');
-                  console.log(re)
-                  console.log(token)
+                  console.log(re);
+                  console.log(token);
                   if(token.search(re) == -1){
                     string = token.substring(1, token.length);
                   }
@@ -5246,14 +5123,14 @@ window.app = new Vue({
                   while(final == false){
                     this.next_token();
                     token = this.get_token();
-                    console.log(token)
+                    console.log(token);
 
                     if(token == null){
                       break;
                     }
 
                     re = new RegExp('(.)","(.)');
-                    console.log(re)
+                    console.log(re);
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -5263,16 +5140,15 @@ window.app = new Vue({
                     re = new RegExp(",", "g")
                     token = token.replace(re, "");
 
-
                     re = new RegExp('^"');
-                    console.log(re)
+                    console.log(re);
                     if(token.search(re) != -1 && final == false){
                       string = string + " ";
                       final = true;
                     }
 
                     re = new RegExp('"$');
-                    console.log(re)
+                    console.log(re);
                     if(token.search(re) != -1 && final == false){
                       final = true;
                       string = string + " " + token.substring(0, token.length-1);
@@ -5287,10 +5163,7 @@ window.app = new Vue({
                   console.log(string);
 
                   for(var i = 0; i < string.length; i++){
-                    console.log(string.length)
-
-
-                    /*ALIGN*/
+                    console.log(string.length);
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -5340,12 +5213,10 @@ window.app = new Vue({
                         memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
                         memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
                       }
-
                       data_address++;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
-
+                  console.log(memory[memory_hash[0]]);
 
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                     var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
@@ -5354,7 +5225,7 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log("ascii_not_null_end Terminado")
+                  console.log("ascii_not_null_end Terminado");
 
                   if(nextToken == 1){
                     this.next_token();
@@ -5363,21 +5234,21 @@ window.app = new Vue({
 
                   nextToken = 1;
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
                       isAscii = false;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
+                  console.log(memory[memory_hash[0]]);
                 }
 
                 j=0;
 
                 break;
               case "ascii_null_end":
-                console.log("ascii_null_end")
+                console.log("ascii_null_end");
                 
                 var isAscii = true;
                 var nextToken = 1;
@@ -5388,7 +5259,7 @@ window.app = new Vue({
                   console.log("ascii_null_end")
 
                   token = this.get_token();
-                  console.log(token)
+                  console.log(token);
 
                   if(token == null){
                     break;
@@ -5413,13 +5284,11 @@ window.app = new Vue({
                   }
 
                   var string = "";
-
                   var final = false;
-
                   
                   re = new RegExp('"$');
-                  console.log(re)
-                  console.log(token)
+                  console.log(re);
+                  console.log(token);
                   if(token.search(re) == -1){
                     string = token.substring(1, token.length);
                   }
@@ -5437,7 +5306,7 @@ window.app = new Vue({
                     }
 
                     re = new RegExp('(.)","(.)');
-                    console.log(re)
+                    console.log(re);
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -5447,16 +5316,15 @@ window.app = new Vue({
                     re = new RegExp(",", "g")
                     token = token.replace(re, "");
 
-
                     re = new RegExp('^"');
-                    console.log(re)
+                    console.log(re);
                     if(token.search(re) != -1 && final == false){
                       string = string + " ";
                       final = true;
                     }
 
                     re = new RegExp('"$');
-                    console.log(re)
+                    console.log(re);
                     if(token.search(re) != -1 && final == false){
                       final = true;
                       string = string + " " + token.substring(0, token.length-1);
@@ -5473,9 +5341,7 @@ window.app = new Vue({
                   console.log(string);
 
                   for(var i = 0; i < string.length + 1; i++){
-                    console.log(string.length)
-
-                    /*ALIGN*/
+                    console.log(string.length);
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -5513,8 +5379,6 @@ window.app = new Vue({
                       }
 
                       data_address++;
-
-                    
                     }
                     else{
                       if(i < string.length){
@@ -5525,7 +5389,7 @@ window.app = new Vue({
                           if(label != null){
                             data_tag.push({tag: label, addr: data_address});
                           }
-                          abel = null;
+                          label = null;
                         }
                         else{
                           (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
@@ -5541,8 +5405,7 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log(memory[memory_hash[0]])
-
+                  console.log(memory[memory_hash[0]]);
 
                   if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                     var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
@@ -5551,7 +5414,7 @@ window.app = new Vue({
                     }
                   }
 
-                  console.log("ascii_null_end Terminado")
+                  console.log("ascii_null_end Terminado");
 
                   if(nextToken == 1){
                     this.next_token();
@@ -5560,26 +5423,26 @@ window.app = new Vue({
 
                   nextToken = 1;
 
-                  console.log(token)
+                  console.log(token);
 
                   for(var z = 0; z < architecture.directives.length; z++){
                     if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
                       isAscii = false;
                     }
                   }
-                  console.log(memory[memory_hash[0]])
+                  console.log(memory[memory_hash[0]]);
                 }
 
                 j=0;
 
                 break;
               case "space":
-                console.log("space")
+                console.log("space");
 
                 this.next_token();
                 token = this.get_token();
-                console.log(token)
-                console.log(label)
+                console.log(token);
+                console.log(label);
 
                 if(token == null){
                   this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5603,8 +5466,6 @@ window.app = new Vue({
                 var auxToken = parseInt(token) * architecture.directives[j].size;
 
                 for(var i = 0; i < auxToken; i++){
-
-                  /*ALIGN*/
                   if((data_address % align) != 0 && i == 0 && align != 0){
                     while((data_address % align) != 0){
                       if(data_address % 4 == 0){
@@ -5637,7 +5498,6 @@ window.app = new Vue({
                     }
 
                     data_address++;
-                  
                   }
                   else{
                     if(i == 0){
@@ -5655,7 +5515,7 @@ window.app = new Vue({
                   }
                 }
 
-                console.log(memory[memory_hash[0]])
+                console.log(memory[memory_hash[0]]);
 
                 if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
                   var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
@@ -5667,15 +5527,15 @@ window.app = new Vue({
                 this.next_token();
                 token = this.get_token();
 
-                console.log("space Terminado")
+                console.log("space Terminado");
 
                 break;
               case "align":
-                console.log("align")
+                console.log("align");
 
                 this.next_token();
                 token = this.get_token();
-                console.log(token)
+                console.log(token);
 
                 if(token == null){
                   this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5696,18 +5556,18 @@ window.app = new Vue({
                   return -1;
                 }
 
-                console.log(align)
+                console.log(align);
                 align = Math.pow(2, parseInt(token));
-                console.log(align)
+                console.log(align);
 
                 this.next_token();
                 token = this.get_token();
 
-                console.log("align Terminado")
+                console.log("align Terminado");
 
                 break;
               default:
-                console.log("Default")
+                console.log("Default");
                 existsData = false;
                 break;
             }
@@ -5723,12 +5583,7 @@ window.app = new Vue({
       app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
       return 0;
     },
-
-
-
-
-
-
+    /*Compile text segment*/
     code_segment_compiler(){
       var existsInstruction = true;
 
@@ -5758,7 +5613,7 @@ window.app = new Vue({
           break;
         }
 
-        console.log(token)
+        console.log(token);
 
         var found = false;
 
@@ -5825,7 +5680,7 @@ window.app = new Vue({
             for (var j = 0; j < numFields - 1; j++){
               this.next_token();
               token = this.get_token();
-              console.log(token)
+              console.log(token);
 
               if(token != null){
                 var re = new RegExp(",+$");
@@ -5836,8 +5691,8 @@ window.app = new Vue({
               userInstruction = userInstruction + " " + token;
             }
 
-            console.log(instruction)
-            console.log(label)
+            console.log(instruction);
+            console.log(label);
 
             var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0);
 
@@ -5898,7 +5753,6 @@ window.app = new Vue({
           }
 
           if(resultPseudo == -1){
-
             existsInstruction = false;
             tokenIndex = 0;
             instructions = [];
@@ -5925,7 +5779,7 @@ window.app = new Vue({
       }
 
       token = this.get_token();
-      console.log(token)
+      console.log(token);
 
       app._data.instructions = instructions;
 
@@ -5937,15 +5791,7 @@ window.app = new Vue({
 
       return 0;
     },
-
-
-
-
-
-
-
-
-
+    /*Compile pseudoinstructions*/
     pseudoinstruction_compiler(instruction, label, line){
       var instructionParts = instruction.split(' ');
       var found = false;
@@ -5967,27 +5813,25 @@ window.app = new Vue({
           for (var j = 1; j < signatureRawParts.length; j++){
             var aux = signatureRawParts[j].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             re = new RegExp(aux,"g");
-
             definition = definition.replace(re, instructionParts[j]);
           }
 
           re = new RegExp("\n","g");
 					definition = definition.replace(re, "");
 
-          console.log(definition)
+          console.log(definition);
 
           re = /Field.(\d).(.*?)[;\s]/;
           while (definition.search(re) != -1){
             var match = re.exec(definition);
-            console.log(match)
+            console.log(match);
 
             var value;
-
             try{
               eval("value = this.field('" + instructionParts[match[1]] +"', '" + match[2] + "')");
             }
             catch(e){
-              if (e instanceof SyntaxError) {
+              if (e instanceof SyntaxError){
                 return -1;
               }
             }
@@ -6000,7 +5844,7 @@ window.app = new Vue({
             re = /Field.(\d).(.*?)[;\s]/;
           }
 
-          console.log(definition)
+          console.log(definition);
 
           var re = /{([^}]*)}/g;
           var code = re.exec(definition);
@@ -6008,7 +5852,7 @@ window.app = new Vue({
           if(code != null){
             while(code != null){
               var instructions = code[1].split(";");
-              console.log(instructions)
+              console.log(instructions);
 
               for (var j = 0; j < instructions.length-1; j++){
                 var aux;
@@ -6020,7 +5864,6 @@ window.app = new Vue({
                 }
                 definition = definition.replace(instructions[j]+";", aux+";\n");
               }
-
               code = re.exec(definition);
             }
           }
@@ -6039,16 +5882,16 @@ window.app = new Vue({
             }
           }
 
-          console.log(definition)
+          console.log(definition);
 
           try{
             var error = false;
             eval(definition);
             if(error == true){
-              console.log("Error pseudo")
+              console.log("Error pseudo");
               return -2;
             }
-            console.log("finpseudo")
+            console.log("fin pseudo");
             return 0;
           }
           catch(e){
@@ -6064,13 +5907,13 @@ window.app = new Vue({
         return -1;
       }
     },
-
+    /*Get pseudoinstruction fields*/
     field(field, action){
-      console.log(field)
-      console.log(action)
+      console.log(field);
+      console.log(action);
       
       if(action == "SIZE"){
-        console.log("SIZE")
+        console.log("SIZE");
 
         if(field.match(/^0x/)){
           var value = field.split("x");
@@ -6089,7 +5932,6 @@ window.app = new Vue({
       if (action.search(re) != -1){
         var match = re.exec(action);
         var bits = match[1].split(",");
-
         var startBit = parseInt(bits[0]);
         var endBit = parseInt(bits[1]);
 
@@ -6118,9 +5960,7 @@ window.app = new Vue({
       }
       return -1;
     },
-
-
-
+    /*Compile instruction*/
     instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress){
       var re = new RegExp("^ +");
       var oriInstruction = instruction.replace(re, "");
@@ -6134,15 +5974,14 @@ window.app = new Vue({
       var stopBit;
       var resultPseudo = -3;
 
-      console.log(label)
-      console.log(line)
+      console.log(label);
+      console.log(line);
 
       for(var i = 0; i < architecture.instructions.length; i++){
         if(architecture.instructions[i].name != instructionParts[0]){
           continue;
         }
         else{
-          //var pending_tag = false;
           var tag = "";
 
           var binary = "";
@@ -6159,7 +5998,7 @@ window.app = new Vue({
           re = new RegExp(",", "g");
           var signature = architecture.instructions[i].signature.replace(re, " ");
 
-          re = new RegExp(signatureDef+"$")
+          re = new RegExp(signatureDef+"$");
           var match = re.exec(signature);
           var signatureParts = [];
           for(var j = 1; j < match.length; j++){
@@ -6172,10 +6011,10 @@ window.app = new Vue({
             signatureRawParts.push(match[j]);
           }
 
-          console.log(signatureParts)
-          console.log(signatureRawParts)
-          re = new RegExp(signatureDef+"$")
+          console.log(signatureParts);
+          console.log(signatureRawParts);
 
+          re = new RegExp(signatureDef+"$");
           if(oriInstruction.search(re) == -1){
             this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
             return -1;
@@ -6187,15 +6026,14 @@ window.app = new Vue({
             instructionParts.push(match[j]);
           }
           
-          console.log(instructionParts)
-
+          console.log(instructionParts);
 
           for(var j = 0; j < signatureParts.length; j++){
             switch(signatureParts[j]) {
               case "INT-Reg":
                 token = instructionParts[j];
 
-                console.log(token)
+                console.log(token);
 
                 var id = -1;
                 re = new RegExp("[0-9]+");
@@ -6206,7 +6044,6 @@ window.app = new Vue({
                 }
 
                 var validReg = false;
-
                 var regNum = 0;
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
@@ -6224,6 +6061,7 @@ window.app = new Vue({
                             this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
                           }
+
                           console.log(reg)
                           console.log((reg.toString(2)).padStart(fieldsLength, "0"))
                           console.log(binary)
@@ -6232,9 +6070,8 @@ window.app = new Vue({
                           console.log(binary.length - (architecture.instructions[i].fields[a].startbit + 1))
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                          //instruction = instruction + " " + token;
                           
-                          console.log(binary)
+                          console.log(binary);
 
                           re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
@@ -6251,7 +6088,6 @@ window.app = new Vue({
                           }
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                          //instruction = instruction + " " + token;
                           re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
                         }
@@ -6259,7 +6095,6 @@ window.app = new Vue({
                           this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                           return -1;
                         }
-
                         regNum++;
                       }
                     }
@@ -6271,10 +6106,9 @@ window.app = new Vue({
               case "FP-Reg":
                 token = instructionParts[j];
 
-                console.log(token)
+                console.log(token);
 
                 var validReg = false;
-
                 var regNum = 0;
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
@@ -6294,7 +6128,6 @@ window.app = new Vue({
                           }
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                          //instruction = instruction + " " + token;
                           re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
                         }
@@ -6318,7 +6151,6 @@ window.app = new Vue({
                 console.log(token)
 
                 var validReg = false;
-
                 var regNum = 0;
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
@@ -6338,7 +6170,6 @@ window.app = new Vue({
                           }
 
                           binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                          //instruction = instruction + " " + token;
                           re = RegExp("[fF][0-9]+");
                           instruction = instruction.replace(re, token);
                         }
@@ -6358,10 +6189,9 @@ window.app = new Vue({
 
               case "inm":
                 token = instructionParts[j];
-
                 var token_user = "";
 
-                console.log(token)
+                console.log(token);
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                   if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
@@ -6452,7 +6282,6 @@ window.app = new Vue({
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                     }
                     
-                    //instruction = instruction + " " + token;
                     re = RegExp("[fF][0-9]+");
                     instruction = instruction.replace(re, token);
                   }
@@ -6483,9 +6312,7 @@ window.app = new Vue({
                       }
 
                       addr = (parseInt(token, 16)).toString(2);
-                    
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                      //instruction = instruction + " " + token;
                       re = RegExp("[fF][0-9]+");
                       instruction = instruction.replace(re, token);
                     }
@@ -6502,22 +6329,21 @@ window.app = new Vue({
               default:
                 token = instructionParts[j];
 
-                console.log(token)
+                console.log(token);
 
                 for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                   if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                     fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                     
-                    console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"))
+                    console.log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
 
                     binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
                     
-                    console.log(binary)
+                    console.log(binary);
 
                     re = RegExp("[fF][0-9]+");
                     instruction = instruction.replace(re, token);
                   }
-
                   if(architecture.instructions[i].fields[a].type == "cop"){
                     fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 
@@ -6527,29 +6353,24 @@ window.app = new Vue({
 
               break;
             }
-
-
           }
 
           if(validTagPC == false && resultPseudo == -3){
-            console.log("pendiente")
+            console.log("pendiente");
 
             var padding = "";
             padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
-
             binary = binary + padding;
 
             var hex = this.bin2hex(binary);
             var auxAddr = address;
 
-            console.log(binary)
-            console.log(this.bin2hex(binary))
+            console.log(binary);
+            console.log(this.bin2hex(binary));
 
             pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: textarea_assembly_editor.posFromIndex(tokenIndex).line});
 
-
             if(pending == false){
-
               instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
               instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
@@ -6568,7 +6389,6 @@ window.app = new Vue({
             }
 
             console.log(address.toString(16));
-
             console.log(instructions);
 
             break;
@@ -6585,12 +6405,10 @@ window.app = new Vue({
               var hex = this.bin2hex(binary);
               var auxAddr = address;
 
-              console.log(binary)
-              console.log(this.bin2hex(binary))
-
+              console.log(binary);
+              console.log(this.bin2hex(binary));
 
               if(pending == false){
-
                 instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
                 instructions_binary.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: binary, user: null, _rowVariant: '', visible: false});
 
@@ -6609,16 +6427,13 @@ window.app = new Vue({
               }
 
               console.log(address.toString(16));
-
-              console.log(instructions)
+              console.log(instructions);
             }
-
           }
         }
       }
     },
-
-    /*Muestra el mensaje de error al compilar*/
+    /*Show error message in the compilation*/
     compileError(error, token, line){
       this.$root.$emit('bv::show::modal', 'modalAssemblyError');
 
@@ -6643,207 +6458,246 @@ window.app = new Vue({
 
 
 
+		/*Simulator*/
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /*PAGINA SIMULADOR*/
-    /*Funciones de los popover*/
-    popoverId(i){
-      return 'popoverValueContent' + i;
-    },
-    closePopover(){
-      this.$root.$emit('bv::hide::popover')
-    },
-
-    /*Convierte de hexadecimal a float*/
-    hex2float ( hexvalue ){
-      var sign     = (hexvalue & 0x80000000) ? -1 : 1;
-      var exponent = ((hexvalue >> 23) & 0xff) - 127;
-      var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
-
-      var valuef = sign * mantissa * Math.pow(2, exponent);
-      if (-127 == exponent)
-        if (1 == mantissa)
-          valuef = (sign == 1) ? "+0" : "-0" ;
-        else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126) ;
-      if (128 == exponent)
-        if (1 == mantissa)
-          valuef = (sign == 1) ? "+Inf" : "-Inf" ;
-        else valuef = "NaN" ;
-
-      return valuef ;
-    },
-
-    hex2double ( hexvalue ){
-      var value = hexvalue.split('x');
-      var value_bit = '';
-
-      for (var i = 0; i < value[1].length; i++) {
-      	var aux = value[1].charAt(i);
-      	aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-      	value_bit = value_bit + aux;
+		/*Change bits of calculator*/
+    changeBitsCalculator(index){
+      if(index == 0){
+        this.calculator.bits = 32;
+        this.calculator.variant32 = "primary";
+        this.calculator.variant64 = "outline-primary";
+        this.calculator.lengthHexadecimal = 8;
+        this.calculator.lengthSign = 1;
+        this.calculator.lengthExponent = 8;
+        this.calculator.lengthMantissa = 23;
       }
-
-	  	var buffer = new ArrayBuffer(8);
-		  new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
-		  return new DataView( buffer ).getFloat64(0, false);
-    },
-
-    /*Convierte de hexadecimal a char*/
-    hex2char8 ( hexvalue ){
-
-    	var num_char = ((hexvalue.toString().length))/2;
-    	var exponent = 0;
-    	var pos = 0;
-
-      var valuec = new Array();
-
-      for (var i = 0; i < num_char; i++) {
-        var auxHex = hexvalue.substring(pos, pos+2);
-        valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-        pos = pos + 2;
+      if(index == 1){
+        this.calculator.bits = 64;
+        this.calculator.variant64 = "primary";
+        this.calculator.variant32 = "outline-primary";
+        this.calculator.lengthHexadecimal = 16;
+        this.calculator.lengthSign = 1;
+        this.calculator.lengthExponent = 11;
+        this.calculator.lengthMantissa = 52;
       }
+      this.calculator.hexadecimal = "";
+      this.calculator.sign = "";
+      this.calculator.exponent = "";
+      this.calculator.mantissa = "";
+      this.calculator.decimal = "";
+      this.calculator.sign = "";
+      this.calculator.exponentDec = "";
+      this.calculator.mantissaDec = "";
+    },
+    /*Calculator functionality*/
+    calculatorFunct(index){
+      switch(index){
+        case 0:
+          var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
+          var float;
+          var binary;
 
-      var characters = '';
+          if(this.calculator.bits == 32){
+            var re = /[0-9A-Fa-f]{8}/g;
+            if(!re.test(hex)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        });
 
-      for (var i = 0; i < valuec.length; i++) {
-        characters = characters + valuec[i] + ' ';
+              this.calculator.sign = "";
+              this.calculator.exponent = "";
+              this.calculator.mantissa = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              this.calculator.decimal = "";
+
+              return;
+            }
+
+            float = this.hex2float("0x" + hex);
+            binary = this.float2bin(float).padStart(this.calculator.bits, "0");
+
+            this.calculator.decimal = float;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 9);
+            this.calculator.mantissa = binary.substring(9, 32);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+          if(this.calculator.bits == 64){
+            var re = /[0-9A-Fa-f]{16}/g;
+            if(!re.test(hex)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        });
+
+              this.calculator.sign = "";
+              this.calculator.exponent = "";
+              this.calculator.mantissa = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              this.calculator.decimal = "";
+
+              return;
+            }
+
+            float = this.hex2double("0x"+hex);
+            binary = this.double2bin(float);
+
+            this.calculator.decimal = float;
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 12);
+            this.calculator.mantissa = binary.substring(12, 64);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+
+          break;
+        case 1:
+          if(this.calculator.bits == 32){
+            this.calculator.sign = this.calculator.sign.padStart(1, "0");
+            this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
+            this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
+
+            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+
+            var re = /[0-1]{32}/g;
+            if(!re.test(binary)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        });
+
+              this.calculator.hexadecimal = "";
+              this.calculator.decimal = "";
+              this.calculator.exponentDec = "";
+              this.calculator.mantissaDec = 0;
+              return;
+            }
+
+            float = this.hex2float("0x" + this.bin2hex(binary));
+            hexadecimal = this.bin2hex(binary);
+
+            this.calculator.decimal = float;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+          if(this.calculator.bits == 64){
+            this.calculator.sign = this.calculator.sign.padStart(1, "0");
+            this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
+            this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
+
+            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+
+            var re = /[0-1]{64}/g;
+            if(!re.test(binary)){
+              app._data.alertMessaje = 'Character not allowed';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessaje, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+								autoHideDelay: 1500,
+			        });
+
+              this.calculator.hexadecimal = "";
+              this.calculator.decimal = "";
+              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+              this.calculator.mantissaDec = 0;
+
+              var j = 0;
+              for (var i = 0; i < this.calculator.mantissa.length; i++) {
+                j--;
+                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+              }
+              return;
+            }
+
+            double = this.hex2double("0x" + this.bin2hex(binary));
+            hexadecimal = this.bin2hex(binary);
+
+            this.calculator.decimal = double;
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+          }
+
+          break;
+        case 2:
+          var float = parseFloat(this.calculator.decimal, 10);
+          var binary;
+          var hexadecimal;
+
+          if(this.calculator.bits == 32){
+            hexadecimal = this.bin2hex(this.float2bin(float));
+            binary = this.float2bin(float);
+
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 9);
+            this.calculator.mantissa = binary.substring(9, 32);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+
+          if(this.calculator.bits == 64){
+            hexadecimal = this.bin2hex(this.double2bin(float));
+            binary = this.double2bin(float);
+
+            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            this.calculator.sign = binary.substring(0, 1);
+            this.calculator.exponent = binary.substring(1, 12);
+            this.calculator.mantissa = binary.substring(12, 64);
+            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
+            this.calculator.mantissaDec = 0;
+
+            var j = 0;
+            for (var i = 0; i < this.calculator.mantissa.length; i++) {
+              j--;
+              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
+            }
+          }
+          break;
       }
-
-      return  characters;
     },
-
-    float2bin (number){
-	    var i, result = "";
-	    var dv = new DataView(new ArrayBuffer(4));
-
-      //number = parseInt(number.toString());
-
-	    dv.setFloat32(0, number, false);
-
-	    for (i = 0; i < 4; i++) {
-	        var bits = dv.getUint8(i).toString(2);
-	        if (bits.length < 8) {
-	            bits = new Array(8 - bits.length).fill('0').join("") + bits;
-	        }
-	        result += bits;
-	    }
-	    return result;
-    },
-
-    double2bin(number) {
-	    var i, result = "";
-	    var dv = new DataView(new ArrayBuffer(8));
-
-	    dv.setFloat64(0, number, false);
-
-	    for (i = 0; i < 8; i++) {
-	        var bits = dv.getUint8(i).toString(2);
-	        if (bits.length < 8) {
-	            bits = new Array(8 - bits.length).fill('0').join("") + bits;
-	        }
-	        result += bits;
-	    }
-	    return result;
-		},
-
-    bin2hex(s) {
-	    var i, k, part, accum, ret = '';
-	    for (i = s.length-1; i >= 3; i -= 4) {
-
-	      part = s.substr(i+1-4, 4);
-	      accum = 0;
-	      for (k = 0; k < 4; k += 1) {
-          if (part[k] !== '0' && part[k] !== '1') {     
-              return { valid: false };
-          }
-          accum = accum * 2 + parseInt(part[k], 10);
-	      }
-	      if (accum >= 10) {
-          ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
-	      } else {
-          ret = String(accum) + ret;
-	      }
-	    }
-
-	    if (i >= 0) {
-        accum = 0;
-        for (k = 0; k <= i; k += 1) {
-          if (s[k] !== '0' && s[k] !== '1') {
-              return { valid: false };
-          }
-          accum = accum * 2 + parseInt(s[k], 10);
-        }
-        ret = String(accum) + ret;
-	    }
-	    return ret;
-		},
-
-    /*Modifica registros de doble precision segun los de simple*/
-    updateDouble(comp, elem){
-      for (var j = 0; j < architecture.components.length; j++) {
-        for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
-          if(architecture.components[j].elements[z].simple_reg[0] == architecture.components[comp].elements[elem].name){
-            var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
-            var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
-            var newDouble = simple + double;
-
-            architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
-          }
-          if(architecture.components[j].elements[z].simple_reg[1] == architecture.components[comp].elements[elem].name){
-            var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
-            var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
-            var newDouble = double + simple;
-
-            architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
-          }
-        }
-      }
-    },
-
-    /*Modifica registros de simple precision segun los de doble*/
-    updateSimple(comp, elem){
-      var part1 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
-      var part2 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
-
-      for (var j = 0; j < architecture.components.length; j++) {
-        for (var z = 0; z < architecture.components[j].elements.length; z++) {
-          if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[0]){
-            architecture.components[j].elements[z].value = this.hex2float("0x"+part1);
-          }
-          if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[1]){
-            architecture.components[j].elements[z].value = this.hex2float("0x"+part2);
-          }
-        }
-      }
-    },
-
-    /*FUNCIONES DE GESTION DE REGISTROS*/
-    /*Actualiza el valor de un registro*/
+    /*Update a new register value*/
     updateReg(comp, elem, type, precision){
       for (var i = 0; i < architecture.components[comp].elements.length; i++) {
         if(type == "integer" || type == "control"){
@@ -6863,20 +6717,16 @@ window.app = new Vue({
         }
         else if(type =="floating point"){
           if(precision == false){
-            
             if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
               architecture.components[comp].elements[i].value = this.hex2float(this.newValue);
-
               this.updateDouble(comp, i);
             }
             else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
               architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-
               this.updateDouble(comp, i);
             }
             else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
               architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-
               this.updateDouble(comp, i);
             }
           }
@@ -6884,17 +6734,14 @@ window.app = new Vue({
           else if(precision == true){
             if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
               architecture.components[comp].elements[i].value = this.hex2double(this.newValue);
-
               this.updateSimple(comp, i);
             }
             else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
               architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-
               this.updateSimple(comp, i);
             }
             else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
               architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-
               this.updateSimple(comp, i)
             }
           }
@@ -6902,76 +6749,29 @@ window.app = new Vue({
       }
       this.newValue = '';
     },
-
-    /*FUNCIONES DE EJECUCION*/
-    /*Ejemplos disponibles*/
-    load_examples_available(){
-      $.getJSON('examples/available_example.json', function(cfg){
-        example_available = cfg;
-
-        app._data.example_available = example_available;
-      })
-    },
-
-    load_example(id){
-      this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
-
-      var xhttp = new XMLHttpRequest();
-      xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-          code_assembly = this.responseText;
-          textarea_assembly_editor.setValue(code_assembly);
-
-          app._data.alertMessaje = ' The selected example has been loaded correctly';
-          app._data.type ='success';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
-        }
-      };
-      xhttp.open("GET", "examples/"+id+".txt", true);
-      xhttp.send();
-    },
-
-    /*Escritura de la terminal terminada y vaciado*/
-    consoleEnter(){
-      consoleMutex = true;
-    },
-
-    consoleClear(){
-    	this.keyboard = "";
-    	this.display = "";
-    },
-
-    /*Funcion que ejecuta instruccion a instruccion*/
+    /*Execute one instruction*/
     executeInstruction(){
-      console.log(mutexRead)
+      console.log(mutexRead);
       newExecution = false;
 
       do{
-        console.log(executionIndex)
-        console.log(architecture.components[0].elements[0].value)
+        console.log(executionIndex);
+        console.log(architecture.components[0].elements[0].value);
 
         if(instructions.length == 0){
           app._data.alertMessaje = 'No instructions in memory';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
 
-        /*Verifica que el programa no ha finalizado ya*/
         if(executionIndex < -1){
           app._data.alertMessaje = 'The program has finished';
           app._data.type ='danger';
@@ -7002,7 +6802,7 @@ window.app = new Vue({
           return;
         }
 
-        /*Etiqueta main*/
+        /*Search a main tag*/
         if(executionInit == 1){
           for (var i = 0; i < instructions.length; i++) {
             if(instructions[i].Label == "main"){
@@ -7013,13 +6813,13 @@ window.app = new Vue({
             }
             else if(i == instructions.length-1){
               app._data.alertMessaje = 'Label "main" not found';
-              app._data.type ='danger';
+              app._data.type = 'danger';
               app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
               var date = new Date();
               notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               executionIndex = -1;
@@ -7031,12 +6831,14 @@ window.app = new Vue({
         var error = 0;
         var index;
 
-        for (var i = 0; i < instructions.length; i++) {
+        for (var i = 0; i < instructions.length; i++){
           if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
             executionIndex = i;
+
             console.log(instructions[executionIndex].hide)
             console.log(executionIndex)
             console.log(instructions[i].Address)
+
             if(instructions[executionIndex].hide == false){
               instructions[executionIndex]._rowVariant = 'info';
             }
@@ -7049,7 +6851,6 @@ window.app = new Vue({
         }
 
         var instructionExec = instructions[executionIndex].loaded;
-
         var instructionExecParts = instructionExec.split(' ');
 
         var signatureDef;
@@ -7059,12 +6860,11 @@ window.app = new Vue({
         var auxDef;
         var binary;
 
-        /*Busca la instruccion a ejecutar y coge la definicion*/
+        /*Search the instruction to execute*/
         for (var i = 0; i < architecture.instructions.length; i++) {
           var auxSig = architecture.instructions[i].signatureRaw.split(' ');
           var type;
           var auxIndex;
-
 
           if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
             if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != ''){
@@ -7092,9 +6892,9 @@ window.app = new Vue({
 
           if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
             type = architecture.instructions[i].type;
-
             signatureDef = architecture.instructions[i].signature_definition;
             signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
             re = new RegExp("[fF][0-9]+", "g");
             signatureDef = signatureDef.replace(re, "(.*?)");
 
@@ -7114,8 +6914,8 @@ window.app = new Vue({
               signatureRawParts.push(match[j]);
             }
             
-            console.log(signatureParts)
-            console.log(signatureRawParts)
+            console.log(signatureParts);
+            console.log(signatureRawParts);
 
             auxDef = architecture.instructions[i].definition;
             nwords = architecture.instructions[i].nwords;
@@ -7124,23 +6924,23 @@ window.app = new Vue({
           }
         }
 
-
-        /*Incrementar PC*/
+        /*Increase PC*/
         architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bigInt((nwords * 4)).value;
 
-        console.log(auxDef)
+        console.log(auxDef);
 
         if(binary == false){
-          re = new RegExp(signatureDef+"$")
+          re = new RegExp(signatureDef+"$");
           var match = re.exec(instructionExec);
           instructionExecParts = [];
+
           for(var j = 1; j < match.length; j++){
             instructionExecParts.push(match[j]);
           }
 
-          console.log(instructionExecParts)
+          console.log(instructionExecParts);
 
-          /*Replaza los valores por el nombre de los registros*/
+          /*Replace the value with the name of the register*/
           for (var i = 1; i < signatureRawParts.length; i++){
             /*if(signatureParts[i] == "inm"){
               var re = new RegExp(signatureRawParts[i],"g");
@@ -7170,13 +6970,12 @@ window.app = new Vue({
         }
 
         if(binary == true){
-          console.log("Binary")
+          console.log("Binary");
 
           for (var j = 0; j < architecture.instructions[auxIndex].fields.length; j++){
             console.log(instructionExecParts[0]);
-            console.log(architecture.instructions[auxIndex].fields.length)
+            console.log(architecture.instructions[auxIndex].fields.length);
             if(architecture.instructions[auxIndex].fields[j].type == "INT-Reg" || architecture.instructions[auxIndex].fields[j].type == "FP-Reg" || architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg") {
-              
               console.log(instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit)));
 
               for (var z = 0; z < architecture.components.length; z++){
@@ -7184,17 +6983,18 @@ window.app = new Vue({
                 if(architecture.components[z].type == "control" && architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg"){
                   for (var w = 0; w < architecture.components[z].elements.length; w++){
                     var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
-                    console.log(auxLength)
-                    console.log((w.toString(2)).padStart(auxLength, "0"))
+                    console.log(auxLength);
+                    console.log((w.toString(2)).padStart(auxLength, "0"));
                     if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
+                    
                     }
                   }
                 }
                 if(architecture.components[z].type == "integer" && architecture.instructions[auxIndex].fields[j].type == "INT-Reg"){
                   for (var w = 0; w < architecture.components[z].elements.length; w++){
                     var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
-                    console.log(auxLength)
-                    console.log((w.toString(2)).padStart(auxLength, "0"))
+                    console.log(auxLength);
+                    console.log((w.toString(2)).padStart(auxLength, "0"));
                     if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
                       var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                       auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
@@ -7204,8 +7004,8 @@ window.app = new Vue({
                 if(architecture.components[z].type == "floating point" && architecture.instructions[auxIndex].fields[j].type == "FP-Reg"){
                   for (var w = 0; w < architecture.components[z].elements.length; w++){
                     var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
-                    console.log(auxLength)
-                    console.log((w.toString(2)).padStart(auxLength, "0"))
+                    console.log(auxLength);
+                    console.log((w.toString(2)).padStart(auxLength, "0"));
                     if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
                       var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                       auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
@@ -7227,18 +7027,15 @@ window.app = new Vue({
           }
         }
 
-        console.log(auxDef)
+        console.log(auxDef);
 
-
-
-
-
-        /*Llamadas al sistema*/
+        /*Syscall*/
         var compIndex;
         var elemIndex;
         var compIndex2;
         var elemIndex2;
-        console.log(auxDef)
+
+        console.log(auxDef);
         
         re = /print_int\((.*?)\)/;
         if (auxDef.search(re) != -1){
@@ -7414,13 +7211,9 @@ window.app = new Vue({
           auxDef = auxDef.replace(re, "this.syscall('read_char',"+compIndex+" , "+elemIndex+", null, null)");
         }
 
+        console.log(auxDef);
 
-        console.log(auxDef)
-
-
-
-
-        /*Remplaza el nombre del registro por su variable*/
+        /*Replaces the name of the register with its variable*/
         var regIndex = 0;
         var regNum = 0;
 
@@ -7428,13 +7221,13 @@ window.app = new Vue({
           for (var j = 0; j < architecture.components[i].elements.length; j++){
             var re;
 
-            /*Si es un regitro en el que se escribe*/
+            /*Write in the register*/
             re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
             if (auxDef.search(re) != -1){
               re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
 
               auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
-              auxDef = "var reg" + regIndex + "=null\n" + auxDef
+              auxDef = "var reg" + regIndex + "=null\n" + auxDef;
               auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
               regIndex++;
             }
@@ -7443,15 +7236,14 @@ window.app = new Vue({
               re = new RegExp("R"+regNum+" *=[^=]");
               if (auxDef.search(re) != -1){
                 re = new RegExp("R"+regNum+" *=","g");
-
                 auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
-                auxDef = "var reg" + regIndex + "=null\n" + auxDef
+                auxDef = "var reg" + regIndex + "=null\n" + auxDef;
                 auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
                 regIndex++;
               }
             }
 
-            /*Si es un registro de lectura*/
+            /*Read in the register*/
             re = new RegExp("([^a-zA-Z0-9])" + architecture.components[i].elements[j].name + "(?!\.name)");
             while(auxDef.search(re) != -1){
               var match = re.exec(auxDef);
@@ -7472,34 +7264,29 @@ window.app = new Vue({
           }
         }
 
-        /*Deja solo el nombre quitando el .name*/
+        /*Leave the name of the register*/
         re = new RegExp("\.name","g");
         auxDef = auxDef.replace(re, "");
 
-        /*Si se modifica el stack_limit*/
+        /*If modify the stack limit*/
         re = new RegExp("stack_limit *=[^=]");
         if (auxDef.search(re) != -1){
-
           re = new RegExp("stack_limit *=","g");
-
-          //auxDef = auxDef.replace(re, "architecture.memory_layout[4].value = ");
-
           auxDef = auxDef.replace(re, "var stackLimit =");
-          auxDef = "var stackLimit = null\n" + auxDef
+          auxDef = "var stackLimit = null\n" + auxDef;
           auxDef = auxDef + "\n this.writeStackLimit(stackLimit);"
         }
 
-        /*Si se lee el stack_limit*/
+        /*If read the stack limit*/
         re = new RegExp("stack_limit");
         while(auxDef.search(re) != -1){
           var match = re.exec(auxDef);
           auxDef = auxDef.replace(re, architecture.memory_layout[4].value >>> 0);
         }
 
-        console.log(auxDef)
+        console.log(auxDef);
 
-        /*Remplaza la direccion de memoria por su valor*/
-        /*Replaces escritura en memoria por registro + desplazamiento*/
+        /*Write in memory*/
         re = /MP.([whb]).\((.*?)\)\) *=/;
         if (auxDef.search(re) != -1){
           var match = re.exec(auxDef);
@@ -7508,22 +7295,20 @@ window.app = new Vue({
 
           re = /MP.[whb].\((.*?)\)\) *=/g;
           auxDef = auxDef.replace(re, "var dir"+ auxDir +"=");
-          auxDef = "var dir" + auxDir + "=null\n" + auxDef
+          auxDef = "var dir" + auxDir + "=null\n" + auxDef;
           auxDef = auxDef + "\n this.writeMemory(dir"+auxDir+",'0x"+auxDir.toString(16)+"','"+match[1]+"');"
         }
 
-        /*Replaces escritura en memoria por direccion y etiqueta*/
         re = new RegExp("MP.([whb]).(.*?) *=");
         if (auxDef.search(re) != -1){
           var match = re.exec(auxDef);
 
           re = new RegExp("MP."+match[1]+"."+match[2]+" *=","g");
           auxDef = auxDef.replace(re, "var dir"+ match[2]+"=");
-          auxDef = "var dir" + match[2] + "=null\n" + auxDef
+          auxDef = "var dir" + match[2] + "=null\n" + auxDef;
           auxDef = auxDef + "\n this.writeMemory(dir"+match[2]+",'"+match[2]+"','"+match[1]+"');"
         }
 
-        /*Replaces lectura en memoria por registro + desplazamiento*/
         re = /MP.([whb]).\((.*?)\)\)/;
         if (auxDef.search(re) != -1){
           var match = re.exec(auxDef);
@@ -7534,7 +7319,6 @@ window.app = new Vue({
           auxDef = auxDef.replace(re, "this.readMemory('0x"+auxDir.toString(16)+"', '"+match[1]+"')");
         }
 
-        /*Replaces lectura en memoria por direccion y etiqueta*/
         re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
         if (auxDef.search(re) != -1){
           var match = re.exec(auxDef);
@@ -7542,7 +7326,7 @@ window.app = new Vue({
           auxDef = auxDef.replace(re, "this.readMemory('"+match[2]+"','"+match[1]+"')");
         }
 
-        console.log(auxDef)
+        console.log(auxDef);
 
         try{
           eval(auxDef);
@@ -7554,20 +7338,20 @@ window.app = new Vue({
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             app._data.alertMessaje = 'The definition of the instruction contains errors, please review it';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
         }
 
-        /*Actualizacion estaditicas*/
+        /*Refresh stats*/
         for (var i = 0; i < stats.length; i++){
           if(type == stats[i].type){
             stats[i].number_instructions++;
@@ -7578,14 +7362,15 @@ window.app = new Vue({
           stats[i].percentage = (stats[i].number_instructions/totalStats)*100;
         }
 
-        
+     		/*Execution error*/
         if(executionIndex == -1){
           error = 1;
           return;
         }
 
+        /*Next instruction to execute*/
         if(error != 1 && executionIndex < instructions.length){
-          for (var i = 0; i < instructions.length; i++) {
+          for (var i = 0; i < instructions.length; i++){
             if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
               executionIndex = i;
               instructions[executionIndex]._rowVariant = 'success';
@@ -7601,26 +7386,25 @@ window.app = new Vue({
         console.log(executionIndex);
 
         if(executionIndex >= instructions.length && mutexRead == true){
-          for (var i = 0; i < instructions.length; i++) {
+          for (var i = 0; i < instructions.length; i++){
             instructions[i]._rowVariant = '';
           }
-
           return;
         }
         else if(executionIndex >= instructions.length){
-          for (var i = 0; i < instructions.length; i++) {
+          for (var i = 0; i < instructions.length; i++){
             instructions[i]._rowVariant = '';
           }
 
           executionIndex = -2;
           app._data.alertMessaje = 'The execution of the program has finished';
-          app._data.type ='success';
+          app._data.type = 'success';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
@@ -7630,63 +7414,61 @@ window.app = new Vue({
             instructions[executionIndex]._rowVariant = 'success';
           }
         }
-        console.log(executionIndex)
+        console.log(executionIndex);
       }
       while(instructions[executionIndex].hide == true);
     },
-
-    /*Funcion que ejecuta todo el programa*/
+    /*Execute all program*/
     executeProgram(){
       app._data.runExecution = true;
       this.runExecution = false;
 
       if(instructions.length == 0){
         app._data.alertMessaje = 'No instructions in memory';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         return;
       }
 
       if(executionIndex < -1){
-          app._data.alertMessaje = 'The program has finished';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-          return;
-        }
-        else if(executionIndex == -1){
-          app._data.alertMessaje = 'The program has finished with errors';
-          app._data.type ='danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
-	          variant: app._data.type,
-	          solid: true,
-	          toaster: "b-toaster-top-center",
-						autoHideDelay: 1500,
-	        })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-          return;
-        }
+        app._data.alertMessaje = 'The program has finished';
+        app._data.type = 'danger';
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
+        });
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        return;
+      }
+      else if(executionIndex == -1){
+        app._data.alertMessaje = 'The program has finished with errors';
+        app._data.type = 'danger';
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center",
+					autoHideDelay: 1500,
+        });
+        var date = new Date();
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        return;
+      }
 
       $("#stopExecution").show();
       $("#playExecution").hide();
 
       this.programExecutionInst();
     },
-
     programExecutionInst(){
     	for (var i = 0; i < 10 && executionIndex >= 0; i++) {
 	    	if(mutexRead == true){
@@ -7722,140 +7504,45 @@ window.app = new Vue({
         $("#playExecution").show();
       }
     },
-
-
+    /*Stop program excution*/
     stopExecution(){
       app._data.runExecution = true;
     },
-
-    /*Funcion que resetea la ejecucion*/
-    reset(){
-      $(".loading").show();
-      setTimeout(function(){
-	      for (var i = 0; i < instructions.length; i++) {
-	        instructions[i]._rowVariant = '';
-	      }
-	      executionIndex = 0;
-	      
-	      /*Reset estadisticas*/
-	      totalStats=0;
-	      for (var i = 0; i < stats.length; i++){
-	        stats[i].percentage = 0;
-	        stats[i].number_instructions = 0;
-	      }
-
-	      /*Reset consola*/
-	      app._data.keyboard = "";
-	      app._data.display = "";
-	      mutexRead = false;
-	      newExecution = true;
-
-	      for (var i = 0; i < architecture_hash.length; i++) {
-	        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-	          if(architecture.components[i].double_precision == false){
-	            architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
-	          }
-
-	          else{
-	            var aux_value;
-	            var aux_sim1;
-	            var aux_sim2;
-	            for (var a = 0; a < architecture_hash.length; a++) {
-	              for (var b = 0; b < architecture.components[a].elements.length; b++) {
-	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-	                  aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-	                }
-	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-	                  aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-	                }
-	              }
-	            }
-
-	            aux_value = aux_sim1 + aux_sim2;
-
-	            architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
-	          }
-	        }
-	      }
-
-	      architecture.memory_layout[4].value = backup_stack_address;
-	      architecture.memory_layout[3].value = backup_data_address;
-
-	      for (var i = 0; i < memory[memory_hash[0]].length; i++) {
-	      	if(memory[memory_hash[0]][i].reset == true){
-	      		memory[memory_hash[0]].splice(i, 1);
-	      		i--;
-	      	}
-	        else{
-	        	memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
-		        for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
-		          memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
-		        }
-		      }
-	      }
-
-	      for (var i = 0; i < memory[memory_hash[2]].length; i++) {
-	      	if(memory[memory_hash[2]][i].reset == true){
-	      		memory[memory_hash[2]].splice(i, 1);
-	      		i--;
-	      	}
-	      	else{
-		        memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
-		        for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
-		          memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
-		        }
-		      }
-	      }
-
-	      for (var i = 0; i < instructions.length; i++) {
-	        if(instructions[i].Label == "main"){
-	          instructions[i]._rowVariant = 'success';
-	        }
-	      }
-
-	      $(".loading").hide();
-      }, 25);
-    },
-
-    /*Funcion que lee de los registro*/
+    /*Read register value*/
     readRegister(indexComp, indexElem){
-      /*Verifica que se puede leer el registro*/
       if(architecture.components[indexComp].elements[indexElem].properties[0] != "read" && architecture.components[indexComp].elements[indexElem].properties[1] != "read"){
         app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
-        app._data.type ='danger';
+        app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
 					autoHideDelay: 1500,
-        })
+        });
         instructions[executionIndex]._rowVariant = 'danger';
         var date = new Date();
         notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         executionIndex = -1;
         return;
       }
-
       return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
     },
-
-    /*Funcion que escribe en los registro*/
+    /*Write value in register*/
     writeRegister(value, indexComp, indexElem){
       if(value == null){
         return;
       }
 
       if(architecture.components[indexComp].type == "integer" || architecture.components[indexComp].type == "control"){
-        /*Verifica que se puede escribir en el registro*/
         if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
           app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           instructions[executionIndex]._rowVariant = 'danger';
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -7879,16 +7566,15 @@ window.app = new Vue({
 
       else if(architecture.components[indexComp].type =="floating point"){
         if(architecture.components[indexComp].double_precision == false){
-          /*Verifica que se puede escribir en el registro*/
           if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
@@ -7901,7 +7587,6 @@ window.app = new Vue({
           var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
 	        var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-
 	        $(buttonDec).attr("style", "background-color:#c2c2c2;");
 	        $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
@@ -7912,7 +7597,6 @@ window.app = new Vue({
         }
         
         else if(architecture.components[indexComp].double_precision == true){
-          /*Verifica que se puede escribir en el registro*/
           if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
             app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type ='danger';
@@ -7926,6 +7610,7 @@ window.app = new Vue({
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
+
           architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
 
           this.updateSimple(indexComp, indexElem);
@@ -7943,8 +7628,7 @@ window.app = new Vue({
         }
       }  
     },
-
-    /*Funcion que lee de memoria*/
+    /*Read memory value*/
     readMemory(addr, type){
       var memValue = '';
       var index;
@@ -7952,13 +7636,13 @@ window.app = new Vue({
       if (type == "w"){
       	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -7972,7 +7656,6 @@ window.app = new Vue({
 
         if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
           index = memory_hash[2];
-
         }
 
         for (var i = 0; i < memory[index].length; i++){
@@ -7987,19 +7670,18 @@ window.app = new Vue({
           }
         }
         return bigInt(0).value;
-
       }
 
       if (type == "h"){
       	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8040,13 +7722,13 @@ window.app = new Vue({
       if (type == "b"){
       	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8071,13 +7753,10 @@ window.app = new Vue({
             }
           }
         }
-        return bigInt(0).value;
-
-        
+        return bigInt(0).value; 
       }
     },
-
-    /*Funcion que escribe de memoria*/
+    /*Write value in memory*/
     writeMemory(value, addr, type){
 
       if(value == null){
@@ -8090,13 +7769,13 @@ window.app = new Vue({
       if (type == "w"){
       	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8170,13 +7849,13 @@ window.app = new Vue({
       if (type == "h"){
       	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8333,13 +8012,13 @@ window.app = new Vue({
       if (type == "b"){
       	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
           app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8435,18 +8114,18 @@ window.app = new Vue({
         }
       }
     },
-
+    /*Modify the stack limit*/
     writeStackLimit(stackLimit){
     	if(stackLimit != null){
     		if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
     			app._data.alertMessaje = 'Segmentation fault. You tried to write in the data segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8455,13 +8134,13 @@ window.app = new Vue({
     		}
     		else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
     			app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-          app._data.type ='danger';
+          app._data.type = 'danger';
           app.$bvToast.toast(app._data.alertMessaje, {
 	          variant: app._data.type,
 	          solid: true,
 	          toaster: "b-toaster-top-center",
 						autoHideDelay: 1500,
-	        })
+	        });
           var date = new Date();
           notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           instructions[executionIndex]._rowVariant = 'danger';
@@ -8483,7 +8162,6 @@ window.app = new Vue({
 	        }
 	        else if(stackLimit > architecture.memory_layout[4].value){
 	    			var diff = stackLimit - architecture.memory_layout[4].value;
-
 	    			for (var i = 0; i < (diff/4); i++){
 	            memory[memory_hash[2]].splice(0, 1);
 	          }
@@ -8492,7 +8170,7 @@ window.app = new Vue({
     		}
 	    }
     },
-
+    /*Syscall*/
     syscall(action, indexComp, indexElem, indexComp2, indexElem2){
       switch(action){
         case "print_int":
@@ -8513,13 +8191,13 @@ window.app = new Vue({
 
           if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
 	          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-	          app._data.type ='danger';
+	          app._data.type = 'danger';
 	          app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
 	          var date = new Date();
 	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 	          instructions[executionIndex]._rowVariant = 'danger';
@@ -8558,37 +8236,38 @@ window.app = new Vue({
           break;
         case "read_int":
           mutexRead = true;
-          console.log(mutexRead)
+          console.log(mutexRead);
           if(newExecution == true){
           	this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
             return;
           }
+
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
           }
           else{
             var value = parseInt(this.keyboard);
-            console.log(value)
+            console.log(value);
             this.writeRegister(value, indexComp, indexElem);
             this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
             if(executionIndex >= instructions.length){
-		          for (var i = 0; i < instructions.length; i++) {
+		          for (var i = 0; i < instructions.length; i++){
 		            instructions[i]._rowVariant = '';
 		          }
 
 		          executionIndex = -2;
 		          app._data.alertMessaje = 'The execution of the program has finished';
-		          app._data.type ='success';
+		          app._data.type = 'success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 		          return;
@@ -8599,13 +8278,14 @@ window.app = new Vue({
           break;
         case "read_float":
           mutexRead = true;
-          console.log(mutexRead)
+          console.log(mutexRead);
           if(newExecution == true){
           	this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
             return;
           }
+
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
           }
@@ -8623,13 +8303,13 @@ window.app = new Vue({
 
 		          executionIndex = -2;
 		          app._data.alertMessaje = 'The execution of the program has finished';
-		          app._data.type ='success';
+		          app._data.type = 'success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 		          return;
@@ -8640,19 +8320,20 @@ window.app = new Vue({
           break;
         case "read_double":
           mutexRead = true;
-          console.log(mutexRead)
+          console.log(mutexRead);
           if(newExecution == true){
           	this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
             return;
           }
+
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
           }
           else{
             var value = parseFloat(this.keyboard, 10);
-            console.log(value)
+            console.log(value);
             this.writeRegister(value, indexComp, indexElem);
             this.keyboard = "";
             consoleMutex = false;
@@ -8664,13 +8345,13 @@ window.app = new Vue({
 
 		          executionIndex = -2;
 		          app._data.alertMessaje = 'The execution of the program has finished';
-		          app._data.type ='success';
+		          app._data.type = 'success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 		          return;
@@ -8681,13 +8362,14 @@ window.app = new Vue({
           break;
         case "read_string":
           mutexRead = true;
-          console.log(mutexRead)
+          console.log(mutexRead);
           if(newExecution == true){
           	this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
             return;
           }
+
           if(consoleMutex == false){
             setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
           }
@@ -8700,20 +8382,20 @@ window.app = new Vue({
               value = value + this.keyboard.charAt(i);
             }
 
-            console.log(value)
+            console.log(value);
 
             var auxAddr = data_address;
             var index;
 
             if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
 		          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-		          app._data.type ='danger';
+		          app._data.type = 'danger';
 		          app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 		          instructions[executionIndex-1]._rowVariant = 'danger';
@@ -8797,13 +8479,13 @@ window.app = new Vue({
 
 			          executionIndex = -2;
 			          app._data.alertMessaje = 'The execution of the program has finished';
-			          app._data.type ='success';
+			          app._data.type = 'success';
 			          app.$bvToast.toast(app._data.alertMessaje, {
 				          variant: app._data.type,
 				          solid: true,
 				          toaster: "b-toaster-top-center",
 									autoHideDelay: 1500,
-				        })
+				        });
 			          var date = new Date();
 			          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 			          return;
@@ -8841,18 +8523,17 @@ window.app = new Vue({
 
 		          executionIndex = -2;
 		          app._data.alertMessaje = 'The execution of the program has finished';
-		          app._data.type ='success';
+		          app._data.type = 'success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 		          return;
 		        }
-
             break;
           }
 
@@ -8862,13 +8543,13 @@ window.app = new Vue({
 
           if((parseInt(architecture.components[indexComp].elements[indexElem].value))%4 != 0){
             app._data.alertMessaje = 'The memory must be aligned';
-            app._data.type ='danger';
+            app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
 		          variant: app._data.type,
 		          solid: true,
 		          toaster: "b-toaster-top-center",
 							autoHideDelay: 1500,
-		        })
+		        });
             var date = new Date();
             instructions[executionIndex]._rowVariant = 'danger';
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -8887,11 +8568,9 @@ window.app = new Vue({
           app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
           architecture.memory_layout[3].value = aux_addr-1;
           this.architecture.memory_layout[3].value = aux_addr-1;
-        
           break;
         case "exit":
           executionIndex = instructions.length + 1;
-          console.log(executionIndex);
           break;
         case "print_char":
           var aux = architecture.components[indexComp].elements[indexElem].value;
@@ -8903,7 +8582,7 @@ window.app = new Vue({
           break;
         case "read_char":
           mutexRead = true;
-          console.log(mutexRead)
+          console.log(mutexRead);
           if(newExecution == true){
           	this.keyboard = "";
             consoleMutex = false;
@@ -8919,34 +8598,120 @@ window.app = new Vue({
             this.keyboard = "";
             consoleMutex = false;
             mutexRead = false;
-            console.log(mutexRead)
+            console.log(mutexRead);
 
             if(executionIndex >= instructions.length){
-		          for (var i = 0; i < instructions.length; i++) {
+		          for (var i = 0; i < instructions.length; i++){
 		            instructions[i]._rowVariant = '';
 		          }
 
 		          executionIndex = -2;
 		          app._data.alertMessaje = 'The execution of the program has finished';
-		          app._data.type ='success';
+		          app._data.type = 'success';
 		          app.$bvToast.toast(app._data.alertMessaje, {
 			          variant: app._data.type,
 			          solid: true,
 			          toaster: "b-toaster-top-center",
 								autoHideDelay: 1500,
-			        })
+			        });
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 		          return;
 		        }
             break;
           }
-
           break;
       }
-
     },
+    /*Reset execution*/
+    reset(){
+      $(".loading").show();
+      setTimeout(function(){
+	      for (var i = 0; i < instructions.length; i++) {
+	        instructions[i]._rowVariant = '';
+	      }
+	      executionIndex = 0;
+	      
+	      /*Reset stats*/
+	      totalStats=0;
+	      for (var i = 0; i < stats.length; i++){
+	        stats[i].percentage = 0;
+	        stats[i].number_instructions = 0;
+	      }
 
+	      /*Reset console*/
+	      app._data.keyboard = "";
+	      app._data.display = "";
+	      mutexRead = false;
+	      newExecution = true;
+
+	      for (var i = 0; i < architecture_hash.length; i++) {
+	        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+	          if(architecture.components[i].double_precision == false){
+	            architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
+	          }
+
+	          else{
+	            var aux_value;
+	            var aux_sim1;
+	            var aux_sim2;
+
+	            for (var a = 0; a < architecture_hash.length; a++) {
+	              for (var b = 0; b < architecture.components[a].elements.length; b++) {
+	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+	                  aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+	                }
+	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+	                  aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+	                }
+	              }
+	            }
+
+	            aux_value = aux_sim1 + aux_sim2;
+	            architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
+	          }
+	        }
+	      }
+
+	      architecture.memory_layout[4].value = backup_stack_address;
+	      architecture.memory_layout[3].value = backup_data_address;
+
+	      for (var i = 0; i < memory[memory_hash[0]].length; i++) {
+	      	if(memory[memory_hash[0]][i].reset == true){
+	      		memory[memory_hash[0]].splice(i, 1);
+	      		i--;
+	      	}
+	        else{
+	        	memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
+		        for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
+		          memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
+		        }
+		      }
+	      }
+
+	      for (var i = 0; i < memory[memory_hash[2]].length; i++) {
+	      	if(memory[memory_hash[2]][i].reset == true){
+	      		memory[memory_hash[2]].splice(i, 1);
+	      		i--;
+	      	}
+	      	else{
+		        memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
+		        for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
+		          memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
+		        }
+		      }
+	      }
+
+	      for (var i = 0; i < instructions.length; i++) {
+	        if(instructions[i].Label == "main"){
+	          instructions[i]._rowVariant = 'success';
+	        }
+	      }
+
+	      $(".loading").hide();
+      }, 25);
+    },
+    /*Enter a breakpoint*/
     breakPoint(record, index){
     	for (var i = 0; i < instructions.length; i++) {
     		if(instructions[i].Address == record.Address){
@@ -8964,245 +8729,190 @@ window.app = new Vue({
         app._data.instructions[index].Break = null;
       }
     },
-
-    /*Funciones calculadora*/
-    changeBitsCalculator(index){
-      if(index == 0){
-        this.calculator.bits = 32;
-        this.calculator.variant32 = "primary";
-        this.calculator.variant64 = "outline-primary";
-        this.calculator.lengthHexadecimal = 8;
-        this.calculator.lengthSign = 1;
-        this.calculator.lengthExponent = 8;
-        this.calculator.lengthMantissa = 23;
-      }
-
-      if(index == 1){
-        this.calculator.bits = 64;
-        this.calculator.variant64 = "primary";
-        this.calculator.variant32 = "outline-primary";
-        this.calculator.lengthHexadecimal = 16;
-        this.calculator.lengthSign = 1;
-        this.calculator.lengthExponent = 11;
-        this.calculator.lengthMantissa = 52;
-      }
-
-      this.calculator.hexadecimal = "";
-      this.calculator.sign = "";
-      this.calculator.exponent = "";
-      this.calculator.mantissa = "";
-      this.calculator.decimal = "";
-      this.calculator.sign = "";
-      this.calculator.exponentDec = "";
-      this.calculator.mantissaDec = "";
+    /*Console mutex*/
+    consoleEnter(){
+      consoleMutex = true;
     },
+    /*Empty keyboard and display*/
+    consoleClear(){
+    	this.keyboard = "";
+    	this.display = "";
+    },
+    /*Convert hexadecimal number to floating point number*/
+    hex2float ( hexvalue ){
+      var sign     = (hexvalue & 0x80000000) ? -1 : 1;
+      var exponent = ((hexvalue >> 23) & 0xff) - 127;
+      var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
 
-    calculatorFunct(index){
-      switch(index){
-        case 0:
-          var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
-          var float;
-          var binary;
+      var valuef = sign * mantissa * Math.pow(2, exponent);
+      if (-127 == exponent)
+        if (1 == mantissa)
+          valuef = (sign == 1) ? "+0" : "-0";
+        else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
+      if (128 == exponent)
+        if (1 == mantissa)
+          valuef = (sign == 1) ? "+Inf" : "-Inf";
+        else valuef = "NaN";
 
-          if(this.calculator.bits == 32){
-            var re = /[0-9A-Fa-f]{8}/g;
-            if(!re.test(hex)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-								autoHideDelay: 1500,
-			        })
+      return valuef ;
+    },
+    /*Convert hexadecimal number to double floating point number*/
+    hex2double ( hexvalue ){
+      var value = hexvalue.split('x');
+      var value_bit = '';
 
-              this.calculator.sign = "";
-              this.calculator.exponent = "";
-              this.calculator.mantissa = "";
-              this.calculator.exponentDec = "";
-              this.calculator.mantissaDec = 0;
-              this.calculator.decimal = "";
-              return;
-            }
+      for (var i = 0; i < value[1].length; i++){
+      	var aux = value[1].charAt(i);
+      	aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
+      	value_bit = value_bit + aux;
+      }
 
-            float = this.hex2float("0x" + hex);
-            binary = this.float2bin(float).padStart(this.calculator.bits, "0");
+	  	var buffer = new ArrayBuffer(8);
+		  new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
+		  return new DataView( buffer ).getFloat64(0, false);
+    },
+    /*Convert hexadecimal number to char*/
+    hex2char8 ( hexvalue ){
+    	var num_char = ((hexvalue.toString().length))/2;
+    	var exponent = 0;
+    	var pos = 0;
 
-            this.calculator.decimal = float;
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 9);
-            this.calculator.mantissa = binary.substring(9, 32);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
+      var valuec = new Array();
 
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
+      for (var i = 0; i < num_char; i++) {
+        var auxHex = hexvalue.substring(pos, pos+2);
+        valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
+        pos = pos + 2;
+      }
+
+      var characters = '';
+
+      for (var i = 0; i < valuec.length; i++){
+        characters = characters + valuec[i] + ' ';
+      }
+
+      return  characters;
+    },
+    /*Convert floating point number to binary*/
+    float2bin (number){
+	    var i, result = "";
+	    var dv = new DataView(new ArrayBuffer(4));
+
+	    dv.setFloat32(0, number, false);
+
+	    for (i = 0; i < 4; i++) {
+	        var bits = dv.getUint8(i).toString(2);
+	        if (bits.length < 8) {
+	          bits = new Array(8 - bits.length).fill('0').join("") + bits;
+	        }
+	        result += bits;
+	    }
+	    return result;
+    },
+    /*Convert double floating point number to binary*/
+    double2bin(number) {
+	    var i, result = "";
+	    var dv = new DataView(new ArrayBuffer(8));
+
+	    dv.setFloat64(0, number, false);
+
+	    for (i = 0; i < 8; i++) {
+	        var bits = dv.getUint8(i).toString(2);
+	        if (bits.length < 8) {
+	          bits = new Array(8 - bits.length).fill('0').join("") + bits;
+	        }
+	        result += bits;
+	    }
+	    return result;
+		},
+		/*Convert binary number to hexadecimal number*/
+		bin2hex(s) {
+	    var i, k, part, accum, ret = '';
+	    for (i = s.length-1; i >= 3; i -= 4){
+
+	      part = s.substr(i+1-4, 4);
+	      accum = 0;
+	      for (k = 0; k < 4; k += 1){
+          if (part[k] !== '0' && part[k] !== '1'){     
+              return { valid: false };
           }
-          if(this.calculator.bits == 64){
-            var re = /[0-9A-Fa-f]{16}/g;
-            if(!re.test(hex)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-								autoHideDelay: 1500,
-			        })
+          accum = accum * 2 + parseInt(part[k], 10);
+	      }
+	      if (accum >= 10){
+          ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
+	      } 
+	      else {
+          ret = String(accum) + ret;
+	      }
+	    }
 
-              this.calculator.sign = "";
-              this.calculator.exponent = "";
-              this.calculator.mantissa = "";
-              this.calculator.exponentDec = "";
-              this.calculator.mantissaDec = 0;
-              this.calculator.decimal = "";
-              return;
-            }
-
-            float = this.hex2double("0x"+hex);
-            binary = this.double2bin(float);
-
-            this.calculator.decimal = float;
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 12);
-            this.calculator.mantissa = binary.substring(12, 64);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
+	    if (i >= 0){
+        accum = 0;
+        for (k = 0; k <= i; k += 1){
+          if (s[k] !== '0' && s[k] !== '1') {
+              return { valid: false };
           }
+          accum = accum * 2 + parseInt(s[k], 10);
+        }
+        ret = String(accum) + ret;
+	    }
+	    return ret;
+		},
+		/*Modifies double precision registers according to simple precision registers*/
+    updateDouble(comp, elem){
+      for (var j = 0; j < architecture.components.length; j++) {
+        for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
+          if(architecture.components[j].elements[z].simple_reg[0] == architecture.components[comp].elements[elem].name){
+            var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
+            var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
+            var newDouble = simple + double;
 
-          break;
-        case 1:
-          if(this.calculator.bits == 32){
-            this.calculator.sign = this.calculator.sign.padStart(1, "0");
-            this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
-            this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
-
-            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-
-            var re = /[0-1]{32}/g;
-            if(!re.test(binary)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-								autoHideDelay: 1500,
-			        })
-
-              this.calculator.hexadecimal = "";
-              this.calculator.decimal = "";
-              this.calculator.exponentDec = "";
-              this.calculator.mantissaDec = 0;
-              return;
-            }
-
-            float = this.hex2float("0x" + this.bin2hex(binary));
-            hexadecimal = this.bin2hex(binary);
-
-            this.calculator.decimal = float;
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
+            architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
           }
-          if(this.calculator.bits == 64){
-            this.calculator.sign = this.calculator.sign.padStart(1, "0");
-            this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
-            this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
+          if(architecture.components[j].elements[z].simple_reg[1] == architecture.components[comp].elements[elem].name){
+            var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
+            var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
+            var newDouble = double + simple;
 
-            var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-
-            var re = /[0-1]{64}/g;
-            if(!re.test(binary)){
-              app._data.alertMessaje = 'Character not allowed';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-								autoHideDelay: 1500,
-			        })
-
-              this.calculator.hexadecimal = "";
-              this.calculator.decimal = "";
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-              return;
-            }
-
-            double = this.hex2double("0x" + this.bin2hex(binary));
-            hexadecimal = this.bin2hex(binary);
-
-            this.calculator.decimal = double;
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+            architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
           }
-
-          break;
-        case 2:
-          var float = parseFloat(this.calculator.decimal, 10);
-          var binary;
-          var hexadecimal;
-
-          if(this.calculator.bits == 32){
-            hexadecimal = this.bin2hex(this.float2bin(float));
-            binary = this.float2bin(float);
-
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 9);
-            this.calculator.mantissa = binary.substring(9, 32);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
-          }
-
-          if(this.calculator.bits == 64){
-            hexadecimal = this.bin2hex(this.double2bin(float));
-            binary = this.double2bin(float);
-
-            this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-            this.calculator.sign = binary.substring(0, 1);
-            this.calculator.exponent = binary.substring(1, 12);
-            this.calculator.mantissa = binary.substring(12, 64);
-            this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-            this.calculator.mantissaDec = 0;
-
-            var j = 0;
-            for (var i = 0; i < this.calculator.mantissa.length; i++) {
-              j--;
-              this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-            }
-          }
-          break;
+        }
       }
     },
 
+    /*Modifies single precision registers according to double precision registers*/
+    updateSimple(comp, elem){
+      var part1 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
+      var part2 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
+
+      for (var j = 0; j < architecture.components.length; j++) {
+        for (var z = 0; z < architecture.components[j].elements.length; z++) {
+          if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[0]){
+            architecture.components[j].elements[z].value = this.hex2float("0x"+part1);
+          }
+          if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[1]){
+            architecture.components[j].elements[z].value = this.hex2float("0x"+part2);
+          }
+        }
+      }
+    },
+		/*Filter table instructions*/
+    filter(row, filter){
+      if(row.hide == true){
+        return false;
+      }
+      else{
+        return true;
+      }
+    },
+    /*Popover functions*/
+    popoverId(i){
+      return 'popoverValueContent' + i;
+    },
+    closePopover(){
+      this.$root.$emit('bv::hide::popover')
+    },
+    /*Show integer registers*/
     showIntReg(){
       app._data.register_type = 'integer';
       app._data.nameTabReg = "Decimal";
@@ -9211,7 +8921,7 @@ window.app = new Vue({
       $("#memory").hide();
       $("#stats").hide();
     },
-
+		/*Show floating point registers*/
     showFpReg(){
       app._data.register_type = 'floating point';
       app._data.nameTabReg = "Real";
@@ -9220,23 +8930,60 @@ window.app = new Vue({
       $("#memory").hide();
       $("#stats").hide();
     },
-
+    /*Stop user interface refresh*/
     debounce: _.debounce(function (param, e) {
       eval("this." + param + "= '" + e + "'");
     }, getDebounceTime())
-
   },
+});
 
-  
-})
 
-/*Alerta al cerrar pagina web*/
+
+/*************
+ * Functions *
+ *************/
+
+/*All modules*/
+
+/*Error handler*/
+Vue.config.errorHandler = function (err, vm, info) {
+  app._data.alertMessaje = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + err;
+  app._data.type ='danger';
+  app.$bvToast.toast(app._data.alertMessaje, {
+    variant: app._data.type,
+    solid: true,
+    toaster: "b-toaster-top-center",
+		autoHideDelay: 3000,
+  })
+
+  setTimeout(function(){
+  	location.reload(true)
+  }, 3000);
+}
+/*Closing alert*/
 window.onbeforeunload = confirmExit;
 function confirmExit(){
-  return "Ha intentado salir de esta pagina. Es posible que los cambios no se guarden.";
+  return "He's tried to get off this page. Changes may not be saved.";
+}
+/*Determines the refresh timeout depending on the device being used*/
+function getDebounceTime(){
+	if(screen.width > 768){
+  	return 500;
+  }
+  else{
+  	return 1000;
+  }
+}
+/*Stop the transmission of events to children*/
+function destroyClickedElement(event) {
+  document.body.removeChild(event.target);
 }
 
-/*Transforma los bigint en string*/
+
+
+/*Architecture editor*/
+
+/*Bigint number to string*/
 function bigInt_serialize(object){
   var auxObject = jQuery.extend(true, {}, object);
 
@@ -9255,11 +9002,9 @@ function bigInt_serialize(object){
       }
     }
   }
-
   return auxObject;
 }
-
-/*Transforma string en bigint*/
+/*String to Bigint number*/
 function bigInt_deserialize(object){
   var auxObject = object;
 
@@ -9278,58 +9023,14 @@ function bigInt_deserialize(object){
       }
     }
   }
-
   return auxObject;
 }
 
-/*Codemirror, text area ensamblador*/
-// initialize codemirror for assembly
-editor_cfg = {
-  lineNumbers: true,
-  autoRefresh:true,
-} ;
 
-textarea_assembly_obj = document.getElementById("textarea_assembly");
 
-if(textarea_assembly_obj != null){
-  textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
+/*Simulator*/
 
-  textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
-
-  textarea_assembly_editor.setValue("");
-  textarea_assembly_editor.setSize("auto", "550px");
-}
-
-/*Funcion que determina el tiempo de espera de refresco dependiendo del dispositivo que se utiliza*/
-function getDebounceTime(){
-	if(screen.width > 768){
-  	return 500;
-  }
-  else{
-  	return 1000;
-  }
-}
-
-/*Manejador de errores*/
-Vue.config.errorHandler = function (err, vm, info) {
-  app._data.alertMessaje = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + err;
-  app._data.type ='danger';
-  app.$bvToast.toast(app._data.alertMessaje, {
-    variant: app._data.type,
-    solid: true,
-    toaster: "b-toaster-top-center",
-		autoHideDelay: 3000,
-  })
-
-  setTimeout(function(){
-  	location.reload(true)
-  }, 3000);
-}
-
-function destroyClickedElement(event) {
-  document.body.removeChild(event.target);
-}
-
+/*Binary string to integer number*/
 function binaryStringToInt( b ) {
     return parseInt(b, 2);
 }
