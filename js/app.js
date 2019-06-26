@@ -8919,7 +8919,10 @@ window.app = new Vue({
     },
     /*Stop user interface refresh*/
     debounce: _.debounce(function (param, e) {
+    	console.log(param);
+    	console.log(e);
       eval("this." + param + "= '" + e + "'");
+      app.$forceUpdate();
     }, getDebounceTime())
   },
 });
