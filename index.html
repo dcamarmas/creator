@@ -1,19 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
+
+  <!-- Head -->
   <head>
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <title>CREATOR - didaCtic geneRic assEmbly progrAmming simulaTOR</title>
 
-    <!-- Required Stylesheets -->
+    <!-- Required stylesheets -->
     <link type="text/css" rel="stylesheet" href="external/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="external/bootstrap-vue.css"/>
     <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
-    <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
-
+    <link rel="stylesheet" href="css/style.css">
+    
     <!-- Required scripts -->
     <script src="external/vue"></script>
     <script src="external/polyfill.min.js"></script>
@@ -29,8 +32,7 @@
     <script src="external/codemirror/mode/javascript/javascript.js"></script>
     <script src="external/codemirror/addon/display/autorefresh.js"></script>
 
-    <!--favicon-->
-
+    <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="./images/icons/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="./images/icons/apple-icon-60x60.png">
     <link rel="apple-touch-icon" sizes="72x72" href="./images/icons/apple-icon-72x72.png">
@@ -51,23 +53,44 @@
 
   </head>
 
+  <!-- Body -->
   <body>
     <div id="app">
       <template>
-        <header>
 
-          <!-- Cargando -->
-          <div id="spinnerBack" class="spinnerBack loading" style="display:none" ref="spinnerBack"></div>
-          <div id="spinner" class="spinner loading" style="text-align: center; display:none">
-            <div style="display: inline-block; opacity: 1;">
-              <b-spinner variant="primary" style="width: 3rem; height: 3rem;"></b-spinner>
-            </div>
-            <div>
-              <span class="text-primary"><strong>Loading...</strong></span>
-            </div>
+
+
+        <!-- Loading spinner-->
+        <div id="spinnerBack" class="spinnerBack loading" style="display:none" ref="spinnerBack"></div>
+        <div id="spinner" class="spinner loading" style="text-align: center; display:none">
+          <div style="display: inline-block; opacity: 1;">
+            <b-spinner variant="primary" style="width: 3rem; height: 3rem;"></b-spinner>
           </div>
+          <div>
+            <span class="text-primary"><strong>Loading...</strong></span>
+          </div>
+        </div>
 
-          <!-- Information -->
+
+
+        <!-- Navbar  -->
+        <header>
+          <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.13 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+
+            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+
+            <b-collapse is-nav id="nav_collapse">
+              <b-navbar-nav class="ml-auto">
+                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
+                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
+              </b-navbar-nav>
+            </b-collapse>
+          </b-navbar>
+
+          <!-- Information modals -->
+
+          <!-- Notification modal -->
           <b-modal id="notifications" title="Notifications" hide-footer scrollable>
             <h6 v-if="notifications.length == 0">There's no notification at the moment</h6>
             <b-alert show :variant="item.color" v-for="item in notifications">
@@ -76,6 +99,7 @@
             </b-alert>
           </b-modal>
           
+          <!-- About modal -->
           <b-modal id="about" hide-footer scrollable>
             <b-card-group>
               <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>
@@ -122,25 +146,15 @@
             </b-card-group>
           </b-modal>
 
-          <!-- 1 navbar -->
-          <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.13 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
-
-            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
-
-            <b-collapse is-nav id="nav_collapse">
-              <b-navbar-nav class="ml-auto">
-                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
-                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
-              </b-navbar-nav>
-            </b-collapse>
-
-          </b-navbar>
         </header>
 
+
+
+
+        <!-- Architecture editor view -->
         <div class="contenedor row menu_cards" id="architecture_menu">
-      		<!-- 2 navbar -->
+
+      		<!-- Navbar -->
           <div class="contenedor menu row">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
@@ -173,16 +187,6 @@
               </div>
             </div>
 
-            <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
-              <b-form>
-                <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
-                <br>
-                <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
-                <br>
-                <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
-              </b-form>
-            </b-modal>
-
             <div class="col-lg-5 col-sm-12 nopadding">
             	<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -199,8 +203,8 @@
               </div>
             </div>
 
+            <!-- Information popover -->
             <b-popover target="info_arch" triggers="click blur">
-
               <template slot="title">
                 <b-button @click="closePopover" class="close" aria-label="Close">
                   <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -213,14 +217,29 @@
                 <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
               </div>
             </b-popover>
+
+            <!-- Load new architecture modal -->
+            <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
+              <b-form>
+                <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
+                <br>
+                <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+                <br>
+                <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
+              </b-form>
+            </b-modal>
+
           </div>
 
         	<div class="contenedor menu row">
+
+            <!-- Architecture menu -->
             <div class="col-lg-12 col-sm-12" id="load_menu_arch">
               <div class="col-lg-12 col-sm-12 row nopadding nomargin">
-                <div class="col-lg-1 col-sm-1"></div>
+                <div class="col-lg-1 col-sm-1">
+                  
+                </div>
                 <div class="col-lg-10 col-sm-10">
-
                   <b-list-group>
                     <b-list-group-item>
                       <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
@@ -240,39 +259,42 @@
                           <b-col md="2">
                             <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
                           </b-col>
-
                         </b-row>
                       </b-card>
 
-                      <!-- Borrar arquitectura -->
+                      <!-- Delete architecture modal -->
                       <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
                         <h6>Are you sure you want to delete the architecture?</h6>
                       </b-modal >
-
                     </b-list-group-item>
                   </b-list-group>
-
                 </div>
-                <div class="col-lg-1 col-sm-1"></div>
+                <div class="col-lg-1 col-sm-1">
+                  
+                </div>
               </div>
               <br>
+
+              <!-- Backup modal -->
+              <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
+                <h6>A backup is available</h6>
+                <h6>Date: {{date_copy}}</h6>
+                <div class="col-lg-12 col-sm-12 row nomargin">
+                  <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
+                    <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" @click="remove_copy">Discard</b-button>
+                  </div>
+                  <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
+                    <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" @click="load_copy">Load</b-button>
+                  </div>
+                </div>
+              </b-modal>
             </div>
 
-            <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
-              <h6>A backup is available</h6>
-              <h6>Date: {{date_copy}}</h6>
-              <div class="col-lg-12 col-sm-12 row nomargin">
-                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
-                  <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" @click="remove_copy">Discard</b-button>
-                </div>
-                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
-                  <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" @click="load_copy">Load</b-button>
-                </div>
-              </div>
-            </b-modal>
-
+            <!-- Architecture components -->
             <div class="col-lg-12 col-sm-12" id="view_components" style="display:none;">
               <b-tabs>
+
+                <!-- Memory layout -->
                 <b-tab title="Memory Layout" active>
                   <br>
                   <h6>Memory layout:</h6>
@@ -281,13 +303,14 @@
                     <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetMemory" @click="resetMemModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset memory layout</b-button>
                   </div>
 
+                  <!-- Reset memory layout -->
                   <b-modal id ="modalResetMem" :title="modalResetMem.title" ok-variant="danger" ok-title="Reset" @ok="resetMemory(modalResetMem.element)">
                     <h6>Are you sure you want to reset the mememory layout set?</h6>
                   </b-modal >
 
+                  <!-- Memory layout form -->
                   <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%; margin-bottom: 3%;">
                     <div class="col-lg-4 col-sm-12">
-
                       <h6>.text Start:</h6>
                       <b-form-input type="text" v-on:input="debounce('memory_layout[0]', $event)" :value="memory_layout[0]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
                       <h6>.text End:</h6>
@@ -304,13 +327,13 @@
                       <b-form-input type="text" v-on:input="debounce('memory_layout[5]', $event)" :value="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
 
                       <b-button class="btn btn-block btn-sm" variant="primary" style="margin-bottom: 5%;" @click="changeMemoryLayout"><span class="fas fa-exchange-alt"></span> Change memory layout</b-button>
-
                     </div>
 
                     <div class="col-lg-2 col-sm-12 ">
 
                     </div>  
 
+                    <!-- Memory layout sketch -->
                     <div class="col-lg-6 col-sm-12 ">
                       <b-list-group class="memoryLayout">
                         <b-list-group horizontal>
@@ -351,6 +374,7 @@
                   </div>
                 </b-tab>
 
+                <!-- Components -->
                 <b-tab title="Components" :disabled="advanced_mode">
                   <br>
                   <h6>Components of the architecture:</h6>
@@ -369,27 +393,51 @@
                     </div>
                   </div>
 
-                  <!-- Resetea la arquitectura -->
+                  <!-- New component form-->
+                  <b-modal id ="new_component" title = "New Component" ok-title="Save" @ok="newComponentVerify" v-model="showNewComponent" @hidden="emptyFormArch">
+                    <b-form>
+                      <b-form-group label="Name:">
+                        <b-form-input type="text" v-on:input="debounce('formArchitecture.name', $event)" :value="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
+                        </b-form-input>
+                      </b-form-group>
+                      <b-form-group label="Type:">
+                        <b-form-select :options="componentsTypes" required v-model="formArchitecture.type" :state="valid(formArchitecture.type)" size="sm"></b-form-select>
+                      </b-form-group>
+                      <b-form-group v-if="formArchitecture.type == 'floating point'">
+                        <b-form-checkbox-group v-model="formArchitecture.precision">
+                          <b-form-checkbox value="precision">Double Precision</b-form-checkbox>
+                        </b-form-checkbox-group>
+                      </b-form-group>
+                    </b-form>
+                  </b-modal >
+
+                  <!-- Reset components -->
                   <b-modal id ="modalResetArch" :title="modalResetArch.title" ok-variant="danger" ok-title="Reset" @ok="resetArchitecture(modalResetArch.element)">
                     <h6>Are you sure you want to reset the architecture?</h6>
                   </b-modal >
                   
+                  <!-- Components table -->
                   <div class="col-lg-12 col-sm-12 nopadding">
                     <br>
                     <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash" style="padding-left: 0px;">
+
+                      <!-- For each component -->
                       <b-card no-body class="mb-1">
                         <b-card-header header-tag="header" class="p-1" role="tab">
                           <b-btn block href="#" v-b-toggle="item.index.toString()" class="btn btn-outline-secondary btn-sm buttonBackground">{{item.name}}</b-btn>
                         </b-card-header>
                         <b-collapse :id="item.index.toString()" visible accordion="my-accordion" role="tabpanel" class="architecture-scroll-y">
                           <b-card-body>
+
+                            <!-- Elements table -->
                              <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
+
+                              <!-- For each element -->
                               <template slot="ID" slot-scope="row">
                                 {{element_id(architecture.components[item.index].elements[row.index].name, architecture.components[item.index].type, architecture.components[item.index].double_precision)}}
                               </template>
 
                               <template slot="properties" slot-scope="row">
-
                                 <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'read' || architecture.components[item.index].elements[row.index].properties[1] == 'read'"> Read </b-form-checkbox>
 
                                 <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'read' && architecture.components[item.index].elements[row.index].properties[1] != 'read'"> Read </b-form-checkbox>
@@ -397,7 +445,6 @@
                                 <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'write' || architecture.components[item.index].elements[row.index].properties[1] == 'write'"> Write </b-form-checkbox>
 
                                 <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'write' && architecture.components[item.index].elements[row.index].properties[1] != 'write'"> Write </b-form-checkbox>
-
                               </template>
 
                               <template slot="actions" slot-scope="row">
@@ -411,13 +458,12 @@
                             <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="far fa-edit"></span> Edit Component</b-button>
 
                             <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="far fa-trash-alt"></span> Delete Component</b-button>
-
                           </b-card-body>
                         </b-collapse>
                       </b-card>
                     </div>
 
-                    <!-- Editar componente -->
+                    <!-- Component edit form-->
                     <b-modal id ="modalEditComponent" :title = "modalEditComponent.title" ok-title="Save" @ok="editCompVerify($event, modalEditComponent.element)" v-model="showEditComponent" @hidden="emptyFormArch">
                       <b-form>
                         <b-form-group label="Name:">
@@ -427,7 +473,12 @@
                       </b-form>
                     </b-modal >
 
-                    <!-- Nuevo elemento -->
+                    <!-- Delete component -->
+                    <b-modal id ="modalDeletComp" :title="modalDeletComp.title" ok-variant="danger" ok-title="Delete" @ok="delComponent(modalDeletComp.element)">
+                      <h6>Are you sure you want to delete the component?</h6>
+                    </b-modal >
+
+                    <!-- New element form -->
                     <b-modal id ="modalNewElement" :title = "modalNewElement.title" ok-title="Save" @ok="newElementVerify($event, modalNewElement.element)" v-model="showNewElement" @hidden="emptyFormArch">
                       <b-form >
                         <b-form-group label="Name:">
@@ -461,7 +512,7 @@
                       </b-form>
                     </b-modal >
 
-                    <!-- Editar elemento -->
+                    <!-- Edit element form -->
                     <b-modal id ="modalEditElement" :title="modalEditElement.title" ok-title="Save" @ok="editElementVerify($event, modalEditElement.element)" v-model="showEditElement" @hidden="emptyFormArch">
                       <b-form>
                         <b-form-group label="Name:">
@@ -482,7 +533,6 @@
                             <b-form-checkbox value="write">Write</b-form-checkbox>
                           </b-form-checkbox-group>
                         </b-form-group>
-
                         <b-form-group label="Simple Floating Points asociate:" v-if="modalEditElement.double_precision == true">
                           <div class="col-lg-12 col-sm-12 row nomargin">
                             <div class="col-lg-6 col-sm-6">
@@ -493,41 +543,17 @@
                             </div>
                           </div>
                         </b-form-group>
-
                       </b-form>
                     </b-modal >
 
-                    <!-- Borrar elemento -->
+                    <!-- Delete element -->
                     <b-modal id ="modalDeletElement" :title="modalDeletElement.title" ok-variant="danger" ok-title="Delete" @ok="delElement(modalDeletElement.element)">
                       <h6>Are you sure you want to delete the item?</h6>
                     </b-modal >
-
-                    <!-- Borrar componente -->
-                    <b-modal id ="modalDeletComp" :title="modalDeletComp.title" ok-variant="danger" ok-title="Delete" @ok="delComponent(modalDeletComp.element)">
-                      <h6>Are you sure you want to delete the component?</h6>
-                    </b-modal >
-
                   </div>
-
-                  <!-- Nuevo componente -->
-                  <b-modal id ="new_component" title = "New Component" ok-title="Save" @ok="newComponentVerify" v-model="showNewComponent" @hidden="emptyFormArch">
-                    <b-form>
-                      <b-form-group label="Name:">
-                        <b-form-input type="text" v-on:input="debounce('formArchitecture.name', $event)" :value="formArchitecture.name" required placeholder="Enter name" :state="valid(formArchitecture.name)" size="sm">
-                        </b-form-input>
-                      </b-form-group>
-                      <b-form-group label="Type:">
-                        <b-form-select :options="componentsTypes" required v-model="formArchitecture.type" :state="valid(formArchitecture.type)" size="sm"></b-form-select>
-                      </b-form-group>
-                      <b-form-group v-if="formArchitecture.type == 'floating point'">
-                        <b-form-checkbox-group v-model="formArchitecture.precision">
-                          <b-form-checkbox value="precision">Double Precision</b-form-checkbox>
-                        </b-form-checkbox-group>
-                      </b-form-group>
-                    </b-form>
-                  </b-modal >
                 </b-tab>
 
+                <!-- Instruction definition -->
                 <b-tab title="Instructions Definition" :disabled="advanced_mode">
                   <br>
                   <h6>Instruction set:</h6>
@@ -536,258 +562,30 @@
 
                   <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset Instructions</b-button>
 
-                  <!-- Resetea las instrucciones -->
-                  <b-modal id ="modalResetInst" :title="modalResetInst.title" ok-variant="danger" ok-title="Reset" @ok="resetInstructions(modalResetInst.element)">
-                    <h6>Are you sure you want to reset the instructions?</h6>
-                  </b-modal >
-
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
-                      <template slot="fields" slot-scope="row">
-                        <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
-                      </template>
-
-                      <template slot="definition" slot-scope="row">
-                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
-                      </template>
-
-                      <template slot="actions" slot-scope="row">
-                        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
-                      </template>
-                    </b-table>
-
-                    <!-- Campos de la instruccion -->
-                    <b-modal size="lg" id ="modalViewFields" :title="modalViewFields.title" hide-footer @hidden="emptyFormInst">
-                      <b-form>
-                        <div id="viewFields" >
-                          <div class="col-lg-12 col-sm-12 row">
-                            <div class="col-lg-2 col-2 fields">
-                              
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Name:</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Type</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Start Bit</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>End Bit</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Value</h6>
-                            </div>
-                          </div>
-
-                          <div v-for="i in parseInt(formInstruction.numfields)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Field {{i-1}}</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required size="sm" v-if="(i-1) != 0" disabled>
-                                  </b-form-input>
-                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.typeField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.co" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.cop" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </b-form>
-                    </b-modal>
-
-                    <!-- Borrar instruccion -->
-                    <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.index)">
-                      <h6>Are you sure you want to delete the item?</h6>
-                    </b-modal >
-
-                    <!-- Formulario para editar una instruccion -->
-                    <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Save" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" v-model="showEditInstruction" @hidden="emptyFormInst">
-
-                      <b-form>
-                        <div id="editInstForm1" v-if="instructionFormPage == 1">
-                          <b-form-group label="Name:">
-                            <b-form-input type="text" v-on:input="debounce('formInstruction.name', $event)" :value="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
-                            </b-form-input>
-                          </b-form-group>
-
-                          <b-form-group label="Type:">
-                            <b-form-select v-on:input="debounce('formInstruction.type', $event)" :value="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
-                          </b-form-group>
-
-                          <b-form-group label="Number of Words:">
-                            <b-form-input type="number" min="1" v-on:input="debounce('formInstruction.nwords', $event)" :value="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
-                            </b-form-input>
-                          </b-form-group>
-
-                          <b-form-group label="Number of fields: (Including co and cop)">
-                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
-                            </b-form-input>
-                          </b-form-group>
-                        </div>
-
-                        <div id="editInstForm2" v-if="instructionFormPage == 2">
-                          <div class="col-lg-12 col-sm-12 row">
-                            <div class="col-lg-2 col-2 fields">
-                              
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Name:</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Type</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Start Bit</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>End Bit</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Value</h6>
-                            </div>
-                          </div>
-
-                          <div v-for="i in parseInt(formInstruction.numfields)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Field {{i-1}}</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-on:input="debounce('formInstruction.nameField[i-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
-                                  </b-form-input>
-                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
-                                    <option value="INT-Reg">INT-Reg</option>
-                                    <option value="FP-Reg">FP-Reg</option>
-                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                    <option value="inm">inm</option>
-                                    <option value="address">address</option>
-                                    <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
-                                  </b-form-select>
-                                  <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField[i-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField[i-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-on:input="debounce('formInstruction.cop', $event)" :value="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div id="editInstForm3" v-if="instructionFormPage == 3">
-                          <b-form-group label="Instruction Signature Definition:">
-                            <b-form-input type="text" v-on:input="debounce('formInstruction.signature_definition', $event)" :value="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
-                          </b-form-group>
-                          <b-form-group label="Instruction Signature:">
-                            <b-form-input type="text" v-on:input="debounce('formInstruction.signature', $event)" :value="formInstruction.signature" disabled required size="sm"></b-form-input>
-                          </b-form-group>
-                          <b-form-group label="Instruction Signature Raw:">
-                            <b-form-input type="text" v-on:input="debounce('formInstruction.signatureRaw', $event)" :value="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
-                          </b-form-group>
-                        </div>
-
-                        <div id="editInstForm4" v-if="instructionFormPage == 4">
-                          <b-form-group label="Assembly Definition:">
-                            <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
-                            </b-form-textarea>
-                          </b-form-group>
-                        </div>
-                      </b-form>
-
-                      <hr>
-                      <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="4" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
-                    </b-modal>
-                  </div>
-
-                  <!-- Formulario nueva instruccion -->
+                  <!-- New instruction form -->
                   <b-modal size="lg" id ="new_instruction" title = "New Instruction" ok-title="Save" @ok="newInstVerify" v-model="showNewInstruction" @hidden="emptyFormInst">
-
                     <b-form>
+
+                      <!-- Page 1 -->
                       <div id="newInstForm1" v-if="instructionFormPage == 1">
                         <b-form-group label="Name:">
                           <b-form-input type="text" v-on:input="debounce('formInstruction.name', $event)" :value="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
                           </b-form-input>
                         </b-form-group>
-
                         <b-form-group label="Type:">
                           <b-form-select v-model="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
                         </b-form-group>
-
                         <b-form-group label="Number of Words:">
                           <b-form-input type="number" min="1" v-on:input="debounce('formInstruction.nwords', $event)" :value="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
                           </b-form-input>
                         </b-form-group>
-
                         <b-form-group label="Number of fields: (Including co and cop)">
                           <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
                           </b-form-input>
                         </b-form-group>
                       </div>
 
+                      <!-- Page 2 -->
                       <div id="newInstForm2" v-if="instructionFormPage == 2">
                         <div class="col-lg-12 col-sm-12 row">
                           <div class="col-lg-2 col-2 fields">
@@ -865,6 +663,7 @@
                         </div>
                       </div>
 
+                      <!-- Page 3 -->
                       <div id="newInstForm3" v-if="instructionFormPage == 3">
                         <b-form-group label="Assembly Signature Definition:">
                           <b-form-input type="text" v-on:input="debounce('formInstruction.signature_definition', $event)" :value="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
@@ -877,6 +676,7 @@
                         </b-form-group>
                       </div>
 
+                      <!-- Page 4 -->
                       <div id="newInstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Assembly Definition:">
                           <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
@@ -884,11 +684,243 @@
                         </b-form-group>
                       </div>
                     </b-form>
-
                     <hr>
                     <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="4" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
-
                   </b-modal >
+
+                  <!-- Reset instruction set -->
+                  <b-modal id ="modalResetInst" :title="modalResetInst.title" ok-variant="danger" ok-title="Reset" @ok="resetInstructions(modalResetInst.element)">
+                    <h6>Are you sure you want to reset the instructions?</h6>
+                  </b-modal >
+
+                  <!-- Instruction set table -->
+                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
+                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
+
+                      <!-- For each instruction -->
+                      <template slot="fields" slot-scope="row">
+                        <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
+                      </template>
+
+                      <template slot="definition" slot-scope="row">
+                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
+                      </template>
+
+                      <template slot="actions" slot-scope="row">
+                        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
+                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                      </template>
+                    </b-table>
+
+                    <!-- Instructions fields -->
+                    <b-modal size="lg" id ="modalViewFields" :title="modalViewFields.title" hide-footer @hidden="emptyFormInst">
+                      <b-form>
+                        <div id="viewFields" >
+                          <div class="col-lg-12 col-sm-12 row">
+                            <div class="col-lg-2 col-2 fields">
+                              
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Name:</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Type</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Start Bit</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>End Bit</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Value</h6>
+                            </div>
+                          </div>
+
+                          <div v-for="i in parseInt(formInstruction.numfields)">
+                            <div class="col-lg-12 col-sm-12 row">
+                              <div class="col-lg-2 col-2 fields">
+                                <h6>Field {{i-1}}</h6>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required size="sm" v-if="(i-1) != 0" disabled>
+                                  </b-form-input>
+                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="text" v-model="formInstruction.typeField[i-1]" required size="sm" disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required size="sm" disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required size="sm" disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
+                                <b-form-group>
+                                  <b-form-input type="text" v-model="formInstruction.co" required size="sm" disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
+                                <b-form-group>
+                                  <b-form-input type="text" v-model="formInstruction.cop" required size="sm" disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </b-form>
+                    </b-modal>
+
+                    <!-- Edit instruction form -->
+                    <b-modal size="lg" id ="modalEditInst" :title="modalEditInst.title" ok-title="Save" @ok="editInstVerify($event, modalEditInst.element, modalEditInst.co, modalEditInst.cop)" v-model="showEditInstruction" @hidden="emptyFormInst">
+                      <b-form>
+
+                        <!-- Page 1 -->
+                        <div id="editInstForm1" v-if="instructionFormPage == 1">
+                          <b-form-group label="Name:">
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.name', $event)" :value="formInstruction.name" required placeholder="Enter name" :state="valid(formInstruction.name)" size="sm">
+                            </b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Type:">
+                            <b-form-select v-on:input="debounce('formInstruction.type', $event)" :value="formInstruction.type" :options="instructionsTypes" :state="valid(formInstruction.type)" size="sm"></b-form-select>
+                          </b-form-group>
+                          <b-form-group label="Number of Words:">
+                            <b-form-input type="number" min="1" v-on:input="debounce('formInstruction.nwords', $event)" :value="formInstruction.nwords" required placeholder="Enter nwords" :state="valid(formInstruction.nwords)" size="sm">
+                            </b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Number of fields: (Including co and cop)">
+                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                            </b-form-input>
+                          </b-form-group>
+                        </div>
+
+                        <!-- Page 2 -->
+                        <div id="editInstForm2" v-if="instructionFormPage == 2">
+                          <div class="col-lg-12 col-sm-12 row">
+                            <div class="col-lg-2 col-2 fields">
+                              
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Name:</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Type</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Start Bit</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>End Bit</h6>
+                            </div>
+                            <div class="col-lg-2 col-2 fields">
+                              <h6>Value</h6>
+                            </div>
+                          </div>
+
+                          <div v-for="i in parseInt(formInstruction.numfields)">
+                            <div class="col-lg-12 col-sm-12 row">
+                              <div class="col-lg-2 col-2 fields">
+                                <h6>Field {{i-1}}</h6>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.nameField[i-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                  </b-form-input>
+                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    <option value="INT-Reg">INT-Reg</option>
+                                    <option value="FP-Reg">FP-Reg</option>
+                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
+                                    <option value="inm">inm</option>
+                                    <option value="address">address</option>
+                                    <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
+                                  </b-form-select>
+                                  <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField[i-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField[i-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
+                                <b-form-group>
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
+                                <b-form-group>
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.cop', $event)" :value="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Page 3 -->
+                        <div id="editInstForm3" v-if="instructionFormPage == 3">
+                          <b-form-group label="Instruction Signature Definition:">
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.signature_definition', $event)" :value="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Instruction Signature:">
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.signature', $event)" :value="formInstruction.signature" disabled required size="sm"></b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Instruction Signature Raw:">
+                            <b-form-input type="text" v-on:input="debounce('formInstruction.signatureRaw', $event)" :value="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
+                          </b-form-group>
+                        </div>
+
+                        <!-- Page 4 -->
+                        <div id="editInstForm4" v-if="instructionFormPage == 4">
+                          <b-form-group label="Assembly Definition:">
+                            <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                            </b-form-textarea>
+                          </b-form-group>
+                        </div>
+                      </b-form>
+                      <hr>
+                      <b-pagination-nav size="sm" align="center" base-url="#" :number-of-pages="4" v-model="instructionFormPage" :link-gen="linkGen" :page-gen="pageGen"></b-pagination-nav>
+                    </b-modal>
+
+                    <!-- Delete instruction -->
+                    <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.index)">
+                      <h6>Are you sure you want to delete the item?</h6>
+                    </b-modal >
+
+                    
+                  </div>
+
+                  
                 </b-tab>
 
                 <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode">
@@ -2148,6 +2180,7 @@
       </template>
     </div>
 
+    <!-- Required scripts -->
     <script src="js/app.js"></script>
     <script src="js/buttons_actions.js"></script>
 
