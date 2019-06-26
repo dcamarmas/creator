@@ -127,20 +127,7 @@ var compileError = [
   { mess1: "Empty directive", mess2: "" },
   { mess1: "After the comma you should go a blank --> ", mess2: "" },
 ];
-/*Codemirror*/
-editor_cfg = {
-  lineNumbers: true,
-  autoRefresh:true,
-} ;
 
-textarea_assembly_obj = document.getElementById("textarea_assembly");
-
-if(textarea_assembly_obj != null){
-  textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
-  textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
-  textarea_assembly_editor.setValue("");
-  textarea_assembly_editor.setSize("auto", "550px");
-}
 
 
 
@@ -9024,6 +9011,25 @@ function bigInt_deserialize(object){
     }
   }
   return auxObject;
+}
+
+
+
+/*Compilator*/
+
+/*Codemirror*/
+editor_cfg = {
+  lineNumbers: true,
+  autoRefresh:true,
+} ;
+
+textarea_assembly_obj = document.getElementById("textarea_assembly");
+
+if(textarea_assembly_obj != null){
+  textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
+  textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
+  textarea_assembly_editor.setValue("");
+  textarea_assembly_editor.setSize("auto", "550px");
 }
 
 
