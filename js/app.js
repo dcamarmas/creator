@@ -965,10 +965,8 @@ window.app = new Vue({
 			        });
 		          var date = new Date();
 		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-		          
 		          return;
 		        }
-		        app._data.memory_layout[i] = "";
           }
           else{
             app._data.alertMessaje = 'The value must be a number';
@@ -981,7 +979,6 @@ window.app = new Vue({
 		        });
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-            
             return;
           }
         }
@@ -998,8 +995,7 @@ window.app = new Vue({
 						autoHideDelay: 1500,
 	        });
 	        var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-          
+          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});  
           return;
         }
 
@@ -1015,7 +1011,6 @@ window.app = new Vue({
 		        });
             var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-            
             return;
           }
         }
@@ -1029,6 +1024,11 @@ window.app = new Vue({
 
       backup_stack_address = architecture.memory_layout[4].value;
 	    backup_data_address = architecture.memory_layout[3].value;
+
+	    for(var i = 0; i < 6; i++){
+		    app._data.memory_layout[i] = "";
+		  }
+		  app.$forceUpdate();
     },
     /*Register ID assigment*/
     element_id(name, type, double){
@@ -4132,6 +4132,7 @@ window.app = new Vue({
                       $(".loading").hide();
                       return -1;
                     }
+
                     if(auxTokenString.length > 2*architecture.directives[j].size){
                       this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -4215,7 +4216,6 @@ window.app = new Vue({
                         (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Bin: auxTokenString.substring(auxTokenString.length-(2+(2*i)), auxTokenString.length-(2*i)), Tag: null},);
                         console.log(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[data_address%4]);
                       }
-
                       data_address++;
                     }
                   }
@@ -4322,7 +4322,6 @@ window.app = new Vue({
                   console.log(auxTokenString)
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
-                    console.log((auxTokenString.length/2))
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
@@ -4968,8 +4967,6 @@ window.app = new Vue({
                   console.log(auxTokenString);
 
                   for(var i = 0; i < (auxTokenString.length/2); i++){
-                    console.log((auxTokenString.length/2));
-
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
