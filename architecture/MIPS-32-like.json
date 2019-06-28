@@ -994,9 +994,9 @@
       "co": "000000",
       "cop": "100000",
       "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature_definition": "F0 $F3 $F2 $F1",
       "signature": "add,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "add $reg1 $reg2 $reg3",
+      "signatureRaw": "add $reg3 $reg2 $reg1",
       "fields": [
         {
           "name": "add",
@@ -1029,7 +1029,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+reg3;\nif(\"reg1.name\"==\"sp.name\"){\n\t if((reg2+reg3)>>>0 != stack_limit){\n\t\t stack_limit=reg2+reg3 >>> 0\n\t}\n}"
+      "definition": "reg3=reg1+reg2;\nif(\"reg3.name\"==\"sp.name\"){\n\t if((reg1+reg2)>>>0 != stack_limit){\n\t\t stack_limit=reg1+reg2 >>> 0\n\t}\n}"
     },
     {
       "name": "addi",
@@ -1037,9 +1037,9 @@
       "co": "001000",
       "cop": null,
       "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 F3",
+      "signature_definition": "F0 $F2 $F1 F3",
       "signature": "addi,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "addi $reg1 $reg2 val",
+      "signatureRaw": "addi $reg2 $reg1 val",
       "fields": [
         {
           "name": "addi",
@@ -1066,7 +1066,87 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2+val;\nif(\"reg1.name\"==\"sp.name\"){\n\t if((reg2+val)>>>0 != stack_limit){\n\t\t stack_limit=reg2+val >>> 0\n\t}\n}"
+      "definition": "reg2=reg1+val;\nif(\"reg2.name\"==\"sp.name\"){\n\t if((reg1+val)>>>0 != stack_limit){\n\t\t stack_limit=reg1+val >>> 0\n\t}\n}"
+    },
+    {
+      "name": "addiu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F2 $F1 F3",
+      "signature": "addiu,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "addiu $reg2 $reg1 val",
+      "co": "001001",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "addiu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg2=reg1+val;\nif('reg2.name'=='sp.name'){\n\t if((reg1+val)>>>0 != stack_limit){\n\t\t stack_limit=reg1+val >>> 0\n\t}\n}"
+    },
+    {
+      "name": "addu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "addu,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "addu $reg3 $reg1 $reg2",
+      "co": "000000",
+      "cop": "100001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "addu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "reg3",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0
+        }
+      ],
+      "definition": "reg3=reg1+reg2;\nif('reg3.name'=='sp.name'){\n\t if((reg1+reg2)>>>0 != stack_limit){\n\t\t stack_limit=reg1+reg2 >>> 0\n\t}\n}"
     },
     {
       "name": "and",
@@ -1074,9 +1154,9 @@
       "co": "000000",
       "cop": "100100",
       "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature_definition": "F0 $F3 $F2 $F1",
       "signature": "and,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "and $reg1 $reg2 $reg3",
+      "signatureRaw": "and $reg3 $reg2 $reg1",
       "fields": [
         {
           "name": "and",
@@ -1109,7 +1189,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2&reg3"
+      "definition": "reg3=reg1&reg2;\nif('reg3.name'=='sp.name'){\n\t if((reg1&reg2)>>>0 != stack_limit){\n\t\t stack_limit=reg1&reg2 >>> 0\n\t}\n}"
     },
     {
       "name": "andi",
@@ -1117,9 +1197,9 @@
       "co": "001100",
       "cop": null,
       "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 F3",
+      "signature_definition": "F0 $F2 $F1 F3",
       "signature": "andi,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "andi $reg1 $reg2 val",
+      "signatureRaw": "andi $reg2 $reg1 val",
       "fields": [
         {
           "name": "andi",
@@ -1146,45 +1226,20 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2&val"
+      "definition": "reg2=reg1&val;\nif('reg2.name'=='sp.name'){\n\t if((reg1&val)>>>0 != stack_limit){\n\t\t stack_limit=reg1&val >>> 0\n\t}\n}"
     },
     {
-      "name": "b",
-      "type": "Unconditional bifurcation",
-      "co": "000100",
+      "name": "andi",
+      "type": "Logic",
+      "co": "001100",
       "cop": null,
       "nwords": 1,
-      "signature_definition": "F0 F1",
-      "signature": "b,inm",
-      "signatureRaw": "b val",
+      "signature_definition": "F0 $F2 $F1 F3",
+      "signature": "andi,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "andi $reg2 $reg1 val",
       "fields": [
         {
-          "name": "b",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "PC=val"
-    },
-    {
-      "name": "beq",
-      "type": "Conditional bifurcation",
-      "co": "000100",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 F3",
-      "signature": "beq,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "beq $reg1 $reg2 val",
-      "fields": [
-        {
-          "name": "beq",
+          "name": "andi",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
@@ -1208,8 +1263,256 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 == reg2){PC=val}"
+      "definition": "reg2=reg1&val;\nif('reg2.name'=='sp.name'){\n\t if((reg1+val)>>>0 != stack_limit){\n\t\t stack_limit=reg1+val >>> 0\n\t}\n}"
     },
+    {
+      "name": "b",
+      "type": "Unconditional bifurcation",
+      "co": "000100",
+      "cop": "",
+      "nwords": 1,
+      "signature_definition": "F0 F1",
+      "signature": "b,inm",
+      "signatureRaw": "b off",
+      "fields": [
+        {
+          "name": "b",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "PC=PC+((off << 16) >> 14)"
+    },
+    {
+      "name": "bc",
+      "type": "Unconditional bifurcation",
+      "signature_definition": "F0 F1",
+      "signature": "bc,inm",
+      "signatureRaw": "bc off",
+      "co": "110010",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bc",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 25,
+          "stopbit": 0
+        }
+      ],
+      "definition": "PC=PC+((off << 6) >> 4)"
+    },
+    {
+      "name": "bc1eqz",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 $F2 F3",
+      "signature": "bc1eqz,$FP-Reg,inm",
+      "signatureRaw": "bc1eqz $ft off",
+      "co": "010001",
+      "cop": "01001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bc1eqz",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "ft",
+          "type": "FP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(ft==0){PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "bc1nez",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 $F2 F3",
+      "signature": "bc1nez,$FP-Reg,inm",
+      "signatureRaw": "bc1nez $ft off",
+      "co": "010001",
+      "cop": "01101",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bc1nez",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "ft",
+          "type": "FP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(ft!=0){PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "beq",
+      "type": "Conditional bifurcation",
+      "co": "000100",
+      "cop": "",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "beq,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "beq $reg1 $reg2 off",
+      "fields": [
+        {
+          "name": "beq",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(reg1 == reg2){PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "bgez",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 $F1 F3",
+      "signature": "bgez,$INT-Reg,inm",
+      "signatureRaw": "bgez $rs off",
+      "co": "000001",
+      "cop": "00001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bgez",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(rs >= 0) {PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "bgezal",
+      "type": "Function call",
+      "signature_definition": "F0 $F1 F3",
+      "signature": "bgezal,$INT-Reg,inm",
+      "signatureRaw": "bgezal $rs off",
+      "co": "000001",
+      "cop": "10001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bgezal",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "ra=PC+8; if(rs>=0){PC=PC+((off << 16) >> 14)}"
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
     {
       "name": "bne",
       "type": "Conditional bifurcation",
