@@ -76,7 +76,7 @@
         <!-- Navbar  -->
         <header>
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.13 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.16 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -587,9 +587,12 @@
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="Number of fields: (Including co and cop)">
-                          <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                          <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm" @change="changeNumfield(0)">
                           </b-form-input>
                         </b-form-group>
+                        <div style="display: none">
+                          <b-form-input type="text" v-model="formInstruction.numfieldsAux"></b-form-input>
+                        </div>
                       </div>
 
                       <!-- Page 2 -->
@@ -615,56 +618,58 @@
                           </div>
                         </div>
 
-                        <div v-for="i in parseInt(formInstruction.numfields)">
-                          <div class="col-lg-12 col-sm-12 row">
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Field {{i-1}}</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-input type="text" v-on:input="debounce('formInstruction.nameField['+i+'-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
-                                </b-form-input>
-                                <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
-                                </b-form-input>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
-                                  <option value="INT-Reg">INT-Reg</option>
-                                  <option value="FP-Reg">FP-Reg</option>
-                                  <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                  <option value="inm">inm</option>
-                                  <option value="address">address</option>
-                                  <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
-                                </b-form-select>
-                                <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
-                                </b-form-input>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                              <b-form-group>
-                                <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                              <b-form-group>
-                                <b-form-input type="text" v-on:input="debounce('formInstruction.cop', $event)" :value="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
-                                </b-form-input>
-                              </b-form-group>
+                        <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
+                          <div v-for="i in parseInt(formInstruction.numfieldsAux)">
+                            <div class="col-lg-12 col-sm-12 row">
+                              <div class="col-lg-2 col-2 fields">
+                                <h6>Field {{i-1}}</h6>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.nameField['+i+'-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                  </b-form-input>
+                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    <option value="INT-Reg">INT-Reg</option>
+                                    <option value="FP-Reg">FP-Reg</option>
+                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
+                                    <option value="inm">inm</option>
+                                    <option value="address">address</option>
+                                    <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
+                                  </b-form-select>
+                                  <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
+                                <b-form-group>
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
+                                <b-form-group>
+                                  <b-form-input type="text" v-on:input="debounce('formInstruction.valueField['+i+'-1]', $event)" :value="formInstruction.valueField[i-1]" required :state="valid(formInstruction.valueField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -744,48 +749,50 @@
                             </div>
                           </div>
 
-                          <div v-for="i in parseInt(formInstruction.numfields)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Field {{i-1}}</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required size="sm" v-if="(i-1) != 0" disabled>
-                                  </b-form-input>
-                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.typeField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.co" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formInstruction.cop" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
+                          <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
+                            <div v-for="i in parseInt(formInstruction.numfieldsAux)">
+                              <div class="col-lg-12 col-sm-12 row">
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Field {{i-1}}</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formInstruction.nameField[i-1]" required size="sm" v-if="(i-1) != 0" disabled>
+                                    </b-form-input>
+                                    <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formInstruction.typeField[i-1]" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formInstruction.co" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-on:input="debounce('formInstruction.valueField['+i+'-1]', $event)" :value="formInstruction.valueField[i-1]" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -811,9 +818,13 @@
                             </b-form-input>
                           </b-form-group>
                           <b-form-group label="Number of fields: (Including co and cop)">
-                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm">
+                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm" @change="changeNumfield(0)">
                             </b-form-input>
                           </b-form-group>
+                          <div style="display: none">
+                            <b-form-input type="text" v-model="formInstruction.numfieldsAux"></b-form-input>
+                          </div>
+
                         </div>
 
                         <!-- Page 2 -->
@@ -835,60 +846,63 @@
                               <h6>End Bit</h6>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Value</h6>
+
                             </div>
                           </div>
 
-                          <div v-for="i in parseInt(formInstruction.numfields)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Field {{i-1}}</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-on:input="debounce('formInstruction.nameField['+i+'-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
-                                  </b-form-input>
-                                  <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
-                                    <option value="INT-Reg">INT-Reg</option>
-                                    <option value="FP-Reg">FP-Reg</option>
-                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                    <option value="inm">inm</option>
-                                    <option value="address">address</option>
-                                    <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
-                                  </b-form-select>
-                                  <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
-                                <b-form-group>
-                                  <b-form-input type="text" v-on:input="debounce('formInstruction.cop', $event)" :value="formInstruction.cop" required :state="valid(formInstruction.cop)" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
+
+                          <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
+                            <div v-for="i in parseInt(formInstruction.numfieldsAux)">
+                              <div class="col-lg-12 col-sm-12 row">
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Field {{i-1}}</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-on:input="debounce('formInstruction.nameField['+i+'-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
+                                    </b-form-input>
+                                    <b-form-input type="text" v-model="formInstruction.nameField[i-1]=formInstruction.name" required size="sm" v-if="(i-1) == 0"  disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-select v-model="formInstruction.typeField[i-1]" required :state="valid(formInstruction.typeField[i-1])" size="sm" v-if="(i-1) != 0">
+                                      <option value="INT-Reg">INT-Reg</option>
+                                      <option value="FP-Reg">FP-Reg</option>
+                                      <option value="Ctrl-Reg">Ctrl-Reg</option>
+                                      <option value="inm">inm</option>
+                                      <option value="address">address</option>
+                                      <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
+                                    </b-form-select>
+                                    <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-on:input="debounce('formInstruction.valueField['+i+'-1]', $event)" :value="formInstruction.valueField[i-1]" required :state="valid(formInstruction.valueField[i-1])" size="sm">
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -952,9 +966,12 @@
                         </b-form-group>
 
                         <b-form-group label="Number of fields: ">
-                          <b-form-input type="number" min="0" :max="32 * formInstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
+                          <b-form-input type="number" min="0" :max="32 * formPseudoinstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm" @change="changeNumfield(1)">
                           </b-form-input>
                         </b-form-group>
+                        <div style="display: none;">
+                          <b-form-input type="text" v-model="formPseudoinstruction.numfieldsAux"></b-form-input>
+                        </div>
                       </div>
 
                       <!-- Page 2 -->
@@ -976,43 +993,45 @@
                             <h6>End Bit</h6>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Value</h6>
+
                           </div>
                         </div>
 
-                        <div v-for="i in parseInt(formPseudoinstruction.numfields)">
-                          <div class="col-lg-12 col-sm-12 row">
-                            <div class="col-lg-2 col-2 fields">
-                              <h6>Field {{i-1}}</h6>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.nameField['+i+'-1]', $event)" :value="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
-                                  <option value="INT-Reg">INT-Reg</option>
-                                  <option value="FP-Reg">FP-Reg</option>
-                                  <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                  <option value="inm">inm</option>
-                                  <option value="address">address</option>
-                                </b-form-select>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.startBitField['+i+'-1]', $event)" :value="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
-                                </b-form-input>
-                              </b-form-group>
-                            </div>
-                            <div class="col-lg-2 col-2 fields">
-                              <b-form-group>
-                                <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.stopBitField['+i+'-1]', $event)" :value="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
-                                </b-form-input>
-                              </b-form-group>
+                        <div v-if="isNaN(parseInt(formPseudoinstruction.numfieldsAux)) == false">
+                          <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
+                            <div class="col-lg-12 col-sm-12 row">
+                              <div class="col-lg-2 col-2 fields">
+                                <h6>Field {{i-1}}</h6>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.nameField['+i+'-1]', $event)" :value="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
+                                    <option value="INT-Reg">INT-Reg</option>
+                                    <option value="FP-Reg">FP-Reg</option>
+                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
+                                    <option value="inm">inm</option>
+                                    <option value="address">address</option>
+                                  </b-form-select>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.startBitField['+i+'-1]', $event)" :value="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields">
+                                <b-form-group>
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.stopBitField['+i+'-1]', $event)" :value="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
+                                  </b-form-input>
+                                </b-form-group>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1088,38 +1107,40 @@
                               <h6>End Bit</h6>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Value</h6>
+
                             </div>
                           </div>
 
-                          <div v-for="i in parseInt(formPseudoinstruction.numfields)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Field {{i-1}}</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-model="formPseudoinstruction.nameField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input v-model="formPseudoinstruction.typeField[i-1]" required type="text" size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required size="sm" disabled>
-                                  </b-form-input>
-                                </b-form-group>
+                          <div v-if="isNaN(parseInt(formPseudoinstruction.numfieldsAux)) == false">  
+                            <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
+                              <div class="col-lg-12 col-sm-12 row">
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Field {{i-1}}</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-model="formPseudoinstruction.nameField[i-1]" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input v-model="formPseudoinstruction.typeField[i-1]" required type="text" size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.startBitField[i-1]" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formPseudoinstruction.stopBitField[i-1]" required size="sm" disabled>
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
                               </div>
                             </div>
                           </div>
@@ -1144,9 +1165,13 @@
                           </b-form-group>
 
                           <b-form-group label="Number of fields: ">
-                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm">
+                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm" @change="changeNumfield(1)">
                             </b-form-input>
                           </b-form-group>
+
+                          <div style="display: none;">
+                            <b-form-input type="text" v-model="formPseudoinstruction.numfieldsAux"></b-form-input>
+                          </div>
                         </div>
 
                         <!-- Page 2 -->
@@ -1168,43 +1193,45 @@
                               <h6>End Bit</h6>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Value</h6>
+
                             </div>
                           </div>
 
-                          <div v-for="i in parseInt(formPseudoinstruction.numfields)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
-                                <h6>Field {{i-1}}</h6>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.nameField['+i+'-1]', $event)" :value="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
-                                    <option value="INT-Reg">INT-Reg</option>
-                                    <option value="FP-Reg">FP-Reg</option>
-                                    <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                    <option value="inm">inm</option>
-                                    <option value="address">address</option>
-                                  </b-form-select>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.startBitField['+i+'-1]', $event)" :value="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
-                              </div>
-                              <div class="col-lg-2 col-2 fields">
-                                <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.stopBitField['+i+'-1]', $event)" :value="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
-                                  </b-form-input>
-                                </b-form-group>
+                          <div v-if="isNaN(parseInt(formPseudoinstruction.numfieldsAux)) == false"> 
+                            <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
+                              <div class="col-lg-12 col-sm-12 row">
+                                <div class="col-lg-2 col-2 fields">
+                                  <h6>Field {{i-1}}</h6>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.nameField['+i+'-1]', $event)" :value="formPseudoinstruction.nameField[i-1]" required :state="valid(formPseudoinstruction.nameField[i-1])" size="sm">
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-select v-model="formPseudoinstruction.typeField[i-1]" required :state="valid(formPseudoinstruction.typeField[i-1])" size="sm">
+                                      <option value="INT-Reg">INT-Reg</option>
+                                      <option value="FP-Reg">FP-Reg</option>
+                                      <option value="Ctrl-Reg">Ctrl-Reg</option>
+                                      <option value="inm">inm</option>
+                                      <option value="address">address</option>
+                                    </b-form-select>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.startBitField['+i+'-1]', $event)" :value="formPseudoinstruction.startBitField[i-1]" required :state="valid(formPseudoinstruction.startBitField[i-1])" size="sm">
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields">
+                                  <b-form-group>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formPseudoinstruction.stopBitField['+i+'-1]', $event)" :value="formPseudoinstruction.stopBitField[i-1]" required :state="valid(formPseudoinstruction.stopBitField[i-1])" size="sm">
+                                    </b-form-input>
+                                  </b-form-group>
+                                </div>
                               </div>
                             </div>
                           </div>
