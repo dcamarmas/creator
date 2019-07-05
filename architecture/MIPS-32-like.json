@@ -1002,34 +1002,39 @@
           "name": "add",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "reg3",
           "type": "INT-Reg",
           "startbit": 15,
-          "stopbit": 11
+          "stopbit": 11,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "100000"
         }
       ],
-      "definition": "reg3=reg1+reg2;\nif(\"reg3.name\"==\"sp.name\"){\n\t if((reg1+reg2)>>>0 != stack_limit){\n\t\t stack_limit=reg1+reg2 >>> 0\n\t}\n}"
+      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
     },
     {
       "name": "addi",
@@ -1045,28 +1050,32 @@
           "name": "addi",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "reg2=reg1+val;\nif(\"reg2.name\"==\"sp.name\"){\n\t if((reg1+val)>>>0 != stack_limit){\n\t\t stack_limit=reg1+val >>> 0\n\t}\n}"
+      "definition": "reg2=reg1+val;\n\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
       "name": "addiu",
@@ -1082,28 +1091,32 @@
           "name": "addiu",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "reg2=reg1+val;\nif('reg2.name'=='sp.name'){\n\t if((reg1+val)>>>0 != stack_limit){\n\t\t stack_limit=reg1+val >>> 0\n\t}\n}"
+      "definition": "reg2=reg1+val;\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
       "name": "addu",
@@ -1119,34 +1132,39 @@
           "name": "addu",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "reg3",
           "type": "INT-Reg",
           "startbit": 15,
-          "stopbit": 11
+          "stopbit": 11,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "100001"
         }
       ],
-      "definition": "reg3=reg1+reg2;\nif('reg3.name'=='sp.name'){\n\t if((reg1+reg2)>>>0 != stack_limit){\n\t\t stack_limit=reg1+reg2 >>> 0\n\t}\n}"
+      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
     },
     {
       "name": "and",
@@ -1162,34 +1180,39 @@
           "name": "and",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "reg3",
           "type": "INT-Reg",
           "startbit": 15,
-          "stopbit": 11
+          "stopbit": 11,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "100100"
         }
       ],
-      "definition": "reg3=reg1&reg2;\nif('reg3.name'=='sp.name'){\n\t if((reg1&reg2)>>>0 != stack_limit){\n\t\t stack_limit=reg1&reg2 >>> 0\n\t}\n}"
+      "definition": "reg3=reg1&reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
     },
     {
       "name": "andi",
@@ -1205,28 +1228,32 @@
           "name": "andi",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "reg2=reg1&val;\nif('reg2.name'=='sp.name'){\n\t if((reg1&val)>>>0 != stack_limit){\n\t\t stack_limit=reg1&val >>> 0\n\t}\n}"
+      "definition": "reg2=reg1&val;\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
       "name": "andi",
@@ -1242,28 +1269,32 @@
           "name": "andi",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "reg2=reg1&val;\nif('reg2.name'=='sp.name'){\n\t if((reg1+val)>>>0 != stack_limit){\n\t\t stack_limit=reg1+val >>> 0\n\t}\n}"
+      "definition": "reg2=reg1&val;\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
       "name": "b",
@@ -1279,13 +1310,15 @@
           "name": "b",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "off",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
       "definition": "PC=PC+((off << 16) >> 14)"
@@ -1304,13 +1337,15 @@
           "name": "bc",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "off",
           "type": "inm",
           "startbit": 25,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
       "definition": "PC=PC+((off << 6) >> 4)"
@@ -1329,25 +1364,29 @@
           "name": "bc1eqz",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": "01001"
         },
         {
           "name": "ft",
           "type": "FP-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "off",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
       "definition": "if(ft==0){PC=PC+((off << 16) >> 14)}"
@@ -1366,25 +1405,29 @@
           "name": "bc1nez",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": "01101"
         },
         {
           "name": "ft",
           "type": "FP-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "off",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
       "definition": "if(ft!=0){PC=PC+((off << 16) >> 14)}"
@@ -1403,25 +1446,29 @@
           "name": "beq",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "off",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
       "definition": "if(reg1 == reg2){PC=PC+((off << 16) >> 14)}"
@@ -1440,25 +1487,29 @@
           "name": "bgez",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "rs",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": "00001"
         },
         {
           "name": "off",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
       "definition": "if(rs >= 0) {PC=PC+((off << 16) >> 14)}"
@@ -1477,25 +1528,29 @@
           "name": "bgezal",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "rs",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": "10001"
         },
         {
           "name": "off",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
       "definition": "ra=PC+8; if(rs>=0){PC=PC+((off << 16) >> 14)}"
@@ -1511,8 +1566,115 @@
 
 
 
-
-
+    {
+      "name": "bgtz",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 $F1 F2",
+      "signature": "bgtz,$INT-Reg,inm",
+      "signatureRaw": "bgtz $rs off",
+      "co": "000111",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bgtz",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "if(rs >> 0 > 0) {PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "blez",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 $F1 F2",
+      "signature": "blez,$INT-Reg,inm",
+      "signatureRaw": "blez $rs off",
+      "co": "000110",
+      "cop": null,
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bgez",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "if(rs >> 0 <= 0) {PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "bltz",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 $F1 F3",
+      "signature": "bltz,$INT-Reg,inm",
+      "signatureRaw": "bltz $rs off",
+      "co": "000001",
+      "cop": "00000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "bltz",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": "00000"
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "if(rs >> 0 < 0) {PC=PC+((off << 16) >> 14)}"
+    },
     {
       "name": "bne",
       "type": "Conditional bifurcation",
@@ -1521,34 +1683,120 @@
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "bne,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "bne $reg1 $reg2 val",
+      "signatureRaw": "bne $reg1 $reg2 off",
       "fields": [
         {
           "name": "bne",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
-          "name": "val",
+          "name": "off",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "if(reg1 != reg2){PC=val}"
+      "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "cfc1",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 $F2 $F3",
+      "signature": "cfc1,$INT-Reg,$FP-Reg",
+      "signatureRaw": "cfc1 $rt $fs",
+      "co": "010001",
+      "cop": "00010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cfc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00010"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        }
+      ],
+      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = fs;\nrt = (new Uint32Array(buf))[0];\ncheck_stack_limit(rt.name; sp.name; rt)"
+    },
+    {
+      "name": "ctc1",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 $F2 $F3",
+      "signature": "ctc1,$INT-Reg,$FP-Reg",
+      "signatureRaw": "ctc1 $rt $fs",
+      "co": "010001",
+      "cop": "00110",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ctc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00110"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        }
+      ],
+      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = rt;\nfs = (new Float32Array(buf))[0];"
     },
     {
       "name": "div",
@@ -1556,43 +1804,205 @@
       "co": "000000",
       "cop": "011010",
       "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 $F3",
-      "signature": "div,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "div $reg1 $reg2 $reg3",
+      "signature_definition": "F0 $F1 $F2",
+      "signature": "div,$INT-Reg,$INT-Reg",
+      "signatureRaw": "div $rs $rt",
       "fields": [
         {
           "name": "div",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
-          "name": "reg1",
+          "name": "rs",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
-          "name": "reg2",
+          "name": "rt",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "reg3",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "011010"
         }
       ],
-      "definition": "reg1=reg2/reg3"
+      "definition": "HI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
     },
+    {
+      "name": "divu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F1 $F2",
+      "signature": "divu,$INT-Reg,$INT-Reg",
+      "signatureRaw": "divu $rs $rt",
+      "co": "000000",
+      "cop": "011011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "divu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "divu",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011011"
+        }
+      ],
+      "definition": "LO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
+    },
+    {
+      "name": "mod",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "mod,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "mod $rd $rs $rt",
+      "co": "000000",
+      "cop": "00011011010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "mod",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        },
+        {
+          "name": "mod+sop32",
+          "type": "cop",
+          "startbit": 10,
+          "stopbit": 0,
+          "valueField": "00011011010"
+        }
+      ],
+      "definition": "rd = (rs >> 0) % (rt >> 0);\ncheck_stack_limit(rd.name; sp.name; rd)"
+    },
+    {
+      "name": "modu",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "modu,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "modu $rd $rs $rt",
+      "co": "000000",
+      "cop": "00011011011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "modu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        },
+        {
+          "name": "modu+sop33",
+          "type": "cop",
+          "startbit": 10,
+          "stopbit": 0,
+          "valueField": "00011011011"
+        }
+      ],
+      "definition": "rd = (rs >>> 0) % (rt >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd)"
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
     {
       "name": "lw",
       "type": "Memory access",
@@ -1607,28 +2017,32 @@
           "name": "lw",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         }
       ],
-      "definition": "reg1=MP.w.(val+reg2)"
+      "definition": "reg1=MP.w.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "mul",
@@ -1644,34 +2058,39 @@
           "name": "mul",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "reg3",
           "type": "INT-Reg",
           "startbit": 15,
-          "stopbit": 11
+          "stopbit": 11,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "000010"
         }
       ],
-      "definition": "reg1=reg2*reg3"
+      "definition": "reg1=reg2*reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "nop",
@@ -1687,13 +2106,15 @@
           "name": "nop",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "000000"
         }
       ],
       "definition": ""
@@ -1712,34 +2133,39 @@
           "name": "or",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "reg3",
           "type": "INT-Reg",
           "startbit": 15,
-          "stopbit": 11
+          "stopbit": 11,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "100101"
         }
       ],
-      "definition": "reg1=reg2|reg3"
+      "definition": "reg1=reg2|reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "ori",
@@ -1755,28 +2181,32 @@
           "name": "ori",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "reg1=reg2|val"
+      "definition": "reg1=reg2|val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "sub",
@@ -1792,34 +2222,39 @@
           "name": "sub",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "reg3",
           "type": "INT-Reg",
           "startbit": 15,
-          "stopbit": 11
+          "stopbit": 11,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "100010"
         }
       ],
-      "definition": "reg1=reg2-reg3"
+      "definition": "reg1=reg2-reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "sw",
@@ -1835,25 +2270,29 @@
           "name": "sw",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         }
       ],
       "definition": "MP.w.(val+reg2)=reg1"
@@ -1872,34 +2311,39 @@
           "name": "xor",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "reg3",
           "type": "INT-Reg",
           "startbit": 15,
-          "stopbit": 11
+          "stopbit": 11,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": "100110"
         }
       ],
-      "definition": "reg1=reg2^reg3"
+      "definition": "reg1=reg2^reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "xori",
@@ -1915,28 +2359,32 @@
           "name": "xori",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
-          "stopbit": 21
+          "stopbit": 21,
+          "valueField": ""
         },
         {
           "name": "reg2",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "reg1=reg2^val"
+      "definition": "reg1=reg2^val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "lui",
@@ -1952,22 +2400,25 @@
           "name": "lui",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 20,
-          "stopbit": 16
+          "stopbit": 16,
+          "valueField": ""
         },
         {
           "name": "val",
           "type": "inm",
           "startbit": 15,
-          "stopbit": 0
+          "stopbit": 0,
+          "valueField": ""
         }
       ],
-      "definition": "reg1=val<<16"
+      "definition": "reg1=val<<16;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "syscall",
@@ -1983,13 +2434,15 @@
           "name": "syscall",
           "type": "co",
           "startbit": 31,
-          "stopbit": 26
+          "stopbit": 26,
+          "valueField": ""
         },
         {
           "name": "cop",
           "type": "cop",
           "startbit": 5,
-          "stopbit": 0
+          "stopbit": 0,
+          "value": "001100"
         }
       ],
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(FG12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(FG0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
