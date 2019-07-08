@@ -76,7 +76,7 @@
         <!-- Navbar  -->
         <header>
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.16 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.17 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -160,13 +160,14 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons" id="load_arch_btn_arch">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm load_Arch_btn btn_arch" v-b-modal.load_arch>Load Architecture</b-button>
+                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm load_Arch_btn btn_arch" v-b-modal.load_arch>Load Architecture</b-button>-->
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_arch" style="display:none;"><span class="fas fa-sitemap" ></span> Architecture</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch" id="assembly_btn_arch" style="display:none;"><span class="fas fa-hashtag"></span>Assembly</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch h-100" id="assembly_btn_arch" style="display:none;"><span class="fas fa-hashtag"></span>Assembly</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch" id="sim_btn_arch" style="display:none;"><span class="fas fa-cogs"></span> Simulator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch h-100" id="sim_btn_arch" style="display:none;"><span class="fas fa-cogs"></span> Simulator</b-button>
                   </div>
                 </div>
               </div>
@@ -176,10 +177,10 @@
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fas fa-download"></span> Save</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fas fa-download"></span> Save</b-button>
                   </div>
                   <div class="col-lg-8 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm"  id="advanced_mode" style="display:none;" @click="change_mode">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode" style="display:none;" @click="change_mode">
                       Advanced Mode: {{!advanced_mode}}
                     </b-button>
                   </div>
@@ -191,13 +192,13 @@
             	<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                 	<div class="col-lg-4 col-sm-4 buttons">
-                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch"><span class="fa fa-gear"></span> Configuration</b-button>-->
+                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch h-100"><span class="fa fa-gear"></span> Configuration</b-button>-->
                   </div>
               		<div class="col-lg-4 col-sm-4 buttons">
-                		<!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
+                		<!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
               		</div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_arch" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_arch" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
             		</div>
               </div>
@@ -220,22 +221,10 @@
               </template>
 
               <div class="col-lg-12 col-sm-12">
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
               </div>
             </b-popover>
-
-            <!-- Load new architecture modal -->
-            <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
-              <b-form>
-                <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
-                <br>
-                <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
-                <br>
-                <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
-              </b-form>
-            </b-modal>
-
           </div>
 
         	<div class="contenedor menu row">
@@ -251,11 +240,11 @@
                     <b-list-group-item>
                       <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters>
-                          <b-col md="3" @click="load_arch_select(item.name)">
+                          <b-col md="2" @click="load_arch_select(item.name)">
                             <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
                           </b-col>
 
-                          <b-col md="7" @click="load_arch_select(item.name)">
+                          <b-col md="8" @click="load_arch_select(item.name)">
                             <b-card-body :title=item.name title-tag="h4">
                               <b-card-text style="text-align: justify; font-size: 11pt;">
                                 {{item.description}}
@@ -264,15 +253,54 @@
                           </b-col>
 
                           <b-col md="2">
-                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
+                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete  h-100" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
                           </b-col>
                         </b-row>
                       </b-card>
 
-                      <!-- Delete architecture modal -->
-                      <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
-                        <h6>Are you sure you want to delete the architecture?</h6>
-                      </b-modal >
+                      <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;">
+                        <b-row no-gutters @click="new_arch">
+                          <b-col md="2">
+                            <b-card-img src="./images/new_icon.png" alt="new icon" class="rounded-0"></b-card-img>
+                          </b-col>
+
+                          <b-col md="10">
+                            <b-card-body title="New Architecture" title-tag="h4" >
+                              <b-card-text style="text-align: justify; font-size: 11pt;">
+                                Allows you to define an architecture from scratch.
+                              </b-card-text>
+                            </b-card-body>
+                          </b-col>
+                        </b-row>
+                      </b-card>
+
+                      <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;" v-b-modal.load_arch>
+                        <b-row no-gutters>
+                           <b-col md="2">
+                            <b-card-img src="./images/load_icon.png" alt="load icon" class="rounded-0"></b-card-img>
+                          </b-col>
+
+                          <b-col md="10">
+                            <b-card-body title="Load Architecture" title-tag="h4">
+                              <b-card-text style="text-align: justify; font-size: 11pt;">
+                                Allows to load the definition of an already created architecture.
+                              </b-card-text>
+                            </b-card-body>
+                          </b-col>
+                        </b-row>
+
+                        <!-- Load new architecture modal -->
+                        <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
+                          <b-form>
+                            <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
+                            <br>
+                            <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+                            <br>
+                            <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
+                          </b-form>
+                        </b-modal>
+
+                      </b-card>
                     </b-list-group-item>
                   </b-list-group>
                 </div>
@@ -307,7 +335,12 @@
                   <h6>Memory layout:</h6>
 
                   <div class="compMenu">
-                    <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetMemory" @click="resetMemModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset memory layout</b-button>
+                    <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" id="resetMemory" @click="resetMemModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset memory layout</b-button>
+                    <br>
+                    <br>
+                    <b-form-checkbox v-model="align">
+                      Align
+                    </b-form-checkbox>
                   </div>
 
                   <!-- Reset memory layout -->
@@ -388,11 +421,11 @@
 
                   <div class="col-lg-12 col-sm-12 row">
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newComponentBtn" v-b-modal.new_component> <span class="fas fa-plus-circle"></span> New component</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" id="newComponentBtn" v-b-modal.new_component> <span class="fas fa-plus-circle"></span> New component</b-button>
                     </div>
 
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset architecture</b-button>
+                      <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" id="resetArchitecture" @click="resetArchModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset architecture</b-button>
                     </div>
 
                     <div class="compMenu">
@@ -455,16 +488,16 @@
                               </template>
 
                               <template slot="actions" slot-scope="row">
-                                <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
-                                <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                                <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
+                                <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                               </template>
                              </b-table>
 
-                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fas fa-plus-circle"></span> New Element</b-button>
+                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" :id="'new '+item.name" @click="newElemModal(item.name, item.index, $event.target)"> <span class="fas fa-plus-circle"></span> New Element</b-button>
 
-                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="far fa-edit"></span> Edit Component</b-button>
+                            <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" :id="'edit '+item.name" @click="editCompModal(item.name, item.index, $event.target)"><span class="far fa-edit"></span> Edit Component</b-button>
 
-                            <b-button class="btn btn-outline-danger btn-sm buttonBackground" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="far fa-trash-alt"></span> Delete Component</b-button>
+                            <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" :id="'delete '+item.name" @click="delCompModal(item.name, $event.target)"><span class="far fa-trash-alt"></span> Delete Component</b-button>
                           </b-card-body>
                         </b-collapse>
                       </b-card>
@@ -565,9 +598,9 @@
                   <br>
                   <h6>Instruction set:</h6>
 
-                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fas fa-plus-circle"></span> New instruction</b-button>
+                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" id="newInstructionBtn" v-b-modal.new_instruction> <span class="fas fa-plus-circle"></span> New instruction</b-button>
 
-                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset Instructions</b-button>
+                  <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" id="resetInstructions" @click="resetInstModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset Instructions</b-button>
 
                   <!-- New instruction form -->
                   <b-modal size="lg" id ="new_instruction" title = "New Instruction" ok-title="Save" @ok="newInstVerify" v-model="showNewInstruction" @hidden="emptyFormInst">
@@ -711,7 +744,7 @@
 
                       <!-- For each instruction -->
                       <template slot="fields" slot-scope="row">
-                        <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
+                        <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100">View Fields</b-button>
                       </template>
 
                       <template slot="definition" slot-scope="row">
@@ -719,8 +752,8 @@
                       </template>
 
                       <template slot="actions" slot-scope="row">
-                        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
+                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
                     </b-table>
 
@@ -945,9 +978,9 @@
                   <br>
                   <h6>Pseudoinstructions set:</h6>
 
-                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newPseudoinstructionsBtn" v-b-modal.new_pseudoinstruction> <span class="fas fa-plus-circle"></span> New pseudoinstructions</b-button>
+                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" id="newPseudoinstructionsBtn" v-b-modal.new_pseudoinstruction> <span class="fas fa-plus-circle"></span> New pseudoinstructions</b-button>
 
-                  <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetPseudoinstructions" @click="resetPseudoinstModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset pseudoinstructions</b-button>
+                  <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" id="resetPseudoinstructions" @click="resetPseudoinstModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset pseudoinstructions</b-button>
 
                   <!-- New pseudoinstruction form -->
                   <b-modal size="lg" title = "New Pseudoinstruction" ok-title="Save" @ok="newPseudoinstVerify" v-model="showNewPseudoinstruction" id="new_pseudoinstruction" @hidden="emptyFormPseudo">
@@ -1073,7 +1106,7 @@
 
                       <!-- For each pseudoinstruction -->
                       <template slot="fields" slot-scope="row">
-                        <b-button @click.stop="viewFielsPseudo(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground">View Fields</b-button>
+                        <b-button @click.stop="viewFielsPseudo(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100">View Fields</b-button>
                       </template>
 
                       <template slot="definition" slot-scope="row">
@@ -1081,8 +1114,8 @@
                       </template>
 
                       <template slot="actions" slot-scope="row">
-                        <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                        <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
+                        <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
                     </b-table>
 
@@ -1276,11 +1309,11 @@
 
                   <div class="col-lg-12 col-sm-12 row">
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground" id="newDirectiveBtn" v-b-modal.new_directive> <span class="fas fa-plus-circle"></span> New directive</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" id="newDirectiveBtn" v-b-modal.new_directive> <span class="fas fa-plus-circle"></span> New directive</b-button>
                     </div>
 
                     <div class="compMenu">
-                      <b-button class="btn btn-outline-danger btn-sm buttonBackground" id="resetDirectives" @click="resetDirModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset directives</b-button>
+                      <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" id="resetDirectives" @click="resetDirModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset directives</b-button>
                     </div>
                   </div>
 
@@ -1311,8 +1344,8 @@
                     <b-table small :items="architecture.directives" :fields="directivesFields" class="instruction_table">
                       <!-- For each directive -->
                       <template slot="actions" slot-scope="row" class="">
-                        <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground"><span class="far fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                        <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
+                        <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
                     </b-table>
 
@@ -1355,10 +1388,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_assembly"><span class="fas fa-sitemap"></span> Architecture</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_assembly"><span class="fas fa-sitemap"></span> Architecture</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn" id="simulator_btn_assembly"><span class="fas fa-cogs"></span> Simulator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn h-100" id="simulator_btn_assembly"><span class="fas fa-cogs"></span> Simulator</b-button>
                   </div>
                 </div>
               </div>
@@ -1402,7 +1435,7 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="compile_assembly" @click="assembly_compiler()"><span class="fas fa-sign-in-alt"></span> Compile/Linked</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="compile_assembly" @click="assembly_compiler()"><span class="fas fa-sign-in-alt"></span> Compile/Linked</b-button>
                   </div>
                 </div>
               </div>
@@ -1441,7 +1474,7 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_ass" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_ass" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
 
                   <b-popover target="info_ass" triggers="click blur">
@@ -1504,10 +1537,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn" id="arch_btn_sim"><span class="fas fa-sitemap"></span> Architecture</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_sim"><span class="fas fa-sitemap"></span> Architecture</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn" id="assembly_btn_sim"><span class="fas fa-hashtag"></span> Assembly</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn h-100" id="assembly_btn_sim"><span class="fas fa-hashtag"></span> Assembly</b-button>
                   </div>
                 </div>
               </div>
@@ -1517,7 +1550,7 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
                   </div>
 
                   <!-- Calculator -->
@@ -1527,10 +1560,10 @@
                       <div class="col-lg-6 col-6">
                         <div class="col-lg-12 col-12 row nomargin nopadding">
                           <div class="col-lg-6 col-6 nopadding">
-                            <b-button class="btn btn-block btn-sm" :variant = "calculator.variant32" @click="changeBitsCalculator(0)">32 bit</b-button>
+                            <b-button class="btn btn-block btn-sm h-100" :variant = "calculator.variant32" @click="changeBitsCalculator(0)">32 bit</b-button>
                           </div>
                           <div class="col-lg-6 col-6 nopadding">
-                            <b-button class="btn btn-block btn-sm" :variant = "calculator.variant64" @click="changeBitsCalculator(1)">64 bit</b-button>
+                            <b-button class="btn btn-block btn-sm h-100" :variant = "calculator.variant64" @click="changeBitsCalculator(1)">64 bit</b-button>
                           </div>
                         </div>
                       </div>
@@ -1610,10 +1643,10 @@
                     
                   </div>
                   <div class="col-lg-4 col-sm-6 buttons">
-                    <b-button class="btn btn-sm btn-block" variant="info" disabled>Current Instruction</b-button>
+                    <b-button class="btn btn-sm btn-block h-100" variant="info" disabled>Current Instruction</b-button>
                   </div>
                   <div class="col-lg-4 col-sm-6 buttons">
-                    <b-button class="btn btn-sm btn-block" variant="success" disabled>Next Instruction</b-button>
+                    <b-button class="btn btn-sm btn-block h-100" variant="success" disabled>Next Instruction</b-button>
                   </div>
                   <div class="col-lg-2 col-sm-0 buttons">
                     
@@ -1626,7 +1659,7 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons">
                   <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
 
                   <!-- Information popover -->
@@ -1687,25 +1720,25 @@
             <div class="col-lg-12 col-sm-12">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm">
+                  <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
                     <span class="fas fa-power-off"></span>
                     Reset
                   </b-button>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeInstruction">
+                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeInstruction">
                     <span class="fas fa-fast-forward"></span>
                     Inst.
                   </b-button>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
-                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="executeProgram" v-if="runExecution == false">
+                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false">
                     <span class="fas fa-play"></span>
                     Run
                   </b-button>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
-                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm" @click="stopExecution">
+                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="stopExecution">
                     <span class="fas fa-stop"></span>
                     Stop
                   </b-button>
@@ -1717,18 +1750,18 @@
             <div class="col-lg-12 col-sm-12">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding" variant="outline-secondary">
+                  <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding" variant="outline-secondary" class=" h-100">
                     <b-dropdown-item @click="showIntReg">CPU-INT Registers</b-dropdown-item>
                     <b-dropdown-item @click="showFpReg">CPU-FP Registers</b-dropdown-item>
                   </b-dropdown>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="memory_btn"><span class="fas fa-memory"></span>
+                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm  h-100" id="memory_btn"><span class="fas fa-memory"></span>
                     Memory 
                   </b-button>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" id="stats_btn"><span class=" fas fa-chart-bar"></span> Stats</b-button>
+                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" id="stats_btn"><span class=" fas fa-chart-bar"></span> Stats</b-button>
                 </div>
               </div>
               <hr>
@@ -1745,7 +1778,7 @@
                       
                       <!-- Control and integer registers -->
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name + 'Int')">
+                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')">
                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
                            <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
@@ -1804,7 +1837,7 @@
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name + 'FP')">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')">
                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
@@ -1855,7 +1888,7 @@
 
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name + 'DFP')">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')">
                              {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
@@ -1915,7 +1948,7 @@
 
                 			<!-- Control and integer registers -->
   	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-  	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+  	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
   	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
@@ -1973,7 +2006,7 @@
 
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
   	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
@@ -2024,7 +2057,7 @@
 
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers" :id="popoverId(item2.name)">
+  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
   		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
@@ -2130,7 +2163,7 @@
                 <!-- Stack memory -->
                 <b-tab title="Stack">
                   <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="Object.values(memory)[2]" :fields="memFields" class="memory_table">
+                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table">
                       <template slot="Address" slot-scope="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
                       </template>
