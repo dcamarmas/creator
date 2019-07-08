@@ -150,6 +150,7 @@ var newExecution = true;
 /*Memory*/
 var memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
 var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
+var unallocated_memory = [];
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
@@ -232,6 +233,8 @@ try{
         title: '',
         element: '',
       },
+      /*Align memory*/
+      align: false,
       /*Component table fields*/
       archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
       /*Components types*/
@@ -480,6 +483,7 @@ try{
       memFields: ['Address', 'Binary', 'Value'],
       /*Memory*/
       memory: memory,
+      unallocated_memory: unallocated_memory,
       /*Stats table fields*/
       statsFields: {
         type: {
@@ -797,6 +801,20 @@ try{
 
           $(".loading").hide();
         }
+      },
+      /*Create a new architecture*/
+      new_arch(){
+        $("#architecture_menu").hide();
+        $("#simulator").show();
+        $("#save_btn_arch").show();
+        $("#advanced_mode").show();
+        $("#assembly_btn_arch").show();
+        $("#load_arch_btn_arch").hide();
+        $("#sim_btn_arch").show();
+        $("#load_arch").hide();
+        $("#load_menu_arch").hide();
+        $("#view_components").show();
+        $(".loading").hide();
       },
       /*Check if it is a new architecture*/
       default_arch(item){
@@ -3545,6 +3563,8 @@ try{
 
 
     	      /*Allocation of memory addresses*/
+            architecture.memory_layout[4].value = backup_stack_address;
+            architecture.memory_layout[3].value = backup_data_address;
     	      data_address = parseInt(architecture.memory_layout[2].value);
     	      stack_address = parseInt(architecture.memory_layout[4].value);
 
@@ -6959,8 +6979,8 @@ try{
               if (auxDef.search(re) != -1){
                 re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
 
-                auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
-                auxDef = "var reg" + regIndex + "=null\n" + auxDef;
+                auxDef = auxDef.replace(re, "reg"+ regIndex+"=");
+                auxDef = "var reg" + regIndex + "=null;\n" + auxDef;
                 auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
                 regIndex++;
               }
@@ -7001,22 +7021,6 @@ try{
           re = new RegExp("\.name","g");
           auxDef = auxDef.replace(re, "");
 
-          /*If modify the stack limit*/
-          /*re = new RegExp("stack_limit *=[^=]");
-          if (auxDef.search(re) != -1){
-            re = new RegExp("stack_limit *=","g");
-            auxDef = auxDef.replace(re, "var stackLimit =");
-            auxDef = "var stackLimit = null\n" + auxDef;
-            auxDef = auxDef + "\n this.writeStackLimit(stackLimit);"
-          }*/
-
-          /*If read the stack limit*/
-          /*re = new RegExp("stack_limit");
-          while(auxDef.search(re) != -1){
-            var match = re.exec(auxDef);
-            auxDef = auxDef.replace(re, architecture.memory_layout[4].value >>> 0);
-          }*/
-
           /*Check if stack limit was modify*/
           re = /check_stack_limit\((.*)\)/;
           if (auxDef.search(re) != -1){
@@ -7028,7 +7032,17 @@ try{
             }
             re = /check_stack_limit\((.*)\)/;
             auxDef = auxDef.replace(re, "");
-            auxDef = auxDef + "\n if('"+args[0]+"'=='"+args[1]+"'){\n\tif(("+args[2]+") != architecture.memory_layout[4].value){\n\t\tthis.writeStackLimit("+args[2]+")\n\t}\n}";
+            auxDef = auxDef + "\n\nif('"+args[0]+"'=='"+args[1]+"'){\n\tif(("+args[2]+") != architecture.memory_layout[4].value){\n\t\tthis.writeStackLimit("+args[2]+")\n\t}\n}";
+          }
+
+          console.log(auxDef);
+
+          /*Check if stack limit was modify*/
+          re = /assert\((.*)\)/;
+          if (auxDef.search(re) != -1){
+            var match = re.exec(auxDef);
+            auxDef = auxDef.replace(re, "");
+            auxDef = auxDef + "\n\nif("+ match[1] +"){}else{app.exception();}";
           }
 
           console.log(auxDef);
@@ -7907,9 +7921,13 @@ try{
   	    			var auxStackLimit = stackLimit;
 
   	    			for (var i = 0; i < (diff/4); i++){
-  	            memory[memory_hash[2]].splice(0, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
+                if(unallocated_memory.length > 0){
+                  unallocated_memory.splice(unallocated_memory-1, 1);
+                }
+
+  	            memory[memory_hash[2]].splice(i, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
   	            for (var z = 0; z < 4; z++){
-  	              (memory[memory_hash[2]][0].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+  	              (memory[memory_hash[2]][i].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
   	              auxStackLimit++;
   	            }
   	          }
@@ -7917,6 +7935,9 @@ try{
   	        else if(stackLimit > architecture.memory_layout[4].value){
   	    			var diff = stackLimit - architecture.memory_layout[4].value;
   	    			for (var i = 0; i < (diff/4); i++){
+                unallocated_memory.push(memory[memory_hash[2]][0]);
+                unallocated_memory[unallocated_memory.length-1]._rowVariant = 'secondary';
+                app._data.unallocated_memory = unallocated_memory;
   	            memory[memory_hash[2]].splice(0, 1);
   	          }
   	        }
@@ -8395,6 +8416,23 @@ try{
             break;
         }
       },
+      /*Exception Notification*/
+      exception(){
+        app._data.alertMessaje = 'There is been an exception';
+        app._data.type = 'danger';
+        app.$bvToast.toast(app._data.alertMessaje, {
+          variant: app._data.type,
+          solid: true,
+          toaster: "b-toaster-top-center",
+          autoHideDelay: 1500,
+        });
+        var date = new Date();
+        instructions[executionIndex]._rowVariant = 'danger';
+        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        executionIndex = -1;
+        return;
+      },
+
       /*Reset execution*/
       reset(){
         $(".loading").show();
@@ -8473,6 +8511,9 @@ try{
   		        }
   		      }
   	      }
+
+          unallocated_memory = [];
+          app._data.unallocated_memory = unallocated_memory;
 
   	      for (var i = 0; i < instructions.length; i++) {
   	        if(instructions[i].Label == "main"){

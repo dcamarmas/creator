@@ -1034,7 +1034,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
+      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)\nassert(reg3.toString(2).length<=32)"
     },
     {
       "name": "addi",
