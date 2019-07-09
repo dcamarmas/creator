@@ -240,11 +240,11 @@
                     <b-list-group-item>
                       <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters>
-                          <b-col md="2" @click="load_arch_select(item.name)">
+                          <b-col md="3" @click="load_arch_select(item.name)">
                             <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
                           </b-col>
 
-                          <b-col md="8" @click="load_arch_select(item.name)">
+                          <b-col md="7" @click="load_arch_select(item.name)">
                             <b-card-body :title=item.name title-tag="h4">
                               <b-card-text style="text-align: justify; font-size: 11pt;">
                                 {{item.description}}
@@ -260,11 +260,11 @@
 
                       <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters @click="new_arch">
-                          <b-col md="2">
-                            <b-card-img src="./images/new_icon.png" alt="new icon" class="rounded-0"></b-card-img>
+                          <b-col md="3" style="text-align: center;">
+                            <b-card-img src="./images/new_icon.png" alt="new icon" class="rounded-0" style="width: 50%; height: auto;"></b-card-img>
                           </b-col>
 
-                          <b-col md="10">
+                          <b-col md="9">
                             <b-card-body title="New Architecture" title-tag="h4" >
                               <b-card-text style="text-align: justify; font-size: 11pt;">
                                 Allows you to define an architecture from scratch.
@@ -276,11 +276,11 @@
 
                       <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;" v-b-modal.load_arch>
                         <b-row no-gutters>
-                           <b-col md="2">
-                            <b-card-img src="./images/load_icon.png" alt="load icon" class="rounded-0"></b-card-img>
+                           <b-col md="3" style="text-align: center;">
+                            <b-card-img src="./images/load_icon.png" alt="load icon" class="rounded-0" style="width: 50%; height: auto;"></b-card-img>
                           </b-col>
 
-                          <b-col md="10">
+                          <b-col md="9">
                             <b-card-body title="Load Architecture" title-tag="h4">
                               <b-card-text style="text-align: justify; font-size: 11pt;">
                                 Allows to load the definition of an already created architecture.
@@ -1836,7 +1836,7 @@
 
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
                         <!-- Simple floating point registers -->
-                        <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
+                        <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')">
                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
@@ -1887,7 +1887,7 @@
                         </div>
 
                         <!-- Double floating point registers -->
-                        <div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
+                        <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')">
                              {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
@@ -2005,7 +2005,7 @@
   	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
 
   	                  	<!-- Simple floating point registers -->
-  	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == false">
+  	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
   	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
@@ -2056,7 +2056,7 @@
   	                  	</div>
 
   	                  	<!-- Double floating point registers -->
-  	                  	<div class="col-lg-12 col-sm-12 nopadding" v-if="architecture.components[item.index].double_precision == true">
+  	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
   		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
