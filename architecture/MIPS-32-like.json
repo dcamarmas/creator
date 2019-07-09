@@ -988,6 +988,96 @@
     }
   ],
   "instructions": [
+  	{
+      "name": "abs.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "abs.s,$FP-Reg,$FP-Reg",
+      "signatureRaw": "abs.s $fd $fs",
+      "co": "010001",
+      "cop": "00000000101",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "abs.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000101"
+        }
+      ],
+      "definition": "fd = Math.abs(fs)"
+    },
+    {
+      "name": "abs.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "abs.d,$FP-Reg,$FP-Reg",
+      "signatureRaw": "abs.d $fd $fs",
+      "co": "010001",
+      "cop": "00001000101",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "abs.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000101"
+        }
+      ],
+      "definition": "fd = Math.abs(fs)"
+    },
     {
       "name": "add",
       "type": "Arithmetic integer",
@@ -1035,6 +1125,108 @@
         }
       ],
       "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)\nassert(reg3.toString(2).length<=32)"
+    },
+    {
+      "name": "add.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F4 $F3 $F2",
+      "signature": "add.s,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signatureRaw": "add.s $fd $fs $ft",
+      "co": "010001",
+      "cop": "00000000000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "add.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "ft",
+          "type": "FP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "add",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000000"
+        }
+      ],
+      "definition": "fd = fs + ft"
+    },
+    {
+      "name": "add.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F4 $F3 $F2",
+      "signature": "add.d,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signatureRaw": "add.d $fd $fs $ft",
+      "co": "010001",
+      "cop": "00001000000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "add.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "ft",
+          "type": "FP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "add",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000000"
+        }
+      ],
+      "definition": "fd = fs + ft"
     },
     {
       "name": "addi",
@@ -1213,47 +1405,6 @@
         }
       ],
       "definition": "reg3=reg1&reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
-    },
-    {
-      "name": "andi",
-      "type": "Logic",
-      "co": "001100",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F2 $F1 F3",
-      "signature": "andi,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "andi $reg2 $reg1 val",
-      "fields": [
-        {
-          "name": "andi",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        }
-      ],
-      "definition": "reg2=reg1&val;\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
       "name": "andi",
@@ -1555,17 +1706,6 @@
       ],
       "definition": "ra=PC+8; if(rs>=0){PC=PC+((off << 16) >> 14)}"
     },
-
-
-
-
-
-
-
-
-
-
-
     {
       "name": "bgtz",
       "type": "Conditional bifurcation",
@@ -1717,47 +1857,6 @@
       "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)}"
     },
     {
-      "name": "cfc1",
-      "type": "Transfer between registers",
-      "signature_definition": "F0 $F2 $F3",
-      "signature": "cfc1,$INT-Reg,$FP-Reg",
-      "signatureRaw": "cfc1 $rt $fs",
-      "co": "010001",
-      "cop": "00010",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "cfc1",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00010"
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "fs",
-          "type": "FP-Reg",
-          "startbit": 15,
-          "stopbit": 11,
-          "valueField": ""
-        }
-      ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = fs;\nrt = (new Uint32Array(buf))[0];\ncheck_stack_limit(rt.name; sp.name; rt)"
-    },
-    {
       "name": "ctc1",
       "type": "Transfer between registers",
       "signature_definition": "F0 $F2 $F3",
@@ -1799,6 +1898,96 @@
       "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = rt;\nfs = (new Float32Array(buf))[0];"
     },
     {
+      "name": "cvt.d.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.d.s,$FP-Reg,$FP-Reg",
+      "signatureRaw": "cvt.d.s $fd $fs",
+      "co": "010001",
+      "cop": "00000100001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.d.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cvt.d",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100001"
+        }
+      ],
+      "definition": "fd = fs"
+    },
+    {
+      "name": "cvt.s.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.s.d,$FP-Reg,$FP-Reg",
+      "signatureRaw": "cvt.s.d $fd $fs",
+      "co": "010001",
+      "cop": "00001100000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.s.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cvt.s",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100000"
+        }
+      ],
+      "definition": "fd = fs"
+    },
+    {
       "name": "div",
       "type": "Arithmetic integer",
       "co": "000000",
@@ -1838,6 +2027,108 @@
         }
       ],
       "definition": "HI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
+    },
+    {
+      "name": "div.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F4 $F3 $F2",
+      "signature": "div.s,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signatureRaw": "div.s $fd $fs $ft",
+      "co": "010001",
+      "cop": "00000000011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "div.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "ft",
+          "type": "FP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "div",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000011"
+        }
+      ],
+      "definition": "fd = fs / ft"
+    },
+    {
+      "name": "div.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F4 $F3 $F2",
+      "signature": "div.d,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signatureRaw": "div.d $fd $fs $ft",
+      "co": "010001",
+      "cop": "00001000011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "div.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "ft",
+          "type": "FP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "fs",
+          "type": "FP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "FP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "div",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000011"
+        }
+      ],
+      "definition": "fd = fs / ft"
     },
     {
       "name": "divu",
@@ -1976,6 +2267,10 @@
       ],
       "definition": "rd = (rs >>> 0) % (rt >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd)"
     },
+
+
+
+
 
 
 
@@ -2446,7 +2741,159 @@
         }
       ],
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(FG12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(FG0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    {
+      "name": "j",
+      "type": "Unconditional bifurcation",
+      "signature_definition": "F0 F1",
+      "signature": "j,inm",
+      "signatureRaw": "j addr",
+      "co": "000010",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "j",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": 25,
+          "stopbit": 0
+        }
+      ],
+      "definition": "PC=addr"
+    },
+    {
+      "name": "jal",
+      "type": "Function call",
+      "signature_definition": "F0 F1",
+      "signature": "jal,inm",
+      "signatureRaw": "jal addr",
+      "co": "000011",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "jal",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": 25,
+          "stopbit": 0
+        }
+      ],
+      "definition": "ra=PC+8\nPC=addr"
+    },
+    {
+      "name": "jalr",
+      "type": "Function call",
+      "signature_definition": "F0 $F2 $F1",
+      "signature": "jalr,$INT-Reg,$INT-Reg",
+      "signatureRaw": "jalr $rd $rs",
+      "co": "000000",
+      "cop": "001001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "jalr",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "jalr",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "001001"
+        }
+      ],
+      "definition": "rd=PC+8\nPC=rs"
+    },
+    {
+      "name": "jr",
+      "type": "Unconditional bifurcation",
+      "signature_definition": "F0 $F1",
+      "signature": "jr,$INT-Reg",
+      "signatureRaw": "jr $rs",
+      "co": "000000",
+      "cop": "001000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "jr",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "jr",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "001000"
+        }
+      ],
+      "definition": "PC=rs"
     }
+
+
+
+
+
+
   ],
   "pseudoinstructions": [
     {
