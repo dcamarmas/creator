@@ -2816,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC+8\nPC=addr"
+      "definition": "ra=PC+4\nPC=addr"
     },
     {
       "name": "jalr",
@@ -2854,7 +2854,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC+8\nPC=rs"
+      "definition": "rd=PC+4\nPC=rs"
     },
     {
       "name": "jr",

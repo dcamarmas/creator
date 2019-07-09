@@ -86,8 +86,7 @@ var code_assembly = '';
 var tokenIndex = 0;
 /*Instructions memory address*/
 var address;
-/*Data memory address and data align*/
-var align = 0;
+/*Data memory address*/
 var data_address;
 /*Stack memory address*/
 var stack_address;
@@ -1008,7 +1007,7 @@ try{
         }
 
         for(var i = 0; i < 6; i++){
-          if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
+          /*if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
             app._data.alertMessaje = 'The memory must be align';
             app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
@@ -1020,7 +1019,7 @@ try{
   	        var date = new Date();
             notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});  
             return;
-          }
+          }*/
 
           for(var j = i; j < 6; j++){
             if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
@@ -4082,7 +4081,7 @@ try{
     	      app._data.instructions = instructions;
 
     	      /*Initialize stack*/
-    	      memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
+    	      memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false, unallocated: false});
     	      
     	      for(var i = 0; i<4; i++){
     	        (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
@@ -7922,26 +7921,32 @@ try{
 
   	    			for (var i = 0; i < (diff/4); i++){
                 if(unallocated_memory.length > 0){
-                  unallocated_memory.splice(unallocated_memory-1, 1);
+                  memory[memory_hash[2]].splice(i, 0, unallocated_memory[unallocated_memory.length-1]);
+                  memory[memory_hash[2]][0].unallocated = false;
+                  unallocated_memory.splice(unallocated_memory.length-1, 1);
                 }
-
-  	            memory[memory_hash[2]].splice(i, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
-  	            for (var z = 0; z < 4; z++){
-  	              (memory[memory_hash[2]][i].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
-  	              auxStackLimit++;
-  	            }
+                else{
+                  memory[memory_hash[2]].splice(i, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
+                  for (var z = 0; z < 4; z++){
+                    (memory[memory_hash[2]][i].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+                    auxStackLimit++;
+                  }
+                }
   	          }
   	        }
   	        else if(stackLimit > architecture.memory_layout[4].value){
   	    			var diff = stackLimit - architecture.memory_layout[4].value;
   	    			for (var i = 0; i < (diff/4); i++){
                 unallocated_memory.push(memory[memory_hash[2]][0]);
-                unallocated_memory[unallocated_memory.length-1]._rowVariant = 'secondary';
+                unallocated_memory[unallocated_memory.length-1].unallocated = true;
                 app._data.unallocated_memory = unallocated_memory;
   	            memory[memory_hash[2]].splice(0, 1);
+                if(unallocated_memory.length > 20){
+                  unallocated_memory.splice(0, 15);
+                }
   	          }
   	        }
-            if(stackLimit % 4 == 0){
+            /*if(stackLimit % 4 == 0){
               architecture.memory_layout[4].value = stackLimit;
             }
             else{
@@ -7958,7 +7963,8 @@ try{
               notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               executionIndex = -1;
               return;
-            }
+            }*/
+            architecture.memory_layout[4].value = stackLimit;
             
       		}
   	    }
@@ -8334,7 +8340,7 @@ try{
           case "sbrk":
             var aux_addr = architecture.memory_layout[3].value;
 
-            if((parseInt(architecture.components[indexComp].elements[indexElem].value))%4 != 0){
+            /*if((parseInt(architecture.components[indexComp].elements[indexElem].value))%4 != 0){
               app._data.alertMessaje = 'The memory must be aligned';
               app._data.type = 'danger';
               app.$bvToast.toast(app._data.alertMessaje, {
@@ -8343,6 +8349,22 @@ try{
   		          toaster: "b-toaster-top-center",
   							autoHideDelay: 1500,
   		        });
+              var date = new Date();
+              instructions[executionIndex]._rowVariant = 'danger';
+              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              executionIndex = -1;
+              return;
+            }*/
+
+            if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
+              app._data.alertMessaje = 'The segment can not be overlap';
+              app._data.type ='danger';
+              app.$bvToast.toast(app._data.alertMessaje, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               var date = new Date();
               instructions[executionIndex]._rowVariant = 'danger';
               notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
@@ -8361,6 +8383,7 @@ try{
             app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
             architecture.memory_layout[3].value = aux_addr-1;
             this.architecture.memory_layout[3].value = aux_addr-1;
+
             break;
           case "exit":
             executionIndex = instructions.length + 1;
@@ -8783,7 +8806,7 @@ try{
   /*All modules*/
 
   /*Error handler*/
-  Vue.config.errorHandler = function (err, vm, info) {
+  /*Vue.config.errorHandler = function (err, vm, info) {
     app._data.alertMessaje = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + err;
     app._data.type ='danger';
     app.$bvToast.toast(app._data.alertMessaje, {
@@ -8796,7 +8819,7 @@ try{
     setTimeout(function(){
     	location.reload(true)
     }, 3000);
-  }
+  }*/
   /*Closing alert*/
   window.onbeforeunload = confirmExit;
   function confirmExit(){
