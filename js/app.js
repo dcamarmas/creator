@@ -2417,7 +2417,7 @@ try{
                       numFields++;
                     }
 
-                    if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
+                    if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "SFP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                       var found = false;
 
                       var id = -1;
@@ -2577,7 +2577,7 @@ try{
                       }
                     }
 
-                    if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
+                    if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(SFP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
                       var found = false;
                       for (var a = 0; a < architecture.components.length; a++){
                         for (var b = 0; b < architecture.components[a].elements.length; b++){
@@ -2709,7 +2709,7 @@ try{
                     numFields++;
                   }
 
-                  if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
+                  if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "SFP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                     var found = false;
 
                     var id = -1;
@@ -2869,7 +2869,7 @@ try{
                     }
                   }
 
-                  if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)"  ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
+                  if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(SFP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)"  ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
                     var found = false;
                     for (var a = 0; a < architecture.components.length; a++){
                       for (var b = 0; b < architecture.components[a].elements.length; b++){
@@ -5855,7 +5855,7 @@ try{
 
                   break;
 
-                case "FP-Reg":
+                case "SFP-Reg":
                   token = instructionParts[j];
 
                   console.log(token);
@@ -6745,7 +6745,7 @@ try{
                 auxDef = auxDef.replace(re, instructionExecParts[i]);
               }*/
 
-              if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
+              if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
                 re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
                 if(instructionExecParts[i].search(re) != -1){
                   var re = new RegExp(signatureRawParts[i],"g");
@@ -6769,7 +6769,7 @@ try{
             for (var j = 0; j < architecture.instructions[auxIndex].fields.length; j++){
               console.log(instructionExecParts[0]);
               console.log(architecture.instructions[auxIndex].fields.length);
-              if(architecture.instructions[auxIndex].fields[j].type == "INT-Reg" || architecture.instructions[auxIndex].fields[j].type == "FP-Reg" || architecture.instructions[auxIndex].fields[j].type == "DFP-Reg" || architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg") {
+              if(architecture.instructions[auxIndex].fields[j].type == "INT-Reg" || architecture.instructions[auxIndex].fields[j].type == "SFP-Reg" || architecture.instructions[auxIndex].fields[j].type == "DFP-Reg" || architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg") {
                 console.log(instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit)));
 
                 for (var z = 0; z < architecture.components.length; z++){
@@ -6795,7 +6795,7 @@ try{
                       }
                     }
                   }
-                  if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false && architecture.instructions[auxIndex].fields[j].type == "FP-Reg"){
+                  if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false && architecture.instructions[auxIndex].fields[j].type == "SFP-Reg"){
                     for (var w = 0; w < architecture.components[z].elements.length; w++){
                       var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
                       console.log(auxLength);
