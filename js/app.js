@@ -2417,7 +2417,7 @@ try{
                       numFields++;
                     }
 
-                    if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
+                    if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                       var found = false;
 
                       var id = -1;
@@ -2577,7 +2577,7 @@ try{
                       }
                     }
 
-                    if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
+                    if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
                       var found = false;
                       for (var a = 0; a < architecture.components.length; a++){
                         for (var b = 0; b < architecture.components[a].elements.length; b++){
@@ -2709,7 +2709,7 @@ try{
                     numFields++;
                   }
 
-                  if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
+                  if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "FP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
                     var found = false;
 
                     var id = -1;
@@ -2869,7 +2869,7 @@ try{
                     }
                   }
 
-                  if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
+                  if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(FP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)"  ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
                     var found = false;
                     for (var a = 0; a < architecture.components.length; a++){
                       for (var b = 0; b < architecture.components[a].elements.length; b++){
@@ -5867,7 +5867,7 @@ try{
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                       for(var z = 0; z < architecture_hash.length; z++){
                         for(var w = 0; w < architecture.components[z].elements.length; w++){
-                          if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point"){
+                          if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
                             validReg = true;
                             regNum++;
 
@@ -5887,7 +5887,49 @@ try{
                             this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
                           }
-                          if(architecture.components[z].type == "floating point"){
+                          if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                            regNum++;
+                          }
+                        }
+                      }
+                    }
+                  }
+
+                  break;
+
+                case "DFP-Reg":
+                  token = instructionParts[j];
+
+                  console.log(token);
+
+                  var validReg = false;
+                  var regNum = 0;
+
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      for(var z = 0; z < architecture_hash.length; z++){
+                        for(var w = 0; w < architecture.components[z].elements.length; w++){
+                          if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                            validReg = true;
+                            regNum++;
+
+                            fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                            var reg = regNum;
+
+                            if(reg.toString(2).length > fieldsLength){
+                              this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                              return -1;
+                            }
+
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                            re = RegExp("[fF][0-9]+");
+                            instruction = instruction.replace(re, token);
+                          }
+                          else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
+                            this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                          if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
                             regNum++;
                           }
                         }
@@ -6703,7 +6745,7 @@ try{
                 auxDef = auxDef.replace(re, instructionExecParts[i]);
               }*/
 
-              if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "Ctrl-Reg"){
+              if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "FP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
                 re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
                 if(instructionExecParts[i].search(re) != -1){
                   var re = new RegExp(signatureRawParts[i],"g");
@@ -6727,7 +6769,7 @@ try{
             for (var j = 0; j < architecture.instructions[auxIndex].fields.length; j++){
               console.log(instructionExecParts[0]);
               console.log(architecture.instructions[auxIndex].fields.length);
-              if(architecture.instructions[auxIndex].fields[j].type == "INT-Reg" || architecture.instructions[auxIndex].fields[j].type == "FP-Reg" || architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg") {
+              if(architecture.instructions[auxIndex].fields[j].type == "INT-Reg" || architecture.instructions[auxIndex].fields[j].type == "FP-Reg" || architecture.instructions[auxIndex].fields[j].type == "DFP-Reg" || architecture.instructions[auxIndex].fields[j].type == "Ctrl-Reg") {
                 console.log(instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit)));
 
                 for (var z = 0; z < architecture.components.length; z++){
@@ -6753,7 +6795,18 @@ try{
                       }
                     }
                   }
-                  if(architecture.components[z].type == "floating point" && architecture.instructions[auxIndex].fields[j].type == "FP-Reg"){
+                  if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false && architecture.instructions[auxIndex].fields[j].type == "FP-Reg"){
+                    for (var w = 0; w < architecture.components[z].elements.length; w++){
+                      var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
+                      console.log(auxLength);
+                      console.log((w.toString(2)).padStart(auxLength, "0"));
+                      if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
+                        var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                        auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
+                      }
+                    }
+                  }
+                  if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true && architecture.instructions[auxIndex].fields[j].type == "DFP-Reg"){
                     for (var w = 0; w < architecture.components[z].elements.length; w++){
                       var auxLength = ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit) - ((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit);
                       console.log(auxLength);
@@ -7040,8 +7093,9 @@ try{
           re = /assert\((.*)\)/;
           if (auxDef.search(re) != -1){
             var match = re.exec(auxDef);
+            var args = match[1].split(";");
             auxDef = auxDef.replace(re, "");
-            auxDef = auxDef + "\n\nif("+ match[1] +"){}else{app.exception();}";
+            auxDef = auxDef + "\n\nif("+ args[0] +"){}else{app.exception("+ args[1] +");}";
           }
 
           console.log(auxDef);
@@ -8357,7 +8411,7 @@ try{
             }*/
 
             if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-              app._data.alertMessaje = 'The segment can not be overlap';
+              app._data.alertMessaje = 'Not enough memory for data segment';
               app._data.type ='danger';
               app.$bvToast.toast(app._data.alertMessaje, {
                 variant: app._data.type,
@@ -8440,8 +8494,8 @@ try{
         }
       },
       /*Exception Notification*/
-      exception(){
-        app._data.alertMessaje = 'There is been an exception';
+      exception(error){
+        app._data.alertMessaje = "There is been an exception. Error description: '" + error;
         app._data.type = 'danger';
         app.$bvToast.toast(app._data.alertMessaje, {
           variant: app._data.type,

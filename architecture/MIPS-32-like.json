@@ -1037,7 +1037,7 @@
       "name": "abs.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F3 $F2",
-      "signature": "abs.d,$FP-Reg,$FP-Reg",
+      "signature": "abs.d,$DFP-Reg,$DFP-Reg",
       "signatureRaw": "abs.d $fd $fs",
       "co": "010001",
       "cop": "00001000101",
@@ -1058,13 +1058,13 @@
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
@@ -1124,7 +1124,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)\nassert(reg3.toString(2).length<=32)"
+      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)\nassert(reg3.toString(2).length<=32; 'Integer Overflow')"
     },
     {
       "name": "add.s",
@@ -1181,7 +1181,7 @@
       "name": "add.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F4 $F3 $F2",
-      "signature": "add.d,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signature": "add.d,$DFP-Reg,$DFP-Reg,$DFP-Reg",
       "signatureRaw": "add.d $fd $fs $ft",
       "co": "010001",
       "cop": "00001000000",
@@ -1202,19 +1202,19 @@
         },
         {
           "name": "ft",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
@@ -1901,7 +1901,7 @@
       "name": "cvt.d.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F3 $F2",
-      "signature": "cvt.d.s,$FP-Reg,$FP-Reg",
+      "signature": "cvt.d.s,$DFP-Reg,$FP-Reg",
       "signatureRaw": "cvt.d.s $fd $fs",
       "co": "010001",
       "cop": "00000100001",
@@ -1928,7 +1928,7 @@
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
@@ -1946,7 +1946,7 @@
       "name": "cvt.s.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F3 $F2",
-      "signature": "cvt.s.d,$FP-Reg,$FP-Reg",
+      "signature": "cvt.s.d,$FP-Reg,$DFP-Reg",
       "signatureRaw": "cvt.s.d $fd $fs",
       "co": "010001",
       "cop": "00001100000",
@@ -1973,7 +1973,7 @@
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
@@ -2083,7 +2083,7 @@
       "name": "div.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F4 $F3 $F2",
-      "signature": "div.d,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signature": "div.d,$DFP-Reg,$DFP-Reg,$DFP-Reg",
       "signatureRaw": "div.d $fd $fs $ft",
       "co": "010001",
       "cop": "00001000011",
@@ -2104,19 +2104,19 @@
         },
         {
           "name": "ft",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "DFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
@@ -2337,7 +2337,7 @@
           "valueField": ""
         }
       ],
-      "definition": "reg1=MP.w.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=MP.w.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)\nassert(reg1%4==0; 'The memory must be align')"
     },
     {
       "name": "mul",
@@ -2590,7 +2590,7 @@
           "valueField": ""
         }
       ],
-      "definition": "MP.w.(val+reg2)=reg1"
+      "definition": "MP.w.(val+reg2)=reg1\nassert((val+reg2)%4==0; 'The memory must be align')"
     },
     {
       "name": "xor",
