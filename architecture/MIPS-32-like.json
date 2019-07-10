@@ -992,7 +992,7 @@
       "name": "abs.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F3 $F2",
-      "signature": "abs.s,$FP-Reg,$FP-Reg",
+      "signature": "abs.s,$SFP-Reg,$SFP-Reg",
       "signatureRaw": "abs.s $fd $fs",
       "co": "010001",
       "cop": "00000000101",
@@ -1013,13 +1013,13 @@
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
@@ -1130,7 +1130,7 @@
       "name": "add.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F4 $F3 $F2",
-      "signature": "add.s,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signature": "add.s,$SFP-Reg,$SFP-Reg,$SFP-Reg",
       "signatureRaw": "add.s $fd $fs $ft",
       "co": "010001",
       "cop": "00000000000",
@@ -1151,19 +1151,19 @@
         },
         {
           "name": "ft",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
@@ -1505,7 +1505,7 @@
       "name": "bc1eqz",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F2 F3",
-      "signature": "bc1eqz,$FP-Reg,inm",
+      "signature": "bc1eqz,$SFP-Reg,inm",
       "signatureRaw": "bc1eqz $ft off",
       "co": "010001",
       "cop": "01001",
@@ -1527,7 +1527,7 @@
         },
         {
           "name": "ft",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 20,
           "stopbit": 16,
           "valueField": ""
@@ -1546,7 +1546,7 @@
       "name": "bc1nez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F2 F3",
-      "signature": "bc1nez,$FP-Reg,inm",
+      "signature": "bc1nez,$SFP-Reg,inm",
       "signatureRaw": "bc1nez $ft off",
       "co": "010001",
       "cop": "01101",
@@ -1568,7 +1568,7 @@
         },
         {
           "name": "ft",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 20,
           "stopbit": 16,
           "valueField": ""
@@ -1860,7 +1860,7 @@
       "name": "ctc1",
       "type": "Transfer between registers",
       "signature_definition": "F0 $F2 $F3",
-      "signature": "ctc1,$INT-Reg,$FP-Reg",
+      "signature": "ctc1,$INT-Reg,$SFP-Reg",
       "signatureRaw": "ctc1 $rt $fs",
       "co": "010001",
       "cop": "00110",
@@ -1889,7 +1889,7 @@
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 15,
           "stopbit": 11,
           "valueField": ""
@@ -1901,7 +1901,7 @@
       "name": "cvt.d.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F3 $F2",
-      "signature": "cvt.d.s,$DFP-Reg,$FP-Reg",
+      "signature": "cvt.d.s,$DFP-Reg,$SFP-Reg",
       "signatureRaw": "cvt.d.s $fd $fs",
       "co": "010001",
       "cop": "00000100001",
@@ -1922,7 +1922,7 @@
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -1946,7 +1946,7 @@
       "name": "cvt.s.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F3 $F2",
-      "signature": "cvt.s.d,$FP-Reg,$DFP-Reg",
+      "signature": "cvt.s.d,$SFP-Reg,$DFP-Reg",
       "signatureRaw": "cvt.s.d $fd $fs",
       "co": "010001",
       "cop": "00001100000",
@@ -1967,7 +1967,7 @@
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
@@ -2032,7 +2032,7 @@
       "name": "div.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 $F4 $F3 $F2",
-      "signature": "div.s,$FP-Reg,$FP-Reg,$FP-Reg",
+      "signature": "div.s,$SFP-Reg,$SFP-Reg,$SFP-Reg",
       "signatureRaw": "div.s $fd $fs $ft",
       "co": "010001",
       "cop": "00000000011",
@@ -2053,19 +2053,19 @@
         },
         {
           "name": "ft",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 20,
           "stopbit": 16
         },
         {
           "name": "fs",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 15,
           "stopbit": 11
         },
         {
           "name": "fd",
-          "type": "FP-Reg",
+          "type": "SFP-Reg",
           "startbit": 10,
           "stopbit": 6
         },
