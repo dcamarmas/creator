@@ -2109,7 +2109,7 @@
                   <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
                     <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table">
                       <template slot="Address" slot-scope="row">
-                        <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
+                        <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
                       <template slot="Binary" slot-scope="row">
                         <h6 style="font-size: 13px">
@@ -2131,7 +2131,7 @@
                   <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
                     <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table" :filter-function=filter filter=" ">
                       <template slot="Address" slot-scope="row">
-                        <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
+                        <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
                       <template slot="Binary" slot-scope="row">
                         <h6 style="font-size: 13px">
@@ -2153,8 +2153,8 @@
                   <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
                     <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table">
                       <template slot="Address" slot-scope="row">
-                        <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
-                        <h6 style="font-size: 13px"v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0")}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0")}}</h6>
+                        <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
+                        <h6 style="font-size: 13px"v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
                       <template slot="Binary" slot-scope="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">

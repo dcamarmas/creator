@@ -1008,7 +1008,7 @@ try{
 
         for(var i = 0; i < 6; i++){
           /*if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
-            app._data.alertMessaje = 'The memory must be align';
+            app._data.alertMessaje = 'The memory must be aligned';
             app._data.type = 'danger';
             app.$bvToast.toast(app._data.alertMessaje, {
   	          variant: app._data.type,
@@ -8004,7 +8004,7 @@ try{
               architecture.memory_layout[4].value = stackLimit;
             }
             else{
-              app._data.alertMessaje = 'The memory must be align';
+              app._data.alertMessaje = 'The memory must be aligned';
               app._data.type = 'danger';
               app.$bvToast.toast(app._data.alertMessaje, {
                 variant: app._data.type,
