@@ -6684,7 +6684,17 @@ try{
               }
             }
 
+            console.log("AQUI1")
+            console.log(instructionExecParts)
+            console.log(architecture.instructions[i].name)
+            console.log(architecture.instructions[i].name == instructionExecParts[0])
+
+            console.log(instructionExecParts.length)
+            console.log(auxSig.length)
+            console.log(instructionExecParts.length == auxSig.length)
+
             if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
+              console.log("AQUI2")
               type = architecture.instructions[i].type;
               signatureDef = architecture.instructions[i].signature_definition;
               signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
