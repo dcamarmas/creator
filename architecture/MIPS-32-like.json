@@ -1124,7 +1124,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)\nassert(reg3.toString(2).length<=32; 'Integer Overflow')"
+      "definition": "assert(((reg1 >> 0) >= 0 && (reg2 >> 0) <= 0) || ((reg1 >> 0) <= 0 && (reg2 >> 0) >= 0) || ((reg1 >> 0) > 0 && (reg2 >> 0) > 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (reg2 >> 0) < 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
     },
     {
       "name": "add.s",
@@ -1232,7 +1232,7 @@
       "name": "addi",
       "type": "Arithmetic integer",
       "co": "001000",
-      "cop": null,
+      "cop": "",
       "nwords": 1,
       "signature_definition": "F0 $F2 $F1 F3",
       "signature": "addi,$INT-Reg,$INT-Reg,inm",
@@ -1267,7 +1267,7 @@
           "valueField": ""
         }
       ],
-      "definition": "reg2=reg1+val;\n\ncheck_stack_limit(reg2.name; sp.name; reg2)"
+      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg2=reg1+val;\ncheck_stack_limit(reg2.name; sp.name; reg2);"
     },
     {
       "name": "addiu",
@@ -1410,7 +1410,7 @@
       "name": "andi",
       "type": "Logic",
       "co": "001100",
-      "cop": null,
+      "cop": "",
       "nwords": 1,
       "signature_definition": "F0 $F2 $F1 F3",
       "signature": "andi,$INT-Reg,$INT-Reg,inm",
@@ -1445,7 +1445,7 @@
           "valueField": ""
         }
       ],
-      "definition": "reg2=reg1&val;\ncheck_stack_limit(reg2.name; sp.name; reg2)"
+      "definition": "reg2=reg1&(val>>>0);\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
       "name": "b",
@@ -1663,7 +1663,7 @@
           "valueField": ""
         }
       ],
-      "definition": "if(rs >= 0) {PC=PC+((off << 16) >> 14)}"
+      "definition": "if((rs >> 0) >= 0) {PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "bgezal",
@@ -1855,47 +1855,6 @@
         }
       ],
       "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)}"
-    },
-    {
-      "name": "ctc1",
-      "type": "Transfer between registers",
-      "signature_definition": "F0 $F2 $F3",
-      "signature": "ctc1,$INT-Reg,$SFP-Reg",
-      "signatureRaw": "ctc1 $rt $fs",
-      "co": "010001",
-      "cop": "00110",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "ctc1",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00110"
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11,
-          "valueField": ""
-        }
-      ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = rt;\nfs = (new Float32Array(buf))[0];"
     },
     {
       "name": "cvt.d.s",
@@ -2186,6 +2145,505 @@
       "definition": "LO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
     },
     {
+      "name": "j",
+      "type": "Unconditional bifurcation",
+      "signature_definition": "F0 F1",
+      "signature": "j,inm",
+      "signatureRaw": "j addr",
+      "co": "000010",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "j",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": 25,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "PC=addr"
+    },
+    {
+      "name": "jal",
+      "type": "Function call",
+      "signature_definition": "F0 F1",
+      "signature": "jal,inm",
+      "signatureRaw": "jal addr",
+      "co": "000011",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "jal",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": 25,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "ra=PC+4\nPC=addr"
+    },
+    {
+      "name": "jalr",
+      "type": "Function call",
+      "signature_definition": "F0 $F2 $F1",
+      "signature": "jalr,$INT-Reg,$INT-Reg",
+      "signatureRaw": "jalr $rd $rs",
+      "co": "000000",
+      "cop": "001001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "jalr",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        },
+        {
+          "name": "jalr",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "001001"
+        }
+      ],
+      "definition": "rd=PC+4\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "jr",
+      "type": "Unconditional bifurcation",
+      "signature_definition": "F0 $F1",
+      "signature": "jr,$INT-Reg",
+      "signatureRaw": "jr $rs",
+      "co": "000000",
+      "cop": "001000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "jr",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "jr",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "001000"
+        }
+      ],
+      "definition": "PC=rs"
+    },
+    {
+      "name": "lb",
+      "type": "Memory access",
+      "co": "100000",
+      "cop": null,
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2 ($F3)",
+      "signature": "lb,$INT-Reg,inm,($INT-Reg)",
+      "signatureRaw": "lb $reg1 val ($reg2)",
+      "fields": [
+        {
+          "name": "lb",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        }
+      ],
+      "definition": "reg1=MP.b.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "lbu",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3($F1)",
+      "signature": "lbu,$INT-Reg,inm($INT-Reg)",
+      "signatureRaw": "lbu $rt off($base)",
+      "co": "100100",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "lbu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "rt=(MP.b.(base+off) >>> 0);\ncheck_stack_limit(rt.name; sp.name; rt);"
+    },
+    {
+      "name": "lh",
+      "type": "Memory access",
+      "co": "100001",
+      "cop": null,
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2 ($F3)",
+      "signature": "lh,$INT-Reg,inm,($INT-Reg)",
+      "signatureRaw": "lh $reg1 val ($reg2)",
+      "fields": [
+        {
+          "name": "lh",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        }
+      ],
+      "definition": "assert((val+reg2)%2==0; 'The memory must be align')\nreg1=MP.h.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "lhu",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3($F1)",
+      "signature": "lhu,$INT-Reg,inm($INT-Reg)",
+      "signatureRaw": "lhu $rt off($base)",
+      "co": "100101",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "lhu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "rt=(MP.h.(base+off) >>> 0);\ncheck_stack_limit(rt.name; sp.name; rt);"
+    },
+    {
+      "name": "lui",
+      "type": "Other",
+      "co": "001111",
+      "cop": null,
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2",
+      "signature": "lui,$INT-Reg,inm",
+      "signatureRaw": "lui $reg1 val",
+      "fields": [
+        {
+          "name": "lui",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "reg1=val<<16;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "lw",
+      "type": "Memory access",
+      "co": "100011",
+      "cop": null,
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2 ($F3)",
+      "signature": "lw,$INT-Reg,inm,($INT-Reg)",
+      "signatureRaw": "lw $reg1 val ($reg2)",
+      "fields": [
+        {
+          "name": "lw",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        }
+      ],
+      "definition": "assert((val+reg2)%4==0; 'The memory must be align')\nreg1=MP.w.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "lwc1",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3 ($F1)",
+      "signature": "lwc1,$SFP-Reg,inm,($INT-Reg)",
+      "signatureRaw": "lwc1 $ft off ($base)",
+      "co": "110001",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "lwc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = MP.w.(base+off);\nft = (new Float32Array(buf))[0];"
+    },
+    {
+      "name": "mfc1",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 $F2 $F3",
+      "signature": "mfc1,$INT-Reg,$SFP-Reg",
+      "signatureRaw": "mfc1 $rt $fs",
+      "co": "010001",
+      "cop": "11111",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "mfc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "mf",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "11111"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        }
+      ],
+      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = fs;\nrt = (new Uint32Array(buf))[0];\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "mfhi",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 $F1",
+      "signature": "mfhi,$INT-Reg",
+      "signatureRaw": "mfhi $rd",
+      "co": "000000",
+      "cop": "010000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "mfhi",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "010000"
+        }
+      ],
+      "definition": "rd=HI;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "mflo",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 $F1",
+      "signature": "mflo,$INT-Reg",
+      "signatureRaw": "mflo $rd",
+      "co": "000000",
+      "cop": "010010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "mflo",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "010010"
+        }
+      ],
+      "definition": "rd=LO;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
       "name": "mod",
       "type": "Arithmetic integer",
       "signature_definition": "F0 $F3 $F1 $F2",
@@ -2281,897 +2739,6 @@
       ],
       "definition": "rd = (rs >>> 0) % (rt >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd)"
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
-    {
-      "name": "lw",
-      "type": "Memory access",
-      "co": "100011",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 F2 ($F3)",
-      "signature": "lw,$INT-Reg,inm,($INT-Reg)",
-      "signatureRaw": "lw $reg1 val ($reg2)",
-      "fields": [
-        {
-          "name": "lw",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        }
-      ],
-      "definition": "reg1=MP.w.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)\nassert((val+reg2)%4==0; 'The memory must be align')"
-    },
-    {
-      "name": "mul",
-      "type": "Arithmetic integer",
-      "co": "011100",
-      "cop": "000010",
-      "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 $F3",
-      "signature": "mul,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "mul $reg1 $reg2 $reg3",
-      "fields": [
-        {
-          "name": "mul",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "reg3",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "000010"
-        }
-      ],
-      "definition": "reg1=reg2*reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "nop",
-      "type": "Logic",
-      "co": "000000",
-      "cop": "000000",
-      "nwords": 1,
-      "signature_definition": "F0",
-      "signature": "nop",
-      "signatureRaw": "nop",
-      "fields": [
-        {
-          "name": "nop",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "000000"
-        }
-      ],
-      "definition": ""
-    },
-    {
-      "name": "or",
-      "type": "Logic",
-      "co": "000000",
-      "cop": "100101",
-      "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 $F3",
-      "signature": "or,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "or $reg1 $reg2 $reg3",
-      "fields": [
-        {
-          "name": "or",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "reg3",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "100101"
-        }
-      ],
-      "definition": "reg1=reg2|reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "ori",
-      "type": "Logic",
-      "co": "001101",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 F3",
-      "signature": "ori,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "ori $reg1 $reg2 val",
-      "fields": [
-        {
-          "name": "ori",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        }
-      ],
-      "definition": "reg1=reg2|val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "sub",
-      "type": "Arithmetic integer",
-      "co": "000000",
-      "cop": "100010",
-      "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 $F3",
-      "signature": "sub,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "sub $reg1 $reg2 $reg3",
-      "fields": [
-        {
-          "name": "sub",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "reg3",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "100010"
-        }
-      ],
-      "definition": "reg1=reg2-reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "sw",
-      "type": "Memory access",
-      "co": "101011",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 F2 ($F3)",
-      "signature": "sw,$INT-Reg,$inm,($INT-Reg)",
-      "signatureRaw": "sw $reg1 val ($reg2)",
-      "fields": [
-        {
-          "name": "sw",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        }
-      ],
-      "definition": "MP.w.(val+reg2)=reg1\nassert((val+reg2)%4==0; 'The memory must be align')"
-    },
-    {
-      "name": "xor",
-      "type": "Logic",
-      "co": "000000",
-      "cop": "100110",
-      "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 $F3",
-      "signature": "xor,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "xor $reg1 $reg2 $reg3",
-      "fields": [
-        {
-          "name": "xor",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "reg3",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "100110"
-        }
-      ],
-      "definition": "reg1=reg2^reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "xori",
-      "type": "Logic",
-      "co": "001110",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 $F2 F3",
-      "signature": "xori,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "xori $reg1 $reg2 val",
-      "fields": [
-        {
-          "name": "xori",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        }
-      ],
-      "definition": "reg1=reg2^val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "lui",
-      "type": "Other",
-      "co": "001111",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 F2",
-      "signature": "lui,$INT-Reg,inm",
-      "signatureRaw": "lui $reg1 val",
-      "fields": [
-        {
-          "name": "lui",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        }
-      ],
-      "definition": "reg1=val<<16;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "syscall",
-      "type": "Syscall",
-      "co": "000000",
-      "cop": "001100",
-      "nwords": 1,
-      "signature_definition": "F0",
-      "signature": "syscall",
-      "signatureRaw": "syscall",
-      "fields": [
-        {
-          "name": "syscall",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "value": "001100"
-        }
-      ],
-      "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(FG12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(FG0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
-    },
-
-
-
-
-
-    {
-      "name": "lb",
-      "type": "Memory access",
-      "co": "100000",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 F2 ($F3)",
-      "signature": "lb,$INT-Reg,inm,($INT-Reg)",
-      "signatureRaw": "lb $reg1 val ($reg2)",
-      "fields": [
-        {
-          "name": "lb",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        }
-      ],
-      "definition": "reg1=MP.b.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
-    },
-    {
-      "name": "lh",
-      "type": "Memory access",
-      "co": "100001",
-      "cop": null,
-      "nwords": 1,
-      "signature_definition": "F0 $F1 F2 ($F3)",
-      "signature": "lh,$INT-Reg,inm,($INT-Reg)",
-      "signatureRaw": "lh $reg1 val ($reg2)",
-      "fields": [
-        {
-          "name": "lh",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "val",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0,
-          "valueField": ""
-        },
-        {
-          "name": "reg2",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        }
-      ],
-      "definition": "reg1=MP.h.(val+reg2);\ncheck_stack_limit(reg1.name; sp.name; reg1)\nassert((val+reg2)%2==0; 'The memory must be align')"
-    },
-    {
-      "name": "mult",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 $F2 $F1",
-      "signature": "mult,$INT-Reg,$INT-Reg",
-      "signatureRaw": "mult $rt $rs",
-      "co": "000000",
-      "cop": "011000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "mult",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16,
-          "valueField": ""
-        },
-        {
-          "name": "mult",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "011000"
-        }
-      ],
-      "definition": "var result = rs >> 0 * rt >> 0\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
-    },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    {
-      "name": "j",
-      "type": "Unconditional bifurcation",
-      "signature_definition": "F0 F1",
-      "signature": "j,inm",
-      "signatureRaw": "j addr",
-      "co": "000010",
-      "cop": "",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "j",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "addr",
-          "type": "inm",
-          "startbit": 25,
-          "stopbit": 0,
-          "valueField": ""
-        }
-      ],
-      "definition": "PC=addr"
-    },
-    {
-      "name": "jal",
-      "type": "Function call",
-      "signature_definition": "F0 F1",
-      "signature": "jal,inm",
-      "signatureRaw": "jal addr",
-      "co": "000011",
-      "cop": "",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "jal",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "addr",
-          "type": "inm",
-          "startbit": 25,
-          "stopbit": 0,
-          "valueField": ""
-        }
-      ],
-      "definition": "ra=PC+4\nPC=addr"
-    },
-    {
-      "name": "jalr",
-      "type": "Function call",
-      "signature_definition": "F0 $F2 $F1",
-      "signature": "jalr,$INT-Reg,$INT-Reg",
-      "signatureRaw": "jalr $rd $rs",
-      "co": "000000",
-      "cop": "001001",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "jalr",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11,
-          "valueField": ""
-        },
-        {
-          "name": "jalr",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "001001"
-        }
-      ],
-      "definition": "rd=PC+4\nPC=rs"
-    },
-    {
-      "name": "jr",
-      "type": "Unconditional bifurcation",
-      "signature_definition": "F0 $F1",
-      "signature": "jr,$INT-Reg",
-      "signatureRaw": "jr $rs",
-      "co": "000000",
-      "cop": "001000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "jr",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26,
-          "valueField": ""
-        },
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": ""
-        },
-        {
-          "name": "jr",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "001000"
-        }
-      ],
-      "definition": "PC=rs"
-    },
-    {
-      "name": "lbu",
-      "type": "Memory access",
-      "signature_definition": "F0 $F2 F3($F1)",
-      "signature": "lbu,$INT-Reg,inm($INT-Reg)",
-      "signatureRaw": "lbu $rt off($base)",
-      "co": "100100",
-      "cop": "",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "lbu",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "base",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "off",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "rt=(MP.b.(base+off) >>> 0);\ncheck_stack_limit(rt.name; sp.name; rt);"
-    },
-    {
-      "name": "lhu",
-      "type": "Memory access",
-      "signature_definition": "F0 $F2 F3($F1)",
-      "signature": "lhu,$INT-Reg,inm($INT-Reg)",
-      "signatureRaw": "lhu $rt off($base)",
-      "co": "100101",
-      "cop": "",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "lhu",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "base",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "off",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "rt=(MP.h.(base+off) >>> 0);\ncheck_stack_limit(rt.name; sp.name; rt);"
-    },
-    {
-      "name": "mfhi",
-      "type": "Transfer between registers",
-      "signature_definition": "F0 $F1",
-      "signature": "mfhi,$INT-Reg",
-      "signatureRaw": "mfhi $rd",
-      "co": "000000",
-      "cop": "010000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "mfhi",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "010000"
-        }
-      ],
-      "definition": "rd=HI;\ncheck_stack_limit(rd.name; sp.name; rd);"
-    },
-    {
-      "name": "mflo",
-      "type": "Transfer between registers",
-      "signature_definition": "F0 $F1",
-      "signature": "mflo,$INT-Reg",
-      "signatureRaw": "mflo $rd",
-      "co": "000000",
-      "cop": "010010",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "mflo",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "010010"
-        }
-      ],
-      "definition": "rd=LO;\ncheck_stack_limit(rd.name; sp.name; rd);"
-    },
     {
       "name": "mov.s",
       "type": "Transfer between registers",
@@ -3263,6 +2830,47 @@
       "definition": "fd = fs"
     },
     {
+      "name": "mtc1",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 $F2 $F3",
+      "signature": "mtc1,$INT-Reg,$SFP-Reg",
+      "signatureRaw": "mtc1 $rt $fs",
+      "co": "010001",
+      "cop": "00100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "mtc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "mt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00100"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        }
+      ],
+      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = rt;\nfs = (new Float32Array(buf))[0];"
+    },
+    {
       "name": "mthi",
       "type": "Transfer between registers",
       "signature_definition": "F0 $F1",
@@ -3325,6 +2933,54 @@
         }
       ],
       "definition": "LO=rs"
+    },
+    {
+      "name": "mul",
+      "type": "Arithmetic integer",
+      "co": "011100",
+      "cop": "000010",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "mul,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "mul $reg1 $reg2 $reg3",
+      "fields": [
+        {
+          "name": "mul",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "reg3",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000010"
+        }
+      ],
+      "definition": "reg1=reg2*reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "mul.s",
@@ -3503,14 +3159,1219 @@
         }
       ],
       "definition": "var result = rs >>> 0 * rt >>> 0;\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO= result % Math.pow(2, 32) >>> 0;"
+    },
+    {
+      "name": "nop",
+      "type": "Logic",
+      "co": "000000",
+      "cop": "000000",
+      "nwords": 1,
+      "signature_definition": "F0",
+      "signature": "nop",
+      "signatureRaw": "nop",
+      "fields": [
+        {
+          "name": "nop",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000000"
+        }
+      ],
+      "definition": ""
+    },
+    {
+      "name": "nor",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "nor,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "nor $rd $rs $rt",
+      "co": "000000",
+      "cop": "101111",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "nor",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "101111"
+        }
+      ],
+      "definition": "rd = (~ (rs | rt));\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "or",
+      "type": "Logic",
+      "co": "000000",
+      "cop": "100101",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "or,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "or $reg1 $reg2 $reg3",
+      "fields": [
+        {
+          "name": "or",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "reg3",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100101"
+        }
+      ],
+      "definition": "reg1=reg2|reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "ori",
+      "type": "Logic",
+      "co": "001101",
+      "cop": null,
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "ori,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "ori $reg1 $reg2 val",
+      "fields": [
+        {
+          "name": "ori",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "reg1=reg2|val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "rotr",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F2 F4",
+      "signature": "rotr,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "rotr $rd $rt sa",
+      "co": "000000",
+      "cop": "1000010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rotr",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "r",
+          "type": "cop",
+          "startbit": 21,
+          "stopbit": 21,
+          "valueField": "1"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "sa",
+          "type": "inm",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "srl",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000010"
+        }
+      ],
+      "definition": "rd = (((rt >>> sa) | (rt << (32 - sa))) >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "rsqrt.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "rsqrt.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "rsqrt.s $fd $fs",
+      "co": "010001",
+      "cop": "00000010110",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rsqrt.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "SFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "rsqrt",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "010110"
+        }
+      ],
+      "definition": "fd = 1.0/Math.sqrt(fs)"
+    },
+    {
+      "name": "rsqrt.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "rsqrt.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "rsqrt.d $fd $fs",
+      "co": "010001",
+      "cop": "00001010110",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rsqrt.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "DFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "rsqrt",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "010110"
+        }
+      ],
+      "definition": "fd = 1.0/Math.sqrt(fs)"
+    },
+    {
+      "name": "sb",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3 ($F1)",
+      "signature": "sb,$INT-Reg,inm,($INT-Reg)",
+      "signatureRaw": "sb $rt off ($base)",
+      "co": "101000",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sb",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "MP.b.(off+base)=rt"
+    },
+    {
+      "name": "sh",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3 ($F1)",
+      "signature": "sh,$INT-Reg,inm,($INT-Reg)",
+      "signatureRaw": "sh $rt off ($base)",
+      "co": "101001",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sh",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "assert((val+reg2)%2==0; \"The memory must be align\")\nMP.h.(off+base)=rt;"
+    },
+    {
+      "name": "sll",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F2 $F1 F3",
+      "signature": "sll,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "sll $rd $rt sa",
+      "co": "000000",
+      "cop": "111111",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sll",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "sa",
+          "type": "inm",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "111111"
+        }
+      ],
+      "definition": "rd = (rt << sa) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "slt",
+      "type": "Logic",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "slt,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "slt $rd $rs $rt",
+      "co": "000000",
+      "cop": "101010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "slt",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "101010"
+        }
+      ],
+      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "slti",
+      "type": "Logic",
+      "signature_definition": "F0 $F2 $F1 F3",
+      "signature": "slti,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "slti $rs $rt inm",
+      "co": "001010",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "slti",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "rt = (rs >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
+    },
+    {
+      "name": "sqrt.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "sqrt.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "sqrt.s $fd $fs",
+      "co": "010001",
+      "cop": "00000000100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sqrt.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "SFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "sqrt",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000100"
+        }
+      ],
+      "definition": "fd = Math.sqrt(fs)"
+    },
+    {
+      "name": "sqrt.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "sqrt.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "sqrt.d $fd $fs",
+      "co": "010001",
+      "cop": "00001000100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sqrt.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "DFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "sqrt",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000100"
+        }
+      ],
+      "definition": "fd = Math.sqrt(fs)"
+    },
+    {
+      "name": "sra",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F2 $F1 F3",
+      "signature": "sra,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "sra $rd $rt sa",
+      "co": "000000",
+      "cop": "000011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sra",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "sa",
+          "type": "inm",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000011"
+        }
+      ],
+      "definition": "rd = (rt >> sa) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "srl",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F2 F4",
+      "signature": "srl,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "srl $rd $rt sa",
+      "co": "000000",
+      "cop": "0000010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "srl",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "r",
+          "type": "cop",
+          "startbit": 21,
+          "stopbit": 21,
+          "valueField": "0"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "sa",
+          "type": "inm",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000010"
+        }
+      ],
+      "definition": "rd = rt >>> sa;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "sub",
+      "type": "Arithmetic integer",
+      "co": "000000",
+      "cop": "100010",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "sub,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "sub $reg1 $reg2 $reg3",
+      "fields": [
+        {
+          "name": "sub",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "reg3",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100010"
+        }
+      ],
+      "definition": "reg1=((reg2 >> 0) - (reg3 >> 0)) >>> 0;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "sub.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F4 $F3 $F2",
+      "signature": "sub.s,$SFP-Reg,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "sub.s $fd $fs $ft",
+      "co": "010001",
+      "cop": "00000000001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sub.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "SFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "sub",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000001"
+        }
+      ],
+      "definition": "fd = fs - ft"
+    },
+    {
+      "name": "sub.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F4 $F3 $F2",
+      "signature": "sub.d,$DFP-Reg,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "sub.d $fd $fs $ft",
+      "co": "010001",
+      "cop": "00001000001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sub.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "DFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "sub",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "000001"
+        }
+      ],
+      "definition": "fd = fs - ft"
+    },
+    {
+      "name": "subu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "subu,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "subu $rd $rs $rt",
+      "co": "000000",
+      "cop": "100011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "subu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100011"
+        }
+      ],
+      "definition": "rd = ((rs >>> 0) - (rt >>> 0)) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "sw",
+      "type": "Memory access",
+      "co": "101011",
+      "cop": "",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2 ($F3)",
+      "signature": "sw,$INT-Reg,inm,($INT-Reg)",
+      "signatureRaw": "sw $reg1 val ($reg2)",
+      "fields": [
+        {
+          "name": "sw",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        }
+      ],
+      "definition": "assert((val+reg2)%4==0; 'The memory must be align')\nMP.w.(val+reg2)=reg1"
+    },
+    {
+      "name": "swc1",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3 ($F1)",
+      "signature": "swc1,$SFP-Reg,inm,($INT-Reg)",
+      "signatureRaw": "swc1 $ft off ($base)",
+      "co": "111001",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "swc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = ft;\nMP.w.(base+off) = (new Uint32Array(buf))[0];"
+    },
+    {
+      "name": "xor",
+      "type": "Logic",
+      "co": "000000",
+      "cop": "100110",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 $F3",
+      "signature": "xor,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "xor $reg1 $reg2 $reg3",
+      "fields": [
+        {
+          "name": "xor",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "reg3",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100110"
+        }
+      ],
+      "definition": "reg1=reg2^reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "xori",
+      "type": "Logic",
+      "co": "001110",
+      "cop": null,
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "xori,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "xori $reg1 $reg2 val",
+      "fields": [
+        {
+          "name": "xori",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": ""
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16,
+          "valueField": ""
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0,
+          "valueField": ""
+        }
+      ],
+      "definition": "reg1=reg2^val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+    },
+    {
+      "name": "syscall",
+      "type": "Syscall",
+      "co": "000000",
+      "cop": "001100",
+      "nwords": 1,
+      "signature_definition": "F0",
+      "signature": "syscall",
+      "signatureRaw": "syscall",
+      "fields": [
+        {
+          "name": "syscall",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26,
+          "valueField": ""
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "value": "001100"
+        }
+      ],
+      "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(FG12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(FG0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
+    },
+    {
+      "name": "div",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "div,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "div $rd $rs $rt",
+      "co": "000000",
+      "cop": "00010011010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "div",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 10,
+          "stopbit": 6,
+          "valueField": "00010"
+        },
+        {
+          "name": "sop32",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011010"
+        }
+      ],
+      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "divu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "divu,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "divu $rd $rs $rt",
+      "co": "000000",
+      "cop": "00010011011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "divu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 10,
+          "stopbit": 6,
+          "valueField": "00010"
+        },
+        {
+          "name": "sop33",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011011"
+        }
+      ],
+      "definition": "rd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "ldc1",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3 ($F1)",
+      "signature": "ldc1,$DFP-Reg,inm,($INT-Reg)",
+      "signatureRaw": "ldc1 $ft off ($base)",
+      "co": "110101",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ldc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "assert((base+off)%8==0, \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.(off+base);\narr[1] =  MP.w.(off+4+base)\nft = (new Float64Array(buf))[0];"
     }
-
-
-
-
-
-
-
   ],
   "pseudoinstructions": [
     {
@@ -3562,6 +4423,44 @@
         }
       ],
       "definition": "lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nadd $reg1 $reg2 $at;"
+    },
+    {
+      "name": "jalr",
+      "signature_definition": "jalr $F0",
+      "signature": "jalr,$INT-Reg",
+      "signatureRaw": "jalr $rs",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "jalr $rs $ra;"
+    },
+    {
+      "name": "li",
+      "signature_definition": "li $F0 F1",
+      "signature": "li,$INT-Reg,inm",
+      "signatureRaw": "li $rd val",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;"
     }
   ],
   "directives": [

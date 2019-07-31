@@ -7400,10 +7400,8 @@ try{
               notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               return;
             }
-            var auxValue = this.bin2hex(this.float2bin(value));
 
-            //architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
-            architecture.components[indexComp].elements[indexElem].value = this.hex2float("0x" + auxValue);
+            architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
 
             this.updateDouble(indexComp, indexElem);
 
