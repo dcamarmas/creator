@@ -2930,7 +2930,6 @@ try{
           }
         }
 
-        //this.formPseudoinstruction.definition = newDefinition;
         return 0;
       },
       /*Generate the pseudoinstruction signature*/
