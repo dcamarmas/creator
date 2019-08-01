@@ -76,7 +76,7 @@
         <!-- Navbar  -->
         <header>
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.19 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.22 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -180,8 +180,11 @@
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fas fa-download"></span> Save</b-button>
                   </div>
                   <div class="col-lg-8 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode" style="display:none;" @click="change_mode">
-                      Advanced Mode: {{!advanced_mode}}
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode" style="display:none;" @click="change_mode" v-if="advanced_mode == true">
+                      Advanced Mode: deactivated
+                    </b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode" style="display:none;" @click="change_mode" v-if="advanced_mode == false">
+                      Advanced Mode: activate
                     </b-button>
                   </div>
                 </div>
@@ -335,40 +338,46 @@
 
                   <!-- Memory layout form -->
                   <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%; margin-bottom: 3%;">
-                    <div class="col-lg-4 col-sm-12">
+                    <div class="col-lg-12 col-sm-12">
                       <h6>Memory layout:</h6>
-                      <div class="compMenu">
-                        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" id="resetMemory" @click="resetMemModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset memory layout</b-button>
+                      <div class="col-lg-12 col-sm-12 row">
+                        <div class="compMenu">
+                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" v-b-modal.change><span class="fas fa-exchange-alt"></span> Change memory layout</b-button>
+                        </div>
+                        <div class="compMenu">
+                          <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" id="resetMemory" @click="resetMemModal(architecture_name, $event)"> <span class="fas fa-power-off"></span> Reset memory layout</b-button>
+                        </div>
                       </div>
+
+                      <br>
 
                       <!-- Reset memory layout -->
                       <b-modal id ="modalResetMem" :title="modalResetMem.title" ok-variant="danger" ok-title="Reset" @ok="resetMemory(modalResetMem.element)">
                         <h6>Are you sure you want to reset the mememory layout set?</h6>
                       </b-modal >
 
-                      <br>
+                      <!-- Change memory layout -->
+                      <b-modal id ="change" title="Change memory layout" ok-title="Change" @ok="changeMemoryLayout">
+                        <h6>.text Start:</h6>
+                        <b-form-input type="text" v-on:input="debounce('memory_layout[0]', $event)" :value="memory_layout[0]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                        <h6>.text End:</h6>
+                        <b-form-input type="text" v-on:input="debounce('memory_layout[1]', $event)" :value="memory_layout[1]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
 
-                      <h6>.text Start:</h6>
-                      <b-form-input type="text" v-on:input="debounce('memory_layout[0]', $event)" :value="memory_layout[0]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-                      <h6>.text End:</h6>
-                      <b-form-input type="text" v-on:input="debounce('memory_layout[1]', $event)" :value="memory_layout[1]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                        <h6>.data Start:</h6>
+                        <b-form-input type="text" v-on:input="debounce('memory_layout[2]', $event)" :value="memory_layout[2]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                        <h6>.data End:</h6>
+                        <b-form-input type="text" v-on:input="debounce('memory_layout[3]', $event)" :value="memory_layout[3]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
 
-                      <h6>.data Start:</h6>
-                      <b-form-input type="text" v-on:input="debounce('memory_layout[2]', $event)" :value="memory_layout[2]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-                      <h6>.data End:</h6>
-                      <b-form-input type="text" v-on:input="debounce('memory_layout[3]', $event)" :value="memory_layout[3]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-
-                      <h6>.stack End:</h6>
-                      <b-form-input type="text" v-on:input="debounce('memory_layout[4]', $event)" :value="memory_layout[4]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-                      <h6>.stack Start:</h6>
-                      <b-form-input type="text" v-on:input="debounce('memory_layout[5]', $event)" :value="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
-
-                      <b-button class="btn btn-block btn-sm" variant="primary" style="margin-bottom: 5%;" @click="changeMemoryLayout"><span class="fas fa-exchange-alt"></span> Change memory layout</b-button>
+                        <h6>.stack End:</h6>
+                        <b-form-input type="text" v-on:input="debounce('memory_layout[4]', $event)" :value="memory_layout[4]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                        <h6>.stack Start:</h6>
+                        <b-form-input type="text" v-on:input="debounce('memory_layout[5]', $event)" :value="memory_layout[5]" required size="sm" style="margin-bottom: 2%;"></b-form-input>
+                      </b-modal >
                     </div>
 
-                    <div class="col-lg-2 col-sm-12 ">
+                    <div class="col-lg-3 col-sm-12 ">
 
-                    </div>  
+                    </div>
 
                     <!-- Memory layout sketch -->
                     <div class="col-lg-6 col-sm-12 ">
@@ -408,6 +417,11 @@
                         </b-list-group>
                       </b-list-group>
                     </div>
+
+                    <div class="col-lg-3 col-sm-12 ">
+
+                    </div>
+
                   </div>
                 </b-tab>
 
@@ -617,7 +631,7 @@
                           </b-form-input>
                         </b-form-group>
                         <b-form-group label="Number of fields: (Including co and cop)">
-                          <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm" @change="changeNumfield(0)">
+                          <b-form-input type="text" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm" @change="changeNumfield(0)">
                           </b-form-input>
                         </b-form-group>
                         <div style="display: none">
@@ -849,7 +863,7 @@
                             </b-form-input>
                           </b-form-group>
                           <b-form-group label="Number of fields: (Including co and cop)">
-                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm" @change="changeNumfield(0)">
+                            <b-form-input type="text" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formInstruction.numfields', $event)" :value="formInstruction.numfields" required placeholder="Enter number of fields" :state="valid(formInstruction.numfields)" size="sm" @change="changeNumfield(0)">
                             </b-form-input>
                           </b-form-group>
                           <div style="display: none">
@@ -998,7 +1012,7 @@
                         </b-form-group>
 
                         <b-form-group label="Number of fields: ">
-                          <b-form-input type="number" min="0" :max="32 * formPseudoinstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm" @change="changeNumfield(1)">
+                          <b-form-input type="text" min="0" :max="32 * formPseudoinstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm" @change="changeNumfield(1)">
                           </b-form-input>
                         </b-form-group>
                         <div style="display: none;">
@@ -1198,7 +1212,7 @@
                           </b-form-group>
 
                           <b-form-group label="Number of fields: ">
-                            <b-form-input type="number" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm" @change="changeNumfield(1)">
+                            <b-form-input type="text" min="1" :max="32 * formInstruction.nwords" v-on:input="debounce('formPseudoinstruction.numfields', $event)" :value="formPseudoinstruction.numfields" required placeholder="Enter number of fields" :state="valid(formPseudoinstruction.numfields)" size="sm" @change="changeNumfield(1)">
                             </b-form-input>
                           </b-form-group>
 
@@ -1533,7 +1547,7 @@
         <div class="contenedor row" id="simulator" style="display:none;">
 
         	<!-- Navbar -->
-          <div class="contenedor menu row">
+          <div class="contenedor menu row mb-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -1547,12 +1561,66 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 nopadding">
+            <div class="col-lg-5 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12 nopadding">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <!-- Execution actions -->
+                  <div class="col-lg-12 col-sm-12">
+                    <div class="col-lg-12 col-sm-12 buttons row">
+                      <div class="col-lg-4 col-sm-4 buttons">
+                        <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
+                          <span class="fas fa-power-off"></span>
+                          Reset
+                        </b-button>
+                      </div>
+                      <div class="col-lg-4 col-sm-4 buttons">
+                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeInstruction">
+                          <span class="fas fa-fast-forward"></span>
+                          Inst.
+                        </b-button>
+                      </div>
+                      <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
+                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false">
+                          <span class="fas fa-play"></span>
+                          Run
+                        </b-button>
+                      </div>
+                      <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
+                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="stopExecution">
+                          <span class="fas fa-stop"></span>
+                          Stop
+                        </b-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-4 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-12 col-sm-12 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
                   </div>
+
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                  </div>
+
+                  <!-- Information popover -->
+                  <b-popover target="info_sim" triggers="click blur">
+                    <template slot="title">
+                      <b-button @click="closePopover" class="close" aria-label="Close">
+                        <span class="d-inline-block" aria-hidden="true">&times;</span>
+                      </b-button>
+                      <br>
+                    </template>
+                    <div class="col-lg-12 col-sm-12">
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+                    </div>
+                  </b-popover>
 
                   <!-- Calculator -->
                   <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
@@ -1637,37 +1705,6 @@
 	            </div>
             </div>
 
-            <div class="col-lg-5 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-2 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons">
-                  <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
-                  </div>
-
-                  <!-- Information popover -->
-                  <b-popover target="info_sim" triggers="click blur">
-                    <template slot="title">
-                      <b-button @click="closePopover" class="close" aria-label="Close">
-                        <span class="d-inline-block" aria-hidden="true">&times;</span>
-                      </b-button>
-                      <br>
-                    </template>
-                    <div class="col-lg-12 col-sm-12">
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
-                    </div>
-                  </b-popover>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- Execution instruction -->
@@ -1706,38 +1743,8 @@
           <!-- Execution data -->
           <div class="col-lg-5 col-sm-12">
 
-            <!-- Execution actions -->
-            <div class="col-lg-12 col-sm-12">
-              <div class="col-lg-12 col-sm-12 buttons row">
-                <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
-                    <span class="fas fa-power-off"></span>
-                    Reset
-                  </b-button>
-                </div>
-                <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeInstruction">
-                    <span class="fas fa-fast-forward"></span>
-                    Inst.
-                  </b-button>
-                </div>
-                <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
-                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false">
-                    <span class="fas fa-play"></span>
-                    Run
-                  </b-button>
-                </div>
-                <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
-                  <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="stopExecution">
-                    <span class="fas fa-stop"></span>
-                    Stop
-                  </b-button>
-                </div>
-              </div>
-            </div>
-
             <!-- View selector -->
-            <div class="col-lg-12 col-sm-12">
+            <div class="col-lg-12 col-sm-12 mb-3">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
                   <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding" variant="outline-secondary" class=" h-100">
@@ -1754,7 +1761,6 @@
                   <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" id="stats_btn"><span class=" fas fa-chart-bar"></span> Stats</b-button>
                 </div>
               </div>
-              <hr>
             </div>
 
             <!-- Registers view -->
