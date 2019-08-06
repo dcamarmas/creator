@@ -123,7 +123,7 @@
       "double_precision": false,
       "elements": [
         {
-          "name": "r0",
+          "name": "zero",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
