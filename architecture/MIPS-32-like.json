@@ -423,7 +423,7 @@
           ]
         },
         {
-          "name": "s8",
+          "name": "fp",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
