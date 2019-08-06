@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "0",
+          "value": "4",
           "default_value": "0",
           "properties": [
             "read",
@@ -205,7 +205,7 @@
         {
           "name": "t0",
           "nbits": "32",
-          "value": "0",
+          "value": "4294967295",
           "default_value": "0",
           "properties": [
             "read",
@@ -2193,7 +2193,7 @@
       "name": "lb",
       "type": "Memory access",
       "co": "100000",
-      "cop": null,
+      "cop": "",
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lb,$INT-Reg,inm,($INT-Reg)",
@@ -2224,7 +2224,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1=MP.b.[val+reg2];\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "lbu",
@@ -2241,7 +2241,6 @@
           "type": "co",
           "startbit": 31,
           "stopbit": 26
-
         },
         {
           "name": "base",
@@ -2268,7 +2267,7 @@
       "name": "lh",
       "type": "Memory access",
       "co": "100001",
-      "cop": null,
+      "cop": "",
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lh,$INT-Reg,inm,($INT-Reg)",
@@ -2299,7 +2298,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; 'The memory must be align')\nreg1=MP.h.[val+reg2];\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "assert((val+reg2)%2==0; \"The memory must be align\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "lhu",
@@ -5249,7 +5248,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $r0 addr;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
     },
     {
       "name": "lw",
@@ -5271,7 +5270,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlw $rd 0 ($at);"
+      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($r0);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlw $rd 0 ($at);}"
     },
     {
       "name": "lh",
@@ -5293,7 +5292,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlh $rd 0 ($at);"
+      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($r0);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlh $rd 0 ($at);}"
     },
     {
       "name": "lb",
@@ -5315,7 +5314,29 @@
           "stopbit": "0"
         }
       ],
-      "definition": "lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlb $rd 0 ($at);"
+      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($r0);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlb $rd 0 ($at);}"
+    },
+    {
+      "name": "c.f.s",
+      "signature_definition": "c.f.s $F1 $F0",
+      "signature": "c.f.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.f.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.f.s 0 $fs $fs;"
     }
   ],
   "directives": [

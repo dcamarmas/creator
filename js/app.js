@@ -314,7 +314,7 @@ try{
       showEditInstruction: false,
       /*Modal pagination*/
       instructionFormPage: 1,
-      instructionFormPageLink: ['#Principal', '#Fields', '#Signature', '#Definition'],
+      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition'],
       /*Edit instruction modal*/
       modalEditInst:{
         title: '',
@@ -2368,273 +2368,247 @@ try{
 
             for (var j = 0; j < instructions.length-1; j++){
               var re = new RegExp("^ +");
-              instructions[j] = instructions[j].replace(re, "");
+	            instructions[j] = instructions[j].replace(re, "");
 
-              re = new RegExp(" +", "g");
-              instructions[j] = instructions[j].replace(re, " ");
+	            re = new RegExp(" +", "g");
+	            instructions[j] = instructions[j].replace(re, " ");
 
-              var instructionParts = instructions[j].split(" ");
+	            var instructionParts = instructions[j].split(" ");
 
-              var found = false;
-              for (var i = 0; i < architecture.instructions.length; i++){
-                if(architecture.instructions[i].name == instructionParts[0]){
-                  found = true;
-                  var numFields = 0;
-                  var regId = 0;
+	            var found = false;
+	            for (var i = 0; i < architecture.instructions.length; i++){
+	              if(architecture.instructions[i].name == instructionParts[0]){
+	                found = true;
+	                var numFields = 0;
+	                var regId = 0;
 
-                  signatureDef = architecture.instructions[i].signature_definition;
-                  signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                  re = new RegExp("[fF][0-9]+", "g");
-                  signatureDef = signatureDef.replace(re, "(.*?)");
+	                signatureDef = architecture.instructions[i].signature_definition;
+	                signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	                re = new RegExp("[fF][0-9]+", "g");
+	                signatureDef = signatureDef.replace(re, "(.*?)");
 
-                  console.log(instructions[j])
-                  console.log(signatureDef)
+	                console.log(instructions[j])
 
-                  re = new RegExp(signatureDef+"$")
-                  if(instructions[j].search(re) == -1){
-                    app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
-                    app._data.type = 'danger';
-                    app.$bvToast.toast(app._data.alertMessaje, {
-  					          variant: app._data.type,
-  					          solid: true,
-  					          toaster: "b-toaster-top-center",
-  										autoHideDelay: 1500,
-  					        });
-                    return -1;
-                  }
+	                re = new RegExp(signatureDef+"$");
+	                if(instructions[j].search(re) == -1){
+	                  app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
+	                  app._data.type = 'danger';
+	                  app.$bvToast.toast(app._data.alertMessaje, {
+	  				          variant: app._data.type,
+	  				          solid: true,
+	  				          toaster: "b-toaster-top-center",
+	  									autoHideDelay: 1500,
+	  				        });
+	                  return -1;
+	                }
 
-                  re = new RegExp(signatureDef+"$")
-                  var match = re.exec(instructions[j]);
-                  var instructionParts = [];
-                  for(var z = 1; z < match.length; z++){
-                    instructionParts.push(match[z]);
-                  }
+	                re = new RegExp(signatureDef+"$");
+	                var match = re.exec(instructions[j]);
+	                var instructionParts = [];
+	                for(var z = 1; z < match.length; z++){
+	                  instructionParts.push(match[z]);
+	                }
 
-                  console.log(instructionParts)
+			            re = new RegExp(",", "g");
+			            var signature = architecture.instructions[i].signature.replace(re, " ");
 
-                  for (var z = 0; z < architecture.instructions[i].fields.length; z++){
-                    if(architecture.instructions[i].fields[z].type != "cop"){
-                      numFields++;
-                    }
+			            re = new RegExp(signatureDef+"$");
+			            var match = re.exec(signature);
+			            var signatureParts = [];
+			            for(var j = 1; j < match.length; j++){
+			              signatureParts.push(match[j]);
+			            }
 
-                    if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "SFP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
-                      var found = false;
+	                console.log(instructionParts)
+	                console.log(signatureParts)
 
-                      var id = -1;
-                      re = new RegExp("R[0-9]+");
-                      if(instructionParts[z].search(re) != -1){
-                        re = new RegExp("R(.*?)$");
-                        match = re.exec(instructionParts[z]);
-                        id = match[1];
-                      }
+	                for (var z = 1; z < signatureParts.length; z++){
 
-                      for (var a = 0; a < architecture.components.length; a++){
-                        for (var b = 0; b < architecture.components[a].elements.length; b++){
-                          if(architecture.components[a].elements[b].name == instructionParts[z]){
-                            found = true;
-                          }
-                          if(architecture.components[a].type == "integer" && regId == id){
-                            found = true;
-                          }
-                          if(architecture.components[a].type == "integer"){
-                            regId++;
-                          }
-                        }
-                      }
+	                  if(signatureParts[z] == "INT-Reg" || signatureParts[z] == "SFP-Reg" || signatureParts[z] == "DFP-Reg" ||signatureParts[z] == "Ctrl-Reg"){
+	                    console.log("REG")
+	                    var found = false;
 
-                      for (var b = 0; b < fields.length; b++){
-                        console.log(fields[b]);
-                        if(fields[b] == instructionParts[z]){
-                          found = true;
-                        }
-                      }
+	                    var id = -1;
+	                    re = new RegExp("R[0-9]+");
+	                    console.log(z)
+	                    if(instructionParts[z].search(re) != -1){
+	                      re = new RegExp("R(.*?)$");
+	                      match = re.exec(instructionParts[z]);
+	                      id = match[1];
+	                    }
 
-                      if(!found){
-                        app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
-                        return -1;
-                      }
-                    }
+	                    for (var a = 0; a < architecture.components.length; a++){
+	                      for (var b = 0; b < architecture.components[a].elements.length; b++){
+	                        if(architecture.components[a].elements[b].name == instructionParts[z]){
+	                          found = true;
+	                        }
+	                        if(architecture.components[a].type == "integer" && regId == id){
+	                          found = true;
+	                        }
+	                        if(architecture.components[a].type == "integer"){
+	                          regId++;
+	                        }
+	                      }
+	                    }
 
-                    if(architecture.instructions[i].fields[z].type == "inm"){
-                      var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+	                    for (var b = 0; b < fields.length; b++){
+	                      if(fields[b] == instructionParts[z]){
+	                        found = true;
+	                      }
+	                    }
 
-                      if(instructionParts[z].match(/^0x/)){
-                        var value = instructionParts[z].split("x");
-                        if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                          app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
+	                    if(!found){
+	                      app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+	                      app._data.type = 'danger';
+	                      app.$bvToast.toast(app._data.alertMessaje, {
+	  						          variant: app._data.type,
+	  						          solid: true,
+	  						          toaster: "b-toaster-top-center",
+	  											autoHideDelay: 1500,
+	  						        });
+	                      return -1;
+	                    }
+	                  }
 
-                        if(value[1].length*4 > fieldsLength){
-                          app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
-                      }
-                      else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
-                        if(isNaN(parseFloat(instructionParts[z])) == true){
-                          app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
+	                  if(signatureParts[z] == "inm"){
+	                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+	                    if(instructionParts[z].match(/^0x/)){
+	                      var value = instructionParts[z].split("x");
+	                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
+	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      }
 
-                        if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
-                          app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
-                      }
-                      else if(isNaN(parseInt(instructionParts[z]))){
+	                      if(value[1].length*4 > fieldsLength){
+	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      }
+	                    }
+	                    else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
+	                      if(isNaN(parseFloat(instructionParts[z])) == true){
+	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      }
 
-                      }
-                      else {
-                        var numAux = parseInt(instructionParts[z], 10);
-                        if(isNaN(parseInt(instructionParts[z])) == true){
-                          app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
+	                      if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
+	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      }
+	                    }
+	                    else if(isNaN(parseInt(instructionParts[z]))){
+	                    	
+	                    }
+	                    else {
+	                      var numAux = parseInt(instructionParts[z], 10);
+	                      if(isNaN(parseInt(instructionParts[z])) == true){
+	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      }
 
-                        if((numAux.toString(2)).length > fieldsLength){
-                          app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
-                      }
-                    }
+	                      if((numAux.toString(2)).length > fieldsLength){
+	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      }
+	                    }
+	                  }
 
-                    if(architecture.instructions[i].fields[z].type == "address"){
-                      var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-                      if(instructionParts[z].match(/^0x/)){
-                        var value = instructionParts[z].split("x");
-                        if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                          app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
+	                  if(signatureParts[z] == "address"){
+	                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+	                    if(instructionParts[z].match(/^0x/)){
+	                      var value = instructionParts[z].split("x");
+	                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
+	                        app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      }
 
-                        if(value[1].length*4 > fieldsLength){
-                          app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessaje, {
-  								          variant: app._data.type,
-  								          solid: true,
-  								          toaster: "b-toaster-top-center",
-  													autoHideDelay: 1500,
-  								        });
-                          return -1;
-                        }
-                      }
-                    }
+	                      if(value[1].length*4 > fieldsLength){
+	                        app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
+	                        app._data.type = 'danger';
+	                        app.$bvToast.toast(app._data.alertMessaje, {
+	  							          variant: app._data.type,
+	  							          solid: true,
+	  							          toaster: "b-toaster-top-center",
+	  												autoHideDelay: 1500,
+	  							        });
+	                        return -1;
+	                      } 
+	                    }
+	                  }
 
-                    if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(SFP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)" ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
-                      var found = false;
-                      for (var a = 0; a < architecture.components.length; a++){
-                        for (var b = 0; b < architecture.components[a].elements.length; b++){
-                          if("($" + architecture.components[a].elements[b].name + ")" == instructionParts[z]){
-                            found = true;
-                          }
-                        }
-                      }
-
-                      for (var a = 0; a < architecture.pseudoinstructions.length; a++){
-                        if(architecture.pseudoinstructions[a].name == name){
-                          for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
-                            if("(" + architecture.pseudoinstructions[a].fields[b].name + ")" == instructionParts[z]){
-                              found = true;
-                            }
-                          }
-                        }
-                      }
-                    }
-
-                    if(!found){
-                      app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-                      app._data.type = 'danger';
-                      app.$bvToast.toast(app._data.alertMessaje, {
-  						          variant: app._data.type,
-  						          solid: true,
-  						          toaster: "b-toaster-top-center",
-  											autoHideDelay: 1500,
-  						        });
-                      return -1;
-                    }
-                  }
-
-                  if(numFields != instructionParts.length){
-                    app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
-                    app._data.type = 'danger';
-                    app.$bvToast.toast(app._data.alertMessaje, {
-  					          variant: app._data.type,
-  					          solid: true,
-  					          toaster: "b-toaster-top-center",
-  										autoHideDelay: 1500,
-  					        });
-                    return -1;
-                  }
-                }
-              }
-              if(!found){
-                app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-                return -1;
-              }
+	                  if(!found){
+	                    app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+	                    app._data.type = 'danger';
+	                    app.$bvToast.toast(app._data.alertMessaje, {
+	  					          variant: app._data.type,
+	  					          solid: true,
+	  					          toaster: "b-toaster-top-center",
+	  										autoHideDelay: 1500,
+	  					        });
+	                    return -1;
+	                  }
+	                }
+	              }
+	            }
+	            if(!found){
+	              app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
+	              app._data.type = 'danger';
+	              app.$bvToast.toast(app._data.alertMessaje, {
+	  		          variant: app._data.type,
+	  		          solid: true,
+	  		          toaster: "b-toaster-top-center",
+	  							autoHideDelay: 1500,
+	  		        });
+	              return -1;
+	            }
             }
 
             definition = definition.replace(code[0], "");
@@ -2680,7 +2654,6 @@ try{
                 signatureDef = signatureDef.replace(re, "(.*?)");
 
                 console.log(instructions[j])
-                console.log(signatureDef)
 
                 re = new RegExp(signatureDef+"$");
                 if(instructions[j].search(re) == -1){
@@ -2702,18 +2675,28 @@ try{
                   instructionParts.push(match[z]);
                 }
 
+		            re = new RegExp(",", "g");
+		            var signature = architecture.instructions[i].signature.replace(re, " ");
+
+		            re = new RegExp(signatureDef+"$");
+		            var match = re.exec(signature);
+		            var signatureParts = [];
+		            for(var j = 1; j < match.length; j++){
+		              signatureParts.push(match[j]);
+		            }
+
                 console.log(instructionParts)
+                console.log(signatureParts)
 
-                for (var z = 0; z < architecture.instructions[i].fields.length; z++){
-                  if(architecture.instructions[i].fields[z].type != "cop"){
-                    numFields++;
-                  }
+                for (var z = 1; z < signatureParts.length; z++){
 
-                  if(architecture.instructions[i].fields[z].type == "INT-Reg" || architecture.instructions[i].fields[z].type == "SFP-Reg" || architecture.instructions[i].fields[z].type == "DFP-Reg" ||architecture.instructions[i].fields[z].type == "Ctrl-Reg"){
+                  if(signatureParts[z] == "INT-Reg" || signatureParts[z] == "SFP-Reg" || signatureParts[z] == "DFP-Reg" ||signatureParts[z] == "Ctrl-Reg"){
+                    console.log("REG")
                     var found = false;
 
                     var id = -1;
                     re = new RegExp("R[0-9]+");
+                    console.log(z)
                     if(instructionParts[z].search(re) != -1){
                       re = new RegExp("R(.*?)$");
                       match = re.exec(instructionParts[z]);
@@ -2735,7 +2718,6 @@ try{
                     }
 
                     for (var b = 0; b < fields.length; b++){
-                      console.log(fields[b]);
                       if(fields[b] == instructionParts[z]){
                         found = true;
                       }
@@ -2753,19 +2735,11 @@ try{
                       return -1;
                     }
                   }
-                  console.log(z)
-                  if(architecture.instructions[i].fields[z].type == "inm"){
-                  	console.log(z)
+
+                  if(signatureParts[z] == "inm"){
                     var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-                    console.log(z)
-                    console.log("AQUI1")
-                    console.log(fieldsLength)
-                    console.log(instructionParts)
-                    console.log(z)
                     if(instructionParts[z].match(/^0x/)){
-                    	console.log("AQUI2")
                       var value = instructionParts[z].split("x");
-                      console.log(isNaN(parseInt(instructionParts[z], 16)));
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type = 'danger';
@@ -2791,7 +2765,6 @@ try{
                       }
                     }
                     else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
-                    	console.log("AQUI4")
                       if(isNaN(parseFloat(instructionParts[z])) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type = 'danger';
@@ -2817,10 +2790,9 @@ try{
                       }
                     }
                     else if(isNaN(parseInt(instructionParts[z]))){
-                    	console.log("AQUI6")
+                    	
                     }
                     else {
-                    	console.log("AQUI8")
                       var numAux = parseInt(instructionParts[z], 10);
                       if(isNaN(parseInt(instructionParts[z])) == true){
                         app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
@@ -2848,7 +2820,7 @@ try{
                     }
                   }
 
-                  if(architecture.instructions[i].fields[z].type == "address"){
+                  if(signatureParts[z] == "address"){
                     var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
@@ -2878,27 +2850,6 @@ try{
                     }
                   }
 
-                  if(architecture.instructions[i].fields[z].type == "(INT-Reg)" || architecture.instructions[i].fields[z].type == "(SFP-Reg)" || architecture.instructions[i].fields[z].type == "(DFP-Reg)"  ||architecture.instructions[i].fields[z].type == "(Ctrl-Reg)"){
-                    var found = false;
-                    for (var a = 0; a < architecture.components.length; a++){
-                      for (var b = 0; b < architecture.components[a].elements.length; b++){
-                        if("($" + architecture.components[a].elements[b].name + ")" == instructionParts[z]){
-                          found = true;
-                        }
-                      }
-                    }
-
-                    for (var a = 0; a < architecture.pseudoinstructions.length; a++){
-                      if(architecture.pseudoinstructions[a].name == name){
-                        for (var b = 0; b < architecture.pseudoinstructions[a].fields.length; b++){
-                          if("(" + architecture.pseudoinstructions[a].fields[b].name + ")" == instructionParts[z]){
-                            found = true;
-                          }
-                        }
-                      }
-                    }
-                  }
-
                   if(!found){
                     app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type = 'danger';
@@ -2910,18 +2861,6 @@ try{
   					        });
                     return -1;
                   }
-                }
-
-                if(numFields != instructionParts.length){
-                  app._data.alertMessaje = 'Incorrect definition of ' + instructions[j];
-                  app._data.type = 'danger';
-                  app.$bvToast.toast(app._data.alertMessaje, {
-  				          variant: app._data.type,
-  				          solid: true,
-  				          toaster: "b-toaster-top-center",
-  									autoHideDelay: 1500,
-  				        });
-                  return -1;
                 }
               }
             }
@@ -5437,18 +5376,30 @@ try{
               instruction = instruction + token;
               userInstruction = userInstruction + token;
 
+              var new_ins = 0;
+
               for (var j = 0; j < numFields - 1; j++){
                 this.next_token();
                 token = this.get_token();
                 console.log(token);
 
                 if(token != null){
-                  var re = new RegExp(",+$");
+				          var re = new RegExp(",+$");
                   token = token.replace(re, "");
-                }
+                  for(var a = 0; a < architecture.instructions.length; a++){
+				            if(architecture.instructions[a].name == token){
+				              new_ins = 1;
+				            }
+				          }
+				          if(new_ins == 0){
+				          	instruction = instruction + " " + token;
+                		userInstruction = userInstruction + " " + token;
+				          }
+                }  
 
-                instruction = instruction + " " + token;
-                userInstruction = userInstruction + " " + token;
+                if(new_ins == 1){
+                	break;
+                }
               }
 
               console.log(instruction);
@@ -5461,7 +5412,10 @@ try{
                 return -1;
               }
 
-              this.next_token();
+              if (new_ins == 0){
+	              this.next_token();
+	            }
+	            new_ins = 0;
             }
           }
 
@@ -5566,9 +5520,23 @@ try{
           else{
             found = true;
 
+            var signatureDef = architecture.pseudoinstructions[i].signature_definition;
+            signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            re = new RegExp("[fF][0-9]+", "g");
+            signatureDef = signatureDef.replace(re, "(.*?)");
+
+
             var signatureParts = architecture.pseudoinstructions[i].signature.split(',');
             var signatureRawParts = architecture.pseudoinstructions[i].signatureRaw.split(' ');
             var definition = architecture.pseudoinstructions[i].definition;
+
+            console.log(signatureDef);
+            console.log(instruction);
+
+            re = new RegExp(signatureDef+"$");
+            if(instruction.search(re) == -1){
+            	return -1;
+            }
 
             for (var j = 1; j < signatureRawParts.length; j++){
               var aux = signatureRawParts[j].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -5620,7 +5588,7 @@ try{
                     aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0) == -1){error = true}";
                   }
                   else{
-                    aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "', ''," + line + ", false, 0) == -1){error = true}";
+                    aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0) == -1){error = true}";
                   }
                   definition = definition.replace(instructions[j]+";", aux+";\n");
                 }
@@ -5776,8 +5744,19 @@ try{
 
             re = new RegExp(signatureDef+"$");
             if(oriInstruction.search(re) == -1){
-              this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              return -1;
+
+            	var resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+            	console.log(resultPseudo)
+
+            	if(resultPseudo == 0){
+            		return;
+            	}
+
+              if(resultPseudo == -1){
+	              this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+	              return -1;
+            	}
             }
 
             match = re.exec(oriInstruction);
@@ -6056,7 +6035,11 @@ try{
                         var numAux = parseInt(token, 10) >>> 0;
 
                         if((numAux.toString(2)).length > fieldsLength){
+                        	console.log(oriInstruction)
+                        	console.log(label)
+                        	console.log(line)
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
@@ -7144,7 +7127,7 @@ try{
             var match = re.exec(auxDef);
             var args = match[1].split(";");
             auxDef = auxDef.replace(re, "");
-            auxDef = "if("+ args[0] +"){}else{app.exception("+ args[1] +");}" + auxDef;
+            auxDef = "var exception = 0;\nif("+ args[0] +"){}else{exception=app.exception("+ args[1] +");}\nif(exception==0){" + auxDef + "}";
           }
 
           console.log(auxDef);
