@@ -5204,7 +5204,7 @@
           "stopbit": "16"
         }
       ],
-      "definition": "jalr $rs $ra;"
+      "definition": "rs=PC+4\nPC=addr"
     },
     {
       "name": "li",
