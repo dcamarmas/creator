@@ -20,7 +20,7 @@
 .text
 main:
 	   addi $t0 $t0 100
-	d: bne $t0 $t1 b
+	d: beq $t0 $t1 7 # beq $t0 $t1 b
 	c: addi $a0 $a0 10
 	   mul $a0 $a0 $4
 	   addi $v0 $v0 1
