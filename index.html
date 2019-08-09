@@ -722,13 +722,13 @@
 
                       <!-- Page 3 -->
                       <div id="newInstForm3" v-if="instructionFormPage == 3">
-                        <b-form-group label="Assembly Signature Definition:">
+                        <b-form-group label="Assembly Syntax Definition:">
                           <b-form-input type="text" v-on:input="debounce('formInstruction.signature_definition', $event)" :value="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
                         </b-form-group>
-                        <b-form-group label="Assembly Signature:">
+                        <b-form-group label="Detailed Syntax:">
                           <b-form-input type="text" v-on:input="debounce('formInstruction.signature', $event)" :value="formInstruction.signature" disabled required size="sm"></b-form-input>
                         </b-form-group>
-                        <b-form-group label="Assembly Signature Raw:">
+                        <b-form-group label="Assembly Syntax:">
                           <b-form-input type="text" v-on:input="debounce('formInstruction.signatureRaw', $event)" :value="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
                         </b-form-group>
                       </div>
@@ -753,6 +753,19 @@
                   <!-- Instruction set table -->
                   <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
                     <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
+
+                      <!-- Change the title of each column -->
+                      <template slot="HEAD_cop" scope="row">
+                        Extended CO
+                      </template>
+
+                      <template slot="HEAD_signature" scope="row">
+                        Detailed Syntax
+                      </template>
+
+                      <template slot="HEAD_signatureRaw" scope="row">
+                        Instruction syntax
+                      </template>
 
                       <!-- For each instruction -->
                       <template slot="fields" slot-scope="row">
@@ -956,13 +969,13 @@
 
                         <!-- Page 3 -->
                         <div id="editInstForm3" v-if="instructionFormPage == 3">
-                          <b-form-group label="Instruction Signature Definition:">
+                          <b-form-group label="Instruction Syntax Definition:">
                             <b-form-input type="text" v-on:input="debounce('formInstruction.signature_definition', $event)" :value="formInstruction.signature_definition" placeholder="Example: F0 F2 F1 (F3)" required :state="valid(formInstruction.signature_definition)" v-on:change="generateSignatureInst()" size="sm"></b-form-input>
                           </b-form-group>
-                          <b-form-group label="Instruction Signature:">
+                          <b-form-group label="Detailed Syntax:">
                             <b-form-input type="text" v-on:input="debounce('formInstruction.signature', $event)" :value="formInstruction.signature" disabled required size="sm"></b-form-input>
                           </b-form-group>
-                          <b-form-group label="Instruction Signature Raw:">
+                          <b-form-group label="Instruction Syntax:">
                             <b-form-input type="text" v-on:input="debounce('formInstruction.signatureRaw', $event)" :value="formInstruction.signatureRaw" disabled size="sm"></b-form-input>
                           </b-form-group>
                         </div>
@@ -1086,13 +1099,13 @@
 
                       <!-- Page 3 -->
                       <div id="newPseudoinstForm3" v-if="instructionFormPage == 3">
-                        <b-form-group label="Pseudoinstruction Signature Definition:">
+                        <b-form-group label="Pseudoinstruction Syntax Definition:">
                             <b-form-input type="text"  v-on:input="debounce('formPseudoinstruction.signature_definition', $event)" :value="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
                           </b-form-group>
-                          <b-form-group label="Pseudoinstruction Signature:">
+                          <b-form-group label="Detailed Syntax:">
                             <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signature', $event)" :value="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
                           </b-form-group>
-                          <b-form-group label="Pseudoinstruction Signature Raw:">
+                          <b-form-group label="Pseudoinstruction Syntax:">
                             <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signatureRaw', $event)" :value="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
                           </b-form-group>
                       </div>
@@ -1117,6 +1130,15 @@
                   <!-- Pseudoinstruction set table -->
                   <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
                     <b-table small :items="architecture.pseudoinstructions" :fields="pseudoinstFields" class="instruction_table">
+
+                      <!-- Change the title of each column -->
+                      <template slot="HEAD_signature" scope="row">
+                        Detailed Syntax
+                      </template>
+
+                      <template slot="HEAD_signatureRaw" scope="row">
+                        Instruction syntax
+                      </template>
 
                       <!-- For each pseudoinstruction -->
                       <template slot="fields" slot-scope="row">
@@ -1287,13 +1309,13 @@
 
                         <!-- Page 3 -->
                         <div id="editPseudoinstForm3" v-if="instructionFormPage == 3">
-                          <b-form-group label="Pseudoinstruction Signature Definition:">
+                          <b-form-group label="Pseudoinstruction Syntax Definition:">
                             <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signature_definition', $event)" :value="formPseudoinstruction.signature_definition" placeholder="Example: move $F0 $F1" required :state="valid(formPseudoinstruction.signature_definition)" v-on:change="generateSignaturePseudo()" size="sm"></b-form-input>
                           </b-form-group>
-                          <b-form-group label="Pseudoinstruction Signature:">
+                          <b-form-group label="Detailed Syntax:">
                             <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signature', $event)" :value="formPseudoinstruction.signature" disabled required size="sm"></b-form-input>
                           </b-form-group>
-                          <b-form-group label="Pseudoinstruction Signature Raw:">
+                          <b-form-group label="Pseudoinstruction Syntax:">
                             <b-form-input type="text" v-on:input="debounce('formPseudoinstruction.signatureRaw', $event)" :value="formPseudoinstruction.signatureRaw" disabled size="sm"></b-form-input>
                           </b-form-group>
                         </div>
