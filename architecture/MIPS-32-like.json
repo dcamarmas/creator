@@ -1797,7 +1797,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)} console.log(reg1!=reg2);"
+      "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "cvt.d.s",
