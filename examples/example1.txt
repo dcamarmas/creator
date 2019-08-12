@@ -20,6 +20,7 @@
 .text
 main:
 	   addi $t0 $t0 100
+	   li $t1 100
 	d: beq $t0 $t1 7 # beq $t0 $t1 b
 	c: addi $a0 $a0 10
 	   mul $a0 $a0 $4
@@ -32,4 +33,4 @@ main:
 	   addi $a0 $a1 105525452
 	   move $5 $4
 	   addi $t1 $t1 100
-	   b d
+	   j c

@@ -4230,7 +4230,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.(off+base);\narr[1] =  MP.w.(off+4+base)\nft = (new Float64Array(buf))[0];"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\nft = (new Float64Array(buf))[0];"
    },
     {
       "name": "c.f.s",
@@ -5226,13 +5226,13 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $r0 val;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
     },
     {
       "name": "la",
-      "signature_definition": "ls $F0 F1",
-      "signature": "ls,$INT-Reg,inm",
-      "signatureRaw": "ls $rd addr",
+      "signature_definition": "la $F0 F1",
+      "signature": "la,$INT-Reg,inm",
+      "signatureRaw": "la $rd addr",
       "nwords": 1,
       "fields": [
         {
@@ -5248,7 +5248,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $r0 addr;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
     },
     {
       "name": "lw",
@@ -5270,7 +5270,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($r0);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlw $rd 0 ($at);}"
     },
     {
       "name": "lh",
@@ -5292,7 +5292,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($r0);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlh $rd 0 ($at);}"
     },
     {
       "name": "lb",
@@ -5314,7 +5314,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($r0);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlb $rd 0 ($at);}"
     },
     {
       "name": "c.f.s",

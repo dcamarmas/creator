@@ -7,16 +7,16 @@
 .text
 main:
 	   addi $t0 $t0 100
-	d: bne $t0 $t1 b
-	c: addi $a0 $r0 space
-	   addi $a1 $r0 11
-	   addi $v0 $r0 8
+	d: bne $t0 $t1 9
+	c: addi $a0 $zero space
+	   addi $a1 $zero 11
+	   addi $v0 $zero 8
 	   syscall
-	   addi $v0 $r0 4
-       addi $a0 $r0 space
+	   addi $v0 $zero 4
+       addi $a0 $zero space
 	   syscall
-	   addi $v0 $r0 10
+	   addi $v0 $zero 10
        syscall
 	b: addi $t1 $0 105525452
 	   move $t2 $t1
-	   b c
+	   j c

@@ -5287,6 +5287,7 @@ try{
         var existsInstruction = true;
 
         this.next_token();
+        var instInit = tokenIndex; //PRUEBA
 
         while(existsInstruction){
           token = this.get_token();
@@ -5343,6 +5344,7 @@ try{
 
             label = token.substring(0,token.length-1);
             this.next_token();
+            instInit = tokenIndex; //PRUEBA
             token = this.get_token();
 
             if(token != null){
@@ -5376,7 +5378,7 @@ try{
               instruction = instruction + token;
               userInstruction = userInstruction + token;
 
-              var new_ins = 0;
+              //var new_ins = 0;
 
               for (var j = 0; j < numFields - 1; j++){
                 this.next_token();
@@ -5386,7 +5388,7 @@ try{
                 if(token != null){
 				          var re = new RegExp(",+$");
                   token = token.replace(re, "");
-                  for(var a = 0; a < architecture.instructions.length; a++){
+                  /*for(var a = 0; a < architecture.instructions.length; a++){
 				            if(architecture.instructions[a].name == token){
 				              new_ins = 1;
 				            }
@@ -5394,28 +5396,33 @@ try{
 				          if(new_ins == 0){
 				          	instruction = instruction + " " + token;
                 		userInstruction = userInstruction + " " + token;
-				          }
+				          }*/
+                  instruction = instruction + " " + token;
+                  userInstruction = userInstruction + " " + token;
                 }  
 
-                if(new_ins == 1){
+                /*if(new_ins == 1){
                 	break;
-                }
+                }*/
               }
 
               console.log(instruction);
               console.log(label);
 
-              var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0);
+              var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0, instInit);
 
               if(result == -1){
                 $(".loading").hide();
                 return -1;
               }
 
-              if (new_ins == 0){
+              /*if (new_ins == 0){
 	              this.next_token();
 	            }
-	            new_ins = 0;
+	            new_ins = 0;*/
+              this.next_token();
+              instInit = tokenIndex; //PRUEBA
+
             }
           }
 
@@ -5488,6 +5495,7 @@ try{
             }
 
             this.next_token();
+            instInit = tokenIndex; //PRUEBA
 
           }
         }
@@ -5534,6 +5542,7 @@ try{
             console.log(instruction);
 
             re = new RegExp(signatureDef+"$");
+            console.log(re)
             if(instruction.search(re) == -1){
             	return -1;
             }
@@ -5585,10 +5594,10 @@ try{
                 for (var j = 0; j < instructions.length-1; j++){
                   var aux;
                   if(j == 0){
-                    aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0) == -1){error = true}";
+                    aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null) == -1){error = true}";
                   }
                   else{
-                    aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0) == -1){error = true}";
+                    aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null) == -1){error = true}";
                   }
                   definition = definition.replace(instructions[j]+";", aux+";\n");
                 }
@@ -5601,10 +5610,10 @@ try{
               for (var j = 0; j < instructions.length-1; j++){
                 var aux;
                 if(j == 0){
-                  aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0) == -1){error = true}";
+                  aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null) == -1){error = true}";
                 }
                 else{
-                  aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0) == -1){error = true}";
+                  aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null) == -1){error = true}";
                 }
                 definition = definition.replace(instructions[j]+";", aux+";\n");
               }
@@ -5689,7 +5698,7 @@ try{
         return -1;
       },
       /*Compile instruction*/
-      instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress){
+      instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit){
         var re = new RegExp("^ +");
         var oriInstruction = instruction.replace(re, "");
 
@@ -5710,6 +5719,8 @@ try{
             continue;
           }
           else{
+            var auxSignature = architecture.instructions[i].signatureRaw;
+
             var tag = "";
 
             var binary = "";
@@ -5745,9 +5756,51 @@ try{
             re = new RegExp(signatureDef+"$");
             if(oriInstruction.search(re) == -1){
 
-            	var resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              console.log(this.get_token())
 
-            	console.log(resultPseudo)
+              tokenIndex =  instInit;
+              token = this.get_token();
+
+              console.log(token)
+
+              var resultPseudo = null;
+              var instruction = "";
+              var numToken = 0;
+
+              for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+                if(architecture.pseudoinstructions[i].name == token){
+                  numToken = architecture.pseudoinstructions[i].fields.length;
+
+                  instruction = instruction + token;
+
+                  for (var i = 0; i < numToken; i++){
+                    this.next_token();
+                    token = this.get_token();
+
+                    var re = new RegExp(",+$");
+                    token = token.replace(re, "");
+
+                    instruction = instruction + " " + token;
+                  }
+                  console.log(instruction)
+                  resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                
+                  console.log(resultPseudo)
+
+                  if(resultPseudo == 0){
+                    return;
+                  }
+
+                  if(resultPseudo == -1){
+                    this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    return -1;
+                  }
+                }
+              }
+
+            	//var resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+            	/*console.log(resultPseudo)
 
             	if(resultPseudo == 0){
             		return;
@@ -5756,7 +5809,12 @@ try{
               if(resultPseudo == -1){
 	              this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
 	              return -1;
-            	}
+            	}*/
+            }
+
+            if(resultPseudo == null){
+              this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              return -1;
             }
 
             match = re.exec(oriInstruction);
@@ -6740,7 +6798,13 @@ try{
               var re2 = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
               var re3 = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
 
-              while(auxDef.search(re1) != -1 || auxDef.search(re2) != -1 || auxDef.search(re3) != -1){
+              var prevSearchIndex;
+
+              console.log(re1);
+              console.log(re2);
+              console.log(re3);
+
+              while(auxDef.search(re1) != -1 || auxDef.search(re2) != -1 || auxDef.search(re3) != -1 && (auxDef.search(re1) != prevSearchIndex || auxDef.search(re2) != prevSearchIndex || auxDef.search(re3) != prevSearchIndex)){
               	console.log(signatureRawParts[i])
 	              if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
 	                re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
@@ -6752,6 +6816,22 @@ try{
 					            console.log(match)
 					            auxDef = auxDef.replace(re, match[1] + "R" + instructionExecParts[i] + match[2]);
 					          }
+
+                    var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
+
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re,"R" + instructionExecParts[i] + match[1]);
+                    }
+
+                    var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
+
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re, match[1] + "R" + instructionExecParts[i]);
+                    }
 	                }
 	                else{
 	                  var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
@@ -6783,10 +6863,29 @@ try{
 	                var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
 
 	                if (auxDef.search(re) != -1){
+                    prevSearchIndex = auxDef.search(re);
 				            match = re.exec(auxDef);
 				            console.log(match)
 				            auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
 				          }
+
+                  var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
+
+                  if (auxDef.search(re) != -1){
+                    prevSearchIndex = auxDef.search(re);
+                    match = re.exec(auxDef);
+                    console.log(match)
+                    auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
+                  }
+
+                  var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
+
+                  if (auxDef.search(re) != -1){
+                    prevSearchIndex = auxDef.search(re);
+                    match = re.exec(auxDef);
+                    console.log(match)
+                    auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
+                  }
 	              }
 	              var re1 = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
 	              var re2 = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
@@ -7088,7 +7187,7 @@ try{
               }
 
               if(architecture.components[i].type == "integer"){
-                re = new RegExp("R"+regNum+"[^0-9]","g");
+                re = new RegExp("R"+regNum+"[^0-9]|[\\s]","g");
                 if(auxDef.search(re) != -1){
                   re = new RegExp("R"+regNum,"g");
                   auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
