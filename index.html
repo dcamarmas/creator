@@ -255,11 +255,16 @@
                             </b-card-body>
                           </b-col>
 
-                          <b-col md="2">
+                          <b-col md="2" >
                             <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
                           </b-col>
                         </b-row>
                       </b-card>
+
+                      <!-- Delete architecture modal -->
+                      <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
+                        <h6>Are you sure you want to delete the architecture?</h6>
+                      </b-modal >
 
                       <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters @click="new_arch">
