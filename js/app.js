@@ -826,7 +826,6 @@ try{
       },
       /*Show remove architecture modal*/
       modal_remove_cache_arch(index, elem, button){
-        console.log("AA")
         this.modalDeletArch.title = "Delete Architecture";
         this.modalDeletArch.index = index;
         this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
