@@ -5550,7 +5550,8 @@ try{
             console.log(definition);
 
             re = /Field.(\d).(.*?)[=<>;\s]/;
-            while (definition.search(re) != -1){
+            while (definition.search(re) != -1)
+            {
               var match = re.exec(definition);
               console.log(match);
 
@@ -7134,19 +7135,20 @@ try{
 
           /*Write in memory*/
           re = /MP.([whb]).\[(.*?)\] *=/;
-          if (auxDef.search(re) != -1){
+          if (auxDef.search(re) != -1)
+          {
             var match = re.exec(auxDef);
-            var auxDir;
-            eval("auxDir="+match[2]);
+            var auxDir = parseInt(match[2]) ;
 
             re = /MP.[whb].\[(.*?)\] *=/g;
-            auxDef = auxDef.replace(re, "var dir"+ auxDir +"=");
-            auxDef = "var dir" + auxDir + "=null\n" + auxDef;
-            auxDef = auxDef + "\n this.writeMemory(dir"+auxDir+",'0x"+auxDir.toString(16)+"','"+match[1]+"');"
+            auxDef = auxDef.replace(re, "var dir"+ match[2] +"=");
+            auxDef = "var dir" + match[2] + "=null\n" + auxDef;
+            auxDef = auxDef + "\n this.writeMemory(dir"+match[2]+",'0x"+auxDir.toString(16)+"','"+match[1]+"');"
           }
 
           re = new RegExp("MP.([whb]).(.*?) *=");
-          if (auxDef.search(re) != -1){
+          if (auxDef.search(re) != -1)
+          {
             var match = re.exec(auxDef);
 
             re = new RegExp("MP."+match[1]+"."+match[2]+" *=","g");
@@ -7158,8 +7160,7 @@ try{
           re = /MP.([whb]).\[(.*?)\]/;
           if (auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-            var auxDir;
-            eval("auxDir="+match[2]);
+            var auxDir = parseInt(match[2]) ;
 
             re = /MP.[whb].\[(.*?)\]/g;
             auxDef = auxDef.replace(re, "this.readMemory('0x"+auxDir.toString(16)+"', '"+match[1]+"')");
@@ -8890,13 +8891,13 @@ try{
         e = e.replace(re, '\\v');
 
         if(e == ""){
-          eval("this." + param + "= null");
+          this[param] = null;
           return;
         }
 
         console.log("this." + param + "= '" + e + "'");
 
-        eval("this." + param + "= '" + e + "'");
+        this[param] = "'" + e + "'" ;
         app.$forceUpdate();
       }, getDebounceTime())
     },
