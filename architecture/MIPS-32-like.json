@@ -5204,7 +5204,7 @@
           "stopbit": "16"
         }
       ],
-      "definition": "rs=PC+4\nPC=addr"
+      "definition": "jalr $rs $ra;"
     },
     {
       "name": "li",
@@ -5337,6 +5337,72 @@
         }
       ],
       "definition": "c.f.s 0 $fs $fs;"
+    },
+    {
+      "name": "sw",
+      "signature_definition": "sw $F0 F1",
+      "signature": "sw,$INT-Reg,inm",
+      "signatureRaw": "sw $rd addr",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsw $rd 0 ($at);}"
+    },
+    {
+      "name": "sh",
+      "signature_definition": "sh $F0 F1",
+      "signature": "sh,$INT-Reg,inm",
+      "signatureRaw": "sh $rd addr",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsh $rd 0 ($at);}"
+    },
+    {
+      "name": "sb",
+      "signature_definition": "sb $F0 F1",
+      "signature": "sb,$INT-Reg,inm",
+      "signatureRaw": "sb $rd addr",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsb $rd 0 ($at);}"
     }
   ],
   "directives": [
