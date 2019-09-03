@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "4",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -205,7 +205,7 @@
         {
           "name": "t0",
           "nbits": "32",
-          "value": "4294967295",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -415,8 +415,8 @@
         {
           "name": "sp",
           "nbits": "32",
-          "value": "268435452",
-          "default_value": "268435452",
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
@@ -1660,7 +1660,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC+8; if(rs>=0){PC=PC+((off << 16) >> 14)}"
+      "definition": "ra=PC; if(rs>=0){PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "bgtz",
@@ -2117,7 +2117,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC+4\nPC=addr"
+      "definition": "ra=PC\nPC=addr"
     },
     {
       "name": "jalr",
@@ -2155,7 +2155,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC+4\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd=PC\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd);"
     },
     {
       "name": "jr",
@@ -2180,7 +2180,7 @@
           "stopbit": 21
         },
         {
-          "name": "jr",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
