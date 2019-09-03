@@ -3410,7 +3410,7 @@ try{
           index++;
         }
 
-        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
+        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (assembly.charAt(index) != ',') && (assembly.charAt(index) != ';')  && (index < assembly.length)){
           index++;
         }
 
@@ -3433,13 +3433,13 @@ try{
           index++;
         }
 
-        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
+        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != ',') && (assembly.charAt(index) != ';') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
           index++;
         }
 
-        while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length)){
+        while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#') || (assembly.charAt(index) == ',') || (assembly.charAt(index) == ';')) && (index < assembly.length)){
 
-          while(((assembly.charAt(index) ==')') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+          while(((assembly.charAt(index) ==')') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == ',') || (assembly.charAt(index) == ';') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
             index++;
           }
 
@@ -3452,7 +3452,7 @@ try{
               index++;
             }
 
-            while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+            while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == ',') ||( assembly.charAt(index) == ';') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
               index++;
             }
           }
@@ -3745,8 +3745,7 @@ try{
     	                  var bin = parseInt(addr, 16).toString(2);
     	                  var startbit = pending_instructions[i].startBit;
     	                  var stopbit = pending_instructions[i].stopBit;
-
-    	                  instructionParts[j] = addr;
+    	                  instructionParts[j] = "0x" + addr.toString(16);
     	                  var newInstruction = "";
     	                  for (var w = 0; w < instructionParts.length; w++) {
     	                    if(w == instructionParts.length-1){
@@ -5442,9 +5441,10 @@ try{
                   token = this.get_token();
 
                   var re = new RegExp(",+$");
-                  token = token.replace(re, "");
-
-                  instruction = instruction + " " + token;
+                  if(token != null){
+                    token = token.replace(re, "");
+                    instruction = instruction + " " + token;
+                  }
                 }
                 resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
               }
@@ -5474,6 +5474,7 @@ try{
             }
 
             if(resultPseudo == -1){
+
               existsInstruction = false;
               tokenIndex = 0;
               instructions = [];
@@ -5544,6 +5545,9 @@ try{
             re = new RegExp(signatureDef+"$");
             console.log(re)
             if(instruction.search(re) == -1){
+              auxSignature = architecture.pseudoinstructions[i].signatureRaw;
+              auxSignature.replace(",", " ");
+              this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
             	return -1;
             }
 
@@ -7187,7 +7191,7 @@ try{
               }
 
               if(architecture.components[i].type == "integer"){
-                re = new RegExp("R"+regNum+"[^0-9]|[\\s]","g");
+                re = new RegExp("R"+regNum+"[\\D|[\\s]","g");
                 if(auxDef.search(re) != -1){
                   re = new RegExp("R"+regNum,"g");
                   auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
