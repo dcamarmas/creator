@@ -1889,7 +1889,44 @@
       ],
       "definition": "fd = fs"
     },
-    
+    {
+      "name": "div",
+      "type": "Arithmetic integer",
+      "co": "000000",
+      "cop": "011010",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2",
+      "signature": "div,$INT-Reg,$INT-Reg",
+      "signatureRaw": "div $rs $rt",
+      "fields": [
+        {
+          "name": "div",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011010"
+        }
+      ],
+      "definition": "HI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
+    },
     {
       "name": "div.s",
       "type": "Arithmetic floating point",
