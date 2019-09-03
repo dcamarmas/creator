@@ -3764,7 +3764,7 @@
           "valueField": "100010"
         }
       ],
-      "definition": "reg1=((reg2 >> 0) - (reg3 >> 0)) >>> 0;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "assert(((reg1 >> 0) >= 0 && (reg2 >> 0) <= 0) || ((reg1 >> 0) <= 0 && (reg2 >> 0) >= 0) || ((reg1 >> 0) > 0 && (reg2 >> 0) > 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (reg2 >> 0) < 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg1=((reg2 >> 0) - (reg3 >> 0)) >>> 0;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "sub.s",
