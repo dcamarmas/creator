@@ -5339,6 +5339,336 @@
       "definition": "c.f.s 0 $fs $fs;"
     },
     {
+      "name": "c.f.d",
+      "signature_definition": "c.f.d $F1 $F0",
+      "signature": "c.f.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.f.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "0"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.f.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.un.s",
+      "signature_definition": "c.un.s $F1 $F0",
+      "signature": "c.un.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.un.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.un.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.un.d",
+      "signature_definition": "c.un.d $F1 $F0",
+      "signature": "c.un.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.un.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.un.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.eq.s",
+      "signature_definition": "c.eq.s $F1 $F0",
+      "signature": "c.eq.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.eq.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.eq.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.eq.d",
+      "signature_definition": "c.eq.d $F1 $F0",
+      "signature": "c.eq.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.eq.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.eq.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ueq.s",
+      "signature_definition": "c.ueq.s $F1 $F0",
+      "signature": "c.ueq.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ueq.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ueq.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ueq.d",
+      "signature_definition": "c.ueq.d $F1 $F0",
+      "signature": "c.ueq.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ueq.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ueq.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.olt.s",
+      "signature_definition": "c.olt.s $F1 $F0",
+      "signature": "c.olt.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.olt.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.olt.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.olt.d",
+      "signature_definition": "c.olt.d $F1 $F0",
+      "signature": "c.olt.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.olt.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.olt.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ult.s",
+      "signature_definition": "c.ult.s $F1 $F0",
+      "signature": "c.ult.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ult.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ult.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ult.d",
+      "signature_definition": "c.ult.d $F1 $F0",
+      "signature": "c.ult.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ult.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ult.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ole.s",
+      "signature_definition": "c.ole.s $F1 $F0",
+      "signature": "c.ole.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ole.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ole.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ole.d",
+      "signature_definition": "c.ole.d $F1 $F0",
+      "signature": "c.ole.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ole.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ole.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ule.s",
+      "signature_definition": "c.ule.s $F1 $F0",
+      "signature": "c.ule.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ule.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ule.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ule.d",
+      "signature_definition": "c.ule.d $F1 $F0",
+      "signature": "c.ule.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ule.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ule.d 0 $fs $ft;"
+    },
+    {
       "name": "sw",
       "signature_definition": "sw $F0 F1",
       "signature": "sw,$INT-Reg,inm",

@@ -7472,6 +7472,7 @@ try{
         }
 
         if(architecture.components[indexComp].type == "control" || architecture.components[indexComp].type == "integer"){
+          console.log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
           return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
         }
         if(architecture.components[indexComp].type == "floating point"){
@@ -8177,6 +8178,7 @@ try{
             app._data.display = app._data.display + value;
             break;
           case "print_string":
+            console.log("AQUI");
             var addr = architecture.components[indexComp].elements[indexElem].value;
             var index;
 
@@ -8210,14 +8212,15 @@ try{
                 var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
                 if(aux == addr){
                   for (var i; i < memory[index].length; i++){
-                    for (var j = 0; j < memory[index][i].Binary.length; j++){
-                      app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16));
-                      if(memory[index][i].Binary[j].Bin == 0){
+                    for (var k = j; k < memory[index][i].Binary.length; k++){
+                      app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+                      if(memory[index][i].Binary[k].Bin == 0){
                         return
                       }
-                      else if(i == memory[index].length-1 && j == memory[index][i].Binary.length-1){
+                      else if(i == memory[index].length-1 && k == memory[index][i].Binary.length-1){
                         return;
                       }
+                      j=0;
                     }
                   }
                 }
