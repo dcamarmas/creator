@@ -1424,31 +1424,6 @@
       "definition": "reg2=reg1&(val>>>0);\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
-      "name": "b",
-      "type": "Unconditional bifurcation",
-      "co": "000100",
-      "cop": "",
-      "nwords": 1,
-      "signature_definition": "F0 F1",
-      "signature": "b,inm",
-      "signatureRaw": "b off",
-      "fields": [
-        {
-          "name": "b",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "off",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "PC=PC+((off << 16) >> 14)"
-    },
-    {
       "name": "bc",
       "type": "Unconditional bifurcation",
       "signature_definition": "F0 F1",
@@ -1587,6 +1562,37 @@
       "definition": "if(reg1 == reg2){PC=PC+((off << 16) >> 14)}"
     },
     {
+      "name": "beqz",
+      "type": "Conditional bifurcation",
+      "co": "000100",
+      "cop": "",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2",
+      "signature": "beqz,$INT-Reg,inm",
+      "signatureRaw": "beqz $reg1 off",
+      "fields": [
+        {
+          "name": "beqz",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(reg1 == 0){PC=PC+((off << 16) >> 14)}"
+    },
+    {
       "name": "bgez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F3",
@@ -1623,6 +1629,43 @@
         }
       ],
       "definition": "if((rs >> 0) >= 0) {PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "bge",
+      "type": "Conditional bifurcation",
+      "co": "000100",
+      "cop": "",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 $F2 F3",
+      "signature": "bge,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "bge $reg1 $reg2 off",
+      "fields": [
+        {
+          "name": "bge",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(reg1 >= reg2){PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "bgezal",
@@ -1892,6 +1935,57 @@
     {
       "name": "div",
       "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "div,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "div $rd $rs $rt",
+      "co": "000000",
+      "cop": "00010011010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "div",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 10,
+          "stopbit": 6,
+          "valueField": "00010"
+        },
+        {
+          "name": "sop32",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011010"
+        }
+      ],
+      "definition": "assert(rt==0; 'Division by zero not allowed')\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "div",
+      "type": "Arithmetic integer",
       "co": "000000",
       "cop": "011010",
       "nwords": 1,
@@ -1925,7 +2019,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "HI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
+      "definition": "assert(rt==0; 'Division by zero not allowed')\nHI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
     },
     {
       "name": "div.s",
@@ -1977,7 +2071,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "fd = fs / ft"
+      "definition": "assert(rt==0; 'Division by zero not allowed')\nfd = fs / ft"
     },
     {
       "name": "div.d",
@@ -2029,45 +2123,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "fd = fs / ft"
-    },
-    {
-      "name": "divu",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 $F1 $F2",
-      "signature": "divu,$INT-Reg,$INT-Reg",
-      "signatureRaw": "divu $rs $rt",
-      "co": "000000",
-      "cop": "011011",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "divu",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "divu",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "011011"
-        }
-      ],
-      "definition": "LO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
+      "definition": "assert(rt==0; 'Division by zero not allowed')\nfd = fs / ft"
     },
     {
       "name": "j",
@@ -2298,7 +2354,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be align\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "lhu",
@@ -4094,57 +4150,6 @@
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
     },
     {
-      "name": "div",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 $F3 $F1 $F2",
-      "signature": "div,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "div $rd $rs $rt",
-      "co": "000000",
-      "cop": "00010011010",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "div",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 10,
-          "stopbit": 6,
-          "valueField": "00010"
-        },
-        {
-          "name": "sop32",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "011010"
-        }
-      ],
-      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
-    },
-    {
       "name": "divu",
       "type": "Arithmetic integer",
       "signature_definition": "F0 $F3 $F1 $F2",
@@ -4193,7 +4198,45 @@
           "valueField": "011011"
         }
       ],
-      "definition": "rd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "assert(rt==0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "divu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F1 $F2",
+      "signature": "divu,$INT-Reg,$INT-Reg",
+      "signatureRaw": "divu $rs $rt",
+      "co": "000000",
+      "cop": "011011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "divu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "divu",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011011"
+        }
+      ],
+      "definition": "assert(rt==0; 'Division by zero not allowed')\nLO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
     },
     {
       "name": "ldc1",
@@ -5161,6 +5204,22 @@
         }
       ],
       "definition": "add $reg1 $zero $reg2;"
+    },
+    {
+      "name": "b",
+      "signature_definition": "b F0",
+      "signature": "b,inm",
+      "signatureRaw": "b inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "25",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "beq $zero $zero inm;"
     },
     {
       "name": "addi",
