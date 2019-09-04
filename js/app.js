@@ -448,6 +448,8 @@ try{
       type: '',
       /*Displayed notifications*/
       notifications: notifications,
+      /*Accesskey*/
+      navigator: "",
       /*Calculator*/
       calculator: {
         bits: 32,
@@ -515,6 +517,7 @@ try{
     created(){
       this.load_arch_available();
       this.load_examples_available();
+      this.detectNavigator();
     },
 
 
@@ -5867,6 +5870,16 @@ try{
             
             console.log(instructionParts);
 
+            //PRUEBA
+            re = new RegExp("[fF][0-9]+");
+            while(instruction.search(re) != -1){
+              re = new RegExp("[fF]([0-9]+)");
+              var match = re.exec(instruction);
+              re = new RegExp("[fF][0-9]+");
+              instruction = instruction.replace(re, "Field"+match[1]);
+            }
+
+
             for(var j = 0; j < signatureParts.length; j++){
               switch(signatureParts[j]) {
                 case "INT-Reg":
@@ -5912,7 +5925,8 @@ try{
                             
                             console.log(binary);
 
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(id == regNum){
@@ -5927,7 +5941,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -5967,8 +5982,11 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
+                            console.log(instruction);
                             instruction = instruction.replace(re, token);
+                            console.log(instruction);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                             this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6009,7 +6027,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -6051,7 +6070,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -6167,7 +6187,8 @@ try{
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                       }
                       
-                      re = RegExp("[fF][0-9]+");
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
                     }
                   }
@@ -6198,7 +6219,8 @@ try{
 
                         addr = (parseInt(token, 16)).toString(2);
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                        re = RegExp("[fF][0-9]+");
+                        //re = RegExp("[fF][0-9]+");
+                        re = RegExp("Field[0-9]+");
                         instruction = instruction.replace(re, token);
                       }
                       else{
@@ -6226,7 +6248,8 @@ try{
                       
                       console.log(binary);
 
-                      re = RegExp("[fF][0-9]+");
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
                     }
                     if(architecture.instructions[i].fields[a].type == "cop"){
@@ -6347,6 +6370,24 @@ try{
 
 
   		/*Simulator*/
+
+      /*Detects the browser being used*/
+      detectNavigator(){
+        if(navigator.appVersion.indexOf("Mac")!=-1) {
+          this.navigator = "Mac";
+          return;
+        }
+    
+        if (navigator.userAgent.search("Chrome") >= 0) {
+          this.navigator = "Chrome";
+        }
+        else if (navigator.userAgent.search("Firefox") >= 0) {
+          this.navigator = "Firefox";
+        }
+        else if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
+          this.navigator = "Chrome";
+        }
+      },
 
   		/*Change bits of calculator*/
       changeBitsCalculator(index){
@@ -9164,7 +9205,7 @@ try{
 
   /*Binary string to integer number*/
   function binaryStringToInt( b ) {
-      return parseInt(b, 2);
+    return parseInt(b, 2);
   }
 }
 catch(e){
