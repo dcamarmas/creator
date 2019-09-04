@@ -448,6 +448,8 @@ try{
       type: '',
       /*Displayed notifications*/
       notifications: notifications,
+      /*Accesskey*/
+      navigator: "",
       /*Calculator*/
       calculator: {
         bits: 32,
@@ -515,6 +517,7 @@ try{
     created(){
       this.load_arch_available();
       this.load_examples_available();
+      this.detectNavigator();
     },
 
 
@@ -5287,7 +5290,7 @@ try{
         var existsInstruction = true;
 
         this.next_token();
-        var instInit = tokenIndex; //PRUEBA
+        var instInit = tokenIndex;
 
         while(existsInstruction){
           token = this.get_token();
@@ -5344,7 +5347,7 @@ try{
 
             label = token.substring(0,token.length-1);
             this.next_token();
-            instInit = tokenIndex; //PRUEBA
+            instInit = tokenIndex;
             token = this.get_token();
 
             if(token != null){
@@ -5356,7 +5359,9 @@ try{
           var re = new RegExp(",+$");
           token = token.replace(re, "");
 
-          for(var i = 0; i < architecture.instructions.length; i++){
+          var stopFor = false;
+
+          for(var i = 0; i < architecture.instructions.length && stopFor == false; i++){
             if(architecture.instructions[i].name != token){
               continue;
             }
@@ -5409,7 +5414,7 @@ try{
               console.log(instruction);
               console.log(label);
 
-              var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0, instInit);
+              var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0, instInit, i);
 
               if(result == -1){
                 $(".loading").hide();
@@ -5422,7 +5427,7 @@ try{
 	            new_ins = 0;*/
               this.next_token();
               instInit = tokenIndex; //PRUEBA
-
+              stopFor = true;
             }
           }
 
@@ -5595,10 +5600,10 @@ try{
                 for (var j = 0; j < instructions.length-1; j++){
                   var aux;
                   if(j == 0){
-                    aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null) == -1){error = true}";
+                    aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null) == -1){error = true}";
                   }
                   else{
-                    aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null) == -1){error = true}";
+                    aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null) == -1){error = true}";
                   }
                   definition = definition.replace(instructions[j]+";", aux+";\n");
                 }
@@ -5611,10 +5616,10 @@ try{
               for (var j = 0; j < instructions.length-1; j++){
                 var aux;
                 if(j == 0){
-                  aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null) == -1){error = true}";
+                  aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null) == -1){error = true}";
                 }
                 else{
-                  aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null) == -1){error = true}";
+                  aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null) == -1){error = true}";
                 }
                 definition = definition.replace(instructions[j]+";", aux+";\n");
               }
@@ -5699,7 +5704,11 @@ try{
         return -1;
       },
       /*Compile instruction*/
-      instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit){
+      instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit, instIndex){
+      	if(instIndex == null){
+      		instIndex = 0;
+      	}
+      	console.log(instIndex);
         var re = new RegExp("^ +");
         var oriInstruction = instruction.replace(re, "");
 
@@ -5715,7 +5724,9 @@ try{
         console.log(label);
         console.log(line);
 
-        for(var i = 0; i < architecture.instructions.length; i++){
+        var stopFor = false;
+
+        for(var i = instIndex; i < architecture.instructions.length && stopFor == false; i++){
           if(architecture.instructions[i].name != instructionParts[0]){
             continue;
           }
@@ -5767,6 +5778,36 @@ try{
               var resultPseudo = null;
               var instruction = "";
               var numToken = 0;
+
+              console.log(token)
+
+
+              for(var i = i + 1; i < architecture.instructions.length; i++){
+			          if(architecture.instructions[i].name == token){
+
+			            var index = i;
+			            numToken = architecture.pseudoinstructions[i].fields.length;
+                  instruction = instruction + token;
+
+                  for (var i = 0; i < numToken; i++){
+                    this.next_token();
+                    token = this.get_token();
+
+                    var re = new RegExp(",+$");
+                    token = token.replace(re, "");
+
+                    instruction = instruction + " " + token;
+                  }
+                  console.log(instruction)
+
+			            this.instruction_compiler(instruction, instruction, label, line, pending, pendingAddress, instInit, index)
+			          	
+			          	return;
+			          }
+			        }
+			        
+
+
 
               for (var i = 0; i < architecture.pseudoinstructions.length; i++){
                 if(architecture.pseudoinstructions[i].name == token){
@@ -5826,6 +5867,16 @@ try{
             
             console.log(instructionParts);
 
+            //PRUEBA
+            re = new RegExp("[fF][0-9]+");
+            while(instruction.search(re) != -1){
+              re = new RegExp("[fF]([0-9]+)");
+              var match = re.exec(instruction);
+              re = new RegExp("[fF][0-9]+");
+              instruction = instruction.replace(re, "Field"+match[1]);
+            }
+
+
             for(var j = 0; j < signatureParts.length; j++){
               switch(signatureParts[j]) {
                 case "INT-Reg":
@@ -5871,7 +5922,8 @@ try{
                             
                             console.log(binary);
 
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(id == regNum){
@@ -5886,7 +5938,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -5926,8 +5979,11 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
+                            console.log(instruction);
                             instruction = instruction.replace(re, token);
+                            console.log(instruction);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                             this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5968,7 +6024,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -6010,7 +6067,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -6126,7 +6184,8 @@ try{
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                       }
                       
-                      re = RegExp("[fF][0-9]+");
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
                     }
                   }
@@ -6157,7 +6216,8 @@ try{
 
                         addr = (parseInt(token, 16)).toString(2);
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                        re = RegExp("[fF][0-9]+");
+                        //re = RegExp("[fF][0-9]+");
+                        re = RegExp("Field[0-9]+");
                         instruction = instruction.replace(re, token);
                       }
                       else{
@@ -6185,7 +6245,8 @@ try{
                       
                       console.log(binary);
 
-                      re = RegExp("[fF][0-9]+");
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
                     }
                     if(architecture.instructions[i].fields[a].type == "cop"){
@@ -6235,6 +6296,7 @@ try{
               console.log(address.toString(16));
               console.log(instructions);
 
+              stopFor = true;
               break;
             }
 
@@ -6270,6 +6332,8 @@ try{
                   }
                 }
 
+                stopFor = true;
+
                 console.log(address.toString(16));
                 console.log(instructions);
               }
@@ -6303,6 +6367,24 @@ try{
 
 
   		/*Simulator*/
+
+      /*Detects the browser being used*/
+      detectNavigator(){
+        if(navigator.appVersion.indexOf("Mac")!=-1) {
+          this.navigator = "Mac";
+          return;
+        }
+    
+        if (navigator.userAgent.search("Chrome") >= 0) {
+          this.navigator = "Chrome";
+        }
+        else if (navigator.userAgent.search("Firefox") >= 0) {
+          this.navigator = "Firefox";
+        }
+        else if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
+          this.navigator = "Chrome";
+        }
+      },
 
   		/*Change bits of calculator*/
       changeBitsCalculator(index){
@@ -9014,7 +9096,7 @@ try{
   /*All modules*/
 
   /*Error handler*/
-  /*Vue.config.errorHandler = function (err, vm, info) {
+  Vue.config.errorHandler = function (err, vm, info) {
     app._data.alertMessage = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + err;
     app._data.type ='danger';
     app.$bvToast.toast(app._data.alertMessage, {
@@ -9023,11 +9105,12 @@ try{
       toaster: "b-toaster-top-center",
   		autoHideDelay: 3000,
     })
+    notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
     setTimeout(function(){
     	location.reload(true)
     }, 3000);
-  }*/
+  }
   /*Closing alert*/
   window.onbeforeunload = confirmExit;
   function confirmExit(){
@@ -9119,7 +9202,7 @@ try{
 
   /*Binary string to integer number*/
   function binaryStringToInt( b ) {
-      return parseInt(b, 2);
+    return parseInt(b, 2);
   }
 }
 catch(e){
@@ -9131,6 +9214,7 @@ catch(e){
     toaster: "b-toaster-top-center",
     autoHideDelay: 3000,
   })
+  notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
   setTimeout(function(){
     location.reload(true)

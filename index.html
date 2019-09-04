@@ -1601,19 +1601,22 @@
                         </b-button>
                       </div>
                       <div class="col-lg-4 col-sm-4 buttons">
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeInstruction">
+                        <b-button accesskey="a" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeInstruction" id="inst">
                           <span class="fas fa-fast-forward"></span>
                           Inst.
                         </b-button>
+                        <b-tooltip target="inst" title="Press [Alt] + A" v-if="navigator=='Chrome'"></b-tooltip>
+                        <b-tooltip target="inst" title="Press [Alt] [Shift] + A" v-if="navigator=='Firefox'"></b-tooltip>
+                        <b-tooltip target="inst" title="Press [Control] [Alt] + A" v-if="navigator=='Mac'"></b-tooltip>
                       </div>
                       <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false">
+                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false" id="run">
                           <span class="fas fa-play"></span>
                           Run
                         </b-button>
                       </div>
                       <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="stopExecution">
+                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="stopExecution" id="stop">
                           <span class="fas fa-stop"></span>
                           Stop
                         </b-button>
