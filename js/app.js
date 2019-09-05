@@ -5500,7 +5500,7 @@ try{
 
           var re = new RegExp(",+$");
           token = token.replace(re, "");
-
+          console.log(token)
           var stopFor = false;
 
           for(var i = 0; i < architecture.instructions.length && stopFor == false; i++){
@@ -5577,11 +5577,15 @@ try{
             var resultPseudo = -2;
             var instruction = "";
             var numToken = 0;
+            var exists = false;
 
-            for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+            console.log(token)
+
+            for (var i = 0; i < architecture.pseudoinstructions.length && exists == false; i++){
               if(architecture.pseudoinstructions[i].name == token){
                 numToken = architecture.pseudoinstructions[i].fields.length;
-
+                console.log(numToken)
+                exists = true;
                 instruction = instruction + token;
 
                 for (var i = 0; i < numToken; i++){

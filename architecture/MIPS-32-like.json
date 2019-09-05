@@ -1975,7 +1975,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "assert(rt==0; 'Division by zero not allowed')\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
     },
     {
       "name": "div",
@@ -2013,7 +2013,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "assert(rt==0; 'Division by zero not allowed')\nHI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
+      "definition": "HI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
     },
     {
       "name": "div.s",
@@ -3585,7 +3585,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt = (rs >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
+      "definition": "rs = (rt >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
     },
     {
       "name": "sqrt.s",
@@ -6458,12 +6458,6 @@
       "nwords": 1,
       "fields": [
         {
-          "name": "beq",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
@@ -6489,17 +6483,11 @@
 
     {
       "name": "bge",
-      "signature_definition": "bge $F0 $F1 F2",
+      "signature_definition": "bge $F0 F1 F2",
       "signature": "bge,$INT-Reg,inm,offset_words",
       "signatureRaw": "bge $reg1 inm off",
       "nwords": 1,
       "fields": [
-        {
-          "name": "bge",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
         {
           "name": "reg1",
           "type": "INT-Reg",
@@ -6519,7 +6507,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "slti $at $reg1 inm; bgez $at $zero off;"
+      "definition": "slti $at $reg1 inm; beq $at $zero off;"
     },
     {
       "name": "bge",
@@ -6528,12 +6516,6 @@
       "signatureRaw": "bge $reg1 $reg2 off",
       "nwords": 1,
       "fields": [
-        {
-          "name": "bge",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
         {
           "name": "reg1",
           "type": "INT-Reg",
@@ -6566,12 +6548,6 @@
       "nwords": 1,
       "fields": [
         {
-          "name": "bgt",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
@@ -6599,12 +6575,6 @@
       "signatureRaw": "bgt $reg1 $reg2 off",
       "nwords": 1,
       "fields": [
-        {
-          "name": "bgt",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
         {
           "name": "reg1",
           "type": "INT-Reg",
@@ -6638,12 +6608,6 @@
       "nwords": 1,
       "fields": [
         {
-          "name": "ble",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
@@ -6671,12 +6635,6 @@
       "signatureRaw": "ble $reg1 $reg2 off",
       "nwords": 1,
       "fields": [
-        {
-          "name": "ble",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
         {
           "name": "reg1",
           "type": "INT-Reg",
@@ -6709,12 +6667,6 @@
       "nwords": 1,
       "fields": [
         {
-          "name": "blt",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
@@ -6742,12 +6694,6 @@
       "signatureRaw": "blt $reg1 $reg2 off",
       "nwords": 1,
       "fields": [
-        {
-          "name": "blt",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
         {
           "name": "reg1",
           "type": "INT-Reg",
@@ -6777,12 +6723,6 @@
       "nwords": 1,
       "fields": [
         {
-          "name": "bne",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
           "name": "reg1",
           "type": "INT-Reg",
           "startbit": 25,
@@ -6811,12 +6751,6 @@
       "signatureRaw": "lw $reg1 ($reg2)",
       "nwords": 1,
       "fields": [
-        {
-          "name": "lw",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
         {
           "name": "reg1",
           "type": "INT-Reg",
