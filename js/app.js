@@ -2473,7 +2473,7 @@ try{
 	                    }
 	                  }
 
-	                  if(signatureParts[z] == "inm"){
+	                  if(signatureParts[z] == "inm" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
 	                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
 	                    if(instructionParts[z].match(/^0x/)){
 	                      var value = instructionParts[z].split("x");
@@ -2739,7 +2739,7 @@ try{
                     }
                   }
 
-                  if(signatureParts[z] == "inm"){
+                  if(signatureParts[z] == "inm" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
                     var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
@@ -3413,7 +3413,7 @@ try{
           index++;
         }
 
-        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (assembly.charAt(index) != ',') && (assembly.charAt(index) != ';')  && (index < assembly.length)){
+        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
           index++;
         }
 
@@ -3436,13 +3436,13 @@ try{
           index++;
         }
 
-        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != ',') && (assembly.charAt(index) != ';') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
+        while((assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
           index++;
         }
 
-        while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#') || (assembly.charAt(index) == ',') || (assembly.charAt(index) == ';')) && (index < assembly.length)){
+        while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length)){
 
-          while(((assembly.charAt(index) ==')') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == ',') || (assembly.charAt(index) == ';') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+          while(((assembly.charAt(index) ==')') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
             index++;
           }
 
@@ -3455,7 +3455,7 @@ try{
               index++;
             }
 
-            while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == ',') ||( assembly.charAt(index) == ';') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+            while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
               index++;
             }
           }
@@ -3748,7 +3748,8 @@ try{
     	                  var bin = parseInt(addr, 16).toString(2);
     	                  var startbit = pending_instructions[i].startBit;
     	                  var stopbit = pending_instructions[i].stopBit;
-    	                  instructionParts[j] = "0x" + addr.toString(16);
+
+    	                  instructionParts[j] = addr;
     	                  var newInstruction = "";
     	                  for (var w = 0; w < instructionParts.length; w++) {
     	                    if(w == instructionParts.length-1){
@@ -3800,6 +3801,148 @@ try{
     	              return -1;
     	            }
     	          }
+
+
+
+
+
+
+                if(signatureParts[j] == "offset_words"){
+                  for (var z = 0; z < instructions.length && exit == 0; z++){
+                    if(instructions[z].Label == instructionParts[j]){
+                      var addr = instructions[z].Address;
+                      var bin = parseInt(addr, 16).toString(2);
+                      var startbit = pending_instructions[i].startBit;
+                      var stopbit = pending_instructions[i].stopBit;
+
+                      addr = ((addr - pending_instructions[i].address)/4)-1;
+
+                      instructionParts[j] = addr;
+                      var newInstruction = "";
+                      for (var w = 0; w < instructionParts.length; w++) {
+                        if(w == instructionParts.length-1){
+                          newInstruction = newInstruction + instructionParts[w];
+                        }
+                        else{
+                          newInstruction = newInstruction + instructionParts[w] + " ";
+                        }
+                      }
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                        }
+                      }
+
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                          var fieldsLength = startbit - stopbit + 1;
+                          console.log(w)
+                          console.log(numBinaries)
+                          console.log(w - numBinaries)
+                          instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+                          exit = 1;
+                        }
+                      }
+                    }
+                  }
+
+                  if(exit == 0){
+                    app.compileError(7, instructionParts[j], pending_instructions[i].line);
+                    tokenIndex = 0;
+                    instructions = [];
+                    pending_instructions = [];
+                    pending_tags = [];
+                    memory[memory_hash[0]] = [];
+                    data_tag = [];
+                    instructions_binary = [];
+                    memory[memory_hash[1]] = [];
+                    memory[memory_hash[2]] = [];
+                    data = [];
+                    extern = [];
+                    app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                    app._data.instructions = instructions;
+                    $(".loading").hide();
+                    return -1;
+                  }
+                }
+
+                if(signatureParts[j] == "offset_bytes"){
+                  for (var z = 0; z < instructions.length && exit == 0; z++){
+                    if(instructions[z].Label == instructionParts[j]){
+                      var addr = instructions[z].Address;
+                      var bin = parseInt(addr, 16).toString(2);
+                      var startbit = pending_instructions[i].startBit;
+                      var stopbit = pending_instructions[i].stopBit;
+
+                      addr = ((addr - pending_instructions[i].address))-1;
+
+                      instructionParts[j] = addr;
+                      var newInstruction = "";
+                      for (var w = 0; w < instructionParts.length; w++) {
+                        if(w == instructionParts.length-1){
+                          newInstruction = newInstruction + instructionParts[w];
+                        }
+                        else{
+                          newInstruction = newInstruction + instructionParts[w] + " ";
+                        }
+                      }
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                        }
+                      }
+
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                          var fieldsLength = startbit - stopbit + 1;
+                          console.log(w)
+                          console.log(numBinaries)
+                          console.log(w - numBinaries)
+                          instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+                          exit = 1;
+                        }
+                      }
+                    }
+                  }
+
+                  if(exit == 0){
+                    app.compileError(7, instructionParts[j], pending_instructions[i].line);
+                    tokenIndex = 0;
+                    instructions = [];
+                    pending_instructions = [];
+                    pending_tags = [];
+                    memory[memory_hash[0]] = [];
+                    data_tag = [];
+                    instructions_binary = [];
+                    memory[memory_hash[1]] = [];
+                    memory[memory_hash[2]] = [];
+                    data = [];
+                    extern = [];
+                    app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                    app._data.instructions = instructions;
+                    $(".loading").hide();
+                    return -1;
+                  }
+                }
+
+
+
+
+
+
+
+
+
     	        }
     	      }
 
@@ -4557,7 +4700,7 @@ try{
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
-                      var re = new RegExp("[0-9.-]{"+token.length+"}","g");
+                      var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         $(".loading").hide();
@@ -4654,7 +4797,7 @@ try{
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
-                      var re = new RegExp("[0-9.-]{"+token.length+"}","g");
+                      var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         $(".loading").hide();
@@ -5446,10 +5589,9 @@ try{
                   token = this.get_token();
 
                   var re = new RegExp(",+$");
-                  if(token != null){
-                    token = token.replace(re, "");
-                    instruction = instruction + " " + token;
-                  }
+                  token = token.replace(re, "");
+
+                  instruction = instruction + " " + token;
                 }
                 resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
               }
@@ -5479,7 +5621,6 @@ try{
             }
 
             if(resultPseudo == -1){
-
               existsInstruction = false;
               tokenIndex = 0;
               instructions = [];
@@ -5550,9 +5691,6 @@ try{
             re = new RegExp(signatureDef+"$");
             console.log(re)
             if(instruction.search(re) == -1){
-              auxSignature = architecture.pseudoinstructions[i].signatureRaw;
-              auxSignature.replace(",", " ");
-              this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
             	return -1;
             }
 
@@ -5587,6 +5725,7 @@ try{
               }
 
               definition = definition.replace("Field." + match[1] + "." + match[2], value);
+              
               re = /Field.(\d).(.*?)[;\s]/;
             }
 
@@ -6228,6 +6367,220 @@ try{
                         startBit = architecture.instructions[i].fields[a].startbit;
                         stopBit = architecture.instructions[i].fields[a].stopbit;
                       }
+                    }
+                  }
+
+                  break;
+
+                case "offset_bytes":
+                  token = instructionParts[j];
+                  var token_user = "";
+
+                  console.log(token);
+
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                  
+                      var inm;
+
+                      if(token.match(/^0x/)){
+                        var value = token.split("x");
+                        if(value[1].length*4 > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                        }
+
+                        if(isNaN(parseInt(token, 16)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 16)).toString(2);
+                      }
+                      else if (token.match(/^(\d)+\.(\d)+/)){
+                        if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseFloat(token)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = this.float2bin(parseFloat(token, 16));
+                      }
+                      else if(isNaN(parseInt(token))){
+                        validTagPC = false;
+                        startBit = architecture.instructions[i].fields[a].startbit;
+                        stopBit = architecture.instructions[i].fields[a].stopbit;
+                      }
+                      else {
+                        var numAux = parseInt(token, 10) >>> 0;
+
+                        if((numAux.toString(2)).length > fieldsLength){
+                          console.log(oriInstruction)
+                          console.log(label)
+                          console.log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseInt(token)) == true && resultPseudo == -3){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 10) >>> 0).toString(2);
+                      }
+                      if(validTagPC == true){
+                        if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
+                          this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      }
+                      
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
+                      instruction = instruction.replace(re, token);
+                    }
+                  }
+
+                  break;
+
+                case "offset_words":
+                  token = instructionParts[j];
+                  var token_user = "";
+
+                  console.log(token);
+
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                  
+                      var inm;
+
+                      if(token.match(/^0x/)){
+                        var value = token.split("x");
+                        if(value[1].length*4 > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                        }
+
+                        if(isNaN(parseInt(token, 16)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 16)).toString(2);
+                      }
+                      else if (token.match(/^(\d)+\.(\d)+/)){
+                        if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseFloat(token)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = this.float2bin(parseFloat(token, 16));
+                      }
+                      else if(isNaN(parseInt(token))){
+                        validTagPC = false;
+                        startBit = architecture.instructions[i].fields[a].startbit;
+                        stopBit = architecture.instructions[i].fields[a].stopbit;
+                      }
+                      else {
+                        var numAux = parseInt(token, 10) >>> 0;
+
+                        if((numAux.toString(2)).length > fieldsLength){
+                          console.log(oriInstruction)
+                          console.log(label)
+                          console.log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseInt(token)) == true && resultPseudo == -3){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 10) >>> 0).toString(2);
+                      }
+                      if(validTagPC == true){
+                        if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
+                          this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      }
+                      
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
+                      instruction = instruction.replace(re, token);
                     }
                   }
 
@@ -7273,7 +7626,7 @@ try{
               }
 
               if(architecture.components[i].type == "integer"){
-                re = new RegExp("R"+regNum+"[\\D|[\\s]","g");
+                re = new RegExp("R"+regNum+"[^0-9]|[\\s]","g");
                 if(auxDef.search(re) != -1){
                   re = new RegExp("R"+regNum,"g");
                   auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
