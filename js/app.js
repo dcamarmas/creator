@@ -5772,15 +5772,18 @@ try{
               definition = definition.replace(re, "");
 
               console.log(definition);
+              console.log(signatureParts);
 
-              re = /Field.(\d).(.*?)[=<>;\s]/;
+              re = /Field.(\d).\((.*?)\).(.*?)[=<>;\s]/;
               while (definition.search(re) != -1){
                 var match = re.exec(definition);
                 console.log(match);
 
+                console.log("value = this.field('" + instructionParts[match[1]] +"', '(" + match[2] + ")', '" + match[3] + "')");
+
                 var value;
                 try{
-                  eval("value = this.field('" + instructionParts[match[1]] +"', '" + match[2] + "')");
+                  eval("value = this.field('" + instructionParts[match[1]] +"', '(" + match[2] + ")', '" + match[3] + "')");
                 }
                 catch(e){
                   if (e instanceof SyntaxError){
@@ -5792,10 +5795,40 @@ try{
                   return -1;
                 }
 
-                definition = definition.replace("Field." + match[1] + "." + match[2], value);
+                definition = definition.replace("Field." + match[1] + ".(" + match[2]+ ")." + match[3], value);
                 
-                re = /Field.(\d).(.*?)[;\s]/;
+                re = /Field.(\d).\((.*?)\).(.*?)[;\s]/;
               }
+
+
+              re = /Field.(\d).SIZE[=<>;\s]/g;
+              if (definition.search(re) != -1){
+                var match = re.exec(definition);
+                console.log(match);
+
+                console.log("value = this.field('" + instructionParts[match[1]] +"', 'SIZE', null)");
+
+                var value;
+                try{
+                  eval("value = this.field('" + instructionParts[match[1]] +"', 'SIZE', null)");
+                }
+                catch(e){
+                  if (e instanceof SyntaxError){
+                    return -1;
+                  }
+                }
+
+                if(value == -1){
+                  return -1;
+                }
+
+                console.log(value);
+                console.log("Field." + match[1] + ".SIZE");
+
+                definition = definition.replace("Field." + match[1] + ".SIZE", value);
+              }
+
+
 
               console.log(definition);
 
@@ -5862,9 +5895,10 @@ try{
         }
       },
       /*Get pseudoinstruction fields*/
-      field(field, action){
+      field(field, action, type){
         console.log(field);
         console.log(action);
+        console.log(type);
         
         if(action == "SIZE"){
           console.log("SIZE");
@@ -5889,16 +5923,28 @@ try{
           var startBit = parseInt(bits[0]);
           var endBit = parseInt(bits[1]);
 
-          if(field.match(/^0x/)){
+          if(field.match(/^0x/) && (type == "int" || type == "float")){
             var binNum = (parseInt(field, 16).toString(2));
             binNum = binNum.padStart(32, '0');
             binNum = binNum.substring(31-startBit, 32-endBit);
-            console.log(binNum);
             var hexNum = "0x" + this.bin2hex(binNum);
             return hexNum;
           }
-          else if (field.match(/^(\d)+\.(\d)+/)){
-            console.log("AQUIAASSDF");
+          else if(field.match(/^0x/) && (type == "double")){
+            var binNum = this.double2bin(this.hex2double(field));
+            binNum = binNum.padStart(64, '0');
+            binNum = binNum.substring(63-startBit, 64-endBit);
+            var hexNum = "0x" + this.bin2hex(binNum);
+            return hexNum;
+          }
+          else if(type == "int"){
+            var binNum = (parseInt(field, 10) >>> 0).toString(2);
+            binNum = binNum.padStart(32, '0');
+            binNum = binNum.substring(31-startBit, 32-endBit);
+            var hexNum = "0x" + this.bin2hex(binNum);
+            return hexNum;
+          }
+          else if (type == "float"){
             var binNum = this.float2bin(parseFloat(field));
             console.log(binNum);
             binNum = binNum.padStart(32, '0');
@@ -5906,13 +5952,15 @@ try{
             var hexNum = "0x" + this.bin2hex(binNum);
             return hexNum;
           }
-          else {
-            var binNum = (parseInt(field, 10) >>> 0).toString(2);
-            binNum = binNum.padStart(32, '0');
-            binNum = binNum.substring(31-startBit, 32-endBit);
+          else if (type == "double"){
+            var binNum = this.double2bin(parseFloat(field));
+            console.log(binNum);
+            binNum = binNum.padStart(64, '0');
+            binNum = binNum.substring(63-startBit, 64-endBit);
             var hexNum = "0x" + this.bin2hex(binNum);
             return hexNum;
           }
+
         }
         return -1;
       },
@@ -7664,12 +7712,25 @@ try{
 
           console.log(auxDef);
 
+          /*Divides a double into two parts*/
+          re = /splitDouble\((.*)\)/;
+          while (auxDef.search(re) != -1){
+            var match = re.exec(auxDef);
+            match[1] = match[1].replace(";", ",");
+            auxDef = auxDef.replace(re, "this.divDouble(" + match [1] + ")");
+          }
+
+          console.log(auxDef);
+
           /*Replaces the name of the register with its variable*/
           var regIndex = 0;
           var regNum = 0;
 
           for (var i = 0; i < architecture.components.length; i++){
-            for (var j = 0; j < architecture.components[i].elements.length; j++){
+            if(architecture.components[i].type == "integer"){
+              regNum = architecture.components[i].elements.length-1;
+            }
+            for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
               var re;
 
               /*Write in the register*/
@@ -7710,7 +7771,7 @@ try{
               }
 
               if(architecture.components[i].type == "integer"){
-                regNum++;
+                regNum--;
               }
             }
           }
@@ -7719,12 +7780,7 @@ try{
           re = new RegExp("\.name","g");
           auxDef = auxDef.replace(re, "");
 
-
           console.log(auxDef);
-
-
-
-
 
           /*Check if stack limit was modify*/
           re = /check_stack_limit\((.*)\)/;
@@ -9174,6 +9230,17 @@ try{
         notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         executionIndex = -1;
         return;
+      },
+      /*Divides a double into two parts*/
+      divDouble(reg, index){
+            var value = this.bin2hex(this.double2bin(reg));
+            console.log(value);
+            if(index == 0){
+              return "0x" + value.substring(0,8);
+            }
+            if(index == 1) {
+              return "0x" + value.substring(8,16);
+            }
       },
 
       /*Reset execution*/
