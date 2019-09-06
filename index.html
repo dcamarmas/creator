@@ -1615,7 +1615,7 @@
                         </b-button>
                         <b-tooltip target="inst" title="Press [Alt] + A" v-if="navigator=='Chrome'"></b-tooltip>
                         <b-tooltip target="inst" title="Press [Alt] [Shift] + A" v-if="navigator=='Firefox'"></b-tooltip>
-                        <b-tooltip target="inst" title="Press [Control] [Alt] + A" v-if="navigator=='Mac'"></b-tooltip>
+                        <b-tooltip target="inst" title="Press [Control] [Alt/Option] + A" v-if="navigator=='Mac'"></b-tooltip>
                       </div>
                       <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
                         <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false" id="run">
