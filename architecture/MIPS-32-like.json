@@ -4118,6 +4118,43 @@
       "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = ft;\nMP.w.[base+off] = (new Uint32Array(buf))[0];"
     },
     {
+      "name": "sdc1",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3 ($F1)",
+      "signature": "sdc1,$DFP-Reg,inm,($INT-Reg)",
+      "signatureRaw": "sdc1 $ft off ($base)",
+      "co": "111101",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sdc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "MP.w.[base+off] = splitDouble(ft; 0); MP.w.[base+off+4] = splitDouble(ft; 1);"
+    },
+    {
       "name": "xor",
       "type": "Logic",
       "co": "000000",
@@ -5531,7 +5568,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nadd $reg1 $reg2 $at;"
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $reg1 $reg2 $at;"
     },
     {
       "name": "jalr",
@@ -5569,7 +5606,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $rd $at;}"
     },
     {
       "name": "la",
@@ -5591,7 +5628,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $rd $at;}"
     },
 
     {
@@ -5636,7 +5673,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlw $rd 0 ($at);}"
     },
     {
       "name": "lh",
@@ -5680,7 +5717,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlh $rd 0 ($at);}"
     },
     {
       "name": "lb",
@@ -5724,7 +5761,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlb $rd 0 ($at);}"
     },
     {
       "name": "l.d",
@@ -6260,7 +6297,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsw $rd 0 ($at);}"
     },
     {
       "name": "sh",
@@ -6304,7 +6341,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsh $rd 0 ($at);}"
     },
     {
       "name": "sb",
@@ -6348,7 +6385,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsb $rd 0 ($at);}"
     },
     {
       "name": "add",
@@ -6376,7 +6413,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $rs $rt inm;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nadd $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $rs $rt $at;} "
     },
     {
       "name": "addu",
@@ -6404,7 +6441,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addiu $rs $rt inm;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\naddu $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addiu $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $rs $rt $at;} "
     },
     {
       "name": "and",
@@ -6432,7 +6469,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nand $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;} "
     },
     {
       "name": "div",
@@ -6460,7 +6497,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; div $rs $rt $at;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\ndiv $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; div $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\ndiv $rs $rt $at;} "
     },
     {
       "name": "divu",
@@ -6488,7 +6525,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; divu $rs $rt $at;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\ndivu $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; divu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\ndivu $rs $rt $at;} "
     },
     {
       "name": "mul",
@@ -6516,7 +6553,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; mul $rs $rt $at;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nmul $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; mul $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nmul $rs $rt $at;} "
     },
     {
       "name": "nor",
@@ -6544,7 +6581,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; nor $rs $rt $at;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nnor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; nor $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nnor $rs $rt $at;} "
     },
     {
       "name": "or",
@@ -6572,7 +6609,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){ori $rs $rt inm;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){ori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;} "
     },
     {
       "name": "sub",
@@ -6600,7 +6637,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; sub $rs $rt $at;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nsub $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; sub $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsub $rs $rt $at;} "
     },
     {
       "name": "subu",
@@ -6628,7 +6665,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; subu $rs $rt $at;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nsubu $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; subu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsubu $rs $rt $at;} "
     },
     {
       "name": "xor",
@@ -6656,7 +6693,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.3.SIZE<=16){xori $rs $rt inm;}\nelse{lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nxor $rs $rt $at;} "
+      "definition": "if(Field.3.SIZE<=16){xori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;} "
     },
     {
       "name": "l.s",
@@ -6759,15 +6796,37 @@
       "definition": "swc1 $rs off ($rt);"
     },
     {
-      "name": "s.s",
-      "signature_definition": "s.s $F0 F2 ($F1)",
-      "signature": "s.s,$SFP-Reg,inm,$INT-Reg",
-      "signatureRaw": "s.s $rs off ($rt)",
+      "name": "s.d",
+      "signature_definition": "s.d $F0 ($F1)",
+      "signature": "s.d,$DFP-Reg,$INT-Reg",
+      "signatureRaw": "s.d $rs ($rt)",
       "nwords": 1,
       "fields": [
         {
           "name": "rs",
-          "type": "SFP-Reg",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "sdc1 $rs 0 ($rt);"
+    },
+    {
+      "name": "s.d",
+      "signature_definition": "s.d $F0 F2 ($F1)",
+      "signature": "s.d,$DFP-Reg,inm,$INT-Reg",
+      "signatureRaw": "s.d $rs off ($rt)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "DFP-Reg",
           "startbit": "25",
           "stopbit": "21"
         },
@@ -6784,7 +6843,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "swc1 $rs off ($rt);"
+      "definition": "sdc1 $rs off ($rt);"
     },
     {
       "name": "beq",
@@ -7326,7 +7385,7 @@
             "stopbit": "0"
           }
         ],
-        "definition": "lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nmtc1 $at $rd;"
+        "definition": "lui $at Field.2.(31,16).float;\nori $at $at Field.2.(15,0).float;\nmtc1 $at $rd;"
       },
       {
         "name": "li.d",
@@ -7348,7 +7407,7 @@
             "stopbit": "0"
           }
         ],
-        "definition": "lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nmtc1 $at $aliasDouble(rd;0);\nlui $at Field.2.(63,48);\nori $at $at Field.2.(47,32);\nmtc1 $at $aliasDouble(rd;1);"
+        "definition": "lui $at Field.2.(31,16).double;\nori $at $at Field.2.(15,0).double;\nmtc1 $at $aliasDouble(rd;1);\nlui $at Field.2.(63,48).double;\nori $at $at Field.2.(47,32).double;\nmtc1 $at $aliasDouble(rd;0);"
       }
   ],
   "directives": [
