@@ -1164,7 +1164,7 @@
           "stopbit": 6
         },
         {
-          "name": "add",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1215,7 +1215,7 @@
           "stopbit": 6
         },
         {
-          "name": "add",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1666,7 +1666,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC; if(rs>=0){PC=PC+((off << 16) >> 14)}"
+      "definition": "ra=PC; if(rs >> 0 >=0){PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "bgtz",
@@ -1710,7 +1710,7 @@
       "nwords": 1,
       "fields": [
         {
-          "name": "bgez",
+          "name": "blez",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
@@ -1872,7 +1872,52 @@
           "stopbit": 6
         },
         {
-          "name": "cvt.d",
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100001"
+        }
+      ],
+      "definition": "fd = fs"
+    },
+    {
+      "name": "cvt.d.w",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.d.w,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "cvt.d.w $fd $fs",
+      "co": "010001",
+      "cop": "00001100001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.d.w",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "DFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1884,9 +1929,9 @@
     {
       "name": "cvt.s.d",
       "type": "Arithmetic floating point",
-      "signature_definition": "F0 $F3 $F2",
+      "signature_definition": "F0 $F2 $F3",
       "signature": "cvt.s.d,$SFP-Reg,$DFP-Reg",
-      "signatureRaw": "cvt.s.d $fd $fs",
+      "signatureRaw": "cvt.s.d $fs $fd",
       "co": "010001",
       "cop": "00001100000",
       "nwords": 1,
@@ -1917,7 +1962,7 @@
           "stopbit": 6
         },
         {
-          "name": "cvt.s",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1926,6 +1971,146 @@
       ],
       "definition": "fd = fs"
     },
+    {
+      "name": "cvt.s.w",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.s.w,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "cvt.s.w $fd $fs",
+      "co": "010001",
+      "cop": "00010100000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.s.w",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00010"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "SFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100000"
+        }
+      ],
+      "definition": "fd = parseFloat(fs)"
+    },
+
+
+    {
+      "name": "cvt.w.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.w.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "cvt.w.s $fd $fs",
+      "co": "010001",
+      "cop": "00000100100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.w.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "SFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100100"
+        }
+      ],
+      "definition": "fd = parseInt(fs)"
+    },
+    {
+      "name": "cvt.w.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.w.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "cvt.w.d $fd $fs",
+      "co": "010001",
+      "cop": "00001100100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.w.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "DFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100100"
+        }
+      ],
+      "definition": "fd = parseInt(fs)"
+    },
+
+
+
     {
       "name": "div",
       "type": "Arithmetic integer",
@@ -1968,7 +2153,7 @@
           "valueField": "00010"
         },
         {
-          "name": "sop32",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2058,14 +2243,14 @@
           "stopbit": 6
         },
         {
-          "name": "div",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "000011"
         }
       ],
-      "definition": "assert(rt==0; 'Division by zero not allowed')\nfd = fs / ft"
+      "definition": "assert(ft!=0; 'Division by zero not allowed')\nfd = fs / ft"
     },
     {
       "name": "div.d",
@@ -2110,14 +2295,14 @@
           "stopbit": 6
         },
         {
-          "name": "div",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "000011"
         }
       ],
-      "definition": "assert(rt==0; 'Division by zero not allowed')\nfd = fs / ft"
+      "definition": "assert(ft!=0; 'Division by zero not allowed');\nfd = fs / ft"
     },
     {
       "name": "j",
@@ -2198,7 +2383,7 @@
           "stopbit": 11
         },
         {
-          "name": "jalr",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2509,7 +2694,7 @@
           "stopbit": 26
         },
         {
-          "name": "mf",
+          "name": "cop",
           "type": "cop",
           "startbit": 25,
           "stopbit": 21,
@@ -2629,7 +2814,7 @@
           "stopbit": 11
         },
         {
-          "name": "mod+sop32",
+          "name": "cop",
           "type": "cop",
           "startbit": 10,
           "stopbit": 0,
@@ -2673,7 +2858,7 @@
           "stopbit": 11
         },
         {
-          "name": "modu+sop33",
+          "name": "cop",
           "type": "cop",
           "startbit": 10,
           "stopbit": 0,
@@ -2718,7 +2903,7 @@
           "stopbit": 6
         },
         {
-          "name": "mov",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2763,7 +2948,7 @@
           "stopbit": 6
         },
         {
-          "name": "mov",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2789,7 +2974,7 @@
           "stopbit": 26
         },
         {
-          "name": "mt",
+          "name": "cop",
           "type": "cop",
           "startbit": 25,
           "stopbit": 21,
@@ -2960,7 +3145,7 @@
           "stopbit": 6
         },
         {
-          "name": "mul",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3011,7 +3196,7 @@
           "stopbit": 6
         },
         {
-          "name": "mul",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3049,14 +3234,14 @@
           "stopbit": 16
         },
         {
-          "name": "mult",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "011000"
         }
       ],
-      "definition": "var result = rs >> 0 * rt >> 0\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
+      "definition": "var result = (rs >> 0) * (rt >> 0)\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
     },
     {
       "name": "multu",
@@ -3087,14 +3272,14 @@
           "stopbit": 16
         },
         {
-          "name": "multu",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "011001"
         }
       ],
-      "definition": "var result = rs >>> 0 * rt >>> 0;\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO= result % Math.pow(2, 32) >>> 0;"
+      "definition": "var result = (rs >>> 0) * (rt >>> 0);\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO= result % Math.pow(2, 32) >>> 0;"
     },
     {
       "name": "nop",
@@ -3289,7 +3474,7 @@
           "stopbit": 6
         },
         {
-          "name": "srl",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3334,7 +3519,7 @@
           "stopbit": 6
         },
         {
-          "name": "rsqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3379,7 +3564,7 @@
           "stopbit": 6
         },
         {
-          "name": "rsqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3704,7 +3889,7 @@
           "stopbit": 6
         },
         {
-          "name": "sqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3749,7 +3934,7 @@
           "stopbit": 6
         },
         {
-          "name": "sqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3939,7 +4124,7 @@
           "stopbit": 6
         },
         {
-          "name": "sub",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3990,7 +4175,7 @@
           "stopbit": 6
         },
         {
-          "name": "sub",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -4310,7 +4495,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt==0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
     },
     {
       "name": "divu",
@@ -4341,14 +4526,14 @@
           "stopbit": 16
         },
         {
-          "name": "divu",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt==0; 'Division by zero not allowed')\nLO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
     },
     {
       "name": "ldc1",
@@ -4429,7 +4614,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4480,7 +4665,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4531,7 +4716,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4582,7 +4767,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4633,7 +4818,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4687,7 +4872,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4738,7 +4923,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4789,7 +4974,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4840,7 +5025,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4893,7 +5078,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4944,7 +5129,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -4995,7 +5180,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5046,7 +5231,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5097,7 +5282,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5148,7 +5333,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5199,7 +5384,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5250,7 +5435,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5301,7 +5486,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5352,7 +5537,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5403,7 +5588,7 @@
         "stopbit": 8
       },
       {
-        "name": "cond",
+        "name": "cop",
         "type": "cop",
         "startbit": 3,
         "stopbit": 0,
@@ -5448,7 +5633,7 @@
         "stopbit": 0
       },
       {
-        "name": "ndtf",
+        "name": "cop",
         "type": "cop",
         "startbit": 17,
         "stopbit": 16,
