@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "4",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -205,7 +205,7 @@
         {
           "name": "t0",
           "nbits": "32",
-          "value": "4294967295",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -415,8 +415,8 @@
         {
           "name": "sp",
           "nbits": "32",
-          "value": "268435452",
-          "default_value": "268435452",
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
@@ -1164,7 +1164,7 @@
           "stopbit": 6
         },
         {
-          "name": "add",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1215,7 +1215,7 @@
           "stopbit": 6
         },
         {
-          "name": "add",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1424,35 +1424,10 @@
       "definition": "reg2=reg1&(val>>>0);\ncheck_stack_limit(reg2.name; sp.name; reg2)"
     },
     {
-      "name": "b",
-      "type": "Unconditional bifurcation",
-      "co": "000100",
-      "cop": "",
-      "nwords": 1,
-      "signature_definition": "F0 F1",
-      "signature": "b,inm",
-      "signatureRaw": "b off",
-      "fields": [
-        {
-          "name": "b",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "off",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "PC=PC+((off << 16) >> 14)"
-    },
-    {
       "name": "bc",
       "type": "Unconditional bifurcation",
       "signature_definition": "F0 F1",
-      "signature": "bc,inm",
+      "signature": "bc,offset_words",
       "signatureRaw": "bc off",
       "co": "110010",
       "cop": "",
@@ -1466,7 +1441,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 25,
           "stopbit": 0
         }
@@ -1477,7 +1452,7 @@
       "name": "bc1eqz",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F2 F3",
-      "signature": "bc1eqz,$SFP-Reg,inm",
+      "signature": "bc1eqz,$SFP-Reg,offset_words",
       "signatureRaw": "bc1eqz $ft off",
       "co": "010001",
       "cop": "01001",
@@ -1504,7 +1479,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
@@ -1515,7 +1490,7 @@
       "name": "bc1nez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F2 F3",
-      "signature": "bc1nez,$SFP-Reg,inm",
+      "signature": "bc1nez,$SFP-Reg,offset_words",
       "signatureRaw": "bc1nez $ft off",
       "co": "010001",
       "cop": "01101",
@@ -1542,7 +1517,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
@@ -1556,7 +1531,7 @@
       "cop": "",
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 F3",
-      "signature": "beq,$INT-Reg,$INT-Reg,inm",
+      "signature": "beq,$INT-Reg,$INT-Reg,offset_words",
       "signatureRaw": "beq $reg1 $reg2 off",
       "fields": [
         {
@@ -1579,7 +1554,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
@@ -1587,10 +1562,41 @@
       "definition": "if(reg1 == reg2){PC=PC+((off << 16) >> 14)}"
     },
     {
+      "name": "beqz",
+      "type": "Conditional bifurcation",
+      "co": "000100",
+      "cop": "",
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2",
+      "signature": "beqz,$INT-Reg,offset_words",
+      "signatureRaw": "beqz $reg1 off",
+      "fields": [
+        {
+          "name": "beqz",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(reg1 == 0){PC=PC+((off << 16) >> 14)}"
+    },
+    {
       "name": "bgez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F3",
-      "signature": "bgez,$INT-Reg,inm",
+      "signature": "bgez,$INT-Reg,offset_words",
       "signatureRaw": "bgez $rs off",
       "co": "000001",
       "cop": "00001",
@@ -1617,7 +1623,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
@@ -1628,7 +1634,7 @@
       "name": "bgezal",
       "type": "Function call",
       "signature_definition": "F0 $F1 F3",
-      "signature": "bgezal,$INT-Reg,inm",
+      "signature": "bgezal,$INT-Reg,offset_words",
       "signatureRaw": "bgezal $rs off",
       "co": "000001",
       "cop": "10001",
@@ -1655,18 +1661,18 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC+8; if(rs>=0){PC=PC+((off << 16) >> 14)}"
+      "definition": "ra=PC; if(rs >> 0 >=0){PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "bgtz",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F2",
-      "signature": "bgtz,$INT-Reg,inm",
+      "signature": "bgtz,$INT-Reg,offset_words",
       "signatureRaw": "bgtz $rs off",
       "co": "000111",
       "cop": "",
@@ -1686,7 +1692,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
@@ -1697,14 +1703,14 @@
       "name": "blez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F2",
-      "signature": "blez,$INT-Reg,inm",
+      "signature": "blez,$INT-Reg,offset_words",
       "signatureRaw": "blez $rs off",
       "co": "000110",
       "cop": null,
       "nwords": 1,
       "fields": [
         {
-          "name": "bgez",
+          "name": "blez",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
@@ -1717,7 +1723,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
@@ -1728,7 +1734,7 @@
       "name": "bltz",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F3",
-      "signature": "bltz,$INT-Reg,inm",
+      "signature": "bltz,$INT-Reg,offset_words",
       "signatureRaw": "bltz $rs off",
       "co": "000001",
       "cop": "00000",
@@ -1755,7 +1761,7 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
@@ -1769,7 +1775,7 @@
       "cop": null,
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 F3",
-      "signature": "bne,$INT-Reg,$INT-Reg,inm",
+      "signature": "bne,$INT-Reg,$INT-Reg,offset_words",
       "signatureRaw": "bne $reg1 $reg2 off",
       "fields": [
         {
@@ -1792,12 +1798,43 @@
         },
         {
           "name": "off",
-          "type": "inm",
+          "type": "offset_words",
           "startbit": 15,
           "stopbit": 0
         }
       ],
       "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)}"
+    },
+    {
+      "name": "bnez",
+      "type": "Conditional bifurcation",
+      "co": "000101",
+      "cop": null,
+      "nwords": 1,
+      "signature_definition": "F0 $F1 F2",
+      "signature": "bne,$INT-Reg,offset_words",
+      "signatureRaw": "bne $reg1 off",
+      "fields": [
+        {
+          "name": "bne",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if(reg1 != 0){PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "cvt.d.s",
@@ -1835,7 +1872,52 @@
           "stopbit": 6
         },
         {
-          "name": "cvt.d",
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100001"
+        }
+      ],
+      "definition": "fd = fs"
+    },
+    {
+      "name": "cvt.d.w",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.d.w,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "cvt.d.w $fd $fs",
+      "co": "010001",
+      "cop": "00001100001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.d.w",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "DFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1847,9 +1929,9 @@
     {
       "name": "cvt.s.d",
       "type": "Arithmetic floating point",
-      "signature_definition": "F0 $F3 $F2",
+      "signature_definition": "F0 $F2 $F3",
       "signature": "cvt.s.d,$SFP-Reg,$DFP-Reg",
-      "signatureRaw": "cvt.s.d $fd $fs",
+      "signatureRaw": "cvt.s.d $fs $fd",
       "co": "010001",
       "cop": "00001100000",
       "nwords": 1,
@@ -1880,7 +1962,7 @@
           "stopbit": 6
         },
         {
-          "name": "cvt.s",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -1888,6 +1970,197 @@
         }
       ],
       "definition": "fd = fs"
+    },
+    {
+      "name": "cvt.s.w",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.s.w,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "cvt.s.w $fd $fs",
+      "co": "010001",
+      "cop": "00010100000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.s.w",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00010"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "SFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100000"
+        }
+      ],
+      "definition": "fd = parseFloat(fs)"
+    },
+
+
+    {
+      "name": "cvt.w.s",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.w.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "cvt.w.s $fd $fs",
+      "co": "010001",
+      "cop": "00000100100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.w.s",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00000"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "SFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100100"
+        }
+      ],
+      "definition": "fd = parseInt(fs)"
+    },
+    {
+      "name": "cvt.w.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 $F3 $F2",
+      "signature": "cvt.w.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "cvt.w.d $fd $fs",
+      "co": "010001",
+      "cop": "00001100100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "cvt.w.d",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "fmt",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "00001"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "fd",
+          "type": "DFP-Reg",
+          "startbit": 10,
+          "stopbit": 6
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "100100"
+        }
+      ],
+      "definition": "fd = parseInt(fs)"
+    },
+
+
+
+    {
+      "name": "div",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "div,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "div $rd $rs $rt",
+      "co": "000000",
+      "cop": "00010011010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "div",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 10,
+          "stopbit": 6,
+          "valueField": "00010"
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011010"
+        }
+      ],
+      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
     },
     {
       "name": "div",
@@ -1970,14 +2243,14 @@
           "stopbit": 6
         },
         {
-          "name": "div",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "000011"
         }
       ],
-      "definition": "fd = fs / ft"
+      "definition": "assert(ft!=0; 'Division by zero not allowed')\nfd = fs / ft"
     },
     {
       "name": "div.d",
@@ -2022,52 +2295,14 @@
           "stopbit": 6
         },
         {
-          "name": "div",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "000011"
         }
       ],
-      "definition": "fd = fs / ft"
-    },
-    {
-      "name": "divu",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 $F1 $F2",
-      "signature": "divu,$INT-Reg,$INT-Reg",
-      "signatureRaw": "divu $rs $rt",
-      "co": "000000",
-      "cop": "011011",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "divu",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "divu",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "011011"
-        }
-      ],
-      "definition": "LO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
+      "definition": "assert(ft!=0; 'Division by zero not allowed');\nfd = fs / ft"
     },
     {
       "name": "j",
@@ -2117,7 +2352,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC+4\nPC=addr"
+      "definition": "ra=PC\nPC=addr"
     },
     {
       "name": "jalr",
@@ -2148,14 +2383,14 @@
           "stopbit": 11
         },
         {
-          "name": "jalr",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC+4\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd=PC\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd);"
     },
     {
       "name": "jr",
@@ -2180,7 +2415,7 @@
           "stopbit": 21
         },
         {
-          "name": "jr",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2298,7 +2533,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be align\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncheck_stack_limit(reg1.name; sp.name; reg1)"
     },
     {
       "name": "lhu",
@@ -2459,7 +2694,7 @@
           "stopbit": 26
         },
         {
-          "name": "mf",
+          "name": "cop",
           "type": "cop",
           "startbit": 25,
           "stopbit": 21,
@@ -2579,7 +2814,7 @@
           "stopbit": 11
         },
         {
-          "name": "mod+sop32",
+          "name": "cop",
           "type": "cop",
           "startbit": 10,
           "stopbit": 0,
@@ -2623,7 +2858,7 @@
           "stopbit": 11
         },
         {
-          "name": "modu+sop33",
+          "name": "cop",
           "type": "cop",
           "startbit": 10,
           "stopbit": 0,
@@ -2668,7 +2903,7 @@
           "stopbit": 6
         },
         {
-          "name": "mov",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2713,7 +2948,7 @@
           "stopbit": 6
         },
         {
-          "name": "mov",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2739,7 +2974,7 @@
           "stopbit": 26
         },
         {
-          "name": "mt",
+          "name": "cop",
           "type": "cop",
           "startbit": 25,
           "stopbit": 21,
@@ -2910,7 +3145,7 @@
           "stopbit": 6
         },
         {
-          "name": "mul",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2961,7 +3196,7 @@
           "stopbit": 6
         },
         {
-          "name": "mul",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -2999,14 +3234,14 @@
           "stopbit": 16
         },
         {
-          "name": "mult",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "011000"
         }
       ],
-      "definition": "var result = rs >> 0 * rt >> 0\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
+      "definition": "var result = (rs >> 0) * (rt >> 0)\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
     },
     {
       "name": "multu",
@@ -3037,14 +3272,14 @@
           "stopbit": 16
         },
         {
-          "name": "multu",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
           "valueField": "011001"
         }
       ],
-      "definition": "var result = rs >>> 0 * rt >>> 0;\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO= result % Math.pow(2, 32) >>> 0;"
+      "definition": "var result = (rs >>> 0) * (rt >>> 0);\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO= result % Math.pow(2, 32) >>> 0;"
     },
     {
       "name": "nop",
@@ -3239,7 +3474,7 @@
           "stopbit": 6
         },
         {
-          "name": "srl",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3284,7 +3519,7 @@
           "stopbit": 6
         },
         {
-          "name": "rsqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3329,7 +3564,7 @@
           "stopbit": 6
         },
         {
-          "name": "rsqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3501,6 +3736,50 @@
       "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
     },
     {
+      "name": "sltu",
+      "type": "Logic",
+      "signature_definition": "F0 $F3 $F1 $F2",
+      "signature": "sltu,$INT-Reg,$INT-Reg,$INT-Reg",
+      "signatureRaw": "sltu $rd $rs $rt",
+      "co": "000000",
+      "cop": "101011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sltu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 15,
+          "stopbit": 11
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "101011"
+        }
+      ],
+      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
       "name": "slti",
       "type": "Logic",
       "signature_definition": "F0 $F2 $F1 F3",
@@ -3535,7 +3814,44 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt = (rs >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
+      "definition": "rs = (rt >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
+    },
+    {
+      "name": "sltiu",
+      "type": "Logic",
+      "signature_definition": "F0 $F2 $F1 F3",
+      "signature": "sltiu,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "sltiu $rs $rt inm",
+      "co": "001011",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sltiu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "rs = (rt >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
     },
     {
       "name": "sqrt.s",
@@ -3573,7 +3889,7 @@
           "stopbit": 6
         },
         {
-          "name": "sqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3618,7 +3934,7 @@
           "stopbit": 6
         },
         {
-          "name": "sqrt",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3808,7 +4124,7 @@
           "stopbit": 6
         },
         {
-          "name": "sub",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3859,7 +4175,7 @@
           "stopbit": 6
         },
         {
-          "name": "sub",
+          "name": "cop",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -3987,6 +4303,43 @@
       "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = ft;\nMP.w.[base+off] = (new Uint32Array(buf))[0];"
     },
     {
+      "name": "sdc1",
+      "type": "Memory access",
+      "signature_definition": "F0 $F2 F3 ($F1)",
+      "signature": "sdc1,$DFP-Reg,inm,($INT-Reg)",
+      "signatureRaw": "sdc1 $ft off ($base)",
+      "co": "111101",
+      "cop": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sdc1",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "base",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "MP.w.[base+off] = splitDouble(ft; 0); MP.w.[base+off+4] = splitDouble(ft; 1);"
+    },
+    {
       "name": "xor",
       "type": "Logic",
       "co": "000000",
@@ -4094,57 +4447,6 @@
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
     },
     {
-      "name": "div",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 $F3 $F1 $F2",
-      "signature": "div,$INT-Reg,$INT-Reg,$INT-Reg",
-      "signatureRaw": "div $rd $rs $rt",
-      "co": "000000",
-      "cop": "00010011010",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "div",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 10,
-          "stopbit": 6,
-          "valueField": "00010"
-        },
-        {
-          "name": "sop32",
-          "type": "cop",
-          "startbit": 5,
-          "stopbit": 0,
-          "valueField": "011010"
-        }
-      ],
-      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
-    },
-    {
       "name": "divu",
       "type": "Arithmetic integer",
       "signature_definition": "F0 $F3 $F1 $F2",
@@ -4193,7 +4495,45 @@
           "valueField": "011011"
         }
       ],
-      "definition": "rd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
+    },
+    {
+      "name": "divu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 $F1 $F2",
+      "signature": "divu,$INT-Reg,$INT-Reg",
+      "signatureRaw": "divu $rs $rt",
+      "co": "000000",
+      "cop": "011011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "divu",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "011011"
+        }
+      ],
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
     },
     {
       "name": "ldc1",
@@ -4230,914 +4570,1123 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\nft = (new Float64Array(buf))[0];"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\nconsole.log(arr);ft = (new Float64Array(buf))[0];"
    },
-    {
-      "name": "c.f.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.f.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.f.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.f.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0000"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | 0 | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.f.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.f.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.f.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.f.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0000"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | 0 | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.un.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.un.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.un.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000001",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.un.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0001"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs)) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.un.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.un.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.un.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010001",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.un.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0001"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs)) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.eq.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.eq.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.eq.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000010",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.eq.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0010"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.eq.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.eq.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.eq.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010010",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.eq.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0010"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ueq.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ueq.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.ueq.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000011",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ueq.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0011"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs) || ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ueq.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ueq.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.ueq.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010011",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ueq.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0011"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs) || ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.olt.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.olt.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.olt.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000100",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.olt.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0100"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.olt.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.olt.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.olt.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010100",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.olt.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0100"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ult.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ult.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.ult.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000101",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ult.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0101"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ult.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ult.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.ult.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010101",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ult.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0101"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ole.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ole.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.ole.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000110",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ole.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0110"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ole.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ole.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.ole.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010110",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ole.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0110"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ule.s",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ule.s,inm,$SFP-Reg,$SFP-Reg",
-      "signatureRaw": "c.ule.s cc $fs $ft",
-      "co": "010001",
-      "cop": "000000111",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ule.s",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00000"
-        },
-        {
-          "name": "ft",
-          "type": "SFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "SFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0111"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "c.ule.d",
-      "type": "Logic",
-      "signature_definition": "F0 F4 $F3 $F2",
-      "signature": "c.ule.d,inm,$DFP-Reg,$DFP-Reg",
-      "signatureRaw": "c.ule.d cc $fs $ft",
-      "co": "010001",
-      "cop": "000010111",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "c.ule.d",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "fmt",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "00001"
-        },
-        {
-          "name": "ft",
-          "type": "DFP-Reg",
-          "startbit": 20,
-          "stopbit": 16
-        },
-        {
-          "name": "fs",
-          "type": "DFP-Reg",
-          "startbit": 15,
-          "stopbit": 11
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 10,
-          "stopbit": 8
-        },
-        {
-          "name": "cond",
-          "type": "cop",
-          "startbit": 3,
-          "stopbit": 0,
-          "valueField": "0111"
-        }
-      ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
-    },
-    {
-      "name": "bc1f",
-      "type": "Conditional bifurcation",
-      "signature_definition": "F0 F2 F3",
-      "signature": "bc1f,inm,inm",
-      "signatureRaw": "bc1f cc off",
-      "co": "010001",
-      "cop": "0100000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "bc1f",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "01000"
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 20,
-          "stopbit": 18
-        },
-        {
-          "name": "off",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        },
-        {
-          "name": "ndtf",
-          "type": "cop",
-          "startbit": 17,
-          "stopbit": 16,
-          "valueField": "00"
-        }
-      ],
-      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {\n    PC=PC+((off << 16) >> 14)\n}"
-    },
-    {
-      "name": "bc1t",
-      "type": "Conditional bifurcation",
-      "signature_definition": "F0 F2 F4",
-      "signature": "bc1t,inm,inm",
-      "signatureRaw": "bc1t cc off",
-      "co": "010001",
-      "cop": "0100001",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "bc1t",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 25,
-          "stopbit": 21,
-          "valueField": "01000"
-        },
-        {
-          "name": "cc",
-          "type": "inm",
-          "startbit": 20,
-          "stopbit": 18
-        },
-        {
-          "name": "ndtf",
-          "type": "cop",
-          "startbit": 17,
-          "stopbit": 16,
-          "valueField": "01"
-        },
-        {
-          "name": "off",
-          "type": "inm",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {\n    PC=PC+((off << 16) >> 14)\n}"
-    }
+  {
+    "name": "c.f.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.f.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.f.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000000",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.f.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0000"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | 0 | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.f.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.f.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.f.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010000",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.f.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0000"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | 0 | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.un.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.un.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.un.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000001",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.un.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0001"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs)) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.un.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.un.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.un.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010001",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.un.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0001"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs)) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.eq.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.eq.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.eq.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000010",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.eq.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0010"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+
+
+
+  {
+    "name": "c.le.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.le.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.le.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000010010",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.le.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "1110"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft <= fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.le.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.le.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.le.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010010",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.le.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "1110"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft <= fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.lt.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.lt.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.lt.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000010010",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.lt.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "1100"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft < fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.lt.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.lt.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.lt.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010010",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.lt.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "1110"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft < fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+
+
+  {
+    "name": "c.eq.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.eq.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.eq.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010010",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.eq.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0010"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ueq.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ueq.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.ueq.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000011",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ueq.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0011"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs) || ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ueq.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ueq.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.ueq.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010011",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ueq.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0011"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(ft) || isNaN(fs) || ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.olt.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.olt.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.olt.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000100",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.olt.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0100"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.olt.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.olt.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.olt.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010100",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.olt.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0100"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ult.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ult.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.ult.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000101",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ult.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0101"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ult.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ult.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.ult.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010101",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ult.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0101"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ole.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ole.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.ole.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000110",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ole.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0110"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ole.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ole.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.ole.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010110",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ole.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0110"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ule.s",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ule.s,inm,$SFP-Reg,$SFP-Reg",
+    "signatureRaw": "c.ule.s cc $fs $ft",
+    "co": "010001",
+    "cop": "000000111",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ule.s",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00000"
+      },
+      {
+        "name": "ft",
+        "type": "SFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "SFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0111"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "c.ule.d",
+    "type": "Logic",
+    "signature_definition": "F0 F4 $F3 $F2",
+    "signature": "c.ule.d,inm,$DFP-Reg,$DFP-Reg",
+    "signatureRaw": "c.ule.d cc $fs $ft",
+    "co": "010001",
+    "cop": "000010111",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "c.ule.d",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "fmt",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "00001"
+      },
+      {
+        "name": "ft",
+        "type": "DFP-Reg",
+        "startbit": 20,
+        "stopbit": 16
+      },
+      {
+        "name": "fs",
+        "type": "DFP-Reg",
+        "startbit": 15,
+        "stopbit": 11
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 10,
+        "stopbit": 8
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 3,
+        "stopbit": 0,
+        "valueField": "0111"
+      }
+    ],
+    "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (isNaN(fs) || isNaN(ft) || fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
+  },
+  {
+    "name": "bc1f",
+    "type": "Conditional bifurcation",
+    "signature_definition": "F0 F2 F3",
+    "signature": "bc1f,inm,offset_words",
+    "signatureRaw": "bc1f cc off",
+    "co": "010001",
+    "cop": "0100000",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "bc1f",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "01000"
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 20,
+        "stopbit": 18
+      },
+      {
+        "name": "off",
+        "type": "offset_words",
+        "startbit": 15,
+        "stopbit": 0
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 17,
+        "stopbit": 16,
+        "valueField": "00"
+      }
+    ],
+    "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {\n    PC=PC+((off << 16) >> 14)\n}"
+  },
+  {
+    "name": "bc1t",
+    "type": "Conditional bifurcation",
+    "signature_definition": "F0 F2 F4",
+    "signature": "bc1t,inm,offset_words",
+    "signatureRaw": "bc1t cc off",
+    "co": "010001",
+    "cop": "0100001",
+    "nwords": 1,
+    "fields": [
+      {
+        "name": "bc1t",
+        "type": "co",
+        "startbit": 31,
+        "stopbit": 26
+      },
+      {
+        "name": "cop",
+        "type": "cop",
+        "startbit": 25,
+        "stopbit": 21,
+        "valueField": "01000"
+      },
+      {
+        "name": "cc",
+        "type": "inm",
+        "startbit": 20,
+        "stopbit": 18
+      },
+      {
+        "name": "ndtf",
+        "type": "cop",
+        "startbit": 17,
+        "stopbit": 16,
+        "valueField": "01"
+      },
+      {
+        "name": "off",
+        "type": "offset_words",
+        "startbit": 15,
+        "stopbit": 0
+      }
+    ],
+    "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {\n    PC=PC+((off << 16) >> 14)\n}"
+  }
   ],
   "pseudoinstructions": [
     {
@@ -5161,6 +5710,22 @@
         }
       ],
       "definition": "add $reg1 $zero $reg2;"
+    },
+    {
+      "name": "b",
+      "signature_definition": "b F0",
+      "signature": "b,inm",
+      "signatureRaw": "b inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "25",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "bgez $zero inm;"
     },
     {
       "name": "addi",
@@ -5188,7 +5753,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "lui $at Field.3.(31,16);\nori $at $at Field.3.(15,0);\nadd $reg1 $reg2 $at;"
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $reg1 $reg2 $at;"
     },
     {
       "name": "jalr",
@@ -5226,7 +5791,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $rd $at;}"
     },
     {
       "name": "la",
@@ -5248,7 +5813,30 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $rd $at;}"
+    },
+
+    {
+      "name": "lw",
+      "signature_definition": "lw $F0 ($F1)",
+      "signature": "lw,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "lw $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "lw $reg1 0 ($reg2);"
     },
     {
       "name": "lw",
@@ -5270,7 +5858,29 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlw $rd 0 ($at);}"
+    },
+    {
+      "name": "lh",
+      "signature_definition": "lh $F0 ($F1)",
+      "signature": "lh,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "lh $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "lh $reg1 0 ($reg2);"
     },
     {
       "name": "lh",
@@ -5292,7 +5902,29 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlh $rd 0 ($at);}"
+    },
+    {
+      "name": "lb",
+      "signature_definition": "lb $F0 ($F1)",
+      "signature": "lb,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "lb $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "lb $reg1 0 ($reg2);"
     },
     {
       "name": "lb",
@@ -5314,7 +5946,57 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nlb $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlb $rd 0 ($at);}"
+    },
+    {
+      "name": "l.d",
+      "signature_definition": "l.d $F0 ($F1)",
+      "signature": "l.d,$DFP-Reg,($INT-Reg)",
+      "signatureRaw": "l.d $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "ldc1 $reg1 0 ($reg2);"
+    },
+    {
+      "name": "l.d",
+      "signature_definition": "l.d $F0 F1 ($F2)",
+      "signature": "l.d,$DFP-Reg,inm,($INT-Reg)",
+      "signatureRaw": "l.d $reg1 inm ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "ldc1 $reg1 inm ($reg2);"
     },
     {
       "name": "c.f.s",
@@ -5339,6 +6021,448 @@
       "definition": "c.f.s 0 $fs $fs;"
     },
     {
+      "name": "c.f.d",
+      "signature_definition": "c.f.d $F1 $F0",
+      "signature": "c.f.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.f.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "0"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.f.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.un.s",
+      "signature_definition": "c.un.s $F1 $F0",
+      "signature": "c.un.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.un.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.un.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.un.d",
+      "signature_definition": "c.un.d $F1 $F0",
+      "signature": "c.un.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.un.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.un.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.eq.s",
+      "signature_definition": "c.eq.s $F1 $F0",
+      "signature": "c.eq.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.eq.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.eq.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.eq.d",
+      "signature_definition": "c.eq.d $F1 $F0",
+      "signature": "c.eq.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.eq.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.eq.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.le.s",
+      "signature_definition": "c.le.s $F1 $F0",
+      "signature": "c.le.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.le.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.le.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.le.d",
+      "signature_definition": "c.le.d $F1 $F0",
+      "signature": "c.le.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.le.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.le.d 0 $fs $ft;"
+    },
+
+    {
+      "name": "c.lt.s",
+      "signature_definition": "c.lt.s $F1 $F0",
+      "signature": "c.lt.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.lt.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.lt.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.lt.d",
+      "signature_definition": "c.lt.d $F1 $F0",
+      "signature": "c.lt.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.lt.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.lt.d 0 $fs $ft;"
+    },
+
+    {
+      "name": "c.ueq.s",
+      "signature_definition": "c.ueq.s $F1 $F0",
+      "signature": "c.ueq.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ueq.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ueq.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ueq.d",
+      "signature_definition": "c.ueq.d $F1 $F0",
+      "signature": "c.ueq.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ueq.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ueq.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.olt.s",
+      "signature_definition": "c.olt.s $F1 $F0",
+      "signature": "c.olt.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.olt.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.olt.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.olt.d",
+      "signature_definition": "c.olt.d $F1 $F0",
+      "signature": "c.olt.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.olt.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.olt.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ult.s",
+      "signature_definition": "c.ult.s $F1 $F0",
+      "signature": "c.ult.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ult.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ult.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ult.d",
+      "signature_definition": "c.ult.d $F1 $F0",
+      "signature": "c.ult.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ult.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ult.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ole.s",
+      "signature_definition": "c.ole.s $F1 $F0",
+      "signature": "c.ole.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ole.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ole.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ole.d",
+      "signature_definition": "c.ole.d $F1 $F0",
+      "signature": "c.ole.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ole.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ole.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ule.s",
+      "signature_definition": "c.ule.s $F1 $F0",
+      "signature": "c.ule.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ule.s $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ule.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ule.d",
+      "signature_definition": "c.ule.d $F1 $F0",
+      "signature": "c.ule.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ule.d $fs $ft",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ule.d 0 $fs $ft;"
+    },
+    {
+      "name": "sw",
+      "signature_definition": "sw $F0 ($F1)",
+      "signature": "sw,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "sw $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sw $reg1 0 ($reg2);"
+    },
+    {
       "name": "sw",
       "signature_definition": "sw $F0 F1",
       "signature": "sw,$INT-Reg,inm",
@@ -5358,7 +6482,29 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsw $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sw $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsw $rd 0 ($at);}"
+    },
+    {
+      "name": "sh",
+      "signature_definition": "sh $F0 ($F1)",
+      "signature": "sh,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "sh $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sh $reg1 0 ($reg2);"
     },
     {
       "name": "sh",
@@ -5380,7 +6526,29 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsh $rd 0 ($at);}"
+      "definition": "if(Field.2.SIZE<=16){sh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsh $rd 0 ($at);}"
+    },
+    {
+      "name": "sb",
+      "signature_definition": "sb $F0 ($F1)",
+      "signature": "sb,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "sb $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sb $reg1 0 ($reg2);"
     },
     {
       "name": "sb",
@@ -5402,8 +6570,1030 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16);\nori $at $at Field.2.(15,0);\nsb $rd 0 ($at);}"
-    }
+      "definition": "if(Field.2.SIZE<=16){sb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nsb $rd 0 ($at);}"
+    },
+    {
+      "name": "add",
+      "signature_definition": "add $F0 $F1 F2",
+      "signature": "add,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "add $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $rs $rt $at;} "
+    },
+    {
+      "name": "addu",
+      "signature_definition": "addu $F0 $F1 F2",
+      "signature": "addu,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "addu $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addiu $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $rs $rt $at;} "
+    },
+    {
+      "name": "and",
+      "signature_definition": "and $F0 $F1 F2",
+      "signature": "and,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "and $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;} "
+    },
+    {
+      "name": "div",
+      "signature_definition": "div $F0 $F1 F2",
+      "signature": "div,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "div $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; div $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\ndiv $rs $rt $at;} "
+    },
+    {
+      "name": "divu",
+      "signature_definition": "divu $F0 $F1 F2",
+      "signature": "divu,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "divu $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; divu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\ndivu $rs $rt $at;} "
+    },
+    {
+      "name": "mul",
+      "signature_definition": "mul $F0 $F1 F2",
+      "signature": "mul,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "mul $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; mul $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nmul $rs $rt $at;} "
+    },
+    {
+      "name": "nor",
+      "signature_definition": "nor $F0 $F1 F2",
+      "signature": "nor,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "nor $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; nor $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nnor $rs $rt $at;} "
+    },
+    {
+      "name": "or",
+      "signature_definition": "or $F0 $F1 F2",
+      "signature": "or,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "or $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){ori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;} "
+    },
+    {
+      "name": "sub",
+      "signature_definition": "sub $F0 $F1 F2",
+      "signature": "sub,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "sub $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; sub $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsub $rs $rt $at;} "
+    },
+    {
+      "name": "subu",
+      "signature_definition": "subu $F0 $F1 F2",
+      "signature": "subu,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "subu $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; subu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nsubu $rs $rt $at;} "
+    },
+    {
+      "name": "xor",
+      "signature_definition": "xor $F0 $F1 F2",
+      "signature": "xor,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "xor $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.3.SIZE<=16){xori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;} "
+    },
+    {
+      "name": "l.s",
+      "signature_definition": "l.s $F0 ($F1)",
+      "signature": "l.s,$SFP-Reg,$INT-Reg",
+      "signatureRaw": "l.s $rs ($rt)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "lwc1 $rs 0 ($rt);"
+    },
+    {
+      "name": "l.s",
+      "signature_definition": "l.s $F0 F2 ($F1)",
+      "signature": "l.s,$SFP-Reg,inm,$INT-Reg",
+      "signatureRaw": "l.s $rs off ($rt)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "lwc1 $rs off ($rt);"
+    },
+    {
+      "name": "s.s",
+      "signature_definition": "s.s $F0 ($F1)",
+      "signature": "s.s,$SFP-Reg,$INT-Reg",
+      "signatureRaw": "s.s $rs ($rt)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "swc1 $rs 0 ($rt);"
+    },
+    {
+      "name": "s.s",
+      "signature_definition": "s.s $F0 F2 ($F1)",
+      "signature": "s.s,$SFP-Reg,inm,$INT-Reg",
+      "signatureRaw": "s.s $rs off ($rt)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "swc1 $rs off ($rt);"
+    },
+    {
+      "name": "s.d",
+      "signature_definition": "s.d $F0 ($F1)",
+      "signature": "s.d,$DFP-Reg,$INT-Reg",
+      "signatureRaw": "s.d $rs ($rt)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "sdc1 $rs 0 ($rt);"
+    },
+    {
+      "name": "s.d",
+      "signature_definition": "s.d $F0 F2 ($F1)",
+      "signature": "s.d,$DFP-Reg,inm,$INT-Reg",
+      "signatureRaw": "s.d $rs off ($rt)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "off",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "sdc1 $rs off ($rt);"
+    },
+    {
+      "name": "beq",
+      "signature_definition": "beq $F0 F1 F2",
+      "signature": "beq,$INT-Reg,inm,offset_words",
+      "signatureRaw": "beq $reg1 inm off",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "ori $at $zero inm; beq $reg1 $at off;"
+    },
+  	{
+      "name": "bge",
+      "signature_definition": "bge $F0 $F1 F2",
+      "signature": "bge,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "bge $reg1 $reg2 off",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "slt $at $reg1 $reg2; beq $at $zero off;"
+    },
+    {
+      "name": "bge",
+      "signature_definition": "bge $F0 F1 F2",
+      "signature": "bge,$INT-Reg,inm,offset_words",
+      "signatureRaw": "bge $reg1 inm off",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "slti $at $reg1 inm; beq $at $zero off;"
+    },
+
+    {
+      "name": "bgt",
+      "signature_definition": "bgt $F0 $F1 F2",
+      "signature": "bgt,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "bgt $reg1 $reg2 off",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
+    },
+    {
+      "name": "bgt",
+      "signature_definition": "bgt $F0 F1 F2",
+      "signature": "bgt,$INT-Reg,inm,offset_words",
+      "signatureRaw": "bgt $reg1 inm off",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "slti $at $reg1 inm; beq $at $zero off;"
+    },
+  	{
+        "name": "ble",
+        "signature_definition": "ble $F0 $F1 F2",
+        "signature": "ble,$INT-Reg,$INT-Reg,offset_words",
+        "signatureRaw": "ble $reg1 $reg2 off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "slt $at $reg1 $reg2; beq $at $zero off;"
+      },
+
+      {
+        "name": "ble",
+        "signature_definition": "ble $F0 F1 F2",
+        "signature": "ble,$INT-Reg,inm,offset_words",
+        "signatureRaw": "ble $reg1 inm off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "inm",
+            "type": "inm",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "slti $at $reg1 inm; bne $at $zero off;"
+      },
+      
+
+
+      {
+        "name": "blt",
+        "signature_definition": "blt $F0 $F1 F2",
+        "signature": "blt,$INT-Reg,$INT-Reg,offset_words",
+        "signatureRaw": "blt $reg1 $reg2 off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
+      },
+      {
+        "name": "blt",
+        "signature_definition": "blt $F0 F1 F2",
+        "signature": "blt,$INT-Reg,inm,offset_words",
+        "signatureRaw": "blt $reg1 inm off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "inm",
+            "type": "inm",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "slti $at $reg1 inm; bne $at $zero off;"
+      },
+      
+      {
+        "name": "bne",
+        "signature_definition": "bne $F0 F1 F2",
+        "signature": "bne,$INT-Reg,inm,offset_words",
+        "signatureRaw": "bne $reg1 inm off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "inm",
+            "type": "inm",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "ori $at $zero inm; bne $reg1 $at off;"
+      },
+
+
+      {
+        "name": "bgtu",
+        "signature_definition": "bgtu $F0 $F1 F2",
+        "signature": "bgtu,$INT-Reg,$INT-Reg,offset_words",
+        "signatureRaw": "bgtu $reg1 $reg2 off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "sltu $at $reg2 $reg1; bne $at $zero off;"
+      },
+      {
+        "name": "bgtu",
+        "signature_definition": "bgtu $F0 F1 F2",
+        "signature": "bgtu,$INT-Reg,inm,offset_words",
+        "signatureRaw": "bgtu $reg1 inm off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "inm",
+            "type": "inm",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;"
+      },
+
+
+      {
+        "name": "bgeu",
+        "signature_definition": "bgeu $F0 $F1 F2",
+        "signature": "bgeu,$INT-Reg,$INT-Reg,offset_words",
+        "signatureRaw": "bgeu $reg1 $reg2 off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "sltu $at $reg1 $reg2; beq $at $zero off;"
+      },
+      {
+        "name": "bgeu",
+        "signature_definition": "bgeu $F0 F1 F2",
+        "signature": "bgeu,$INT-Reg,inm,offset_words",
+        "signatureRaw": "bgeu $reg1 inm off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "inm",
+            "type": "inm",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "sltiu $at $reg1 inm; beq $at $zero off;"
+      },
+
+
+      {
+        "name": "bleu",
+        "signature_definition": "bleu $F0 $F1 F2",
+        "signature": "bleu,$INT-Reg,$INT-Reg,offset_words",
+        "signatureRaw": "bleu $reg1 $reg2 off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "sltu $at $reg2 $reg1; beq $at $zero off;"
+      },
+      {
+        "name": "bleu",
+        "signature_definition": "bleu $F0 F1 F2",
+        "signature": "bleu,$INT-Reg,inm,offset_words",
+        "signatureRaw": "bleu $reg1 inm off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "inm",
+            "type": "inm",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; bne $at $zero off;"
+      },
+
+
+      {
+        "name": "bltu",
+        "signature_definition": "bltu $F0 $F1 F2",
+        "signature": "bltu,$INT-Reg,$INT-Reg,offset_words",
+        "signatureRaw": "bltu $reg1 $reg2 off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "sltu $at $reg1 $reg2; bne $at $zero off;"
+      },
+      {
+        "name": "bltu",
+        "signature_definition": "bltu $F0 F1 F2",
+        "signature": "bltu,$INT-Reg,inm,offset_words",
+        "signatureRaw": "bltu $reg1 inm off",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "inm",
+            "type": "inm",
+            "startbit": 20,
+            "stopbit": 16
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "sltiu $at $reg1 off; bne $at $zero off;"
+      },
+
+
+      {
+        "name": "li.s",
+        "signature_definition": "li.s $F0 F1",
+        "signature": "li.s,$SFP-Reg,inm",
+        "signatureRaw": "li.s $rd val",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "rd",
+            "type": "SFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "val",
+            "type": "inm",
+            "startbit": "15",
+            "stopbit": "0"
+          }
+        ],
+        "definition": "lui $at Field.2.(31,16).float;\nori $at $at Field.2.(15,0).float;\nmtc1 $at $rd;"
+      },
+      {
+        "name": "li.d",
+        "signature_definition": "li.d $F0 F1",
+        "signature": "li.d,$DFP-Reg,inm",
+        "signatureRaw": "li.d $rd val",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "rd",
+            "type": "DFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "val",
+            "type": "inm",
+            "startbit": "15",
+            "stopbit": "0"
+          }
+        ],
+        "definition": "lui $at Field.2.(31,16).double;\nori $at $at Field.2.(15,0).double;\nmtc1 $at $aliasDouble(rd;1);\nlui $at Field.2.(63,48).double;\nori $at $at Field.2.(47,32).double;\nmtc1 $at $aliasDouble(rd;0);"
+      }
   ],
   "directives": [
     {
