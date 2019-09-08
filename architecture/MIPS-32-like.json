@@ -7141,7 +7141,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
+      "definition": "slt $at $reg2 $reg1; bne $at $zero off;"
     },
     {
       "name": "bgt",
@@ -7197,7 +7197,7 @@
             "stopbit": 0
           }
         ],
-        "definition": "slt $at $reg1 $reg2; beq $at $zero off;"
+        "definition": "slt $at $reg2 $reg1; beq $at $zero off;"
       },
 
       {
