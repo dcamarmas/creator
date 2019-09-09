@@ -2146,14 +2146,14 @@
           "stopbit": 11
         },
         {
-          "name": "cop",
+          "name": "cop1",
           "type": "cop",
           "startbit": 10,
           "stopbit": 6,
           "valueField": "00010"
         },
         {
-          "name": "cop",
+          "name": "cop2",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -4441,7 +4441,7 @@
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
-          "value": "001100"
+          "valueField": "001100"
         }
       ],
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
@@ -4827,9 +4827,6 @@
     ],
     "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
   },
-
-
-
   {
     "name": "c.le.s",
     "type": "Logic",
@@ -5034,8 +5031,6 @@
     ],
     "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft < fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
   },
-
-
   {
     "name": "c.eq.d",
     "type": "Logic",
@@ -5905,6 +5900,50 @@
       "definition": "if(Field.2.SIZE<=16){lh $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlh $rd 0 ($at);}"
     },
     {
+      "name": "lhu",
+      "signature_definition": "lhu $F0 ($F1)",
+      "signature": "lhu,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "lhu $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "lhu $reg1 0 ($reg2);"
+    },
+    {
+      "name": "lhu",
+      "signature_definition": "lhu $F0 F1",
+      "signature": "lhu,$INT-Reg,inm",
+      "signatureRaw": "lhu $rd addr",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.2.SIZE<=16){lhu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlhu $rd 0 ($at);}"
+    },
+    {
       "name": "lb",
       "signature_definition": "lb $F0 ($F1)",
       "signature": "lb,$INT-Reg,($INT-Reg)",
@@ -5948,6 +5987,51 @@
       ],
       "definition": "if(Field.2.SIZE<=16){lb $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlb $rd 0 ($at);}"
     },
+    {
+      "name": "lbu",
+      "signature_definition": "lbu $F0 ($F1)",
+      "signature": "lbu,$INT-Reg,($INT-Reg)",
+      "signatureRaw": "lbu $reg1 ($reg2)",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "lbu $reg1 0 ($reg2);"
+    },
+    {
+      "name": "lbu",
+      "signature_definition": "lbu $F0 F1",
+      "signature": "lbu,$INT-Reg,inm",
+      "signatureRaw": "lbu $rd addr",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.2.SIZE<=16){lbu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlbu $rd 0 ($at);}"
+    },
+
     {
       "name": "l.d",
       "signature_definition": "l.d $F0 ($F1)",

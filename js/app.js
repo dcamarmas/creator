@@ -3780,7 +3780,7 @@ try{
                     }
                   }
 
-                  if(exit == 0){
+                  if(exit == 0 && isNaN(instructionParts[j]) == true){
                     app.compileError(7, instructionParts[j], pending_instructions[i].line);
                     tokenIndex = 0;
                     instructions = [];
@@ -5574,7 +5574,7 @@ try{
           }
 
           if(!found){
-            var resultPseudo = -2;
+            var resultPseudo = -3;
             var instruction = "";
             var numToken = 0;
             var exists = false;
@@ -5598,11 +5598,35 @@ try{
                   instruction = instruction + " " + token;
                 }
                 resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                console.log(resultPseudo);
               }
             }
 
+            if(resultPseudo == -3){
+              this.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
+
+              existsInstruction = false;
+              tokenIndex = 0;
+              instructions = [];
+              pending_instructions = [];
+              pending_tags = [];
+              memory[memory_hash[0]] = [];
+              data_tag = [];
+              instructions_binary = [];
+              memory[memory_hash[1]] = [];
+              extern = [];
+              memory[memory_hash[2]] = [];
+              data = [];
+              app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+              memory[memory_hash[1]] = memory[memory_hash[1]];
+              memory[memory_hash[2]] = memory[memory_hash[2]];
+              app._data.instructions = instructions;
+              $(".loading").hide();
+              return -1;
+            }
+
             if(resultPseudo == -2){
-              this.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              //this.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
 
               existsInstruction = false;
               tokenIndex = 0;
@@ -5715,12 +5739,10 @@ try{
             re = new RegExp(signatureDef+"$");
             console.log(re)
             if(instruction.search(re) == -1 && i == architecture.pseudoinstructions.length-1){
-              console.log("WASDJK");
               return -1;
             }
 
             if(instruction.search(re) == -1 && i < architecture.pseudoinstructions.length-1){
-              console.log("ADFGHJKILIKGGDSA")
               found = false;
             }
 
@@ -5728,24 +5750,18 @@ try{
               re = /aliasDouble\((.*)\)/;
               for(var a = 0; a < architecture.pseudoinstructions[i].fields.length && definition.search(re) != -1; a++){
                 re = new RegExp(architecture.pseudoinstructions[i].fields[a].name,"g");
-                console.log("DDDDDD" + re);
                 console.log(instructionParts[a+1]);
-                console.log("ANTES" + definition);
                 instructionParts[a+1] = instructionParts[a+1].replace("$","");
                 definition = definition.replace(re, instructionParts[a+1]);
-                console.log("DESPUES" + definition);
               }
 
               /*Replace DFP of SPF*/
               re = /aliasDouble\((.*)\)/;
               console.log(re);
               while (definition.search(re) != -1){
-                console.log("AQUI");
                 var match = re.exec(definition);
                 var args = match[1].split(";");
-
                 var aux = "";
-
 
                 for(var b = 0; b < architecture.components[3].elements.length; b++){
                   console.log(architecture.components[3].elements[b].name); 
@@ -6051,15 +6067,15 @@ try{
                   instruction = instruction + token;
 
                   for (var a = 1; a < numToken; a++){
-                  	if(architecture.instructions[i].fields[a].type != "cop"){
-	                    this.next_token();
-	                    token = this.get_token();
+                    if(architecture.instructions[i].fields[a].type != "cop"){
+                      this.next_token();
+                      token = this.get_token();
 
-	                    var re = new RegExp(",+$");
-	                    token = token.replace(re, "");
+                      var re = new RegExp(",+$");
+                      token = token.replace(re, "");
 
-	                    instruction = instruction + " " + token;
-	                  }
+                      instruction = instruction + " " + token;
+                    }
                   }
 
                   this.instruction_compiler(instruction, instruction, label, line, pending, pendingAddress, instInit, index)
@@ -6145,7 +6161,7 @@ try{
 
 
             for(var j = 0; j < signatureParts.length; j++){
-            	console.log(signatureParts[j]);
+              console.log(signatureParts[j]);
               switch(signatureParts[j]) {
                 case "INT-Reg":
                   token = instructionParts[j];
@@ -6370,6 +6386,8 @@ try{
                         if(value[1].length*4 > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
+                          console.log(resultPseudo);
+
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
@@ -6392,6 +6410,8 @@ try{
                       else if (token.match(/^(\d)+\.(\d)+/)){
                         if(this.float2bin(parseFloat(token)).length > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6424,6 +6444,8 @@ try{
                           console.log(label)
                           console.log(line)
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6515,6 +6537,8 @@ try{
                         if(value[1].length*4 > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
+                          console.log(resultPseudo);
+
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
@@ -6537,6 +6561,8 @@ try{
                       else if (token.match(/^(\d)+\.(\d)+/)){
                         if(this.float2bin(parseFloat(token)).length > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6569,6 +6595,8 @@ try{
                           console.log(label)
                           console.log(line)
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6624,6 +6652,8 @@ try{
                         if(value[1].length*4 > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
+                          console.log(resultPseudo);
+
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
@@ -6646,6 +6676,8 @@ try{
                       else if (token.match(/^(\d)+\.(\d)+/)){
                         if(this.float2bin(parseFloat(token)).length > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6678,6 +6710,8 @@ try{
                           console.log(label)
                           console.log(line)
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6722,7 +6756,7 @@ try{
                   console.log(token);
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
-                  	console.log(architecture.instructions[i].fields[a].name);
+                    console.log(architecture.instructions[i].fields[a].name);
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                       
@@ -6741,7 +6775,7 @@ try{
                     if(architecture.instructions[i].fields[a].type == "cop"){
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 
-                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].cop).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].fields[a].valueField).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                     }
                   }
 
@@ -7281,18 +7315,25 @@ try{
             var type;
             var auxIndex;
 
+            var numCop = 0;
+            var numCopCorrect = 0;
+
             if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
               if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != ''){
                 for (var j = 0; j < architecture.instructions[i].fields.length; j++){
                   if (architecture.instructions[i].fields[j].type == "cop") {
-                    if(architecture.instructions[i].cop == instructionExecParts[0].substring(((architecture.instructions[i].nwords*31) - architecture.instructions[i].fields[j].startbit), ((architecture.instructions[i].nwords*32) - architecture.instructions[i].fields[j].stopbit))){
-                      auxDef = architecture.instructions[i].definition;
-                      nwords = architecture.instructions[i].nwords;
-                      binary = true;
-                      auxIndex = i;
-                      break;
+                    numCop++;
+                    if(architecture.instructions[i].fields[j].valueField == instructionExecParts[0].substring(((architecture.instructions[i].nwords*31) - architecture.instructions[i].fields[j].startbit), ((architecture.instructions[i].nwords*32) - architecture.instructions[i].fields[j].stopbit))){
+                      numCopCorrect++;
                     }
                   }
+                }
+                if(numCop == numCopCorrect){
+                  auxDef = architecture.instructions[i].definition;
+                  nwords = architecture.instructions[i].nwords;
+                  binary = true;
+                  auxIndex = i;
+                  break;
                 }
               }
               else{
@@ -7528,6 +7569,16 @@ try{
                 auxDef = auxDef.replace(re, parseInt(value, 2));
               }
               if(architecture.instructions[auxIndex].fields[j].type == "address"){
+                var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                auxDef = auxDef.replace(re, parseInt(value, 2));
+              }
+              if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
+                var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                auxDef = auxDef.replace(re, parseInt(value, 2));
+              }
+              if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
                 var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
                 var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                 auxDef = auxDef.replace(re, parseInt(value, 2));
@@ -8768,7 +8819,6 @@ try{
             app._data.display = app._data.display + value;
             break;
           case "print_string":
-            console.log("AQUI");
             var addr = architecture.components[indexComp].elements[indexElem].value;
             var index;
 
