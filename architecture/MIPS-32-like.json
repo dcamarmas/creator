@@ -2146,14 +2146,14 @@
           "stopbit": 11
         },
         {
-          "name": "cop",
+          "name": "cop1",
           "type": "cop",
           "startbit": 10,
           "stopbit": 6,
           "valueField": "00010"
         },
         {
-          "name": "cop",
+          "name": "cop2",
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
@@ -4441,7 +4441,7 @@
           "type": "cop",
           "startbit": 5,
           "stopbit": 0,
-          "value": "001100"
+          "valueField": "001100"
         }
       ],
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
@@ -4827,9 +4827,6 @@
     ],
     "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
   },
-
-
-
   {
     "name": "c.le.s",
     "type": "Logic",
@@ -5034,8 +5031,6 @@
     ],
     "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft < fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off)));"
   },
-
-
   {
     "name": "c.eq.d",
     "type": "Logic",
@@ -7141,7 +7136,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "slt $at $reg2 $reg1; bne $at $zero off;"
+      "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
     },
     {
       "name": "bgt",
@@ -7197,7 +7192,7 @@
             "stopbit": 0
           }
         ],
-        "definition": "slt $at $reg2 $reg1; beq $at $zero off;"
+        "definition": "slt $at $reg1 $reg2; beq $at $zero off;"
       },
 
       {
@@ -7372,7 +7367,7 @@
             "stopbit": 0
           }
         ],
-        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; beq $at $zero off;"
+        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;"
       },
 
 
