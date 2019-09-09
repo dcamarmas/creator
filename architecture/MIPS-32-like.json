@@ -7372,7 +7372,7 @@
             "stopbit": 0
           }
         ],
-        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;"
+        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; beq $at $zero off;"
       },
 
 
