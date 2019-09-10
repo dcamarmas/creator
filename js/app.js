@@ -9712,13 +9712,13 @@ try{
         e = e.replace(re, '\\v');
 
         if(e == ""){
-          eval("this." + param + "= null");
+          this[param] = null;
           return;
         }
 
         console.log("this." + param + "= '" + e + "'");
 
-        eval("this." + param + "= '" + e + "'");
+        this[param] = e.toString();
         app.$forceUpdate();
       }, getDebounceTime())
     },
