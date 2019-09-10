@@ -1,0 +1,15 @@
+.text
+
+	li $t0 23
+	li $t1 2
+	b exit
+	ble $t0 5 jump
+	li $t3 34
+	li $v0 10
+	syscall
+
+jump:
+	li $t9 11
+	li $t8 555
+	li $v0 10
+	syscall
