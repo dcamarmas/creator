@@ -1647,6 +1647,22 @@ try{
       newInstVerify(evt){
         evt.preventDefault();
 
+        for (var i = 0; i < this.formInstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
+            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
+
         var empty = 0;
         var auxCop = "";
 
@@ -1838,6 +1854,22 @@ try{
       /*Check all fields of modify instruction*/
       editInstVerify(evt, inst, co, cop){
         evt.preventDefault();
+
+        for (var i = 0; i < this.formInstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
+            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
 
         var empty = 0;
         var auxCop = "";
@@ -2193,6 +2225,22 @@ try{
       newPseudoinstVerify(evt){
         evt.preventDefault();
 
+        for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
+            if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
+
         var vacio = 0;
 
         for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
@@ -2265,6 +2313,22 @@ try{
       /*Check all fields of modify pseudoinstruction*/
       editPseudoinstVerify(evt, inst, index){
         evt.preventDefault();
+
+        for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
+            if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
 
         var vacio = 0;
 
@@ -5438,9 +5502,14 @@ try{
           token = this.get_token();
 
           for(var i = 0; i < architecture.directives.length; i++){
-            if(token == architecture.directives[i].name){
+            if(token == architecture.directives[i].name && architecture.directives[i].action == "global_symbol"){
+              this.next_token(); // .globl *main* 
+              this.next_token(); 
+              token = this.get_token();
+            }
+            else if(token == architecture.directives[i].name){
               app._data.instructions = instructions;
-
+              console.log(token);
               for(var i = 0; i < instructions.length; i++){
                 if(instructions[i].Label != ""){
                   instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
