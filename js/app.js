@@ -103,7 +103,7 @@ var compileError = [
   { mess1: "Empty label", mess2: "" },
   { mess1: "Repeated tag: ", mess2: "" },
   { mess1: "Instruction '", mess2: "' not found" },
-  { mess1: "Incorrect signature --> ", mess2: "" },
+  { mess1: "Incorrect sintax --> ", mess2: "" },
   { mess1: "Register '", mess2: "' not found" },
   { mess1: "Immediate number '", mess2: "' is too big" },
   { mess1: "Immediate number '", mess2: "' is not valid" },
@@ -125,6 +125,7 @@ var compileError = [
   { mess1: "The number should be positive '", mess2: "'" },
   { mess1: "Empty directive", mess2: "" },
   { mess1: "After the comma you should go a blank --> ", mess2: "" },
+  { mess1: "Incorrect sintax", mess2: "" },
 ];
 /*Promise*/
 let promise;
@@ -189,19 +190,19 @@ try{
 
   window.app = new Vue({
 
-  	/*DOM ID*/
+    /*DOM ID*/
     el: "#app",
 
 
     /*Vue data*/
     data: {
-    	/*Architecture editor*/
+      /*Architecture editor*/
 
-    	/*Available architectures*/
+      /*Available architectures*/
       arch_available: architecture_available,
       /*Architectures card background*/
       back_card: back_card,
-  		/*Backup date*/
+      /*Backup date*/
       date_copy: '',
       /*New architecture modal*/
       showLoadArch: false,
@@ -444,10 +445,12 @@ try{
       /*Simulator*/
 
       /*Alert toasts content*/
-      alertMessaje: '',
+      alertMessage: '',
       type: '',
       /*Displayed notifications*/
       notifications: notifications,
+      /*Accesskey*/
+      navigator: "",
       /*Calculator*/
       calculator: {
         bits: 32,
@@ -471,7 +474,7 @@ try{
       archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
       /*Instructions memory*/
       instructions: instructions,
-  		/*Register type displayed*/
+      /*Register type displayed*/
       register_type: 'integer',
       /*Register select*/
       nameTabReg: 'Decimal',
@@ -515,6 +518,7 @@ try{
     created(){
       this.load_arch_available();
       this.load_examples_available();
+      this.detectNavigator();
     },
 
 
@@ -526,9 +530,9 @@ try{
 
     /*Vue methods*/
     methods:{
-    	/*Architecture editor*/
+      /*Architecture editor*/
 
-    	/*Load the available architectures and check if exists backup*/
+      /*Load the available architectures and check if exists backup*/
       load_arch_available(){
         $.getJSON('architecture/available_arch.json', function(cfg){
           architecture_available = cfg;
@@ -617,16 +621,16 @@ try{
 
         this.$refs.copyRef.hide();
 
-        app._data.alertMessaje = 'The backup has been loaded correctly';
+        app._data.alertMessage = 'The backup has been loaded correctly';
         app._data.type = 'success';
-        app.$bvToast.toast(app._data.alertMessaje, {
+        app.$bvToast.toast(app._data.alertMessage, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
           autoHideDelay: 1500,
         });
         var date = new Date();
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       },
       /*Delete backup*/
       remove_copy(){
@@ -669,16 +673,16 @@ try{
             $("#view_components").show();
             $(".loading").hide();
 
-            app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+            app._data.alertMessage = 'The selected architecture has been loaded correctly';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             
             return;
           }
@@ -712,30 +716,30 @@ try{
           $("#view_components").show();
           $(".loading").hide();
 
-          app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+          app._data.alertMessage = 'The selected architecture has been loaded correctly';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         })
 
         .fail(function() {
           $(".loading").hide();
-          app._data.alertMessaje = 'The selected architecture is not currently available';
+          app._data.alertMessage = 'The selected architecture is not currently available';
           app._data.type = 'info';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         });
       },
       /*Read the JSON of new architecture*/
@@ -745,13 +749,13 @@ try{
         e.preventDefault();
         if(!this.name_arch || !this.load_arch){
           $(".loading").hide();
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           return;
         }
@@ -783,16 +787,16 @@ try{
             localStorage.setItem("load_architectures_available", auxArch);
           }
 
-          app._data.alertMessaje = 'The selected architecture has been loaded correctly';
+          app._data.alertMessage = 'The selected architecture has been loaded correctly';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});
           
           app._data.name_arch = '';
           app._data.description_arch = '';
@@ -854,16 +858,16 @@ try{
         auxArch = JSON.stringify(load_architectures_available, null, 2);
         localStorage.setItem("load_architectures_available", auxArch);
 
-        app._data.alertMessaje = 'Architecture deleted successfully';
+        app._data.alertMessage = 'Architecture deleted successfully';
         app._data.type = 'success';
-        app.$bvToast.toast(app._data.alertMessaje, {
+        app.$bvToast.toast(app._data.alertMessage, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
-  				autoHideDelay: 1500,
+          autoHideDelay: 1500,
         });
         var date = new Date();
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       },
       /*Save the current architecture in a JSON file*/
       arch_save(){
@@ -894,16 +898,16 @@ try{
 
         downloadLink.click();
 
-        app._data.alertMessaje = 'Save architecture';
+        app._data.alertMessage = 'Save architecture';
         app._data.type = 'success';
-        app.$bvToast.toast(app._data.alertMessaje, {
+        app.$bvToast.toast(app._data.alertMessage, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
-  				autoHideDelay: 1500,
+          autoHideDelay: 1500,
         });
         var date = new Date();
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       },
       /*Change the execution mode of architecture editor*/
       change_mode(){
@@ -933,16 +937,16 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessaje = 'The memory layout has been reset correctly';
+            app._data.alertMessage = 'The memory layout has been reset correctly';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        })
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            })
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             
             return;
           }
@@ -956,16 +960,16 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessaje = 'The memory layout has been reset correctly';
+          app._data.alertMessage = 'The memory layout has been reset correctly';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           })
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         });
       },
       /*Check de memory layout changes*/
@@ -977,30 +981,30 @@ try{
             if(!isNaN(parseInt(this.memory_layout[i]))){
               auxMemoryLayout[i].value = parseInt(this.memory_layout[i]);
               if(auxMemoryLayout[i].value < 0){
-  		          app._data.alertMessaje = 'The value can not be negative';
-  		          app._data.type = 'danger';
-  		          app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-  		          var date = new Date();
-  		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  		          return;
-  		        }
+                app._data.alertMessage = 'The value can not be negative';
+                app._data.type = 'danger';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                return;
+              }
             }
             else{
-              app._data.alertMessaje = 'The value must be a number';
+              app._data.alertMessage = 'The value must be a number';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               var date = new Date();
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               return;
             }
           }
@@ -1008,31 +1012,31 @@ try{
 
         for(var i = 0; i < 6; i++){
           /*if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
-            app._data.alertMessaje = 'The memory must be aligned';
+            app._data.alertMessage = 'The memory must be aligned';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
-  	        var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});  
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});  
             return;
           }*/
 
           for(var j = i; j < 6; j++){
             if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
-              app._data.alertMessaje = 'The segment can not be overlap';
+              app._data.alertMessage = 'The segment can not be overlap';
               app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               var date = new Date();
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               return;
             }
           }
@@ -1045,12 +1049,12 @@ try{
         app._data.architecture = architecture;
 
         backup_stack_address = architecture.memory_layout[4].value;
-  	    backup_data_address = architecture.memory_layout[3].value;
+        backup_data_address = architecture.memory_layout[3].value;
 
-  	    for(var i = 0; i < 6; i++){
-  		    app._data.memory_layout[i] = "";
-  		  }
-  		  app.$forceUpdate();
+        for(var i = 0; i < 6; i++){
+          app._data.memory_layout[i] = "";
+        }
+        app.$forceUpdate();
       },
       /*Register ID assigment*/
       element_id(name, type, double){
@@ -1091,16 +1095,16 @@ try{
             }
 
             $(".loading").hide();
-            app._data.alertMessaje = 'The registers has been reset correctly';
+            app._data.alertMessage = 'The registers has been reset correctly';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             
             return;
           }
@@ -1121,29 +1125,29 @@ try{
           }
 
           $(".loading").hide();
-          app._data.alertMessaje = 'The registers has been reset correctly';
+          app._data.alertMessage = 'The registers has been reset correctly';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         });
       },
       /*Verify all field of new component*/
       newComponentVerify(evt){
         evt.preventDefault();
         if (!this.formArchitecture.name || !this.formArchitecture.type){
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else{
@@ -1154,14 +1158,14 @@ try{
       newComponent(){
         for (var i = 0; i < architecture_hash.length; i++){
           if(this.formArchitecture.name == architecture_hash[i].name){
-            app._data.alertMessaje = 'The component already exists';
+            app._data.alertMessage = 'The component already exists';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -1189,13 +1193,13 @@ try{
       editCompVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name){
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else {
@@ -1206,14 +1210,14 @@ try{
       editComponent(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           if((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
-            app._data.alertMessaje = 'The component already exists';
+            app._data.alertMessage = 'The component already exists';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -1279,35 +1283,35 @@ try{
       newElementVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name){
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else{
           if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
-            app._data.alertMessaje = 'Please complete all fields';
+            app._data.alertMessage = 'Please complete all fields';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
           }
           else if(isNaN(this.formArchitecture.defValue)){
-            app._data.alertMessaje = 'The default value must be a number';
+            app._data.alertMessage = 'The default value must be a number';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
           }
           else{
             this.newElement(comp);
@@ -1319,14 +1323,14 @@ try{
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
             if(this.formArchitecture.name == architecture.components[i].elements[j].name){
-              app._data.alertMessaje = 'The element already exists';
+              app._data.alertMessage = 'The element already exists';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               return;
             }
           } 
@@ -1422,23 +1426,23 @@ try{
       editElementVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else if(isNaN(this.formArchitecture.defValue)){
-          app._data.alertMessaje = 'The default value must be a number';
+          app._data.alertMessage = 'The default value must be a number';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else {
@@ -1450,14 +1454,14 @@ try{
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
             if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
-              app._data.alertMessaje = 'The element already exists';
+              app._data.alertMessage = 'The element already exists';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               return;
             }
           } 
@@ -1550,16 +1554,16 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessaje = 'The instruction set has been reset correctly';
+            app._data.alertMessage = 'The instruction set has been reset correctly';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             
             return;
           }
@@ -1574,16 +1578,16 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessaje = 'The instruction set has been reset correctly';
+          app._data.alertMessage = 'The instruction set has been reset correctly';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         });
       },
       /*Verify new number of fields*/
@@ -1644,6 +1648,22 @@ try{
       newInstVerify(evt){
         evt.preventDefault();
 
+        for (var i = 0; i < this.formInstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
+            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
+
         var empty = 0;
         var auxCop = "";
 
@@ -1654,27 +1674,27 @@ try{
             }
             else{
               if((this.formInstruction.valueField[z]).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-                app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
+                app._data.alertMessage = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
                 app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
                 return;
               }
 
               for (var i = 0; i < this.formInstruction.valueField[z].length; i++){
                 if(this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
-                  app._data.alertMessaje = 'The value of cop must be binary';
+                  app._data.alertMessage = 'The value of cop must be binary';
                   app._data.type = 'danger';
-                  app.$bvToast.toast(app._data.alertMessaje, {
-  				          variant: app._data.type,
-  				          solid: true,
-  				          toaster: "b-toaster-top-center",
-  									autoHideDelay: 1500,
-  				        });
+                  app.$bvToast.toast(app._data.alertMessage, {
+                    variant: app._data.type,
+                    solid: true,
+                    toaster: "b-toaster-top-center",
+                    autoHideDelay: 1500,
+                  });
                   return;
                 }
               }
@@ -1687,14 +1707,14 @@ try{
 
         for (var i = 0; i < this.formInstruction.co.length; i++){
           if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-            app._data.alertMessaje = 'The value of co must be binary';
+            app._data.alertMessage = 'The value of co must be binary';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -1706,43 +1726,43 @@ try{
         }
 
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else if(isNaN(this.formInstruction.co)){
-          app._data.alertMessaje = 'The field co must be numbers';
+          app._data.alertMessage = 'The field co must be numbers';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else if(isNaN(this.formInstruction.cop)){
-          app._data.alertMessaje = 'The field cop must be numbers';
+          app._data.alertMessage = 'The field cop must be numbers';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-          app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
+          app._data.alertMessage = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else {
@@ -1754,14 +1774,14 @@ try{
         for (var i = 0; i < architecture.instructions.length; i++){
           if(this.formInstruction.co == architecture.instructions[i].co){
             if((!this.formInstruction.cop)){
-              app._data.alertMessaje = 'The instruction already exists';
+              app._data.alertMessage = 'The instruction already exists';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               return;
             }
           }
@@ -1769,14 +1789,14 @@ try{
 
         for (var i = 0; i < architecture.instructions.length; i++){
           if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
-            app._data.alertMessaje = 'The instruction already exists';
+            app._data.alertMessage = 'The instruction already exists';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -1836,6 +1856,22 @@ try{
       editInstVerify(evt, inst, co, cop){
         evt.preventDefault();
 
+        for (var i = 0; i < this.formInstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
+            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
+
         var empty = 0;
         var auxCop = "";
 
@@ -1846,27 +1882,27 @@ try{
             }
             else{
               if((this.formInstruction.valueField[z]).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-                app._data.alertMessaje = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
+                app._data.alertMessage = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
                 app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
                 return;
               }
 
               for (var i = 0; i < this.formInstruction.valueField[z].length; i++){
                 if(this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
-                  app._data.alertMessaje = 'The value of cop must be binary';
+                  app._data.alertMessage = 'The value of cop must be binary';
                   app._data.type = 'danger';
-                  app.$bvToast.toast(app._data.alertMessaje, {
-  				          variant: app._data.type,
-  				          solid: true,
-  				          toaster: "b-toaster-top-center",
-  									autoHideDelay: 1500,
-  				        });
+                  app.$bvToast.toast(app._data.alertMessage, {
+                    variant: app._data.type,
+                    solid: true,
+                    toaster: "b-toaster-top-center",
+                    autoHideDelay: 1500,
+                  });
                   return;
                 }
               }
@@ -1879,14 +1915,14 @@ try{
 
         for (var i = 0; i < this.formInstruction.co.length; i++){
           if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-            app._data.alertMessaje = 'The value of co must be binary';
+            app._data.alertMessage = 'The value of co must be binary';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -1897,43 +1933,43 @@ try{
           }
         }
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else if(isNaN(this.formInstruction.co)){
-          app._data.alertMessaje = 'The field co must be numbers';
+          app._data.alertMessage = 'The field co must be numbers';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else if(isNaN(this.formInstruction.cop)){
-          app._data.alertMessaje = 'The field cop must be numbers';
+          app._data.alertMessage = 'The field cop must be numbers';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-          app._data.alertMessaje = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
+          app._data.alertMessage = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else {
@@ -1953,14 +1989,14 @@ try{
         for (var i = 0; i < architecture.instructions.length; i++){
           if((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
             if(((!this.formInstruction.cop) || (exCop != true))){
-              app._data.alertMessaje = 'The instruction already exists';
+              app._data.alertMessage = 'The instruction already exists';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               return;
             }
           }
@@ -1968,14 +2004,14 @@ try{
 
         for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
           if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
-            app._data.alertMessaje = 'The instruction already exists';
+            app._data.alertMessage = 'The instruction already exists';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -2024,16 +2060,16 @@ try{
           }
         }
 
-        app._data.alertMessaje = 'The instruction has been modified, please check the definition of the pseudoinstructions';
+        app._data.alertMessage = 'The instruction has been modified, please check the definition of the pseudoinstructions';
         app._data.type = 'info';
-        app.$bvToast.toast(app._data.alertMessaje, {
+        app.$bvToast.toast(app._data.alertMessage, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
-  				autoHideDelay: 1500,
+          autoHideDelay: 1500,
         });
         var date = new Date();
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
       },
       /*Show delete instruction modal*/
       delInstModal(elem, index, button){
@@ -2150,16 +2186,16 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessaje = 'The registers has been reset correctly';
+            app._data.alertMessage = 'The registers has been reset correctly';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             
             return;
           }
@@ -2174,21 +2210,37 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessaje = 'The pseudoinstruction set has been reset correctly';
+          app._data.alertMessage = 'The pseudoinstruction set has been reset correctly';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         });
       },
       /*Check all fields of new pseudoinstruction*/
       newPseudoinstVerify(evt){
         evt.preventDefault();
+
+        for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
+            if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
 
         var vacio = 0;
 
@@ -2205,13 +2257,13 @@ try{
         }
 
         if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else {
@@ -2263,6 +2315,22 @@ try{
       editPseudoinstVerify(evt, inst, index){
         evt.preventDefault();
 
+        for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
+            if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
+
         var vacio = 0;
 
         for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
@@ -2278,13 +2346,13 @@ try{
         }
 
         if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         }
         else {
@@ -2355,260 +2423,260 @@ try{
             console.log(code)
             var instructions = code[1].split(";");
             if(instructions.length == 1){
-              app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
+              app._data.alertMessage = 'Enter a ";" at the end of each line of code';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               return -1;
             }
 
             for (var j = 0; j < instructions.length-1; j++){
               var re = new RegExp("^ +");
-	            instructions[j] = instructions[j].replace(re, "");
+              instructions[j] = instructions[j].replace(re, "");
 
-	            re = new RegExp(" +", "g");
-	            instructions[j] = instructions[j].replace(re, " ");
+              re = new RegExp(" +", "g");
+              instructions[j] = instructions[j].replace(re, " ");
 
-	            var instructionParts = instructions[j].split(" ");
+              var instructionParts = instructions[j].split(" ");
 
-	            var found = false;
-	            for (var i = 0; i < architecture.instructions.length; i++){
-	              if(architecture.instructions[i].name == instructionParts[0]){
-	                found = true;
-	                var numFields = 0;
-	                var regId = 0;
+              var found = false;
+              for (var i = 0; i < architecture.instructions.length; i++){
+                if(architecture.instructions[i].name == instructionParts[0]){
+                  found = true;
+                  var numFields = 0;
+                  var regId = 0;
 
-	                signatureDef = architecture.instructions[i].signature_definition;
-	                signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-	                re = new RegExp("[fF][0-9]+", "g");
-	                signatureDef = signatureDef.replace(re, "(.*?)");
+                  signatureDef = architecture.instructions[i].signature_definition;
+                  signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                  re = new RegExp("[fF][0-9]+", "g");
+                  signatureDef = signatureDef.replace(re, "(.*?)");
 
-	                console.log(instructions[j])
+                  console.log(instructions[j])
 
-	                re = new RegExp(signatureDef+"$");
-	                if(instructions[j].search(re) == -1){
-	                  app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
-	                  app._data.type = 'danger';
-	                  app.$bvToast.toast(app._data.alertMessaje, {
-	  				          variant: app._data.type,
-	  				          solid: true,
-	  				          toaster: "b-toaster-top-center",
-	  									autoHideDelay: 1500,
-	  				        });
-	                  return -1;
-	                }
+                  re = new RegExp(signatureDef+"$");
+                  if(instructions[j].search(re) == -1){
+                    app._data.alertMessage = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
+                    app._data.type = 'danger';
+                    app.$bvToast.toast(app._data.alertMessage, {
+                      variant: app._data.type,
+                      solid: true,
+                      toaster: "b-toaster-top-center",
+                      autoHideDelay: 1500,
+                    });
+                    return -1;
+                  }
 
-	                re = new RegExp(signatureDef+"$");
-	                var match = re.exec(instructions[j]);
-	                var instructionParts = [];
-	                for(var z = 1; z < match.length; z++){
-	                  instructionParts.push(match[z]);
-	                }
+                  re = new RegExp(signatureDef+"$");
+                  var match = re.exec(instructions[j]);
+                  var instructionParts = [];
+                  for(var z = 1; z < match.length; z++){
+                    instructionParts.push(match[z]);
+                  }
 
-			            re = new RegExp(",", "g");
-			            var signature = architecture.instructions[i].signature.replace(re, " ");
+                  re = new RegExp(",", "g");
+                  var signature = architecture.instructions[i].signature.replace(re, " ");
 
-			            re = new RegExp(signatureDef+"$");
-			            var match = re.exec(signature);
-			            var signatureParts = [];
-			            for(var j = 1; j < match.length; j++){
-			              signatureParts.push(match[j]);
-			            }
+                  re = new RegExp(signatureDef+"$");
+                  var match = re.exec(signature);
+                  var signatureParts = [];
+                  for(var j = 1; j < match.length; j++){
+                    signatureParts.push(match[j]);
+                  }
 
-	                console.log(instructionParts)
-	                console.log(signatureParts)
+                  console.log(instructionParts)
+                  console.log(signatureParts)
 
-	                for (var z = 1; z < signatureParts.length; z++){
+                  for (var z = 1; z < signatureParts.length; z++){
 
-	                  if(signatureParts[z] == "INT-Reg" || signatureParts[z] == "SFP-Reg" || signatureParts[z] == "DFP-Reg" ||signatureParts[z] == "Ctrl-Reg"){
-	                    console.log("REG")
-	                    var found = false;
+                    if(signatureParts[z] == "INT-Reg" || signatureParts[z] == "SFP-Reg" || signatureParts[z] == "DFP-Reg" ||signatureParts[z] == "Ctrl-Reg"){
+                      console.log("REG")
+                      var found = false;
 
-	                    var id = -1;
-	                    re = new RegExp("R[0-9]+");
-	                    console.log(z)
-	                    if(instructionParts[z].search(re) != -1){
-	                      re = new RegExp("R(.*?)$");
-	                      match = re.exec(instructionParts[z]);
-	                      id = match[1];
-	                    }
+                      var id = -1;
+                      re = new RegExp("R[0-9]+");
+                      console.log(z)
+                      if(instructionParts[z].search(re) != -1){
+                        re = new RegExp("R(.*?)$");
+                        match = re.exec(instructionParts[z]);
+                        id = match[1];
+                      }
 
-	                    for (var a = 0; a < architecture.components.length; a++){
-	                      for (var b = 0; b < architecture.components[a].elements.length; b++){
-	                        if(architecture.components[a].elements[b].name == instructionParts[z]){
-	                          found = true;
-	                        }
-	                        if(architecture.components[a].type == "integer" && regId == id){
-	                          found = true;
-	                        }
-	                        if(architecture.components[a].type == "integer"){
-	                          regId++;
-	                        }
-	                      }
-	                    }
+                      for (var a = 0; a < architecture.components.length; a++){
+                        for (var b = 0; b < architecture.components[a].elements.length; b++){
+                          if(architecture.components[a].elements[b].name == instructionParts[z]){
+                            found = true;
+                          }
+                          if(architecture.components[a].type == "integer" && regId == id){
+                            found = true;
+                          }
+                          if(architecture.components[a].type == "integer"){
+                            regId++;
+                          }
+                        }
+                      }
 
-	                    for (var b = 0; b < fields.length; b++){
-	                      if(fields[b] == instructionParts[z]){
-	                        found = true;
-	                      }
-	                    }
+                      for (var b = 0; b < fields.length; b++){
+                        if(fields[b] == instructionParts[z]){
+                          found = true;
+                        }
+                      }
 
-	                    if(!found){
-	                      app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-	                      app._data.type = 'danger';
-	                      app.$bvToast.toast(app._data.alertMessaje, {
-	  						          variant: app._data.type,
-	  						          solid: true,
-	  						          toaster: "b-toaster-top-center",
-	  											autoHideDelay: 1500,
-	  						        });
-	                      return -1;
-	                    }
-	                  }
+                      if(!found){
+                        app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
+                        app._data.type = 'danger';
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
+                        return -1;
+                      }
+                    }
 
-	                  if(signatureParts[z] == "inm"){
-	                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-	                    if(instructionParts[z].match(/^0x/)){
-	                      var value = instructionParts[z].split("x");
-	                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
-	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      }
+                    if(signatureParts[z] == "inm" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
+                      var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                      if(instructionParts[z].match(/^0x/)){
+                        var value = instructionParts[z].split("x");
+                        if(isNaN(parseInt(instructionParts[z], 16)) == true){
+                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        }
 
-	                      if(value[1].length*4 > fieldsLength){
-	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      }
-	                    }
-	                    else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
-	                      if(isNaN(parseFloat(instructionParts[z])) == true){
-	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      }
+                        if(value[1].length*4 > fieldsLength){
+                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        }
+                      }
+                      else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
+                        if(isNaN(parseFloat(instructionParts[z])) == true){
+                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        }
 
-	                      if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
-	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      }
-	                    }
-	                    else if(isNaN(parseInt(instructionParts[z]))){
-	                    	
-	                    }
-	                    else {
-	                      var numAux = parseInt(instructionParts[z], 10);
-	                      if(isNaN(parseInt(instructionParts[z])) == true){
-	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      }
+                        if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
+                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        }
+                      }
+                      else if(isNaN(parseInt(instructionParts[z]))){
+                        
+                      }
+                      else {
+                        var numAux = parseInt(instructionParts[z], 10);
+                        if(isNaN(parseInt(instructionParts[z])) == true){
+                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        }
 
-	                      if((numAux.toString(2)).length > fieldsLength){
-	                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      }
-	                    }
-	                  }
+                        if((numAux.toString(2)).length > fieldsLength){
+                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        }
+                      }
+                    }
 
-	                  if(signatureParts[z] == "address"){
-	                    var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
-	                    if(instructionParts[z].match(/^0x/)){
-	                      var value = instructionParts[z].split("x");
-	                      if(isNaN(parseInt(instructionParts[z], 16)) == true){
-	                        app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      }
+                    if(signatureParts[z] == "address"){
+                      var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
+                      if(instructionParts[z].match(/^0x/)){
+                        var value = instructionParts[z].split("x");
+                        if(isNaN(parseInt(instructionParts[z], 16)) == true){
+                          app._data.alertMessage = "Address " + instructionParts[z] + " is not valid";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        }
 
-	                      if(value[1].length*4 > fieldsLength){
-	                        app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
-	                        app._data.type = 'danger';
-	                        app.$bvToast.toast(app._data.alertMessaje, {
-	  							          variant: app._data.type,
-	  							          solid: true,
-	  							          toaster: "b-toaster-top-center",
-	  												autoHideDelay: 1500,
-	  							        });
-	                        return -1;
-	                      } 
-	                    }
-	                  }
+                        if(value[1].length*4 > fieldsLength){
+                          app._data.alertMessage = "Address " + instructionParts[z] + " is too big";
+                          app._data.type = 'danger';
+                          app.$bvToast.toast(app._data.alertMessage, {
+                            variant: app._data.type,
+                            solid: true,
+                            toaster: "b-toaster-top-center",
+                            autoHideDelay: 1500,
+                          });
+                          return -1;
+                        } 
+                      }
+                    }
 
-	                  if(!found){
-	                    app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
-	                    app._data.type = 'danger';
-	                    app.$bvToast.toast(app._data.alertMessaje, {
-	  					          variant: app._data.type,
-	  					          solid: true,
-	  					          toaster: "b-toaster-top-center",
-	  										autoHideDelay: 1500,
-	  					        });
-	                    return -1;
-	                  }
-	                }
-	              }
-	            }
-	            if(!found){
-	              app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
-	              app._data.type = 'danger';
-	              app.$bvToast.toast(app._data.alertMessaje, {
-	  		          variant: app._data.type,
-	  		          solid: true,
-	  		          toaster: "b-toaster-top-center",
-	  							autoHideDelay: 1500,
-	  		        });
-	              return -1;
-	            }
+                    if(!found){
+                      app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
+                      app._data.type = 'danger';
+                      app.$bvToast.toast(app._data.alertMessage, {
+                        variant: app._data.type,
+                        solid: true,
+                        toaster: "b-toaster-top-center",
+                        autoHideDelay: 1500,
+                      });
+                      return -1;
+                    }
+                  }
+                }
+              }
+              if(!found){
+                app._data.alertMessage = 'Instruction ' + instructions[j] + ' do not exists';
+                app._data.type = 'danger';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                return -1;
+              }
             }
 
             definition = definition.replace(code[0], "");
@@ -2621,14 +2689,14 @@ try{
           var instructions = definition.split(";");
           console.log(instructions.length)
           if(instructions.length == 1){
-            app._data.alertMessaje = 'Enter a ";" at the end of each line of code';
+            app._data.alertMessage = 'Enter a ";" at the end of each line of code';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return -1;
           }
 
@@ -2657,14 +2725,14 @@ try{
 
                 re = new RegExp(signatureDef+"$");
                 if(instructions[j].search(re) == -1){
-                  app._data.alertMessaje = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
+                  app._data.alertMessage = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
                   app._data.type = 'danger';
-                  app.$bvToast.toast(app._data.alertMessaje, {
-  				          variant: app._data.type,
-  				          solid: true,
-  				          toaster: "b-toaster-top-center",
-  									autoHideDelay: 1500,
-  				        });
+                  app.$bvToast.toast(app._data.alertMessage, {
+                    variant: app._data.type,
+                    solid: true,
+                    toaster: "b-toaster-top-center",
+                    autoHideDelay: 1500,
+                  });
                   return -1;
                 }
 
@@ -2675,15 +2743,15 @@ try{
                   instructionParts.push(match[z]);
                 }
 
-		            re = new RegExp(",", "g");
-		            var signature = architecture.instructions[i].signature.replace(re, " ");
+                re = new RegExp(",", "g");
+                var signature = architecture.instructions[i].signature.replace(re, " ");
 
-		            re = new RegExp(signatureDef+"$");
-		            var match = re.exec(signature);
-		            var signatureParts = [];
-		            for(var j = 1; j < match.length; j++){
-		              signatureParts.push(match[j]);
-		            }
+                re = new RegExp(signatureDef+"$");
+                var match = re.exec(signature);
+                var signatureParts = [];
+                for(var j = 1; j < match.length; j++){
+                  signatureParts.push(match[j]);
+                }
 
                 console.log(instructionParts)
                 console.log(signatureParts)
@@ -2724,97 +2792,97 @@ try{
                     }
 
                     if(!found){
-                      app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+                      app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
                       app._data.type = 'danger';
-                      app.$bvToast.toast(app._data.alertMessaje, {
-  						          variant: app._data.type,
-  						          solid: true,
-  						          toaster: "b-toaster-top-center",
-  											autoHideDelay: 1500,
-  						        });
+                      app.$bvToast.toast(app._data.alertMessage, {
+                        variant: app._data.type,
+                        solid: true,
+                        toaster: "b-toaster-top-center",
+                        autoHideDelay: 1500,
+                      });
                       return -1;
                     }
                   }
 
-                  if(signatureParts[z] == "inm"){
+                  if(signatureParts[z] == "inm" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
                     var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
-                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       }
                     }
                     else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
                       if(isNaN(parseFloat(instructionParts[z])) == true){
-                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       }
 
                       if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
-                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       }
                     }
                     else if(isNaN(parseInt(instructionParts[z]))){
-                    	
+                      
                     }
                     else {
                       var numAux = parseInt(instructionParts[z], 10);
                       if(isNaN(parseInt(instructionParts[z])) == true){
-                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is not valid";
+                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       }
 
                       if((numAux.toString(2)).length > fieldsLength){
-                        app._data.alertMessaje = "Immediate number " + instructionParts[z] + " is too big";
+                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       }
                     }
@@ -2825,54 +2893,54 @@ try{
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                        app._data.alertMessaje = "Address " + instructionParts[z] + " is not valid";
+                        app._data.alertMessage = "Address " + instructionParts[z] + " is not valid";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
-                        app._data.alertMessaje = "Address " + instructionParts[z] + " is too big";
+                        app._data.alertMessage = "Address " + instructionParts[z] + " is too big";
                         app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessaje, {
-  							          variant: app._data.type,
-  							          solid: true,
-  							          toaster: "b-toaster-top-center",
-  												autoHideDelay: 1500,
-  							        });
+                        app.$bvToast.toast(app._data.alertMessage, {
+                          variant: app._data.type,
+                          solid: true,
+                          toaster: "b-toaster-top-center",
+                          autoHideDelay: 1500,
+                        });
                         return -1;
                       } 
                     }
                   }
 
                   if(!found){
-                    app._data.alertMessaje = 'Register ' + instructionParts[z] + ' not found';
+                    app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
                     app._data.type = 'danger';
-                    app.$bvToast.toast(app._data.alertMessaje, {
-  					          variant: app._data.type,
-  					          solid: true,
-  					          toaster: "b-toaster-top-center",
-  										autoHideDelay: 1500,
-  					        });
+                    app.$bvToast.toast(app._data.alertMessage, {
+                      variant: app._data.type,
+                      solid: true,
+                      toaster: "b-toaster-top-center",
+                      autoHideDelay: 1500,
+                    });
                     return -1;
                   }
                 }
               }
             }
             if(!found){
-              app._data.alertMessaje = 'Instruction ' + instructions[j] + ' do not exists';
+              app._data.alertMessage = 'Instruction ' + instructions[j] + ' do not exists';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               return -1;
             }
           }
@@ -2964,16 +3032,16 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessaje = 'The directive set has been reset correctly';
+            app._data.alertMessage = 'The directive set has been reset correctly';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
         }
@@ -2987,16 +3055,16 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessaje = 'The directive set has been reset correctly';
+          app._data.alertMessage = 'The directive set has been reset correctly';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         });
       },
       /*Verify all fields of new directive*/
@@ -3004,25 +3072,25 @@ try{
         evt.preventDefault();
 
         if (!this.formDirective.name || !this.formDirective.action) {
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else {
           if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
-            app._data.alertMessaje = 'Please complete all fields';
+            app._data.alertMessage = 'Please complete all fields';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
           }
           else{
             this.newDirective();
@@ -3033,14 +3101,14 @@ try{
       newDirective(){
         for (var i = 0; i < architecture.directives.length; i++) {
           if(this.formDirective.name == architecture.directives[i].name){
-            app._data.alertMessaje = 'The directive already exists';
+            app._data.alertMessage = 'The directive already exists';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -3072,25 +3140,25 @@ try{
         evt.preventDefault();
 
         if (!this.formDirective.name || !this.formDirective.action) {
-          app._data.alertMessaje = 'Please complete all fields';
+          app._data.alertMessage = 'Please complete all fields';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
         } 
         else {
           if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
-            app._data.alertMessaje = 'Please complete all fields';
+            app._data.alertMessage = 'Please complete all fields';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
           }
           else{
             this.editDirective(name);
@@ -3101,14 +3169,14 @@ try{
       editDirective(name){
         for (var i = 0; i < architecture.directives.length; i++) {
           if((this.formDirective.name == architecture.directives[i].name) && (name != this.formDirective.name)){
-            app._data.alertMessaje = 'The directive already exists';
+            app._data.alertMessage = 'The directive already exists';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             return;
           }
         }
@@ -3176,9 +3244,9 @@ try{
 
 
 
-  		/*Compilator*/
+      /*Compilator*/
 
-  		/*Empty assembly textarea*/
+      /*Empty assembly textarea*/
       newAssembly(){
         textarea_assembly_editor.setValue("");
       },
@@ -3247,16 +3315,16 @@ try{
             code_assembly = this.responseText;
             textarea_assembly_editor.setValue(code_assembly);
 
-            app._data.alertMessaje = ' The selected example has been loaded correctly';
+            app._data.alertMessage = ' The selected example has been loaded correctly';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
           }
         };
         xhttp.open("GET", "examples/"+id+".txt", true);
@@ -3265,39 +3333,39 @@ try{
       /*Save a binary in a local file*/
       library_save(){
         if(this.assembly_compiler() == -1){
-        	return;
+          return;
         }
         promise.then((message) => {
           if(message == "-1"){
             return;
           }
           if(memory[memory_hash[0]].length != 0){
-            app._data.alertMessaje = 'You can not enter data in a library';
+            app._data.alertMessage = 'You can not enter data in a library';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
+            app.$bvToast.toast(app._data.alertMessage, {
               variant: app._data.type,
               solid: true,
               toaster: "b-toaster-top-center",
-    					autoHideDelay: 1500,
+              autoHideDelay: 1500,
             });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
 
           for (var i = 0; i < instructions_binary.length; i++){
             console.log(instructions_binary[i].Label)
             if(instructions_binary[i].Label == "main_symbol"){
-              app._data.alertMessaje = 'You can not use the "main" tag in a library';
+              app._data.alertMessage = 'You can not use the "main" tag in a library';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-    	          variant: app._data.type,
-    	          solid: true,
-    	          toaster: "b-toaster-top-center",
-    						autoHideDelay: 1500,
-    	        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               var date = new Date();
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               return;
             }
           }
@@ -3328,16 +3396,16 @@ try{
 
           downloadLink.click();
 
-          app._data.alertMessaje = 'Save binary';
+          app._data.alertMessage = 'Save binary';
           app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-    				autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         });
       },
       /*Load binary file*/
@@ -3463,599 +3531,741 @@ try{
       assembly_compiler(){
         $(".loading").show();
         promise = new Promise((resolve, reject) => {
-         	setTimeout(function(){
-    	      instructions = [];
-    	      instructions_tag = [];
-    	      pending_instructions = [];
-    	      pending_tags = [];
-    	      memory[memory_hash[0]] = [];
-    	      data_tag = [];
-    	      instructions_binary =[];
-    	      memory[memory_hash[1]] = [];
-    	      extern = [];
-    	      memory[memory_hash[2]] = [];
-    	      data = [];
-    	      executionInit = 1;
-    	      mutexRead = false;
+          setTimeout(function(){
+            instructions = [];
+            instructions_tag = [];
+            pending_instructions = [];
+            pending_tags = [];
+            memory[memory_hash[0]] = [];
+            data_tag = [];
+            instructions_binary =[];
+            memory[memory_hash[1]] = [];
+            extern = [];
+            memory[memory_hash[2]] = [];
+            data = [];
+            executionInit = 1;
+            mutexRead = false;
 
-    	      if(update_binary.instructions_binary != null){
-    	        for(var i = 0; i < update_binary.instructions_binary.length; i++){
-    	          instructions.push(update_binary.instructions_binary[i]);
-    	          if(i == 0){
-    	            instructions[instructions.length-1].hide = false;
-    	            if(update_binary.instructions_binary[i].globl == false){
-    	              instructions[instructions.length-1].Label = "";
-    	            }
-    	          }
-    	          else if(update_binary.instructions_binary[i].globl == false){
-    	            instructions[instructions.length-1].Label = "";
-    	            instructions[instructions.length-1].hide = true;
-    	          }
-    	          else if(update_binary.instructions_binary[i].globl == null){
-    	            instructions[instructions.length-1].hide = true;
-    	          }
-    	          else{
-    	            instructions[instructions.length-1].hide = false;
-    	          }
+            if(update_binary.instructions_binary != null){
+              for(var i = 0; i < update_binary.instructions_binary.length; i++){
+                instructions.push(update_binary.instructions_binary[i]);
+                if(i == 0){
+                  instructions[instructions.length-1].hide = false;
+                  if(update_binary.instructions_binary[i].globl == false){
+                    instructions[instructions.length-1].Label = "";
+                  }
+                }
+                else if(update_binary.instructions_binary[i].globl == false){
+                  instructions[instructions.length-1].Label = "";
+                  instructions[instructions.length-1].hide = true;
+                }
+                else if(update_binary.instructions_binary[i].globl == null){
+                  instructions[instructions.length-1].hide = true;
+                }
+                else{
+                  instructions[instructions.length-1].hide = false;
+                }
 
-    	          address = parseInt(instructions[instructions.length-1].Address, 16) + 4;
-    	        }
-    	      }
-    	      else{
-    	        address = parseInt(architecture.memory_layout[0].value);
-    	      }
+                address = parseInt(instructions[instructions.length-1].Address, 16) + 4;
+              }
+            }
+            else{
+              address = parseInt(architecture.memory_layout[0].value);
+            }
 
-    	      var numBinaries = instructions.length;
+            var numBinaries = instructions.length;
 
 
-    	      /*Allocation of memory addresses*/
+            /*Allocation of memory addresses*/
             architecture.memory_layout[4].value = backup_stack_address;
             architecture.memory_layout[3].value = backup_data_address;
-    	      data_address = parseInt(architecture.memory_layout[2].value);
-    	      stack_address = parseInt(architecture.memory_layout[4].value);
+            data_address = parseInt(architecture.memory_layout[2].value);
+            stack_address = parseInt(architecture.memory_layout[4].value);
 
-    	      architecture.components[1].elements[29].value = bigInt(stack_address).value;
-    	      architecture.components[0].elements[0].value = bigInt(address).value;
-    	      architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
-    	      architecture.components[0].elements[0].default_value = bigInt(address).value;
+            architecture.components[1].elements[29].value = bigInt(stack_address).value;
+            architecture.components[0].elements[0].value = bigInt(address).value;
+            architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
+            architecture.components[0].elements[0].default_value = bigInt(address).value;
 
-    	      /*Reset stats*/
-    	      totalStats = 0;
-    	      for (var i = 0; i < stats.length; i++){
-    	        stats[i].percentage = 0;
-    	        stats[i].number_instructions = 0;
-    	      }
+            /*Reset stats*/
+            totalStats = 0;
+            for (var i = 0; i < stats.length; i++){
+              stats[i].percentage = 0;
+              stats[i].number_instructions = 0;
+            }
 
-    	      align = 0;
-    	      var empty = false;
+            align = 0;
+            var empty = false;
 
-    	      /*Save a backup in the cache memory*/
-    	      if (typeof(Storage) !== "undefined") {
-    	        var auxObject = jQuery.extend(true, {}, architecture);
+            /*Save a backup in the cache memory*/
+            if (typeof(Storage) !== "undefined") {
+              var auxObject = jQuery.extend(true, {}, architecture);
 
-    	        var auxArchitecture = bigInt_serialize(auxObject);
-    	        var auxArch = JSON.stringify(auxArchitecture, null, 2);
+              var auxArchitecture = bigInt_serialize(auxObject);
+              var auxArch = JSON.stringify(auxArchitecture, null, 2);
 
-    	        var date = new Date();
-    	        var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
+              var date = new Date();
+              var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
               console.log(app._data.architecture_name);
-    	        localStorage.setItem("arch_name", app._data.architecture_name);
-    	        localStorage.setItem("architecture_copy", auxArch);
-    	        localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
-    	        localStorage.setItem("date_copy", auxDate);
-    	      }
+              localStorage.setItem("arch_name", app._data.architecture_name);
+              localStorage.setItem("architecture_copy", auxArch);
+              localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
+              localStorage.setItem("date_copy", auxDate);
+            }
 
-    	      /*Start of compilation*/
-    	      app.first_token();
+            /*Start of compilation*/
+            app.first_token();
 
-    	      if(app.get_token() == null){
-    	        $(".loading").hide();
-    	        app._data.alertMessaje = 'Please enter the assembly code before compiling';
-    	        app._data.type = 'danger';
-    	        app.$bvToast.toast(app._data.alertMessaje, {
-    	          variant: app._data.type,
-    	          solid: true,
-    	          toaster: "b-toaster-top-center",
-    						autoHideDelay: 1500,
-    	        });
-    	        var date = new Date();
-    	        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-    	        return -1;
-    	      }
+            if(app.get_token() == null){
+              $(".loading").hide();
+              app._data.alertMessage = 'Please enter the assembly code before compiling';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              var date = new Date();
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              return -1;
+            }
 
-    	      token = app.get_token();
-    	      console.log(token)
+            token = app.get_token();
+            console.log(token)
 
-    	      while(!empty){
-    	        token = app.get_token();
-    	        console.log(token)
+            while(!empty){
+              token = app.get_token();
+              console.log(token)
 
-    	        if(token == null){
-    	          empty = true;
-    	          break;
-    	        }
+              if(token == null){
+                empty = true;
+                break;
+              }
 
-    	        var change = false;
+              var change = false;
 
-    	        for(var i = 0; i < architecture.directives.length; i++){
-    	          if(token == architecture.directives[i].name){
-    	            switch(architecture.directives[i].action){
-    	              case "data_segment":
-    	                console.log("data_segment")
-    	                var result = app.data_segment_compiler();
-    	                if(result == 0){
-    	                  change = true;
-    	                }
-    	                if(result == -1){
-    	                  tokenIndex = 0;
-    	                  instructions = [];
-    	                  pending_instructions = [];
-    	                  pending_tags = [];
-    	                  memory[memory_hash[0]] = [];
-    	                  data_tag = [];
-    	                  instructions_binary = [];
-    	                  memory[memory_hash[1]] = [];
-    	                  memory[memory_hash[2]] = [];
-    	                  data = [];
-    	                  extern = [];
-    	                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-    	                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-    	                  app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-    	                  app._data.instructions = instructions;
-    	                  $(".loading").hide();
-    	                  return -1;
-    	                }
-    	                break;
-    	              case "code_segment":
-    	                console.log("code_segment")
-    	                var result = app.code_segment_compiler();
-    	                if(result == 0){
-    	                  change = true;
-    	                }
-    	                if(result == -1){
-    	                  tokenIndex = 0;
-    	                  instructions = [];
-    	                  pending_instructions = [];
-    	                  pending_tags = [];
-    	                  memory[memory_hash[0]] = [];
-    	                  data_tag = [];
-    	                  instructions_binary = [];
-    	                  memory[memory_hash[1]] = [];
-    	                  extern = [];
-    	                  memory[memory_hash[2]] = [];
-    	                  data = [];
-    	                  app._data.instructions = instructions;
-    	                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-    	                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-    	                  app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-    	                  $(".loading").hide();
-    	                  return -1;
-    	                }
-    	                break;
-    	              case "global_symbol":
+              for(var i = 0; i < architecture.directives.length; i++){
+                if(token == architecture.directives[i].name){
+                  switch(architecture.directives[i].action){
+                    case "data_segment":
+                      console.log("data_segment")
+                      var result = app.data_segment_compiler();
+                      if(result == 0){
+                        change = true;
+                      }
+                      if(result == -1){
+                        tokenIndex = 0;
+                        instructions = [];
+                        pending_instructions = [];
+                        pending_tags = [];
+                        memory[memory_hash[0]] = [];
+                        data_tag = [];
+                        instructions_binary = [];
+                        memory[memory_hash[1]] = [];
+                        memory[memory_hash[2]] = [];
+                        data = [];
+                        extern = [];
+                        app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                        app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                        app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                        app._data.instructions = instructions;
+                        $(".loading").hide();
+                        return -1;
+                      }
+                      break;
+                    case "code_segment":
+                      console.log("code_segment")
+                      var result = app.code_segment_compiler();
+                      if(result == 0){
+                        change = true;
+                      }
+                      if(result == -1){
+                        tokenIndex = 0;
+                        instructions = [];
+                        pending_instructions = [];
+                        pending_tags = [];
+                        memory[memory_hash[0]] = [];
+                        data_tag = [];
+                        instructions_binary = [];
+                        memory[memory_hash[1]] = [];
+                        extern = [];
+                        memory[memory_hash[2]] = [];
+                        data = [];
+                        app._data.instructions = instructions;
+                        app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                        app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                        app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                        $(".loading").hide();
+                        return -1;
+                      }
+                      break;
+                    case "global_symbol":
 
-    	                var isGlobl = true;
-    	                app.next_token();
+                      var isGlobl = true;
+                      app.next_token();
 
-    	                while(isGlobl){
-    	                  token = app.get_token();
+                      while(isGlobl){
+                        token = app.get_token();
 
-    	                  re = new RegExp(",", "g");
-    	                  token = token.replace(re, "");
+                        re = new RegExp(",", "g");
+                        token = token.replace(re, "");
 
-    	                  console.log(token)
-    	                  extern.push(token);
-    	                  change = true;
+                        console.log(token)
+                        extern.push(token);
+                        change = true;
 
-    	                  app.next_token();
-    	                  token = app.get_token();
+                        app.next_token();
+                        token = app.get_token();
 
-    	                  console.log(token)
+                        console.log(token)
 
-    	                  for(var z = 0; z < architecture.directives.length; z++){
-    	                    if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-    	                      isGlobl = false;
-    	                    }
-    	                  }
-    	                }
+                        for(var z = 0; z < architecture.directives.length; z++){
+                          if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                            isGlobl = false;
+                          }
+                        }
+                      }
 
-    	                break;
-    	              default:
-    	                console.log("default")
-    	                empty = true;
-    	                break;
-    	            }
-    	          }
+                      break;
+                    default:
+                      console.log("default")
+                      empty = true;
+                      break;
+                  }
+                }
 
-    	          else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
-    	            empty = true;
-    	            app.compileError(15, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-    	            $(".loading").hide();
-    	            tokenIndex = 0;
-    	            return -1;
-    	          } 
-    	        }
-    	      }
+                else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
+                  empty = true;
+                  app.compileError(15, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                  $(".loading").hide();
+                  tokenIndex = 0;
+                  return -1;
+                } 
+              }
+            }
 
-    	      var found = false;
+            var found = false;
 
-    	      if(update_binary.instructions_binary != null){
-    	        for(var j = 0; j<instructions.length; j++){
-    	          if(instructions[j].Label != ""){
-    	            for(var i = 0; i<update_binary.instructions_tag.length; i++){
-    	              if(instructions[j].Label == update_binary.instructions_tag[i].tag){
-    	                update_binary.instructions_tag[i].addr = instructions[j].Address;
-    	              }
-    	            }
-    	          }
-    	        }
-    	      }
+            if(update_binary.instructions_binary != null){
+              for(var j = 0; j<instructions.length; j++){
+                if(instructions[j].Label != ""){
+                  for(var i = 0; i<update_binary.instructions_tag.length; i++){
+                    if(instructions[j].Label == update_binary.instructions_tag[i].tag){
+                      update_binary.instructions_tag[i].addr = instructions[j].Address;
+                    }
+                  }
+                }
+              }
+            }
 
-    	      /*Check pending instructions*/
-    	      for(var i = 0; i < pending_instructions.length; i++){
-    	        var exit = 0;
-    	        var signatureParts = pending_instructions[i].signature;
-    	        var signatureRawParts = pending_instructions[i].signatureRaw;
-    	        var instructionParts = (pending_instructions[i].instruction).split(' ');
-    	        for (var j = 0; j < signatureParts.length && exit == 0; j++){
-    	          if(signatureParts[j] == "inm" || signatureParts[j] == "address"){
-    	            for (var z = 0; z < instructions.length && exit == 0; z++){
-    	              if(instructions[z].Label == instructionParts[j]){
-    	                var addr = instructions[z].Address;
-    	                var bin = parseInt(addr, 16).toString(2);
-    	                var startbit = pending_instructions[i].startBit;
-    	                var stopbit = pending_instructions[i].stopBit;
+            /*Check pending instructions*/
+            for(var i = 0; i < pending_instructions.length; i++){
+              var exit = 0;
+              var signatureParts = pending_instructions[i].signature;
+              var signatureRawParts = pending_instructions[i].signatureRaw;
+              var instructionParts = (pending_instructions[i].instruction).split(' ');
+              for (var j = 0; j < signatureParts.length && exit == 0; j++){
+                if(signatureParts[j] == "inm" || signatureParts[j] == "address"){
+                  for (var z = 0; z < instructions.length && exit == 0; z++){
+                    if(instructions[z].Label == instructionParts[j]){
+                      var addr = instructions[z].Address;
+                      var bin = parseInt(addr, 16).toString(2);
+                      var startbit = pending_instructions[i].startBit;
+                      var stopbit = pending_instructions[i].stopBit;
 
-    	                instructionParts[j] = addr;
-    	                var newInstruction = "";
-    	                for (var w = 0; w < instructionParts.length; w++) {
-    	                  if(w == instructionParts.length-1){
-    	                    newInstruction = newInstruction + instructionParts[w];
-    	                  }
-    	                  else{
-    	                    newInstruction = newInstruction + instructionParts[w] + " ";
-    	                  }
-    	                }
-    	                for (var w = 0; w < instructions.length && exit == 0; w++) {
-    	                  var aux = "0x" + (pending_instructions[i].address).toString(16);
-    	                  if(aux == instructions[w].Address){
-    	                    instructions[w].loaded = newInstruction;
-    	                  }
-    	                }
+                      instructionParts[j] = addr;
+                      var newInstruction = "";
+                      for (var w = 0; w < instructionParts.length; w++) {
+                        if(w == instructionParts.length-1){
+                          newInstruction = newInstruction + instructionParts[w];
+                        }
+                        else{
+                          newInstruction = newInstruction + instructionParts[w] + " ";
+                        }
+                      }
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                        }
+                      }
 
-    	                for (var w = 0; w < instructions.length && exit == 0; w++) {
-    	                  var aux = "0x" + (pending_instructions[i].address).toString(16);
-    	                  if(aux == instructions[w].Address){
-    	                    instructions[w].loaded = newInstruction;
-    	                    var fieldsLength = startbit - stopbit + 1;
-    	                    console.log(w)
-    	                    console.log(numBinaries)
-    	                    console.log(w - numBinaries)
-    	                    instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-    	                    exit = 1;
-    	                  }
-    	                }
-    	              }
-    	            }
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                          var fieldsLength = startbit - stopbit + 1;
+                          console.log(w)
+                          console.log(numBinaries)
+                          console.log(w - numBinaries)
+                          instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+                          exit = 1;
+                        }
+                      }
+                    }
+                  }
 
-    	            for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-    	              for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-    	                if(instructionParts[j] == memory[memory_hash[0]][z].Binary[p].Tag){
-    	                  var addr = (memory[memory_hash[0]][z].Binary[p].Addr);
-    	                  var bin = parseInt(addr, 16).toString(2);
-    	                  var startbit = pending_instructions[i].startBit;
-    	                  var stopbit = pending_instructions[i].stopBit;
+                  for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
+                    for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
+                      if(instructionParts[j] == memory[memory_hash[0]][z].Binary[p].Tag){
+                        var addr = (memory[memory_hash[0]][z].Binary[p].Addr);
+                        var bin = parseInt(addr, 16).toString(2);
+                        var startbit = pending_instructions[i].startBit;
+                        var stopbit = pending_instructions[i].stopBit;
 
-    	                  instructionParts[j] = addr;
-    	                  var newInstruction = "";
-    	                  for (var w = 0; w < instructionParts.length; w++) {
-    	                    if(w == instructionParts.length-1){
-    	                      newInstruction = newInstruction + instructionParts[w];
-    	                    }
-    	                    else{
-    	                      newInstruction = newInstruction + instructionParts[w] + " ";
-    	                    }
-    	                  }
-    	                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-    	                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-    	                    if(aux == instructions[w].Address){
-    	                      instructions[w].loaded = newInstruction;
-    	                    }
-    	                  }
+                        instructionParts[j] = addr;
+                        var newInstruction = "";
+                        for (var w = 0; w < instructionParts.length; w++) {
+                          if(w == instructionParts.length-1){
+                            newInstruction = newInstruction + instructionParts[w];
+                          }
+                          else{
+                            newInstruction = newInstruction + instructionParts[w] + " ";
+                          }
+                        }
+                        for (var w = 0; w < instructions.length && exit == 0; w++) {
+                          var aux = "0x" + (pending_instructions[i].address).toString(16);
+                          if(aux == instructions[w].Address){
+                            instructions[w].loaded = newInstruction;
+                          }
+                        }
 
-    	                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-    	                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-    	                    if(aux == instructions[w].Address){
-    	                      instructions[w].loaded = newInstruction;
-    	                      var fieldsLength = startbit - stopbit + 1;
-    	                      instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-    	                      exit = 1;
-    	                    }
-    	                  }
+                        for (var w = 0; w < instructions.length && exit == 0; w++) {
+                          var aux = "0x" + (pending_instructions[i].address).toString(16);
+                          if(aux == instructions[w].Address){
+                            instructions[w].loaded = newInstruction;
+                            var fieldsLength = startbit - stopbit + 1;
+                            instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+                            exit = 1;
+                          }
+                        }
 
-    	                }
-    	              }
-    	            }
+                      }
+                    }
+                  }
 
-    	            if(exit == 0){
-    	              app.compileError(7, instructionParts[j], pending_instructions[i].line);
-    	              tokenIndex = 0;
-    	              instructions = [];
-    	              pending_instructions = [];
-    	              pending_tags = [];
-    	              memory[memory_hash[0]] = [];
-    	              data_tag = [];
-    	              instructions_binary = [];
-    	              memory[memory_hash[1]] = [];
-    	              memory[memory_hash[2]] = [];
-    	              data = [];
-    	              extern = [];
-    	              app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-    	              app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-    	              app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-    	              app._data.instructions = instructions;
-    	              $(".loading").hide();
-    	              return -1;
-    	            }
-    	          }
-    	        }
-    	      }
-
-    	      /*Enter the binary in the text segment*/
-    	      if(update_binary.instructions_binary != null){
-    	        for (var i = 0; i < update_binary.instructions_binary.length; i++){
-    	          var hex = app.bin2hex(update_binary.instructions_binary[i].loaded);
-    	          var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
-    	          var label = update_binary.instructions_binary[i].Label;
-    	          var hide;
-
-    	          if(i == 0){
-    	            hide = false;
-    	            if(update_binary.instructions_binary[i].globl == false){
-    	              label = "";
-    	            }
-    	          }
-    	          else if(update_binary.instructions_binary[i].globl == false){
-    	            label = "";
-    	            hide = true;
-    	          }
-    	          else if(update_binary.instructions_binary[i].globl == null){
-    	            hide = true;
-    	          }
-    	          else{
-    	            hide = false;
-    	          }
-
-    	          for(var a = 0; a < hex.length/2; a++){
-    	            if(auxAddr % 4 == 0){
-    	              memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
-    	              if(label == ""){
-    	                label=null;
-    	              }
-
-    	              if(a == 0){
-    	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-    	              }
-    	              else{
-    	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-    	              }
-
-    	              auxAddr++;
-    	            }
-    	            else{
-    	              if(a == 0){
-    	                console.log(label);
-    	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-    	              }
-    	              else{
-    	                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-    	              }
-
-    	              auxAddr++;
-    	            }
-    	          }
-
-    	          if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
-    	            var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
-    	            for(var b = 0; b < num_iter; b++){
-    	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
-    	            }
-    	          }
-
-    	          app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-    	        }
-    	      }
-
-    	      /*Enter the compilated instructions in the text segment*/
-    	      for (var i = 0; i < instructions_binary.length; i++){
-    	        var hex = app.bin2hex(instructions_binary[i].loaded);
-    	        var auxAddr = parseInt(instructions_binary[i].Address, 16);
-    	        var label = instructions_binary[i].Label;
-    	        var binNum = 0;
-
-    	        if(update_binary.instructions_binary != null){
-    	          binNum = update_binary.instructions_binary.length
-    	        }
-
-    	        for(var a = 0; a < hex.length/2; a++){
-    	          if(auxAddr % 4 == 0){
-    	            memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
-    	            if(label == ""){
-    	              label=null;
-    	            }
-    	            if(a == 0){
-    	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-    	            }
-    	            else{
-    	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-    	            }
-
-    	            auxAddr++;
-    	          }
-    	          else{
-    	            if(a == 0){
-    	              console.log(label);
-    	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-    	            }
-    	            else{
-    	              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-    	            }
-
-    	            auxAddr++;
-    	          }
-    	        }
-
-    	        if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
-    	          var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
-    	          for(var b = 0; b < num_iter; b++){
-    	            (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-    	          }
-    	        }
-    	        app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-    	      }
+                  if(exit == 0 && isNaN(instructionParts[j]) == true){
+                    app.compileError(7, instructionParts[j], pending_instructions[i].line);
+                    tokenIndex = 0;
+                    instructions = [];
+                    pending_instructions = [];
+                    pending_tags = [];
+                    memory[memory_hash[0]] = [];
+                    data_tag = [];
+                    instructions_binary = [];
+                    memory[memory_hash[1]] = [];
+                    memory[memory_hash[2]] = [];
+                    data = [];
+                    extern = [];
+                    app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                    app._data.instructions = instructions;
+                    $(".loading").hide();
+                    return -1;
+                  }
+                }
 
 
-    	      /*Check for overlap*/
-    	      if(memory[memory_hash[0]].length > 0){
-    	        if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
-    	          tokenIndex = 0;
-    	          instructions = [];
-    	          pending_instructions = [];
-    	          pending_tags = [];
-    	          memory[memory_hash[0]] = [];
-    	          data_tag = [];
-    	          instructions_binary = [];
-    	          memory[memory_hash[1]] = [];
-    	          extern = [];
-    	          memory[memory_hash[2]] = [];
-    	          data = [];
-    	          app._data.instructions = instructions;
-    	          app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-    	          app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-    	          app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
-    	          app._data.alertMessaje = 'Data overflow';
-    	          app._data.type = 'danger';
-    	          app.$bvToast.toast(app._data.alertMessaje, {
-    		          variant: app._data.type,
-    		          solid: true,
-    		          toaster: "b-toaster-top-center",
-    							autoHideDelay: 1500,
-    		        });
-    	          var date = new Date();
-    	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-    	          $(".loading").hide();
-    	          return -1;
-    	        }
-    	      }
 
-    	      if(memory[memory_hash[1]].length > 0){
-    	        if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
-    	          tokenIndex = 0;
-    	          instructions = [];
-    	          pending_instructions = [];
-    	          pending_tags = [];
-    	          memory[memory_hash[0]] = [];
-    	          data_tag = [];
-    	          instructions_binary = [];
-    	          memory[memory_hash[1]] = [];
-    	          extern = [];
-    	          memory[memory_hash[2]] = [];
-    	          data = [];
-    	          app._data.instructions = instructions;
-    	          app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-    	          app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-    	          app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
-    	          app._data.alertMessaje = 'Instruction overflow';
-    	          app._data.type = 'danger';
-    	          app.$bvToast.toast(app._data.alertMessaje, {
-    		          variant: app._data.type,
-    		          solid: true,
-    		          toaster: "b-toaster-top-center",
-    							autoHideDelay: 1500,
-    		        });
-    	          var date = new Date();
-    	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-    	          $(".loading").hide();
-    	          return -1;
-    	        }
-    	      }
 
-    	      /*Save binary*/
-    	      for(var i = 0; i < instructions_binary.length; i++){
-    	        if(extern.length == 0 && instructions_binary[i].Label != ""){
-    	          instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
-    	          instructions_binary[i].globl = false;
-    	        }
-    	        else{
-    	        	for(var j = 0; j < extern.length; j++){
-    	        		if(instructions_binary[i].Label != extern[j] && j == extern.length-1 && instructions_binary[i].Label != ""){
-    	        			instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
-    	              instructions_binary[i].globl = false;
-    	              break;
-    	        		}
-    	            else if(instructions_binary[i].Label == extern[j]){
-    	              instructions_binary[i].globl = true;
-    	              break;
-    	            }
-    	        	}
-    	        }	
-    	      }
+                if(signatureParts[j] == "offset_words"){
+                  for (var z = 0; z < instructions.length && exit == 0; z++){
+                    if(instructions[z].Label == instructionParts[j]){
+                      var addr = instructions[z].Address;
+                      var bin = parseInt(addr, 16).toString(2);
+                      var startbit = pending_instructions[i].startBit;
+                      var stopbit = pending_instructions[i].stopBit;
 
-    	      /*Save tags*/
-    	      for(var i = 0; i < instructions_tag.length; i++){
-    	        if(extern.length == 0 && instructions_tag[i].tag != ""){
-    	          instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
-    	          instructions_tag[i].globl = false;
-    	          break;
-    	        }
-    	        else{
-    	          for(var j = 0; j < extern.length; j++){
-    	            if(instructions_tag[i].tag != extern[j] && j == extern.length-1 && instructions_tag[i].tag != ""){
-    	              instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
-    	              instructions_tag[i].globl = false;
-    	              break;
-    	            }
-    	            else if(instructions_tag[i].tag == extern[j]){
-    	              instructions_tag[i].globl = true;
-    	              break;
-    	            }
-    	          }
-    	        } 
-    	      }
+                      addr = ((addr - pending_instructions[i].address)/4)-1;
 
-    	      app._data.instructions = instructions;
+                      instructionParts[j] = addr;
+                      var newInstruction = "";
+                      for (var w = 0; w < instructionParts.length; w++) {
+                        if(w == instructionParts.length-1){
+                          newInstruction = newInstruction + instructionParts[w];
+                        }
+                        else{
+                          newInstruction = newInstruction + instructionParts[w] + " ";
+                        }
+                      }
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                        }
+                      }
 
-    	      /*Initialize stack*/
-    	      memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false, unallocated: false});
-    	      
-    	      for(var i = 0; i<4; i++){
-    	        (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
-    	      }
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                          var fieldsLength = startbit - stopbit + 1;
+                          console.log(w)
+                          console.log(numBinaries)
+                          console.log(w - numBinaries)
+                          instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+                          exit = 1;
+                        }
+                      }
+                    }
+                  }
 
-    	      app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                  if(exit == 0){
+                    app.compileError(7, instructionParts[j], pending_instructions[i].line);
+                    tokenIndex = 0;
+                    instructions = [];
+                    pending_instructions = [];
+                    pending_tags = [];
+                    memory[memory_hash[0]] = [];
+                    data_tag = [];
+                    instructions_binary = [];
+                    memory[memory_hash[1]] = [];
+                    memory[memory_hash[2]] = [];
+                    data = [];
+                    extern = [];
+                    app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                    app._data.instructions = instructions;
+                    $(".loading").hide();
+                    return -1;
+                  }
+                }
 
-    	      app._data.alertMessaje = 'Compilation completed successfully';
-    	      app._data.type = 'success';
-    	      app.$bvToast.toast(app._data.alertMessaje, {
-    	        variant: app._data.type,
-    	        solid: true,
-    	        toaster: "b-toaster-top-center",
-    					autoHideDelay: 1500,
-    	      });
-    	      var date = new Date();
-    	      notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                if(signatureParts[j] == "offset_bytes"){
+                  for (var z = 0; z < instructions.length && exit == 0; z++){
+                    if(instructions[z].Label == instructionParts[j]){
+                      var addr = instructions[z].Address;
+                      var bin = parseInt(addr, 16).toString(2);
+                      var startbit = pending_instructions[i].startBit;
+                      var stopbit = pending_instructions[i].stopBit;
 
-    	      tokenIndex = 0;
-    	      
-    	      app.reset();
+                      addr = ((addr - pending_instructions[i].address))-1;
 
-    	      address = architecture.memory_layout[0].value;
-    	      data_address = architecture.memory_layout[2].value;
-    	      stack_address = architecture.memory_layout[4].value;
+                      instructionParts[j] = addr;
+                      var newInstruction = "";
+                      for (var w = 0; w < instructionParts.length; w++) {
+                        if(w == instructionParts.length-1){
+                          newInstruction = newInstruction + instructionParts[w];
+                        }
+                        else{
+                          newInstruction = newInstruction + instructionParts[w] + " ";
+                        }
+                      }
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                        }
+                      }
 
-          	$(".loading").hide();
+                      for (var w = 0; w < instructions.length && exit == 0; w++) {
+                        var aux = "0x" + (pending_instructions[i].address).toString(16);
+                        if(aux == instructions[w].Address){
+                          instructions[w].loaded = newInstruction;
+                          var fieldsLength = startbit - stopbit + 1;
+                          console.log(w)
+                          console.log(numBinaries)
+                          console.log(w - numBinaries)
+                          instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
+                          exit = 1;
+                        }
+                      }
+                    }
+                  }
+
+                  if(exit == 0){
+                    app.compileError(7, instructionParts[j], pending_instructions[i].line);
+                    tokenIndex = 0;
+                    instructions = [];
+                    pending_instructions = [];
+                    pending_tags = [];
+                    memory[memory_hash[0]] = [];
+                    data_tag = [];
+                    instructions_binary = [];
+                    memory[memory_hash[1]] = [];
+                    memory[memory_hash[2]] = [];
+                    data = [];
+                    extern = [];
+                    app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+                    app._data.instructions = instructions;
+                    $(".loading").hide();
+                    return -1;
+                  }
+                }
+
+
+
+
+
+
+
+
+
+              }
+            }
+
+            /*Enter the binary in the text segment*/
+            if(update_binary.instructions_binary != null){
+              for (var i = 0; i < update_binary.instructions_binary.length; i++){
+                var hex = app.bin2hex(update_binary.instructions_binary[i].loaded);
+                var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
+                var label = update_binary.instructions_binary[i].Label;
+                var hide;
+
+                if(i == 0){
+                  hide = false;
+                  if(update_binary.instructions_binary[i].globl == false){
+                    label = "";
+                  }
+                }
+                else if(update_binary.instructions_binary[i].globl == false){
+                  label = "";
+                  hide = true;
+                }
+                else if(update_binary.instructions_binary[i].globl == null){
+                  hide = true;
+                }
+                else{
+                  hide = false;
+                }
+
+                for(var a = 0; a < hex.length/2; a++){
+                  if(auxAddr % 4 == 0){
+                    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
+                    if(label == ""){
+                      label=null;
+                    }
+
+                    if(a == 0){
+                      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+                    }
+                    else{
+                      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+                    }
+
+                    auxAddr++;
+                  }
+                  else{
+                    if(a == 0){
+                      console.log(label);
+                      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
+                    }
+                    else{
+                      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
+                    }
+
+                    auxAddr++;
+                  }
+                }
+
+                if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
+                  var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
+                  for(var b = 0; b < num_iter; b++){
+                    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
+                  }
+                }
+
+                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+              }
+            }
+
+            /*Enter the compilated instructions in the text segment*/
+            for (var i = 0; i < instructions_binary.length; i++){
+              var hex = app.bin2hex(instructions_binary[i].loaded);
+              var auxAddr = parseInt(instructions_binary[i].Address, 16);
+              var label = instructions_binary[i].Label;
+              var binNum = 0;
+
+              if(update_binary.instructions_binary != null){
+                binNum = update_binary.instructions_binary.length
+              }
+
+              for(var a = 0; a < hex.length/2; a++){
+                if(auxAddr % 4 == 0){
+                  memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
+                  if(label == ""){
+                    label=null;
+                  }
+                  if(a == 0){
+                    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+                  }
+                  else{
+                    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+                  }
+
+                  auxAddr++;
+                }
+                else{
+                  if(a == 0){
+                    console.log(label);
+                    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
+                  }
+                  else{
+                    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
+                  }
+
+                  auxAddr++;
+                }
+              }
+
+              if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
+                var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
+                for(var b = 0; b < num_iter; b++){
+                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
+                }
+              }
+              app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+            }
+
+
+            /*Check for overlap*/
+            if(memory[memory_hash[0]].length > 0){
+              if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
+                tokenIndex = 0;
+                instructions = [];
+                pending_instructions = [];
+                pending_tags = [];
+                memory[memory_hash[0]] = [];
+                data_tag = [];
+                instructions_binary = [];
+                memory[memory_hash[1]] = [];
+                extern = [];
+                memory[memory_hash[2]] = [];
+                data = [];
+                app._data.instructions = instructions;
+                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+
+                app._data.alertMessage = 'Data overflow';
+                app._data.type = 'danger';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                $(".loading").hide();
+                return -1;
+              }
+            }
+
+            if(memory[memory_hash[1]].length > 0){
+              if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
+                tokenIndex = 0;
+                instructions = [];
+                pending_instructions = [];
+                pending_tags = [];
+                memory[memory_hash[0]] = [];
+                data_tag = [];
+                instructions_binary = [];
+                memory[memory_hash[1]] = [];
+                extern = [];
+                memory[memory_hash[2]] = [];
+                data = [];
+                app._data.instructions = instructions;
+                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+                app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+
+                app._data.alertMessage = 'Instruction overflow';
+                app._data.type = 'danger';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                $(".loading").hide();
+                return -1;
+              }
+            }
+
+            /*Save binary*/
+            for(var i = 0; i < instructions_binary.length; i++){
+              if(extern.length == 0 && instructions_binary[i].Label != ""){
+                instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+                instructions_binary[i].globl = false;
+              }
+              else{
+                for(var j = 0; j < extern.length; j++){
+                  if(instructions_binary[i].Label != extern[j] && j == extern.length-1 && instructions_binary[i].Label != ""){
+                    instructions_binary[i].Label = instructions_binary[i].Label + "_symbol";
+                    instructions_binary[i].globl = false;
+                    break;
+                  }
+                  else if(instructions_binary[i].Label == extern[j]){
+                    instructions_binary[i].globl = true;
+                    break;
+                  }
+                }
+              } 
+            }
+
+            /*Save tags*/
+            for(var i = 0; i < instructions_tag.length; i++){
+              if(extern.length == 0 && instructions_tag[i].tag != ""){
+                instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
+                instructions_tag[i].globl = false;
+                break;
+              }
+              else{
+                for(var j = 0; j < extern.length; j++){
+                  if(instructions_tag[i].tag != extern[j] && j == extern.length-1 && instructions_tag[i].tag != ""){
+                    instructions_tag[i].tag = instructions_tag[i].tag + "_symbol";
+                    instructions_tag[i].globl = false;
+                    break;
+                  }
+                  else if(instructions_tag[i].tag == extern[j]){
+                    instructions_tag[i].globl = true;
+                    break;
+                  }
+                }
+              } 
+            }
+
+            app._data.instructions = instructions;
+
+            /*Initialize stack*/
+            memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false, unallocated: false});
+            
+            for(var i = 0; i<4; i++){
+              (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
+            }
+
+            app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+
+            app._data.alertMessage = 'Compilation completed successfully';
+            app._data.type = 'success';
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
+            var date = new Date();
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+            tokenIndex = 0;
+            
+            app.reset();
+
+            address = architecture.memory_layout[0].value;
+            data_address = architecture.memory_layout[2].value;
+            stack_address = architecture.memory_layout[4].value;
+
+            $(".loading").hide();
 
             resolve("0");
 
@@ -4090,8 +4300,8 @@ try{
             }
 
             for(var i = 0; i < data_tag.length; i++){
-            	console.log(data_tag[i].tag);
-            	console.log(token.substring(0,token.length-1))
+              console.log(data_tag[i].tag);
+              console.log(token.substring(0,token.length-1))
               if(data_tag[i].tag == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 $(".loading").hide();
@@ -4188,7 +4398,7 @@ try{
                     console.log(auxTokenString)
 
                     if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
-                    	return -1;
+                      return -1;
                     }
 
                     label = null;
@@ -4286,7 +4496,7 @@ try{
                     console.log(auxTokenString)
 
                     if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
-                    	return -1;
+                      return -1;
                     }
 
                     label = null;
@@ -4382,7 +4592,7 @@ try{
                     console.log(auxTokenString);
 
                     if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
-                    	return -1;
+                      return -1;
                     }
 
                     label = null;
@@ -4477,7 +4687,7 @@ try{
                     }
                     
                     if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
-                    	return -1;
+                      return -1;
                     }
 
                     label = null;
@@ -4555,7 +4765,7 @@ try{
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
-                      var re = new RegExp("[0-9.-]{"+token.length+"}","g");
+                      var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         $(".loading").hide();
@@ -4574,7 +4784,7 @@ try{
                     console.log(auxTokenString);
 
                     if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token) == -1){
-                    	return -1;
+                      return -1;
                     }
 
                     label = null;
@@ -4652,7 +4862,7 @@ try{
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
-                      var re = new RegExp("[0-9.-]{"+token.length+"}","g");
+                      var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         $(".loading").hide();
@@ -4671,7 +4881,7 @@ try{
                     console.log(auxTokenString);
 
                     if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token) == -1){
-                    	return -1;
+                      return -1;
                     }
 
                     label = null;
@@ -5210,91 +5420,97 @@ try{
       },
       /*Stores a data in data memory*/
       data_compiler(value, size, dataLabel, DefValue){
-  			for(var i = 0; i < (value.length/2); i++){
-  		    if((data_address % align) != 0 && i == 0 && align != 0){
-  		      while((data_address % align) != 0){
-  		        if(data_address % 4 == 0){
-  		          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
-  		          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-  		          data_address++;
-  		        }
-  		        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
-  		          data_address++;
-  		        }
-  		        else{
-  		          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-  		          data_address++;
-  		        }
-  		      }
-  		    }
+        for(var i = 0; i < (value.length/2); i++){
+          if((data_address % align) != 0 && i == 0 && align != 0){
+            while((data_address % align) != 0){
+              if(data_address % 4 == 0){
+                memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                data_address++;
+              }
+              else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
+                data_address++;
+              }
+              else{
+                (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                data_address++;
+              }
+            }
+          }
 
-  		    if(data_address % size != 0 && i == 0){
-  		      this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-  		      $(".loading").hide();
-  		      return -1;
-  		    }
+          if(data_address % size != 0 && i == 0){
+            this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+            $(".loading").hide();
+            return -1;
+          }
 
-  		    if(data_address % 4 == 0){
-  		    	console.log(DefValue);
-  		      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: DefValue, DefValue: DefValue, reset: false});
+          if(data_address % 4 == 0){
+            console.log(DefValue);
+            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: DefValue, DefValue: DefValue, reset: false});
 
-  		      if(i == 0){
-  		        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: dataLabel},);
-  		        if(dataLabel != null){
-  		          data_tag.push({tag: dataLabel, addr: data_address});
-  		        }
-  		        dataLabel = null;
-  		      }
-  		      else{
-  		        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: null},);
-  		      }
+            if(i == 0){
+              (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: dataLabel},);
+              if(dataLabel != null){
+                data_tag.push({tag: dataLabel, addr: data_address});
+              }
+              dataLabel = null;
+            }
+            else{
+              (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: null},);
+            }
 
-  		      data_address++;
-  		    }
-  		    else{
-  		      if(value.length <= 4 && i == 0){
-  		      	console.log(DefValue);
-  		        memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = DefValue + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
-  		        memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = DefValue + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
-  		      }
+            data_address++;
+          }
+          else{
+            if(value.length <= 4 && i == 0){
+              console.log(DefValue);
+              memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = DefValue + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+              memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = DefValue + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
+            }
 
-  		      if(i == 0){
-  		        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: dataLabel},);
-  		        if(dataLabel != null){
-  		          data_tag.push({tag: dataLabel, addr: data_address});
-  		        }
-  		        dataLabel = null;
-  		      }
-  		      else{
-  		        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: null},);
-  		        console.log(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[data_address%4]);
-  		      }
-  		      data_address++;
-  		    }
-  		  }
-  		  console.log(memory[memory_hash[0]])
+            if(i == 0){
+              (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: dataLabel},);
+              if(dataLabel != null){
+                data_tag.push({tag: dataLabel, addr: data_address});
+              }
+              dataLabel = null;
+            }
+            else{
+              (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: null},);
+              console.log(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[data_address%4]);
+            }
+            data_address++;
+          }
+        }
+        console.log(memory[memory_hash[0]])
 
-  		  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
-  		    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
-  		    for(var i = 0; i < num_iter; i++){
-  		      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + i), DefBin: "00", Bin: "00", Tag: null},);
-  		      console.log("padding");
-  		    }
-  		  }
-  		},
+        if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+          var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
+          for(var i = 0; i < num_iter; i++){
+            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + i), DefBin: "00", Bin: "00", Tag: null},);
+            console.log("padding");
+          }
+        }
+      },
       /*Compile text segment*/
       code_segment_compiler(){
         var existsInstruction = true;
 
         this.next_token();
+        var instInit = tokenIndex;
 
         while(existsInstruction){
           token = this.get_token();
 
           for(var i = 0; i < architecture.directives.length; i++){
-            if(token == architecture.directives[i].name){
+            if(token == architecture.directives[i].name && architecture.directives[i].action == "global_symbol"){
+              this.next_token(); // .globl *main* 
+              this.next_token(); 
+              token = this.get_token();
+            }
+            else if(token == architecture.directives[i].name){
               app._data.instructions = instructions;
-
+              console.log(token);
               for(var i = 0; i < instructions.length; i++){
                 if(instructions[i].Label != ""){
                   instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
@@ -5343,6 +5559,7 @@ try{
 
             label = token.substring(0,token.length-1);
             this.next_token();
+            instInit = tokenIndex;
             token = this.get_token();
 
             if(token != null){
@@ -5353,8 +5570,10 @@ try{
 
           var re = new RegExp(",+$");
           token = token.replace(re, "");
+          console.log(token)
+          var stopFor = false;
 
-          for(var i = 0; i < architecture.instructions.length; i++){
+          for(var i = 0; i < architecture.instructions.length && stopFor == false; i++){
             if(architecture.instructions[i].name != token){
               continue;
             }
@@ -5376,7 +5595,7 @@ try{
               instruction = instruction + token;
               userInstruction = userInstruction + token;
 
-              var new_ins = 0;
+              //var new_ins = 0;
 
               for (var j = 0; j < numFields - 1; j++){
                 this.next_token();
@@ -5384,67 +5603,103 @@ try{
                 console.log(token);
 
                 if(token != null){
-				          var re = new RegExp(",+$");
+                  var re = new RegExp(",+$");
                   token = token.replace(re, "");
-                  for(var a = 0; a < architecture.instructions.length; a++){
-				            if(architecture.instructions[a].name == token){
-				              new_ins = 1;
-				            }
-				          }
-				          if(new_ins == 0){
-				          	instruction = instruction + " " + token;
-                		userInstruction = userInstruction + " " + token;
-				          }
+                  /*for(var a = 0; a < architecture.instructions.length; a++){
+                    if(architecture.instructions[a].name == token){
+                      new_ins = 1;
+                    }
+                  }
+                  if(new_ins == 0){
+                    instruction = instruction + " " + token;
+                    userInstruction = userInstruction + " " + token;
+                  }*/
+                  instruction = instruction + " " + token;
+                  userInstruction = userInstruction + " " + token;
                 }  
 
-                if(new_ins == 1){
-                	break;
-                }
+                /*if(new_ins == 1){
+                  break;
+                }*/
               }
 
               console.log(instruction);
               console.log(label);
 
-              var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0);
+              var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0, instInit, i);
 
               if(result == -1){
                 $(".loading").hide();
                 return -1;
               }
 
-              if (new_ins == 0){
-	              this.next_token();
-	            }
-	            new_ins = 0;
+              /*if (new_ins == 0){
+                this.next_token();
+              }
+              new_ins = 0;*/
+              this.next_token();
+              instInit = tokenIndex; //PRUEBA
+              stopFor = true;
             }
           }
 
           if(!found){
-            var resultPseudo = -2;
+            var resultPseudo = -3;
             var instruction = "";
             var numToken = 0;
+            var exists = false;
+            var inst = token;
 
-            for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+            console.log(token)
+
+            for (var i = 0; i < architecture.pseudoinstructions.length && exists == false; i++){
               if(architecture.pseudoinstructions[i].name == token){
                 numToken = architecture.pseudoinstructions[i].fields.length;
-
+                console.log(numToken)
+                exists = true;
                 instruction = instruction + token;
 
                 for (var i = 0; i < numToken; i++){
                   this.next_token();
                   token = this.get_token();
 
-                  var re = new RegExp(",+$");
-                  token = token.replace(re, "");
+                  if(token != null){
+                    var re = new RegExp(",+$");
+                    token = token.replace(re, "");
+                  }
 
                   instruction = instruction + " " + token;
                 }
                 resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                console.log(resultPseudo);
               }
             }
 
+            if(resultPseudo == -3){
+              this.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
+
+              existsInstruction = false;
+              tokenIndex = 0;
+              instructions = [];
+              pending_instructions = [];
+              pending_tags = [];
+              memory[memory_hash[0]] = [];
+              data_tag = [];
+              instructions_binary = [];
+              memory[memory_hash[1]] = [];
+              extern = [];
+              memory[memory_hash[2]] = [];
+              data = [];
+              app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+              memory[memory_hash[1]] = memory[memory_hash[1]];
+              memory[memory_hash[2]] = memory[memory_hash[2]];
+              app._data.instructions = instructions;
+              $(".loading").hide();
+              return -1;
+            }
+
             if(resultPseudo == -2){
-              this.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              //this.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
 
               existsInstruction = false;
               tokenIndex = 0;
@@ -5467,6 +5722,7 @@ try{
             }
 
             if(resultPseudo == -1){
+              this.compileError(25, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
               existsInstruction = false;
               tokenIndex = 0;
               instructions = [];
@@ -5488,6 +5744,7 @@ try{
             }
 
             this.next_token();
+            instInit = tokenIndex; //PRUEBA
 
           }
         }
@@ -5513,6 +5770,7 @@ try{
         console.log(instructionParts);
 
         for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+          console.log(architecture.pseudoinstructions[i].name);
           if(architecture.pseudoinstructions[i].name != instructionParts[0]){
             continue;
           }
@@ -5532,99 +5790,192 @@ try{
 
             console.log(signatureDef);
             console.log(instruction);
+            console.log(instructionParts);
+
+            if(instructionParts.length < (architecture.pseudoinstructions[i].fields.length + 1)){
+              for (var j = 0; j < ((architecture.pseudoinstructions[i].fields.length + 1)-instructionParts.length ); j++){
+                this.next_token();
+                token = this.get_token();
+
+                console.log(token);
+
+                if(token != null){
+                  var re = new RegExp(",+$");
+                  token = token.replace(re, "");
+                }
+
+                instruction = instruction + " " + token;
+              }
+
+              instructionParts = instruction.split(' ');
+            }
+
+            console.log(instruction);
 
             re = new RegExp(signatureDef+"$");
-            if(instruction.search(re) == -1){
-            	return -1;
+            console.log(re)
+            if(instruction.search(re) == -1 && i == architecture.pseudoinstructions.length-1){
+              return -1;
             }
 
-            for (var j = 1; j < signatureRawParts.length; j++){
-              var aux = signatureRawParts[j].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-              re = new RegExp(aux,"g");
-              definition = definition.replace(re, instructionParts[j]);
+            if(instruction.search(re) == -1 && i < architecture.pseudoinstructions.length-1){
+              found = false;
             }
 
-            re = new RegExp("\n","g");
-  					definition = definition.replace(re, "");
-
-            console.log(definition);
-
-            re = /Field.(\d).(.*?)[=<>;\s]/;
-            while (definition.search(re) != -1){
-              var match = re.exec(definition);
-              console.log(match);
-
-              var value;
-              try{
-                eval("value = this.field('" + instructionParts[match[1]] +"', '" + match[2] + "')");
+            if(found == true){
+              re = /aliasDouble\((.*)\)/;
+              for(var a = 0; a < architecture.pseudoinstructions[i].fields.length && definition.search(re) != -1; a++){
+                re = new RegExp(architecture.pseudoinstructions[i].fields[a].name,"g");
+                console.log(instructionParts[a+1]);
+                instructionParts[a+1] = instructionParts[a+1].replace("$","");
+                definition = definition.replace(re, instructionParts[a+1]);
               }
-              catch(e){
-                if (e instanceof SyntaxError){
+
+              /*Replace DFP of SPF*/
+              re = /aliasDouble\((.*)\)/;
+              console.log(re);
+              while (definition.search(re) != -1){
+                var match = re.exec(definition);
+                var args = match[1].split(";");
+                var aux = "";
+
+                for(var b = 0; b < architecture.components[3].elements.length; b++){
+                  console.log(architecture.components[3].elements[b].name); 
+                  if(architecture.components[3].elements[b].name == args[0]){
+                    aux = architecture.components[3].elements[b].simple_reg[args[1]];
+                    console.log(aux);
+                    break;
+                  }
+                }
+                console.log(aux);
+
+                definition = definition.replace(re, aux);
+                console.log(definition);
+
+              }
+
+              for (var j = 1; j < signatureRawParts.length; j++){
+                var aux = signatureRawParts[j].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                re = new RegExp(aux,"g");
+                definition = definition.replace(re, instructionParts[j]);
+              }
+
+              re = new RegExp("\n","g");
+              definition = definition.replace(re, "");
+
+              console.log(definition);
+              console.log(signatureParts);
+
+              re = /Field.(\d).\((.*?)\).(.*?)[=<>;\s]/;
+              while (definition.search(re) != -1){
+                var match = re.exec(definition);
+                console.log(match);
+
+                console.log("value = this.field('" + instructionParts[match[1]] +"', '(" + match[2] + ")', '" + match[3] + "')");
+
+                var value;
+                try{
+                  eval("value = this.field('" + instructionParts[match[1]] +"', '(" + match[2] + ")', '" + match[3] + "')");
+                }
+                catch(e){
+                  if (e instanceof SyntaxError){
+                    return -1;
+                  }
+                }
+
+                if(value == -1){
                   return -1;
                 }
+
+                definition = definition.replace("Field." + match[1] + ".(" + match[2]+ ")." + match[3], value);
+                
+                re = /Field.(\d).\((.*?)\).(.*?)[;\s]/;
               }
 
-              if(value == -1){
-                return -1;
+
+              re = /Field.(\d).SIZE[=<>;\s]/g;
+              if (definition.search(re) != -1){
+                var match = re.exec(definition);
+                console.log(match);
+
+                console.log("value = this.field('" + instructionParts[match[1]] +"', 'SIZE', null)");
+
+                var value;
+                try{
+                  eval("value = this.field('" + instructionParts[match[1]] +"', 'SIZE', null)");
+                }
+                catch(e){
+                  if (e instanceof SyntaxError){
+                    return -1;
+                  }
+                }
+
+                if(value == -1){
+                  return -1;
+                }
+
+                console.log(value);
+                console.log("Field." + match[1] + ".SIZE");
+
+                definition = definition.replace("Field." + match[1] + ".SIZE", value);
               }
 
-              definition = definition.replace("Field." + match[1] + "." + match[2], value);
-              re = /Field.(\d).(.*?)[;\s]/;
-            }
 
-            console.log(definition);
 
-            var re = /{([^}]*)}/g;
-            var code = re.exec(definition);
+              console.log(definition);
 
-            if(code != null){
-              while(code != null){
-                var instructions = code[1].split(";");
-                console.log(instructions);
+              var re = /{([^}]*)}/g;
+              var code = re.exec(definition);
+
+              if(code != null){
+                while(code != null){
+                  var instructions = code[1].split(";");
+                  console.log(instructions);
+
+                  for (var j = 0; j < instructions.length-1; j++){
+                    var aux;
+                    if(j == 0){
+                      aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null) == -1){error = true}";
+                    }
+                    else{
+                      aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null) == -1){error = true}";
+                    }
+                    definition = definition.replace(instructions[j]+";", aux+";\n");
+                  }
+                  code = re.exec(definition);
+                }
+              }
+              else{
+                var instructions = definition.split(";");
 
                 for (var j = 0; j < instructions.length-1; j++){
                   var aux;
                   if(j == 0){
-                    aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0) == -1){error = true}";
+                    aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null) == -1){error = true}";
                   }
                   else{
-                    aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0) == -1){error = true}";
+                    aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null) == -1){error = true}";
                   }
                   definition = definition.replace(instructions[j]+";", aux+";\n");
                 }
-                code = re.exec(definition);
               }
-            }
-            else{
-              var instructions = definition.split(";");
 
-              for (var j = 0; j < instructions.length-1; j++){
-                var aux;
-                if(j == 0){
-                  aux = "if(this.instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0) == -1){error = true}";
+              console.log(definition);
+
+              try{
+                var error = false;
+                eval(definition);
+                if(error == true){
+                  console.log("Error pseudo");
+                  return -2;
                 }
-                else{
-                  aux = "if(this.instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0) == -1){error = true}";
+                console.log("fin pseudo");
+                return 0;
+              }
+              catch(e){
+                if (e instanceof SyntaxError) {
+                  return -2;
                 }
-                definition = definition.replace(instructions[j]+";", aux+";\n");
-              }
-            }
-
-            console.log(definition);
-
-            try{
-              var error = false;
-              eval(definition);
-              if(error == true){
-                console.log("Error pseudo");
-                return -2;
-              }
-              console.log("fin pseudo");
-              return 0;
-            }
-            catch(e){
-              if (e instanceof SyntaxError) {
-                return -2;
               }
             }
 
@@ -5636,9 +5987,10 @@ try{
         }
       },
       /*Get pseudoinstruction fields*/
-      field(field, action){
+      field(field, action, type){
         console.log(field);
         console.log(action);
+        console.log(type);
         
         if(action == "SIZE"){
           console.log("SIZE");
@@ -5663,33 +6015,53 @@ try{
           var startBit = parseInt(bits[0]);
           var endBit = parseInt(bits[1]);
 
-          if(field.match(/^0x/)){
+          if(field.match(/^0x/) && (type == "int" || type == "float")){
             var binNum = (parseInt(field, 16).toString(2));
             binNum = binNum.padStart(32, '0');
             binNum = binNum.substring(31-startBit, 32-endBit);
-            console.log(binNum);
             var hexNum = "0x" + this.bin2hex(binNum);
             return hexNum;
           }
-          else if (field.match(/^(\d)+\.(\d)+/)){
-            var binNum = this.float2bin(parseFloat(field));
-            binNum = binNum.padStart(32, '0');
-            binNum = binNum.substring(31-startBit, 32-endBit);
+          else if(field.match(/^0x/) && (type == "double")){
+            var binNum = this.double2bin(this.hex2double(field));
+            binNum = binNum.padStart(64, '0');
+            binNum = binNum.substring(63-startBit, 64-endBit);
             var hexNum = "0x" + this.bin2hex(binNum);
             return hexNum;
           }
-          else {
+          else if(type == "int"){
             var binNum = (parseInt(field, 10) >>> 0).toString(2);
             binNum = binNum.padStart(32, '0');
             binNum = binNum.substring(31-startBit, 32-endBit);
             var hexNum = "0x" + this.bin2hex(binNum);
             return hexNum;
           }
+          else if (type == "float"){
+            var binNum = this.float2bin(parseFloat(field));
+            console.log(binNum);
+            binNum = binNum.padStart(32, '0');
+            binNum = binNum.substring(31-startBit, 32-endBit);
+            var hexNum = "0x" + this.bin2hex(binNum);
+            return hexNum;
+          }
+          else if (type == "double"){
+            var binNum = this.double2bin(parseFloat(field));
+            console.log(binNum);
+            binNum = binNum.padStart(64, '0');
+            binNum = binNum.substring(63-startBit, 64-endBit);
+            var hexNum = "0x" + this.bin2hex(binNum);
+            return hexNum;
+          }
+
         }
         return -1;
       },
       /*Compile instruction*/
-      instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress){
+      instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit, instIndex){
+        if(instIndex == null){
+          instIndex = 0;
+        }
+        console.log(instIndex);
         var re = new RegExp("^ +");
         var oriInstruction = instruction.replace(re, "");
 
@@ -5705,11 +6077,15 @@ try{
         console.log(label);
         console.log(line);
 
-        for(var i = 0; i < architecture.instructions.length; i++){
+        var stopFor = false;
+
+        for(var i = instIndex; i < architecture.instructions.length && stopFor == false; i++){
           if(architecture.instructions[i].name != instructionParts[0]){
             continue;
           }
           else{
+            var auxSignature = architecture.instructions[i].signatureRaw;
+
             var tag = "";
 
             var binary = "";
@@ -5745,29 +6121,127 @@ try{
             re = new RegExp(signatureDef+"$");
             if(oriInstruction.search(re) == -1){
 
-            	var resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              console.log(this.get_token())
 
-            	console.log(resultPseudo)
+              tokenIndex =  instInit;
+              token = this.get_token();
 
-            	if(resultPseudo == 0){
-            		return;
-            	}
+              console.log(token);
+
+              var resultPseudo = null;
+              var instruction = "";
+              var numToken = 0;
+
+              console.log(token)
+
+
+              for(var i = i + 1; i < architecture.instructions.length; i++){
+                if(architecture.instructions[i].name == token){
+
+                  var index = i;
+                  numToken = architecture.instructions[i].fields.length;
+                  instruction = instruction + token;
+
+                  for (var a = 1; a < numToken; a++){
+                    if(architecture.instructions[i].fields[a].type != "cop"){
+                      this.next_token();
+                      token = this.get_token();
+
+                      if(token != null){
+                        var re = new RegExp(",+$");
+                        token = token.replace(re, "");
+                      }
+
+                      instruction = instruction + " " + token;
+                    }
+                  }
+
+                  this.instruction_compiler(instruction, instruction, label, line, pending, pendingAddress, instInit, index)
+                  
+                  return;
+                }
+              }
+              
+
+
+
+              for (var i = 0; i < architecture.pseudoinstructions.length; i++){
+                if(architecture.pseudoinstructions[i].name == token){
+                  numToken = architecture.pseudoinstructions[i].fields.length;
+
+                  instruction = instruction + token;
+
+                  for (var i = 0; i < numToken; i++){
+                    this.next_token();
+                    token = this.get_token();
+
+                    if(token != null){
+                      var re = new RegExp(",+$");
+                      token = token.replace(re, "");
+                    }
+
+                    instruction = instruction + " " + token;
+                  }
+                  console.log(instruction)
+                  resultPseudo = this.pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                
+                  console.log(resultPseudo)
+
+                  if(resultPseudo == 0){
+                    return;
+                  }
+
+                  if(resultPseudo == -1){
+                    this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                    return -1;
+                  }
+                }
+              }
+
+              //var resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+              /*console.log(resultPseudo)
+
+              if(resultPseudo == 0){
+                return;
+              }
 
               if(resultPseudo == -1){
-	              this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-	              return -1;
-            	}
+                this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                return -1;
+              }*/
             }
 
+            if(resultPseudo == null){
+              this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+              return -1;
+            }
+            console.log(oriInstruction);
             match = re.exec(oriInstruction);
             instructionParts = [];
-            for(var j = 1; j < match.length; j++){
-              instructionParts.push(match[j]);
+            if(match != null){
+              for(var j = 1; j < match.length; j++){
+                instructionParts.push(match[j]);
+              }
+            }
+            else{
+              return -2;
             }
             
             console.log(instructionParts);
 
+            //PRUEBA
+            re = new RegExp("[fF][0-9]+");
+            while(instruction.search(re) != -1){
+              re = new RegExp("[fF]([0-9]+)");
+              var match = re.exec(instruction);
+              re = new RegExp("[fF][0-9]+");
+              instruction = instruction.replace(re, "Field"+match[1]);
+            }
+
+
             for(var j = 0; j < signatureParts.length; j++){
+              console.log(signatureParts[j]);
               switch(signatureParts[j]) {
                 case "INT-Reg":
                   token = instructionParts[j];
@@ -5812,7 +6286,8 @@ try{
                             
                             console.log(binary);
 
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(id == regNum){
@@ -5827,7 +6302,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -5867,8 +6343,11 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
+                            console.log(instruction);
                             instruction = instruction.replace(re, token);
+                            console.log(instruction);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                             this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5909,7 +6388,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -5951,7 +6431,8 @@ try{
                             }
 
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                            re = RegExp("[fF][0-9]+");
+                            //re = RegExp("[fF][0-9]+");
+                            re = RegExp("Field[0-9]+");
                             instruction = instruction.replace(re, token);
                           }
                           else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
@@ -5985,6 +6466,8 @@ try{
                         if(value[1].length*4 > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
 
+                          console.log(resultPseudo);
+
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                             return -1;
@@ -6007,6 +6490,8 @@ try{
                       else if (token.match(/^(\d)+\.(\d)+/)){
                         if(this.float2bin(parseFloat(token)).length > fieldsLength){
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6035,10 +6520,12 @@ try{
                         var numAux = parseInt(token, 10) >>> 0;
 
                         if((numAux.toString(2)).length > fieldsLength){
-                        	console.log(oriInstruction)
-                        	console.log(label)
-                        	console.log(line)
+                          console.log(oriInstruction)
+                          console.log(label)
+                          console.log(line)
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -6059,7 +6546,7 @@ try{
                         inm = (parseInt(token, 10) >>> 0).toString(2);
                       }
                       if(validTagPC == true){
-                      	if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
+                        if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
                           this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                           return -1;
                         }
@@ -6067,7 +6554,8 @@ try{
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                       }
                       
-                      re = RegExp("[fF][0-9]+");
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
                     }
                   }
@@ -6098,7 +6586,8 @@ try{
 
                         addr = (parseInt(token, 16)).toString(2);
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                        re = RegExp("[fF][0-9]+");
+                        //re = RegExp("[fF][0-9]+");
+                        re = RegExp("Field[0-9]+");
                         instruction = instruction.replace(re, token);
                       }
                       else{
@@ -6111,12 +6600,243 @@ try{
 
                   break;
 
+                case "offset_bytes":
+                  token = instructionParts[j];
+                  var token_user = "";
+
+                  console.log(token);
+
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                  
+                      var inm;
+
+                      if(token.match(/^0x/)){
+                        var value = token.split("x");
+                        if(value[1].length*4 > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                        }
+
+                        if(isNaN(parseInt(token, 16)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 16)).toString(2);
+                      }
+                      else if (token.match(/^(\d)+\.(\d)+/)){
+                        if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseFloat(token)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = this.float2bin(parseFloat(token, 16));
+                      }
+                      else if(isNaN(parseInt(token))){
+                        validTagPC = false;
+                        startBit = architecture.instructions[i].fields[a].startbit;
+                        stopBit = architecture.instructions[i].fields[a].stopbit;
+                      }
+                      else {
+                        var numAux = parseInt(token, 10) >>> 0;
+
+                        if((numAux.toString(2)).length > fieldsLength){
+                          console.log(oriInstruction)
+                          console.log(label)
+                          console.log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseInt(token)) == true && resultPseudo == -3){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 10) >>> 0).toString(2);
+                      }
+                      if(validTagPC == true){
+                        if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
+                          this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      }
+                      
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
+                      console.log(instruction);
+                      instruction = instruction.replace(re, token);
+                      console.log(instruction);
+                    }
+                  }
+
+                  break;
+
+                case "offset_words":
+                  token = instructionParts[j];
+                  var token_user = "";
+
+                  console.log(token);
+
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                  
+                      var inm;
+
+                      if(token.match(/^0x/)){
+                        var value = token.split("x");
+                        if(value[1].length*4 > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                        }
+
+                        if(isNaN(parseInt(token, 16)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 16)).toString(2);
+                      }
+                      else if (token.match(/^(\d)+\.(\d)+/)){
+                        if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseFloat(token)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = this.float2bin(parseFloat(token, 16));
+                      }
+                      else if(isNaN(parseInt(token))){
+                        validTagPC = false;
+                        startBit = architecture.instructions[i].fields[a].startbit;
+                        stopBit = architecture.instructions[i].fields[a].stopbit;
+                      }
+                      else {
+                        var numAux = parseInt(token, 10) >>> 0;
+
+                        if((numAux.toString(2)).length > fieldsLength){
+                          console.log(oriInstruction)
+                          console.log(label)
+                          console.log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console.log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseInt(token)) == true && resultPseudo == -3){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 10) >>> 0).toString(2);
+                      }
+                      if(validTagPC == true){
+                        if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
+                          this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      }
+                      
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
+                      console.log(instruction);
+                      instruction = instruction.replace(re, token);
+                      console.log(instruction);
+                    }
+                  }
+
+                  break;
+
                 default:
                   token = instructionParts[j];
 
                   console.log(token);
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    console.log(architecture.instructions[i].fields[a].name);
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                       
@@ -6126,13 +6846,16 @@ try{
                       
                       console.log(binary);
 
-                      re = RegExp("[fF][0-9]+");
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
+                      console.log(instruction);
                       instruction = instruction.replace(re, token);
+                      console.log(instruction);
                     }
                     if(architecture.instructions[i].fields[a].type == "cop"){
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 
-                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].cop).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].fields[a].valueField).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                     }
                   }
 
@@ -6176,6 +6899,7 @@ try{
               console.log(address.toString(16));
               console.log(instructions);
 
+              stopFor = true;
               break;
             }
 
@@ -6211,6 +6935,8 @@ try{
                   }
                 }
 
+                stopFor = true;
+
                 console.log(address.toString(16));
                 console.log(instructions);
               }
@@ -6243,9 +6969,27 @@ try{
 
 
 
-  		/*Simulator*/
+      /*Simulator*/
 
-  		/*Change bits of calculator*/
+      /*Detects the browser being used*/
+      detectNavigator(){
+        if(navigator.appVersion.indexOf("Mac")!=-1) {
+          this.navigator = "Mac";
+          return;
+        }
+    
+        if (navigator.userAgent.search("Chrome") >= 0) {
+          this.navigator = "Chrome";
+        }
+        else if (navigator.userAgent.search("Firefox") >= 0) {
+          this.navigator = "Firefox";
+        }
+        else if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
+          this.navigator = "Chrome";
+        }
+      },
+
+      /*Change bits of calculator*/
       changeBitsCalculator(index){
         if(index == 0){
           this.calculator.bits = 32;
@@ -6285,14 +7029,14 @@ try{
             if(this.calculator.bits == 32){
               var re = /[0-9A-Fa-f]{8}/g;
               if(!re.test(hex)){
-                app._data.alertMessaje = 'Character not allowed';
+                app._data.alertMessage = 'Character not allowed';
                 app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
 
                 this.calculator.sign = "";
                 this.calculator.exponent = "";
@@ -6323,14 +7067,14 @@ try{
             if(this.calculator.bits == 64){
               var re = /[0-9A-Fa-f]{16}/g;
               if(!re.test(hex)){
-                app._data.alertMessaje = 'Character not allowed';
+                app._data.alertMessage = 'Character not allowed';
                 app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
 
                 this.calculator.sign = "";
                 this.calculator.exponent = "";
@@ -6370,14 +7114,14 @@ try{
 
               var re = /[0-1]{32}/g;
               if(!re.test(binary)){
-                app._data.alertMessaje = 'Character not allowed';
+                app._data.alertMessage = 'Character not allowed';
                 app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
 
                 this.calculator.hexadecimal = "";
                 this.calculator.decimal = "";
@@ -6409,14 +7153,14 @@ try{
 
               var re = /[0-1]{64}/g;
               if(!re.test(binary)){
-                app._data.alertMessaje = 'Character not allowed';
+                app._data.alertMessage = 'Character not allowed';
                 app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
 
                 this.calculator.hexadecimal = "";
                 this.calculator.decimal = "";
@@ -6489,7 +7233,7 @@ try{
             if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
               var value = this.newValue.split("x");
               if(value[1].length * 4 > architecture.components[comp].elements[i].nbits){
-              	value[1] = value[1].substring(((value[1].length * 4) - architecture.components[comp].elements[i].nbits)/4, value[1].length)
+                value[1] = value[1].substring(((value[1].length * 4) - architecture.components[comp].elements[i].nbits)/4, value[1].length)
               }
               architecture.components[comp].elements[i].value = bigInt(value[1], 16).value;
             }
@@ -6544,43 +7288,43 @@ try{
           console.log(architecture.components[0].elements[0].value);
 
           if(instructions.length == 0){
-            app._data.alertMessaje = 'No instructions in memory';
+            app._data.alertMessage = 'No instructions in memory';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
 
           if(executionIndex < -1){
-            app._data.alertMessaje = 'The program has finished';
+            app._data.alertMessage = 'The program has finished';
             app._data.type ='danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        })
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            })
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
           else if(executionIndex == -1){
-            app._data.alertMessaje = 'The program has finished with errors';
+            app._data.alertMessage = 'The program has finished with errors';
             app._data.type ='danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        })
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            })
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
           else if(mutexRead == true){
@@ -6597,16 +7341,16 @@ try{
                 break;
               }
               else if(i == instructions.length-1){
-                app._data.alertMessaje = 'Label "main" not found';
+                app._data.alertMessage = 'Label "main" not found';
                 app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
                 var date = new Date();
-                notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
                 executionIndex = -1;
                 return;
               }
@@ -6651,18 +7395,25 @@ try{
             var type;
             var auxIndex;
 
+            var numCop = 0;
+            var numCopCorrect = 0;
+
             if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
               if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != ''){
                 for (var j = 0; j < architecture.instructions[i].fields.length; j++){
                   if (architecture.instructions[i].fields[j].type == "cop") {
-                    if(architecture.instructions[i].cop == instructionExecParts[0].substring(((architecture.instructions[i].nwords*31) - architecture.instructions[i].fields[j].startbit), ((architecture.instructions[i].nwords*32) - architecture.instructions[i].fields[j].stopbit))){
-                      auxDef = architecture.instructions[i].definition;
-                      nwords = architecture.instructions[i].nwords;
-                      binary = true;
-                      auxIndex = i;
-                      break;
+                    numCop++;
+                    if(architecture.instructions[i].fields[j].valueField == instructionExecParts[0].substring(((architecture.instructions[i].nwords*31) - architecture.instructions[i].fields[j].startbit), ((architecture.instructions[i].nwords*32) - architecture.instructions[i].fields[j].stopbit))){
+                      numCopCorrect++;
                     }
                   }
+                }
+                if(numCop == numCopCorrect){
+                  auxDef = architecture.instructions[i].definition;
+                  nwords = architecture.instructions[i].nwords;
+                  binary = true;
+                  auxIndex = i;
+                  break;
                 }
               }
               else{
@@ -6740,59 +7491,100 @@ try{
               var re2 = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
               var re3 = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
 
-              while(auxDef.search(re1) != -1 || auxDef.search(re2) != -1 || auxDef.search(re3) != -1){
-              	console.log(signatureRawParts[i])
-	              if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
-	                re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
-	                if(instructionExecParts[i].search(re) != -1){
-	                  var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
+              var prevSearchIndex;
 
-	                  if (auxDef.search(re) != -1){
-					            match = re.exec(auxDef);
-					            console.log(match)
-					            auxDef = auxDef.replace(re, match[1] + "R" + instructionExecParts[i] + match[2]);
-					          }
-	                }
-	                else{
-	                  var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
+              console.log(re1);
+              console.log(re2);
+              console.log(re3);
 
-	                  if (auxDef.search(re) != -1){
-					            match = re.exec(auxDef);
-					            console.log(match)
-					            auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
-					          }
+              while(auxDef.search(re1) != -1 || auxDef.search(re2) != -1 || auxDef.search(re3) != -1 && (auxDef.search(re1) != prevSearchIndex || auxDef.search(re2) != prevSearchIndex || auxDef.search(re3) != prevSearchIndex)){
+                console.log(signatureRawParts[i])
+                if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
+                  re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
+                  if(instructionExecParts[i].search(re) != -1){
+                    var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
 
-					          var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re, match[1] + "R" + instructionExecParts[i] + match[2]);
+                    }
 
-	                  if (auxDef.search(re) != -1){
-					            match = re.exec(auxDef);
-					            console.log(match)
-					            auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
-					          }
+                    var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
 
-					          var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re,"R" + instructionExecParts[i] + match[1]);
+                    }
 
-	                  if (auxDef.search(re) != -1){
-					            match = re.exec(auxDef);
-					            console.log(match)
-					            auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
-					          }
-	                }
-	              }
-	              else{
-	                var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
+                    var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
 
-	                if (auxDef.search(re) != -1){
-				            match = re.exec(auxDef);
-				            console.log(match)
-				            auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
-				          }
-	              }
-	              var re1 = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
-	              var re2 = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
-	              var re3 = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
-	            }
-	          }
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re, match[1] + "R" + instructionExecParts[i]);
+                    }
+                  }
+                  else{
+                    var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
+
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
+                    }
+
+                    var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
+
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
+                    }
+
+                    var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
+
+                    if (auxDef.search(re) != -1){
+                      match = re.exec(auxDef);
+                      console.log(match)
+                      auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
+                    }
+                  }
+                }
+                else{
+                  var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
+
+                  if (auxDef.search(re) != -1){
+                    prevSearchIndex = auxDef.search(re);
+                    match = re.exec(auxDef);
+                    console.log(match)
+                    auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
+                  }
+
+                  var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
+
+                  if (auxDef.search(re) != -1){
+                    prevSearchIndex = auxDef.search(re);
+                    match = re.exec(auxDef);
+                    console.log(match)
+                    auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
+                  }
+
+                  var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
+
+                  if (auxDef.search(re) != -1){
+                    prevSearchIndex = auxDef.search(re);
+                    match = re.exec(auxDef);
+                    console.log(match)
+                    auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
+                  }
+                }
+                var re1 = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
+                var re2 = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
+                var re3 = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
+              }
+            }
           }
 
           if(binary == true){
@@ -6857,6 +7649,16 @@ try{
                 auxDef = auxDef.replace(re, parseInt(value, 2));
               }
               if(architecture.instructions[auxIndex].fields[j].type == "address"){
+                var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                auxDef = auxDef.replace(re, parseInt(value, 2));
+              }
+              if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
+                var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                auxDef = auxDef.replace(re, parseInt(value, 2));
+              }
+              if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
                 var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
                 var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                 auxDef = auxDef.replace(re, parseInt(value, 2));
@@ -7050,12 +7852,25 @@ try{
 
           console.log(auxDef);
 
+          /*Divides a double into two parts*/
+          re = /splitDouble\((.*)\)/;
+          while (auxDef.search(re) != -1){
+            var match = re.exec(auxDef);
+            match[1] = match[1].replace(";", ",");
+            auxDef = auxDef.replace(re, "this.divDouble(" + match [1] + ")");
+          }
+
+          console.log(auxDef);
+
           /*Replaces the name of the register with its variable*/
           var regIndex = 0;
           var regNum = 0;
 
           for (var i = 0; i < architecture.components.length; i++){
-            for (var j = 0; j < architecture.components[i].elements.length; j++){
+            if(architecture.components[i].type == "integer"){
+              regNum = architecture.components[i].elements.length-1;
+            }
+            for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
               var re;
 
               /*Write in the register*/
@@ -7088,7 +7903,7 @@ try{
               }
 
               if(architecture.components[i].type == "integer"){
-                re = new RegExp("R"+regNum+"[^0-9]","g");
+                re = new RegExp("R"+regNum+"[^0-9]|[\\s]","g");
                 if(auxDef.search(re) != -1){
                   re = new RegExp("R"+regNum,"g");
                   auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
@@ -7096,7 +7911,7 @@ try{
               }
 
               if(architecture.components[i].type == "integer"){
-                regNum++;
+                regNum--;
               }
             }
           }
@@ -7104,6 +7919,8 @@ try{
           /*Leave the name of the register*/
           re = new RegExp("\.name","g");
           auxDef = auxDef.replace(re, "");
+
+          console.log(auxDef);
 
           /*Check if stack limit was modify*/
           re = /check_stack_limit\((.*)\)/;
@@ -7134,42 +7951,45 @@ try{
 
           /*Write in memory*/
           re = /MP.([whb]).\[(.*?)\] *=/;
-          if (auxDef.search(re) != -1){
+          while (auxDef.search(re) != -1){
+            console.log("AQUI1");
             var match = re.exec(auxDef);
             var auxDir;
             eval("auxDir="+match[2]);
 
-            re = /MP.[whb].\[(.*?)\] *=/g;
+            re = /MP.[whb].\[(.*?)\] *=/;
             auxDef = auxDef.replace(re, "var dir"+ auxDir +"=");
             auxDef = "var dir" + auxDir + "=null\n" + auxDef;
             auxDef = auxDef + "\n this.writeMemory(dir"+auxDir+",'0x"+auxDir.toString(16)+"','"+match[1]+"');"
+            re = /MP.([whb]).\[(.*?)\] *=/;
           }
 
           re = new RegExp("MP.([whb]).(.*?) *=");
-          if (auxDef.search(re) != -1){
+          while (auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-
-            re = new RegExp("MP."+match[1]+"."+match[2]+" *=","g");
+            re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
             auxDef = auxDef.replace(re, "var dir"+ match[2]+"=");
             auxDef = "var dir" + match[2] + "=null\n" + auxDef;
             auxDef = auxDef + "\n this.writeMemory(dir"+match[2]+",'"+match[2]+"','"+match[1]+"');"
+            re = new RegExp("MP.([whb]).(.*?) *=");
           }
 
           re = /MP.([whb]).\[(.*?)\]/;
-          if (auxDef.search(re) != -1){
+          while (auxDef.search(re) != -1){
             var match = re.exec(auxDef);
             var auxDir;
             eval("auxDir="+match[2]);
-
-            re = /MP.[whb].\[(.*?)\]/g;
+            re = /MP.[whb].\[(.*?)\]/;
             auxDef = auxDef.replace(re, "this.readMemory('0x"+auxDir.toString(16)+"', '"+match[1]+"')");
+            re = /MP.([whb]).\[(.*?)\]/;
           }
 
           re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
-          if (auxDef.search(re) != -1){
+          while (auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-            re = new RegExp("MP."+match[1]+"."+match[2],"g");
+            re = new RegExp("MP."+match[1]+"."+match[2]);
             auxDef = auxDef.replace(re, "this.readMemory('"+match[2]+"','"+match[1]+"')");
+            re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
           }
 
           console.log(auxDef);
@@ -7183,16 +8003,16 @@ try{
               error = 1;
               instructions[executionIndex]._rowVariant = 'danger';
               executionIndex = -1;
-              app._data.alertMessaje = 'The definition of the instruction contains errors, please review it';
+              app._data.alertMessage = 'The definition of the instruction contains errors, please review it';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               var date = new Date();
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               return;
             }
           }
@@ -7208,7 +8028,7 @@ try{
             stats[i].percentage = (stats[i].number_instructions/totalStats)*100;
           }
 
-       		/*Execution error*/
+          /*Execution error*/
           if(executionIndex == -1){
             error = 1;
             return;
@@ -7243,16 +8063,16 @@ try{
             }
 
             executionIndex = -2;
-            app._data.alertMessaje = 'The execution of the program has finished';
+            app._data.alertMessage = 'The execution of the program has finished';
             app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             return;
           }
           else{
@@ -7270,43 +8090,43 @@ try{
         this.runExecution = false;
 
         if(instructions.length == 0){
-          app._data.alertMessaje = 'No instructions in memory';
+          app._data.alertMessage = 'No instructions in memory';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
 
         if(executionIndex < -1){
-          app._data.alertMessaje = 'The program has finished';
+          app._data.alertMessage = 'The program has finished';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
         else if(executionIndex == -1){
-          app._data.alertMessaje = 'The program has finished with errors';
+          app._data.alertMessage = 'The program has finished with errors';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           return;
         }
 
@@ -7316,30 +8136,30 @@ try{
         this.programExecutionInst();
       },
       programExecutionInst(){
-      	for (var i = 0; i < 10 && executionIndex >= 0; i++) {
-  	    	if(mutexRead == true){
-  	      	iter1 = 1;
-  	        $("#stopExecution").hide();
-  	        $("#playExecution").show();
-  	        return;
-  	      }
-  	      else if(instructions[executionIndex].Break == true && iter1 == 0){
-  	        iter1 = 1;
-  	        $("#stopExecution").hide();
-  	        $("#playExecution").show();
-  	        return;
-  	      }
-  	      else if(this.runExecution == true){
-  	        app._data.runExecution = false;
-  	        iter1 = 1;
-  	        $("#stopExecution").hide();
-  	        $("#playExecution").show();
-  	        return;
-  	      }
-  	      else{
-  	        this.executeInstruction();
-  	        iter1 = 0;
-  	      }
+        for (var i = 0; i < 10 && executionIndex >= 0; i++) {
+          if(mutexRead == true){
+            iter1 = 1;
+            $("#stopExecution").hide();
+            $("#playExecution").show();
+            return;
+          }
+          else if(instructions[executionIndex].Break == true && iter1 == 0){
+            iter1 = 1;
+            $("#stopExecution").hide();
+            $("#playExecution").show();
+            return;
+          }
+          else if(this.runExecution == true){
+            app._data.runExecution = false;
+            iter1 = 1;
+            $("#stopExecution").hide();
+            $("#playExecution").show();
+            return;
+          }
+          else{
+            this.executeInstruction();
+            iter1 = 0;
+          }
         }
 
         if(executionIndex >= 0){
@@ -7357,22 +8177,23 @@ try{
       /*Read register value*/
       readRegister(indexComp, indexElem){
         if(architecture.components[indexComp].elements[indexElem].properties[0] != "read" && architecture.components[indexComp].elements[indexElem].properties[1] != "read"){
-          app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
+          app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
           app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessaje, {
+          app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
             toaster: "b-toaster-top-center",
-  					autoHideDelay: 1500,
+            autoHideDelay: 1500,
           });
           instructions[executionIndex]._rowVariant = 'danger';
           var date = new Date();
-          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           executionIndex = -1;
           return;
         }
 
         if(architecture.components[indexComp].type == "control" || architecture.components[indexComp].type == "integer"){
+          console.log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
           return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
         }
         if(architecture.components[indexComp].type == "floating point"){
@@ -7388,22 +8209,22 @@ try{
 
         if(architecture.components[indexComp].type == "integer" || architecture.components[indexComp].type == "control"){
           if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-            app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
+            app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             instructions[executionIndex]._rowVariant = 'danger';
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             executionIndex = -1;
             return;
           }
 
-          architecture.components[indexComp].elements[indexElem].value = bigInt(parseInt(value) >>> 0, 10).value;
+          architecture.components[indexComp].elements[indexElem].value = bigInt(parseInt(value) >>> 0).value;
 
           var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
           var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -7420,64 +8241,64 @@ try{
         else if(architecture.components[indexComp].type =="floating point"){
           if(architecture.components[indexComp].double_precision == false){
             if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-              app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
+              app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
               var date = new Date();
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               return;
             }
 
-            architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
+            architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
 
             this.updateDouble(indexComp, indexElem);
 
             var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
-  	        var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-  	        $(buttonDec).attr("style", "background-color:#c2c2c2;");
-  	        $(buttonHex).attr("style", "background-color:#c2c2c2;");
+            $(buttonDec).attr("style", "background-color:#c2c2c2;");
+            $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-  	        setTimeout(function() {
-  	          $(buttonDec).attr("style", "background-color:#f5f5f5;");
-  	          $(buttonHex).attr("style", "background-color:#f5f5f5;");
-  	        }, 850);
+            setTimeout(function() {
+              $(buttonDec).attr("style", "background-color:#f5f5f5;");
+              $(buttonHex).attr("style", "background-color:#f5f5f5;");
+            }, 850);
           }
           
           else if(architecture.components[indexComp].double_precision == true){
             if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-              app._data.alertMessaje = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
+              app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
               app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        })
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              })
               var date = new Date();
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               return;
             }
 
-            architecture.components[indexComp].elements[indexElem].value = parseFloat(value, 10);
+            architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
 
             this.updateSimple(indexComp, indexElem);
 
             var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
-  	        var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-  	        $(buttonDec).attr("style", "background-color:#c2c2c2;");
-  	        $(buttonHex).attr("style", "background-color:#c2c2c2;");
+            $(buttonDec).attr("style", "background-color:#c2c2c2;");
+            $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-  	        setTimeout(function() {
-  	          $(buttonDec).attr("style", "background-color:#f5f5f5;");
-  	          $(buttonHex).attr("style", "background-color:#f5f5f5;");
-  	        }, 850);
+            setTimeout(function() {
+              $(buttonDec).attr("style", "background-color:#f5f5f5;");
+              $(buttonHex).attr("style", "background-color:#f5f5f5;");
+            }, 850);
           }
         }  
       },
@@ -7487,17 +8308,17 @@ try{
         var index;
 
         if (type == "w"){
-        	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to read in the text segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -7528,17 +8349,17 @@ try{
         }
 
         if (type == "h"){
-        	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to read in the text segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -7578,17 +8399,17 @@ try{
         }
 
         if (type == "b"){
-        	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessaje = 'Segmentation fault. You tried to read in the text segment';
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to read in the text segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -7627,17 +8448,17 @@ try{
         var index;
 
         if (type == "w"){
-        	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -7658,7 +8479,7 @@ try{
                 memory[index][i].Value = parseInt(memValue, 16);
                 var charIndex = memValue.length-1;
                 for (var z = 0; z < memory[index][i].Binary.length; z++){
-                  memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                   charIndex = charIndex - 2;
                 }
                 memory[index][i].Value = parseInt(memValue, 16);
@@ -7674,7 +8495,7 @@ try{
               memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+                (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
                 charIndex = charIndex - 2;
               }
               app._data.memory[index] = memory[index];
@@ -7685,7 +8506,7 @@ try{
               memory[index].push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
-                (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+                (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
                 charIndex = charIndex - 2;
               }
               app._data.memory[index] = memory[index];
@@ -7698,7 +8519,7 @@ try{
             memory[index].push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
-              (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1)+memValue.charAt(charIndex), Tag: null},);
+              (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
               charIndex = charIndex - 2;
             }
             app._data.memory[index] = memory[index];
@@ -7707,17 +8528,17 @@ try{
         }
 
         if (type == "h"){
-        	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -7738,7 +8559,7 @@ try{
                  if(j < 2){
                   var charIndex = memValue.length-1;
                   for (var z = 0; z < memory[index][i].Binary.length - 2; z++){
-                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                     charIndex = charIndex - 2;
                   }
 
@@ -7752,7 +8573,7 @@ try{
                 else{
                   var charIndex = memValue.length-1;
                   for (var z = 2; z < memory[index][i].Binary.length; z++){
-                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                     charIndex = charIndex - 2;
                   }
                   app._data.memory[index] = memory[index];
@@ -7776,7 +8597,7 @@ try{
                    if(j < 2){
                     var charIndex = memValue.length-1;
                     for (var z = 0; z < memory[index][i].Binary.length - 2; z++){
-                      memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                       charIndex = charIndex - 2;
                     }
                     memory[index][i].Value = "0 " + parseInt(memValue, 16); 
@@ -7786,7 +8607,7 @@ try{
                   else{
                     var charIndex = memValue.length-1;
                     for (var z = 2; z < memory[index][i].Binary.length; z++){
-                      memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                       charIndex = charIndex - 2;
                     }
                     memory[index][i].Value = parseInt(memValue, 16) + " 0";    
@@ -7810,7 +8631,7 @@ try{
                    if(j < 2){
                     var charIndex = memValue.length-1;
                     for (var z = 0; z < memory[index][i+1].Binary.length - 2; z++){
-                      memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                       charIndex = charIndex - 2;
                     }
                     memory[index][i+1].Value = "0 " + parseInt(memValue, 16); 
@@ -7820,7 +8641,7 @@ try{
                   else{
                     var charIndex = memValue.length-1;
                     for (var z = 2; z < memory[index][i].Binary.length; z++){
-                      memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                      memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                       charIndex = charIndex - 2;
                     }
                     memory[index][i+1].Value = parseInt(memValue, 16) + " 0"; 
@@ -7846,7 +8667,7 @@ try{
                  if(j < 2){
                   var charIndex = memValue.length-1;
                   for (var z = 0; z < memory[index][memory[index].length-1].Binary.length - 2; z++){
-                    memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                     charIndex = charIndex - 2;
                   }
                   memory[index][memory[index].length-1].Value = "0 " + parseInt(memValue, 16); 
@@ -7856,7 +8677,7 @@ try{
                 else{
                   var charIndex = memValue.length-1;
                   for (var z = 2; z < memory[index][i].Binary.length; z++){
-                    memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                    memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                     charIndex = charIndex - 2;
                   }
                   memory[index][memory[index].length-1].Value = parseInt(memValue, 16) + " 0"; 
@@ -7870,17 +8691,17 @@ try{
         }
 
         if (type == "b"){
-        	if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -7899,7 +8720,7 @@ try{
               var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                 var charIndex = memValue.length-1;
-                memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                 memory[index][i].Value = null;
                 for (var z = 3; z < 4; z--){
                   memory[index][i].Value = memory[index][i].Value + parseInt(memory[index][i].Binary[z].Bin, 16) + " ";
@@ -7921,7 +8742,7 @@ try{
                 var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
                 if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                   var charIndex = memValue.length-1;
-                  memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                   for (var z = 3; z < 4; z--){
                     memory[index][i+1].Value = memory[index][i+1].Value + parseInt(memory[index][i+1].Binary[z].Bin, 16) + " ";
                   }
@@ -7941,7 +8762,7 @@ try{
                 var aux = "0x"+(memory[index][i+1].Binary[j].Addr).toString(16);
                 if(aux == addr || memory[index][i+1].Binary[j].Tag == addr){
                   var charIndex = memValue.length-1;
-                  memory[index][i+1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                  memory[index][i+1].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                   for (var z = 3; z < 4; z--){
                     memory[index][i+1].Value = memory[index][i+1].Value + parseInt(memory[index][i+1].Binary[z].Bin, 16) + " ";
                   }
@@ -7963,7 +8784,7 @@ try{
               var aux = "0x"+(memory[index][memory[index].length-1].Binary[j].Addr).toString(16);
               if(aux == addr || memory[index][memory[index].length-1].Binary[j].Tag == addr){
                 var charIndex = memValue.length-1;
-                memory[index][memory[index].length-1].Binary[j].Bin = memValue.charAt(charIndex-1)+memValue.charAt(charIndex);
+                memory[index][memory[index].length-1].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                 for (var z = 3; z < 4; z--){
                   memory[index][memory[index].length-1].Value = memory[index][memory[index].length-1].Value + parseInt(memory[index][memory[index].length-1].Binary[z].Bin, 16) + " ";
                 }
@@ -7976,43 +8797,43 @@ try{
       },
       /*Modify the stack limit*/
       writeStackLimit(stackLimit){
-      	if(stackLimit != null){
-      		if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-      			app._data.alertMessaje = 'Segmentation fault. You tried to write in the data segment';
+        if(stackLimit != null){
+          if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to write in the data segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
-      		}
-      		else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-      			app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
+          }
+          else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
+            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
             app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessaje, {
-  	          variant: app._data.type,
-  	          solid: true,
-  	          toaster: "b-toaster-top-center",
-  						autoHideDelay: 1500,
-  	        });
+            app.$bvToast.toast(app._data.alertMessage, {
+              variant: app._data.type,
+              solid: true,
+              toaster: "b-toaster-top-center",
+              autoHideDelay: 1500,
+            });
             var date = new Date();
-            notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
-      		}
-      		else{
-      			if(stackLimit < architecture.memory_layout[4].value){
-  	    			var diff = architecture.memory_layout[4].value - stackLimit;
-  	    			var auxStackLimit = stackLimit;
+          }
+          else{
+            if(stackLimit < architecture.memory_layout[4].value){
+              var diff = architecture.memory_layout[4].value - stackLimit;
+              var auxStackLimit = stackLimit;
 
-  	    			for (var i = 0; i < (diff/4); i++){
+              for (var i = 0; i < (diff/4); i++){
                 if(unallocated_memory.length > 0){
                   memory[memory_hash[2]].splice(i, 0, unallocated_memory[unallocated_memory.length-1]);
                   memory[memory_hash[2]][0].unallocated = false;
@@ -8025,27 +8846,27 @@ try{
                     auxStackLimit++;
                   }
                 }
-  	          }
-  	        }
-  	        else if(stackLimit > architecture.memory_layout[4].value){
-  	    			var diff = stackLimit - architecture.memory_layout[4].value;
-  	    			for (var i = 0; i < (diff/4); i++){
+              }
+            }
+            else if(stackLimit > architecture.memory_layout[4].value){
+              var diff = stackLimit - architecture.memory_layout[4].value;
+              for (var i = 0; i < (diff/4); i++){
                 unallocated_memory.push(memory[memory_hash[2]][0]);
                 unallocated_memory[unallocated_memory.length-1].unallocated = true;
                 app._data.unallocated_memory = unallocated_memory;
-  	            memory[memory_hash[2]].splice(0, 1);
+                memory[memory_hash[2]].splice(0, 1);
                 if(unallocated_memory.length > 20){
                   unallocated_memory.splice(0, 15);
                 }
-  	          }
-  	        }
+              }
+            }
             /*if(stackLimit % 4 == 0){
               architecture.memory_layout[4].value = stackLimit;
             }
             else{
-              app._data.alertMessaje = 'The memory must be aligned';
+              app._data.alertMessage = 'The memory must be aligned';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
+              app.$bvToast.toast(app._data.alertMessage, {
                 variant: app._data.type,
                 solid: true,
                 toaster: "b-toaster-top-center",
@@ -8053,21 +8874,21 @@ try{
               });
               instructions[executionIndex]._rowVariant = 'danger';
               var date = new Date();
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               executionIndex = -1;
               return;
             }*/
             architecture.memory_layout[4].value = stackLimit;
             
-      		}
-  	    }
+          }
+        }
       },
       /*Syscall*/
       syscall(action, indexComp, indexElem, indexComp2, indexElem2){
         switch(action){
           case "print_int":
             var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + value;
+            app._data.display = app._data.display + (parseInt(value.toString()) >> 0);
             break;
           case "print_float":
             var value = architecture.components[indexComp].elements[indexElem].value;
@@ -8082,43 +8903,44 @@ try{
             var index;
 
             if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-  	          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-  	          app._data.type = 'danger';
-  	          app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
-  	          var date = new Date();
-  	          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  	          instructions[executionIndex]._rowVariant = 'danger';
-  	          executionIndex = -1;
-  	          this.keyboard = "";
-  	          return;
-  	        }
+              app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              var date = new Date();
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              instructions[executionIndex]._rowVariant = 'danger';
+              executionIndex = -1;
+              this.keyboard = "";
+              return;
+            }
 
-  	        if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-  	          index = memory_hash[0];
-  	        }
+            if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+              index = memory_hash[0];
+            }
 
-  	        if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-  	          index = memory_hash[2];
-  	        }
+            if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+              index = memory_hash[2];
+            }
 
-  	        for (var i = 0; i < memory[index].length; i++){
+            for (var i = 0; i < memory[index].length; i++){
               for (var j = 0; j < memory[index][i].Binary.length; j++){
                 var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
                 if(aux == addr){
                   for (var i; i < memory[index].length; i++){
-                    for (var j = 0; j < memory[index][i].Binary.length; j++){
-                      app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16));
-                      if(memory[index][i].Binary[j].Bin == 0){
+                    for (var k = j; k < memory[index][i].Binary.length; k++){
+                      app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+                      if(memory[index][i].Binary[k].Bin == 0){
                         return
                       }
-                      else if(i == memory[index].length-1 && j == memory[index][i].Binary.length-1){
+                      else if(i == memory[index].length-1 && k == memory[index][i].Binary.length-1){
                         return;
                       }
+                      j=0;
                     }
                   }
                 }
@@ -8130,7 +8952,7 @@ try{
             mutexRead = true;
             console.log(mutexRead);
             if(newExecution == true){
-            	this.keyboard = "";
+              this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
               return;
@@ -8147,23 +8969,23 @@ try{
               consoleMutex = false;
               mutexRead = false;
               if(executionIndex >= instructions.length){
-  		          for (var i = 0; i < instructions.length; i++){
-  		            instructions[i]._rowVariant = '';
-  		          }
+                for (var i = 0; i < instructions.length; i++){
+                  instructions[i]._rowVariant = '';
+                }
 
-  		          executionIndex = -2;
-  		          app._data.alertMessaje = 'The execution of the program has finished';
-  		          app._data.type = 'success';
-  		          app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-  		          var date = new Date();
-  		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  		          return;
-  		        }
+                executionIndex = -2;
+                app._data.alertMessage = 'The execution of the program has finished';
+                app._data.type = 'success';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                return;
+              }
               break;
             }
 
@@ -8172,7 +8994,7 @@ try{
             mutexRead = true;
             console.log(mutexRead);
             if(newExecution == true){
-            	this.keyboard = "";
+              this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
               return;
@@ -8189,23 +9011,23 @@ try{
               consoleMutex = false;
               mutexRead = false;
               if(executionIndex >= instructions.length){
-  		          for (var i = 0; i < instructions.length; i++) {
-  		            instructions[i]._rowVariant = '';
-  		          }
+                for (var i = 0; i < instructions.length; i++) {
+                  instructions[i]._rowVariant = '';
+                }
 
-  		          executionIndex = -2;
-  		          app._data.alertMessaje = 'The execution of the program has finished';
-  		          app._data.type = 'success';
-  		          app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-  		          var date = new Date();
-  		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  		          return;
-  		        }
+                executionIndex = -2;
+                app._data.alertMessage = 'The execution of the program has finished';
+                app._data.type = 'success';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                return;
+              }
               break;
             }
 
@@ -8214,7 +9036,7 @@ try{
             mutexRead = true;
             console.log(mutexRead);
             if(newExecution == true){
-            	this.keyboard = "";
+              this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
               return;
@@ -8231,23 +9053,23 @@ try{
               consoleMutex = false;
               mutexRead = false;
               if(executionIndex >= instructions.length){
-  		          for (var i = 0; i < instructions.length; i++) {
-  		            instructions[i]._rowVariant = '';
-  		          }
+                for (var i = 0; i < instructions.length; i++) {
+                  instructions[i]._rowVariant = '';
+                }
 
-  		          executionIndex = -2;
-  		          app._data.alertMessaje = 'The execution of the program has finished';
-  		          app._data.type = 'success';
-  		          app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-  		          var date = new Date();
-  		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  		          return;
-  		        }
+                executionIndex = -2;
+                app._data.alertMessage = 'The execution of the program has finished';
+                app._data.type = 'success';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                return;
+              }
               break;
             }
 
@@ -8256,7 +9078,7 @@ try{
             mutexRead = true;
             console.log(mutexRead);
             if(newExecution == true){
-            	this.keyboard = "";
+              this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
               return;
@@ -8280,31 +9102,31 @@ try{
               var index;
 
               if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-  		          app._data.alertMessaje = 'Segmentation fault. You tried to write in the text segment';
-  		          app._data.type = 'danger';
-  		          app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-  		          var date = new Date();
-  		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  		          instructions[executionIndex-1]._rowVariant = 'danger';
-  		          executionIndex = -1;
-  		          this.keyboard = "";
-  		          return;
-  		        }
+                app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
+                app._data.type = 'danger';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                instructions[executionIndex-1]._rowVariant = 'danger';
+                executionIndex = -1;
+                this.keyboard = "";
+                return;
+              }
 
-  		        if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-  			        index = memory_hash[0];
-  			      }
+              if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+                index = memory_hash[0];
+              }
 
-  			      if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-  			        index = memory_hash[2];
-  			      }
+              if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+                index = memory_hash[2];
+              }
 
-  			      for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
+              for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
                 for (var j = 0; j < memory[index][i].Binary.length; j++){
                   var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
                   if(aux == addr){
@@ -8363,25 +9185,25 @@ try{
               if(valueIndex == value.length){
                 this.keyboard = "";
                 consoleMutex = false;
-  	            mutexRead = false;
-  	            if(executionIndex >= instructions.length){
-  			          for (var i = 0; i < instructions.length; i++) {
-  			            instructions[i]._rowVariant = '';
-  			          }
+                mutexRead = false;
+                if(executionIndex >= instructions.length){
+                  for (var i = 0; i < instructions.length; i++) {
+                    instructions[i]._rowVariant = '';
+                  }
 
-  			          executionIndex = -2;
-  			          app._data.alertMessaje = 'The execution of the program has finished';
-  			          app._data.type = 'success';
-  			          app.$bvToast.toast(app._data.alertMessaje, {
-  				          variant: app._data.type,
-  				          solid: true,
-  				          toaster: "b-toaster-top-center",
-  									autoHideDelay: 1500,
-  				        });
-  			          var date = new Date();
-  			          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  			          return;
-  			        }
+                  executionIndex = -2;
+                  app._data.alertMessage = 'The execution of the program has finished';
+                  app._data.type = 'success';
+                  app.$bvToast.toast(app._data.alertMessage, {
+                    variant: app._data.type,
+                    solid: true,
+                    toaster: "b-toaster-top-center",
+                    autoHideDelay: 1500,
+                  });
+                  var date = new Date();
+                  notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                  return;
+                }
                 return;
               }
 
@@ -8409,23 +9231,23 @@ try{
               consoleMutex = false;
               mutexRead = false;
               if(executionIndex >= instructions.length){
-  		          for (var i = 0; i < instructions.length; i++) {
-  		            instructions[i]._rowVariant = '';
-  		          }
+                for (var i = 0; i < instructions.length; i++) {
+                  instructions[i]._rowVariant = '';
+                }
 
-  		          executionIndex = -2;
-  		          app._data.alertMessaje = 'The execution of the program has finished';
-  		          app._data.type = 'success';
-  		          app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-  		          var date = new Date();
-  		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  		          return;
-  		        }
+                executionIndex = -2;
+                app._data.alertMessage = 'The execution of the program has finished';
+                app._data.type = 'success';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                return;
+              }
               break;
             }
 
@@ -8434,25 +9256,9 @@ try{
             var aux_addr = architecture.memory_layout[3].value;
 
             /*if((parseInt(architecture.components[indexComp].elements[indexElem].value))%4 != 0){
-              app._data.alertMessaje = 'The memory must be aligned';
+              app._data.alertMessage = 'The memory must be aligned';
               app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
-  		          variant: app._data.type,
-  		          solid: true,
-  		          toaster: "b-toaster-top-center",
-  							autoHideDelay: 1500,
-  		        });
-              var date = new Date();
-              instructions[executionIndex]._rowVariant = 'danger';
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-              executionIndex = -1;
-              return;
-            }*/
-
-            if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-              app._data.alertMessaje = 'Not enough memory for data segment';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessaje, {
+              app.$bvToast.toast(app._data.alertMessage, {
                 variant: app._data.type,
                 solid: true,
                 toaster: "b-toaster-top-center",
@@ -8460,7 +9266,23 @@ try{
               });
               var date = new Date();
               instructions[executionIndex]._rowVariant = 'danger';
-              notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              executionIndex = -1;
+              return;
+            }*/
+
+            if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
+              app._data.alertMessage = 'Not enough memory for data segment';
+              app._data.type ='danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              var date = new Date();
+              instructions[executionIndex]._rowVariant = 'danger';
+              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               executionIndex = -1;
               return;
             }
@@ -8493,7 +9315,7 @@ try{
             mutexRead = true;
             console.log(mutexRead);
             if(newExecution == true){
-            	this.keyboard = "";
+              this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
               return;
@@ -8510,23 +9332,23 @@ try{
               console.log(mutexRead);
 
               if(executionIndex >= instructions.length){
-  		          for (var i = 0; i < instructions.length; i++){
-  		            instructions[i]._rowVariant = '';
-  		          }
+                for (var i = 0; i < instructions.length; i++){
+                  instructions[i]._rowVariant = '';
+                }
 
-  		          executionIndex = -2;
-  		          app._data.alertMessaje = 'The execution of the program has finished';
-  		          app._data.type = 'success';
-  		          app.$bvToast.toast(app._data.alertMessaje, {
-  			          variant: app._data.type,
-  			          solid: true,
-  			          toaster: "b-toaster-top-center",
-  								autoHideDelay: 1500,
-  			        });
-  		          var date = new Date();
-  		          notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-  		          return;
-  		        }
+                executionIndex = -2;
+                app._data.alertMessage = 'The execution of the program has finished';
+                app._data.type = 'success';
+                app.$bvToast.toast(app._data.alertMessage, {
+                  variant: app._data.type,
+                  solid: true,
+                  toaster: "b-toaster-top-center",
+                  autoHideDelay: 1500,
+                });
+                var date = new Date();
+                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                return;
+              }
               break;
             }
             break;
@@ -8534,9 +9356,9 @@ try{
       },
       /*Exception Notification*/
       exception(error){
-        app._data.alertMessaje = "There is been an exception. Error description: '" + error;
+        app._data.alertMessage = "There is been an exception. Error description: '" + error;
         app._data.type = 'danger';
-        app.$bvToast.toast(app._data.alertMessaje, {
+        app.$bvToast.toast(app._data.alertMessage, {
           variant: app._data.type,
           solid: true,
           toaster: "b-toaster-top-center",
@@ -8544,110 +9366,121 @@ try{
         });
         var date = new Date();
         instructions[executionIndex]._rowVariant = 'danger';
-        notifications.push({mess: app._data.alertMessaje, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         executionIndex = -1;
         return;
+      },
+      /*Divides a double into two parts*/
+      divDouble(reg, index){
+            var value = this.bin2hex(this.double2bin(reg));
+            console.log(value);
+            if(index == 0){
+              return "0x" + value.substring(0,8);
+            }
+            if(index == 1) {
+              return "0x" + value.substring(8,16);
+            }
       },
 
       /*Reset execution*/
       reset(){
         $(".loading").show();
         setTimeout(function(){
-  	      for (var i = 0; i < instructions.length; i++) {
-  	        instructions[i]._rowVariant = '';
-  	      }
-  	      executionIndex = 0;
-  	      
-  	      /*Reset stats*/
-  	      totalStats=0;
-  	      for (var i = 0; i < stats.length; i++){
-  	        stats[i].percentage = 0;
-  	        stats[i].number_instructions = 0;
-  	      }
+          for (var i = 0; i < instructions.length; i++) {
+            instructions[i]._rowVariant = '';
+          }
+          executionIndex = 0;
+          
+          /*Reset stats*/
+          totalStats=0;
+          for (var i = 0; i < stats.length; i++){
+            stats[i].percentage = 0;
+            stats[i].number_instructions = 0;
+          }
 
-  	      /*Reset console*/
-  	      app._data.keyboard = "";
-  	      app._data.display = "";
-  	      mutexRead = false;
-  	      newExecution = true;
+          /*Reset console*/
+          app._data.keyboard = "";
+          app._data.display = "";
+          mutexRead = false;
+          newExecution = true;
 
-  	      for (var i = 0; i < architecture_hash.length; i++) {
-  	        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-  	          if(architecture.components[i].double_precision == false){
-  	            architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
-  	          }
+          for (var i = 0; i < architecture_hash.length; i++) {
+            for (var j = 0; j < architecture.components[i].elements.length; j++) {
+              if(architecture.components[i].double_precision == false){
+                architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
+              }
 
-  	          else{
-  	            var aux_value;
-  	            var aux_sim1;
-  	            var aux_sim2;
+              else{
+                var aux_value;
+                var aux_sim1;
+                var aux_sim2;
 
-  	            for (var a = 0; a < architecture_hash.length; a++) {
-  	              for (var b = 0; b < architecture.components[a].elements.length; b++) {
-  	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-  	                  aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-  	                }
-  	                if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-  	                  aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-  	                }
-  	              }
-  	            }
+                for (var a = 0; a < architecture_hash.length; a++) {
+                  for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+                      aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+                    }
+                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+                      aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+                    }
+                  }
+                }
 
-  	            aux_value = aux_sim1 + aux_sim2;
-  	            architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
-  	          }
-  	        }
-  	      }
+                aux_value = aux_sim1 + aux_sim2;
+                architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
+              }
+            }
+          }
 
-  	      architecture.memory_layout[4].value = backup_stack_address;
-  	      architecture.memory_layout[3].value = backup_data_address;
+          architecture.memory_layout[4].value = backup_stack_address;
+          architecture.memory_layout[3].value = backup_data_address;
 
-  	      for (var i = 0; i < memory[memory_hash[0]].length; i++) {
-  	      	if(memory[memory_hash[0]][i].reset == true){
-  	      		memory[memory_hash[0]].splice(i, 1);
-  	      		i--;
-  	      	}
-  	        else{
-  	        	memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
-  		        for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
-  		          memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
-  		        }
-  		      }
-  	      }
+          for (var i = 0; i < memory[memory_hash[0]].length; i++) {
+            if(memory[memory_hash[0]][i].reset == true){
+              memory[memory_hash[0]].splice(i, 1);
+              i--;
+            }
+            else{
+              memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
+              for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
+                memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
+              }
+            }
+          }
 
-  	      for (var i = 0; i < memory[memory_hash[2]].length; i++) {
-  	      	if(memory[memory_hash[2]][i].reset == true){
-  	      		memory[memory_hash[2]].splice(i, 1);
-  	      		i--;
-  	      	}
-  	      	else{
-  		        memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
-  		        for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
-  		          memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
-  		        }
-  		      }
-  	      }
+          for (var i = 0; i < memory[memory_hash[2]].length; i++) {
+            if(memory[memory_hash[2]][i].reset == true){
+              memory[memory_hash[2]].splice(i, 1);
+              i--;
+            }
+            else{
+              memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
+              for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
+                memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
+              }
+            }
+          }
 
           unallocated_memory = [];
           app._data.unallocated_memory = unallocated_memory;
 
-  	      for (var i = 0; i < instructions.length; i++) {
-  	        if(instructions[i].Label == "main"){
-  	          instructions[i]._rowVariant = 'success';
-  	        }
-  	      }
+          for (var i = 0; i < instructions.length; i++) {
+            if(instructions[i].Label == "main"){
+              instructions[i]._rowVariant = 'success';
+            }
+          }
 
-  	      $(".loading").hide();
+          $(".loading").hide();
         }, 25);
       },
       /*Enter a breakpoint*/
       breakPoint(record, index){
-      	for (var i = 0; i < instructions.length; i++) {
-      		if(instructions[i].Address == record.Address){
-      			index = i;
-      			break;
-      		}
-      	}
+        for (var i = 0; i < instructions.length; i++) {
+          if(instructions[i].Address == record.Address){
+            index = i;
+            break;
+          }
+        }
 
         if(instructions[index].Break == null){
           instructions[index].Break = true;
@@ -8664,8 +9497,8 @@ try{
       },
       /*Empty keyboard and display*/
       consoleClear(){
-      	this.keyboard = "";
-      	this.display = "";
+        this.keyboard = "";
+        this.display = "";
       },
       /*Convert hexadecimal number to floating point number*/
       hex2float ( hexvalue ){
@@ -8703,20 +9536,20 @@ try{
         var value_bit = '';
 
         for (var i = 0; i < value[1].length; i++){
-        	var aux = value[1].charAt(i);
-        	aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-        	value_bit = value_bit + aux;
+          var aux = value[1].charAt(i);
+          aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
+          value_bit = value_bit + aux;
         }
 
-  	  	var buffer = new ArrayBuffer(8);
-  		  new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
-  		  return new DataView( buffer ).getFloat64(0, false);
+        var buffer = new ArrayBuffer(8);
+        new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
+        return new DataView( buffer ).getFloat64(0, false);
       },
       /*Convert hexadecimal number to char*/
       hex2char8 ( hexvalue ){
-      	var num_char = ((hexvalue.toString().length))/2;
-      	var exponent = 0;
-      	var pos = 0;
+        var num_char = ((hexvalue.toString().length))/2;
+        var exponent = 0;
+        var pos = 0;
 
         var valuec = new Array();
 
@@ -8736,58 +9569,58 @@ try{
       },
       /*Convert floating point number to binary*/
       float2bin (number){
-  	    var i, result = "";
-  	    var dv = new DataView(new ArrayBuffer(4));
+        var i, result = "";
+        var dv = new DataView(new ArrayBuffer(4));
 
-  	    dv.setFloat32(0, number, false);
+        dv.setFloat32(0, number, false);
 
-  	    for (i = 0; i < 4; i++) {
-  	        var bits = dv.getUint8(i).toString(2);
-  	        if (bits.length < 8) {
-  	          bits = new Array(8 - bits.length).fill('0').join("") + bits;
-  	        }
-  	        result += bits;
-  	    }
-  	    return result;
+        for (i = 0; i < 4; i++) {
+            var bits = dv.getUint8(i).toString(2);
+            if (bits.length < 8) {
+              bits = new Array(8 - bits.length).fill('0').join("") + bits;
+            }
+            result += bits;
+        }
+        return result;
       },
       /*Convert double floating point number to binary*/
       double2bin(number) {
-  	    var i, result = "";
-  	    var dv = new DataView(new ArrayBuffer(8));
+        var i, result = "";
+        var dv = new DataView(new ArrayBuffer(8));
 
-  	    dv.setFloat64(0, number, false);
+        dv.setFloat64(0, number, false);
 
-  	    for (i = 0; i < 8; i++) {
-  	        var bits = dv.getUint8(i).toString(2);
-  	        if (bits.length < 8) {
-  	          bits = new Array(8 - bits.length).fill('0').join("") + bits;
-  	        }
-  	        result += bits;
-  	    }
-  	    return result;
-  		},
-  		/*Convert binary number to hexadecimal number*/
-  		bin2hex(s) {
-  	    var i, k, part, accum, ret = '';
-  	    for (i = s.length-1; i >= 3; i -= 4){
+        for (i = 0; i < 8; i++) {
+            var bits = dv.getUint8(i).toString(2);
+            if (bits.length < 8) {
+              bits = new Array(8 - bits.length).fill('0').join("") + bits;
+            }
+            result += bits;
+        }
+        return result;
+      },
+      /*Convert binary number to hexadecimal number*/
+      bin2hex(s) {
+        var i, k, part, accum, ret = '';
+        for (i = s.length-1; i >= 3; i -= 4){
 
-  	      part = s.substr(i+1-4, 4);
-  	      accum = 0;
-  	      for (k = 0; k < 4; k += 1){
+          part = s.substr(i+1-4, 4);
+          accum = 0;
+          for (k = 0; k < 4; k += 1){
             if (part[k] !== '0' && part[k] !== '1'){     
                 return { valid: false };
             }
             accum = accum * 2 + parseInt(part[k], 10);
-  	      }
-  	      if (accum >= 10){
+          }
+          if (accum >= 10){
             ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
-  	      } 
-  	      else {
+          } 
+          else {
             ret = String(accum) + ret;
-  	      }
-  	    }
+          }
+        }
 
-  	    if (i >= 0){
+        if (i >= 0){
           accum = 0;
           for (k = 0; k <= i; k += 1){
             if (s[k] !== '0' && s[k] !== '1') {
@@ -8796,10 +9629,10 @@ try{
             accum = accum * 2 + parseInt(s[k], 10);
           }
           ret = String(accum) + ret;
-  	    }
-  	    return ret;
-  		},
-  		/*Modifies double precision registers according to simple precision registers*/
+        }
+        return ret;
+      },
+      /*Modifies double precision registers according to simple precision registers*/
       updateDouble(comp, elem){
         for (var j = 0; j < architecture.components.length; j++) {
           for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
@@ -8836,7 +9669,7 @@ try{
           }
         }
       },
-  		/*Filter table instructions*/
+      /*Filter table instructions*/
       filter(row, filter){
         if(row.hide == true){
           return false;
@@ -8861,7 +9694,7 @@ try{
         $("#memory").hide();
         $("#stats").hide();
       },
-  		/*Show floating point registers*/
+      /*Show floating point registers*/
       showFpReg(){
         app._data.register_type = 'floating point';
         app._data.nameTabReg = "Real";
@@ -8872,11 +9705,11 @@ try{
       },
       /*Stop user interface refresh*/
       debounce: _.debounce(function (param, e) {
-      	console.log(param);
-      	console.log(e);
+        console.log(param);
+        console.log(e);
 
-      	e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      	var re = new RegExp("'","g");
+        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        var re = new RegExp("'","g");
         e = e.replace(re, '"');
         re = new RegExp("[\f]","g");
         e = e.replace(re, '\\f');
@@ -8890,13 +9723,13 @@ try{
         e = e.replace(re, '\\v');
 
         if(e == ""){
-          eval("this." + param + "= null");
+          this[param] = null;
           return;
         }
 
         console.log("this." + param + "= '" + e + "'");
 
-        eval("this." + param + "= '" + e + "'");
+        this[param] = e.toString();
         app.$forceUpdate();
       }, getDebounceTime())
     },
@@ -8911,20 +9744,21 @@ try{
   /*All modules*/
 
   /*Error handler*/
-  /*Vue.config.errorHandler = function (err, vm, info) {
-    app._data.alertMessaje = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + err;
+  Vue.config.errorHandler = function (err, vm, info) {
+    app._data.alertMessage = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + err;
     app._data.type ='danger';
-    app.$bvToast.toast(app._data.alertMessaje, {
+    app.$bvToast.toast(app._data.alertMessage, {
       variant: app._data.type,
       solid: true,
       toaster: "b-toaster-top-center",
-  		autoHideDelay: 3000,
+      autoHideDelay: 3000,
     })
+    notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
     setTimeout(function(){
-    	location.reload(true)
+      location.reload(true)
     }, 3000);
-  }*/
+  }
   /*Closing alert*/
   window.onbeforeunload = confirmExit;
   function confirmExit(){
@@ -8932,11 +9766,11 @@ try{
   }
   /*Determines the refresh timeout depending on the device being used*/
   function getDebounceTime(){
-  	if(screen.width > 768){
-    	return 500;
+    if(screen.width > 768){
+      return 500;
     }
     else{
-    	return 1000;
+      return 1000;
     }
   }
   /*Stop the transmission of events to children*/
@@ -9016,18 +9850,19 @@ try{
 
   /*Binary string to integer number*/
   function binaryStringToInt( b ) {
-      return parseInt(b, 2);
+    return parseInt(b, 2);
   }
 }
 catch(e){
-  app._data.alertMessaje = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + e;
+  app._data.alertMessage = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + e;
   app._data.type ='danger';
-  app.$bvToast.toast(app._data.alertMessaje, {
+  app.$bvToast.toast(app._data.alertMessage, {
     variant: app._data.type,
     solid: true,
     toaster: "b-toaster-top-center",
     autoHideDelay: 3000,
   })
+  notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
   setTimeout(function(){
     location.reload(true)

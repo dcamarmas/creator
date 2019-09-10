@@ -76,7 +76,7 @@
         <!-- Navbar  -->
         <header>
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.2.22 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.3 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -224,6 +224,7 @@
               </template>
 
               <div class="col-lg-12 col-sm-12">
+                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
                 <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
                 <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
               </div>
@@ -255,11 +256,16 @@
                             </b-card-body>
                           </b-col>
 
-                          <b-col md="2">
-                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete  h-100" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
+                          <b-col md="2" >
+                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
                           </b-col>
                         </b-row>
                       </b-card>
+
+                      <!-- Delete architecture modal -->
+                      <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
+                        <h6>Are you sure you want to delete the architecture?</h6>
+                      </b-modal >
 
                       <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;">
                         <b-row no-gutters @click="new_arch">
@@ -685,6 +691,8 @@
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
                                     <option value="inm">inm</option>
                                     <option value="address">address</option>
+                                    <option value="offset_bytes">Offset Bytes</option>
+                                    <option value="offset_words">Offset Words</option>
                                     <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                   </b-form-select>
                                   <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -932,6 +940,8 @@
                                       <option value="Ctrl-Reg">Ctrl-Reg</option>
                                       <option value="inm">inm</option>
                                       <option value="address">address</option>
+                                      <option value="offset_bytes">Offset Bytes</option>
+                                      <option value="offset_words">Offset Words</option>
                                       <option value="cop" :disabled="formInstruction.assignedCop!=false">cop</option>
                                     </b-form-select>
                                     <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
@@ -1077,6 +1087,8 @@
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
                                     <option value="inm">inm</option>
                                     <option value="address">address</option>
+                                    <option value="offset_bytes">Offset Bytes</option>
+                                    <option value="offset_words">Offset Words</option>
                                   </b-form-select>
                                 </b-form-group>
                               </div>
@@ -1287,6 +1299,8 @@
                                       <option value="Ctrl-Reg">Ctrl-Reg</option>
                                       <option value="inm">inm</option>
                                       <option value="address">address</option>
+                                      <option value="offset_bytes">Offset Bytes</option>
+                                      <option value="offset_words">Offset Words</option>
                                     </b-form-select>
                                   </b-form-group>
                                 </div>
@@ -1523,6 +1537,7 @@
                     </template>
 
                     <div class="col-lg-12 col-sm-12">
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
@@ -1596,19 +1611,22 @@
                         </b-button>
                       </div>
                       <div class="col-lg-4 col-sm-4 buttons">
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeInstruction">
+                        <b-button accesskey="a" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeInstruction" id="inst">
                           <span class="fas fa-fast-forward"></span>
                           Inst.
                         </b-button>
+                        <b-tooltip target="inst" title="Press [Alt] + A" v-if="navigator=='Chrome'"></b-tooltip>
+                        <b-tooltip target="inst" title="Press [Alt] [Shift] + A" v-if="navigator=='Firefox'"></b-tooltip>
+                        <b-tooltip target="inst" title="Press [Control] [Alt/Option] + A" v-if="navigator=='Mac'"></b-tooltip>
                       </div>
                       <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false">
+                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="executeProgram" v-if="runExecution == false" id="run">
                           <span class="fas fa-play"></span>
                           Run
                         </b-button>
                       </div>
                       <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="stopExecution">
+                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" @click="stopExecution" id="stop">
                           <span class="fas fa-stop"></span>
                           Stop
                         </b-button>
@@ -1639,6 +1657,7 @@
                       <br>
                     </template>
                     <div class="col-lg-12 col-sm-12">
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
