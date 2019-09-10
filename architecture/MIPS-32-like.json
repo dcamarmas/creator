@@ -3851,7 +3851,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rs = (rt >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
+      "definition": "rs = (rt >>> 0) < (inm >>> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
     },
     {
       "name": "sqrt.s",

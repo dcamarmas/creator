@@ -103,7 +103,7 @@ var compileError = [
   { mess1: "Empty label", mess2: "" },
   { mess1: "Repeated tag: ", mess2: "" },
   { mess1: "Instruction '", mess2: "' not found" },
-  { mess1: "Incorrect signature --> ", mess2: "" },
+  { mess1: "Incorrect sintax --> ", mess2: "" },
   { mess1: "Register '", mess2: "' not found" },
   { mess1: "Immediate number '", mess2: "' is too big" },
   { mess1: "Immediate number '", mess2: "' is not valid" },
@@ -125,6 +125,7 @@ var compileError = [
   { mess1: "The number should be positive '", mess2: "'" },
   { mess1: "Empty directive", mess2: "" },
   { mess1: "After the comma you should go a blank --> ", mess2: "" },
+  { mess1: "Incorrect sintax", mess2: "" },
 ];
 /*Promise*/
 let promise;
@@ -5647,6 +5648,7 @@ try{
             var instruction = "";
             var numToken = 0;
             var exists = false;
+            var inst = token;
 
             console.log(token)
 
@@ -5661,8 +5663,10 @@ try{
                   this.next_token();
                   token = this.get_token();
 
-                  var re = new RegExp(",+$");
-                  token = token.replace(re, "");
+                  if(token != null){
+                    var re = new RegExp(",+$");
+                    token = token.replace(re, "");
+                  }
 
                   instruction = instruction + " " + token;
                 }
@@ -5718,6 +5722,7 @@ try{
             }
 
             if(resultPseudo == -1){
+              this.compileError(25, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
               existsInstruction = false;
               tokenIndex = 0;
               instructions = [];
@@ -5794,8 +5799,10 @@ try{
 
                 console.log(token);
 
-                var re = new RegExp(",+$");
-                token = token.replace(re, "");
+                if(token != null){
+                  var re = new RegExp(",+$");
+                  token = token.replace(re, "");
+                }
 
                 instruction = instruction + " " + token;
               }
@@ -6140,8 +6147,10 @@ try{
                       this.next_token();
                       token = this.get_token();
 
-                      var re = new RegExp(",+$");
-                      token = token.replace(re, "");
+                      if(token != null){
+                        var re = new RegExp(",+$");
+                        token = token.replace(re, "");
+                      }
 
                       instruction = instruction + " " + token;
                     }
@@ -6166,8 +6175,10 @@ try{
                     this.next_token();
                     token = this.get_token();
 
-                    var re = new RegExp(",+$");
-                    token = token.replace(re, "");
+                    if(token != null){
+                      var re = new RegExp(",+$");
+                      token = token.replace(re, "");
+                    }
 
                     instruction = instruction + " " + token;
                   }
@@ -8877,7 +8888,7 @@ try{
         switch(action){
           case "print_int":
             var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + value;
+            app._data.display = app._data.display + (parseInt(value.toString()) >> 0);
             break;
           case "print_float":
             var value = architecture.components[indexComp].elements[indexElem].value;
