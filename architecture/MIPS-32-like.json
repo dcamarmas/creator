@@ -4337,7 +4337,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = splitDouble(ft; 0); MP.w.[base+off+4] = splitDouble(ft; 1);"
+      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);"
     },
     {
       "name": "xor",
@@ -5277,62 +5277,6 @@
         }
       ],
       "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;} "
-    },
-    {
-      "name": "div",
-      "signature_definition": "div $F0 $F1 F2",
-      "signature": "div,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "div $rs $rt inm",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
-        },
-        {
-          "name": "inm",
-          "type": "inm",
-          "startbit": "15",
-          "stopbit": "0"
-        }
-      ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; div $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\ndiv $rs $rt $at;} "
-    },
-    {
-      "name": "divu",
-      "signature_definition": "divu $F0 $F1 F2",
-      "signature": "divu,$INT-Reg,$INT-Reg,inm",
-      "signatureRaw": "divu $rs $rt inm",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "rs",
-          "type": "INT-Reg",
-          "startbit": "25",
-          "stopbit": "21"
-        },
-        {
-          "name": "rt",
-          "type": "INT-Reg",
-          "startbit": "20",
-          "stopbit": "16"
-        },
-        {
-          "name": "inm",
-          "type": "inm",
-          "startbit": "15",
-          "stopbit": "0"
-        }
-      ],
-      "definition": "if(Field.3.SIZE<=16){addi $at $zero inm; divu $rs $rt $at;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\ndivu $rs $rt $at;} "
     },
     {
       "name": "mul",

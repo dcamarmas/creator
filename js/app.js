@@ -4591,7 +4591,7 @@ try{
                     
                     console.log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0) == -1){
                       return -1;
                     }
 
@@ -4868,7 +4868,7 @@ try{
                         $(".loading").hide();
                         return -1;
                       }
-                      auxToken = parseFloat(token, 10);
+                      auxToken = parseFloat(token, 10);console.log(auxTokenString);
                       auxTokenString = (this.bin2hex(this.double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5135,7 +5135,7 @@ try{
                     while(final == false){
                       this.next_token();
                       token = this.get_token();
-
+                      console.log(token);
                       if(token == null){
                         break;
                       }
@@ -8933,6 +8933,8 @@ try{
                 if(aux == addr){
                   for (var i; i < memory[index].length; i++){
                     for (var k = j; k < memory[index][i].Binary.length; k++){
+                      console.log(parseInt(memory[index][i].Binary[k].Bin, 16));
+                      console.log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
                       app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       if(memory[index][i].Binary[k].Bin == 0){
                         return

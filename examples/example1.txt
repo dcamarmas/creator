@@ -7,6 +7,6 @@
  	word:		.word -5678
  	float:		.float 456.322
  	double:		.double 9741.34
- 	stringZ: 	.asciiz "Esto es una cadena"
- 	string:  	.ascii "Esto es otra cadena"
+ 	stringZ: 	.asciiz "This is a string"
+ 	string:  	.ascii "This is another string"
  	space:		.space 32
