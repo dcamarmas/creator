@@ -4337,7 +4337,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = splitDouble(ft; 0); MP.w.[base+off+4] = splitDouble(ft; 1);"
+      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);"
     },
     {
       "name": "xor",
