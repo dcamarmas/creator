@@ -1,27 +1,26 @@
+.data
+	string1: .asciiz "Insert the string length (no more than 100 characters) "
+    string2: .asciiz "Insert the string "
+	space:	 .space 100
 .text
 
 main:
-	li $a0 23
-    li $a1 -77
-    li $a2 45
-    jal suma
-    move $a0 $v0
-    move $a1 $v1
-    jal resta
-    move $a0 $v0
-    li $v0 1
-    syscall
-    li $v0 10
+	la $a0 string1
+    li $v0 4
     syscall
     
+    li $v0 5
+    syscall
+    move $t0 $v0
     
-suma:
-	add $t1 $a0 $a1
-    add $t2 $a2 $a2
-    move $v0 $t1
-    move $v1 $t2
-  	jr $ra  
-resta:
-	sub $v0 $a0 $a1
-  	jr $ra
+    la $a0 string2
+    li $v0 4
+    syscall
     
+    la $a0 space
+    move $a1 $t0
+    li $v0 8
+    syscall
+    
+    li $v0 4
+    syscall
