@@ -1,0 +1,34 @@
+.data
+
+	matrizA:  .float 0x34000000, 0x34000000, 0x34000000, 0x34000000
+    		    .float 0x23450000, 0x00432210, 0x77512120, 0x14141414
+            .float 0x00000214, 0x44551122, 0xAABFF012, 0x77D00000
+            .float 0x0000FF23, 0x12345678, 0x87654321, 0x33441124
+
+	matrizB:  .float 0.0, 0.0, 0.0, 0.0
+    		    .float 0.0, 0.0, 0.0, 0.0
+            .float 0.0, 0.0, 0.0, 0.0
+            .float 0.0, 0.0, 0.0, 0.0
+
+.text
+main:
+    la $t0 matrizA
+    la $t1 matrizB
+    li $t2 4
+    li $t3 4
+    move $t4 $zero
+    move $t5 $zero
+    
+bucle1: beq $t2 $t4 fin1
+bucle2:		beq $t3 $t5 fin2
+              l.s $f0 ($t0)
+              s.s $f0 ($t1)
+              addi $t0 $t0 4
+              addi $t1 $t1 4
+              addi $t5 $t5 1
+              b bucle2
+fin2:		addi $t4 $t4 1
+  			move $t5 $zero
+  			b bucle1
+fin1:	li $v0 0
+		  syscall

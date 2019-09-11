@@ -103,7 +103,7 @@ var compileError = [
   { mess1: "Empty label", mess2: "" },
   { mess1: "Repeated tag: ", mess2: "" },
   { mess1: "Instruction '", mess2: "' not found" },
-  { mess1: "Incorrect signature --> ", mess2: "" },
+  { mess1: "Incorrect sintax --> ", mess2: "" },
   { mess1: "Register '", mess2: "' not found" },
   { mess1: "Immediate number '", mess2: "' is too big" },
   { mess1: "Immediate number '", mess2: "' is not valid" },
@@ -125,6 +125,7 @@ var compileError = [
   { mess1: "The number should be positive '", mess2: "'" },
   { mess1: "Empty directive", mess2: "" },
   { mess1: "After the comma you should go a blank --> ", mess2: "" },
+  { mess1: "Incorrect sintax", mess2: "" },
 ];
 /*Promise*/
 let promise;
@@ -1647,6 +1648,22 @@ try{
       newInstVerify(evt){
         evt.preventDefault();
 
+        for (var i = 0; i < this.formInstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
+            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
+
         var empty = 0;
         var auxCop = "";
 
@@ -1838,6 +1855,22 @@ try{
       /*Check all fields of modify instruction*/
       editInstVerify(evt, inst, co, cop){
         evt.preventDefault();
+
+        for (var i = 0; i < this.formInstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
+            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
 
         var empty = 0;
         var auxCop = "";
@@ -2193,6 +2226,22 @@ try{
       newPseudoinstVerify(evt){
         evt.preventDefault();
 
+        for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
+            if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
+
         var vacio = 0;
 
         for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
@@ -2265,6 +2314,22 @@ try{
       /*Check all fields of modify pseudoinstruction*/
       editPseudoinstVerify(evt, inst, index){
         evt.preventDefault();
+
+        for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
+          for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
+            if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
+              app._data.alertMessage = 'Field name repeated';
+              app._data.type = 'danger';
+              app.$bvToast.toast(app._data.alertMessage, {
+                variant: app._data.type,
+                solid: true,
+                toaster: "b-toaster-top-center",
+                autoHideDelay: 1500,
+              });
+              return;
+            }
+          }
+        }
 
         var vacio = 0;
 
@@ -4526,7 +4591,7 @@ try{
                     
                     console.log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0) == -1){
                       return -1;
                     }
 
@@ -4803,7 +4868,7 @@ try{
                         $(".loading").hide();
                         return -1;
                       }
-                      auxToken = parseFloat(token, 10);
+                      auxToken = parseFloat(token, 10);console.log(auxTokenString);
                       auxTokenString = (this.bin2hex(this.double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -5070,7 +5135,7 @@ try{
                     while(final == false){
                       this.next_token();
                       token = this.get_token();
-
+                      console.log(token);
                       if(token == null){
                         break;
                       }
@@ -5438,9 +5503,14 @@ try{
           token = this.get_token();
 
           for(var i = 0; i < architecture.directives.length; i++){
-            if(token == architecture.directives[i].name){
+            if(token == architecture.directives[i].name && architecture.directives[i].action == "global_symbol"){
+              this.next_token(); // .globl *main* 
+              this.next_token(); 
+              token = this.get_token();
+            }
+            else if(token == architecture.directives[i].name){
               app._data.instructions = instructions;
-
+              console.log(token);
               for(var i = 0; i < instructions.length; i++){
                 if(instructions[i].Label != ""){
                   instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
@@ -5578,6 +5648,7 @@ try{
             var instruction = "";
             var numToken = 0;
             var exists = false;
+            var inst = token;
 
             console.log(token)
 
@@ -5592,8 +5663,10 @@ try{
                   this.next_token();
                   token = this.get_token();
 
-                  var re = new RegExp(",+$");
-                  token = token.replace(re, "");
+                  if(token != null){
+                    var re = new RegExp(",+$");
+                    token = token.replace(re, "");
+                  }
 
                   instruction = instruction + " " + token;
                 }
@@ -5649,6 +5722,7 @@ try{
             }
 
             if(resultPseudo == -1){
+              this.compileError(25, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
               existsInstruction = false;
               tokenIndex = 0;
               instructions = [];
@@ -5725,8 +5799,10 @@ try{
 
                 console.log(token);
 
-                var re = new RegExp(",+$");
-                token = token.replace(re, "");
+                if(token != null){
+                  var re = new RegExp(",+$");
+                  token = token.replace(re, "");
+                }
 
                 instruction = instruction + " " + token;
               }
@@ -6071,8 +6147,10 @@ try{
                       this.next_token();
                       token = this.get_token();
 
-                      var re = new RegExp(",+$");
-                      token = token.replace(re, "");
+                      if(token != null){
+                        var re = new RegExp(",+$");
+                        token = token.replace(re, "");
+                      }
 
                       instruction = instruction + " " + token;
                     }
@@ -6097,8 +6175,10 @@ try{
                     this.next_token();
                     token = this.get_token();
 
-                    var re = new RegExp(",+$");
-                    token = token.replace(re, "");
+                    if(token != null){
+                      var re = new RegExp(",+$");
+                      token = token.replace(re, "");
+                    }
 
                     instruction = instruction + " " + token;
                   }
@@ -8808,7 +8888,7 @@ try{
         switch(action){
           case "print_int":
             var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + value;
+            app._data.display = app._data.display + (parseInt(value.toString()) >> 0);
             break;
           case "print_float":
             var value = architecture.components[indexComp].elements[indexElem].value;
@@ -8853,6 +8933,8 @@ try{
                 if(aux == addr){
                   for (var i; i < memory[index].length; i++){
                     for (var k = j; k < memory[index][i].Binary.length; k++){
+                      console.log(parseInt(memory[index][i].Binary[k].Bin, 16));
+                      console.log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
                       app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       if(memory[index][i].Binary[k].Bin == 0){
                         return
@@ -9643,13 +9725,13 @@ try{
         e = e.replace(re, '\\v');
 
         if(e == ""){
-          eval("this." + param + "= null");
+          this[param] = null;
           return;
         }
 
         console.log("this." + param + "= '" + e + "'");
 
-        eval("this." + param + "= '" + e + "'");
+        this[param] = e.toString();
         app.$forceUpdate();
       }, getDebounceTime())
     },
