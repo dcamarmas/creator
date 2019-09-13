@@ -1812,11 +1812,11 @@
       "cop": null,
       "nwords": 1,
       "signature_definition": "F0 $F1 F2",
-      "signature": "bne,$INT-Reg,offset_words",
-      "signatureRaw": "bne $reg1 off",
+      "signature": "bnez,$INT-Reg,offset_words",
+      "signatureRaw": "bnez $reg1 off",
       "fields": [
         {
-          "name": "bne",
+          "name": "bnez",
           "type": "co",
           "startbit": 31,
           "stopbit": 26
