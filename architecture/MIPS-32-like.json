@@ -4731,6 +4731,34 @@
       "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nadd $reg1 $reg2 $at;"
     },
     {
+      "name": "addiu",
+      "nwords": 1,
+      "signature_definition": "addiu $F0 $F1 F2",
+      "signature": "addiu,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "addiu $reg1 $reg2 val",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "val",
+          "type": "inm",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\naddu $reg1 $reg2 $at;"
+    },
+    {
       "name": "jalr",
       "signature_definition": "jalr $F0",
       "signature": "jalr,$INT-Reg",
@@ -5279,6 +5307,62 @@
       "definition": "if(Field.3.SIZE<=16){andi $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;} "
     },
     {
+      "name": "andi",
+      "signature_definition": "andi $F0 $F1 F2",
+      "signature": "andi,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "andi $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nand $rs $rt $at;"
+    },
+    {
+      "name": "ori",
+      "signature_definition": "ori $F0 $F1 F2",
+      "signature": "ori,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "ori $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;"
+    },
+    {
       "name": "mul",
       "signature_definition": "mul $F0 $F1 F2",
       "signature": "mul,$INT-Reg,$INT-Reg,inm",
@@ -5361,6 +5445,34 @@
         }
       ],
       "definition": "if(Field.3.SIZE<=16){ori $rs $rt inm;}\nelse{lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nor $rs $rt $at;} "
+    },
+    {
+      "name": "xori",
+      "signature_definition": "xori $F0 $F1 F2",
+      "signature": "xori,$INT-Reg,$INT-Reg,inm",
+      "signatureRaw": "xori $rs $rt inm",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "inm",
+          "type": "inm",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "lui $at Field.3.(31,16).int;\nori $at $at Field.3.(15,0).int;\nxor $rs $rt $at;"
     },
     {
       "name": "sub",
