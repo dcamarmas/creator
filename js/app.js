@@ -5811,6 +5811,12 @@ try{
       pseudoinstruction_compiler(instruction, label, line){
         var re = /\' \'/;
         instruction = instruction.replace(re, "'\0'");
+        var re = /\'\\n\'/;
+        instruction = instruction.replace(re, "10");
+        console.log(instruction);
+        var re = /\'\\t\'/;
+        instruction = instruction.replace(re, "9");
+        console.log(instruction);
 
         var instructionParts = instruction.split(' ');
         var found = false;
@@ -5818,6 +5824,7 @@ try{
         var re = /\'\0\'/;
         instruction = instruction.replace(re, "' '");
         console.log(instruction);
+
 
         for (var i = 0; i < instructionParts.length; i++) {
           instructionParts[i] = instructionParts[i].replace(re, "' '");
