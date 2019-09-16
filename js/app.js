@@ -3474,6 +3474,25 @@ try{
           return null;
         }
 
+        console.log(assembly.charAt(index));
+        console.log(index);
+
+        if(assembly.charAt(index) == "'"){
+          index++;
+          while(assembly.charAt(index) != "'"){
+            console.log(assembly.charAt(index));
+            console.log(index);
+            index++;
+          }
+          index++;
+          console.log(assembly.substring(tokenIndex, index));
+          console.log(index);
+          console.log(assembly.substring(tokenIndex, index));
+          return assembly.substring(tokenIndex, index);
+        }
+
+
+
         if((assembly.charAt(index) == '(') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == '{')){
           index++;
         }
@@ -3496,6 +3515,16 @@ try{
       next_token(){
         var assembly = textarea_assembly_editor.getValue();
         var index = tokenIndex;
+
+        console.log(assembly.charAt(index));
+        if(assembly.charAt(index) == "'"){
+          index++;
+          while(assembly.charAt(index) != "'"){
+            console.log(assembly.charAt(index));
+            index++;
+          }
+          index++;
+        }
 
         if((assembly.charAt(index) == '(') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == '{')){
           index++;
@@ -5780,12 +5809,21 @@ try{
       },
       /*Compile pseudoinstructions*/
       pseudoinstruction_compiler(instruction, label, line){
+        var re = /\' \'/;
+        instruction = instruction.replace(re, "'\0'");
+
         var instructionParts = instruction.split(' ');
         var found = false;
 
+        var re = /\'\0\'/;
+        instruction = instruction.replace(re, "' '");
+        console.log(instruction);
+
+        for (var i = 0; i < instructionParts.length; i++) {
+          instructionParts[i] = instructionParts[i].replace(re, "' '");
+        }
+
         console.log(instructionParts);
-
-
 
         for (var i = 0; i < architecture.pseudoinstructions.length; i++){
           console.log(architecture.pseudoinstructions[i].name);
