@@ -4794,7 +4794,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}"
     },
     {
       "name": "la",
