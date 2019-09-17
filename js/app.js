@@ -3896,20 +3896,19 @@ try{
                   }
                 }
 
-
-
-
-
-
                 if(signatureParts[j] == "offset_words"){
                   for (var z = 0; z < instructions.length && exit == 0; z++){
                     if(instructions[z].Label == instructionParts[j]){
                       var addr = instructions[z].Address;
-                      var bin = parseInt(addr, 16).toString(2);
+                      //var bin = parseInt(addr, 16).toString(2);
                       var startbit = pending_instructions[i].startBit;
                       var stopbit = pending_instructions[i].stopBit;
 
                       addr = ((addr - pending_instructions[i].address)/4)-1;
+                      console.log(instructionParts);
+                      console.log(addr);
+                      var bin = parseInt(addr).toString(2);
+                      console.log(bin);
 
                       instructionParts[j] = addr;
                       var newInstruction = "";
@@ -3933,9 +3932,10 @@ try{
                         if(aux == instructions[w].Address){
                           instructions[w].loaded = newInstruction;
                           var fieldsLength = startbit - stopbit + 1;
-                          console.log(w)
-                          console.log(numBinaries)
-                          console.log(w - numBinaries)
+                          console.log(w);
+                          console.log(numBinaries);
+                          console.log(w - numBinaries);
+                          console.log(bin.padStart(fieldsLength, "0"));
                           instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
                           exit = 1;
                         }
