@@ -511,6 +511,7 @@ try{
       display: '',
       /*Keyboard*/
       keyboard: '', 
+      enter: null,
     },
 
 
@@ -9092,11 +9093,13 @@ try{
             break;
           case "read_int":
             mutexRead = true;
+            app._data.enter = false;
             
             if(newExecution == true){
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               return;
             }
 
@@ -9110,6 +9113,7 @@ try{
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){
                   instructions[i]._rowVariant = '';
@@ -9134,11 +9138,13 @@ try{
             break;
           case "read_float":
             mutexRead = true;
+            app._data.enter = false;
             
             if(newExecution == true){
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               return;
             }
 
@@ -9152,6 +9158,7 @@ try{
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
                   instructions[i]._rowVariant = '';
@@ -9176,11 +9183,13 @@ try{
             break;
           case "read_double":
             mutexRead = true;
+            app._data.enter = false;
             
             if(newExecution == true){
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               return;
             }
 
@@ -9194,6 +9203,7 @@ try{
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
                   instructions[i]._rowVariant = '';
@@ -9218,11 +9228,13 @@ try{
             break;
           case "read_string":
             mutexRead = true;
+            app._data.enter = false;
             
             if(newExecution == true){
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               return;
             }
 
@@ -9328,6 +9340,7 @@ try{
                 this.keyboard = "";
                 consoleMutex = false;
                 mutexRead = false;
+                app._data.enter = null;
                 if(executionIndex >= instructions.length){
                   for (var i = 0; i < instructions.length; i++) {
                     instructions[i]._rowVariant = '';
@@ -9372,6 +9385,7 @@ try{
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
                   instructions[i]._rowVariant = '';
@@ -9455,11 +9469,13 @@ try{
             break;
           case "read_char":
             mutexRead = true;
+            app._data.enter = false;
             
             if(newExecution == true){
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               return;
             }
             if(consoleMutex == false){
@@ -9471,6 +9487,7 @@ try{
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
+              app._data.enter = null;
               
 
               if(executionIndex >= instructions.length){
@@ -9544,6 +9561,7 @@ try{
           app._data.keyboard = "";
           app._data.display = "";
           mutexRead = false;
+          app._data.enter = null;
           newExecution = true;
 
           for (var i = 0; i < architecture_hash.length; i++) {
