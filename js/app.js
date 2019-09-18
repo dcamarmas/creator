@@ -8183,6 +8183,9 @@ try{
                 instructions[executionIndex]._rowVariant = 'success';
                 break;
               }
+              else if(i == instructions.length-1 && mutexRead == true){
+                executionIndex = instructions.length+1;
+              }
               else if(i == instructions.length-1){
                 instructions[executionIndex]._rowVariant = '';
                 executionIndex = instructions.length+1;
@@ -8193,12 +8196,12 @@ try{
           
 
           if(executionIndex >= instructions.length && mutexRead == true){
-            for (var i = 0; i < instructions.length; i++){
+            /*for (var i = 0; i < instructions.length; i++){
               instructions[i]._rowVariant = '';
-            }
+            }*/
             return;
           }
-          else if(executionIndex >= instructions.length){
+          else if(executionIndex >= instructions.length && mutexRead == false){
             for (var i = 0; i < instructions.length; i++){
               instructions[i]._rowVariant = '';
             }
@@ -9094,12 +9097,25 @@ try{
           case "read_int":
             mutexRead = true;
             app._data.enter = false;
+
             
             if(newExecution == true){
               this.keyboard = "";
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               return;
             }
 
@@ -9114,6 +9130,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){
                   instructions[i]._rowVariant = '';
@@ -9145,6 +9173,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               return;
             }
 
@@ -9159,6 +9199,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
                   instructions[i]._rowVariant = '';
@@ -9190,6 +9242,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               return;
             }
 
@@ -9204,6 +9268,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
                   instructions[i]._rowVariant = '';
@@ -9235,6 +9311,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               return;
             }
 
@@ -9341,6 +9429,18 @@ try{
                 consoleMutex = false;
                 mutexRead = false;
                 app._data.enter = null;
+
+                app._data.alertMessage = 'The data has been uploaded';
+				        app._data.type = 'info';
+				        app.$bvToast.toast(app._data.alertMessage, {
+				          variant: app._data.type,
+				          solid: true,
+				          toaster: "b-toaster-top-center",
+				          autoHideDelay: 1500,
+				        });
+				        var date = new Date();
+				        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
                 if(executionIndex >= instructions.length){
                   for (var i = 0; i < instructions.length; i++) {
                     instructions[i]._rowVariant = '';
@@ -9386,6 +9486,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
                   instructions[i]._rowVariant = '';
@@ -9476,6 +9588,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               return;
             }
             if(consoleMutex == false){
@@ -9488,6 +9612,18 @@ try{
               consoleMutex = false;
               mutexRead = false;
               app._data.enter = null;
+
+              app._data.alertMessage = 'The data has been uploaded';
+			        app._data.type = 'info';
+			        app.$bvToast.toast(app._data.alertMessage, {
+			          variant: app._data.type,
+			          solid: true,
+			          toaster: "b-toaster-top-center",
+			          autoHideDelay: 1500,
+			        });
+			        var date = new Date();
+			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
               
 
               if(executionIndex >= instructions.length){
