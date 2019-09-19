@@ -8347,7 +8347,7 @@ try{
         this.programExecutionInst();
       },
       programExecutionInst(){
-        for (var i = 0; i < 10 && executionIndex >= 0; i++) {
+        for (var i = 0; i < 15 && executionIndex >= 0; i++) {
           if(mutexRead == true){
             iter1 = 1;
             $("#stopExecution").hide();
