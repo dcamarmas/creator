@@ -3220,16 +3220,6 @@ try{
       },
       /*Form validator*/
       valid(value){
-        /*for (var i = 0; i <this.formInstruction.typeField.length; i++) {
-          if(this.formInstruction.typeField[i]=='cop'){
-            this.formInstruction.assignedCop = true;
-            break;
-          }
-          if(i == this.formInstruction.typeField.length-1){
-            this.formInstruction.assignedCop = false;
-          }
-        }*/
-
         if(parseInt(value) != 0){
           if(!value){
             return false;
@@ -3471,7 +3461,7 @@ try{
         var assembly = textarea_assembly_editor.getValue();
         var index = tokenIndex;
 
-        if(index == assembly.length){
+        if(index >= assembly.length){
           return null;
         }
 
@@ -3480,12 +3470,28 @@ try{
 
         if(assembly.charAt(index) == "'"){
           index++;
-          while(assembly.charAt(index) != "'"){
+          while(assembly.charAt(index) != "'" && index < assembly.length){
             
             
             index++;
           }
           index++;
+
+          
+          
+          
+          return assembly.substring(tokenIndex, index);
+        }
+
+        if(assembly.charAt(index) == '"'){
+          index++;
+          while(assembly.charAt(index) != '"' && index < assembly.length){
+            
+            
+            index++;
+          }
+          index++;
+
           
           
           
@@ -3520,7 +3526,16 @@ try{
         
         if(assembly.charAt(index) == "'"){
           index++;
-          while(assembly.charAt(index) != "'"){
+          while(assembly.charAt(index) != "'" && index < assembly.length){
+            
+            index++;
+          }
+          index++;
+        }
+
+        if(assembly.charAt(index) == '"'){
+          index++;
+          while(assembly.charAt(index) != '"' && index < assembly.length){
             
             index++;
           }
@@ -4384,7 +4399,30 @@ try{
 
                     var auxToken;
                     var auxTokenString;
-                    if(token.match(/^0x/)){
+
+                    if(token.match(/^\'(.*?)\'$/)){
+                      var re = /^\'(.*?)\'$/;
+                      
+                      var match = re.exec(token);
+                      
+                      var asciiCode;
+
+                      
+
+                      if(token.search(/^\'\\n\'$/) != -1){
+                        asciiCode = 10;
+                      }
+                      else if(token.search(/^\'\\t\'$/) != -1){
+                        asciiCode = 9;
+                      }
+                      else{
+                        asciiCode = match[1].charCodeAt(0);
+                      }
+
+                      
+                      auxTokenString = asciiCode.toString(16);
+                    }
+                    else if(token.match(/^0x/)){
                       var value = token.split('x');
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
@@ -4949,16 +4987,27 @@ try{
                     token = this.get_token();
                     
 
+                    string = token;
+
+                    re = new RegExp('^"');
+                    string = string.replace(re, "");
+                    
+                    re = new RegExp('"$');
+                    string = string.replace(re, "");
+                    
+
                     if(token == null){
                       break;
                     }
 
-                    re = new RegExp('(.)","(.)');
+                    /*re = new RegExp('(.)","(.)');
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
                       return -1;
                     }
+
+                    
 
                     re = new RegExp(",", "g");
                     token = token.replace(re, "");
@@ -5002,6 +5051,8 @@ try{
                         return -1;
                       }
 
+                      
+
                       re = new RegExp(",", "g")
                       token = token.replace(re, "");
 
@@ -5023,7 +5074,7 @@ try{
                         string = string + " " + token;
                         final = false;
                       }
-                    }
+                    }*/
 
                     
 
@@ -5130,7 +5181,16 @@ try{
                       break;
                     }
 
-                    re = new RegExp('(.)","(.)');
+                    string = token;
+
+                    re = new RegExp('^"');
+                    string = string.replace(re, "");
+                    
+                    re = new RegExp('"$');
+                    string = string.replace(re, "");
+                    
+
+                    /*re = new RegExp('(.)","(.)');
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       $(".loading").hide();
@@ -5201,7 +5261,7 @@ try{
                       }
                     }
 
-                    string = string;
+                    string = string;*/
 
                     
 
@@ -5303,6 +5363,8 @@ try{
                   break;
                 case "space":
                   
+
+                  var string = "";
 
                   this.next_token();
                   token = this.get_token();
@@ -7163,6 +7225,7 @@ try{
       calculatorFunct(index){
         switch(index){
           case 0:
+            
             var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
             var float;
             var binary;
@@ -7190,6 +7253,7 @@ try{
               }
 
               float = this.hex2float("0x" + hex);
+              
               binary = this.float2bin(float).padStart(this.calculator.bits, "0");
 
               this.calculator.decimal = float;
@@ -7252,6 +7316,7 @@ try{
               this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
 
               var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
+              
 
               var re = /[0-1]{32}/g;
               if(!re.test(binary)){
@@ -7332,6 +7397,8 @@ try{
             if(this.calculator.bits == 32){
               hexadecimal = this.bin2hex(this.float2bin(float));
               binary = this.float2bin(float);
+
+              
 
               this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
               this.calculator.sign = binary.substring(0, 1);
@@ -9004,24 +9071,7 @@ try{
                 }
               }
             }
-            /*if(stackLimit % 4 == 0){
-              architecture.memory_layout[4].value = stackLimit;
-            }
-            else{
-              app._data.alertMessage = 'The memory must be aligned';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              instructions[executionIndex]._rowVariant = 'danger';
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-              executionIndex = -1;
-              return;
-            }*/
+            
             architecture.memory_layout[4].value = stackLimit;
             
           }
@@ -9523,22 +9573,6 @@ try{
           case "sbrk":
             var aux_addr = architecture.memory_layout[3].value;
 
-            /*if((parseInt(architecture.components[indexComp].elements[indexElem].value))%4 != 0){
-              app._data.alertMessage = 'The memory must be aligned';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              instructions[executionIndex]._rowVariant = 'danger';
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-              executionIndex = -1;
-              return;
-            }*/
-
             if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
               app._data.alertMessage = 'Not enough memory for data segment';
               app._data.type ='danger';
@@ -9789,7 +9823,9 @@ try{
       },
       /*Console mutex*/
       consoleEnter(){
-        consoleMutex = true;
+        if(this.keyboard != ""){
+          consoleMutex = true;
+        }
       },
       /*Empty keyboard and display*/
       consoleClear(){
@@ -10025,7 +10061,9 @@ try{
 
         
 
-        this[param] = e.toString();
+        eval("this." + param + "= '" + e + "'");
+
+        //this[param] = e.toString();
         app.$forceUpdate();
       }, getDebounceTime())
     },
