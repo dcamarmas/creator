@@ -5875,7 +5875,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "slti $at $reg1 inm; beq $at $zero off;"
+      "definition": "addi $at $zero inm; addi $at $at 1; slt $at $reg1 $at; beq $at $zero off;"
     },
   	{
         "name": "ble",
@@ -5932,7 +5932,7 @@
             "stopbit": 0
           }
         ],
-        "definition": "slti $at $reg1 inm; bne $at $zero off;"
+        "definition": "addi $at $zero inm; addi $at $at 1; slti $at $reg1 inm; bne $at $zero off;"
       },
       
 
