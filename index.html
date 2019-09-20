@@ -31,6 +31,8 @@
     <script src="external/codemirror/mode/gas/gas.js"></script>
     <script src="external/codemirror/mode/javascript/javascript.js"></script>
     <script src="external/codemirror/addon/display/autorefresh.js"></script>
+    <script src="external/codemirror/addon/comment/comment.js"></script>
+    <script src="external/codemirror/addon/hint/show-hint.js"></script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="./images/icons/apple-icon-57x57.png">
@@ -1550,7 +1552,7 @@
           <!-- Assembly textarea and library tags-->
           <div class="contenedor row">
             <div class="col-lg-12 col-sm-12" id="divAssembly">
-              <h5>Assembly:</h5>
+              <h5>Assembly: (To comment a block of code press ctrl + /)</h5>
               <textarea id="textarea_assembly" rows="14" class="code-scroll-y">
               </textarea>
             </div>
