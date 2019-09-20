@@ -3810,6 +3810,7 @@ try{
               var signatureParts = pending_instructions[i].signature;
               var signatureRawParts = pending_instructions[i].signatureRaw;
               var instructionParts = (pending_instructions[i].instruction).split(' ');
+              
               for (var j = 0; j < signatureParts.length && exit == 0; j++){
                 if(signatureParts[j] == "inm" || signatureParts[j] == "address"){
                   for (var z = 0; z < instructions.length && exit == 0; z++){
@@ -3859,7 +3860,7 @@ try{
                         var startbit = pending_instructions[i].startBit;
                         var stopbit = pending_instructions[i].stopBit;
 
-                        instructionParts[j] = addr;
+                        instructionParts[j] = "0x" + addr.toString(16);
                         var newInstruction = "";
                         for (var w = 0; w < instructionParts.length; w++) {
                           if(w == instructionParts.length-1){
@@ -9166,6 +9167,10 @@ try{
 			        var date = new Date();
 			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
+              if(runExecution == false){
+                this.executeProgram();
+              }
+
               return;
             }
 
@@ -9210,6 +9215,9 @@ try{
                 notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
                 return;
               }
+              else if(runExecution == false){
+                this.executeProgram();
+              }
               break;
             }
 
@@ -9234,6 +9242,10 @@ try{
 			        });
 			        var date = new Date();
 			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+              if(runExecution == false){
+                this.executeProgram();
+              }
 
               return;
             }
@@ -9279,6 +9291,10 @@ try{
                 notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
                 return;
               }
+              else if(runExecution == false){
+                this.executeProgram();
+              }
+
               break;
             }
 
@@ -9303,6 +9319,10 @@ try{
 			        });
 			        var date = new Date();
 			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+              if(runExecution == false){
+                this.executeProgram();
+              }
 
               return;
             }
@@ -9348,6 +9368,10 @@ try{
                 notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
                 return;
               }
+              else if(runExecution == false){
+                this.executeProgram();
+              }
+
               break;
             }
 
@@ -9372,6 +9396,10 @@ try{
 			        });
 			        var date = new Date();
 			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+
+              if(runExecution == false){
+                this.executeProgram();
+              }
 
               return;
             }
@@ -9509,6 +9537,10 @@ try{
                   notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
                   return;
                 }
+                else if(runExecution == false){
+                  this.executeProgram();
+                }
+
                 return;
               }
 
@@ -9566,6 +9598,10 @@ try{
                 notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
                 return;
               }
+              else if(runExecution == false){
+                this.executeProgram();
+              }
+
               break;
             }
 
@@ -9634,6 +9670,10 @@ try{
 			        var date = new Date();
 			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
+              if(runExecution == false){
+                this.executeProgram();
+              }
+
               return;
             }
             if(consoleMutex == false){
@@ -9678,6 +9718,10 @@ try{
                 notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
                 return;
               }
+              else if(runExecution == false){
+                this.executeProgram();
+              }
+
               break;
             }
             break;
