@@ -470,6 +470,8 @@ try{
       },
       /*Run button*/
       runExecution: false,
+      /*Reset button*/
+      resetBut: false,
       /*Instrutions table fields*/
       archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
       /*Instructions memory*/
@@ -526,11 +528,30 @@ try{
     /*Mounted vue instance*/
     mounted(){
       this.backupCopyModal();
+      this.verifyNavigator();
     },
 
 
     /*Vue methods*/
     methods:{
+      /*Generic*/
+      verifyNavigator(){
+        if(navigator.userAgent.indexOf("Chrome") > -1) {
+          return;
+        } 
+        else if (navigator.userAgent.indexOf("Safari") > -1) {
+          return;
+        } 
+        else if (navigator.userAgent.indexOf("Firefox") > -1) {
+          return
+        } 
+        else{
+          this.$refs.navigator.show();
+        }
+      },
+
+
+
       /*Architecture editor*/
 
       /*Load the available architectures and check if exists backup*/
@@ -8368,6 +8389,13 @@ try{
             $("#playExecution").show();
             return;
           }
+          else if(this.resetBut == true){
+            app._data.resetBut = false;
+
+            $("#stopExecution").hide();
+            $("#playExecution").show();
+            return;
+          }
           else{
             this.executeInstruction();
             iter1 = 0;
@@ -9759,6 +9787,7 @@ try{
       reset(){
         $(".loading").show();
         setTimeout(function(){
+          app._data.resetBut = true;
           for (var i = 0; i < instructions.length; i++) {
             instructions[i]._rowVariant = '';
           }
