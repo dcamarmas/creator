@@ -536,7 +536,16 @@ try{
     methods:{
       /*Generic*/
       verifyNavigator(){
-        if(navigator.userAgent.indexOf("Chrome") > -1) {
+        if (navigator.userAgent.indexOf("Opera") > -1) {
+          this.$refs.navigator.show();
+        } 
+        else if (navigator.userAgent.indexOf("MIE") > -1) {
+          this.$refs.navigator.show();
+        }
+        else if (navigator.userAgent.indexOf("Edge") > -1) {
+          this.$refs.navigator.show();
+        } 
+        else if(navigator.userAgent.indexOf("Chrome") > -1) {
           return;
         } 
         else if (navigator.userAgent.indexOf("Safari") > -1) {
