@@ -4794,7 +4794,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $rd $at;}"
+      "definition": "if(Field.2.SIZE<=16){addi $rd $zero val;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $zero $at;}"
     },
     {
       "name": "la",
@@ -5875,7 +5875,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "slti $at $reg1 inm; beq $at $zero off;"
+      "definition": "addi $at $zero inm; addi $at $at 1; slt $at $reg1 $at; beq $at $zero off;"
     },
   	{
         "name": "ble",
@@ -5903,7 +5903,7 @@
             "stopbit": 0
           }
         ],
-        "definition": "slt $at $reg1 $reg2; beq $at $zero off;"
+        "definition": "slt $at $reg2 $reg1; beq $at $zero off;"
       },
 
       {
@@ -5932,7 +5932,7 @@
             "stopbit": 0
           }
         ],
-        "definition": "slti $at $reg1 inm; bne $at $zero off;"
+        "definition": "addi $at $zero inm; addi $at $at 1; slti $at $reg1 inm; bne $at $zero off;"
       },
       
 
