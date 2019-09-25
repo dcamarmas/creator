@@ -7213,7 +7213,6 @@ try{
       },
       /*Show error message in the compilation*/
       compileError(error, token, line){
-        console.log(error)
         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
 
         if (line > 0){
