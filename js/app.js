@@ -126,6 +126,7 @@ var compileError = [
   { mess1: "Empty directive", mess2: "" },
   { mess1: "After the comma you should go a blank --> ", mess2: "" },
   { mess1: "Incorrect sintax", mess2: "" },
+  { mess1: "Syntax error near line: ", mess2: "" },
 ];
 /*Promise*/
 let promise;
@@ -5818,6 +5819,35 @@ try{
             }
 
             if(resultPseudo == -3){
+              for (var i = 0; i < architecture.components.length; i++){
+                for (var j = 0; j < architecture.components[i].elements.length; j++){
+                  var re = new RegExp(architecture.components[i].elements[j].name);
+                  if(token.search(re) != -1){
+                    this.compileError(26, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+
+                    existsInstruction = false;
+                    tokenIndex = 0;
+                    instructions = [];
+                    pending_instructions = [];
+                    pending_tags = [];
+                    memory[memory_hash[0]] = [];
+                    data_tag = [];
+                    instructions_binary = [];
+                    memory[memory_hash[1]] = [];
+                    extern = [];
+                    memory[memory_hash[2]] = [];
+                    data = [];
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                    memory[memory_hash[1]] = memory[memory_hash[1]];
+                    memory[memory_hash[2]] = memory[memory_hash[2]];
+                    app._data.instructions = instructions;
+                    $(".loading").hide();
+                    return -1;
+                  }
+                }          
+              }
+
+
               this.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
 
               existsInstruction = false;
@@ -7183,6 +7213,7 @@ try{
       },
       /*Show error message in the compilation*/
       compileError(error, token, line){
+        console.log(error)
         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
 
         if (line > 0){
