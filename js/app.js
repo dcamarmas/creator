@@ -8251,15 +8251,14 @@ try{
             /*Write in memory*/
             re = /MP.([whb]).\[(.*?)\] *=/;
             while (auxDef.search(re) != -1){
-              console_log("AQUI1");
               var match = re.exec(auxDef);
               var auxDir;
-              eval("auxDir="+match[2]);
+              //eval("auxDir="+match[2]);
 
               re = /MP.[whb].\[(.*?)\] *=/;
-              auxDef = auxDef.replace(re, "var dir"+ auxDir +"=");
-              auxDef = "var dir" + auxDir + "=null\n" + auxDef;
-              auxDef = auxDef + "\n this.writeMemory(dir"+auxDir+",'0x"+auxDir.toString(16)+"','"+match[1]+"');"
+              auxDef = auxDef.replace(re, "dir=");
+              auxDef = "var dir=null\n" + auxDef;
+              auxDef = auxDef + "\n this.writeMemory(dir"+","+match[2]+",'"+match[1]+"');"
               re = /MP.([whb]).\[(.*?)\] *=/;
             }
 
@@ -8267,9 +8266,9 @@ try{
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
-              auxDef = auxDef.replace(re, "var dir"+ match[2]+"=");
-              auxDef = "var dir" + match[2] + "=null\n" + auxDef;
-              auxDef = auxDef + "\n this.writeMemory(dir"+match[2]+",'"+match[2]+"','"+match[1]+"');"
+              auxDef = auxDef.replace(re, "dir=");
+              auxDef = "var dir=null\n" + auxDef;
+              auxDef = auxDef + "\n this.writeMemory(dir,"+match[2]+",'"+match[1]+"');"
               re = new RegExp("MP.([whb]).(.*?) *=");
             }
 
@@ -8277,9 +8276,9 @@ try{
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               var auxDir;
-              eval("auxDir="+match[2]);
+              //eval("auxDir="+match[2]);
               re = /MP.[whb].\[(.*?)\]/;
-              auxDef = auxDef.replace(re, "this.readMemory('0x"+auxDir.toString(16)+"', '"+match[1]+"')");
+              auxDef = auxDef.replace(re, "this.readMemory("+match[2]+", '"+match[1]+"')");
               re = /MP.([whb]).\[(.*?)\]/;
             }
 
@@ -8287,19 +8286,20 @@ try{
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               re = new RegExp("MP."+match[1]+"."+match[2]);
-              auxDef = auxDef.replace(re, "this.readMemory('"+match[2]+"','"+match[1]+"')");
+              auxDef = auxDef.replace(re, "this.readMemory("+match[2]+",'"+match[1]+"')");
               re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
             }
 
             console_log(auxDef);
+            console.log(auxDef);
 
             // preload instruction
-            //eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.") + " }; ") ;
+            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.") + " }; ") ;
           }
 
           try{
-            //instructions[executionIndex].preload(this) ;
-            eval(auxDef);
+            instructions[executionIndex].preload(this);
+            //eval(auxDef);
           }
           catch(e){
             if (e instanceof SyntaxError) {
