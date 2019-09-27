@@ -650,7 +650,8 @@ try{
         architecture = bigInt_deserialize(auxArchitecture);
 
         app._data.architecture = architecture;
-        textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
+        app._data.assembly_code = localStorage.getItem("assembly_copy");
+        //textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
 
         architecture_hash = [];
         for (var i = 0; i < architecture.components.length; i++){
@@ -8291,7 +8292,6 @@ try{
             }
 
             console_log(auxDef);
-            console.log(auxDef);
 
             // preload instruction
             eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.") + " }; ") ;
