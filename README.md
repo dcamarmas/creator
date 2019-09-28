@@ -9,9 +9,9 @@ CREATOR:
    * Nightly build: https://dcamarmas.github.io/creator/
 
 Documentation:
-https://creatorsim.github.io/
+   * https://creatorsim.github.io/
 
-CREATOR GitHub Repository:
+GitHub Repository:
    * Stable  build: https://creatorsim.github.io/creator/
    * Nightly build: https://dcamarmas.github.io/creator/
 
