@@ -479,6 +479,8 @@ try{
         lengthExponent: 8,
         lengthMantissa: 23,
       },
+      /*Run instructions*/
+      instructionsPacked: 20,
       /*Run button*/
       runExecution: false,
       /*Reset button*/
@@ -690,16 +692,7 @@ try{
 
         this.$refs.copyRef.hide();
 
-        app._data.alertMessage = 'The backup has been loaded correctly';
-        app._data.type = 'success';
-        app.$bvToast.toast(app._data.alertMessage, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-          autoHideDelay: 1500,
-        });
-        var date = new Date();
-        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        show_notification('The backup has been loaded correctly', 'success') ;
       },
       /*Delete backup*/
       remove_copy(){
@@ -743,17 +736,7 @@ try{
             $("#view_components").show();
             $(".loading").hide();
 
-            app._data.alertMessage = 'The selected architecture has been loaded correctly';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-            
+            show_notification('The selected architecture has been loaded correctly', 'success') ;
             return;
           }
         }
@@ -787,30 +770,12 @@ try{
           $("#view_components").show();
           $(".loading").hide();
 
-          app._data.alertMessage = 'The selected architecture has been loaded correctly';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The selected architecture has been loaded correctly', 'success') ;
         })
 
         .fail(function() {
           $(".loading").hide();
-          app._data.alertMessage = 'The selected architecture is not currently available';
-          app._data.type = 'info';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The selected architecture is not currently available', 'info') ;
         });
       },
       /*Read the JSON of new architecture*/
@@ -820,14 +785,7 @@ try{
         e.preventDefault();
         if(!this.name_arch || !this.load_arch){
           $(".loading").hide();
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('Please complete all fields', 'danger') ;
           return;
         }
 
@@ -858,16 +816,7 @@ try{
             localStorage.setItem("load_architectures_available", auxArch);
           }
 
-          app._data.alertMessage = 'The selected architecture has been loaded correctly';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});
+          show_notification('The selected architecture has been loaded correctly', 'success') ;
           
           app._data.name_arch = '';
           app._data.description_arch = '';
@@ -930,16 +879,7 @@ try{
         auxArch = JSON.stringify(load_architectures_available, null, 2);
         localStorage.setItem("load_architectures_available", auxArch);
 
-        app._data.alertMessage = 'Architecture deleted successfully';
-        app._data.type = 'success';
-        app.$bvToast.toast(app._data.alertMessage, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-          autoHideDelay: 1500,
-        });
-        var date = new Date();
-        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        show_notification('Architecture deleted successfully', 'success') ;
       },
       /*Save the current architecture in a JSON file*/
       arch_save(){
@@ -970,16 +910,7 @@ try{
 
         downloadLink.click();
 
-        app._data.alertMessage = 'Save architecture';
-        app._data.type = 'success';
-        app.$bvToast.toast(app._data.alertMessage, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-          autoHideDelay: 1500,
-        });
-        var date = new Date();
-        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        show_notification('Save architecture', 'success') ;
       },
       /*Change the execution mode of architecture editor*/
       change_mode(){
@@ -1009,16 +940,7 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessage = 'The memory layout has been reset correctly';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            })
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The memory layout has been reset correctly', 'success') ;
             
             return;
           }
@@ -1032,16 +954,7 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessage = 'The memory layout has been reset correctly';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          })
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The memory layout has been reset correctly', 'success') ;
         });
       },
       /*Check de memory layout changes*/
@@ -1052,64 +965,28 @@ try{
           if(this.memory_layout[i] != "" && this.memory_layout[i] != null){
             if(!isNaN(parseInt(this.memory_layout[i]))){
               auxMemoryLayout[i].value = parseInt(this.memory_layout[i]);
-              if(auxMemoryLayout[i].value < 0){
-                app._data.alertMessage = 'The value can not be negative';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-                return;
+              if (auxMemoryLayout[i].value < 0) {
+                  show_notification('The value can not be negative', 'danger') ;
+                  return;
               }
             }
-            else{
-              app._data.alertMessage = 'The value must be a number';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-              return;
+            else {
+                  show_notification('The value must be a number', 'danger') ;
+                  return;
             }
           }
         }
 
         for(var i = 0; i < 6; i++){
-          /*if(i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
-            app._data.alertMessage = 'The memory must be aligned';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});  
-            return;
-          }*/
+          /*if (i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
+                show_notification('The memory must be aligned', 'danger') ;
+                return;
+            }*/
 
-          for(var j = i; j < 6; j++){
-            if(auxMemoryLayout[i].value > auxMemoryLayout[j].value){
-              app._data.alertMessage = 'The segment can not be overlap';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-              return;
+          for (var j = i; j < 6; j++) {
+            if (auxMemoryLayout[i].value > auxMemoryLayout[j].value) {
+                show_notification('The segment can not be overlap', 'danger') ;
+                return;
             }
           }
         }
@@ -1167,16 +1044,7 @@ try{
             }
 
             $(".loading").hide();
-            app._data.alertMessage = 'The registers has been reset correctly';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The registers has been reset correctly', 'success') ;
             
             return;
           }
@@ -1197,30 +1065,15 @@ try{
           }
 
           $(".loading").hide();
-          app._data.alertMessage = 'The registers has been reset correctly';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The registers has been reset correctly', 'success') ;
         });
       },
+
       /*Verify all field of new component*/
       newComponentVerify(evt){
         evt.preventDefault();
-        if (!this.formArchitecture.name || !this.formArchitecture.type){
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+        if (!this.formArchitecture.name || !this.formArchitecture.type) {
+            show_notification('Please complete all fields', 'danger') ;
         } 
         else{
           this.newComponent();
@@ -1228,25 +1081,18 @@ try{
       },
       /*Create a new component*/
       newComponent(){
-        for (var i = 0; i < architecture_hash.length; i++){
-          if(this.formArchitecture.name == architecture_hash[i].name){
-            app._data.alertMessage = 'The component already exists';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            return;
+        for (var i = 0; i < architecture_hash.length; i++) {
+          if (this.formArchitecture.name == architecture_hash[i].name) {
+              show_notification('The component already exists', 'danger') ;
+              return;
           }
         }
 
         this.showNewComponent = false;
 
         var precision = false;
-        if(this.formArchitecture.precision == "precision"){
-          precision = true;
+        if (this.formArchitecture.precision == "precision"){
+            precision = true;
         }
 
         var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
@@ -1264,33 +1110,19 @@ try{
       /*Verify all field of modified component*/
       editCompVerify(evt, comp){
         evt.preventDefault();
-        if (!this.formArchitecture.name){
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+        if (!this.formArchitecture.name) {
+            show_notification('Please complete all fields', 'danger') ;
         } 
         else {
-          this.editComponent(comp);
+            this.editComponent(comp);
         }
       },
       /*Edit the component*/
       editComponent(comp){
         for (var i = 0; i < architecture_hash.length; i++){
-          if((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
-            app._data.alertMessage = 'The component already exists';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            return;
+          if ((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
+              show_notification('The component already exists', 'danger') ;
+              return;
           }
         }
 
@@ -1355,55 +1187,28 @@ try{
       newElementVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name){
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+             show_notification('Please complete all fields', 'danger') ;
         } 
         else{
-          if(!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
-            app._data.alertMessage = 'Please complete all fields';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+          if (!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
+             show_notification('Please complete all fields', 'danger') ;
           }
           else if(isNaN(this.formArchitecture.defValue)){
-            app._data.alertMessage = 'The default value must be a number';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+             show_notification('The default value must be a number', 'danger') ;
           }
           else{
             this.newElement(comp);
           }
         }
       },
+
       /*Create a new element*/
       newElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(this.formArchitecture.name == architecture.components[i].elements[j].name){
-              app._data.alertMessage = 'The element already exists';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              return;
+            if (this.formArchitecture.name == architecture.components[i].elements[j].name){
+                show_notification('The element already exists', 'danger') ;
+                return;
             }
           } 
         }
@@ -1626,16 +1431,7 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessage = 'The instruction set has been reset correctly';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The instruction set has been reset correctly', 'success') ;
             
             return;
           }
@@ -1650,16 +1446,7 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessage = 'The instruction set has been reset correctly';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The instruction set has been reset correctly', 'success') ;
         });
       },
       /*Verify new number of fields*/
@@ -1723,15 +1510,8 @@ try{
         for (var i = 0; i < this.formInstruction.nameField.length; i++){
           for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
             if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
-              app._data.alertMessage = 'Field name repeated';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              return;
+                show_notification('Field name repeated', 'danger') ;
+                return;
             }
           }
         }
@@ -1758,16 +1538,9 @@ try{
               }
 
               for (var i = 0; i < this.formInstruction.valueField[z].length; i++){
-                if(this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
-                  app._data.alertMessage = 'The value of cop must be binary';
-                  app._data.type = 'danger';
-                  app.$bvToast.toast(app._data.alertMessage, {
-                    variant: app._data.type,
-                    solid: true,
-                    toaster: "b-toaster-top-center",
-                    autoHideDelay: 1500,
-                  });
-                  return;
+                if (this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
+                    show_notification('The value of cop must be binary', 'danger') ;
+                    return;
                 }
               }
               auxCop = auxCop + this.formInstruction.valueField[z];
@@ -1778,16 +1551,9 @@ try{
         this.formInstruction.cop = auxCop;
 
         for (var i = 0; i < this.formInstruction.co.length; i++){
-          if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-            app._data.alertMessage = 'The value of co must be binary';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            return;
+          if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+              show_notification('The value of co must be binary', 'danger') ;
+              return;
           }
         }
 
@@ -1798,44 +1564,16 @@ try{
         }
 
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+            show_notification('Please complete all fields', 'danger') ;
         } 
-        else if(isNaN(this.formInstruction.co)){
-          app._data.alertMessage = 'The field co must be numbers';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+        else if (isNaN(this.formInstruction.co)){
+                 show_notification('The field co must be numbers', 'danger') ;
         }
         else if(isNaN(this.formInstruction.cop)){
-          app._data.alertMessage = 'The field cop must be numbers';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+                 show_notification('The field cop must be numbers', 'danger') ;
         }
         else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-          app._data.alertMessage = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+                 show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
         }
         else {
           this.newInstruction();
@@ -1844,32 +1582,18 @@ try{
       /*Create a new instruction*/
       newInstruction(){
         for (var i = 0; i < architecture.instructions.length; i++){
-          if(this.formInstruction.co == architecture.instructions[i].co){
-            if((!this.formInstruction.cop)){
-              app._data.alertMessage = 'The instruction already exists';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              return;
+          if  (this.formInstruction.co == architecture.instructions[i].co){
+            if  ((!this.formInstruction.cop)){
+                 show_notification('The instruction already exists', 'danger') ;
+                 return;
             }
           }
         }
 
         for (var i = 0; i < architecture.instructions.length; i++){
-          if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
-            app._data.alertMessage = 'The instruction already exists';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            return;
+          if ((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
+               show_notification('The instruction already exists', 'danger') ;
+               return;
           }
         }
 
@@ -7587,8 +7311,10 @@ try{
         }
         this.newValue = '';
       },
+
       /*Execute one instruction*/
-      executeInstruction(){
+      executeInstruction() 
+      {
         console_log(mutexRead);
         newExecution = false;
 
@@ -8403,8 +8129,10 @@ try{
         }
         while(instructions[executionIndex].hide == true);
       },
+
       /*Execute all program*/
-      executeProgram(but){
+      executeProgram(but)
+      {
         app._data.runExecution = true;
         this.runExecution = false;
 
@@ -8454,8 +8182,11 @@ try{
 
         this.programExecutionInst(but);
       },
-      programExecutionInst(but){
-        for (var i = 0; i < 15 && executionIndex >= 0; i++){
+
+      programExecutionInst(but)
+      {
+        for (var i=0; (i<app._data.instructionsPacked) && (executionIndex >= 0); i++)
+	{
           if(mutexRead == true){
             iter1 = 1;
             $("#stopExecution").hide();
@@ -8499,10 +8230,12 @@ try{
           $("#playExecution").show();
         }
       },
+
       /*Stop program excution*/
       stopExecution(){
         app._data.runExecution = true;
       },
+
       /*Read register value*/
       readRegister(indexComp, indexElem){
         if(architecture.components[indexComp].elements[indexElem].properties[0] != "read" && architecture.components[indexComp].elements[indexElem].properties[1] != "read"){
@@ -10258,11 +9991,13 @@ try{
       location.reload(true)
     }, 3000);
   }
+
   /*Closing alert*/
   window.onbeforeunload = confirmExit;
   function confirmExit(){
     return "He's tried to get off this page. Changes may not be saved.";
   }
+
   /*Determines the refresh timeout depending on the device being used*/
   function getDebounceTime(){
     if(screen.width > 768){

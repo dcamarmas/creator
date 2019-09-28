@@ -21,9 +21,8 @@
 
       function show_notification ( msg, type )
       {
-          $(".loading").hide();
           app._data.alertMessage = msg ;
-          app._data.type = type ;
+          app._data.type         = type ;
           app.$bvToast.toast(app._data.alertMessage, {
             variant: app._data.type,
             solid: true,
@@ -36,5 +35,7 @@
                                color: app._data.type, 
                                time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
                                date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
+
+	  return true ;
       }
 
