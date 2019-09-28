@@ -80,6 +80,8 @@ var actionTypes = [
 
 /*Compilator*/
 
+/*Codemirror*/
+var textarea_assembly_editor;
 /*Assembly code textarea*/
 var code_assembly = '';
 /*Compilation index*/
@@ -490,6 +492,7 @@ try{
       /*Register select*/
       nameTabReg: 'Decimal',
       nameReg: 'INT Registers',
+      register_popover: '',
       /*Data mode*/
       data_mode: 'registers',
       /*Register form*/
@@ -570,16 +573,25 @@ try{
         }
       },
       change_UI_mode(e){
+        $(".loading").show();
         app._data.creator_mode = e;
         if(e == "assembly"){
           setTimeout(function(){
             codemirrorStart();
+            if(app._data.update_binary != ""){
+              $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+              $("#divTags").attr("class", "col-lg-2 col-sm-12");
+              $("#divTags").show();
+            }
           },50);
         }
         else{
-          app._data.assembly_code = textarea_assembly_editor.getValue();
-          textarea_assembly_editor.toTextArea();
+          if(textarea_assembly_editor != null){
+            app._data.assembly_code = textarea_assembly_editor.getValue();
+            textarea_assembly_editor.toTextArea();
+          }
         }
+        $(".loading").hide();
         app.$forceUpdate();
       },
 
@@ -10184,6 +10196,9 @@ try{
       change_data_view(e){
         app._data.data_mode = e;
       },
+      change_popover_register(e){
+        app._data.register_popover = e;
+      },
       /*Stop user interface refresh*/
       debounce: _.debounce(function (param, e) {
         console_log(param);
@@ -10236,6 +10251,7 @@ try{
       toaster: "b-toaster-top-center",
       autoHideDelay: 3000,
     })
+    var date = new Date();
     notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
 
     setTimeout(function(){
