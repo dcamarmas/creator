@@ -152,7 +152,7 @@
 
 
         <!-- Load architecture menu -->
-        <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'load_architecture'">
+        <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
           
           <!-- Navbar -->
           <div class="contenedor menu row">
@@ -164,7 +164,7 @@
                   <div class="col-lg-4 col-sm-4 buttons"></div>
                   <div class="col-lg-4 col-sm-4 buttons"></div>
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_arch" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_men" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
                 </div>
               </div>
@@ -172,7 +172,7 @@
           </div>
 
           <!-- Information popover -->
-          <b-popover target="info_arch" triggers="click blur">
+          <b-popover target="info_men" triggers="click blur">
             <template slot="title">
               <b-button @click="closePopover" class="close" aria-label="Close">
                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -354,10 +354,10 @@
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="save_btn_arch" v-b-modal.save_architecture><span class="fas fa-download"></span> Save</b-button>
                   </div>
                   <div class="col-lg-8 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode"  @click="change_mode" v-if="advanced_mode == true">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode1"  @click="change_mode" v-if="advanced_mode == true">
                       Advanced Mode: deactivated
                     </b-button>
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode" @click="change_mode" v-if="advanced_mode == false">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode2" @click="change_mode" v-if="advanced_mode == false">
                       Advanced Mode: activate
                     </b-button>
                   </div>
@@ -381,13 +381,6 @@
               </div>
             </div>
 
-            <!-- Save architecture form -->
-            <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
-              <h6>Enter the name of the architecture to save:</h6>
-              <br>
-              <b-form-input v-on:input="debounce('name_arch_save', $event)" :value="name_arch_save" type="text" placeholder="Enter the name" class="form-control form-control-sm" style="background-color: white; color: black," :state="valid(name_arch_save)"></b-form-input>
-            </b-modal>
-
             <!-- Information popover -->
             <b-popover target="info_arch" triggers="click blur">
               <template slot="title">
@@ -403,6 +396,13 @@
                 <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
               </div>
             </b-popover>
+
+            <!-- Save architecture form -->
+            <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
+              <h6>Enter the name of the architecture to save:</h6>
+              <br>
+              <b-form-input v-on:input="debounce('name_arch_save', $event)" :value="name_arch_save" type="text" placeholder="Enter the name" class="form-control form-control-sm" style="background-color: white; color: black," :state="valid(name_arch_save)"></b-form-input>
+            </b-modal>
           </div>
 
         	<div class="contenedor menu row">
@@ -1600,25 +1600,25 @@
                   <div class="col-lg-12 col-sm-12 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_ass" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
-
-                  <b-popover target="info_ass" triggers="click blur">
-                    <template slot="title">
-                      <b-button @click="closePopover" class="close" aria-label="Close">
-                        <span class="d-inline-block" aria-hidden="true">&times;</span>
-                      </b-button>
-                      <br>
-                    </template>
-
-                    <div class="col-lg-12 col-sm-12">
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
-                    </div>
-                  </b-popover>
                 </div>
               </div>
             </div>
           </div>
+
+          <b-popover target="info_ass" triggers="click blur">
+            <template slot="title">
+              <b-button @click="closePopover" class="close" aria-label="Close">
+                <span class="d-inline-block" aria-hidden="true">&times;</span>
+              </b-button>
+              <br>
+            </template>
+
+            <div class="col-lg-12 col-sm-12">
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+            </div>
+          </b-popover>
 
           <!-- Assembly textarea and library tags-->
           <div class="contenedor row">
@@ -1888,14 +1888,14 @@
                       
                       <!-- Control and integer registers -->
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')">
+                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
                            <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
 
                         <!-- Register popover -->
-                        <b-popover :target="popoverId(item2.name + 'Int')" triggers="click blur" class="popover" >
+                        <b-popover show :target="popoverId(item2.name + 'Int')" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name + 'Int')">
                           <template slot="title">
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -1947,12 +1947,12 @@
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover :target="popoverId(item2.name + 'FP')" triggers="click blur">
+                          <b-popover show :target="popoverId(item2.name + 'FP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'FP')">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -1998,12 +1998,12 @@
 
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
                              {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover :target="popoverId(item2.name + 'DFP')" triggers="click blur">
+                          <b-popover show :target="popoverId(item2.name + 'DFP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'DFP')">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -2058,12 +2058,12 @@
 
                 			<!-- Control and integer registers -->
   	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-  	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
+  	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
   	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
-  	                    <b-popover :target="popoverId(item2.name)" triggers="click blur" class="popover" >
+  	                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name)">
                           <template slot="title">
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -2116,12 +2116,12 @@
 
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
+  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
   	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
-  		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
+  		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -2167,12 +2167,12 @@
 
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
+  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
   		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
-  		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
+  		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
