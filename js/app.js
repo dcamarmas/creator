@@ -1303,24 +1303,10 @@ try{
       editElementVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+            show_notification('Please complete all fields', 'danger') ;
         } 
         else if(isNaN(this.formArchitecture.defValue)){
-          app._data.alertMessage = 'The default value must be a number';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('The default value must be a number', 'danger') ;
         }
         else {
           this.editElement(comp);
@@ -1330,16 +1316,9 @@ try{
       editElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
-              app._data.alertMessage = 'The element already exists';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              return;
+            if ((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
+                show_notification('The element already exists', 'danger') ;
+                return;
             }
           } 
         }
@@ -1526,14 +1505,7 @@ try{
             }
             else{
               if((this.formInstruction.valueField[z]).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-                app._data.alertMessage = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
+                show_notification('The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers', 'danger') ;
                 return;
               }
 
@@ -1655,14 +1627,7 @@ try{
         for (var i = 0; i < this.formInstruction.nameField.length; i++){
           for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
             if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
-              app._data.alertMessage = 'Field name repeated';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
+              show_notification('Field name repeated', 'danger') ;
               return;
             }
           }
@@ -1672,34 +1637,20 @@ try{
         var auxCop = "";
 
         for (var z = 1; z < this.formInstruction.numfields; z++){
-          if(this.formInstruction.typeField[z] == 'cop'){
-            if(!this.formInstruction.valueField[z]){
-              empty = 1;
+          if (this.formInstruction.typeField[z] == 'cop'){
+            if (!this.formInstruction.valueField[z]){
+                empty = 1;
             }
-            else{
-              if((this.formInstruction.valueField[z]).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-                app._data.alertMessage = 'The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                return;
+            else {
+              if ((this.formInstruction.valueField[z]).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
+                 show_notification('The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers', 'danger') ;
+                 return;
               }
 
               for (var i = 0; i < this.formInstruction.valueField[z].length; i++){
-                if(this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
-                  app._data.alertMessage = 'The value of cop must be binary';
-                  app._data.type = 'danger';
-                  app.$bvToast.toast(app._data.alertMessage, {
-                    variant: app._data.type,
-                    solid: true,
-                    toaster: "b-toaster-top-center",
-                    autoHideDelay: 1500,
-                  });
-                  return;
+                if (this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
+                   show_notification('The value of cop must be binary', 'danger') ;
+                   return;
                 }
               }
             }
@@ -1710,16 +1661,9 @@ try{
         this.formInstruction.cop = auxCop;
 
         for (var i = 0; i < this.formInstruction.co.length; i++){
-          if(this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-            app._data.alertMessage = 'The value of co must be binary';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            return;
+          if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+              show_notification('The value of co must be binary', 'danger') ;
+              return;
           }
         }
 
@@ -1729,93 +1673,55 @@ try{
           }
         }
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('Please complete all fields', 'danger') ;
         }
         else if(isNaN(this.formInstruction.co)){
-          app._data.alertMessage = 'The field co must be numbers';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('The field co must be numbers', 'danger') ;
         }
         else if(isNaN(this.formInstruction.cop)){
-          app._data.alertMessage = 'The field cop must be numbers';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('The field cop must be numbers', 'danger') ;
         }
         else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-          app._data.alertMessage = 'The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger') ;
         }
         else {
           this.editInstruction(inst, co, cop);
         }
       },
+
       /*Edit the instruction*/
-      editInstruction(comp, co, cop){
+      editInstruction(comp, co, cop)
+      {
         var exCop = false;
 
         for (var z = 1; z < this.formInstruction.numfields; z++){
-          if(this.formInstruction.typeField[z] == 'cop'){
-            exCop = true;
+          if (this.formInstruction.typeField[z] == 'cop'){
+              exCop = true;
           }
         }
 
         for (var i = 0; i < architecture.instructions.length; i++){
-          if((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
-            if(((!this.formInstruction.cop) || (exCop != true))){
-              app._data.alertMessage = 'The instruction already exists';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              return;
+          if ((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
+            if (((!this.formInstruction.cop) || (exCop != true))){
+                show_notification('The instruction already exists', 'danger') ;
+                return;
             }
           }
         }
 
         for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
-          if((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
-            app._data.alertMessage = 'The instruction already exists';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            return;
+          if ((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
+               show_notification('The instruction already exists', 'danger') ;
+               return;
           }
         }
 
         this.showEditInstruction = false;
 
-        for (var i = 0; i < architecture.instructions.length; i++){
-          if(architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop){
+        for (var i = 0; i < architecture.instructions.length; i++)
+	{
+          if (architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop)
+	  {
             architecture.instructions[i].name = this.formInstruction.name;
             architecture.instructions[i].type = this.formInstruction.type;
             architecture.instructions[i].co = this.formInstruction.co;
@@ -1824,8 +1730,10 @@ try{
             architecture.instructions[i].signature_definition = this.formInstruction.signature_definition;
             architecture.instructions[i].definition = this.formInstruction.definition;
 
-            for (var j = 0; j < this.formInstruction.numfields; j++){
-              if(j < architecture.instructions[i].fields.length){
+            for (var j = 0; j < this.formInstruction.numfields; j++)
+	    {
+              if (j < architecture.instructions[i].fields.length)
+              {
                 architecture.instructions[i].fields[j].name = this.formInstruction.nameField[j];
                 architecture.instructions[i].fields[j].type = this.formInstruction.typeField[j];
                 architecture.instructions[i].fields[j].startbit = parseInt(this.formInstruction.startBitField[j]);
@@ -1856,16 +1764,7 @@ try{
           }
         }
 
-        app._data.alertMessage = 'The instruction has been modified, please check the definition of the pseudoinstructions';
-        app._data.type = 'info';
-        app.$bvToast.toast(app._data.alertMessage, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-          autoHideDelay: 1500,
-        });
-        var date = new Date();
-        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+        show_notification('The instruction has been modified, please check the definition of the pseudoinstructions', 'info') ;
       },
       /*Show delete instruction modal*/
       delInstModal(elem, index, button){
@@ -1982,16 +1881,7 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessage = 'The registers has been reset correctly';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The registers has been reset correctly', 'success') ;
             
             return;
           }
@@ -2006,16 +1896,7 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessage = 'The pseudoinstruction set has been reset correctly';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The pseudoinstruction set has been reset correctly', 'success') ;
         });
       },
       /*Check all fields of new pseudoinstruction*/
@@ -2025,14 +1906,7 @@ try{
         for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
           for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
             if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
-              app._data.alertMessage = 'Field name repeated';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
+              show_notification('Field name repeated', 'danger') ;
               return;
             }
           }
@@ -2053,14 +1927,7 @@ try{
         }
 
         if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('Please complete all fields', 'danger') ;
         } 
         else {
           this.newPseudoinstruction();
@@ -2114,14 +1981,7 @@ try{
         for (var i = 0; i < this.formPseudoinstruction.nameField.length; i++){
           for (var j = i + 1; j < this.formPseudoinstruction.nameField.length; j++){
             if (this.formPseudoinstruction.nameField[i] == this.formPseudoinstruction.nameField[j]){
-              app._data.alertMessage = 'Field name repeated';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
+              show_notification('Field name repeated', 'danger') ;
               return;
             }
           }
@@ -2142,14 +2002,7 @@ try{
         }
 
         if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('Please complete all fields', 'danger') ;
         }
         else {
           this.editPseudoinstruction(inst, index);
@@ -2214,20 +2067,15 @@ try{
         re = /{([^}]*)}/g;
         var code = re.exec(definition);
 
-        if(code != null){
-          while(code != null){
+        if(code != null)
+	{
+          while(code != null)
+	  {
             console_log(code)
             var instructions = code[1].split(";");
-            if(instructions.length == 1){
-              app._data.alertMessage = 'Enter a ";" at the end of each line of code';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              return -1;
+            if (instructions.length == 1){
+                show_notification('Enter a ";" at the end of each line of code', 'danger') ;
+                return -1;
             }
 
             for (var j = 0; j < instructions.length-1; j++){
@@ -2255,14 +2103,7 @@ try{
 
                   re = new RegExp(signatureDef+"$");
                   if(instructions[j].search(re) == -1){
-                    app._data.alertMessage = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
-                    app._data.type = 'danger';
-                    app.$bvToast.toast(app._data.alertMessage, {
-                      variant: app._data.type,
-                      solid: true,
-                      toaster: "b-toaster-top-center",
-                      autoHideDelay: 1500,
-                    });
+                    show_notification('Incorrect signature --> ' + architecture.instructions[i].signatureRaw, 'danger') ;
                     return -1;
                   }
 
@@ -2322,14 +2163,7 @@ try{
                       }
 
                       if(!found){
-                        app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
                         return -1;
                       }
                     }
@@ -2338,52 +2172,24 @@ try{
                       var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                       if(instructionParts[z].match(/^0x/)){
                         var value = instructionParts[z].split("x");
-                        if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
-                          return -1;
+                        if (isNaN(parseInt(instructionParts[z], 16)) == true){
+                            show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
+                            return -1;
                         }
 
                         if(value[1].length*4 > fieldsLength){
-                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
+                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                           return -1;
                         }
                       }
                       else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
                         if(isNaN(parseFloat(instructionParts[z])) == true){
-                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
+                          show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
                           return -1;
                         }
 
                         if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
-                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
+                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                           return -1;
                         }
                       }
@@ -2393,26 +2199,12 @@ try{
                       else {
                         var numAux = parseInt(instructionParts[z], 10);
                         if(isNaN(parseInt(instructionParts[z])) == true){
-                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
+                          show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
                           return -1;
                         }
 
                         if((numAux.toString(2)).length > fieldsLength){
-                          app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
+                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                           return -1;
                         }
                       }
@@ -2423,54 +2215,26 @@ try{
                       if(instructionParts[z].match(/^0x/)){
                         var value = instructionParts[z].split("x");
                         if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                          app._data.alertMessage = "Address " + instructionParts[z] + " is not valid";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
+                          show_notification("Address " + instructionParts[z] + " is not valid", 'danger') ;
                           return -1;
                         }
 
                         if(value[1].length*4 > fieldsLength){
-                          app._data.alertMessage = "Address " + instructionParts[z] + " is too big";
-                          app._data.type = 'danger';
-                          app.$bvToast.toast(app._data.alertMessage, {
-                            variant: app._data.type,
-                            solid: true,
-                            toaster: "b-toaster-top-center",
-                            autoHideDelay: 1500,
-                          });
+                          show_notification("Address " + instructionParts[z] + " is too big", 'danger') ;
                           return -1;
                         } 
                       }
                     }
 
                     if(!found){
-                      app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
-                      app._data.type = 'danger';
-                      app.$bvToast.toast(app._data.alertMessage, {
-                        variant: app._data.type,
-                        solid: true,
-                        toaster: "b-toaster-top-center",
-                        autoHideDelay: 1500,
-                      });
+                      show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
                       return -1;
                     }
                   }
                 }
               }
               if(!found){
-                app._data.alertMessage = 'Instruction ' + instructions[j] + ' do not exists';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
+                show_notification('Instruction ' + instructions[j] + ' do not exists', 'danger') ;
                 return -1;
               }
             }
@@ -2485,14 +2249,7 @@ try{
           var instructions = definition.split(";");
           console_log(instructions.length)
           if(instructions.length == 1){
-            app._data.alertMessage = 'Enter a ";" at the end of each line of code';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+            show_notification('Enter a ";" at the end of each line of code', 'danger') ;
             return -1;
           }
 
@@ -2521,14 +2278,7 @@ try{
 
                 re = new RegExp(signatureDef+"$");
                 if(instructions[j].search(re) == -1){
-                  app._data.alertMessage = 'Incorrect signature --> ' + architecture.instructions[i].signatureRaw;
-                  app._data.type = 'danger';
-                  app.$bvToast.toast(app._data.alertMessage, {
-                    variant: app._data.type,
-                    solid: true,
-                    toaster: "b-toaster-top-center",
-                    autoHideDelay: 1500,
-                  });
+                  show_notification('Incorrect signature --> ' + architecture.instructions[i].signatureRaw, 'danger') ;
                   return -1;
                 }
 
@@ -2588,14 +2338,7 @@ try{
                     }
 
                     if(!found){
-                      app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
-                      app._data.type = 'danger';
-                      app.$bvToast.toast(app._data.alertMessage, {
-                        variant: app._data.type,
-                        solid: true,
-                        toaster: "b-toaster-top-center",
-                        autoHideDelay: 1500,
-                      });
+                      show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
                       return -1;
                     }
                   }
@@ -2605,51 +2348,23 @@ try{
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
-                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                         return -1;
                       }
                     }
                     else if (instructionParts[z].match(/^(\d)+\.(\d)+/)){
                       if(isNaN(parseFloat(instructionParts[z])) == true){
-                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
                         return -1;
                       }
 
                       if(this.float2bin(parseFloat(instructionParts[z])).length > fieldsLength){
-                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                         return -1;
                       }
                     }
@@ -2659,26 +2374,12 @@ try{
                     else {
                       var numAux = parseInt(instructionParts[z], 10);
                       if(isNaN(parseInt(instructionParts[z])) == true){
-                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is not valid";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Immediate number " + instructionParts[z] + " is not valid", 'danger') ;
                         return -1;
                       }
 
                       if((numAux.toString(2)).length > fieldsLength){
-                        app._data.alertMessage = "Immediate number " + instructionParts[z] + " is too big";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                         return -1;
                       }
                     }
@@ -2689,54 +2390,26 @@ try{
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
                       if(isNaN(parseInt(instructionParts[z], 16)) == true){
-                        app._data.alertMessage = "Address " + instructionParts[z] + " is not valid";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Address " + instructionParts[z] + " is not valid", 'danger') ;
                         return -1;
                       }
 
                       if(value[1].length*4 > fieldsLength){
-                        app._data.alertMessage = "Address " + instructionParts[z] + " is too big";
-                        app._data.type = 'danger';
-                        app.$bvToast.toast(app._data.alertMessage, {
-                          variant: app._data.type,
-                          solid: true,
-                          toaster: "b-toaster-top-center",
-                          autoHideDelay: 1500,
-                        });
+                        show_notification("Address " + instructionParts[z] + " is too big", 'danger') ;
                         return -1;
                       } 
                     }
                   }
 
                   if(!found){
-                    app._data.alertMessage = 'Register ' + instructionParts[z] + ' not found';
-                    app._data.type = 'danger';
-                    app.$bvToast.toast(app._data.alertMessage, {
-                      variant: app._data.type,
-                      solid: true,
-                      toaster: "b-toaster-top-center",
-                      autoHideDelay: 1500,
-                    });
+                    show_notification('Register ' + instructionParts[z] + ' not found', 'danger') ;
                     return -1;
                   }
                 }
               }
             }
             if(!found){
-              app._data.alertMessage = 'Instruction ' + instructions[j] + ' do not exists';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
+              show_notification('Instruction ' + instructions[j] + ' do not exists', 'danger') ;
               return -1;
             }
           }
@@ -2828,16 +2501,7 @@ try{
             app._data.architecture = architecture;
 
             $(".loading").hide();
-            app._data.alertMessage = 'The directive set has been reset correctly';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The directive set has been reset correctly', 'success') ;
             return;
           }
         }
@@ -2851,16 +2515,7 @@ try{
           app._data.architecture = architecture;
 
           $(".loading").hide();
-          app._data.alertMessage = 'The directive set has been reset correctly';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The directive set has been reset correctly', 'success') ;
         });
       },
       /*Verify all fields of new directive*/
@@ -2868,25 +2523,11 @@ try{
         evt.preventDefault();
 
         if (!this.formDirective.name || !this.formDirective.action) {
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('Please complete all fields', 'danger') ;
         } 
         else {
           if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
-            app._data.alertMessage = 'Please complete all fields';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+            show_notification('Please complete all fields', 'danger') ;
           }
           else{
             this.newDirective();
@@ -2897,14 +2538,7 @@ try{
       newDirective(){
         for (var i = 0; i < architecture.directives.length; i++) {
           if(this.formDirective.name == architecture.directives[i].name){
-            app._data.alertMessage = 'The directive already exists';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+            show_notification('The directive already exists', 'danger') ;
             return;
           }
         }
@@ -2936,25 +2570,11 @@ try{
         evt.preventDefault();
 
         if (!this.formDirective.name || !this.formDirective.action) {
-          app._data.alertMessage = 'Please complete all fields';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('Please complete all fields', 'danger') ;
         } 
         else {
           if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
-            app._data.alertMessage = 'Please complete all fields';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+            show_notification('Please complete all fields', 'danger') ;
           }
           else{
             this.editDirective(name);
@@ -2965,14 +2585,7 @@ try{
       editDirective(name){
         for (var i = 0; i < architecture.directives.length; i++) {
           if((this.formDirective.name == architecture.directives[i].name) && (name != this.formDirective.name)){
-            app._data.alertMessage = 'The directive already exists';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+            show_notification('The directive already exists', 'danger') ;
             return;
           }
         }
@@ -3101,16 +2714,7 @@ try{
             code_assembly = this.responseText;
             textarea_assembly_editor.setValue(code_assembly);
 
-            app._data.alertMessage = ' The selected example has been loaded correctly';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()});     
+            show_notification(' The selected example has been loaded correctly', 'success') ;
           }
         };
         xhttp.open("GET", "examples/"+id+".txt", true);
@@ -3126,32 +2730,14 @@ try{
             return;
           }
           if(memory[memory_hash[0]].length != 0){
-            app._data.alertMessage = 'You can not enter data in a library';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('You can not enter data in a library', 'danger') ;
             return;
           }
 
           for (var i = 0; i < instructions_binary.length; i++){
             console_log(instructions_binary[i].Label)
             if(instructions_binary[i].Label == "main_symbol"){
-              app._data.alertMessage = 'You can not use the "main" tag in a library';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              show_notification('You can not use the "main" tag in a library', 'danger') ;
               return;
             }
           }
@@ -3182,16 +2768,7 @@ try{
 
           downloadLink.click();
 
-          app._data.alertMessage = 'Save binary';
-          app._data.type = 'success';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('Save binary', 'success') ;
         });
       },
       /*Load binary file*/
@@ -3458,16 +3035,7 @@ try{
 
             if(app.get_token() == null){
               $(".loading").hide();
-              app._data.alertMessage = 'Please enter the assembly code before compiling';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              show_notification('Please enter the assembly code before compiling', 'danger') ;
               return -1;
             }
 
@@ -3985,16 +3553,7 @@ try{
                 app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
                 app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
-                app._data.alertMessage = 'Data overflow';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('Data overflow', 'danger') ;
                 $(".loading").hide();
                 return -1;
               }
@@ -4018,16 +3577,7 @@ try{
                 app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
                 app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
-                app._data.alertMessage = 'Instruction overflow';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('Instruction overflow', 'danger') ;
                 $(".loading").hide();
                 return -1;
               }
@@ -4087,16 +3637,7 @@ try{
 
             app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
-            app._data.alertMessage = 'Compilation completed successfully';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Compilation completed successfully', 'success') ;
 
             tokenIndex = 0;
             
@@ -7058,14 +6599,7 @@ try{
             if(this.calculator.bits == 32){
               var re = /[0-9A-Fa-f]{8}/g;
               if(!re.test(hex)){
-                app._data.alertMessage = 'Character not allowed';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
+                show_notification('Character not allowed', 'danger') ;
 
                 this.calculator.sign = "";
                 this.calculator.exponent = "";
@@ -7097,14 +6631,7 @@ try{
             if(this.calculator.bits == 64){
               var re = /[0-9A-Fa-f]{16}/g;
               if(!re.test(hex)){
-                app._data.alertMessage = 'Character not allowed';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
+                show_notification('Character not allowed', 'danger') ;
 
                 this.calculator.sign = "";
                 this.calculator.exponent = "";
@@ -7145,14 +6672,7 @@ try{
 
               var re = /[0-1]{32}/g;
               if(!re.test(binary)){
-                app._data.alertMessage = 'Character not allowed';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
+                show_notification('Character not allowed', 'danger') ;
 
                 this.calculator.hexadecimal = "";
                 this.calculator.decimal = "";
@@ -7184,14 +6704,7 @@ try{
 
               var re = /[0-1]{64}/g;
               if(!re.test(binary)){
-                app._data.alertMessage = 'Character not allowed';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
+                show_notification('Character not allowed', 'danger') ;
 
                 this.calculator.hexadecimal = "";
                 this.calculator.decimal = "";
@@ -7323,43 +6836,16 @@ try{
           console_log(architecture.components[0].elements[0].value);
 
           if(instructions.length == 0){
-            app._data.alertMessage = 'No instructions in memory';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('No instructions in memory', 'danger');
             return;
           }
 
           if(executionIndex < -1){
-            app._data.alertMessage = 'The program has finished';
-            app._data.type ='danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            })
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The program has finished', app._data.type ='danger') ;
             return;
           }
           else if(executionIndex == -1){
-            app._data.alertMessage = 'The program has finished with errors';
-            app._data.type ='danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            })
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The program has finished with errors', 'danger') ;
             return;
           }
           else if(mutexRead == true){
@@ -7376,16 +6862,7 @@ try{
                 break;
               }
               else if(i == instructions.length-1){
-                app._data.alertMessage = 'Label "main" not found';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('Label "main" not found', 'danger') ;
                 executionIndex = -1;
                 return;
               }
@@ -8045,16 +7522,7 @@ try{
               error = 1;
               instructions[executionIndex]._rowVariant = 'danger';
               executionIndex = -1;
-              app._data.alertMessage = 'The definition of the instruction contains errors, please review it';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              show_notification('The definition of the instruction contains errors, please review it', 'danger') ;
               return;
             }
           }
@@ -8108,16 +7576,7 @@ try{
             }
 
             executionIndex = -2;
-            app._data.alertMessage = 'The execution of the program has finished';
-            app._data.type = 'success';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('The execution of the program has finished', 'success') ;
             return;
           }
           else{
@@ -8137,43 +7596,16 @@ try{
         this.runExecution = false;
 
         if(instructions.length == 0){
-          app._data.alertMessage = 'No instructions in memory';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('No instructions in memory', 'danger') ;
           return;
         }
 
         if(executionIndex < -1){
-          app._data.alertMessage = 'The program has finished';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The program has finished', 'danger') ;
           return;
         }
         else if(executionIndex == -1){
-          app._data.alertMessage = 'The program has finished with errors';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+          show_notification('The program has finished with errors', 'danger') ;
           return;
         }
 
@@ -8239,17 +7671,8 @@ try{
       /*Read register value*/
       readRegister(indexComp, indexElem){
         if(architecture.components[indexComp].elements[indexElem].properties[0] != "read" && architecture.components[indexComp].elements[indexElem].properties[1] != "read"){
-          app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read';
-          app._data.type = 'danger';
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+          show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read', 'danger') ;
           instructions[executionIndex]._rowVariant = 'danger';
-          var date = new Date();
-          notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
           executionIndex = -1;
           return;
         }
@@ -8271,17 +7694,8 @@ try{
 
         if(architecture.components[indexComp].type == "integer" || architecture.components[indexComp].type == "control"){
           if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-            app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
+            show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
             executionIndex = -1;
             return;
           }
@@ -8303,16 +7717,7 @@ try{
         else if(architecture.components[indexComp].type =="floating point"){
           if(architecture.components[indexComp].double_precision == false){
             if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-              app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
               return;
             }
 
@@ -8333,18 +7738,9 @@ try{
           }
           
           else if(architecture.components[indexComp].double_precision == true){
-            if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-              app._data.alertMessage = 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              })
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-              return;
+            if (architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
+	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
+                return;
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
@@ -8371,16 +7767,7 @@ try{
 
         if (type == "w"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to read in the text segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -8412,16 +7799,7 @@ try{
 
         if (type == "h"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to read in the text segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -8462,16 +7840,7 @@ try{
 
         if (type == "b"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to read in the text segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -8511,16 +7880,7 @@ try{
 
         if (type == "w"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -8591,16 +7951,7 @@ try{
 
         if (type == "h"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -8754,16 +8105,7 @@ try{
 
         if (type == "b"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -8861,31 +8203,13 @@ try{
       writeStackLimit(stackLimit){
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to write in the data segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to write in the data segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
           }
           else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-            app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
-            app._data.type = 'danger';
-            app.$bvToast.toast(app._data.alertMessage, {
-              variant: app._data.type,
-              solid: true,
-              toaster: "b-toaster-top-center",
-              autoHideDelay: 1500,
-            });
-            var date = new Date();
-            notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             instructions[executionIndex]._rowVariant = 'danger';
             executionIndex = -1;
             return;
@@ -8948,16 +8272,7 @@ try{
             var index;
 
             if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-              app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
-              app._data.type = 'danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+              show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
               instructions[executionIndex]._rowVariant = 'danger';
               executionIndex = -1;
               this.keyboard = "";
@@ -9006,16 +8321,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+	      show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -9036,16 +8342,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){
@@ -9053,16 +8350,7 @@ try{
                 }
 
                 executionIndex = -2;
-                app._data.alertMessage = 'The execution of the program has finished';
-                app._data.type = 'success';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('The execution of the program has finished', 'success') ;
                 return;
               }
               else if(runExecution == false){
@@ -9082,16 +8370,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -9112,16 +8391,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
@@ -9129,16 +8399,7 @@ try{
                 }
 
                 executionIndex = -2;
-                app._data.alertMessage = 'The execution of the program has finished';
-                app._data.type = 'success';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('The execution of the program has finished', 'success') ;
                 return;
               }
               else if(runExecution == false){
@@ -9159,16 +8420,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -9189,16 +8441,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
@@ -9206,16 +8449,7 @@ try{
                 }
 
                 executionIndex = -2;
-                app._data.alertMessage = 'The execution of the program has finished';
-                app._data.type = 'success';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('The execution of the program has finished', 'success') ;
                 return;
               }
               else if(runExecution == false){
@@ -9236,16 +8470,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -9272,16 +8497,7 @@ try{
               var index;
 
               if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-                app._data.alertMessage = 'Segmentation fault. You tried to write in the text segment';
-                app._data.type = 'danger';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
                 instructions[executionIndex-1]._rowVariant = 'danger';
                 executionIndex = -1;
                 this.keyboard = "";
@@ -9358,16 +8574,7 @@ try{
                 mutexRead = false;
                 app._data.enter = null;
 
-                app._data.alertMessage = 'The data has been uploaded';
-				        app._data.type = 'info';
-				        app.$bvToast.toast(app._data.alertMessage, {
-				          variant: app._data.type,
-				          solid: true,
-				          toaster: "b-toaster-top-center",
-				          autoHideDelay: 1500,
-				        });
-				        var date = new Date();
-				        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		      show_notification('The data has been uploaded', 'info') ;
 
                 if(executionIndex >= instructions.length){
                   for (var i = 0; i < instructions.length; i++) {
@@ -9375,16 +8582,7 @@ try{
                   }
 
                   executionIndex = -2;
-                  app._data.alertMessage = 'The execution of the program has finished';
-                  app._data.type = 'success';
-                  app.$bvToast.toast(app._data.alertMessage, {
-                    variant: app._data.type,
-                    solid: true,
-                    toaster: "b-toaster-top-center",
-                    autoHideDelay: 1500,
-                  });
-                  var date = new Date();
-                  notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                  show_notification('The execution of the program has finished', 'success') ;
                   return;
                 }
                 else if(runExecution == false){
@@ -9419,16 +8617,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
@@ -9436,16 +8625,7 @@ try{
                 }
 
                 executionIndex = -2;
-                app._data.alertMessage = 'The execution of the program has finished';
-                app._data.type = 'success';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('The execution of the program has finished', 'success') ;
                 return;
               }
               else if(runExecution == false){
@@ -9460,17 +8640,8 @@ try{
             var aux_addr = architecture.memory_layout[3].value;
 
             if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-              app._data.alertMessage = 'Not enough memory for data segment';
-              app._data.type ='danger';
-              app.$bvToast.toast(app._data.alertMessage, {
-                variant: app._data.type,
-                solid: true,
-                toaster: "b-toaster-top-center",
-                autoHideDelay: 1500,
-              });
-              var date = new Date();
+		    show_notification('Not enough memory for data segment', 'danger') ;
               instructions[executionIndex]._rowVariant = 'danger';
-              notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
               executionIndex = -1;
               return;
             }
@@ -9509,16 +8680,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -9537,16 +8699,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-              app._data.alertMessage = 'The data has been uploaded';
-			        app._data.type = 'info';
-			        app.$bvToast.toast(app._data.alertMessage, {
-			          variant: app._data.type,
-			          solid: true,
-			          toaster: "b-toaster-top-center",
-			          autoHideDelay: 1500,
-			        });
-			        var date = new Date();
-			        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+		    show_notification('The data has been uploaded', 'info') ;
 
               console_log(mutexRead);
 
@@ -9556,16 +8709,7 @@ try{
                 }
 
                 executionIndex = -2;
-                app._data.alertMessage = 'The execution of the program has finished';
-                app._data.type = 'success';
-                app.$bvToast.toast(app._data.alertMessage, {
-                  variant: app._data.type,
-                  solid: true,
-                  toaster: "b-toaster-top-center",
-                  autoHideDelay: 1500,
-                });
-                var date = new Date();
-                notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+                show_notification('The execution of the program has finished', 'success') ;
                 return;
               }
               else if(runExecution == false){
@@ -9579,17 +8723,8 @@ try{
       },
       /*Exception Notification*/
       exception(error){
-        app._data.alertMessage = "There is been an exception. Error description: '" + error;
-        app._data.type = 'danger';
-        app.$bvToast.toast(app._data.alertMessage, {
-          variant: app._data.type,
-          solid: true,
-          toaster: "b-toaster-top-center",
-          autoHideDelay: 1500,
-        });
-        var date = new Date();
+        show_notification("There is been an exception. Error description: '" + error, 'danger') ;
         instructions[executionIndex]._rowVariant = 'danger';
-        notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
         executionIndex = -1;
         return;
       },
@@ -9976,20 +9111,10 @@ try{
 
   /*Error handler*/
   Vue.config.errorHandler = function (err, vm, info) {
-    app._data.alertMessage = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + err;
-    app._data.type ='danger';
-    app.$bvToast.toast(app._data.alertMessage, {
-      variant: app._data.type,
-      solid: true,
-      toaster: "b-toaster-top-center",
-      autoHideDelay: 3000,
-    })
-    var date = new Date();
-    notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
-
-    setTimeout(function(){
-      location.reload(true)
-    }, 3000);
+      show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + err, 'danger') ;
+      setTimeout(function(){
+        location.reload(true)
+      }, 3000);
   }
 
   /*Closing alert*/
@@ -10101,18 +9226,11 @@ try{
     return parseInt(b, 2);
   }
 }
-catch(e){
-  app._data.alertMessage = 'An error has ocurred, the simulator is going to restart.  \n Error: ' + e;
-  app._data.type ='danger';
-  app.$bvToast.toast(app._data.alertMessage, {
-    variant: app._data.type,
-    solid: true,
-    toaster: "b-toaster-top-center",
-    autoHideDelay: 3000,
-  })
-  //notifications.push({mess: app._data.alertMessage, color: app._data.type, time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear()}); 
+catch(e)
+{
+   show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + e, 'danger') ;
 
-  setTimeout(function(){
-    location.reload(true)
-  }, 3000);
+   setTimeout(function(){
+     location.reload(true)
+   }, 3000);
 }
