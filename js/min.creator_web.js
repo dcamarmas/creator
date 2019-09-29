@@ -8264,7 +8264,7 @@ try{
         }
 
         if(executionIndex >= 0){
-          setTimeout(this.programExecutionInst, 25);
+          setTimeout(this.programExecutionInst, 15);
         }
         else{
           $("#stopExecution").hide();
