@@ -151,25 +151,197 @@
         </header>
 
 
+        <!-- Load architecture menu -->
+        <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
+          
+          <!-- Navbar -->
+          <div class="contenedor menu row">
+            <div class="col-lg-3 col-sm-12 nopadding"></div>
+            <div class="col-lg-4 col-sm-12 nopadding"></div>
+            <div class="col-lg-5 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-4 col-sm-4 buttons"></div>
+                  <div class="col-lg-4 col-sm-4 buttons"></div>
+                  <div class="col-lg-4 col-sm-4 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_men" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Information popover -->
+          <b-popover target="info_men" triggers="click blur">
+            <template slot="title">
+              <b-button @click="closePopover" class="close" aria-label="Close">
+                <span class="d-inline-block" aria-hidden="true">&times;</span>
+              </b-button>
+              <br>
+            </template>
+
+            <div class="col-lg-12 col-sm-12">
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+            </div>
+          </b-popover>
+
+          <!-- Architecture menu -->
+          <div class="col-lg-12 col-sm-12" id="load_menu_arch">
+            <div class="col-lg-12 col-sm-12 row nopadding nomargin">
+              <div class="col-lg-1 col-sm-1">
+                
+              </div>
+              <div class="col-lg-10 col-sm-10">
+                <b-list-group>
+                  <b-list-group-item>
+                    <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
+                      <b-row no-gutters>
+                        <b-col md="3" @click="load_arch_select(item.name)">
+                          <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
+                        </b-col>
+
+                        <b-col md="7" @click="load_arch_select(item.name)">
+                          <b-card-body :title=item.name title-tag="h4">
+                            <b-card-text style="text-align: justify; font-size: 11pt;">
+                              {{item.description}}
+                            </b-card-text>
+                          </b-card-body>
+                        </b-col>
+
+                        <b-col md="2" >
+                          <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
+                        </b-col>
+                      </b-row>
+                    </b-card>
+
+                    <!-- Delete architecture modal -->
+                    <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
+                      <h6>Are you sure you want to delete the architecture?</h6>
+                    </b-modal >
+
+
+
+
+
+
+                    <!-- Browser not supported modal -->
+                    <b-modal id ="modalNavigator" title="Browser not supported" ref="navigator" hide-footer>
+                      <h6>You are using an unsupported browser, please use one of the following:</h6>
+                      <br>
+                      <b-list-group>
+                        <b-list-group-item class="d-flex justify-content-between align-items-center">
+                          Google Chrome 70+
+                          <b-badge pill style="background-color: transparent;">
+                          <b-img src="./images/chrome.png" class="shadow" rounded="circle" fluid alt="Responsive image" style="height: 50px;width: auto;"></b-img>
+                          </b-badge>
+                        </b-list-group-item>
+                        <b-list-group-item class="d-flex justify-content-between align-items-center">
+                          Mozilla Firefox 60+
+                          <b-badge pill style="background-color: transparent;">
+                           <b-img src="./images/firefox.png" class="shadow" rounded="circle" fluid alt="Responsive image" style="height: 50px;width: auto;"></b-img>
+                          </b-badge>
+                        </b-list-group-item>
+                        <b-list-group-item class="d-flex justify-content-between align-items-center">
+                          Apple Safari 12+
+                          <b-badge pill style="background-color: transparent;">
+                           <b-img src="./images/safari.png" class="shadow" rounded="circle" fluid alt="Responsive image" style="height: 50px;width: auto;"></b-img>
+                          </b-badge>
+                        </b-list-group-item>
+                      </b-list-group>
+                    </b-modal >
+
+
+
+
+
+
+
+                    <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;">
+                      <b-row no-gutters @click="new_arch">
+                        <b-col md="3" style="text-align: center;">
+                          <b-card-img src="./images/new_icon.png" alt="new icon" class="rounded-0" style="width: 50%; height: auto;"></b-card-img>
+                        </b-col>
+
+                        <b-col md="9">
+                          <b-card-body title="New Architecture" title-tag="h4" >
+                            <b-card-text style="text-align: justify; font-size: 11pt;">
+                              Allows you to define an architecture from scratch.
+                            </b-card-text>
+                          </b-card-body>
+                        </b-col>
+                      </b-row>
+                    </b-card>
+
+                    <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;" v-b-modal.load_arch>
+                      <b-row no-gutters>
+                         <b-col md="3" style="text-align: center;">
+                          <b-card-img src="./images/load_icon.png" alt="load icon" class="rounded-0" style="width: 50%; height: auto;"></b-card-img>
+                        </b-col>
+
+                        <b-col md="9">
+                          <b-card-body title="Load Architecture" title-tag="h4">
+                            <b-card-text style="text-align: justify; font-size: 11pt;">
+                              Allows to load the definition of an already created architecture.
+                            </b-card-text>
+                          </b-card-body>
+                        </b-col>
+                      </b-row>
+
+                      <!-- Load new architecture modal -->
+                      <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
+                        <b-form>
+                          <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
+                          <br>
+                          <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+                          <br>
+                          <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
+                        </b-form>
+                      </b-modal>
+
+                    </b-card>
+                  </b-list-group-item>
+                </b-list-group>
+              </div>
+              <div class="col-lg-1 col-sm-1">
+                
+              </div>
+            </div>
+            <br>
+
+            <!-- Backup modal -->
+            <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
+              <h6>A backup is available</h6>
+              <h6>Date: {{date_copy}}</h6>
+              <div class="col-lg-12 col-sm-12 row nomargin">
+                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
+                  <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" @click="remove_copy">Discard</b-button>
+                </div>
+                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
+                  <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" @click="load_copy">Load</b-button>
+                </div>
+              </div>
+            </b-modal>
+          </div>
+
+        </div>
+
 
 
         <!-- Architecture editor view -->
-        <div class="contenedor row menu_cards" id="architecture_menu">
+        <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
 
       		<!-- Navbar -->
           <div class="contenedor menu row">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons" id="load_arch_btn_arch">
-                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm load_Arch_btn btn_arch" v-b-modal.load_arch>Load Architecture</b-button>-->
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_arch" style="display:none;"><span class="fas fa-sitemap" ></span> Architecture</b-button>
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch h-100" id="assembly_btn_arch" @click="change_UI_mode('assembly')"><span class="fas fa-hashtag"></span>Assembly</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch h-100" id="assembly_btn_arch" style="display:none;"><span class="fas fa-hashtag"></span>Assembly</b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch h-100" id="sim_btn_arch" style="display:none;"><span class="fas fa-cogs"></span> Simulator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch h-100" id="sim_btn_arch" @click="change_UI_mode('simulator')"><span class="fas fa-cogs"></span> Simulator</b-button>
                   </div>
                 </div>
               </div>
@@ -179,13 +351,13 @@
 							<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="save_btn_arch" v-b-modal.save_architecture style="display:none;"><span class="fas fa-download"></span> Save</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="save_btn_arch" v-b-modal.save_architecture><span class="fas fa-download"></span> Save</b-button>
                   </div>
                   <div class="col-lg-8 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode" style="display:none;" @click="change_mode" v-if="advanced_mode == true">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode1"  @click="change_mode" v-if="advanced_mode == true">
                       Advanced Mode: deactivated
                     </b-button>
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode" style="display:none;" @click="change_mode" v-if="advanced_mode == false">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  id="advanced_mode2" @click="change_mode" v-if="advanced_mode == false">
                       Advanced Mode: activate
                     </b-button>
                   </div>
@@ -209,13 +381,6 @@
               </div>
             </div>
 
-            <!-- Save architecture form -->
-            <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
-              <h6>Enter the name of the architecture to save:</h6>
-              <br>
-              <b-form-input v-on:input="debounce('name_arch_save', $event)" :value="name_arch_save" type="text" placeholder="Enter the name" class="form-control form-control-sm" style="background-color: white; color: black," :state="valid(name_arch_save)"></b-form-input>
-            </b-modal>
-
             <!-- Information popover -->
             <b-popover target="info_arch" triggers="click blur">
               <template slot="title">
@@ -231,150 +396,19 @@
                 <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"  v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
               </div>
             </b-popover>
+
+            <!-- Save architecture form -->
+            <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
+              <h6>Enter the name of the architecture to save:</h6>
+              <br>
+              <b-form-input v-on:input="debounce('name_arch_save', $event)" :value="name_arch_save" type="text" placeholder="Enter the name" class="form-control form-control-sm" style="background-color: white; color: black," :state="valid(name_arch_save)"></b-form-input>
+            </b-modal>
           </div>
 
         	<div class="contenedor menu row">
 
-            <!-- Architecture menu -->
-            <div class="col-lg-12 col-sm-12" id="load_menu_arch">
-              <div class="col-lg-12 col-sm-12 row nopadding nomargin">
-                <div class="col-lg-1 col-sm-1">
-                  
-                </div>
-                <div class="col-lg-10 col-sm-10">
-                  <b-list-group>
-                    <b-list-group-item>
-                      <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
-                        <b-row no-gutters>
-                          <b-col md="3" @click="load_arch_select(item.name)">
-                            <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
-                          </b-col>
-
-                          <b-col md="7" @click="load_arch_select(item.name)">
-                            <b-card-body :title=item.name title-tag="h4">
-                              <b-card-text style="text-align: justify; font-size: 11pt;">
-                                {{item.description}}
-                              </b-card-text>
-                            </b-card-body>
-                          </b-col>
-
-                          <b-col md="2" >
-                            <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" @click.stop="modal_remove_cache_arch(index, item.name, $event.target)" v-if="default_arch(item.name) == true" :id="'delete_'+item.name" style="margin-top: 50%;"><span class="far fa-trash-alt"></span> Delete</b-button>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-
-                      <!-- Delete architecture modal -->
-                      <b-modal id ="modalDeletArch" :title="modalDeletArch.title" ok-variant="danger" ok-title="Delete" @ok="remove_cache_arch(modalDeletArch.index)">
-                        <h6>Are you sure you want to delete the architecture?</h6>
-                      </b-modal >
-
-
-
-
-
-
-                      <!-- Browser not supported modal -->
-                      <b-modal id ="modalNavigator" title="Browser not supported" ref="navigator" hide-footer>
-                        <h6>You are using an unsupported browser, please use one of the following:</h6>
-                        <br>
-                        <b-list-group>
-		                      <b-list-group-item class="d-flex justify-content-between align-items-center">
-		                        Google Chrome 70+
-		                        <b-badge pill style="background-color: transparent;">
-		                        <b-img src="./images/chrome.png" class="shadow" rounded="circle" fluid alt="Responsive image" style="height: 50px;width: auto;"></b-img>
-		                        </b-badge>
-		                      </b-list-group-item>
-		                      <b-list-group-item class="d-flex justify-content-between align-items-center">
-		                        Mozilla Firefox 60+
-		                        <b-badge pill style="background-color: transparent;">
-		                         <b-img src="./images/firefox.png" class="shadow" rounded="circle" fluid alt="Responsive image" style="height: 50px;width: auto;"></b-img>
-		                        </b-badge>
-		                      </b-list-group-item>
-		                      <b-list-group-item class="d-flex justify-content-between align-items-center">
-		                        Apple Safari 12+
-		                        <b-badge pill style="background-color: transparent;">
-		                         <b-img src="./images/safari.png" class="shadow" rounded="circle" fluid alt="Responsive image" style="height: 50px;width: auto;"></b-img>
-		                        </b-badge>
-		                      </b-list-group-item>
-		                    </b-list-group>
-                      </b-modal >
-
-
-
-
-
-
-
-                      <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;">
-                        <b-row no-gutters @click="new_arch">
-                          <b-col md="3" style="text-align: center;">
-                            <b-card-img src="./images/new_icon.png" alt="new icon" class="rounded-0" style="width: 50%; height: auto;"></b-card-img>
-                          </b-col>
-
-                          <b-col md="9">
-                            <b-card-body title="New Architecture" title-tag="h4" >
-                              <b-card-text style="text-align: justify; font-size: 11pt;">
-                                Allows you to define an architecture from scratch.
-                              </b-card-text>
-                            </b-card-body>
-                          </b-col>
-                        </b-row>
-                      </b-card>
-
-                      <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;" v-b-modal.load_arch>
-                        <b-row no-gutters>
-                           <b-col md="3" style="text-align: center;">
-                            <b-card-img src="./images/load_icon.png" alt="load icon" class="rounded-0" style="width: 50%; height: auto;"></b-card-img>
-                          </b-col>
-
-                          <b-col md="9">
-                            <b-card-body title="Load Architecture" title-tag="h4">
-                              <b-card-text style="text-align: justify; font-size: 11pt;">
-                                Allows to load the definition of an already created architecture.
-                              </b-card-text>
-                            </b-card-body>
-                          </b-col>
-                        </b-row>
-
-                        <!-- Load new architecture modal -->
-                        <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
-                          <b-form>
-                            <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
-                            <br>
-                            <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
-                            <br>
-                            <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
-                          </b-form>
-                        </b-modal>
-
-                      </b-card>
-                    </b-list-group-item>
-                  </b-list-group>
-                </div>
-                <div class="col-lg-1 col-sm-1">
-                  
-                </div>
-              </div>
-              <br>
-
-              <!-- Backup modal -->
-              <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
-                <h6>A backup is available</h6>
-                <h6>Date: {{date_copy}}</h6>
-                <div class="col-lg-12 col-sm-12 row nomargin">
-                  <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
-                    <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" @click="remove_copy">Discard</b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
-                    <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" @click="load_copy">Load</b-button>
-                  </div>
-                </div>
-              </b-modal>
-            </div>
-
             <!-- Architecture components -->
-            <div class="col-lg-12 col-sm-12" id="view_components" style="display:none;">
+            <div class="col-lg-12 col-sm-12" id="view_components">
               <b-tabs>
 
                 <!-- Memory layout -->
@@ -1470,7 +1504,7 @@
 
 
         <!-- Assembly view -->
-        <div class="contenedor row" id="assembly" style="display:none;">
+        <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
           <!-- Navbar -->
           <div class="contenedor menu row">
@@ -1478,10 +1512,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_assembly"><span class="fas fa-sitemap"></span> Architecture</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_assembly"  @click="change_UI_mode('architecture')"><span class="fas fa-sitemap"></span> Architecture</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn h-100" id="simulator_btn_assembly"><span class="fas fa-cogs"></span> Simulator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn h-100" id="simulator_btn_assembly" @click="change_UI_mode('simulator')"><span class="fas fa-cogs"></span> Simulator</b-button>
                   </div>
                 </div>
               </div>
@@ -1566,25 +1600,25 @@
                   <div class="col-lg-12 col-sm-12 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_ass" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
-
-                  <b-popover target="info_ass" triggers="click blur">
-                    <template slot="title">
-                      <b-button @click="closePopover" class="close" aria-label="Close">
-                        <span class="d-inline-block" aria-hidden="true">&times;</span>
-                      </b-button>
-                      <br>
-                    </template>
-
-                    <div class="col-lg-12 col-sm-12">
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
-                    </div>
-                  </b-popover>
                 </div>
               </div>
             </div>
           </div>
+
+          <b-popover target="info_ass" triggers="click blur">
+            <template slot="title">
+              <b-button @click="closePopover" class="close" aria-label="Close">
+                <span class="d-inline-block" aria-hidden="true">&times;</span>
+              </b-button>
+              <br>
+            </template>
+
+            <div class="col-lg-12 col-sm-12">
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" href='https://creatorsim.github.io/' target="_blank"><span class="fas fa-question-circle" ></span> Help</b-button>
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
+              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
+            </div>
+          </b-popover>
 
           <!-- Assembly textarea and library tags-->
           <div class="contenedor row">
@@ -1620,7 +1654,7 @@
 
 
         <!-- Simulator view -->
-        <div class="contenedor row" id="simulator" style="display:none;">
+        <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
         	<!-- Navbar -->
           <div class="contenedor menu row mb-3">
@@ -1628,10 +1662,10 @@
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_sim"><span class="fas fa-sitemap"></span> Architecture</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_sim"  @click="change_UI_mode('architecture')"><span class="fas fa-sitemap"></span> Architecture</b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn h-100" id="assembly_btn_sim"><span class="fas fa-hashtag"></span> Assembly</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn h-100" id="assembly_btn_sim" @click="change_UI_mode('assembly')"><span class="fas fa-hashtag"></span> Assembly</b-button>
                   </div>
                 </div>
               </div>
@@ -1700,6 +1734,13 @@
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
+		    <br/>
+		    <template>
+		      <div>
+			 <label for="range-2">Execution Speed (- ... +):</label>
+			 <b-form-input id="range-2" v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
+		      </div>
+		    </template>
                   </b-popover>
 
                   <!-- Calculator -->
@@ -1795,7 +1836,7 @@
                 <template slot="Break" slot-scope="row">
                   <div class="break" :id="row.index">
                     <br v-if="row.item.Break == null">
-                    <b-img alt="Break" src="./images/stop_classic.gif" class="shadow" rounded="circle" style="width:auto !important;height:4vh;" v-if="row.item.Break == true">
+                    <b-img alt="Break" src="./images/stop_classic.gif" class="shadow" rounded="circle" style="width:auto !important;height:4vh;" v-if="row.item.Break == true"></b-img>
                   </div>
                 </template>
                 <template slot="Address" slot-scope="row">
@@ -1827,24 +1868,24 @@
             <div class="col-lg-12 col-sm-12 mb-3">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding" variant="outline-secondary" class=" h-100">
+                  <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary">
                     <b-dropdown-item @click="showIntReg">CPU-INT Registers</b-dropdown-item>
                     <b-dropdown-item @click="showFpReg">CPU-FP Registers</b-dropdown-item>
                   </b-dropdown>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm  h-100" id="memory_btn"><span class="fas fa-memory"></span>
+                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" id="memory_btn" @click="change_data_view('memory')"><span class="fas fa-memory"></span>
                     Memory 
                   </b-button>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" id="stats_btn"><span class=" fas fa-chart-bar"></span> Stats</b-button>
+                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" id="stats_btn" @click="change_data_view('stats')"><span class=" fas fa-chart-bar"></span> Stats</b-button>
                 </div>
               </div>
             </div>
 
             <!-- Registers view -->
-            <div class="col-lg-12 col-sm-12" id="registers">
+            <div class="col-lg-12 col-sm-12" id="registers" v-if="data_mode == 'registers'">
               <b-tabs content-class="mt-3">
 
                 <!-- Decimal view -->
@@ -1854,14 +1895,14 @@
                       
                       <!-- Control and integer registers -->
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')">
+                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
                            <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
 
                         <!-- Register popover -->
-                        <b-popover :target="popoverId(item2.name + 'Int')" triggers="click blur" class="popover" >
+                        <b-popover show :target="popoverId(item2.name + 'Int')" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name + 'Int')">
                           <template slot="title">
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -1913,12 +1954,12 @@
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover :target="popoverId(item2.name + 'FP')" triggers="click blur">
+                          <b-popover show :target="popoverId(item2.name + 'FP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'FP')">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -1964,12 +2005,12 @@
 
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')">
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
                              {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover :target="popoverId(item2.name + 'DFP')" triggers="click blur">
+                          <b-popover show :target="popoverId(item2.name + 'DFP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'DFP')">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -2024,12 +2065,12 @@
 
                 			<!-- Control and integer registers -->
   	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-  	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
+  	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
   	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
-  	                    <b-popover :target="popoverId(item2.name)" triggers="click blur" class="popover" >
+  	                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name)">
                           <template slot="title">
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -2082,12 +2123,12 @@
 
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
+  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
   	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
-  		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
+  		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -2133,12 +2174,12 @@
 
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)">
+  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
   		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
-  		                    <b-popover :target="popoverId(item2.name)" triggers="click blur">
+  		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
                             <template slot="title">
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
@@ -2189,7 +2230,7 @@
             </div>
 
             <!-- Memory view-->
-            <div class="col-lg-12 col-sm-12" id="memory" style="display:none;">
+            <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
               <b-tabs content-class="mt-3">
 
                 <!-- Data memory -->
@@ -2242,7 +2283,7 @@
                     <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table">
                       <template slot="Address" slot-scope="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
-                        <h6 style="font-size: 13px"v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
+                        <h6 style="font-size: 13px" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
                       <template slot="Binary" slot-scope="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">
@@ -2269,7 +2310,7 @@
             </div>
 
             <!-- Stats--->
-            <div class="col-lg-12 col-sm-12" id="stats" style="display:none;">
+            <div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == 'stats'">
               <div class="col-lg-12 col-sm-12">
                 <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table"></b-table>
                 <br>
@@ -2334,7 +2375,6 @@
     </div>
 
     <!-- Required scripts -->
-    <script src="js/app.js"></script>
-    <script src="js/buttons_actions.js"></script>
+    <script src="js/min.creator_web.js"></script>
   </body>
 </html>
