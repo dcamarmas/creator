@@ -153,20 +153,38 @@
 
         <b-modal id="configuration" title="Configuration" hide-footer>
 	  <b-list-group>
+
 	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Execution Speed (-/+):</label>
-            <b-form-input v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
+            <label for="range-2">Execution Speed:</label>
+	    <b-input-group>
+               <b-input-group-prepend>
+                 <b-btn variant="outline-secondary" @click="instructionsPacked-=5">-</b-btn>
+               </b-input-group-prepend>
+               <b-form-input v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
+               <b-input-group-append>
+                 <b-btn variant="outline-secondary" @click="instructionsPacked+=5">+</b-btn>
+               </b-input-group-append>
+	    </b-input-group>
 	    </b-list-group-item>
 
 	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Notification Time (-/+):</label>
-            <b-form-input v-model="notificationTime" type="range" min="1000" max="3500" step="5"></b-form-input>
+            <label for="range-2">Notification Time:</label>
+	    <b-input-group>
+               <b-input-group-prepend>
+                 <b-btn variant="outline-secondary" @click="notificationTime-=20">-</b-btn>
+               </b-input-group-prepend>
+               <b-form-input v-model="notificationTime" type="range" min="1000" max="3500" step="10"></b-form-input>
+               <b-input-group-append>
+                 <b-btn variant="outline-secondary" @click="notificationTime+=20">+</b-btn>
+               </b-input-group-append>
+	    </b-input-group>
 	    </b-list-group-item>
 
 	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Debug (on/off):</label>
+            <label for="range-2">Debug:</label>
             <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
 	    </b-list-group-item>
+
 	  </b-list-group>
         </b-modal>
 
