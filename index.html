@@ -150,6 +150,30 @@
 
         </header>
 
+        <b-modal id="configuration" title="Configuration" hide-footer>
+          <h6><b>General</b></h6>
+          <hr>
+          <div>
+            <label for="range-2">Notification Time (- ... +):</label>
+            <b-form-input v-model="notificationTime" type="range" min="1000" max="3500" step="5"></b-form-input>
+          </div>
+          <br>
+
+          <h6><b>Execution</b></h6>
+          <hr>
+          <div>
+            <label for="range-2">Execution Speed (- ... +):</label>
+            <b-form-input v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
+          </div>
+
+          <h6><b>Debug</b></h6>
+          <hr>
+          <div>
+            <b-form-checkbox v-model="c_debug" name="check-button" switch> Debug</b-form-checkbox>
+          </div>
+          <br>
+        </b-modal>
+
 
         <!-- Load architecture menu -->
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
@@ -157,13 +181,14 @@
           <!-- Navbar -->
           <div class="contenedor menu row">
             <div class="col-lg-3 col-sm-12 nopadding"></div>
-            <div class="col-lg-4 col-sm-12 nopadding"></div>
-            <div class="col-lg-5 col-sm-12 nopadding">
+            <div class="col-lg-6 col-sm-12 nopadding"></div>
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons"></div>
-                  <div class="col-lg-4 col-sm-4 buttons"></div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_men" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
+                  </div>
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_men" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
                 </div>
@@ -365,16 +390,15 @@
               </div>
             </div>
 
-            <div class="col-lg-5 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 nopadding"></div>
+
+            <div class="col-lg-3 col-sm-12 nopadding">
             	<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                	<div class="col-lg-4 col-sm-4 buttons">
-                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch h-100"><span class="fa fa-gear"></span> Configuration</b-button>-->
-                  </div>
-              		<div class="col-lg-4 col-sm-4 buttons">
-                		<!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
+              		<div class="col-lg-6 col-sm-6 buttons">
+                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_arch" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
               		</div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_arch" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
             		</div>
@@ -762,7 +786,8 @@
                                     <option value="SFP-Reg">SFP-Reg</option>
                                     <option value="DFP-Reg">DFP-Reg</option>
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                    <option value="inm">inm</option>
+                                    <option value="inm-signed">inm-signed</option>
+                                    <option value="inm-unsigned">inm-unsigned</option>
                                     <option value="address">address</option>
                                     <option value="offset_bytes">Offset Bytes</option>
                                     <option value="offset_words">Offset Words</option>
@@ -1011,7 +1036,8 @@
                                       <option value="SFP-Reg">SFP-Reg</option>
                                       <option value="DFP-Reg">DFP-Reg</option>
                                       <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                      <option value="inm">inm</option>
+                                      <option value="inm-signed">inm-signed</option>
+                                      <option value="inm-unsigned">inm-unsigned</option>
                                       <option value="address">address</option>
                                       <option value="offset_bytes">Offset Bytes</option>
                                       <option value="offset_words">Offset Words</option>
@@ -1158,7 +1184,8 @@
                                     <option value="SFP-Reg">SFP-Reg</option>
                                     <option value="DFP-Reg">DFP-Reg</option>
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                    <option value="inm">inm</option>
+                                    <option value="inm-signed">inm-signed</option>
+                                    <option value="inm-unsigned">inm-unsigned</option>
                                     <option value="address">address</option>
                                     <option value="offset_bytes">Offset Bytes</option>
                                     <option value="offset_words">Offset Words</option>
@@ -1370,7 +1397,8 @@
                                       <option value="SFP-Reg">SFP-Reg</option>
                                       <option value="DFP-Reg">DFP-Reg</option>
                                       <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                      <option value="inm">inm</option>
+                                      <option value="inm-signed">inm-signed</option>
+                                      <option value="inm-unsigned">inm-unsigned</option>
                                       <option value="address">address</option>
                                       <option value="offset_bytes">Offset Bytes</option>
                                       <option value="offset_words">Offset Words</option>
@@ -1590,14 +1618,13 @@
               </b-form-input>
             </b-modal>
 
-            <div class="col-lg-1 col-sm-12 nopadding">
-
-            </div>
-
-            <div class="col-lg-2 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-12 col-sm-12 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_ass" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
+                  </div>
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_ass" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
                 </div>
@@ -1671,7 +1698,7 @@
               </div>
             </div>
 
-            <div class="col-lg-5 col-sm-12 nopadding">
+            <div class="col-lg-4 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <!-- Execution actions -->
@@ -1710,15 +1737,25 @@
               </div>
             </div>
 
-            <div class="col-lg-4 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-12 col-sm-12 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_sim" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
                   </div>
 
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;" ><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
 
                   <!-- Information popover -->
@@ -1734,13 +1771,6 @@
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
-		    <br/>
-		    <template>
-		      <div>
-			 <label for="range-2">Execution Speed (- ... +):</label>
-			 <b-form-input id="range-2" v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
-		      </div>
-		    </template>
                   </b-popover>
 
                   <!-- Calculator -->
@@ -1869,8 +1899,8 @@
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
                   <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary">
-                    <b-dropdown-item @click="showIntReg">CPU-INT Registers</b-dropdown-item>
-                    <b-dropdown-item @click="showFpReg">CPU-FP Registers</b-dropdown-item>
+                    <b-dropdown-item @click="change_data_view('registers', 'int')">CPU-INT Registers</b-dropdown-item>
+                    <b-dropdown-item @click="change_data_view('registers', 'fp')">CPU-FP Registers</b-dropdown-item>
                   </b-dropdown>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
