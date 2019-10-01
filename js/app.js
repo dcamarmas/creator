@@ -9428,24 +9428,6 @@ try{
       console.log(m); 
     }
   }
-  function show_loading(){
-    if(toHandler != null){
-      return;
-    }
-    toHandler = setTimeout(function(){
-      $(".loading").show();
-      toHandler = null;
-    }, 500);
-  }
-  function hide_loading(){
-    if(toHandler != null){
-      clearTimeout(toHandler);
-      toHandler = null;
-    }
-    $(".loading").hide();
-  }
-
-
 
   /*Architecture editor*/
 
