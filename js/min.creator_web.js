@@ -19,25 +19,23 @@
  */
 
 
-      function show_notification ( msg, type )
-      {
-          app._data.alertMessage = msg ;
-          app._data.type         = type ;
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+  function show_notification ( msg, type ){
+    app._data.alertMessage = msg ;
+    app._data.type         = type ;
+    app.$bvToast.toast(app._data.alertMessage, {
+      variant: app._data.type,
+      solid: true,
+      toaster: "b-toaster-top-center",
+      autoHideDelay: app._data.notificationTime,
+    });
 
-          var date = new Date();
-          notifications.push({ mess: app._data.alertMessage, 
-                               color: app._data.type, 
-                               time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
-                               date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
-
-	  return true ;
-      }
+    var date = new Date();
+    notifications.push({ mess: app._data.alertMessage, 
+                         color: app._data.type, 
+                         time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
+                         date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
+    return true ;
+  }
 
 /*
  *  Copyright 2018-2019 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
@@ -226,7 +224,7 @@ var stats = [
 
 
 /*General*/
-var c_debug = false;
+var toHandler = null;
 
 
 
@@ -244,7 +242,14 @@ try{
     /*Vue data*/
     data: {
       /*Global*/
+      /*View*/
       creator_mode: "load_architecture",
+      /*Notification speed*/
+      notificationTime: 1500,
+      /*Debug*/
+      c_debug: false,
+
+
 
       /*Architecture editor*/
 
@@ -616,7 +621,7 @@ try{
         }
       },
       change_UI_mode(e){
-        $(".loading").show();
+        show_loading();
         app._data.creator_mode = e;
         if(e == "assembly"){
           setTimeout(function(){
@@ -634,7 +639,7 @@ try{
             textarea_assembly_editor.toTextArea();
           }
         }
-        $(".loading").hide();
+        hide_loading();
         app.$forceUpdate();
       },
 
@@ -720,16 +725,17 @@ try{
         this.reset();
 
         //$("#architecture_menu").hide();
-        app._data.creator_mode = 'simulator';
+        app.change_UI_mode('simulator');
+        app.change_data_view('registers' , 'int');
         app.$forceUpdate();
-        $("#save_btn_arch").show();
+        /*$("#save_btn_arch").show();
         $("#advanced_mode").show();
         $("#assembly_btn_arch").show();
         $("#load_arch_btn_arch").hide();
         $("#sim_btn_arch").show();
         $("#load_arch").hide();
         $("#load_menu_arch").hide();
-        $("#view_components").show();
+        $("#view_components").show();*/
 
         this.$refs.copyRef.hide();
 
@@ -744,7 +750,7 @@ try{
       },
       /*Load the selected architecture*/
       load_arch_select(e){
-        $(".loading").show();
+        show_loading();
 
         for (var i = 0; i < load_architectures.length; i++){
           if(e == load_architectures[i].id){
@@ -765,17 +771,10 @@ try{
             app._data.architecture_name = e;
 
             //$("#architecture_menu").hide();
-            app._data.creator_mode = 'simulator';
+            app.change_UI_mode('simulator');
+            app.change_data_view('registers' , 'int');
             app.$forceUpdate();
-            $("#save_btn_arch").show();
-            $("#advanced_mode").show();
-            $("#assembly_btn_arch").show();
-            $("#load_arch_btn_arch").hide();
-            $("#sim_btn_arch").show();
-            $("#load_arch").hide();
-            $("#load_menu_arch").hide();
-            $("#view_components").show();
-            $(".loading").hide();
+            hide_loading();
 
             show_notification('The selected architecture has been loaded correctly', 'success') ;
             return;
@@ -799,33 +798,26 @@ try{
           app._data.architecture_name = e;
 
           //$("#architecture_menu").hide();
-          app._data.creator_mode = 'simulator';
+          app.change_UI_mode('simulator');
+          app.change_data_view('registers' , 'int');
           app.$forceUpdate();
-          $("#save_btn_arch").show();
-          $("#advanced_mode").show();
-          $("#assembly_btn_arch").show();
-          $("#load_arch_btn_arch").hide();
-          $("#sim_btn_arch").show();
-          $("#load_arch").hide();
-          $("#load_menu_arch").hide();
-          $("#view_components").show();
-          $(".loading").hide();
+          hide_loading();
 
           show_notification('The selected architecture has been loaded correctly', 'success') ;
         })
 
         .fail(function() {
-          $(".loading").hide();
+          hide_loading();
           show_notification('The selected architecture is not currently available', 'info') ;
         });
       },
       /*Read the JSON of new architecture*/
       read_arch(e){
-        $(".loading").show();
+        show_loading();
 
         e.preventDefault();
         if(!this.name_arch || !this.load_arch){
-          $(".loading").hide();
+          hide_loading();
           show_notification('Please complete all fields', 'danger') ;
           return;
         }
@@ -863,23 +855,16 @@ try{
           app._data.description_arch = '';
           app._data.load_arch = '';
 
-          $(".loading").hide();
+          hide_loading();
         }
       },
       /*Create a new architecture*/
       new_arch(){
         //$("#architecture_menu").hide();
-        app._data.creator_mode = 'simulator';
+        app.change_UI_mode('simulator');
+        app.change_data_view('registers' , 'int');
         app.$forceUpdate();
-        $("#save_btn_arch").show();
-        $("#advanced_mode").show();
-        $("#assembly_btn_arch").show();
-        $("#load_arch_btn_arch").hide();
-        $("#sim_btn_arch").show();
-        $("#load_arch").hide();
-        $("#load_menu_arch").hide();
-        $("#view_components").show();
-        $(".loading").hide();
+        hide_loading();
       },
       /*Check if it is a new architecture*/
       default_arch(item){
@@ -970,7 +955,7 @@ try{
       },
       /*Reset memory layout*/
       resetMemory(arch){
-        $(".loading").show();
+        show_loading();
 
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
@@ -980,7 +965,7 @@ try{
             architecture.memory_layout = auxArchitecture.memory_layout;
             app._data.architecture = architecture;
 
-            $(".loading").hide();
+            hide_loading();
             show_notification('The memory layout has been reset correctly', 'success') ;
             
             return;
@@ -994,7 +979,7 @@ try{
           architecture.memory_layout = auxArchitecture2.memory_layout;
           app._data.architecture = architecture;
 
-          $(".loading").hide();
+          hide_loading();
           show_notification('The memory layout has been reset correctly', 'success') ;
         });
       },
@@ -1068,7 +1053,7 @@ try{
       },
       /*Reset components*/
       resetArchitecture(arch){
-        $(".loading").show();
+        show_loading();
 
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
@@ -1084,7 +1069,7 @@ try{
               app._data.architecture_hash = architecture_hash;
             }
 
-            $(".loading").hide();
+            hide_loading();
             show_notification('The registers has been reset correctly', 'success') ;
             
             return;
@@ -1105,7 +1090,7 @@ try{
             app._data.architecture_hash = architecture_hash;
           }
 
-          $(".loading").hide();
+          hide_loading();
           show_notification('The registers has been reset correctly', 'success') ;
         });
       },
@@ -1440,7 +1425,7 @@ try{
       },
       /*Reset instructions*/
       resetInstructions(arch){
-        $(".loading").show();
+        show_loading();
 
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
@@ -1450,7 +1435,7 @@ try{
             architecture.instructions = auxArchitecture.instructions;
             app._data.architecture = architecture;
 
-            $(".loading").hide();
+            hide_loading();
             show_notification('The instruction set has been reset correctly', 'success') ;
             
             return;
@@ -1465,7 +1450,7 @@ try{
 
           app._data.architecture = architecture;
 
-          $(".loading").hide();
+          hide_loading();
           show_notification('The instruction set has been reset correctly', 'success') ;
         });
       },
@@ -1911,7 +1896,7 @@ try{
       },
       /*Reset pseudoinstructions*/
       resetPseudoinstructionsModal(arch){
-        $(".loading").show();
+        show_loading();
 
         for (var i = 0; i < load_architectures.length; i++) {
           if(arch == load_architectures[i].id){
@@ -1921,7 +1906,7 @@ try{
             architecture.pseudoinstructions = auxArchitecture.pseudoinstructions;
             app._data.architecture = architecture;
 
-            $(".loading").hide();
+            hide_loading();
             show_notification('The registers has been reset correctly', 'success') ;
             
             return;
@@ -1936,7 +1921,7 @@ try{
 
           app._data.architecture = architecture;
 
-          $(".loading").hide();
+          hide_loading();
           show_notification('The pseudoinstruction set has been reset correctly', 'success') ;
         });
       },
@@ -2209,7 +2194,7 @@ try{
                       }
                     }
 
-                    if(signatureParts[z] == "inm" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
+                    if(signatureParts[z] == "inm-signed" || signatureParts[z] == "inm-unsigned" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
                       var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                       if(instructionParts[z].match(/^0x/)){
                         var value = instructionParts[z].split("x");
@@ -2244,7 +2229,19 @@ try{
                           return -1;
                         }
 
-                        if((numAux.toString(2)).length > fieldsLength){
+                        /*if((numAux.toString(2)).length > fieldsLength){
+                          show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
+                          return -1;
+                        }*/
+
+                        var comNumPos = Math.pow(2, fieldsLength-1);
+                        var comNumNeg = comNumPos * (-1);
+                        comNumPos = comNumPos -1;
+
+                        console_log(comNumPos);
+                        console_log(comNumNeg);
+
+                        if(parseInt(instructionParts[z], 10) > comNumPos || parseInt(instructionParts[z], 10) < comNumNeg){
                           show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                           return -1;
                         }
@@ -2384,7 +2381,7 @@ try{
                     }
                   }
 
-                  if(signatureParts[z] == "inm" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
+                  if(signatureParts[z] == "inm-signed" || signatureParts[z] == "inm-unsigned" || signatureParts[z] == "offset_bytes" || signatureParts[z] == "offset_words"){
                     var fieldsLength = architecture.instructions[i].fields[z].startbit - architecture.instructions[i].fields[z].stopbit + 1;
                     if(instructionParts[z].match(/^0x/)){
                       var value = instructionParts[z].split("x");
@@ -2419,7 +2416,19 @@ try{
                         return -1;
                       }
 
-                      if((numAux.toString(2)).length > fieldsLength){
+                      /*if((numAux.toString(2)).length > fieldsLength){
+                        show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
+                        return -1;
+                      }*/
+
+                      var comNumPos = Math.pow(2, fieldsLength-1);
+                      var comNumNeg = comNumPos * (-1);
+                      comNumPos = comNumPos -1;
+
+                      console_log(comNumPos);
+                      console_log(comNumNeg);
+
+                      if(parseInt(instructionParts[z], 10) > comNumPos || parseInt(instructionParts[z], 10) < comNumNeg){
                         show_notification("Immediate number " + instructionParts[z] + " is too big", 'danger') ;
                         return -1;
                       }
@@ -2531,7 +2540,7 @@ try{
       },
       /*Reset directives*/
       resetDirectives(arch){
-        $(".loading").show();
+        show_loading();
 
         for (var i = 0; i < load_architectures.length; i++) {
           if(arch == load_architectures[i].id){
@@ -2541,7 +2550,7 @@ try{
             architecture.directives = auxArchitecture.directives;
             app._data.architecture = architecture;
 
-            $(".loading").hide();
+            hide_loading();
             show_notification('The directive set has been reset correctly', 'success') ;
             return;
           }
@@ -2555,7 +2564,7 @@ try{
 
           app._data.architecture = architecture;
 
-          $(".loading").hide();
+          hide_loading();
           show_notification('The directive set has been reset correctly', 'success') ;
         });
       },
@@ -2692,7 +2701,7 @@ try{
       },
       /*Load external assembly code*/
       read_assembly(e){
-        $(".loading").show();
+        show_loading();
         var file;
         var reader;
         var files = document.getElementById('assembly_file').files;
@@ -2707,7 +2716,7 @@ try{
         function onFileLoaded(event) {
           code_assembly = event.currentTarget.result;
         }
-        $(".loading").hide();
+        hide_loading();
       },
       assembly_update(){
         textarea_assembly_editor.setValue(code_assembly);
@@ -2987,7 +2996,10 @@ try{
       },
       /*Compile assembly code*/
       assembly_compiler(){
-        $(".loading").show();
+
+
+
+        show_loading();
         promise = new Promise((resolve, reject) => {
           setTimeout(function(){
             instructions = [];
@@ -3075,7 +3087,7 @@ try{
             app.first_token();
 
             if(app.get_token() == null){
-              $(".loading").hide();
+              hide_loading();
               show_notification('Please enter the assembly code before compiling', 'danger') ;
               return -1;
             }
@@ -3119,7 +3131,7 @@ try{
                         app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
                         app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
                         app._data.instructions = instructions;
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       break;
@@ -3145,7 +3157,7 @@ try{
                         app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
                         app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
                         app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       break;
@@ -3187,7 +3199,7 @@ try{
                 else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
                   empty = true;
                   app.compileError(15, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                  $(".loading").hide();
+                  hide_loading();
                   tokenIndex = 0;
                   return -1;
                 } 
@@ -3216,7 +3228,7 @@ try{
               var instructionParts = (pending_instructions[i].instruction).split(' ');
               console_log(instructionParts);
               for (var j = 0; j < signatureParts.length && exit == 0; j++){
-                if(signatureParts[j] == "inm" || signatureParts[j] == "address"){
+                if(signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address"){
                   for (var z = 0; z < instructions.length && exit == 0; z++){
                     if(instructions[z].Label == instructionParts[j]){
                       var addr = instructions[z].Address;
@@ -3312,7 +3324,7 @@ try{
                     app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
                     app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
                     app._data.instructions = instructions;
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
                 }
@@ -3381,7 +3393,7 @@ try{
                     app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
                     app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
                     app._data.instructions = instructions;
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
                 }
@@ -3445,7 +3457,7 @@ try{
                     app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
                     app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
                     app._data.instructions = instructions;
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
                 }
@@ -3595,7 +3607,7 @@ try{
                 app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
                 show_notification('Data overflow', 'danger') ;
-                $(".loading").hide();
+                hide_loading();
                 return -1;
               }
             }
@@ -3619,7 +3631,7 @@ try{
                 app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
 
                 show_notification('Instruction overflow', 'danger') ;
-                $(".loading").hide();
+                hide_loading();
                 return -1;
               }
             }
@@ -3688,7 +3700,7 @@ try{
             data_address = architecture.memory_layout[2].value;
             stack_address = architecture.memory_layout[4].value;
 
-            $(".loading").hide();
+            hide_loading();
 
             resolve("0");
 
@@ -3718,7 +3730,7 @@ try{
           if(token.search(/\:$/) != -1){
             if(token.length == 1){
               this.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              $(".loading").hide();
+              hide_loading();
               return -1;
             }
 
@@ -3727,7 +3739,7 @@ try{
               console_log(token.substring(0,token.length-1))
               if(data_tag[i].tag == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                $(".loading").hide();
+                hide_loading();
                 return -1;
               }
             }
@@ -3735,7 +3747,7 @@ try{
             for(var i = 0; i < instructions.length; i++){
               if(instructions[i].Label == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                $(".loading").hide();
+                hide_loading();
                 return -1;
               } 
             }
@@ -3758,14 +3770,14 @@ try{
 
                     if(token == null){
                       this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -3806,20 +3818,20 @@ try{
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -3828,14 +3840,14 @@ try{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -3879,14 +3891,14 @@ try{
 
                     if(token == null){
                       this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -3904,7 +3916,7 @@ try{
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
@@ -3912,12 +3924,12 @@ try{
 
                       if(value[1].length == 0){
                         this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -3926,14 +3938,14 @@ try{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -3977,14 +3989,14 @@ try{
 
                     if(token == null){
                       this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4001,19 +4013,19 @@ try{
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4022,14 +4034,14 @@ try{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4074,14 +4086,14 @@ try{
 
                     if(token == null){
                       this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4098,19 +4110,19 @@ try{
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4119,14 +4131,14 @@ try{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4169,14 +4181,14 @@ try{
 
                     if(token == null){
                       this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4193,19 +4205,19 @@ try{
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4214,14 +4226,14 @@ try{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxToken = parseFloat(token, 10);
                       auxTokenString = (this.bin2hex(this.float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4266,14 +4278,14 @@ try{
 
                     if(token == null){
                       this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4290,19 +4302,19 @@ try{
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         this.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4311,14 +4323,14 @@ try{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
                         this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxToken = parseFloat(token, 10);console_log(auxTokenString);
                       auxTokenString = (this.bin2hex(this.double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         this.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -4381,7 +4393,7 @@ try{
                     /*re = new RegExp('(.)","(.)');
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4394,7 +4406,7 @@ try{
                     console_log(re);
                     if(token.search(re) == -1){
                       this.compileError(17, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4425,7 +4437,7 @@ try{
                       console_log(re);
                       if(token.search(re) != -1){
                         this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
@@ -4571,7 +4583,7 @@ try{
                     /*re = new RegExp('(.)","(.)');
                     if(token.search(re) != -1){
                       this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4582,7 +4594,7 @@ try{
                     console_log(re)
                     if(token.search(re) == -1){
                       this.compileError(17, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      $(".loading").hide();
+                      hide_loading();
                       return -1;
                     }
 
@@ -4612,7 +4624,7 @@ try{
                       console_log(re);
                       if(token.search(re) != -1){
                         this.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        $(".loading").hide();
+                        hide_loading();
                         return -1;
                       }
 
@@ -4751,20 +4763,20 @@ try{
 
                   if(token == null){
                     this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
                     this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
 
                   if(parseInt(token) < 0){
                     this.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
 
@@ -4844,20 +4856,20 @@ try{
 
                   if(token == null){
                     this.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
                     this.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
 
                   if(parseInt(token) < 0){
                     this.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
 
@@ -4910,7 +4922,7 @@ try{
 
           if(data_address % size != 0 && i == 0){
             this.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-            $(".loading").hide();
+            hide_loading();
             return -1;
           }
 
@@ -5006,7 +5018,7 @@ try{
           if(token.search(/\:$/) != -1){
             if(token.length == 1){
               this.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              $(".loading").hide();
+              hide_loading();
               return -1;
             }
 
@@ -5014,7 +5026,7 @@ try{
               for(var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++){
                 if(memory[memory_hash[0]][i].Binary[j].Tag == token.substring(0,token.length-1)){
                   this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                  $(".loading").hide();
+                  hide_loading();
                   return -1;
                 }
               }
@@ -5023,7 +5035,7 @@ try{
             for(var i = 0; i < instructions.length; i++){
               if(instructions[i].Label == token.substring(0,token.length-1)){
                 this.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                $(".loading").hide();
+                hide_loading();
                 return -1;
               } 
             }
@@ -5115,7 +5127,7 @@ try{
               var result = this.instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0, instInit, i, false);
 
               if(result == -1){
-                $(".loading").hide();
+                hide_loading();
                 return -1;
               }
 
@@ -5184,7 +5196,7 @@ try{
                     memory[memory_hash[1]] = memory[memory_hash[1]];
                     memory[memory_hash[2]] = memory[memory_hash[2]];
                     app._data.instructions = instructions;
-                    $(".loading").hide();
+                    hide_loading();
                     return -1;
                   }
                 }          
@@ -5209,7 +5221,7 @@ try{
               memory[memory_hash[1]] = memory[memory_hash[1]];
               memory[memory_hash[2]] = memory[memory_hash[2]];
               app._data.instructions = instructions;
-              $(".loading").hide();
+              hide_loading();
               return -1;
             }
 
@@ -5232,7 +5244,7 @@ try{
               memory[memory_hash[1]] = memory[memory_hash[1]];
               memory[memory_hash[2]] = memory[memory_hash[2]];
               app._data.instructions = instructions;
-              $(".loading").hide();
+              hide_loading();
               return -1;
             }
 
@@ -5254,7 +5266,7 @@ try{
               memory[memory_hash[1]] = memory[memory_hash[1]];
               memory[memory_hash[2]] = memory[memory_hash[2]];
               app._data.instructions = instructions;
-              $(".loading").hide();
+              hide_loading();
               return -1;
             }
 
@@ -6045,7 +6057,7 @@ try{
 
                   break;
 
-                case "inm":
+                case "inm-signed":
                   token = instructionParts[j];
                   var token_user = "";
 
@@ -6126,9 +6138,36 @@ try{
                         stopBit = architecture.instructions[i].fields[a].stopbit;
                       }
                       else {
-                        var numAux = parseInt(token, 10) >>> 0;
+
+                        var comNumPos = Math.pow(2, fieldsLength-1);
+                        var comNumNeg = comNumPos * (-1);
+                        comNumPos = comNumPos -1;
+
+                        console_log(comNumPos);
+                        console_log(comNumNeg);
+
+                        /*var numAux = parseInt(token, 10) >>> 0;
 
                         if((numAux.toString(2)).length > fieldsLength){
+                          console_log(oriInstruction)
+                          console_log(label)
+                          console_log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console_log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }*/
+
+                        if(parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg){
                           console_log(oriInstruction)
                           console_log(label)
                           console_log(line)
@@ -6153,6 +6192,138 @@ try{
                         }
 
                         inm = (parseInt(token, 10) >>> 0).toString(2);
+                        inm = inm.substring(inm.length - fieldsLength ,inm.length);
+                      }
+                      if(validTagPC == true){
+                        console_log(inm.length);
+                        if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
+                          this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      }
+                      
+                      //re = RegExp("[fF][0-9]+");
+                      re = RegExp("Field[0-9]+");
+                      instruction = instruction.replace(re, token);
+                    }
+                  }
+
+                  break;
+
+                case "inm-unsigned":
+                  token = instructionParts[j];
+                  var token_user = "";
+
+                  console_log(token);
+
+                  for(var a = 0; a < architecture.instructions[i].fields.length; a++){
+                    if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                  
+                      var inm;
+
+                      if(token.match(/^0x/)){
+                        var value = token.split("x");
+                        if(value[1].length*4 > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console_log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                        }
+
+                        if(isNaN(parseInt(token, 16)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 16)).toString(2);
+                      }
+                      else if (token.match(/^(\d)+\.(\d)+/)){
+                        if(this.float2bin(parseFloat(token)).length > fieldsLength){
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console_log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseFloat(token)) == true){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = this.float2bin(parseFloat(token, 16));
+                      }
+                      else if(token.match(/^\'(.*?)\'$/)){
+                        var re = /^\'(.*?)\'$/;
+                        console_log(re);
+                        var match = re.exec(token);
+                        console_log(match);
+                        var asciiCode = match[1].charCodeAt(0);
+                        console_log(asciiCode);
+
+                        re = RegExp("Field[0-9]+");
+                        instruction = instruction.replace(re, asciiCode);
+
+                        inm = (asciiCode >>> 0).toString(2);
+                      }
+                      else if(isNaN(parseInt(token))){
+                        validTagPC = false;
+                        startBit = architecture.instructions[i].fields[a].startbit;
+                        stopBit = architecture.instructions[i].fields[a].stopbit;
+                      }
+                      else {
+
+                        var comNumPos = Math.pow(2, fieldsLength);
+
+                        console_log(comNumPos);
+
+                        if(parseInt(token, 10) > comNumPos){
+                          console_log(oriInstruction)
+                          console_log(label)
+                          console_log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console_log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseInt(token)) == true && resultPseudo == -3){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
+                        inm = (parseInt(token, 10) >>> 0).toString(2);
+                        inm = inm.substring(inm.length - fieldsLength ,inm.length);
                       }
                       if(validTagPC == true){
                         console_log(inm.length);
@@ -6278,7 +6449,20 @@ try{
                         stopBit = architecture.instructions[i].fields[a].stopbit;
                       }
                       else {
-                        var numAux = parseInt(token, 10) >>> 0;
+
+                        var comNumPos = Math.pow(2, fieldsLength-1);
+                        var comNumNeg = comNumPos * (-1);
+                        comNumPos = comNumPos -1;
+
+                        console_log(comNumPos);
+                        console_log(comNumNeg);
+
+
+
+
+
+
+                        /*var numAux = parseInt(token, 10) >>> 0;
 
                         if((numAux.toString(2)).length > fieldsLength){
                           console_log(oriInstruction)
@@ -6304,7 +6488,34 @@ try{
                           return -1;
                         }
 
+                        inm = (parseInt(token, 10) >>> 0).toString(2);*/
+
+                        if(parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg){
+                          console_log(oriInstruction)
+                          console_log(label)
+                          console_log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console_log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }
+
+                        if(isNaN(parseInt(token)) == true && resultPseudo == -3){
+                          this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                          return -1;
+                        }
+
                         inm = (parseInt(token, 10) >>> 0).toString(2);
+                        inm = inm.substring(inm.length - fieldsLength ,inm.length);
                       }
                       if(validTagPC == true){
                         if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
@@ -6392,10 +6603,38 @@ try{
                         startBit = architecture.instructions[i].fields[a].startbit;
                         stopBit = architecture.instructions[i].fields[a].stopbit;
                       }
-                      else {
-                        var numAux = parseInt(token, 10) >>> 0;
+                      else{
+
+                        var comNumPos = Math.pow(2, fieldsLength-1);
+                        var comNumNeg = comNumPos * (-1);
+                        comNumPos = comNumPos -1;
+
+                        console_log(comNumPos);
+                        console_log(comNumNeg);
+
+
+                        /*var numAux = parseInt(token, 10) >>> 0;
 
                         if((numAux.toString(2)).length > fieldsLength){
+                          console_log(oriInstruction)
+                          console_log(label)
+                          console_log(line)
+                          resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
+
+                          console_log(resultPseudo);
+
+                          if(resultPseudo == -1){
+                            this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+
+                          if(resultPseudo == -2){
+                            this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
+                            return -1;
+                          }
+                        }*/
+
+                        if(parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg){
                           console_log(oriInstruction)
                           console_log(label)
                           console_log(line)
@@ -6420,6 +6659,8 @@ try{
                         }
 
                         inm = (parseInt(token, 10) >>> 0).toString(2);
+                        inm = inm.substring(inm.length - fieldsLength ,inm.length);
+
                       }
                       if(validTagPC == true){
                         if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
@@ -7022,6 +7263,7 @@ try{
           if (typeof instructions[executionIndex].preload === "undefined"){
 
             if(binary == false){
+              console.log("no binary");
               re = new RegExp(signatureDef+"$");
               var match = re.exec(instructionExec);
               instructionExecParts = [];
@@ -7199,10 +7441,19 @@ try{
                     }
                   }
                 }
-                if(architecture.instructions[auxIndex].fields[j].type == "inm"){
+                if(architecture.instructions[auxIndex].fields[j].type == "inm-signed"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                  var valueSign = value.charAt(0);
+                  var newValue =  value.padStart(32, valueSign) ;
+                  newValue = parseInt(newValue, 2) ;
                   var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-                  auxDef = auxDef.replace(re, parseInt(value, 2));
+                  auxDef = auxDef.replace(re, newValue >> 0);
+                }
+                if(architecture.instructions[auxIndex].fields[j].type == "inm-unsigned"){
+                  var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                  newValue = parseInt(newValue, 2) ;
+                  var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                  auxDef = auxDef.replace(re, newValue >> 0);
                 }
                 if(architecture.instructions[auxIndex].fields[j].type == "address"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
@@ -7211,13 +7462,21 @@ try{
                 }
                 if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                  var valueSign = value.charAt(0);
+                  var newValue =  value.padStart(32, valueSign) ;
+                  newValue = parseInt(newValue, 2) ;
+//danger
                   var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-                  auxDef = auxDef.replace(re, parseInt(value, 2));
+                  auxDef = auxDef.replace(re, newValue >> 0);
                 }
                 if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                  var valueSign = value.charAt(0);
+                  var newValue =  value.padStart(32, valueSign) ;
+                  newValue = parseInt(newValue, 2) ;
+//danger
                   var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-                  auxDef = auxDef.replace(re, parseInt(value, 2));
+                  auxDef = auxDef.replace(re, newValue >> 0);
                 }
               }
             }
@@ -8783,7 +9042,7 @@ try{
 
       /*Reset execution*/
       reset(){
-        $(".loading").show();
+        show_loading();
         setTimeout(function(){
           app._data.resetBut = true;
           for (var i = 0; i < instructions.length; i++) {
@@ -8871,7 +9130,7 @@ try{
             }
           }
 
-          $(".loading").hide();
+          hide_loading();
         }, 25);
       },
       /*Enter a breakpoint*/
@@ -9089,24 +9348,49 @@ try{
         this.$root.$emit('bv::hide::popover')
       },
       /*Show integer registers*/
-      showIntReg(){
+      /*showIntReg(){
         app._data.register_type = 'integer';
         app._data.nameTabReg = "Decimal";
         app._data.nameReg = 'INT Registers';
-        app._data.data_mode = 'registers';
-      },
+        app._data.data_mode = "registers";
+        app.$forceUpdate();
+      },*/
       /*Show floating point registers*/
-      showFpReg(){
+      /*showFpReg(){
         app._data.register_type = 'floating point';
         app._data.nameTabReg = "Real";
         app._data.nameReg = 'FP Registers';
-        app._data.data_mode = 'registers';
-      },
-      change_data_view(e){
+        app._data.data_mode = "registers";
+        app.$forceUpdate();
+      },*/
+      change_data_view(e, type){
         app._data.data_mode = e;
+
+        if(e == "registers"){
+          if(type == "int"){
+            app._data.register_type = 'integer';
+            app._data.nameTabReg = "Decimal";
+            app._data.nameReg = 'INT Registers';
+          }
+          else if(type == "fp"){
+            app._data.register_type = 'floating point';
+            app._data.nameTabReg = "Real";
+            app._data.nameReg = 'FP Registers';
+          }
+        }
+        if(e == "memory"){
+          app._data.data_mode = "stats";
+          setTimeout(function(){
+            app.$forceUpdate();
+            app._data.data_mode = e;
+          }, 10);
+        }
+
+        app.$forceUpdate();
       },
       change_popover_register(e){
         app._data.register_popover = e;
+        app.$forceUpdate();
       },
       /*Stop user interface refresh*/
       debounce: _.debounce(function (param, e) {
@@ -9177,11 +9461,27 @@ try{
   function destroyClickedElement(event) {
     document.body.removeChild(event.target);
   }
-  /*Console.log*/
+  /*console.log*/
   function console_log(m){
-    if(c_debug){
+    if(app._data.c_debug){
       console.log(m); 
     }
+  }
+  function show_loading(){
+    if(toHandler != null){
+      return;
+    }
+    toHandler = setTimeout(function(){
+      $(".loading").show();
+      toHandler = null;
+    }, 500);
+  }
+  function hide_loading(){
+    if(toHandler != null){
+      clearTimeout(toHandler);
+      toHandler = null;
+    }
+    $(".loading").hide();
   }
 
 
