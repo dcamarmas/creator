@@ -150,28 +150,24 @@
 
         </header>
 
+
         <b-modal id="configuration" title="Configuration" hide-footer>
-          <h6><b>General</b></h6>
-          <hr>
-          <div>
-            <label for="range-2">Notification Time (- ... +):</label>
-            <b-form-input v-model="notificationTime" type="range" min="1000" max="3500" step="5"></b-form-input>
-          </div>
-          <br>
-
-          <h6><b>Execution</b></h6>
-          <hr>
-          <div>
-            <label for="range-2">Execution Speed (- ... +):</label>
+	  <b-list-group>
+	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Execution Speed (-/+):</label>
             <b-form-input v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
-          </div>
+	    </b-list-group-item>
 
-          <h6><b>Debug</b></h6>
-          <hr>
-          <div>
-            <b-form-checkbox v-model="c_debug" name="check-button" switch> Debug</b-form-checkbox>
-          </div>
-          <br>
+	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Notification Time (-/+):</label>
+            <b-form-input v-model="notificationTime" type="range" min="1000" max="3500" step="5"></b-form-input>
+	    </b-list-group-item>
+
+	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Debug (on/off):</label>
+            <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
+	    </b-list-group-item>
+	  </b-list-group>
         </b-modal>
 
 
@@ -1926,9 +1922,9 @@
                       <!-- Control and integer registers -->
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
-                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
-                           <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
+                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
 
                         <!-- Register popover -->
@@ -1985,7 +1981,7 @@
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
-                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
+                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2036,7 +2032,7 @@
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
-                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
+                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2096,7 +2092,7 @@
                 			<!-- Control and integer registers -->
   	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
@@ -2154,7 +2150,7 @@
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
+  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2205,7 +2201,7 @@
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
+  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
