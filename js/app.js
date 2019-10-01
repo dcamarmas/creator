@@ -582,26 +582,31 @@ try{
         }
       },
       change_UI_mode(e){
-        show_loading();
-        app._data.creator_mode = e;
-        if(e == "assembly"){
-          setTimeout(function(){
-            codemirrorStart();
-            if(app._data.update_binary != ""){
-              $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-              $("#divTags").attr("class", "col-lg-2 col-sm-12");
-              $("#divTags").show();
-            }
-          },50);
-        }
-        else{
-          if(textarea_assembly_editor != null){
-            app._data.assembly_code = textarea_assembly_editor.getValue();
-            textarea_assembly_editor.toTextArea();
-          }
-        }
-        hide_loading();
-        app.$forceUpdate();
+	$(".loading").show();
+
+        setTimeout(function(){
+		app._data.creator_mode = e;
+
+		if(e == "assembly"){
+		  setTimeout(function(){
+		    codemirrorStart();
+		    if(app._data.update_binary != ""){
+		      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+		      $("#divTags").attr("class", "col-lg-2 col-sm-12");
+		      $("#divTags").show();
+		    }
+		  },50);
+		}
+		else{
+		  if(textarea_assembly_editor != null){
+		    app._data.assembly_code = textarea_assembly_editor.getValue();
+		    textarea_assembly_editor.toTextArea();
+		  }
+		}
+
+		app.$forceUpdate();
+	        $(".loading").hide();
+        }, 50) ;
       },
 
 
