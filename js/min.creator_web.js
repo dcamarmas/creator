@@ -647,32 +647,40 @@ try{
         }
       },
       change_UI_mode(e){
-	$(".loading").show();
-        setTimeout(function(){
-		app._data.creator_mode = e;
+	// slow transition <any> => "architecture"
+	if (e == "architecture") 
+	{
+	    $(".loading").show();
+            setTimeout(function(){
+		          app._data.creator_mode = e;
+			  app.$forceUpdate();
+	                  $(".loading").hide();
+		       }, 50) ;
+	    return ;
+	}
 
-		if(e == "assembly"){
-		  setTimeout(function(){
-		    codemirrorStart();
-		    if(app._data.update_binary != ""){
-		      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-		      $("#divTags").attr("class", "col-lg-2 col-sm-12");
-		      $("#divTags").show();
-		    }
-		  },50);
-		}
-		else{
-		  if(textarea_assembly_editor != null){
-		    app._data.assembly_code = textarea_assembly_editor.getValue();
-		    textarea_assembly_editor.toTextArea();
-		  }
-		}
+	// fast transition <any> => <any> - "architecture"
+	app._data.creator_mode = e;
 
-		app.$forceUpdate();
-	        $(".loading").hide();
-        }, 50) ;
+	if(e == "assembly"){
+	  setTimeout(function(){
+	    codemirrorStart();
+	    if(app._data.update_binary != ""){
+	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+	      $("#divTags").attr("class", "col-lg-2 col-sm-12");
+	      $("#divTags").show();
+	    }
+	  },50);
+	}
+	else{
+	  if(textarea_assembly_editor != null){
+	    app._data.assembly_code = textarea_assembly_editor.getValue();
+	    textarea_assembly_editor.toTextArea();
+	  }
+	}
+
+	app.$forceUpdate();
       },
-
 
 
       /*Architecture editor*/
