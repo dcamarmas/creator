@@ -19,23 +19,47 @@
  */
 
 
-      function show_notification ( msg, type )
-      {
-          app._data.alertMessage = msg ;
-          app._data.type         = type ;
-          app.$bvToast.toast(app._data.alertMessage, {
-            variant: app._data.type,
-            solid: true,
-            toaster: "b-toaster-top-center",
-            autoHideDelay: 1500,
-          });
+  function show_notification ( msg, type ){
+    // show notification
+    app._data.alertMessage = msg ;
+    app._data.type         = type ;
+    app.$bvToast.toast(app._data.alertMessage, {
+      variant: app._data.type,
+      solid: true,
+      toaster: "b-toaster-top-center",
+      autoHideDelay: app._data.notificationTime,
+    });
 
-          var date = new Date();
-          notifications.push({ mess: app._data.alertMessage, 
-                               color: app._data.type, 
-                               time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
-                               date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
+    // add notification to the notification summary
+    var date = new Date();
+    notifications.push({ mess: app._data.alertMessage, 
+                         color: app._data.type, 
+                         time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
+                         date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
+    return true ;
+  }
 
-	  return true ;
-      }
+  function show_loading(){
+    // if loading is programmed, skip
+    if(toHandler != null){
+      return;
+    }
+
+    // after half second show the loading spinner 
+    toHandler = setTimeout(function(){
+      $(".loading").show();
+      toHandler = null;
+    }, 500);
+  }
+
+  function hide_loading(){
+    // if loading is programmed, cancel it
+    if(toHandler != null){
+      clearTimeout(toHandler);
+      toHandler = null;
+    }
+
+    // disable loading spinner
+    $(".loading").hide();
+  }
 
