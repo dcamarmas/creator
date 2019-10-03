@@ -435,8 +435,8 @@
         {
           "name": "ra",
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": "0xFFFFFFFF",
+          "default_value": "0xFFFFFFFF",
           "properties": [
             "read",
             "write"
