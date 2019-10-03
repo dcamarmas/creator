@@ -57,9 +57,9 @@
 
   <!-- Body -->
   <body>
+
     <div id="app">
       <template>
-
 
 
         <!-- Loading spinner-->
@@ -72,7 +72,6 @@
             <span class="text-primary"><strong>Loading...</strong></span>
           </div>
         </div>
-
 
 
         <!-- Navbar  -->
@@ -151,19 +150,58 @@
         </header>
 
 
+        <b-modal id="configuration" title="Configuration" hide-footer>
+	  <b-list-group>
+
+	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Execution Speed:</label>
+	    <b-input-group>
+               <b-input-group-prepend>
+                 <b-btn variant="outline-secondary" @click="instructionsPacked-=5">-</b-btn>
+               </b-input-group-prepend>
+               <b-form-input v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
+               <b-input-group-append>
+                 <b-btn variant="outline-secondary" @click="instructionsPacked+=5">+</b-btn>
+               </b-input-group-append>
+	    </b-input-group>
+	    </b-list-group-item>
+
+	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Notification Time:</label>
+	    <b-input-group>
+               <b-input-group-prepend>
+                 <b-btn variant="outline-secondary" @click="notificationTime-=20">-</b-btn>
+               </b-input-group-prepend>
+               <b-form-input v-model="notificationTime" type="range" min="1000" max="3500" step="10"></b-form-input>
+               <b-input-group-append>
+                 <b-btn variant="outline-secondary" @click="notificationTime+=20">+</b-btn>
+               </b-input-group-append>
+	    </b-input-group>
+	    </b-list-group-item>
+
+	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Debug:</label>
+            <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
+	    </b-list-group-item>
+
+	  </b-list-group>
+        </b-modal>
+
+
         <!-- Load architecture menu -->
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
           
           <!-- Navbar -->
           <div class="contenedor menu row">
             <div class="col-lg-3 col-sm-12 nopadding"></div>
-            <div class="col-lg-4 col-sm-12 nopadding"></div>
-            <div class="col-lg-5 col-sm-12 nopadding">
+            <div class="col-lg-6 col-sm-12 nopadding"></div>
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons"></div>
-                  <div class="col-lg-4 col-sm-4 buttons"></div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_men" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
+                  </div>
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_men" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
                 </div>
@@ -223,9 +261,6 @@
 
 
 
-
-
-
                     <!-- Browser not supported modal -->
                     <b-modal id ="modalNavigator" title="Browser not supported" ref="navigator" hide-footer>
                       <h6>You are using an unsupported browser, please use one of the following:</h6>
@@ -251,10 +286,6 @@
                         </b-list-group-item>
                       </b-list-group>
                     </b-modal >
-
-
-
-
 
 
 
@@ -365,16 +396,15 @@
               </div>
             </div>
 
-            <div class="col-lg-5 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 nopadding"></div>
+
+            <div class="col-lg-3 col-sm-12 nopadding">
             	<div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                	<div class="col-lg-4 col-sm-4 buttons">
-                    <!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" id="conf_btn_arch h-100"><span class="fa fa-gear"></span> Configuration</b-button>-->
-                  </div>
-              		<div class="col-lg-4 col-sm-4 buttons">
-                		<!--<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="help_arch" style="background-color:#D4DB17;"><span class="fa fa-question-circle"></span> Help</b-button>-->
+              		<div class="col-lg-6 col-sm-6 buttons">
+                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_arch" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
               		</div>
-                  <div class="col-lg-4 col-sm-4 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_arch" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
             		</div>
@@ -762,7 +792,8 @@
                                     <option value="SFP-Reg">SFP-Reg</option>
                                     <option value="DFP-Reg">DFP-Reg</option>
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                    <option value="inm">inm</option>
+                                    <option value="inm-signed">inm-signed</option>
+                                    <option value="inm-unsigned">inm-unsigned</option>
                                     <option value="address">address</option>
                                     <option value="offset_bytes">Offset Bytes</option>
                                     <option value="offset_words">Offset Words</option>
@@ -1011,7 +1042,8 @@
                                       <option value="SFP-Reg">SFP-Reg</option>
                                       <option value="DFP-Reg">DFP-Reg</option>
                                       <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                      <option value="inm">inm</option>
+                                      <option value="inm-signed">inm-signed</option>
+                                      <option value="inm-unsigned">inm-unsigned</option>
                                       <option value="address">address</option>
                                       <option value="offset_bytes">Offset Bytes</option>
                                       <option value="offset_words">Offset Words</option>
@@ -1158,7 +1190,8 @@
                                     <option value="SFP-Reg">SFP-Reg</option>
                                     <option value="DFP-Reg">DFP-Reg</option>
                                     <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                    <option value="inm">inm</option>
+                                    <option value="inm-signed">inm-signed</option>
+                                    <option value="inm-unsigned">inm-unsigned</option>
                                     <option value="address">address</option>
                                     <option value="offset_bytes">Offset Bytes</option>
                                     <option value="offset_words">Offset Words</option>
@@ -1370,7 +1403,8 @@
                                       <option value="SFP-Reg">SFP-Reg</option>
                                       <option value="DFP-Reg">DFP-Reg</option>
                                       <option value="Ctrl-Reg">Ctrl-Reg</option>
-                                      <option value="inm">inm</option>
+                                      <option value="inm-signed">inm-signed</option>
+                                      <option value="inm-unsigned">inm-unsigned</option>
                                       <option value="address">address</option>
                                       <option value="offset_bytes">Offset Bytes</option>
                                       <option value="offset_words">Offset Words</option>
@@ -1590,14 +1624,13 @@
               </b-form-input>
             </b-modal>
 
-            <div class="col-lg-1 col-sm-12 nopadding">
-
-            </div>
-
-            <div class="col-lg-2 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-12 col-sm-12 buttons">
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_ass" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
+                  </div>
+                  <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_ass" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
                 </div>
@@ -1671,7 +1704,7 @@
               </div>
             </div>
 
-            <div class="col-lg-5 col-sm-12 nopadding">
+            <div class="col-lg-4 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <!-- Execution actions -->
@@ -1710,15 +1743,25 @@
               </div>
             </div>
 
-            <div class="col-lg-4 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 nopadding">
+              <div class="col-lg-12 col-sm-12">
+                <div class="col-lg-12 col-sm-12 buttons row">
+                  <div class="col-lg-12 col-sm-12 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_sim" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
                   </div>
 
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;"><span class="fas fa-info-circle"></span> Info</b-button>
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;" ><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
 
                   <!-- Information popover -->
@@ -1734,13 +1777,6 @@
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
-		    <br/>
-		    <template>
-		      <div>
-			 <label for="range-2">Execution Speed (- ... +):</label>
-			 <b-form-input id="range-2" v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
-		      </div>
-		    </template>
                   </b-popover>
 
                   <!-- Calculator -->
@@ -1869,8 +1905,8 @@
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
                   <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary">
-                    <b-dropdown-item @click="showIntReg">CPU-INT Registers</b-dropdown-item>
-                    <b-dropdown-item @click="showFpReg">CPU-FP Registers</b-dropdown-item>
+                    <b-dropdown-item @click="change_data_view('registers', 'int')">CPU-INT Registers</b-dropdown-item>
+                    <b-dropdown-item @click="change_data_view('registers', 'fp')">CPU-FP Registers</b-dropdown-item>
                   </b-dropdown>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
@@ -1896,9 +1932,9 @@
                       <!-- Control and integer registers -->
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
-                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
-                           <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
+                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
 
                         <!-- Register popover -->
@@ -1955,7 +1991,7 @@
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
-                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
+                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2006,7 +2042,7 @@
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
-                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{item2.value}}</b-badge>
+                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2066,7 +2102,7 @@
                 			<!-- Control and integer registers -->
   	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
@@ -2124,7 +2160,7 @@
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
+  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2175,7 +2211,7 @@
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family: monospace;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
+  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
