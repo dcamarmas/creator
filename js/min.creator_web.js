@@ -5590,8 +5590,6 @@ try{
                 }
               }
 
-              console_log(definition);
-
               try{
                 var error = false;
                 console_log(definition);
@@ -5600,12 +5598,11 @@ try{
                   console_log("Error pseudo");
                   return -2;
                 }
-                console_log("fin pseudo");
+                console_log("Fin pseudo");
                 return 0;
               }
               catch(e){
                 if (e instanceof SyntaxError) {
-                  console_log("ASDFGHJ")
                   return -2;
                 }
               }
@@ -6210,8 +6207,6 @@ try{
                           console_log(label)
                           console_log(line)
                           resultPseudo = this.pseudoinstruction_compiler(oriInstruction, label, line);
-
-                          console_log(resultPseudo);
 
                           if(resultPseudo == -1){
                             this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
@@ -7301,7 +7296,6 @@ try{
           if (typeof instructions[executionIndex].preload === "undefined"){
 
             if(binary == false){
-              console.log("no binary");
               re = new RegExp(signatureDef+"$");
               var match = re.exec(instructionExec);
               instructionExecParts = [];
