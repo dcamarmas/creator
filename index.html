@@ -181,7 +181,7 @@
 
 	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
             <label for="range-2">Debug:</label>
-            <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
+            <b-form-checkbox v-model="c_debug" @input="toggle_debug" name="check-button" switch size="lg"></b-form-checkbox>
 	    </b-list-group-item>
 
 	  </b-list-group>

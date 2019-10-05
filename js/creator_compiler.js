@@ -261,11 +261,11 @@ var stats = [
 	// Console.log
 	//
 
-	  var debug = false ;
+	  var creator_debug = false ;
 
 	  function console_log ( msg )
 	  {
-		if (debug) {
+		if (creator_debug) {
 		    console.log(msg) ;
 		}
 	  }
