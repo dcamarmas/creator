@@ -100,7 +100,7 @@ var pending_tags = [];
 var extern = [];
 /*Error code messages*/
 var compileError = [
-  { mess1: "Empty label", mess2: "" },
+  { mess1: "Empty label ", mess2: "" },
   { mess1: "Repeated tag: ", mess2: "" },
   { mess1: "Instruction '", mess2: "' not found" },
   { mess1: "Incorrect sintax --> ", mess2: "" },
@@ -123,9 +123,9 @@ var compileError = [
   { mess1: "The text segment should start with '", mess2: "'" },
   { mess1: "The data must be aligned", mess2: "" },
   { mess1: "The number should be positive '", mess2: "'" },
-  { mess1: "Empty directive", mess2: "" },
+  { mess1: "Empty directive ", mess2: "" },
   { mess1: "After the comma you should go a blank --> ", mess2: "" },
-  { mess1: "Incorrect sintax", mess2: "" },
+  { mess1: "Incorrect sintax ", mess2: "" },
   { mess1: "Syntax error near line: ", mess2: "" },
 ];
 /*Promise*/
@@ -185,6 +185,57 @@ var stats = [
 	// Load architecture
 	//
 
+	  /*String to Bigint number*/
+	  function bigInt_deserialize(object)
+	  {
+	       var auxObject = object;
+	   
+	       for (var i = 0; i < auxObject.components.length; i++){
+		 if(auxObject.components[i].type != "floating point"){
+		   for (var j = 0; j < auxObject.components[i].elements.length; j++){
+		     var aux = auxObject.components[i].elements[j].value;
+		     var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
+		     auxObject.components[i].elements[j].value = auxBigInt;
+	   
+		     if(auxObject.components[i].double_precision != true){
+		       var aux = auxObject.components[i].elements[j].default_value;
+		       var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
+		       auxObject.components[i].elements[j].default_value = auxBigInt;
+		     }
+		   }
+		 }
+	       }
+	       return auxObject;
+	  }
+
+	  /*Bigint number to string*/
+	  function bigInt_serialize(object)
+          {
+	    var auxObject = jQuery.extend(true, {}, object);
+
+	    for (var i = 0; i < architecture.components.length; i++){
+	      if(architecture.components[i].type != "floating point"){
+		for (var j = 0; j < architecture.components[i].elements.length; j++){
+		  var aux = architecture.components[i].elements[j].value;
+		  var auxString = aux.toString();
+		  auxObject.components[i].elements[j].value = auxString;
+
+		  if(architecture.components[i].double_precision != true){
+		    var aux = architecture.components[i].elements[j].default_value;
+		    var auxString = aux.toString();
+		    auxObject.components[i].elements[j].default_value = auxString;
+		  }
+		}
+	      }
+	    }
+	    return auxObject;
+	  }
+
+
+	//
+	// Load architecture
+	//
+
 	function load_arch_select(cfg)
 	{
 	    var ret = {};
@@ -204,29 +255,6 @@ var stats = [
 	    ret.type = "success";
 	    return ret;
 	}
-
-     /*String to Bigint number*/
-     function bigInt_deserialize(object)
-     {
-       var auxObject = object;
-   
-       for (var i = 0; i < auxObject.components.length; i++){
-         if(auxObject.components[i].type != "floating point"){
-           for (var j = 0; j < auxObject.components[i].elements.length; j++){
-             var aux = auxObject.components[i].elements[j].value;
-             var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-             auxObject.components[i].elements[j].value = auxBigInt;
-   
-             if(auxObject.components[i].double_precision != true){
-               var aux = auxObject.components[i].elements[j].default_value;
-               var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-               auxObject.components[i].elements[j].default_value = auxBigInt;
-             }
-           }
-         }
-       }
-       return auxObject;
-     }
 
 
 	//
@@ -405,12 +433,14 @@ var stats = [
       }
 
 
-      function assembly_compiler(assembly_code)
+      function assembly_compiler()
       {
 	    var ret = {
 		            update: "",
 		            status: "ok"
 	    } ;
+
+            var assembly_code = code_assembly ;
 
             instructions = [];
             instructions_tag = [];
@@ -504,7 +534,7 @@ var stats = [
                   switch(architecture.directives[i].action){
                     case "data_segment":
                       console_log("data_segment");
-                      ret = data_segment_compiler(assembly_code);
+                      ret = data_segment_compiler();
                       if (ret.status != "ok"){
                           tokenIndex = 0;
                           instructions = [];
@@ -530,7 +560,7 @@ var stats = [
 
                     case "code_segment":
                       console_log("code_segment");
-                      ret = code_segment_compiler(assembly_code);
+                      ret = code_segment_compiler();
                       if (ret.status != "ok"){
                           tokenIndex = 0;
                           instructions = [];
@@ -1055,12 +1085,14 @@ var stats = [
             return ret ;
       }
 
-      function data_segment_compiler(assembly_code)
+      function data_segment_compiler()
       {
 	    var ret = {
 		            update: "",
 		            status: "ok"
 	    } ;
+
+            var assembly_code = code_assembly ;
             var existsData = true;
 
         next_token(assembly_code);
@@ -2010,13 +2042,15 @@ var stats = [
       }
 
       /*Compile text segment*/
-      function code_segment_compiler(assembly_code)
+      function code_segment_compiler()
       {
 	    var ret = {
 		            update: "",
 		            status: "ok"
 	    } ;
-        var existsInstruction = true;
+
+            var assembly_code = code_assembly ;
+            var existsInstruction = true;
 
         next_token(assembly_code);
         var instInit = tokenIndex;
@@ -2319,6 +2353,8 @@ var stats = [
 		            update: "",
 		            status: "ok"
 	    } ;
+
+            var assembly_code = code_assembly ;
 
         if(instIndex == null){
           instIndex = 0;
@@ -3196,7 +3232,6 @@ var stats = [
               console_log(binary);
               console_log(bin2hex(binary));
 
-		    //TODO. textarea...
               pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: tokenIndex});
 
               if(pending == false){
@@ -3275,6 +3310,8 @@ var stats = [
 		            update: "",
 		            status: "ok"
 	    } ;
+
+            var assembly_code = code_assembly ;
 
         for(var i = 0; i < (value.length/2); i++){
           if((data_address % align) != 0 && i == 0 && align != 0){
@@ -3356,6 +3393,8 @@ var stats = [
 		            update: "",
 		            status: "ok"
 	    } ;
+
+            var assembly_code = code_assembly ;
 
         var re = /\' \'/;
         instruction = instruction.replace(re, "'\0'");

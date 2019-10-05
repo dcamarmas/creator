@@ -2681,15 +2681,16 @@ try{
             app.reset();
 
             /*Save a backup in the cache memory*/
-            if (typeof(Storage) !== "undefined") {
+            if (typeof(Storage) !== "undefined") 
+            {
               var auxObject = jQuery.extend(true, {}, architecture);
-
               var auxArchitecture = bigInt_serialize(auxObject);
               var auxArch = JSON.stringify(auxArchitecture, null, 2);
 
               var date = new Date();
               var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
               console_log(app._data.architecture_name);
+
               localStorage.setItem("arch_name", app._data.architecture_name);
               localStorage.setItem("architecture_copy", auxArch);
               localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
@@ -5133,6 +5134,21 @@ try{
 
         return  characters;
       },
+
+      /*Convert hexadecimal number to char*/
+      bin2hex ( value ){
+         return bin2hex(value) ;
+      },
+      hex2double ( value ){
+         return hex2double(value) ;
+      },
+      float2bin ( value ){
+         return float2bin(value) ;
+      },
+      double2bin ( value ){
+         return double2bin(value) ;
+      },
+
       /*Modifies double precision registers according to simple precision registers*/
       updateDouble(comp, elem){
         for (var j = 0; j < architecture.components.length; j++) {
@@ -5303,31 +5319,6 @@ try{
 
   /*Architecture editor*/
 
-  /*Bigint number to string*/
-  function bigInt_serialize(object){
-    var auxObject = jQuery.extend(true, {}, object);
-
-    for (var i = 0; i < architecture.components.length; i++){
-      if(architecture.components[i].type != "floating point"){
-        for (var j = 0; j < architecture.components[i].elements.length; j++){
-          var aux = architecture.components[i].elements[j].value;
-          var auxString = aux.toString();
-          auxObject.components[i].elements[j].value = auxString;
-
-          if(architecture.components[i].double_precision != true){
-            var aux = architecture.components[i].elements[j].default_value;
-            var auxString = aux.toString();
-            auxObject.components[i].elements[j].default_value = auxString;
-          }
-        }
-      }
-    }
-    return auxObject;
-  }
-
-
-
-  /*Compilator*/
 
   /*Codemirror*/
   function codemirrorStart(){
