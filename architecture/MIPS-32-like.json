@@ -5467,7 +5467,7 @@
         },
         {
           "name": "inm",
-          "type": "inm",
+          "type": "inm-signed",
           "startbit": "15",
           "stopbit": "0"
         }
@@ -5661,7 +5661,7 @@
     {
       "name": "s.s",
       "signature_definition": "s.s $F0 F2 ($F1)",
-      "signature": "s.s,$SFP-Reg,inm,$INT-Reg",
+      "signature": "s.s,$SFP-Reg,inm-signed,$INT-Reg",
       "signatureRaw": "s.s $rs off ($rt)",
       "nwords": 1,
       "fields": [
