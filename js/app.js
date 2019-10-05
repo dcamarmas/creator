@@ -515,6 +515,7 @@ try{
 
         app._data.architecture = architecture;
         app._data.assembly_code = localStorage.getItem("assembly_copy");
+                  code_assembly = app._data.assembly_code ;
         //textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
 
         architecture_hash = [];
@@ -530,7 +531,7 @@ try{
 
         //$("#architecture_menu").hide();
         app.change_UI_mode('simulator');
-        app.change_data_view('registers' , 'int');
+        app.change_data_view('registers' , 'integer');
         app.$forceUpdate();
         /*$("#save_btn_arch").show();
         $("#advanced_mode").show();
@@ -576,7 +577,7 @@ try{
 
             //$("#architecture_menu").hide();
             app.change_UI_mode('simulator');
-            app.change_data_view('registers' , 'int');
+            app.change_data_view('registers' , 'integer');
             app.$forceUpdate();
             hide_loading();
 
@@ -603,7 +604,7 @@ try{
 
           //$("#architecture_menu").hide();
           app.change_UI_mode('simulator');
-          app.change_data_view('registers' , 'int');
+          app.change_data_view('registers' , 'integer');
           app.$forceUpdate();
           hide_loading();
 
@@ -666,7 +667,7 @@ try{
       new_arch(){
         //$("#architecture_menu").hide();
         app.change_UI_mode('simulator');
-        app.change_data_view('registers' , 'int');
+        app.change_data_view('registers' , 'integer');
         app.$forceUpdate();
         hide_loading();
       },
@@ -5203,37 +5204,24 @@ try{
         this.$root.$emit('bv::hide::popover')
       },
       /*Show integer registers*/
-      /*showIntReg(){
-        app._data.register_type = 'integer';
-        app._data.nameTabReg = "Decimal";
-        app._data.nameReg = 'INT Registers';
-        app._data.data_mode = "registers";
-        app.$forceUpdate();
-      },*/
-      /*Show floating point registers*/
-      /*showFpReg(){
-        app._data.register_type = 'floating point';
-        app._data.nameTabReg = "Real";
-        app._data.nameReg = 'FP Registers';
-        app._data.data_mode = "registers";
-        app.$forceUpdate();
-      },*/
       change_data_view(e, type){
+
         app._data.data_mode = e;
 
-        if(e == "registers"){
-          if(type == "int"){
-            app._data.register_type = 'integer';
+        if (e == "registers")
+	{
+          app._data.register_type = type;
+          if(type == "integer"){
             app._data.nameTabReg = "Decimal";
-            app._data.nameReg = 'INT Registers';
+            app._data.nameReg    = 'INT Registers';
           }
-          else if(type == "fp"){
-            app._data.register_type = 'floating point';
+          else if(type == "floating point"){
             app._data.nameTabReg = "Real";
-            app._data.nameReg = 'FP Registers';
+            app._data.nameReg    = 'FP Registers';
           }
         }
-        if(e == "memory"){
+
+        if (e == "memory"){
           app._data.data_mode = "stats";
           setTimeout(function(){
             app.$forceUpdate();
