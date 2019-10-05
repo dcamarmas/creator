@@ -20,21 +20,11 @@
 
 
   /*
-   * Console.log
-   */
-
-  function app_console_log(m){
-    if(app._data.c_debug){
-      console.log(m); 
-    }
-  }
-
-
-  /*
    * Notifications
    */
 
-  function show_notification ( msg, type ){
+  function show_notification ( msg, type ) 
+  {
     // show notification
     app._data.alertMessage = msg ;
     app._data.type         = type ;
