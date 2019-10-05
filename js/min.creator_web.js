@@ -6602,8 +6602,8 @@ try{
           setTimeout(function()
 	  {
 	    /* compile */
-            var assembly = textarea_assembly_editor.getValue();
-            var ret = assembly_compiler(assembly) ;
+            code_assembly = textarea_assembly_editor.getValue();
+            var ret = assembly_compiler() ;
 
 	    /* update */
 	    app._data.instructions = instructions;

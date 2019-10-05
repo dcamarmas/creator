@@ -3846,16 +3846,21 @@ var stats = [
 
 function assembly_compile ( code )
 {
-	var ret = {} ;
+    var ret = {} ;
 
-    ret = assembly_compiler(code) ;
+    code_assembly = code ;
+    ret = assembly_compiler() ;
     if (ret.status == "error")
     {
     	var mess = compileError[ret.errorcode] ;
     	ret.msg = mess.mess1 + ret.token + mess.mess2 ;
     }
+    if (ret.status == "ok")
+    {
+        ret.msg = 'Compilation completed successfully' ;
+    }
 
-	return ret.msg ;
+    return ret ;
 }
 
 
