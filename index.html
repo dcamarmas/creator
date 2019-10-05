@@ -16,7 +16,7 @@
     <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
     <link rel="stylesheet" href="css/style.css">
-    
+
     <!-- Required scripts -->
     <script src="external/vue"></script>
     <script src="external/polyfill.min.js"></script>
@@ -99,7 +99,7 @@
               <h6>{{item.time}}   -   {{item.date}}</h6>
             </b-alert>
           </b-modal>
-          
+
           <!-- About modal -->
           <b-modal id="about" hide-footer scrollable>
             <b-card-group>
@@ -190,7 +190,7 @@
 
         <!-- Load architecture menu -->
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
-          
+
           <!-- Navbar -->
           <div class="contenedor menu row">
             <div class="col-lg-3 col-sm-12 nopadding"></div>
@@ -229,7 +229,7 @@
           <div class="col-lg-12 col-sm-12" id="load_menu_arch">
             <div class="col-lg-12 col-sm-12 row nopadding nomargin">
               <div class="col-lg-1 col-sm-1">
-                
+
               </div>
               <div class="col-lg-10 col-sm-10">
                 <b-list-group>
@@ -336,7 +336,7 @@
                 </b-list-group>
               </div>
               <div class="col-lg-1 col-sm-1">
-                
+
               </div>
             </div>
             <br>
@@ -443,7 +443,7 @@
 
                 <!-- Memory layout -->
                 <b-tab title="Memory Layout" active>
-                  
+
 
                   <!-- Memory layout form -->
                   <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%; margin-bottom: 3%;">
@@ -512,7 +512,7 @@
                         <b-list-group horizontal>
                           <b-list-group-item variant="secondary" class="memoryLayout"><br>...<br><br></b-list-group-item>
                           <b-list-group-item class="memoryLayout noBorder">
-                            
+
                           </b-list-group-item>
                         </b-list-group>
 
@@ -575,7 +575,7 @@
                   <b-modal id ="modalResetArch" :title="modalResetArch.title" ok-variant="danger" ok-title="Reset" @ok="resetArchitecture(modalResetArch.element)">
                     <h6>Are you sure you want to reset the architecture?</h6>
                   </b-modal >
-                  
+
                   <!-- Components table -->
                   <div class="col-lg-12 col-sm-12 nopadding">
                     <br>
@@ -609,7 +609,7 @@
 
                               <template slot="actions" slot-scope="row">
                                 <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
-                                <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                                <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button>
                               </template>
                              </b-table>
 
@@ -752,7 +752,7 @@
                       <div id="newInstForm2" v-if="instructionFormPage == 2">
                         <div class="col-lg-12 col-sm-12 row">
                           <div class="col-lg-2 col-2 fields">
-                            
+
                           </div>
                           <div class="col-lg-2 col-2 fields">
                             <h6>Name:</h6>
@@ -890,7 +890,7 @@
 
                       <template slot="actions" slot-scope="row">
                         <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button>
                       </template>
                     </b-table>
 
@@ -900,7 +900,7 @@
                         <div id="viewFields" >
                           <div class="col-lg-12 col-sm-12 row">
                             <div class="col-lg-2 col-2 fields">
-                              
+
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Name:</h6>
@@ -1001,7 +1001,7 @@
                         <div id="editInstForm2" v-if="instructionFormPage == 2">
                           <div class="col-lg-12 col-sm-12 row">
                             <div class="col-lg-2 col-2 fields">
-                              
+
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Name:</h6>
@@ -1111,7 +1111,7 @@
                     <b-modal id ="modalDeletInst" :title="modalDeletInst.title" ok-variant="danger" ok-title="Delete" @ok="delInstruction(modalDeletInst.index)">
                       <h6>Are you sure you want to delete the item?</h6>
                     </b-modal >
-                  </div> 
+                  </div>
                 </b-tab>
 
                 <!-- Pseudoinstruction definition -->
@@ -1152,7 +1152,7 @@
                       <div id="newPseudoinstForm2" v-if="instructionFormPage == 2">
                         <div class="col-lg-12 col-sm-12 row">
                           <div class="col-lg-2 col-2 fields">
-                            
+
                           </div>
                           <div class="col-lg-2 col-2 fields">
                             <h6>Name:</h6>
@@ -1269,7 +1269,7 @@
 
                       <template slot="actions" slot-scope="row">
                         <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                        <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button>
                       </template>
                     </b-table>
 
@@ -1279,7 +1279,7 @@
                         <div id="viewFieldsPseudo">
                           <div class="col-lg-12 col-sm-12 row">
                             <div class="col-lg-2 col-2 fields">
-                              
+
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Name:</h6>
@@ -1298,7 +1298,7 @@
                             </div>
                           </div>
 
-                          <div v-if="isNaN(parseInt(formPseudoinstruction.numfieldsAux)) == false">  
+                          <div v-if="isNaN(parseInt(formPseudoinstruction.numfieldsAux)) == false">
                             <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
                               <div class="col-lg-12 col-sm-12 row">
                                 <div class="col-lg-2 col-2 fields">
@@ -1365,7 +1365,7 @@
                         <div id="editPseudoinstForm2" v-if="instructionFormPage == 2">
                           <div class="col-lg-12 col-sm-12 row">
                             <div class="col-lg-2 col-2 fields">
-                              
+
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Name:</h6>
@@ -1384,7 +1384,7 @@
                             </div>
                           </div>
 
-                          <div v-if="isNaN(parseInt(formPseudoinstruction.numfieldsAux)) == false"> 
+                          <div v-if="isNaN(parseInt(formPseudoinstruction.numfieldsAux)) == false">
                             <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
                               <div class="col-lg-12 col-sm-12 row">
                                 <div class="col-lg-2 col-2 fields">
@@ -1503,7 +1503,7 @@
                       <!-- For each directive -->
                       <template slot="actions" slot-scope="row" class="">
                         <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
-                        <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
+                        <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button>
                       </template>
                     </b-table>
 
@@ -1568,13 +1568,13 @@
 
             <!-- Load assembly form -->
             <b-modal  id = "load_assembly"   title = "Load Assembly" ok-title="Load from this File" @ok="assembly_update">
-              <p> Please select the assembly file to be loaded </p> 
+              <p> Please select the assembly file to be loaded </p>
               <b-form-file v-model="load_assembly" :state="Boolean(load_assembly)" placeholder="Choose a file..." accept=".s" @change="read_assembly" id="assembly_file"></b-form-file>
             </b-modal>
 
             <!-- Save assembly form -->
             <b-modal  id = "save_assembly"   title = "Save Assembly" ok-title="Save to File" @ok="assembly_save">
-              <p> Please write the file name: </p> 
+              <p> Please write the file name: </p>
               <b-form-input v-on:input="debounce('save_assembly', $event)" :value="save_assembly"
                   type="text"
                   placeholder="File name where assembly will be saved">
@@ -1611,13 +1611,13 @@
 
             <!-- Load binary form -->
             <b-modal  id = "load_binary"   title = "Load Binary" ok-title="Load from this File" @ok="library_update">
-              <p> Please select the binary file to be loaded </p> 
+              <p> Please select the binary file to be loaded </p>
               <b-form-file v-model="name_binary_load" :state="Boolean(name_binary_load)" placeholder="Choose a file..." accept=".o" @change="library_load" id="binary_file"></b-form-file>
             </b-modal>
 
             <!-- Save binary form -->
             <b-modal  id = "save_binary"   title = "Save Binary" ok-title="Save to File" @ok="library_save">
-              <p> Please write the file name: </p> 
+              <p> Please write the file name: </p>
               <b-form-input v-on:input="debounce('name_binary_save', $event)" :value="name_binary_save"
                   type="text"
                   placeholder="File name where binary will be saved">
@@ -1888,11 +1888,11 @@
                 <template slot="Loaded Instructions" slot-scope="row">
                     <h6 v-if="row.item.visible == true">{{row.item.loaded}} <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge></h6>
                     <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt; <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge></h6>
-                </template> 
+                </template>
                 <template slot-scope="row">
                   <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
                   <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
-                </template> 
+                </template>
               </b-table>
             </div>
           </div>
@@ -1904,14 +1904,17 @@
             <div class="col-lg-12 col-sm-12 mb-3">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary">
-                    <b-dropdown-item @click="change_data_view('registers', 'int')">CPU-INT Registers</b-dropdown-item>
-                    <b-dropdown-item @click="change_data_view('registers', 'fp')">CPU-FP Registers</b-dropdown-item>
+                  <b-dropdown split right :text="nameReg" size="sm"
+			      class="btn btn-block btn-sm nopadding h-100 p-0"
+			      variant="outline-secondary"
+			      @click="change_data_view('registers', register_type)">
+                    <b-dropdown-item @click="change_data_view('registers', 'integer')">CPU-INT Registers</b-dropdown-item>
+                    <b-dropdown-item @click="change_data_view('registers', 'floating point')">CPU-FP Registers</b-dropdown-item>
                   </b-dropdown>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
                   <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" id="memory_btn" @click="change_data_view('memory')"><span class="fas fa-memory"></span>
-                    Memory 
+                    Memory
                   </b-button>
                 </div>
                 <div class="col-lg-4 col-sm-4 buttons">
@@ -1928,7 +1931,7 @@
                 <b-tab :title="nameTabReg" active>
                   <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
                     <div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
-                      
+
                       <!-- Control and integer registers -->
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
@@ -2088,7 +2091,7 @@
                               </div>
                             </div>
                           </b-popover>
-                        </div> 
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2257,7 +2260,7 @@
   						            		</div>
   					            		</div>
   									      </b-popover>
-  	                  	</div> 
+  	                  	</div>
   	                  </div>
   	                </div>
                   </div>
@@ -2395,7 +2398,7 @@
 
             <div class="col-lg-12 col-sm-12 row nomargin">
               <div class="col-lg-4 col-sm-4">
-               
+
               </div>
               <div class="col-lg-4 col-sm-4">
                 <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleClear"><span class="fas fa-broom"></span> Clear</b-button>
