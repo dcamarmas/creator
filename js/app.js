@@ -582,39 +582,40 @@ try{
         }
       },
       change_UI_mode(e){
-	// slow transition <any> => "architecture"
-	if (e == "architecture") 
-	{
-	    $(".loading").show();
-            setTimeout(function(){
-		          app._data.creator_mode = e;
-			  app.$forceUpdate();
-	                  $(".loading").hide();
-		       }, 50) ;
-	    return ;
-	}
+        app._data.register_popover = '';
+      	// slow transition <any> => "architecture"
+      	if (e == "architecture") 
+      	{
+      	    $(".loading").show();
+                  setTimeout(function(){
+      		          app._data.creator_mode = e;
+      			  app.$forceUpdate();
+      	                  $(".loading").hide();
+      		       }, 50) ;
+      	    return ;
+      	}
 
-	// fast transition <any> => <any> - "architecture"
-	app._data.creator_mode = e;
+      	// fast transition <any> => <any> - "architecture"
+      	app._data.creator_mode = e;
 
-	if(e == "assembly"){
-	  setTimeout(function(){
-	    codemirrorStart();
-	    if(app._data.update_binary != ""){
-	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-	      $("#divTags").attr("class", "col-lg-2 col-sm-12");
-	      $("#divTags").show();
-	    }
-	  },50);
-	}
-	else{
-	  if(textarea_assembly_editor != null){
-	    app._data.assembly_code = textarea_assembly_editor.getValue();
-	    textarea_assembly_editor.toTextArea();
-	  }
-	}
+      	if(e == "assembly"){
+      	  setTimeout(function(){
+      	    codemirrorStart();
+      	    if(app._data.update_binary != ""){
+      	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+      	      $("#divTags").attr("class", "col-lg-2 col-sm-12");
+      	      $("#divTags").show();
+      	    }
+      	  },50);
+      	}
+      	else{
+      	  if(textarea_assembly_editor != null){
+      	    app._data.assembly_code = textarea_assembly_editor.getValue();
+      	    textarea_assembly_editor.toTextArea();
+      	  }
+      	}
 
-	app.$forceUpdate();
+      	app.$forceUpdate();
       },
 
 
@@ -1302,7 +1303,7 @@ try{
       editElementVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
-            show_notification('Please complete all fields', 'danger') ;
+          show_notification('Please complete all fields', 'danger') ;
         } 
         else if(isNaN(this.formArchitecture.defValue)){
           show_notification('The default value must be a number', 'danger') ;
@@ -3828,7 +3829,7 @@ try{
                     
                     console_log(auxTokenString)
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16), false) == -1){
                       return -1;
                     }
 
@@ -3926,7 +3927,7 @@ try{
                     
                     console_log(auxTokenString)
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16), false) == -1){
                       return -1;
                     }
 
@@ -4022,7 +4023,7 @@ try{
                     
                     console_log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0, false) == -1){
                       return -1;
                     }
 
@@ -4117,7 +4118,7 @@ try{
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16)) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16), false) == -1){
                       return -1;
                     }
 
@@ -4214,7 +4215,7 @@ try{
                     
                     console_log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token, true) == -1){
                       return -1;
                     }
 
@@ -4311,7 +4312,7 @@ try{
                     
                     console_log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token, true) == -1){
                       return -1;
                     }
 
@@ -4874,12 +4875,13 @@ try{
         return 0;
       },
       /*Stores a data in data memory*/
-      data_compiler(value, size, dataLabel, DefValue){
+      data_compiler(value, size, dataLabel, DefValue, floating_point){
+
         for(var i = 0; i < (value.length/2); i++){
           if((data_address % align) != 0 && i == 0 && align != 0){
             while((data_address % align) != 0){
               if(data_address % 4 == 0){
-                memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, floating_point: floating_point});
                 (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                 data_address++;
               }
@@ -4901,7 +4903,7 @@ try{
 
           if(data_address % 4 == 0){
             console_log(DefValue);
-            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: DefValue, DefValue: DefValue, reset: false});
+            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: DefValue, DefValue: DefValue, reset: false, floating_point: floating_point});
 
             if(i == 0){
               (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: dataLabel},);
@@ -8165,13 +8167,28 @@ try{
             for (var j = 0; j < memory[index][i].Binary.length; j++){
               var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                memory[index][i].Value = parseInt(memValue, 16);
+                //memory[index][i].Value = parseInt(memValue, 16);
+                if(memory[index][i].floating_point == true){
+                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                }
+                else{
+                  memory[index][i].Value = parseInt(memValue, 16);
+                }
+
                 var charIndex = memValue.length-1;
                 for (var z = 0; z < memory[index][i].Binary.length; z++){
                   memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                   charIndex = charIndex - 2;
                 }
-                memory[index][i].Value = parseInt(memValue, 16);
+                //memory[index][i].Value = parseInt(memValue, 16);
+
+                if(memory[index][i].floating_point == true){
+                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                }
+                else{
+                  memory[index][i].Value = parseInt(memValue, 16);
+                }
+
                 app._data.memory[index] = memory[index];
                 return;
               }
@@ -8588,7 +8605,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-	      show_notification('The data has been uploaded', 'info') ;
+	      			show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -8609,7 +8626,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){
@@ -8637,7 +8654,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -8658,7 +8675,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
@@ -8687,7 +8704,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -8708,7 +8725,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
@@ -8737,7 +8754,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -8841,7 +8858,7 @@ try{
                 mutexRead = false;
                 app._data.enter = null;
 
-		      show_notification('The data has been uploaded', 'info') ;
+		      			show_notification('The data has been uploaded', 'info') ;
 
                 if(executionIndex >= instructions.length){
                   for (var i = 0; i < instructions.length; i++) {
@@ -8884,7 +8901,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
@@ -8907,7 +8924,7 @@ try{
             var aux_addr = architecture.memory_layout[3].value;
 
             if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-		    show_notification('Not enough memory for data segment', 'danger') ;
+		    			show_notification('Not enough memory for data segment', 'danger') ;
               instructions[executionIndex]._rowVariant = 'danger';
               executionIndex = -1;
               return;
@@ -8947,7 +8964,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               if(runExecution == false){
                 this.executeProgram();
@@ -8966,7 +8983,7 @@ try{
               mutexRead = false;
               app._data.enter = null;
 
-		    show_notification('The data has been uploaded', 'info') ;
+		    			show_notification('The data has been uploaded', 'info') ;
 
               console_log(mutexRead);
 
