@@ -5545,6 +5545,8 @@ try{
                 var match = re.exec(definition);
                 var result;
 
+                console.log(match[1]);
+
                 eval("result=" + match[1]);
 
                 definition = definition.replace(re, result);
