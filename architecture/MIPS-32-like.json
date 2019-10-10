@@ -6759,19 +6759,19 @@
 	    {
 	      "name": "ror",
 	      "signature_definition": "ror $F1 $F0 F2",
-	      "signature": "ror,$DFP-Reg,$DFP-Reg,inm-unsigned",
+	      "signature": "ror,$INT-Reg,$INT-Reg,inm-unsigned",
 	      "signatureRaw": "ror $reg1 $reg2 val",
 	      "nwords": 1,
 	      "fields": [
 	        {
 	          "name": "reg2",
-	          "type": "DFP-Reg",
+	          "type": "INT-Reg",
 	          "startbit": "25",
 	          "stopbit": "21"
 	        },
 	        {
 	          "name": "reg1",
-	          "type": "DFP-Reg",
+	          "type": "INT-Reg",
 	          "startbit": "20",
 	          "stopbit": "16"
 	        },
@@ -6782,24 +6782,24 @@
 	          "stopbit": "0"
 	        }
 	      ],
-	      "definition": "sll $at $reg2 op(32-val);srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
+	      "definition": "sll $at $reg2 op(32-(val));srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
 	    },
 	    {
 	      "name": "rol",
 	      "signature_definition": "rol $F1 $F0 F2",
-	      "signature": "rol,$DFP-Reg,$DFP-Reg,inm-unsigned",
+	      "signature": "rol,$INT-Reg,$INT-Reg,inm-unsigned",
 	      "signatureRaw": "rol $reg1 $reg2 val",
 	      "nwords": 1,
 	      "fields": [
 	        {
 	          "name": "reg2",
-	          "type": "DFP-Reg",
+	          "type": "INT-Reg",
 	          "startbit": "25",
 	          "stopbit": "21"
 	        },
 	        {
 	          "name": "reg1",
-	          "type": "DFP-Reg",
+	          "type": "INT-Reg",
 	          "startbit": "20",
 	          "stopbit": "16"
 	        },
@@ -6810,7 +6810,7 @@
 	          "stopbit": "0"
 	        }
 	      ],
-	      "definition": "srl $at $reg2 op(32-val);sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
+	      "definition": "srl $at $reg2 op(32-(val));sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
 	    }
   ],
   "directives": [
