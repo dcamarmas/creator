@@ -5474,6 +5474,18 @@ try{
 
               console_log(definition);
 
+              re = /op\((.*)\)/;
+              console_log(re);
+              while (definition.search(re) != -1){
+                var match = re.exec(definition);
+                var result;
+
+                eval("result=" + match[1]);
+
+                definition = definition.replace(re, result);
+                console_log(definition);
+              }
+
               while(definition.match(/\'(.*?)\'/)){
                 var re = /\'(.*?)\'/;
                 console_log(re);
