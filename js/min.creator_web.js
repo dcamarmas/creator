@@ -274,6 +274,9 @@ try{
       notificationTime: 1500,
       /*Debug*/
       c_debug: false,
+      /*Dark Mode*/
+      dark: false,
+      dark_mode_style: "",
 
 
 
@@ -619,10 +622,40 @@ try{
       this.verifyNavigator();
     },
 
+    beforeUpdate(){
+      this.get_configuration();
+    },  
+
 
     /*Vue methods*/
     methods:{
       /*Generic*/
+      /*Dark  Mode*/
+      change_dark_mode(){
+        app._data.dark= !app._data.dark;
+        if (app._data.dark){
+          document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
+          localStorage.setItem("dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
+        }
+        else{
+          document.getElementsByTagName("body")[0].style = "";
+          localStorage.setItem("dark_mode", "");
+
+        }
+      },
+
+      get_configuration(){
+        if(localStorage.getItem("dark_mode") != null){
+          document.getElementsByTagName("body")[0].style = localStorage.getItem("dark_mode");
+          if(localStorage.getItem("dark_mode") == ""){
+            app._data.dark = false;
+          }
+          else{
+            app._data.dark = true;
+          }
+        }
+      },
+
       verifyNavigator(){
         if (navigator.userAgent.indexOf("OPR") > -1) {
           this.$refs.navigator.show();
