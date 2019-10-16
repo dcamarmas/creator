@@ -9047,6 +9047,7 @@ try{
             instructions[i]._rowVariant = '';
           }
           executionIndex = 0;
+          executionInit = 1;
           
           /*Reset stats*/
           totalStats=0;
