@@ -5545,7 +5545,7 @@ try{
                 var match = re.exec(definition);
                 var result;
 
-                console.log(match[1]);
+                console_log(match[1]);
 
                 eval("result=" + match[1]);
 
@@ -9112,6 +9112,7 @@ try{
             instructions[i]._rowVariant = '';
           }
           executionIndex = 0;
+          executionInit = 1;
           
           /*Reset stats*/
           totalStats=0;
