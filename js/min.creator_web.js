@@ -32,7 +32,7 @@
 
     // add notification to the notification summary
     var date = new Date();
-    notifications.push({ mess: app._data.alertMessage, 
+    notifications.splice(0, 0,{ mess: app._data.alertMessage, 
                          color: app._data.type, 
                          time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
                          date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
@@ -3927,7 +3927,7 @@ try{
                     
                     console_log(auxTokenString)
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16), false) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "byte") == -1){
                       return -1;
                     }
 
@@ -4025,7 +4025,7 @@ try{
                     
                     console_log(auxTokenString)
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16), false) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "half") == -1){
                       return -1;
                     }
 
@@ -4121,7 +4121,7 @@ try{
                     
                     console_log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0, false) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0, "word") == -1){
                       return -1;
                     }
 
@@ -4216,7 +4216,7 @@ try{
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, parseInt(auxTokenString, 16), false) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "double_word") == -1){
                       return -1;
                     }
 
@@ -4271,7 +4271,19 @@ try{
 
                     var auxToken;
                     var auxTokenString;
-                    if(token.match(/^0x/)){
+                    if(token == "-Inf" || token == "-inf" || token == "-Infinity" || token == "-infinity"){
+                      token = "-Infinity";
+                      auxTokenString = "FF800000";
+                    }
+                    else if(token == "Inf" || token == "+Inf" || token == "inf" || token == "+inf" || token == "Infinity" || token == "+Infinity" || token == "infinity" || token == "+infinity"){
+                      token = "+Infinity";
+                      auxTokenString = "7F800000";
+                    }
+                    else if(token == "NaN" || token == "nan"){
+                      token = "NaN";
+                      auxTokenString = "7FC00000";
+                    }
+                    else if(token.match(/^0x/)){
                       var value = token.split('x');
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
@@ -4293,6 +4305,7 @@ try{
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
+                      token = this.hex2float(token);
                     }
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
@@ -4313,7 +4326,7 @@ try{
                     
                     console_log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token, true) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float") == -1){
                       return -1;
                     }
 
@@ -4368,7 +4381,19 @@ try{
 
                     var auxToken;
                     var auxTokenString;
-                    if(token.match(/^0x/)){
+                    if(token == "-Inf" || token == "-inf" || token == "-Infinity" || token == "-infinity"){
+                      token = "-Infinity";
+                      auxTokenString = "FFF0000000000000";
+                    }
+                    else if(token == "Inf" || token == "+Inf" || token == "inf" || token == "+inf" || token == "Infinity" || token == "+Infinity" || token == "infinity" || token == "+infinity"){
+                      token = "+Infinity";
+                      auxTokenString = "7FF0000000000000";
+                    }
+                    else if(token == "NaN" || token == "nan"){
+                      token = "NaN";
+                      auxTokenString = "7FF8000000000000";
+                    }
+                    else if(token.match(/^0x/)){
                       var value = token.split('x');
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
@@ -4390,6 +4415,7 @@ try{
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
+                      token = this.hex2double(token);
                     }
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
@@ -4410,7 +4436,7 @@ try{
                     
                     console_log(auxTokenString);
 
-                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token, true) == -1){
+                    if(this.data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float") == -1){
                       return -1;
                     }
 
@@ -4545,7 +4571,7 @@ try{
                       if((data_address % align) != 0 && i == 0 && align != 0){
                         while((data_address % align) != 0){
                           if(data_address % 4 == 0){
-                            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: "ascii"});
                             (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                             data_address++;
                           }
@@ -4560,7 +4586,7 @@ try{
                       }
 
                       if(data_address % 4 == 0){
-                        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false});
+                        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false, type: "ascii"});
 
                         if(i == 0){
                           (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
@@ -4732,7 +4758,7 @@ try{
                       if((data_address % align) != 0 && i == 0 && align != 0){
                         while((data_address % align) != 0){
                           if(data_address % 4 == 0){
-                            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: "ascii"});
                             (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                             data_address++;
                           }
@@ -4747,7 +4773,7 @@ try{
                       }
 
                       if(data_address % 4 == 0){
-                        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false});
+                        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false, type: "ascii"});
 
                         if(i < string.length){
                           if(i == 0){
@@ -4858,7 +4884,7 @@ try{
                     if((data_address % align) != 0 && i == 0 && align != 0){
                       while((data_address % align) != 0){
                         if(data_address % 4 == 0){
-                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: "space"});
                           (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                           data_address++;
                         }
@@ -4873,7 +4899,7 @@ try{
                     }
 
                     if(data_address % 4 == 0){
-                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string, DefValue: "", reset: false});
+                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string, DefValue: "", reset: false, type: "space"});
 
                       if(i == 0){
                         (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
@@ -4973,13 +4999,12 @@ try{
         return 0;
       },
       /*Stores a data in data memory*/
-      data_compiler(value, size, dataLabel, DefValue, floating_point){
-
+      data_compiler(value, size, dataLabel, DefValue, type){
         for(var i = 0; i < (value.length/2); i++){
           if((data_address % align) != 0 && i == 0 && align != 0){
             while((data_address % align) != 0){
               if(data_address % 4 == 0){
-                memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, floating_point: floating_point});
+                memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: type});
                 (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
                 data_address++;
               }
@@ -5001,7 +5026,7 @@ try{
 
           if(data_address % 4 == 0){
             console_log(DefValue);
-            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: DefValue, DefValue: DefValue, reset: false, floating_point: floating_point});
+            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: DefValue, DefValue: DefValue, reset: false, type: type});
 
             if(i == 0){
               (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Bin: value.substring(value.length-(2+(2*i)), value.length-(2*i)), Tag: dataLabel},);
@@ -5043,7 +5068,6 @@ try{
           var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
           for(var i = 0; i < num_iter; i++){
             (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + i), DefBin: "00", Bin: "00", Tag: null},);
-            console_log("padding");
           }
         }
       },
@@ -8280,11 +8304,11 @@ try{
               var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                 //memory[index][i].Value = parseInt(memValue, 16);
-                if(memory[index][i].floating_point == true){
+                if(memory[index][i].type == "float"){
                   memory[index][i].Value = this.hex2float("0x" + memValue);
                 }
                 else{
-                  memory[index][i].Value = parseInt(memValue, 16);
+                  memory[index][i].Value = (parseInt(memValue, 16) >> 0);
                 }
 
                 var charIndex = memValue.length-1;
@@ -8294,11 +8318,11 @@ try{
                 }
                 //memory[index][i].Value = parseInt(memValue, 16);
 
-                if(memory[index][i].floating_point == true){
+                if(memory[index][i].type == "float"){
                   memory[index][i].Value = this.hex2float("0x" + memValue);
                 }
                 else{
-                  memory[index][i].Value = parseInt(memValue, 16);
+                  memory[index][i].Value = (parseInt(memValue, 16) >> 0);
                 }
 
                 app._data.memory[index] = memory[index];
@@ -8310,7 +8334,7 @@ try{
           for (var i = 0; i < memory[index].length; i++){
             if(memory[index][i].Address > parseInt(addr, 16)){
               var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
+              memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
                 (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
@@ -8321,7 +8345,7 @@ try{
             }
             else if(i == memory[index].length-1){
               var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
+              memory[index].push({Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
                 (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
@@ -8334,7 +8358,7 @@ try{
 
           if(memory[index].length == 0){
             var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            memory[index].push({Address: aux_addr, Binary: [], Value: parseInt(memValue, 16), DefValue: null, reset: false});
+            memory[index].push({Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
               (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
@@ -8374,7 +8398,7 @@ try{
 
                   memory[index][i].Value = null;
                   for (var z = 3; z < 4; z=z-2){
-                    memory[index][i].Value = memory[index][i].Value + parseInt((memory[index][i].Binary[z].Bin + memory[index][i].Binary[z-1].Bin), 16) + " ";
+                    memory[index][i].Value = memory[index][i].Value + (parseInt((memory[index][i].Binary[z].Bin + memory[index][i].Binary[z-1].Bin), 16) >> 0) + " ";
                   }
                   app._data.memory[index] = memory[index];
                   return;
@@ -8409,7 +8433,7 @@ try{
                       memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                       charIndex = charIndex - 2;
                     }
-                    memory[index][i].Value = "0 " + parseInt(memValue, 16); 
+                    memory[index][i].Value = "0 " + (parseInt(memValue, 16) >> 0); 
                     app._data.memory[index] = memory[index];
                     return;
                   }
@@ -8419,7 +8443,7 @@ try{
                       memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                       charIndex = charIndex - 2;
                     }
-                    memory[index][i].Value = parseInt(memValue, 16) + " 0";    
+                    memory[index][i].Value = (parseInt(memValue, 16) >> 0) + " 0";    
                     app._data.memory[index] = memory[index];             
                     return;
                   }
@@ -8443,7 +8467,7 @@ try{
                       memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                       charIndex = charIndex - 2;
                     }
-                    memory[index][i+1].Value = "0 " + parseInt(memValue, 16); 
+                    memory[index][i+1].Value = "0 " + (parseInt(memValue, 16) >> 0); 
                     app._data.memory[index] = memory[index];
                     return;
                   }
@@ -8479,7 +8503,7 @@ try{
                     memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                     charIndex = charIndex - 2;
                   }
-                  memory[index][memory[index].length-1].Value = "0 " + parseInt(memValue, 16); 
+                  memory[index][memory[index].length-1].Value = "0 " + (parseInt(memValue, 16) >> 0); 
                   app._data.memory[index] = memory[index];
                   return;
                 }
@@ -8489,7 +8513,7 @@ try{
                     memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                     charIndex = charIndex - 2;
                   }
-                  memory[index][memory[index].length-1].Value = parseInt(memValue, 16) + " 0"; 
+                  memory[index][memory[index].length-1].Value = (parseInt(memValue, 16) >> 0) + " 0"; 
                   app._data.memory[index] = memory[index];
                   return;
                 }
