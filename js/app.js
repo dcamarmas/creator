@@ -4206,17 +4206,17 @@ try{
 
                     var auxToken;
                     var auxTokenString;
-                    if(token == "-Inf" || token == "-inf"){
-                      token = "-Inf";
+                    if(token == "-Inf" || token == "-inf" || token == "-Infinity" || token == "-infinity"){
+                      token = "-Infinity";
                       auxTokenString = "FF800000";
                     }
-                    else if(token == "Inf" || token == "+Inf" || token == "inf" || token == "+inf"){
-                      token = "+Inf";
+                    else if(token == "Inf" || token == "+Inf" || token == "inf" || token == "+inf" || token == "Infinity" || token == "+Infinity" || token == "infinity" || token == "+infinity"){
+                      token = "+Infinity";
                       auxTokenString = "7F800000";
                     }
                     else if(token == "NaN" || token == "nan"){
                       token = "NaN";
-                      auxTokenString = "7F820000";
+                      auxTokenString = "7FC00000";
                     }
                     else if(token.match(/^0x/)){
                       var value = token.split('x');
@@ -4316,7 +4316,19 @@ try{
 
                     var auxToken;
                     var auxTokenString;
-                    if(token.match(/^0x/)){
+                    if(token == "-Inf" || token == "-inf" || token == "-Infinity" || token == "-infinity"){
+                      token = "-Infinity";
+                      auxTokenString = "FFF0000000000000";
+                    }
+                    else if(token == "Inf" || token == "+Inf" || token == "inf" || token == "+inf" || token == "Infinity" || token == "+Infinity" || token == "infinity" || token == "+infinity"){
+                      token = "+Infinity";
+                      auxTokenString = "7FF0000000000000";
+                    }
+                    else if(token == "NaN" || token == "nan"){
+                      token = "NaN";
+                      auxTokenString = "7FF8000000000000";
+                    }
+                    else if(token.match(/^0x/)){
                       var value = token.split('x');
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
