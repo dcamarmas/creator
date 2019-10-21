@@ -32,7 +32,7 @@
 
     // add notification to the notification summary
     var date = new Date();
-    notifications.splice(0, 0,{ mess: app._data.alertMessage, 
+    notifications.push({ mess: app._data.alertMessage, 
                          color: app._data.type, 
                          time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
                          date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
