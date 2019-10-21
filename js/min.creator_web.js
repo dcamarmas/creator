@@ -32,7 +32,7 @@
 
     // add notification to the notification summary
     var date = new Date();
-    notifications.splice(0, 0,{ mess: app._data.alertMessage, 
+    notifications.push({ mess: app._data.alertMessage, 
                          color: app._data.type, 
                          time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
                          date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
@@ -576,6 +576,8 @@ try{
       newValue: '',
       /*Memory table fields*/
       memFields: ['Address', 'Binary', 'Value'],
+      row_index: null,
+      selected_space_view: null,
       /*Memory*/
       memory: memory,
       unallocated_memory: unallocated_memory,
@@ -9508,6 +9510,79 @@ try{
         }
 
         app.$forceUpdate();
+      },
+      select_space_type(record, index){
+        if(record.type == "space" && (memory[memory_hash[0]][index].Binary[0].Tag != null) || memory[memory_hash[0]][index].Binary[1].Tag != null || memory[memory_hash[0]][index].Binary[2].Tag != null || memory[memory_hash[0]][index].Binary[3].Tag != null){
+        	app._data.row_index = index;
+        	this.$refs['space_modal'].show();
+        }
+      },
+      change_space_view(){
+      	if(app._data.selected_space_view == "sig_int"){
+    			var hex = "";
+    			for (var j = 0; j < 4; j++) {
+    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
+    			}
+    			memory[memory_hash[0]][app._data.row_index].Value = parseInt(hex, 16) >> 0;
+    		}
+    		else if(app._data.selected_space_view == "unsig_int"){
+    			var hex = "";
+    			for (var j = 0; j < 4; j++) {
+    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
+    			}
+    			memory[memory_hash[0]][app._data.row_index].Value = parseInt(hex, 16) >>> 0;
+    		}
+    		else if(app._data.selected_space_view == "float"){
+    			var hex = "";
+    			for (var j = 0; j < 4; j++) {
+    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
+    			}
+    			memory[memory_hash[0]][app._data.row_index].Value = this.hex2float("0x" + hex);
+    		}
+    		else if(app._data.selected_space_view == "char"){
+    			var hex = "";
+    			for (var j = 0; j < 4; j++) {
+    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
+    			}
+    			memory[memory_hash[0]][app._data.row_index].Value = this.hex2char8(hex);
+    		}
+
+      	var i = 1;
+
+      	while((app._data.row_index + i) < memory[memory_hash[0]].length && memory[memory_hash[0]][app._data.row_index + i].type == "space" && (memory[memory_hash[0]][app._data.row_index + i].Binary[0].Tag == null) && memory[memory_hash[0]][app._data.row_index + i].Binary[1].Tag == null && memory[memory_hash[0]][app._data.row_index + i].Binary[2].Tag == null && memory[memory_hash[0]][app._data.row_index + i].Binary[3].Tag == null){
+      		if(app._data.selected_space_view == "sig_int"){
+      			var hex = "";
+      			for (var j = 0; j < 4; j++) {
+      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
+      			}
+      			memory[memory_hash[0]][app._data.row_index + i].Value = parseInt(hex, 16) >> 0;
+      		}
+      		else if(app._data.selected_space_view == "unsig_int"){
+      			var hex = "";
+      			for (var j = 0; j < 4; j++) {
+      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
+      			}
+      			memory[memory_hash[0]][app._data.row_index + i].Value = parseInt(hex, 16) >>> 0;
+      		}
+      		else if(app._data.selected_space_view == "float"){
+      			var hex = "";
+      			for (var j = 0; j < 4; j++) {
+      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
+      			}
+      			memory[memory_hash[0]][app._data.row_index + i].Value = this.hex2float("0x" + hex);
+      		}
+      		else if(app._data.selected_space_view == "char"){
+	    			var hex = "";
+	    			for (var j = 0; j < 4; j++) {
+	    				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
+	    			}
+	    			memory[memory_hash[0]][app._data.row_index + i].Value = this.hex2char8(hex);
+	    		}
+      		i++;
+      	}
+      },
+      hide_space_modal(){
+      	app._data.selected_space_view = null;
       },
       change_popover_register(e){
         app._data.register_popover = e;
