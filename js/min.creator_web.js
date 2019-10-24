@@ -276,8 +276,7 @@ try{
       c_debug: false,
       /*Dark Mode*/
       dark: false,
-      dark_mode_style: "",
-
+      
 
 
       /*Architecture editor*/
@@ -578,6 +577,7 @@ try{
       memFields: ['Address', 'Binary', 'Value'],
       row_index: null,
       selected_space_view: null,
+      selected_stack_view: null,
       /*Memory*/
       memory: memory,
       unallocated_memory: unallocated_memory,
@@ -9581,6 +9581,61 @@ try{
       		i++;
       	}
       },
+      hide_space_modal(){
+        app._data.selected_space_view = null;
+      },
+
+
+
+
+
+      select_stack_type(record, index){
+        console.log(index);
+        app._data.row_index = index;
+        this.$refs['stack_modal'].show();
+      },
+      change_stack_view(){
+        if(app._data.selected_stack_view == "sig_int"){
+          var hex = "";
+          for (var j = 0; j < 4; j++) {
+            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
+          }
+          memory[memory_hash[2]][app._data.row_index].Value = parseInt(hex, 16) >> 0;
+        }
+        else if(app._data.selected_stack_view == "unsig_int"){
+          var hex = "";
+          for (var j = 0; j < 4; j++) {
+            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
+          }
+          memory[memory_hash[2]][app._data.row_index].Value = parseInt(hex, 16) >>> 0;
+        }
+        else if(app._data.selected_stack_view == "float"){
+          var hex = "";
+          for (var j = 0; j < 4; j++) {
+            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
+          }
+          memory[memory_hash[2]][app._data.row_index].Value = this.hex2float("0x" + hex);
+        }
+        else if(app._data.selected_stack_view == "char"){
+          var hex = "";
+          for (var j = 0; j < 4; j++) {
+            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
+          }
+          memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
+        }
+      },
+      hide_stack_modal(){
+        app._data.selected_stack_view = null;
+      },
+
+
+
+
+
+
+
+
+
       hide_space_modal(){
       	app._data.selected_space_view = null;
       },
