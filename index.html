@@ -2277,7 +2277,7 @@
                 <!-- Data memory -->
                 <b-tab title="Data" active>
                   <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table">
+                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table" @row-clicked="select_space_type" id="data_memory_table">
                       <template slot="Address" slot-scope="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
@@ -2290,9 +2290,16 @@
                         </h6>
                       </template>
                       <template slot="Value" slot-scope="row">
-                        <h6 style="font-size: 13px">{{row.item.Value}}</h6>
+                        <h6 style="font-size: 13px">{{row.item.Value}} <span class="fas fa-eye" v-if="row.item.type == 'space' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)" style="float: right; margin-right: 2%;"></span></h6> 
                       </template>
                     </b-table>
+
+                    <b-modal ref="space_modal" size="sm" title="Select space view:" @hidden="hide_space_modal" @ok="change_space_view">
+                      <b-form-radio v-model="selected_space_view" value="sig_int">Signed Integer</b-form-radio>
+                      <b-form-radio v-model="selected_space_view" value="unsig_int">Unsigned Integer</b-form-radio>
+                      <b-form-radio v-model="selected_space_view" value="float">Float</b-form-radio>
+                      <b-form-radio v-model="selected_space_view" value="char">Char</b-form-radio>
+									  </b-modal>
                   </div>
                 </b-tab>
 
@@ -2321,7 +2328,7 @@
                 <!-- Stack memory -->
                 <b-tab title="Stack">
                   <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table">
+                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table" @row-clicked="select_stack_type">
                       <template slot="Address" slot-scope="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
@@ -2345,6 +2352,14 @@
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">{{row.item.Value}}</h6>
                       </template>
                     </b-table>
+
+                    <b-modal ref="stack_modal" size="sm" title="Select stack word view:" @hidden="hide_stack_modal" @ok="change_stack_view">
+                      <b-form-radio v-model="selected_stack_view" value="sig_int">Signed Integer</b-form-radio>
+                      <b-form-radio v-model="selected_stack_view" value="unsig_int">Unsigned Integer</b-form-radio>
+                      <b-form-radio v-model="selected_stack_view" value="float">Float</b-form-radio>
+                      <b-form-radio v-model="selected_stack_view" value="char">Char</b-form-radio>
+									  </b-modal>
+
                   </div>
                 </b-tab>
               </b-tabs>
