@@ -1028,10 +1028,13 @@
 
                           <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
                             <div v-for="i in parseInt(formInstruction.numfieldsAux)">
-                              <div class="col-lg-12 col-sm-12 row">
-                                <div class="col-lg-2 col-2 fields">
+                              <div class="col-lg-14 col-sm-14 row">
+                                <div class="col-lg-1 col-1 fields">
                                   <h6>Field {{i-1}}</h6>
                                 </div>
+				<div class="col-lg-1 col-1 fields">
+	 				<b-form-checkbox :id="'fragment-'+ i" :value="true" >
+				</div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.nameField['+i+'-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
