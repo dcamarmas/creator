@@ -755,8 +755,8 @@
 
                       <!-- Page 2 -->
                       <div id="newInstForm2" v-if="instructionFormPage == 2">
-                        <div class="col-lg-12 col-sm-12 row">
-                          <div class="col-lg-2 col-2 fields">
+                        <div class="col-lg-14 col-sm-14 row">
+                          <div class="col-lg-1 col-1 fields">
                             
                           </div>
                           <div class="col-lg-2 col-2 fields">
@@ -764,6 +764,9 @@
                           </div>
                           <div class="col-lg-2 col-2 fields">
                             <h6>Type</h6>
+                          </div>
+                          <div class="col-lg-1 col-1 fields">
+                            <h6>Break</h6>
                           </div>
                           <div class="col-lg-2 col-2 fields">
                             <h6>Start Bit</h6>
@@ -778,8 +781,8 @@
 
                         <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
                           <div v-for="i in parseInt(formInstruction.numfieldsAux)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
+                            <div class="col-lg-14 col-sm-14 row">
+                              <div class="col-lg-1 col-1 fields">
                                 <h6>Field {{i-1}}</h6>
                               </div>
                               <div class="col-lg-2 col-2 fields">
@@ -808,6 +811,13 @@
                                   </b-form-input>
                                 </b-form-group>
                               </div>
+                                    <div class="col-lg-1 col-1 fields">
+                                        <b-form-checkbox
+                                            :id="'fragment-'+ i"
+                                            :value="true"
+                                            :disabled="fragmentData.indexOf(formInstruction.typeField[i-1]) === -1"
+                                            >
+                                      </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
                                   <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
@@ -1004,8 +1014,8 @@
 
                         <!-- Page 2 -->
                         <div id="editInstForm2" v-if="instructionFormPage == 2">
-                          <div class="col-lg-12 col-sm-12 row">
-                            <div class="col-lg-2 col-2 fields">
+                          <div class="col-lg-14 col-sm-14 row">
+                            <div class="col-lg-1 col-1 fields">
                               
                             </div>
                             <div class="col-lg-2 col-2 fields">
@@ -1013,6 +1023,9 @@
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Type</h6>
+                            </div>
+                            <div class="col-lg-1 col-1 fields">
+                              <h6>Break</h6>
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Start Bit</h6>
@@ -1032,9 +1045,6 @@
                                 <div class="col-lg-1 col-1 fields">
                                   <h6>Field {{i-1}}</h6>
                                 </div>
-				<div class="col-lg-1 col-1 fields">
-	 				<b-form-checkbox :id="'fragment-'+ i" :value="true" >
-				</div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.nameField['+i+'-1]', $event)" :value="formInstruction.nameField[i-1]" required :state="valid(formInstruction.nameField[i-1])" size="sm" v-if="(i-1) != 0">
@@ -1060,6 +1070,13 @@
                                     <b-form-input type="text" v-model="formInstruction.typeField[i-1]='co'" required size="sm" v-if="(i-1) == 0" disabled>
                                     </b-form-input>
                                   </b-form-group>
+                                </div>
+                                <div class="col-lg-1 col-1 fields">
+                                    <b-form-checkbox
+                                        :id="'fragment-'+ i"
+                                        :value="true"
+                                        :disabled="fragmentData.indexOf(formInstruction.typeField[i-1]) === -1"
+                                        >
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>

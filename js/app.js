@@ -358,6 +358,7 @@ try{
         numfieldsAux: "1",
         nameField: [],
         typeField: [],
+        separated: false,
         startBitField: [],
         stopBitField: [],
         valueField: [],
@@ -432,6 +433,8 @@ try{
         action: '',
         size: 0,
       },
+      /* Allow instruction with fractioned fields */
+      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
       
 
 
