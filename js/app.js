@@ -358,7 +358,7 @@ try{
         numfieldsAux: "1",
         nameField: [],
         typeField: [],
-        separated: false,
+        separated: [],
         startBitField: [],
         stopBitField: [],
         valueField: [],
@@ -1630,6 +1630,7 @@ try{
       },
       /*Show edit instruction modal*/
       editInstModal(elem, co, cop, button){
+        debugger;
         this.modalEditInst.title = "Edit Instruction";
         this.modalEditInst.element = elem;
         for (var i = 0; i < architecture.instructions.length; i++) {
@@ -1652,6 +1653,10 @@ try{
               this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
               this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
               this.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
+              /* add positions that allow to save temporaly the value of the break field in edit mode
+               *  this line will be make to edit for get the real value of that field when it was stored
+               */
+              this.formInstruction.separated.push(false);
             }
             this.generateSignatureInst();
           }
