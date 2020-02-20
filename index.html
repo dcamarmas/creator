@@ -815,7 +815,8 @@
                                         <b-form-checkbox
                                             :id="'fragment-'+ i"
                                             :value="true"
-                                            :disabled="fragmentData.indexOf(formInstruction.typeField[i-1]) === -1"
+                                            v-model="formInstruction.separated[i-1]"
+                                            v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
                                             >
                                       </div>
                               <div class="col-lg-2 col-2 fields">
@@ -1075,7 +1076,8 @@
                                     <b-form-checkbox
                                         :id="'fragment-'+ i"
                                         :value="true"
-                                        :disabled="fragmentData.indexOf(formInstruction.typeField[i-1]) === -1"
+                                        v-model="formInstruction.separated[i-1]"
+                                        v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
                                         >
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
@@ -1101,6 +1103,9 @@
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.valueField['+i+'-1]', $event)" :value="formInstruction.valueField[i-1]" required :state="valid(formInstruction.valueField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.separated[i-1]">
+                                    <b-button variant="primary"> + </b-button>
                                 </div>
                               </div>
                             </div>
