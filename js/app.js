@@ -659,6 +659,22 @@ try{
 
       /*Architecture editor*/
 
+      /**
+        * method in charge of create the array corresponent to the 
+        * current position of start bit and end bit
+       */
+
+      changeToSeparateValue( val, pos ) {
+        this.formInstruction.startBitField[pos] = [0];
+        this.formInstruction.stopBitField[pos] =[0];
+      },
+
+      addMoreFieldsToSeparateValues(event, pos) {
+        this.formInstruction.startBitField[pos].push(0);
+        this.formInstruction.stopBitField[pos].push(0);
+        app.$forceUpdate();
+      },
+
       /*Load the available architectures and check if exists backup*/
       load_arch_available(){
         $.getJSON('architecture/available_arch.json', function(cfg){
@@ -1630,7 +1646,6 @@ try{
       },
       /*Show edit instruction modal*/
       editInstModal(elem, co, cop, button){
-        debugger;
         this.modalEditInst.title = "Edit Instruction";
         this.modalEditInst.element = elem;
         for (var i = 0; i < architecture.instructions.length; i++) {

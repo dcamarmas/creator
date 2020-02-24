@@ -816,18 +816,38 @@
                                             :id="'fragment-'+ i"
                                             :value="true"
                                             v-model="formInstruction.separated[i-1]"
+                                            @change="changeToSeparateValue($event, i-1)"
                                             v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
                                             >
                                       </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
-                                  </b-form-input>
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm"
+                                 v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+                                    <b-form-input v-else v-for="(j, ind) in formInstruction.startBitField[i-1]"
+                                                  type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                                  v-on:input="debounce('formInstruction.startBitField['+i+'-1]['+ind+']', $event)"
+                                                  :value="formInstruction.startBitField[i-1][ind]" required
+                                                  :state="valid(j)"
+                                                  size="sm"
+                                                  class="mt-2">
+                                    </b-form-input>
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm"
+                                 v-if="typeof(formInstruction.stopBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+
+                                    <b-form-input v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]"
+                                                  type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                                  v-on:input="debounce('formInstruction.stopBitField['+i+'-1]['+ind+']', $event)"
+                                                  :value="formInstruction.stopBitField[i-1][ind]" required
+                                                  :state="valid(j)"
+                                                  size="sm"
+                                                  class="mt-2">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
@@ -842,6 +862,9 @@
                                   <b-form-input type="text" v-on:input="debounce('formInstruction.valueField['+i+'-1]', $event)" :value="formInstruction.valueField[i-1]" required :state="valid(formInstruction.valueField[i-1])" size="sm">
                                   </b-form-input>
                                 </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.separated[i-1]">
+                                  <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)"> + </b-button>
                               </div>
                             </div>
                           </div>
@@ -1077,18 +1100,33 @@
                                         :id="'fragment-'+ i"
                                         :value="true"
                                         v-model="formInstruction.separated[i-1]"
+                                        @change="changeToSeparateValue($event, i-1)"
                                         v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
                                         >
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
-                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm" v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+                                    <b-form-input v-else v-for="(j, ind) in formInstruction.startBitField[i-1]"
+                                                  type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                                  v-on:input="debounce('formInstruction.startBitField['+i+'-1]['+ind+']', $event)"
+                                                  :value="formInstruction.startBitField[i-1][ind]" required
+                                                  :state="valid(j)" size="sm"
+                                                  class="mt-2">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
-                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm"v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+                                    <b-form-input v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]"
+                                                  type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                                  v-on:input="debounce('formInstruction.stopBitField['+i+'-1]['+ind+']', $event)"
+                                                  :value="formInstruction.stopBitField[i-1][ind]" required
+                                                  :state="valid(j)" size="sm"
+                                                  class="mt-2">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -1105,7 +1143,7 @@
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.separated[i-1]">
-                                    <b-button variant="primary"> + </b-button>
+                                    <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)"> + </b-button>
                                 </div>
                               </div>
                             </div>
