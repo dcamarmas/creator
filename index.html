@@ -818,6 +818,7 @@
                                             v-model="formInstruction.separated[i-1]"
                                             @change="changeToSeparateValue($event, i-1)"
                                             v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
+                                            class="ml-3"
                                             >
                                       </div>
                               <div class="col-lg-2 col-2 fields">
@@ -831,7 +832,7 @@
                                                   :value="formInstruction.startBitField[i-1][ind]" required
                                                   :state="valid(j)"
                                                   size="sm"
-                                                  class="mt-2">
+                                                  class="mb-2">
                                     </b-form-input>
                                 </b-form-group>
                               </div>
@@ -847,7 +848,7 @@
                                                   :value="formInstruction.stopBitField[i-1][ind]" required
                                                   :state="valid(j)"
                                                   size="sm"
-                                                  class="mt-2">
+                                                  class="mb-2">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
@@ -864,7 +865,8 @@
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields" v-if="formInstruction.separated[i-1]">
-                                  <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)"> + </b-button>
+                                  <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)" size="sm"> + </b-button>
+                                  <b-button v-if="formInstruction.startBitField[i-1].length > 1" variant="danger" size="sm" @click="lessFieldsToSeparateValues($event, i-1)"> - </b-button>
                               </div>
                             </div>
                           </div>
@@ -1102,6 +1104,7 @@
                                         v-model="formInstruction.separated[i-1]"
                                         @change="changeToSeparateValue($event, i-1)"
                                         v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
+                                        class="ml-3"
                                         >
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
@@ -1113,7 +1116,7 @@
                                                   v-on:input="debounce('formInstruction.startBitField['+i+'-1]['+ind+']', $event)"
                                                   :value="formInstruction.startBitField[i-1][ind]" required
                                                   :state="valid(j)" size="sm"
-                                                  class="mt-2">
+                                                  class="mb-2">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -1126,7 +1129,7 @@
                                                   v-on:input="debounce('formInstruction.stopBitField['+i+'-1]['+ind+']', $event)"
                                                   :value="formInstruction.stopBitField[i-1][ind]" required
                                                   :state="valid(j)" size="sm"
-                                                  class="mt-2">
+                                                  class="mb-2">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
@@ -1143,7 +1146,8 @@
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.separated[i-1]">
-                                    <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)"> + </b-button>
+                                    <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)" size="sm"> + </b-button>
+                                    <b-button v-if="formInstruction.startBitField[i-1].length > 1" variant="danger" size="sm"  @click="lessFieldsToSeparateValues($event, i-1)"> - </b-button>
                                 </div>
                               </div>
                             </div>

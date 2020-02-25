@@ -675,6 +675,13 @@ try{
         app.$forceUpdate();
       },
 
+
+    lessFieldsToSeparateValues(event, pos) {
+        this.formInstruction.startBitField[pos].pop();
+        this.formInstruction.stopBitField[pos].pop();
+        app.$forceUpdate();
+    },
+
       /*Load the available architectures and check if exists backup*/
       load_arch_available(){
         $.getJSON('architecture/available_arch.json', function(cfg){
