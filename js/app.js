@@ -1653,6 +1653,7 @@ try{
       },
       /*Show edit instruction modal*/
       editInstModal(elem, co, cop, button){
+        debugger;
         this.modalEditInst.title = "Edit Instruction";
         this.modalEditInst.element = elem;
         for (var i = 0; i < architecture.instructions.length; i++) {
@@ -1672,8 +1673,10 @@ try{
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
               this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
               this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
-              this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-              this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+              //this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+              //this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+              this.formInstruction.startBitField[j] = (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) ? architecture.instructions[i].fields[j].startbit : [...architecture.instructions[i].fields[j].startbit];
+              this.formInstruction.stopBitField[j] = (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) ? architecture.instructions[i].fields[j].stopbit : [...architecture.instructions[i].fields[j].stopbit];
               this.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
               /* add positions that allow to save temporaly the value of the break field in edit mode
                *  this line will be make to edit for get the real value of that field when it was stored
@@ -1801,9 +1804,11 @@ try{
               {
                 architecture.instructions[i].fields[j].name = this.formInstruction.nameField[j];
                 architecture.instructions[i].fields[j].type = this.formInstruction.typeField[j];
-                architecture.instructions[i].fields[j].startbit = parseInt(this.formInstruction.startBitField[j]);
-                architecture.instructions[i].fields[j].stopbit = parseInt(this.formInstruction.stopBitField[j]);
+                architecture.instructions[i].fields[j].startbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.startBitField[j]) : this.formInstruction.startBitField.map(val => parseInt(val));
+                architecture.instructions[i].fields[j].stopbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.stopBitField[j]): this.formInstruction.stopBitField.map(val => parseInt(val));
                 architecture.instructions[i].fields[j].valueField = this.formInstruction.valueField[j];
+                /*add data to store if the field is fragmented or not.*/
+                architecture.instructions[i].fields[j].separated = this.formInstruction.separated[j];
               }
               else{
                 var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j], valueField: this.formInstruction.valueField[j]};
