@@ -1708,9 +1708,21 @@ try{
           this.formInstruction.cop='';
         }*/
 
-        var newInstruction = {name: this.formInstruction.name, type: this.formInstruction.type, signature_definition: this.formInstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition,separated:[...this.formInstruction.separated] };
+        var newInstruction = {
+          name: this.formInstruction.name,
+          type: this.formInstruction.type,
+          signature_definition: this.formInstruction.signature_definition,
+          signature: signature, signatureRaw: signatureRaw,
+          co: this.formInstruction.co,
+          cop: this.formInstruction.cop,
+          nwords: this.formInstruction.nwords ,
+          fields: [],
+          definition: this.formInstruction.definition,
+          separated:[]
+        };
+        newInstruction.separated = this.formInstruction.startBitField.map((e, i) => this.formInstruction.separated[i] || false)
         architecture.instructions.push(newInstruction);
-
+        debugger;
         for (var i = 0; i < this.formInstruction.numfields; i++){
           var newField = { name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i],
                            startbit: !this.formInstruction.separated[i] ? parseInt(this.formInstruction.startBitField[i]) : this.formInstruction.startBitField[i].map(val => parseInt(val)),
@@ -1737,21 +1749,28 @@ try{
             this.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
             this.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
             this.formInstruction.definition = architecture.instructions[i].definition;
+            this.formInstruction.separated = [];
 
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
+              debugger;
               this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
               this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
               //this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
               //this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-              this.formInstruction.startBitField[j] = (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) ? architecture.instructions[i].fields[j].startbit : [...architecture.instructions[i].fields[j].startbit];
-              this.formInstruction.stopBitField[j] = (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) ? architecture.instructions[i].fields[j].stopbit : [...architecture.instructions[i].fields[j].stopbit];
+              if (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) {
+                this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+                this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+                this.formInstruction.separated.push(false);
+              }
+              else {
+                this.formInstruction.startBitField[j] = [...architecture.instructions[i].fields[j].startbit];
+                this.formInstruction.stopBitField[j] =  [...architecture.instructions[i].fields[j].stopbit];
+                this.formInstruction.separated.push(true);
+              }
               this.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
-              /* add positions that allow to save temporaly the value of the break field in edit mode
-               *  this line will be make to edit for get the real value of that field when it was stored
-               */
-              this.formInstruction.separated.push(false);
             }
             this.generateSignatureInst();
+            break;
           }
         }
         this.$root.$emit('bv::show::modal', 'modalEditInst', button);
@@ -1854,10 +1873,8 @@ try{
 
         this.showEditInstruction = false;
 
-        for (var i = 0; i < architecture.instructions.length; i++)
-	{
-          if (architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop)
-	  {
+        for (var i = 0; i < architecture.instructions.length; i++){
+          if (architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop) {
             architecture.instructions[i].name = this.formInstruction.name;
             architecture.instructions[i].type = this.formInstruction.type;
             architecture.instructions[i].co = this.formInstruction.co;
@@ -1865,18 +1882,18 @@ try{
             architecture.instructions[i].nwords = this.formInstruction.nwords;
             architecture.instructions[i].signature_definition = this.formInstruction.signature_definition;
             architecture.instructions[i].definition = this.formInstruction.definition;
+            if (!architecture.instructions[i].separated)
+                architecture.instructions[i].separated =Array(this.formInstruction.numfields).fill(false);
 
-            for (var j = 0; j < this.formInstruction.numfields; j++)
-	    {
-              if (j < architecture.instructions[i].fields.length)
-              {
+            for (var j = 0; j < this.formInstruction.numfields; j++) {
+              if (j < architecture.instructions[i].fields.length) {
                 architecture.instructions[i].fields[j].name = this.formInstruction.nameField[j];
                 architecture.instructions[i].fields[j].type = this.formInstruction.typeField[j];
                 architecture.instructions[i].fields[j].startbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.startBitField[j]) : this.formInstruction.startBitField[j].map(val => parseInt(val));
                 architecture.instructions[i].fields[j].stopbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.stopBitField[j]): this.formInstruction.stopBitField[j].map(val => parseInt(val));
                 architecture.instructions[i].fields[j].valueField = this.formInstruction.valueField[j];
                 /*add data to store if the field is fragmented or not.*/
-                architecture.instructions[i].fields[j].separated = this.formInstruction.separated[j];
+                architecture.instructions[i].separated[j] = this.formInstruction.separated[j];
               }
               else{
                 var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j], valueField: this.formInstruction.valueField[j]};
@@ -1899,6 +1916,7 @@ try{
             if(architecture.instructions[i].fields.length > this.formInstruction.numfields){
               architecture.instructions[i].fields.splice(this.formInstruction.numfields, (architecture.instructions[i].fields.length - this.formInstruction.numfields));
             }
+            break;
           }
         }
 
@@ -1975,6 +1993,7 @@ try{
         this.formInstruction.startBitField = [];
         this.formInstruction.stopBitField = [];
         this.formInstruction.valueField = [];
+        this.formInstruction.separated = [];
         this.formInstruction.assignedCop = false;
         this.formInstruction.signature ='';
         this.formInstruction.signatureRaw = '';
@@ -3661,6 +3680,7 @@ try{
                 binNum = update_binary.instructions_binary.length
               }
 
+              debugger;
               for(var a = 0; a < hex.length/2; a++){
                 if(auxAddr % 4 == 0){
                   memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
@@ -5800,6 +5820,7 @@ try{
       },
       /*Compile instruction*/
       instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit, instIndex, isPseudo){
+        debugger;
         if(instIndex == null){
           instIndex = 0;
         }
@@ -6082,6 +6103,7 @@ try{
                   var validReg = false;
                   var regNum = 0;
 
+                  debugger;
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                       for(var z = 0; z < architecture_hash.length; z++){
@@ -6347,7 +6369,25 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        if (!architecture.instructions[i].separated[a])
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        else {
+                            // check if the value fit on the first segment
+                            let myInm = inm; //it is created to evit edit the global variable
+                            for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
+                                let sb = architecture.instructions[i].fields[a].startbit[index],
+                                    stb = architecture.instructions[i].fields[a].stopbit[index],
+                                    diff = sb - stb+1;
+                                if (inm.length < diff) {
+                                    binary = binary.substring(0, binary.length - (sb+1)) + inm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+                                    break;
+                                } else {
+                                    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
+                                    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+                                    myInm = myInm.substring(0,myInm-diff);
+                                } 
+                            }
+                        }
                       }
                       
                       //re = RegExp("[fF][0-9]+");
