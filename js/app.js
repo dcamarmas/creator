@@ -6302,19 +6302,22 @@ try{
                         if (!architecture.instructions[i].separated[a])
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         else {
+                            debugger;
                             // check if the value fit on the first segment
                             let myInm = inm; //it is created to evit edit the global variable
                             for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
                                 let sb = architecture.instructions[i].fields[a].startbit[index],
                                     stb = architecture.instructions[i].fields[a].stopbit[index],
                                     diff = sb - stb+1;
-                                if (inm.length < diff) {
-                                    binary = binary.substring(0, binary.length - (sb+1)) + inm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+                                if (myInm.length <= diff) {
+                                    binary = binary.substring(0, binary.length - (sb+1)) +
+                                        myInm.padStart(diff, "0") +
+                                        binary.substring((binary.length - stb), binary.length);
                                     break;
                                 } else {
                                     let tmpinm = inm.substring(myInm.length - diff, myInm.length);
                                     binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
-                                    myInm = myInm.substring(0,myInm-diff);
+                                    myInm = myInm.substring(0,(myInm.length-diff));
                                 } 
                             }
                         }
@@ -6449,6 +6452,7 @@ try{
                         }
 
                         binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                      }
                       }
                       
                       //re = RegExp("[fF][0-9]+");
@@ -6906,6 +6910,7 @@ try{
 
                 console_log(address.toString(16));
                 console_log(instructions);
+                debugger;
               }
             }
           }

@@ -1722,7 +1722,6 @@ try{
         };
         newInstruction.separated = this.formInstruction.startBitField.map((e, i) => this.formInstruction.separated[i] || false)
         architecture.instructions.push(newInstruction);
-        debugger;
         for (var i = 0; i < this.formInstruction.numfields; i++){
           var newField = { name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i],
                            startbit: !this.formInstruction.separated[i] ? parseInt(this.formInstruction.startBitField[i]) : this.formInstruction.startBitField[i].map(val => parseInt(val)),
@@ -1752,7 +1751,6 @@ try{
             this.formInstruction.separated = [];
 
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
-              debugger;
               this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
               this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
               //this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
@@ -3680,7 +3678,6 @@ try{
                 binNum = update_binary.instructions_binary.length
               }
 
-              debugger;
               for(var a = 0; a < hex.length/2; a++){
                 if(auxAddr % 4 == 0){
                   memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
@@ -5820,7 +5817,6 @@ try{
       },
       /*Compile instruction*/
       instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit, instIndex, isPseudo){
-        debugger;
         if(instIndex == null){
           instIndex = 0;
         }
@@ -6103,7 +6099,6 @@ try{
                   var validReg = false;
                   var regNum = 0;
 
-                  debugger;
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                       for(var z = 0; z < architecture_hash.length; z++){
@@ -6372,19 +6367,22 @@ try{
                         if (!architecture.instructions[i].separated[a])
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         else {
+                            debugger;
                             // check if the value fit on the first segment
                             let myInm = inm; //it is created to evit edit the global variable
                             for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
                                 let sb = architecture.instructions[i].fields[a].startbit[index],
                                     stb = architecture.instructions[i].fields[a].stopbit[index],
                                     diff = sb - stb+1;
-                                if (inm.length < diff) {
-                                    binary = binary.substring(0, binary.length - (sb+1)) + inm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+                                if (myInm.length <= diff) {
+                                    binary = binary.substring(0, binary.length - (sb+1)) +
+                                        myInm.padStart(diff, "0") +
+                                        binary.substring((binary.length - stb), binary.length);
                                     break;
                                 } else {
                                     let tmpinm = inm.substring(myInm.length - diff, myInm.length);
                                     binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
-                                    myInm = myInm.substring(0,myInm-diff);
+                                    myInm = myInm.substring(0,(myInm.length-diff));
                                 } 
                             }
                         }
@@ -6399,6 +6397,7 @@ try{
                   break;
 
                 case "inm-unsigned":
+                  debugger;
                   token = instructionParts[j];
                   var token_user = "";
 
@@ -6976,6 +6975,7 @@ try{
 
                 console_log(address.toString(16));
                 console_log(instructions);
+                debugger;
               }
             }
           }
