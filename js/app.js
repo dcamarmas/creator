@@ -6165,8 +6165,13 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                  
+                      if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                      else {
+                        fieldsLength = architecture.instructions[i].fields[a].startbit
+                          .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
+                          .reduce((old, newV) => old+newV);
+                      }
                       var inm;
 
                       if(token.match(/^0x/)){
@@ -6299,10 +6304,9 @@ try{
                           return -1;
                         }
 
-                        if (!architecture.instructions[i].separated[a])
+                        if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                        else {
-                            debugger;
+                        else {                            
                             // check if the value fit on the first segment
                             let myInm = inm; //it is created to evit edit the global variable
                             for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
@@ -6339,7 +6343,16 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                      if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                      else {
+                        fieldsLength = architecture.instructions[i].fields[a].startbit
+                          .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
+                          .reduce((old, newV) => old+newV);
+                      }
+
+                      //fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                   
                       var inm;
 
@@ -6451,9 +6464,31 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        if (!architecture.instructions[i].separated[a])
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        else {
+                            debugger;
+                            // check if the value fit on the first segment
+                            let myInm = inm; //it is created to evit edit the global variable
+                            for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
+                                let sb = architecture.instructions[i].fields[a].startbit[index],
+                                    stb = architecture.instructions[i].fields[a].stopbit[index],
+                                    diff = sb - stb+1;
+                                if (myInm.length <= diff) {
+                                    binary = binary.substring(0, binary.length - (sb+1)) +
+                                        myInm.padStart(diff, "0") +
+                                        binary.substring((binary.length - stb), binary.length);
+                                    break;
+                                } else {
+                                    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
+                                    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+                                    myInm = myInm.substring(0,(myInm.length-diff));
+                                } 
+                            }
+                        }
                       }
-                      }
+                  
                       
                       //re = RegExp("[fF][0-9]+");
                       re = RegExp("Field[0-9]+");
