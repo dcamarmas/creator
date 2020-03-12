@@ -6230,13 +6230,17 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
+			//aqui
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+			/*
                       if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
                         fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                      else {
+                      else 
                         fieldsLength = architecture.instructions[i].fields[a].startbit
                           .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
                           .reduce((old, newV) => old+newV);
-                      }
+			*/
+                      
                       var inm;
 
                       if(token.match(/^0x/)){
@@ -6369,6 +6373,8 @@ try{
                           return -1;
                         }
 
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+			/*
                         if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         else {                            
@@ -6390,6 +6396,7 @@ try{
                                 } 
                             }
                         }
+			*/
                       }
                       
                       //re = RegExp("[fF][0-9]+");
@@ -6418,6 +6425,7 @@ try{
                       }
 
                       //fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
                   
                       var inm;
 
@@ -6530,6 +6538,9 @@ try{
                         }
 
                         //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+			/*
                         if (!architecture.instructions[i].separated[a])
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         else {
@@ -6552,6 +6563,7 @@ try{
                                 } 
                             }
                         }
+			*/
                       }
                   
                       
@@ -6570,7 +6582,8 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			//aqui
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
 
                       if(token.match(/^0x/)){
                         var value = token.split("x");
@@ -6586,7 +6599,8 @@ try{
                         }
 
                         addr = (parseInt(token, 16)).toString(2);
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                         //re = RegExp("[fF][0-9]+");
                         re = RegExp("Field[0-9]+");
                         instruction = instruction.replace(re, token);
@@ -6609,7 +6623,7 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
                   
                       var inm;
 
@@ -6743,7 +6757,8 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                       }
                       
                       //re = RegExp("[fF][0-9]+");
@@ -6764,7 +6779,7 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
                   
                       var inm;
 
@@ -6888,7 +6903,8 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                       }
                       
                       //re = RegExp("[fF][0-9]+");
@@ -9920,4 +9936,52 @@ catch(e)
    setTimeout(function(){
      location.reload(true)
    }, 3000);
+}
+
+
+/** methods that not necessary must be load by vue */
+
+/**
+ * method in charge of return the length of the value. The most use are whene the field are fragment
+ * this funciton is create with the intention of reduce errors on the code in case of add new fragments field
+ * @return {int} the size of the field
+*/
+function getFieldLength(separated, startbit, stopbit,a) {
+	let fieldsLength;
+	if (!separated || !separated[a])
+		fieldsLength = startbit - stopbit + 1;
+	else 
+		fieldsLength = startbit
+		  .map((b, i) => b - stopbit[i]+1)
+		  .reduce((old, newV) => old+newV);
+	return fieldsLength;
+}
+
+/**
+ * method in charge of return the binary instruction after add the inmediate value of the instruction
+ * @return {string} the new binary update
+*/
+function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a) {
+	if (!separated ||!separated[a])
+	    binary = binary.substring(0, binary.length - (startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (stopbit ), binary.length);
+	else {                            
+	    // check if the value fit on the first segment
+	    let myInm = inm;
+	    for (let i = startbit.length-1; i >= 0;  i--) {
+		let sb = startbit[i],
+		    stb = stopbit[i],
+		    diff = sb - stb+1;
+		if (myInm.length <= diff) {
+		    binary = binary.substring(0, binary.length - (sb+1)) +
+			myInm.padStart(diff, "0") +
+			binary.substring((binary.length - stb), binary.length);
+		    break;
+		} else {
+		    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
+		    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+		    myInm = myInm.substring(0,(myInm.length-diff));
+		} 
+	    }
+	}
+	return binary;
 }
