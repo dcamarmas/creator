@@ -999,16 +999,18 @@
                                 </div>
                                 <div class="col-lg-1 col-1 fields">
                                     <b-form-checkbox
+                                        :id="'view-fragment-'+ i"
                                         v-model="formInstruction.separated[i-1]"
                                         v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
                                         class="ml-3"
                                         disabled
                                         >
                                 </div>
-                                <!-- start bit desription -->
+                                <!-- start bit description -->
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
                                     <b-form-input
+                                        :value="true"
                                        type="number"
                                        min="0"
                                        :max="32 * formInstruction.nwords - 1"
@@ -1021,10 +1023,11 @@
                                        v-else v-for="(j, ind) in formInstruction.startBitField[i-1]"
                                        type="number" min="0" :max="32 * formInstruction.nwords - 1"
                                        v-model="formInstruction.startBitField[i-1][ind]" required
+                                      class="mb-2"
                                        disabled>
                                   </b-form-group>
                                 </div>
-                                <!-- stop bit desription -->
+                                <!-- stop bit description -->
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
                                     <b-form-input
@@ -1042,6 +1045,7 @@
                                       type="number" min="0" :max="32 * formInstruction.nwords - 1"
                                       v-model="formInstruction.stopBitField[i-1][ind]"
                                       required
+                                      class="mb-2"
                                       disabled>
                                     </b-form-input>
                                     
