@@ -499,7 +499,7 @@ try{
         size: 0,
       },
       /* Allow instruction with fractioned fields */
-      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
+      fragmentData:["co", "inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
       
 
 
@@ -730,13 +730,24 @@ try{
        */
 
       changeToSeparateValue( val, pos ) {
-        this.formInstruction.startBitField[pos] = [0];
-        this.formInstruction.stopBitField[pos] =[0];
+          if (val) {
+            this.formInstruction.startBitField[pos] = [0];
+            this.formInstruction.stopBitField[pos] =[0];
+              if (this.formInstruction.typeField[pos] == 'co')
+                  this.formInstruction.co = ['0'];
+          } else {
+            this.formInstruction.startBitField[pos] = 0;
+            this.formInstruction.stopBitField[pos] =0;
+              if (this.formInstruction.typeField[pos] == 'co')
+                  this.formInstruction.co = '0';
+          }
       },
 
       addMoreFieldsToSeparateValues(event, pos) {
         this.formInstruction.startBitField[pos].push(0);
         this.formInstruction.stopBitField[pos].push(0);
+          if (this.formInstruction.typeField[pos] == 'co')
+              this.formInstruction.co.push('0')
         app.$forceUpdate();
       },
 
@@ -744,6 +755,8 @@ try{
     lessFieldsToSeparateValues(event, pos) {
         this.formInstruction.startBitField[pos].pop();
         this.formInstruction.stopBitField[pos].pop();
+          if (this.formInstruction.typeField[pos] == 'co')
+              this.formInstruction.co.pop()
         app.$forceUpdate();
     },
 
@@ -1648,11 +1661,19 @@ try{
 
         this.formInstruction.cop = auxCop;
 
-        for (var i = 0; i < this.formInstruction.co.length; i++){
-          if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-              show_notification('The value of co must be binary', 'danger') ;
-              return;
-          }
+          if (typeof(this.formInstruction.co) != 'object')
+            for (var i = 0; i < this.formInstruction.co.length; i++){
+              if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+                  show_notification('The value of co must be binary', 'danger') ;
+                  return;
+              }
+            }
+        else {
+            for (let val in this.formInstruction.co)
+                if (!/[01]+/.test(val)) {
+                  show_notification('The value of co must be binary', 'danger') ;
+                  return;
+                }
         }
 
         for (var i = 0; i < this.formInstruction.numfields; i++){
@@ -1664,15 +1685,17 @@ try{
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
             show_notification('Please complete all fields', 'danger') ;
         } 
-        else if (isNaN(this.formInstruction.co)){
+        else if (typeof(this.formInstruction.co) != 'object' && isNaN(this.formInstruction.co)){
                  show_notification('The field co must be numbers', 'danger') ;
-        }
+        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some(val => isNaN(val)))
+                 show_notification('The field co must be numbers', 'danger') ;
         else if(isNaN(this.formInstruction.cop)){
                  show_notification('The field cop must be numbers', 'danger') ;
         }
-        else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+        else if(typeof(this.formInstruction.co) != 'object' && (this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
                  show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
-        }
+        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some((val, ind) => val.length !== app.formInstruction.startBitField[0][ind] - app.formInstruction.stopBitField[0][ind] +1))
+                 show_notification('The length of co don\'t match with the desription', 'danger');
         else {
           this.newInstruction();
         }
@@ -1813,12 +1836,21 @@ try{
 
         this.formInstruction.cop = auxCop;
 
-        for (var i = 0; i < this.formInstruction.co.length; i++){
-          if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-              show_notification('The value of co must be binary', 'danger') ;
-              return;
+          if (typeof(this.formInstruction.co) !== 'object')
+            for (var i = 0; i < this.formInstruction.co.length; i++){
+              if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+                  show_notification('The value of co must be binary', 'danger') ;
+                  return;
+              }
+            }
+          else {
+              for (let val in this.formInstruction.co) {
+                  if (!/^[01]+$/.test(val)) {
+                      show_notification('The value of co must be binary', 'danger') ;
+                      return;
+                  }
+              }
           }
-        }
 
         for (var i = 0; i < this.formInstruction.numfields; i++){
           if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
@@ -1828,15 +1860,15 @@ try{
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
           show_notification('Please complete all fields', 'danger') ;
         }
-        else if(isNaN(this.formInstruction.co)){
-          show_notification('The field co must be numbers', 'danger') ;
-        }
+        if ((typeof(this.formInstruction.co) != 'object' && isNaN(this.formInstruction.co)) || (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some(val => isNaN(val))))
+                 show_notification('The field co must be numbers', 'danger') ;
         else if(isNaN(this.formInstruction.cop)){
           show_notification('The field cop must be numbers', 'danger') ;
         }
-        else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-          show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger') ;
-        }
+        else if(typeof(this.formInstruction.co) != 'object' && (this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+                 show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
+        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some((val, ind) => val.length !== app.formInstruction.startBitField[0][ind] - app.formInstruction.stopBitField[0][ind] +1))
+                 show_notification('The length of co don\'t match with the desription', 'danger');
         else {
           this.editInstruction(inst, co, cop);
         }
@@ -6925,11 +6957,28 @@ try{
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     console_log(architecture.instructions[i].fields[a].name);
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                      
-                      console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
+                      // Si el co es un array hay que separarlo
+                      /**/
+                      if (typeof(architecture.instructions[i].fields[a].startbit) == 'object') {
+                          fieldsLength = architecture.instructions[i].fields[a].startbit.reduce((t, cv, ind) => {
+                            t = !ind ? 0 : t;
+                            t+(cv-architecture.instructions[i].fields[a].stopbit[ind]+1)
+                          }); 
+                          console_log(architecture.instructions[i].co.join("").padStart(fieldsLength, "0"));
+                          // aqui_ahora
+                      } else {
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
+                      }
+                      /*
+                      fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                      let co =typeof(architecture.instructions[i].fields[a].startbit) == 'object' ?
+                        architecture.instructions[i].co.join("").padStart(fieldsLength, "0") :
+                        (architecture.instructions[i].co).padStart(fieldsLength, "0");
+                      binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm, fieldsLength, a);
+                      */
 
-                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
                       
                       console_log(binary);
 
@@ -7026,7 +7075,6 @@ try{
 
                 console_log(address.toString(16));
                 console_log(instructions);
-                debugger;
               }
             }
           }
