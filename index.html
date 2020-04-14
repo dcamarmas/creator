@@ -867,9 +867,18 @@
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                <b-form-group>
+                                <b-form-group v-if="typeof(formInstruction.stopBitField[i-1]) != 'object'">
                                   <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                   </b-form-input>
+                                </b-form-group>
+                                <b-form-group v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]">
+                                  <b-form-input type="text"
+                                      v-on:input="debounce('formInstruction.co['+ ind + ']', $event)"
+                                      :value="formInstruction.co[ind]"
+                                      required :state="valid(formInstruction.co[ind])"
+                                      size="sm">
+                                  </b-form-input>
+                                    
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
@@ -1181,7 +1190,8 @@
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
-                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm"v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm"
+                                        v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
                                     </b-form-input>
                                     <b-form-input v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]"
                                                   type="number" min="0" :max="32 * formInstruction.nwords - 1"
@@ -1193,10 +1203,13 @@
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                  <b-form-group>
+                                  <b-form-group v-if="typeof(formInstruction.stopBitField[i-1]) !== 'object'">
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
+                                  <b-form-group else v-for="(j, ind) in formInstruction.stopBitField[i-1]">
+                                    <b-form-input type="text" v-on:input="debounce('formInstruction.co['+ind+']', $event)" :value="formInstruction.co[ind]" required :state="valid(formInstruction.co[ind])" size="sm">
+                                    </b-form-input>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
                                   <b-form-group>
