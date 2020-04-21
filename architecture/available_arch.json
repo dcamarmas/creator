@@ -5,5 +5,12 @@
     "alt":"MIPS logo",
     "id": "select_confMIPS",
     "description": "The MIPS processor was developed by Dr.John Hennessey and his graduate students at Stanford University in the early 1980s. It is currently one of the major processors in the embedded processor market."
+  },
+  {
+      "name": "RISC-V-like",
+      "img": "./images/personalized_logo.png",
+      "alt": "RISC-V logo",
+      "id": "select_confRISV",
+      "description": ""
   }
 ]
