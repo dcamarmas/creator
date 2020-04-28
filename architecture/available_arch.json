@@ -8,7 +8,7 @@
   },
   {
       "name": "RISC-V-like",
-      "img": "./images/personalized_logo.png",
+      "img": "./images/risc-v_logo.png",
       "alt": "RISC-V logo",
       "id": "select_confRISV",
       "description": ""

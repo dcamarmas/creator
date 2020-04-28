@@ -1711,8 +1711,10 @@ try{
           }
         }
 
+        let auxcop = (() => this.formInstruction.co instanceof Array ? this.formInstrucion.co.join("") : this.formInstruction.co)() + this.formInstruction.cop;
+
         for (var i = 0; i < architecture.instructions.length; i++){
-          if ((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
+          if ((auxcop == architecture.instructions[i].cop) && (!auxcop == false)){
                show_notification('The instruction already exists', 'danger') ;
                return;
           }
@@ -1894,8 +1896,11 @@ try{
           }
         }
 
+          
+        let auxcop = (() => this.formInstruction.co instanceof Array ? this.formInstrucion.co.join("") : this.formInstruction.co)() + this.formInstruction.cop;
+
         for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
-          if ((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
+          if ((auxcop == architecture.instructions[i].cop) && (!auxcop == false) && (auxcop != cop)){
                show_notification('The instruction already exists', 'danger') ;
                return;
           }
