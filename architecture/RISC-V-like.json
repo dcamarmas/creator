@@ -123,7 +123,7 @@
       "double_precision": false,
       "elements": [
         {
-          "name": "x0",
+          "name": "ZERO",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -133,7 +133,7 @@
           ]
         },
         {
-          "name": "x1",
+          "name": "RA",
           "nbits": "32",
           "value": "20",
           "default_value": "0",
@@ -143,7 +143,7 @@
           ]
         },
         {
-          "name": "x2",
+          "name": "SP",
           "nbits": "32",
           "value": "80",
           "default_value": "0",
@@ -153,7 +153,7 @@
           ]
         },
         {
-          "name": "x3",
+          "name": "GP",
           "nbits": "32",
           "value": "100",
           "default_value": "0",
@@ -163,7 +163,7 @@
           ]
         },
         {
-          "name": "x4",
+          "name": "TP",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -173,7 +173,7 @@
           ]
         },
         {
-          "name": "x5",
+          "name": "t0",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -183,7 +183,7 @@
           ]
         },
         {
-          "name": "x6",
+          "name": "t1",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -193,7 +193,7 @@
           ]
         },
         {
-          "name": "x7",
+          "name": "t2",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -203,7 +203,7 @@
           ]
         },
         {
-          "name": "x8",
+          "name": "s0/fp",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -213,7 +213,7 @@
           ]
         },
         {
-          "name": "x9",
+          "name": "s1",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -223,7 +223,7 @@
           ]
         },
         {
-          "name": "x10",
+          "name": "a0",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -233,7 +233,7 @@
           ]
         },
         {
-          "name": "x11",
+          "name": "a1",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -243,7 +243,7 @@
           ]
         },
         {
-          "name": "x12",
+          "name": "a2",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -253,7 +253,7 @@
           ]
         },
         {
-          "name": "x13",
+          "name": "a3",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -263,7 +263,7 @@
           ]
         },
         {
-          "name": "x14",
+          "name": "a4",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -273,7 +273,7 @@
           ]
         },
         {
-          "name": "x15",
+          "name": "a5",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -283,7 +283,7 @@
           ]
         },
         {
-          "name": "x16",
+          "name": "a6",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -293,7 +293,7 @@
           ]
         },
         {
-          "name": "x17",
+          "name": "a7",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -303,7 +303,7 @@
           ]
         },
         {
-          "name": "x18",
+          "name": "s2",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -313,7 +313,7 @@
           ]
         },
         {
-          "name": "x19",
+          "name": "s3",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -323,7 +323,7 @@
           ]
         },
         {
-          "name": "x20",
+          "name": "s4",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -333,7 +333,7 @@
           ]
         },
         {
-          "name": "x21",
+          "name": "s5",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -343,7 +343,7 @@
           ]
         },
         {
-          "name": "x22",
+          "name": "s6",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -353,7 +353,7 @@
           ]
         },
         {
-          "name": "x23",
+          "name": "s7",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -363,7 +363,7 @@
           ]
         },
         {
-          "name": "x24",
+          "name": "s8",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -373,7 +373,7 @@
           ]
         },
         {
-          "name": "x25",
+          "name": "s9",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -383,7 +383,7 @@
           ]
         },
         {
-          "name": "x26",
+          "name": "s10",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -393,7 +393,7 @@
           ]
         },
         {
-          "name": "x27",
+          "name": "s11",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -403,7 +403,7 @@
           ]
         },
         {
-          "name": "x28",
+          "name": "t3",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -413,7 +413,7 @@
           ]
         },
         {
-          "name": "x29",
+          "name": "t4",
           "nbits": "32",
           "value": "268435452",
           "default_value": "268435452",
@@ -423,7 +423,7 @@
           ]
         },
         {
-          "name": "x30",
+          "name": "t5",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -433,20 +433,10 @@
           ]
         },
         {
-          "name": "x31",
+          "name": "t6",
           "nbits": "32",
           "value": "4294967295",
           "default_value": "4294967295",
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "pc",
-          "nbits": 32,
-          "value": "0",
-          "default_value": "0",
           "properties": [
             "read",
             "write"
@@ -1440,24 +1430,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "jalr,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "jalr rd rs1 inm",
-      "co": [
-        "1100111",
-        "000"
-      ],
-      "cop": "",
+      "co": "1100111",
+      "cop": "000",
       "nwords": 1,
       "fields": [
         {
           "name": "jalr",
           "type": "co",
-          "startbit": [
-            6,
-            14
-          ],
-          "stopbit": [
-            0,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1476,11 +1457,19 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "000"
         }
       ],
       "definition": "rd=pc+4;pc+=inm;",
       "separated": [
-        true,
+        false,
+        false,
         false,
         false,
         false
@@ -1489,27 +1478,25 @@
     {
       "name": "beq",
       "type": "Conditional bifurcation",
-      "signature_definition": "F0 F3 F2 F1",
+      "signature_definition": "F0 F4 F3 F2",
       "signature": "beq,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "beq rs1 rs2 inm",
-      "co": [
-        "1100011",
-        "000"
-      ],
-      "cop": "",
+      "co": "1100011",
+      "cop": "000",
       "nwords": 1,
       "fields": [
         {
           "name": "beq",
           "type": "co",
-          "startbit": [
-            6,
-            14
-          ],
-          "stopbit": [
-            0,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "000"
         },
         {
           "name": "inm",
@@ -1538,7 +1525,8 @@
       ],
       "definition": "if (rs1 === rs2) pc+=inm;",
       "separated": [
-        true,
+        false,
+        false,
         true,
         false,
         false
@@ -1550,24 +1538,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "bne,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "bne rs1 rs2 inm",
-      "co": [
-        "1100011",
-        "001"
-      ],
-      "cop": "",
+      "co": "1100011",
+      "cop": "001",
       "nwords": 1,
       "fields": [
         {
           "name": "bne",
           "type": "co",
-          "startbit": [
-            6,
-            14
-          ],
-          "stopbit": [
-            0,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1592,11 +1571,18 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "001"
         }
       ],
       "definition": "if (rs1 !== rs2) pc+=inm;",
       "separated": [
-        true,
+        false,
         true,
         false,
         false
@@ -1608,24 +1594,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "blt,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "blt rs1 rs2 inm",
-      "co": [
-        "1100011",
-        "100"
-      ],
-      "cop": "",
+      "co": "1100011",
+      "cop": "100",
       "nwords": 1,
       "fields": [
         {
           "name": "blt",
           "type": "co",
-          "startbit": [
-            6,
-            14
-          ],
-          "stopbit": [
-            0,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1650,11 +1627,18 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "100"
         }
       ],
       "definition": "if (rs1 < rs2) pc+=inm;",
       "separated": [
-        true,
+        false,
         true,
         false,
         false
@@ -1666,24 +1650,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "bge,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "bge rs1 rs2 inm",
-      "co": [
-        "1100011",
-        "101"
-      ],
-      "cop": "",
+      "co": "1100011",
+      "cop": "101",
       "nwords": 1,
       "fields": [
         {
           "name": "bge",
           "type": "co",
-          "startbit": [
-            6,
-            14
-          ],
-          "stopbit": [
-            0,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1708,11 +1683,18 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "101"
         }
       ],
       "definition": "if (rs1 >= rs2) pc+=inm;",
       "separated": [
-        true,
+        false,
         true,
         false,
         false
@@ -1724,24 +1706,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "bltu,INT-Reg,INT-Reg,inm-unsigned",
       "signatureRaw": "bltu rs1 rs2 inm",
-      "co": [
-        "1100011",
-        "110"
-      ],
-      "cop": "",
+      "co": "1100011",
+      "cop": "110",
       "nwords": 1,
       "fields": [
         {
           "name": "bltu",
           "type": "co",
-          "startbit": [
-            6,
-            14
-          ],
-          "stopbit": [
-            0,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1766,11 +1739,18 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "110"
         }
       ],
       "definition": "if (rs1 < rs2) pc+=inm;",
       "separated": [
-        true,
+        false,
         true,
         false,
         false
@@ -1780,26 +1760,17 @@
       "name": "bgeu",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bge,INT-Reg,INT-Reg,inm-unsigned",
-      "signatureRaw": "bge rs1 rs2 inm",
-      "co": [
-        "1100011",
-        "111"
-      ],
-      "cop": "",
+      "signature": "bgeu,INT-Reg,INT-Reg,inm-unsigned",
+      "signatureRaw": "bgeu rs1 rs2 inm",
+      "co": "1100011",
+      "cop": "111",
       "nwords": 1,
       "fields": [
         {
-          "name": "bge",
+          "name": "bgeu",
           "type": "co",
-          "startbit": [
-            6,
-            14
-          ],
-          "stopbit": [
-            0,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1824,64 +1795,19 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "111"
         }
       ],
       "definition": "if (rs1 >= rs2) pc+=inm;",
       "separated": [
-        true,
-        true,
         false,
-        false
-      ]
-    },
-    {
-      "name": "lh",
-      "type": "Memory access",
-      "signature_definition": "F0 F3 F1(F2)",
-      "signature": "lh,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "lh rd inm(rs1)",
-      "co": [
-        "001",
-        "0000011"
-      ],
-      "cop": "",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "lh",
-          "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
-        },
-        {
-          "name": "inm",
-          "type": "inm-signed",
-          "startbit": 31,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "assert((inm+rs1)%2==0; \"The memory must be aligned\")\nrd=((MP.h.[inm+rs1] << 16 ) >> 16);\ncheck_stack_limit(rd.name; sp.name; rd)",
-      "separated": [
         true,
-        false,
         false,
         false
       ]
@@ -1892,24 +1818,15 @@
       "signature_definition": "F0 F3 F1(F2)",
       "signature": "lb,INT-Reg,inm-signed(INT-Reg)",
       "signatureRaw": "lb rd inm(rs1)",
-      "co": [
-        "001",
-        "0000011"
-      ],
-      "cop": "",
+      "co": "0000011",
+      "cop": "000",
       "nwords": 1,
       "fields": [
         {
           "name": "lb",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1928,11 +1845,70 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "000"
         }
       ],
       "definition": "rd=((MP.b.[inm+rs1] << 24) >> 24);\ncheck_stack_limit(rd.name; sp.name; rd)",
       "separated": [
-        true,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "lh",
+      "type": "Memory access",
+      "signature_definition": "F0 F3 F1(F2)",
+      "signature": "lh,INT-Reg,inm-signed(INT-Reg)",
+      "signatureRaw": "lh rd inm(rs1)",
+      "co": "0000011",
+      "cop": "001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "lh",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "inm",
+          "type": "inm-signed",
+          "startbit": 31,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "001"
+        }
+      ],
+      "definition": "assert((inm+rs1)%2==0; \"The memory must be aligned\")\nrd=((MP.h.[inm+rs1] << 16 ) >> 16);\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "separated": [
+        false,
+        false,
         false,
         false,
         false
@@ -1944,24 +1920,15 @@
       "signature_definition": "F0 F3 F1(F2)",
       "signature": "lw,INT-Reg,inm-signed(INT-Reg)",
       "signatureRaw": "lw rd inm(rs1)",
-      "co": [
-        "010",
-        "0000011"
-      ],
-      "cop": "",
+      "co": "0000011",
+      "cop": "010",
       "nwords": 1,
       "fields": [
         {
           "name": "lw",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -1980,11 +1947,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "010"
         }
       ],
       "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd=MP.w.[val+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -1996,24 +1970,15 @@
       "signature_definition": "F0 F3 F1(F2)",
       "signature": "lhu,INT-Reg,inm-signed(INT-Reg)",
       "signatureRaw": "lhu rd inm(rs1)",
-      "co": [
-        "101",
-        "0000011"
-      ],
-      "cop": "",
+      "co": "0000011",
+      "cop": "101",
       "nwords": 1,
       "fields": [
         {
           "name": "lhu",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2032,11 +1997,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "101"
         }
       ],
       "definition": "rd=(MP.h.[rs1+inm] >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2048,24 +2020,15 @@
       "signature_definition": "F0 F3 F1(F2)",
       "signature": "lbu,INT-Reg,inm-signed(INT-Reg)",
       "signatureRaw": "lbu rd inm(rs1)",
-      "co": [
-        "100",
-        "0000011"
-      ],
-      "cop": "",
+      "co": "0000011",
+      "cop": "100",
       "nwords": 1,
       "fields": [
         {
           "name": "lbu",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2084,11 +2047,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "100"
         }
       ],
       "definition": "rd=(MP.b.[rs1+inm] >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2100,24 +2070,15 @@
       "signature_definition": "F0 F2 F3(F1) ",
       "signature": "sb,INT-Reg,INT-Reg(inm-signed),",
       "signatureRaw": "sb rs2 rs1(inm) ",
-      "co": [
-        "000",
-        "0100011"
-      ],
-      "cop": "",
+      "co": "0100011",
+      "cop": "000",
       "nwords": 1,
       "fields": [
         {
           "name": "sb",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2142,11 +2103,18 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "000"
         }
       ],
       "definition": "MP.b.[inm+rs1]=rs2",
       "separated": [
-        true,
+        false,
         true,
         false,
         false
@@ -2158,24 +2126,15 @@
       "signature_definition": "F0 F2 F3(F1) ",
       "signature": "sh,INT-Reg,INT-Reg(inm-signed),",
       "signatureRaw": "sh rs2 rs1(inm) ",
-      "co": [
-        "001",
-        "0100011"
-      ],
-      "cop": "",
+      "co": "0100011",
+      "cop": "001",
       "nwords": 1,
       "fields": [
         {
           "name": "sh",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2200,11 +2159,18 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "001"
         }
       ],
       "definition": "assert((inm+rs1)%2==0; \"The memory must be align\")\nMP.h.[inm+rs1]=rs2;",
       "separated": [
-        true,
+        false,
         true,
         false,
         false
@@ -2216,24 +2182,15 @@
       "signature_definition": "F0 F2 F3(F1) ",
       "signature": "sw,INT-Reg,INT-Reg(inm-signed),",
       "signatureRaw": "sw rs2 rs1(inm) ",
-      "co": [
-        "010",
-        "0100011"
-      ],
-      "cop": "",
+      "co": "0100011",
+      "cop": "010",
       "nwords": 1,
       "fields": [
         {
           "name": "sw",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2258,11 +2215,18 @@
           "type": "INT-Reg",
           "startbit": 19,
           "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "010"
         }
       ],
       "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nMP.w.[inm+rs1]=rs2",
       "separated": [
-        true,
+        false,
         true,
         false,
         false
@@ -2274,24 +2238,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "addi,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "addi rd rs1 inm",
-      "co": [
-        "000",
-        "0010011"
-      ],
-      "cop": "",
+      "co": "0010011",
+      "cop": "000",
       "nwords": 1,
       "fields": [
         {
           "name": "addi",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2310,11 +2265,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "000"
         }
       ],
       "definition": "assert(((rs1 >> 0) >= 0 && (inm >> 0) <= 0) || ((rs1 >> 0) <= 0 && (inm >> 0) >= 0) || ((rs1 >> 0) > 0 && (inm >> 0) > 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) > 0) || ((rs1 >> 0) < 0 && (inm >> 0) < 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) < 0); \"Integer Overflow\")\nrd=rs1+inm;\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2326,24 +2288,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "slti,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "slti rd rs1 inm",
-      "co": [
-        "010",
-        "0010011"
-      ],
-      "cop": "",
+      "co": "0010011",
+      "cop": "010",
       "nwords": 1,
       "fields": [
         {
           "name": "slti",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2362,11 +2315,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "010"
         }
       ],
       "definition": "rd = (rs1 >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rs1.name; sp.name; rs1);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2378,24 +2338,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "sltiu,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "sltiu rd rs1 inm",
-      "co": [
-        "011",
-        "0010011"
-      ],
-      "cop": "",
+      "co": "0010011",
+      "cop": "011",
       "nwords": 1,
       "fields": [
         {
           "name": "sltiu",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2414,11 +2365,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "011"
         }
       ],
       "definition": "rd = (rs1 >>> 0) < (inm >>> 0) ? 1 : 0;\ncheck_stack_limit(rs1.name; sp.name; rs1);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2430,24 +2388,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "xori,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "xori rd rs1 inm",
-      "co": [
-        "100",
-        "0010011"
-      ],
-      "cop": "",
+      "co": "0010011",
+      "cop": "100",
       "nwords": 1,
       "fields": [
         {
           "name": "xori",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2466,11 +2415,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "100"
         }
       ],
       "definition": "rd=rs1^val;\ncheck_stack_limit(rd.name; sp.name; rd)",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2482,24 +2438,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "ori,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "ori rd rs1 inm",
-      "co": [
-        "110",
-        "0010011"
-      ],
-      "cop": "",
+      "co": "0010011",
+      "cop": "110",
       "nwords": 1,
       "fields": [
         {
           "name": "ori",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2518,11 +2465,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "110"
         }
       ],
       "definition": "rd=rs1|val;\ncheck_stack_limit(rd.name; sp.name; rd)\n",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2534,24 +2488,15 @@
       "signature_definition": "F0 F3 F2 F1",
       "signature": "andi,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "andi rd rs1 inm",
-      "co": [
-        "111",
-        "0010011"
-      ],
-      "cop": "",
+      "co": "0010011",
+      "cop": "111",
       "nwords": 1,
       "fields": [
         {
           "name": "andi",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "inm",
@@ -2570,11 +2515,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "111"
         }
       ],
       "definition": "rd=rs1&(val>>>0);\ncheck_stack_limit(rd.name; sp.name; rd)\n",
       "separated": [
-        true,
+        false,
         false,
         false,
         false
@@ -2586,27 +2538,18 @@
       "signature_definition": "F0 F4 F3 F2",
       "signature": "slli,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "slli rd rs1 shapt",
-      "co": [
-        "001",
-        "0010011"
-      ],
-      "cop": "0000000",
+      "co": "0010011",
+      "cop": "0000000001",
       "nwords": 1,
       "fields": [
         {
           "name": "slli",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
-          "name": "opcode",
+          "name": "cop",
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
@@ -2629,11 +2572,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "001"
         }
       ],
       "definition": "rd = (rs1 << shampt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false,
@@ -2646,27 +2596,18 @@
       "signature_definition": "F0 F4 F3 F2",
       "signature": "srli,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "srli rd rs1 shapt",
-      "co": [
-        "101",
-        "0010011"
-      ],
-      "cop": "0000000",
+      "co": "0010011",
+      "cop": "0000000101",
       "nwords": 1,
       "fields": [
         {
           "name": "srli",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
-          "name": "opcode",
+          "name": "cop",
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
@@ -2689,11 +2630,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "101"
         }
       ],
       "definition": "rd = (rs1 >> shampt);\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false,
@@ -2706,27 +2654,18 @@
       "signature_definition": "F0 F4 F3 F2",
       "signature": "srai,INT-Reg,INT-Reg,inm-signed",
       "signatureRaw": "srai rd rs1 shapt",
-      "co": [
-        "101",
-        "0010011"
-      ],
-      "cop": "0100000",
+      "co": "0010011",
+      "cop": "0100000101",
       "nwords": 1,
       "fields": [
         {
           "name": "srai",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
-          "name": "opcode",
+          "name": "cop",
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
@@ -2749,11 +2688,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "101"
         }
       ],
       "definition": "rd = (rs1 >> shampt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false,
@@ -2766,24 +2712,15 @@
       "signature_definition": "F0 F1 F2 F3",
       "signature": "add,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "add rs2 rs1 rd",
-      "co": [
-        "0110011",
-        "000"
-      ],
-      "cop": "0110011",
+      "co": "0110011",
+      "cop": "0000000000",
       "nwords": 1,
       "fields": [
         {
           "name": "add",
           "type": "co",
-          "startbit": [
-            31,
-            14
-          ],
-          "stopbit": [
-            25,
-            12
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "rs2",
@@ -2804,16 +2741,23 @@
           "stopbit": 7
         },
         {
-          "name": "opcode",
+          "name": "cop",
           "type": "cop",
-          "startbit": 6,
-          "stopbit": 0,
-          "valueField": "0110011"
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "000"
         }
       ],
       "definition": "rd = parseInt((rs2+rs1).toString(2).slice(-31), 2);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false,
@@ -2826,27 +2770,18 @@
       "signature_definition": "F0 F4 F3 F2",
       "signature": "sub,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "sub rd rs1 rs2",
-      "co": [
-        "101",
-        "0110011"
-      ],
-      "cop": "0100000",
+      "co": "0110011",
+      "cop": "0100000000",
       "nwords": 1,
       "fields": [
         {
           "name": "sub",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
-          "name": "opcode",
+          "name": "cop",
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
@@ -2869,11 +2804,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "000"
         }
       ],
       "definition": "rd = parseInt((rs2-rs1).toString(2).slice(-31), 2)",
       "separated": [
-        true,
+        false,
         false,
         false,
         false,
@@ -2886,27 +2828,308 @@
       "signature_definition": "F0 F4 F3 F2",
       "signature": "sll,INT-Reg,INT-Reg,INT-Reg",
       "signatureRaw": "sll rd rs1 rs2",
-      "co": [
-        "001",
-        "0110011"
-      ],
-      "cop": "0000000",
+      "co": "0110011",
+      "cop": "0000000001",
       "nwords": 1,
       "fields": [
         {
           "name": "sll",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
           "name": "opcode",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "001"
+        }
+      ],
+      "definition": "rd = (rs1 << rs2) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "slt",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "slt,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "slt rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000000010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "slt",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "010"
+        }
+      ],
+      "definition": "rd = (rs1 >> 0) < (rd >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "sltu",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "sltu,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "sltu rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000000011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sltu",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "opcode",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "011"
+        }
+      ],
+      "definition": "rd = (rs1 << rs2) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "xor",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "xor,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "xor rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000000100",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "xor",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "opcode",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "100"
+        }
+      ],
+      "definition": "rd = (rs1^rs2);\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "srl",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "srl,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "srl rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000000101",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "srl",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "opcode",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "101"
+        }
+      ],
+      "definition": "rd = rs1 >>> rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "sra",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "sra,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "sra rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0100000101",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "sra",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
@@ -2929,251 +3152,18 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
-        }
-      ],
-      "definition": "rd = (rs1 << rs2) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
-      "separated": [
-        true,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
-      "name": "slt",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 F4 F3 F2",
-      "signature": "slt,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "slt rd rs1 rs2",
-      "co": [
-        "010",
-        "0110011"
-      ],
-      "cop": "0000000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "slt",
-          "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
         },
         {
-          "name": "opcode",
+          "name": "cop2",
           "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000000"
-        },
-        {
-          "name": "rs2",
-          "type": "INT-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "rd = (rs1 >> 0) < (rd >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
-      "separated": [
-        true,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
-      "name": "sltu",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 F4 F3 F2",
-      "signature": "sltu,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "sltu rd rs1 rs2",
-      "co": [
-        "011",
-        "0110011"
-      ],
-      "cop": "0000000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "sltu",
-          "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
-        },
-        {
-          "name": "opcode",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000000"
-        },
-        {
-          "name": "rs2",
-          "type": "INT-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "rd = (rs1 << rs2) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
-      "separated": [
-        true,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
-      "name": "xor",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 F4 F3 F2",
-      "signature": "xor,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "xor rd rs1 rs2",
-      "co": [
-        "100",
-        "0110011"
-      ],
-      "cop": "0000000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "xor",
-          "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
-        },
-        {
-          "name": "opcode",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000000"
-        },
-        {
-          "name": "rs2",
-          "type": "INT-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
-        }
-      ],
-      "definition": "rd = (rs1^rs2);\ncheck_stack_limit(rd.name; sp.name; rd);",
-      "separated": [
-        true,
-        false,
-        false,
-        false,
-        false
-      ]
-    },
-    {
-      "name": "srl",
-      "type": "Arithmetic integer",
-      "signature_definition": "F0 F4 F3 F2",
-      "signature": "srl,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "srl rd rs1 rs2",
-      "co": [
-        "101",
-        "0110011"
-      ],
-      "cop": "0000000",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "srl",
-          "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
-        },
-        {
-          "name": "opcode",
-          "type": "cop",
-          "startbit": 31,
-          "stopbit": 25,
-          "valueField": "0000000"
-        },
-        {
-          "name": "rs2",
-          "type": "INT-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
+          "startbit": "14",
+          "stopbit": "12",
+          "valueField": "101"
         }
       ],
       "definition": "rd = rs1 >>> rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
         false,
         false,
         false,
@@ -3181,32 +3171,23 @@
       ]
     },
     {
-      "name": "srl",
+      "name": "or",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "srl,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "srl rd rs1 rs2",
-      "co": [
-        "101",
-        "0110011"
-      ],
-      "cop": "0000000",
+      "signature": "or,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "or rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000000110",
       "nwords": 1,
       "fields": [
         {
-          "name": "srl",
+          "name": "or",
           "type": "co",
-          "startbit": [
-            14,
-            6
-          ],
-          "stopbit": [
-            12,
-            0
-          ]
+          "startbit": 6,
+          "stopbit": 0
         },
         {
-          "name": "opcode",
+          "name": "cop",
           "type": "cop",
           "startbit": 31,
           "stopbit": 25,
@@ -3229,11 +3210,78 @@
           "type": "INT-Reg",
           "startbit": 11,
           "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "110"
         }
       ],
-      "definition": "rd = rs1 >>> rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = rs1 | rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
-        true,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "and",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "and,INT-Reg,INT-Reg,INT-Reg",
+      "signatureRaw": "and rd rs1 rs2",
+      "co": "0110011",
+      "cop": "0000000111",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "and",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000000"
+        },
+        {
+          "name": "rs2",
+          "type": "INT-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "111"
+        }
+      ],
+      "definition": "rd = rs1 & rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "separated": [
+        false,
+        false,
         false,
         false,
         false,
