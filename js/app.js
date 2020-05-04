@@ -74,6 +74,7 @@ var actionTypes = [
   { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
   { text: 'ASCII finished in null', value: 'ascii_null_end' },
   { text: 'Align', value: 'align' },
+  { text: 'Baling', value: 'baling'},
 ];
 
 
@@ -4975,7 +4976,9 @@ try{
 
                   break;
                 case "align":
-                  console_log("align");
+                case "balign":
+                  console_log("[b]align");
+                  let pow_mode = token == "align";
 
                   this.next_token();
                   token = this.get_token();
@@ -5001,8 +5004,9 @@ try{
                   }
 
                   console_log(align);
-                  align = Math.pow(2, parseInt(token));
+                  align = pow_mode ? Math.pow(2, parseInt(token)) : token;
                   console_log(align);
+            alert(align);
 
                   this.next_token();
                   token = this.get_token();
@@ -6516,7 +6520,6 @@ try{
                         if (!architecture.instructions[i].separated[a])
                             binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                         else {
-                            debugger;
                             // check if the value fit on the first segment
                             let myInm = inm; //it is created to evit edit the global variable
                             for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
