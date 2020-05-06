@@ -5334,7 +5334,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = rs1<0; let b = rs2<0;\n\nrd = a^b ? Math.abs(rs1) : -Math.abs(rs1)",
+      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? Math.abs(rs1) : -Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -6013,6 +6013,1457 @@
         }
       ],
       "definition": "rd=rs1",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "fld",
+      "type": "Memory access",
+      "signature_definition": "F0 F4 F1(F2)",
+      "signature": "fld,DFP-Reg,inm-signed(INT-Reg)",
+      "signatureRaw": "fld rd inm(rs1)",
+      "co": "0000111",
+      "cop": "011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "fld",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "inm",
+          "type": "inm-signed",
+          "startbit": 20,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "011"
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = MP.d[rs1+inm];",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "fsd",
+      "type": "Memory access",
+      "signature_definition": "F0 F3 F2(F1)",
+      "signature": "fsd,INT-Reg,DFP-Reg(inm-signed)",
+      "signatureRaw": "fsd rs1 rs2(inm)",
+      "co": "0100111",
+      "cop": "011",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "fsd",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "inm",
+          "type": "inm-signed",
+          "startbit": [
+            0,
+            11
+          ],
+          "stopbit": [
+            25,
+            7
+          ]
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "011"
+        }
+      ],
+      "definition": "MP.d[rs1+inm] = rs2;",
+      "separated": [
+        false,
+        true,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FMADD.D",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F4 F3 F1",
+      "signature": "FMADD.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FMADD.D rd rs1 rs2 rs3",
+      "co": "1000011",
+      "cop": "01",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FMADD.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "rs3",
+          "type": "DFP-Reg",
+          "startbit": 31,
+          "stopbit": 27
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 26,
+          "stopbit": 25,
+          "valueField": "01"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1*rs2+rs3",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "fmsub.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F4 F3 F1",
+      "signature": "fmsub.d,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fmsub.d rd rs1 rs2 rs3",
+      "co": "1000111",
+      "cop": "01",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "fmsub.d",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "rs3",
+          "type": "DFP-Reg",
+          "startbit": 31,
+          "stopbit": 27
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 26,
+          "stopbit": 25,
+          "valueField": "01"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1*rs2-rs3",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FNMADD.D",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F4 F3 F1",
+      "signature": "FNMADD.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FNMADD.D rd rs1 rs2 rs3",
+      "co": "1001111",
+      "cop": "01",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FNMADD.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "rs3",
+          "type": "DFP-Reg",
+          "startbit": 31,
+          "stopbit": 27
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 26,
+          "stopbit": 25,
+          "valueField": "01"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = ~(rs1*rs2)-rs3",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FNMSUB.D",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F4 F3 F1",
+      "signature": "FNMSUB.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FNMSUB.D rd rs1 rs2 rs3",
+      "co": "1001011",
+      "cop": "01",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FNMSUB.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "rs3",
+          "type": "DFP-Reg",
+          "startbit": 31,
+          "stopbit": 27
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 26,
+          "stopbit": 25,
+          "valueField": "01"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = ~(rs1*rs2)+rs3",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FADD.D",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "FADD.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FADD.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0000001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FADD.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1+rs2",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FSUB.D",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "FSUB.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FSUB.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0000101",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FSUB.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0000101"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1-rs2",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FMUL.D",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "FMUL.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FMUL.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0001001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FMUL.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0001001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1*rs2",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "fdiv.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F4 F3 F2",
+      "signature": "fdiv.d,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fdiv.d rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0001101",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "fdiv.d",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0001101"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1/rs2",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FSQRT.D",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F4 F3",
+      "signature": "FSQRT.D,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FSQRT.D rd rs1",
+      "co": "1010011",
+      "cop": "010110100000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FSQRT.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0101101"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = Math.sqrt(rs1)",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FSGNJ.D",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "FSGNJ.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FSGNJ.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0010001000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FSGNJ.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0010001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "000"
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd =rs > 0 ? Math.abs(rs2) : - Math.abs(rs1)",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FSGNJN.D",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "FSGNJN.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FSGNJN.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0010001001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FSGNJN.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0010001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "001"
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd =rs < 0 ? Math.abs(rs2) : - Math.abs(rs1)",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FSGNJX.D",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "FSGNJX.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FSGNJX.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0010001010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FSGNJX.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0010001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "010"
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? Math.abs(rs1) : -Math.abs(rs1);",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FMIN.D",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "FMIN.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FMIN.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0010101000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FMIN.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0010101"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "000"
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = Math.min(rs1, rs2)",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FMAX.D",
+      "type": "Arithmetic integer",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "FMAX.D,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "FMAX.D rd rs1 rs2",
+      "co": "1010011",
+      "cop": "0010101001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FMAX.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0010101"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "001"
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = Math.max(rs1, rs2)",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FCVT.S.D",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 F4 F3",
+      "signature": "FCVT.S.D,SFP-Reg,DFP-Reg",
+      "signatureRaw": "FCVT.S.D rd rs1",
+      "co": "1010011",
+      "cop": "010000000001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FCVT.S.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0100000"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00001"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "SFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd=rs1",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FCVT.D.S",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 F4 F3",
+      "signature": "FCVT.D.S,DFP-Reg,SFP-Reg",
+      "signatureRaw": "FCVT.D.S rd rs1",
+      "co": "1010011",
+      "cop": "010000100000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FCVT.D.S",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "0100001"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "SFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd=rs1",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "feq.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "feq.d,INT-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "feq.d rd rs1 rs2",
+      "co": "1010011",
+      "cop": "1010001010",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "feq.d",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1010001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "010"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd=rs1==rs2",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "flt.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "flt.d,INT-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "flt.d rd rs1 rs2",
+      "co": "1010011",
+      "cop": "1010001001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "flt.d",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1010001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "001"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd=rs1<s2",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "fle.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "fle.d,INT-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fle.d rd rs1 rs2",
+      "co": "1010011",
+      "cop": "1010001000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "fle.d",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1010001"
+        },
+        {
+          "name": "rs2",
+          "type": "DFP-Reg",
+          "startbit": 24,
+          "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "000"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd=rs1<=s2",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "fclass.d",
+      "type": "Arithmetic floating point",
+      "signature_definition": "F0 F5 F3 F2",
+      "signature": "fclass.d,INT-Reg,DFP-Reg,cop",
+      "signatureRaw": "fclass.d rd rs1 cop2",
+      "co": "1010011",
+      "cop": "111000100000001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "fclass.d",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1110001"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "cop3",
+          "type": "cop",
+          "startbit": 14,
+          "stopbit": 12,
+          "valueField": "001"
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "throw \"Not implemented\"",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FCVT.W.D",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 F4 F3",
+      "signature": "FCVT.W.D,INT-Reg,DFP-Reg",
+      "signatureRaw": "FCVT.W.D rd rs1",
+      "co": "1010011",
+      "cop": "110000100000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FCVT.W.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1100001"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = parseInt(rs1)",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FCVT.WU.D",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 F4 F3",
+      "signature": "FCVT.WU.D,INT-Reg,DFP-Reg",
+      "signatureRaw": "FCVT.WU.D rd rs1",
+      "co": "1010011",
+      "cop": "110000100001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FCVT.WU.D",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1100001"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00001"
+        },
+        {
+          "name": "rs1",
+          "type": "DFP-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = parseInt(rs1) >>>0",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FCVT.D.W",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 F4 F3",
+      "signature": "FCVT.D.W,DFP-Reg,INT-Reg",
+      "signatureRaw": "FCVT.D.W rd rs1",
+      "co": "1010011",
+      "cop": "110100100000",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FCVT.D.W",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1101001"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00000"
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1",
+      "separated": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ]
+    },
+    {
+      "name": "FCVT.D.WU",
+      "type": "Transfer between registers",
+      "signature_definition": "F0 F4 F3",
+      "signature": "FCVT.D.WU,DFP-Reg,INT-Reg",
+      "signatureRaw": "FCVT.D.WU rd rs1",
+      "co": "1010011",
+      "cop": "110100100001",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "FCVT.D.WU",
+          "type": "co",
+          "startbit": 6,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 31,
+          "stopbit": 25,
+          "valueField": "1101001"
+        },
+        {
+          "name": "cop2",
+          "type": "cop",
+          "startbit": 24,
+          "stopbit": 20,
+          "valueField": "00001"
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15
+        },
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": 11,
+          "stopbit": 7
+        }
+      ],
+      "definition": "rd = rs1>>>0",
       "separated": [
         false,
         false,
