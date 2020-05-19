@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "12",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -5753,7 +5753,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "throw \"Not implemented\"",
+      "definition": "let a = app.float2bin(rs1);\nrd=checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));",
       "separated": [
         false,
         false,
@@ -7151,7 +7151,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "throw \"Not implemented\"",
+      "definition": "let a = app.float2bin(rs1);\nrd=checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));",
       "separated": [
         false,
         false,
@@ -7372,6 +7372,32 @@
         false,
         false
       ]
+    },
+    {
+      "name": "syscall",
+      "type": "Syscall",
+      "co": "000000",
+      "cop": "001100",
+      "nwords": 1,
+      "signature_definition": "F0",
+      "signature": "syscall",
+      "signatureRaw": "syscall",
+      "fields": [
+        {
+          "name": "syscall",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 5,
+          "stopbit": 0,
+          "valueField": "001100"
+        }
+      ],
+      "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
     }
   ],
   "pseudoinstructions": [

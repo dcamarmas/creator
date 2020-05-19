@@ -10041,3 +10041,38 @@ function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, 
 	}
 	return binary;
 }
+
+
+/**
+ * method in chage of map a float number separated in parts and determinte what it.
+ * @param s {Number} the sing of the number
+ * @param e {Number} the exponent of the number.
+ * @param m {Number} the mantinsa of the number
+ * @return {number} 2^n with n as
+ *      0 -> -infinite
+ *      1 -> -normal number
+ *      2 -> -subnormal number
+ *      3 -> -0
+ *      4 -> +0
+ *      5 -> +normal number
+ *      6 -> +subnormal number
+ *      7 -> +inf
+ *      8 -> -NaN
+ *      9 -> +NaN
+ */
+function checkTypeIEEE(s, e, m) {
+    let rd = 0;
+
+    if (!m && !e)
+        rd = s ? 1<<3 : 1<<4;
+    else if (!e)
+        rd = s ? 1<<2 : 1<<5;
+    else if (!(e ^ 255))
+        if (m)
+            rd = s ? 1<<8 : 1<<9;
+        else 
+            rd = s ? 1<<0 : 1<<7;
+    else
+        rd = s ? 1<<1 : 1<<6;
+    return rd;
+}
