@@ -35,7 +35,7 @@
         {
           "name": "RA",
           "nbits": "32",
-          "value": "20",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -45,7 +45,7 @@
         {
           "name": "SP",
           "nbits": "32",
-          "value": "80",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -55,7 +55,7 @@
         {
           "name": "GP",
           "nbits": "32",
-          "value": "100",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -5418,7 +5418,7 @@
       ]
     },
     {
-      "name": "FCVT.WU.S",
+      "name": "fcvt.wu.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3",
       "signature": "FCVT.WU.S,INT-Reg,SFP-Reg",
@@ -5471,7 +5471,7 @@
       ]
     },
     {
-      "name": "FMV.X.W",
+      "name": "fmv.x.w",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3",
       "signature": "FMV.X.W,INT-Reg,SFP-Reg",
@@ -5524,7 +5524,7 @@
       ]
     },
     {
-      "name": "FEQ.S",
+      "name": "feq.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F2",
       "signature": "FEQ.S,INT-Reg,SFP-Reg,SFP-Reg",
@@ -5704,7 +5704,7 @@
       ]
     },
     {
-      "name": "FCLASS.S",
+      "name": "fclass.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F4",
       "signature": "FCLASS.S,INT-Reg,SFP-Reg,INT-Reg",
@@ -5764,7 +5764,7 @@
       ]
     },
     {
-      "name": "FCVT.S.W",
+      "name": "fcvt.s.w",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F4",
       "signature": "FCVT.S.W,SFP-Reg,INT-Reg,SFP-Reg",
@@ -5817,7 +5817,7 @@
       ]
     },
     {
-      "name": "FCVT.S.WU",
+      "name": "fcvt.s.wu",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F4",
       "signature": "FCVT.S.WU,SFP-Reg,INT-Reg,SFP-Reg",
@@ -5870,7 +5870,7 @@
       ]
     },
     {
-      "name": "FMV.W.X",
+      "name": "fmv.w.x",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F4",
       "signature": "FMV.W.X,SFP-Reg,INT-Reg,SFP-Reg",
@@ -6031,7 +6031,7 @@
       ]
     },
     {
-      "name": "FMADD.D",
+      "name": "fmadd.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F5 F4 F3 F1",
       "signature": "FMADD.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6147,7 +6147,7 @@
       ]
     },
     {
-      "name": "FNMADD.D",
+      "name": "fnmadd.d",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F4 F3 F1",
       "signature": "FNMADD.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6205,7 +6205,7 @@
       ]
     },
     {
-      "name": "FNMSUB.D",
+      "name": "fnmsub.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F5 F4 F3 F1",
       "signature": "FNMSUB.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6263,7 +6263,7 @@
       ]
     },
     {
-      "name": "FADD.D",
+      "name": "fadd.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F2",
       "signature": "FADD.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6314,7 +6314,7 @@
       ]
     },
     {
-      "name": "FSUB.D",
+      "name": "fsub.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F2",
       "signature": "FSUB.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6365,7 +6365,7 @@
       ]
     },
     {
-      "name": "FMUL.D",
+      "name": "fmul.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F2",
       "signature": "FMUL.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6467,7 +6467,7 @@
       ]
     },
     {
-      "name": "FSQRT.D",
+      "name": "fsqrt.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3",
       "signature": "FSQRT.D,DFP-Reg,DFP-Reg",
@@ -6519,7 +6519,7 @@
       ]
     },
     {
-      "name": "FSGNJ.D",
+      "name": "fsgnj.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "FSGNJ.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6579,7 +6579,7 @@
       ]
     },
     {
-      "name": "FSGNJN.D",
+      "name": "fsgnjn.d",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "FSGNJN.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6639,7 +6639,7 @@
       ]
     },
     {
-      "name": "FSGNJX.D",
+      "name": "fsgnjx.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "FSGNJX.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6699,7 +6699,7 @@
       ]
     },
     {
-      "name": "FMIN.D",
+      "name": "fmin.d",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "FMIN.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6759,7 +6759,7 @@
       ]
     },
     {
-      "name": "FMAX.D",
+      "name": "fmax.d",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "FMAX.D,DFP-Reg,DFP-Reg,DFP-Reg",
@@ -6819,7 +6819,7 @@
       ]
     },
     {
-      "name": "FCVT.S.D",
+      "name": "fcvt.s.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
       "signature": "FCVT.S.D,SFP-Reg,DFP-Reg",
@@ -6872,7 +6872,7 @@
       ]
     },
     {
-      "name": "FCVT.D.S",
+      "name": "fcvt.d.s",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
       "signature": "FCVT.D.S,DFP-Reg,SFP-Reg",
@@ -7162,7 +7162,7 @@
       ]
     },
     {
-      "name": "FCVT.W.D",
+      "name": "fcvt.w.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
       "signature": "FCVT.W.D,INT-Reg,DFP-Reg",
@@ -7215,7 +7215,7 @@
       ]
     },
     {
-      "name": "FCVT.WU.D",
+      "name": "fcvt.wu.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
       "signature": "FCVT.WU.D,INT-Reg,DFP-Reg",
@@ -7268,7 +7268,7 @@
       ]
     },
     {
-      "name": "FCVT.D.W",
+      "name": "fcvt.d.w",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
       "signature": "FCVT.D.W,DFP-Reg,INT-Reg",
@@ -7321,7 +7321,7 @@
       ]
     },
     {
-      "name": "FCVT.D.WU",
+      "name": "fcvt.d.wu",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
       "signature": "FCVT.D.WU,DFP-Reg,INT-Reg",
@@ -9226,13 +9226,13 @@
   ],
   "directives": [
     {
-      "name": ".text",
-      "action": "code_segment",
+      "name": ".data",
+      "action": "data_segment",
       "size": null
     },
     {
-      "name": ".data",
-      "action": "data_segment",
+      "name": ".text",
+      "action": "code_segment",
       "size": null
     },
     {
