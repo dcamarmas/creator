@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "0",
+          "value": "12",
           "default_value": "0",
           "properties": [
             "read",
@@ -315,7 +315,7 @@
         {
           "name": "t4",
           "nbits": "32",
-          "value": "268435452",
+          "value": "0",
           "default_value": "268435452",
           "properties": [
             "read",
@@ -325,7 +325,7 @@
         {
           "name": "t5",
           "nbits": "32",
-          "value": "0",
+          "value": "4294967040",
           "default_value": "0",
           "properties": [
             "read",
@@ -335,7 +335,7 @@
         {
           "name": "t6",
           "nbits": "32",
-          "value": "4294967295",
+          "value": "7",
           "default_value": "4294967295",
           "properties": [
             "read",
@@ -1281,7 +1281,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=inm+pc",
+      "definition": "var n = (inm<<12).toString(2).padStart(32, \"0\");\nrd=inm+parseInt(n.substring(0,20), 2);",
       "separated": [
         false,
         false,
@@ -1317,7 +1317,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=pc+4; pc+=inm;",
+      "definition": "rd=PC+4; PC=inm;",
       "separated": [
         false,
         false,
@@ -1361,12 +1361,12 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "000"
         }
       ],
-      "definition": "rd=pc+4;pc+=inm;",
+      "definition": "rd= PC+4;\npc=(rs1+inm)&~1;",
       "separated": [
         false,
         false,
@@ -1379,7 +1379,7 @@
       "name": "beq",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "beq,INT-Reg,INT-Reg,inm-signed",
+      "signature": "beq,INT-Reg,INT-Reg,offset_words",
       "signatureRaw": "beq rs1 rs2 inm",
       "co": "1100011",
       "cop": "000",
@@ -1400,7 +1400,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "offset_words",
           "startbit": [
             31,
             11
@@ -1423,7 +1423,7 @@
           "stopbit": 15
         }
       ],
-      "definition": "if (rs1 === rs2) pc+=inm;",
+      "definition": "if (rs1 === rs2)PC=PC+((inm<<16)>>14)",
       "separated": [
         false,
         false,
@@ -1436,7 +1436,7 @@
       "name": "bne",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bne,INT-Reg,INT-Reg,inm-signed",
+      "signature": "bne,INT-Reg,INT-Reg,offset_words",
       "signatureRaw": "bne rs1 rs2 inm",
       "co": "1100011",
       "cop": "001",
@@ -1450,7 +1450,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "offset_words",
           "startbit": [
             31,
             11
@@ -1475,15 +1475,16 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "001"
         }
       ],
-      "definition": "if (rs1 !== rs2) pc+=inm;",
+      "definition": "if (rs1 !== rs2) PC=PC+((inm<<16)>>14);",
       "separated": [
         false,
         true,
+        false,
         false,
         false
       ]
@@ -1492,7 +1493,7 @@
       "name": "blt",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "blt,INT-Reg,INT-Reg,inm-signed",
+      "signature": "blt,INT-Reg,INT-Reg,offset_words",
       "signatureRaw": "blt rs1 rs2 inm",
       "co": "1100011",
       "cop": "100",
@@ -1506,7 +1507,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "offset_words",
           "startbit": [
             31,
             11
@@ -1531,15 +1532,16 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "100"
         }
       ],
-      "definition": "if (rs1 < rs2) pc+=inm;",
+      "definition": "if ((rs1>>0) < (rs2>>0))PC=PC+((inm<<16)>>14);",
       "separated": [
         false,
         true,
+        false,
         false,
         false
       ]
@@ -1548,7 +1550,7 @@
       "name": "bge",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bge,INT-Reg,INT-Reg,inm-signed",
+      "signature": "bge,INT-Reg,INT-Reg,offset_words",
       "signatureRaw": "bge rs1 rs2 inm",
       "co": "1100011",
       "cop": "101",
@@ -1562,7 +1564,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "offset_words",
           "startbit": [
             31,
             11
@@ -1587,15 +1589,16 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "101"
         }
       ],
-      "definition": "if (rs1 >= rs2) pc+=inm;",
+      "definition": "if ((rs1>>0) >= (rs2>>0)) PC=PC+((inm<<16)>>14);",
       "separated": [
         false,
         true,
+        false,
         false,
         false
       ]
@@ -1604,7 +1607,7 @@
       "name": "bltu",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bltu,INT-Reg,INT-Reg,inm-unsigned",
+      "signature": "bltu,INT-Reg,INT-Reg,offset_words",
       "signatureRaw": "bltu rs1 rs2 inm",
       "co": "1100011",
       "cop": "110",
@@ -1618,7 +1621,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "offset_words",
           "startbit": [
             31,
             11
@@ -1643,15 +1646,16 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "110"
         }
       ],
-      "definition": "if (rs1 < rs2) pc+=inm;",
+      "definition": "if ((rs1>>>0) < (rs2>>>0))PC=PC+((inm<<16)>>14);",
       "separated": [
         false,
         true,
+        false,
         false,
         false
       ]
@@ -1660,7 +1664,7 @@
       "name": "bgeu",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 F3 F2 F1",
-      "signature": "bgeu,INT-Reg,INT-Reg,inm-unsigned",
+      "signature": "bgeu,INT-Reg,INT-Reg,offset_words",
       "signatureRaw": "bgeu rs1 rs2 inm",
       "co": "1100011",
       "cop": "111",
@@ -1674,7 +1678,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-unsigned",
+          "type": "offset_words",
           "startbit": [
             31,
             11
@@ -1699,15 +1703,16 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "111"
         }
       ],
-      "definition": "if (rs1 >= rs2) pc+=inm;",
+      "definition": "if ((rs1>>>0)> (rs2>>>0))PC=PC+((inm<<16)>>14);",
       "separated": [
         false,
         true,
+        false,
         false,
         false
       ]
@@ -1715,12 +1720,12 @@
     {
       "name": "lb",
       "type": "Memory access",
-      "signature_definition": "F0 F3 F1(F2)",
-      "signature": "lb,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "lb rd inm(rs1)",
+      "signature_definition": "F0 F3 F1 (F2)",
+      "signature": "lb,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "lb rd inm (rs1)",
       "co": "0000011",
       "cop": "000",
-      "nwords": 1,
+      "nwords": "1",
       "fields": [
         {
           "name": "lb",
@@ -1766,9 +1771,9 @@
     {
       "name": "lh",
       "type": "Memory access",
-      "signature_definition": "F0 F3 F1(F2)",
-      "signature": "lh,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "lh rd inm(rs1)",
+      "signature_definition": "F0 F3 F1 (F2)",
+      "signature": "lh,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "lh rd inm (rs1)",
       "co": "0000011",
       "cop": "001",
       "nwords": 1,
@@ -1817,9 +1822,9 @@
     {
       "name": "lw",
       "type": "Memory access",
-      "signature_definition": "F0 F3 F1(F2)",
-      "signature": "lw,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "lw rd inm(rs1)",
+      "signature_definition": "F0 F3 F1 (F2)",
+      "signature": "lw,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "lw rd inm (rs1)",
       "co": "0000011",
       "cop": "010",
       "nwords": 1,
@@ -1851,13 +1856,14 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "010"
         }
       ],
-      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd=MP.w.[val+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd=MP.w.[inm+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -1867,9 +1873,9 @@
     {
       "name": "lhu",
       "type": "Memory access",
-      "signature_definition": "F0 F3 F1(F2)",
-      "signature": "lhu,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "lhu rd inm(rs1)",
+      "signature_definition": "F0 F3 F1 (F2)",
+      "signature": "lhu,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "lhu rd inm (rs1)",
       "co": "0000011",
       "cop": "101",
       "nwords": 1,
@@ -1901,13 +1907,14 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "101"
         }
       ],
       "definition": "rd=(MP.h.[rs1+inm] >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -1917,9 +1924,9 @@
     {
       "name": "lbu",
       "type": "Memory access",
-      "signature_definition": "F0 F3 F1(F2)",
-      "signature": "lbu,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "lbu rd inm(rs1)",
+      "signature_definition": "F0 F3 F1 (F2)",
+      "signature": "lbu,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "lbu rd inm (rs1)",
       "co": "0000011",
       "cop": "100",
       "nwords": 1,
@@ -1951,13 +1958,14 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "100"
         }
       ],
       "definition": "rd=(MP.b.[rs1+inm] >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -1967,9 +1975,9 @@
     {
       "name": "sb",
       "type": "Memory access",
-      "signature_definition": "F0 F2 F3(F1) ",
-      "signature": "sb,INT-Reg,INT-Reg(inm-signed),",
-      "signatureRaw": "sb rs2 rs1(inm) ",
+      "signature_definition": "F0 F2 F1 (F3)",
+      "signature": "sb,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "sb rs2 inm (rs1)",
       "co": "0100011",
       "cop": "000",
       "nwords": 1,
@@ -2007,8 +2015,8 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "000"
         }
       ],
@@ -2017,15 +2025,16 @@
         false,
         true,
         false,
+        false,
         false
       ]
     },
     {
       "name": "sh",
       "type": "Memory access",
-      "signature_definition": "F0 F2 F3(F1) ",
-      "signature": "sh,INT-Reg,INT-Reg(inm-signed),",
-      "signatureRaw": "sh rs2 rs1(inm) ",
+      "signature_definition": "F0 F2 F1 (F3)",
+      "signature": "sh,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "sh rs2 inm (rs1)",
       "co": "0100011",
       "cop": "001",
       "nwords": 1,
@@ -2063,8 +2072,8 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "001"
         }
       ],
@@ -2073,15 +2082,16 @@
         false,
         true,
         false,
+        false,
         false
       ]
     },
     {
       "name": "sw",
       "type": "Memory access",
-      "signature_definition": "F0 F2 F3(F1) ",
-      "signature": "sw,INT-Reg,INT-Reg(inm-signed),",
-      "signatureRaw": "sw rs2 rs1(inm) ",
+      "signature_definition": "F0 F2 F1 (F3)",
+      "signature": "sw,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "sw rs2 inm (rs1)",
       "co": "0100011",
       "cop": "010",
       "nwords": 1,
@@ -2119,8 +2129,8 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "010"
         }
       ],
@@ -2128,6 +2138,7 @@
       "separated": [
         false,
         true,
+        false,
         false,
         false
       ]
@@ -2319,13 +2330,14 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "100"
         }
       ],
-      "definition": "rd=rs1^val;\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "rd=rs1^inm;\ncheck_stack_limit(rd.name; sp.name; rd)",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -2369,13 +2381,14 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "110"
         }
       ],
-      "definition": "rd=rs1|val;\ncheck_stack_limit(rd.name; sp.name; rd)\n",
+      "definition": "rd=rs1|inm;\ncheck_stack_limit(rd.name; sp.name; rd)\n",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -2419,13 +2432,14 @@
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "111"
         }
       ],
-      "definition": "rd=rs1&(val>>>0);\ncheck_stack_limit(rd.name; sp.name; rd)\n",
+      "definition": "rd=rs1&(inm>>>0);\ncheck_stack_limit(rd.name; sp.name; rd)\n",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -2437,7 +2451,7 @@
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
       "signature": "slli,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "slli rd rs1 shapt",
+      "signatureRaw": "slli rd rs1 shamt",
       "co": "0010011",
       "cop": "0000000001",
       "nwords": 1,
@@ -2456,7 +2470,7 @@
           "valueField": "0000000"
         },
         {
-          "name": "shapt",
+          "name": "shamt",
           "type": "inm-signed",
           "startbit": 24,
           "stopbit": 20
@@ -2476,13 +2490,14 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "001"
         }
       ],
-      "definition": "rd = (rs1 << shampt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 << shamt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -2495,7 +2510,7 @@
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
       "signature": "srli,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "srli rd rs1 shapt",
+      "signatureRaw": "srli rd rs1 shamt",
       "co": "0010011",
       "cop": "0000000101",
       "nwords": 1,
@@ -2514,7 +2529,7 @@
           "valueField": "0000000"
         },
         {
-          "name": "shapt",
+          "name": "shamt",
           "type": "inm-signed",
           "startbit": 24,
           "stopbit": 20
@@ -2534,13 +2549,14 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "101"
         }
       ],
-      "definition": "rd = (rs1 >> shampt);\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 >> shamt);\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -2553,7 +2569,7 @@
       "type": "Arithmetic integer",
       "signature_definition": "F0 F4 F3 F2",
       "signature": "srai,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "srai rd rs1 shapt",
+      "signatureRaw": "srai rd rs1 shamt",
       "co": "0010011",
       "cop": "0100000101",
       "nwords": 1,
@@ -2572,7 +2588,7 @@
           "valueField": "0100000"
         },
         {
-          "name": "shapt",
+          "name": "shamt",
           "type": "inm-signed",
           "startbit": 24,
           "stopbit": 20
@@ -2592,13 +2608,14 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "101"
         }
       ],
-      "definition": "rd = (rs1 >> shampt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 >> shamt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -2609,9 +2626,9 @@
     {
       "name": "add",
       "type": "Arithmetic integer",
-      "signature_definition": "F0 F1 F2 F3",
+      "signature_definition": "F0 F3 F2 F1",
       "signature": "add,INT-Reg,INT-Reg,INT-Reg",
-      "signatureRaw": "add rs2 rs1 rd",
+      "signatureRaw": "add rd rs1 rs2",
       "co": "0110011",
       "cop": "0000000000",
       "nwords": 1,
@@ -2650,13 +2667,14 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "000"
         }
       ],
-      "definition": "rd = parseInt((rs2+rs1).toString(2).slice(-31), 2);",
+      "definition": "rd = rs2+rs1",
       "separated": [
+        false,
         false,
         false,
         false,
@@ -2708,13 +2726,14 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "000"
         }
       ],
-      "definition": "rd = parseInt((rs2-rs1).toString(2).slice(-31), 2)",
+      "definition": "rd =rs1-rs2",
       "separated": [
+        false,
         false,
         false,
         false,
