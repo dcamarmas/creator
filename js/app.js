@@ -8035,7 +8035,7 @@ try{
             console_log(auxDef);
 
             // preload instruction
-            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.") + " }; ") ;
+            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.").replace(/\"/g, "'") + " }; ") ;
           }
 
           try{

@@ -500,7 +500,7 @@ try{
         size: 0,
       },
       /* Allow instruction with fractioned fields */
-      fragmentData:["co", "inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
+      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
       
 
 
@@ -5071,7 +5071,6 @@ try{
                   console_log(align);
                   align = pow_mode ? Math.pow(2, parseInt(token)) : token;
                   console_log(align);
-            alert(align);
 
                   this.next_token();
                   token = this.get_token();
@@ -8101,7 +8100,7 @@ try{
             console_log(auxDef);
 
             // preload instruction
-            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.") + " }; ") ;
+            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.").replace(/\"/g, "'") + " }; ") ;
           }
 
           try{
@@ -10070,7 +10069,7 @@ function checkTypeIEEE(s, e, m) {
     else if (!(e ^ 255))
         if (m)
             rd = s ? 1<<8 : 1<<9;
-        else 
+        else
             rd = s ? 1<<0 : 1<<7;
     else
         rd = s ? 1<<1 : 1<<6;
