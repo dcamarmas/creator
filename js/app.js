@@ -7991,40 +7991,40 @@ try{
             console_log(auxDef);
 
             /*Write in memory*/
-            re = /MP.([whb]).\[(.*?)\] *=/;
+            re = /MP.([whbd]).\[(.*?)\] *=/;
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               var auxDir;
               //eval("auxDir="+match[2]);
 
-              re = /MP.[whb].\[(.*?)\] *=/;
+              re = /MP.[whbd].\[(.*?)\] *=/;
               auxDef = auxDef.replace(re, "dir=");
               auxDef = "var dir=null\n" + auxDef;
               auxDef = auxDef + "\n this.writeMemory(dir"+","+match[2]+",'"+match[1]+"');"
               re = /MP.([whb]).\[(.*?)\] *=/;
             }
 
-            re = new RegExp("MP.([whb]).(.*?) *=");
+            re = new RegExp("MP.([whbd]).(.*?) *=");
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
               auxDef = auxDef.replace(re, "dir=");
               auxDef = "var dir=null\n" + auxDef;
               auxDef = auxDef + "\n this.writeMemory(dir,"+match[2]+",'"+match[1]+"');"
-              re = new RegExp("MP.([whb]).(.*?) *=");
+              re = new RegExp("MP.([whbd]).(.*?) *=");
             }
 
-            re = /MP.([whb]).\[(.*?)\]/;
+            re = /MP.([whbd]).\[(.*?)\]/;
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               var auxDir;
               //eval("auxDir="+match[2]);
-              re = /MP.[whb].\[(.*?)\]/;
+              re = /MP.[whbd].\[(.*?)\]/;
               auxDef = auxDef.replace(re, "this.readMemory("+match[2]+", '"+match[1]+"')");
-              re = /MP.([whb]).\[(.*?)\]/;
+              re = /MP.([whbd]).\[(.*?)\]/;
             }
 
-            re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
+            re = new RegExp("MP.([whbd]).([0-9]*[a-z]*[0-9]*)");
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               re = new RegExp("MP."+match[1]+"."+match[2]);
@@ -8291,6 +8291,35 @@ try{
         var memValue = '';
         var index;
 
+	if (type == "d") {
+		debugger;
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
+            instructions[executionIndex]._rowVariant = 'danger';
+            executionIndex = -1;
+            return;
+          }
+          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value) index = memory_hash[0];
+
+          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value) index = memory_hash[2];
+
+          for (var i = 0; i < memory[index].length; i++){
+            for (var j = 0; j < memory[index][i].Binary.length; j++){
+              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+		for (let k = 0; k<2; k++)
+			for (var z = 0; z < memory[index][i].Binary.length; z++)
+				  memValue = memory[index][k].Binary[z].Bin + memValue;
+                //return bigInt(memValue, 16).value;
+		return parseInt(memValue, 16);
+              }
+            }
+          }
+	return 0;
+          
+          
+
+	}
         if (type == "w"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
