@@ -315,7 +315,7 @@
         {
           "name": "t4",
           "nbits": "32",
-          "value": "0",
+          "value": "536870912",
           "default_value": "268435452",
           "properties": [
             "read",
@@ -325,7 +325,7 @@
         {
           "name": "t5",
           "nbits": "32",
-          "value": "4294967040",
+          "value": "2147483649",
           "default_value": "0",
           "properties": [
             "read",
@@ -335,7 +335,7 @@
         {
           "name": "t6",
           "nbits": "32",
-          "value": "7",
+          "value": "4",
           "default_value": "4294967295",
           "properties": [
             "read",
@@ -3212,9 +3212,9 @@
     {
       "name": "lwu",
       "type": "Memory access",
-      "signature_definition": "F0 F4 F1(F2)",
-      "signature": "lwu,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "lwu rd inm(rs1)",
+      "signature_definition": "F0 F4 F1 (F2)",
+      "signature": "lwu,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "lwu rd inm (rs1)",
       "co": "0000011",
       "cop": "110",
       "nwords": 1,
@@ -3251,7 +3251,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%4 == 0; \"The memory must be align\");\nrd=(MP.w[inm+rs1] >>>0)\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "assert((inm+rs1)%4 == 0; \"The memory must be align\");\nrd=(MP.w.[inm+(rs1>>>0)])\ncheck_stack_limit(rd.name; sp.name; rd);",
       "separated": [
         false,
         false,
@@ -3263,9 +3263,9 @@
     {
       "name": "ld",
       "type": "Memory access",
-      "signature_definition": "F0 F4 F1(F2)",
-      "signature": "ld,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "ld rd inm(rs1)",
+      "signature_definition": "F0 F4 F1 (F2)",
+      "signature": "ld,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "ld rd inm (rs1)",
       "co": "0000011",
       "cop": "011",
       "nwords": 1,
@@ -3302,7 +3302,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%8 == 0; \"The memory must be align\");\nrd = MP.d[inm+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "assert((inm+rs1)%8 == 0; \"The memory must be align\");\nrd = MP.d.[inm+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
       "separated": [
         false,
         false,
@@ -3314,9 +3314,9 @@
     {
       "name": "sd",
       "type": "Memory access",
-      "signature_definition": "F0 F4 F1(F2)",
-      "signature": "sd,INT-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "sd rd inm(rs2)",
+      "signature_definition": "F0 F4 F1 (F2)",
+      "signature": "sd,INT-Reg,inm-signed (INT-Reg)",
+      "signatureRaw": "sd rd inm (rs2)",
       "co": "0100011",
       "cop": "011",
       "nwords": 1,
@@ -3359,7 +3359,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert(inm+rs2)%8 == 0; \"The memory must be align\");\nMP.d[inm+rs2] = rd;",
+      "definition": "assert(inm+rs2)%8 == 0; \"The memory must be align\");\nMP.d.[inm+rs2] = rd;",
       "separated": [
         false,
         true,
@@ -3372,14 +3372,14 @@
       "name": "slli",
       "type": "Logic",
       "signature_definition": "F0 F5 F1 F2",
-      "signature": "SLLI,INT-Reg,cop,inm-signed",
-      "signatureRaw": "SLLI rd cop1 shamt",
+      "signature": "slli,INT-Reg,cop,inm-signed",
+      "signatureRaw": "slli rd cop1 shamt",
       "co": "0010011",
-      "cop": "000000001",
+      "cop": "000000101",
       "nwords": 1,
       "fields": [
         {
-          "name": "SLLI",
+          "name": "slli",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -3417,7 +3417,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (rs1 << shampt) >>> 0;",
+      "definition": "rd = (rs1 << shamt) >>> 0;",
       "separated": [
         false,
         false,
@@ -3476,7 +3476,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (rs1 >>shampt) >>> 0;",
+      "definition": "rd = (rs1 >>shamt) >>> 0;",
       "separated": [
         false,
         false,
@@ -3542,7 +3542,7 @@
       "type": "Logic",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "slliw,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "slliw rd rs1 shampt",
+      "signatureRaw": "slliw rd rs1 shamt",
       "co": "0011011",
       "cop": "0000000001",
       "nwords": 1,
@@ -3561,7 +3561,7 @@
           "valueField": "0000000"
         },
         {
-          "name": "shampt",
+          "name": "shamt",
           "type": "inm-signed",
           "startbit": 24,
           "stopbit": 20
@@ -3586,7 +3586,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 << shampt",
+      "definition": "rd = rs1 << shamt",
       "separated": [
         false,
         false,
@@ -3601,7 +3601,7 @@
       "type": "Logic",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "srliw,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "srliw rd rs1 shampt",
+      "signatureRaw": "srliw rd rs1 shamt",
       "co": "0011011",
       "cop": "0000000101",
       "nwords": 1,
@@ -3620,7 +3620,7 @@
           "valueField": "0000000"
         },
         {
-          "name": "shampt",
+          "name": "shamt",
           "type": "inm-signed",
           "startbit": 24,
           "stopbit": 20
@@ -3645,7 +3645,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 >> shampt",
+      "definition": "rd = rs1 >> shamt",
       "separated": [
         false,
         false,
@@ -3660,7 +3660,7 @@
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
       "signature": "sraiw,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "sraiw rd rs1 shampt",
+      "signatureRaw": "sraiw rd rs1 shamt",
       "co": "0011011",
       "cop": "0100000101",
       "nwords": 1,
@@ -3679,7 +3679,7 @@
           "valueField": "0100000"
         },
         {
-          "name": "shampt",
+          "name": "shamt",
           "type": "inm-signed",
           "startbit": 24,
           "stopbit": 20
@@ -3704,7 +3704,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (rs1 >> shampt) >>> 0",
+      "definition": "rd = (rs1 >> shamt) >>> 0",
       "separated": [
         false,
         false,
@@ -3881,7 +3881,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 << rs2",
+      "definition": "rd = rs1 << parseInt(rs2.toString(2).slice(-5), 2)",
       "separated": [
         false,
         false,
@@ -3940,7 +3940,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 >> rs2",
+      "definition": "rd = rs1 >> parseInt(rs2.toString(2).slice(-5), 2)",
       "separated": [
         false,
         false,
@@ -3999,7 +3999,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 >> rs2",
+      "definition": "rd = rs1 >> parseInt(rs2.toString(2).slice(-5), 2)\n",
       "separated": [
         false,
         false,
