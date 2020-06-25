@@ -139,6 +139,7 @@ var actionTypes = [
   { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
   { text: 'ASCII finished in null', value: 'ascii_null_end' },
   { text: 'Align', value: 'align' },
+  { text: 'Baling', value: 'baling'},
 ];
 
 
@@ -423,6 +424,7 @@ try{
         numfieldsAux: "1",
         nameField: [],
         typeField: [],
+        separated: [],
         startBitField: [],
         stopBitField: [],
         valueField: [],
@@ -497,6 +499,8 @@ try{
         action: '',
         size: 0,
       },
+      /* Allow instruction with fractioned fields */
+      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
       
 
 
@@ -720,6 +724,42 @@ try{
 
 
       /*Architecture editor*/
+
+      /**
+        * method in charge of create the array corresponent to the 
+        * current position of start bit and end bit
+       */
+
+      changeToSeparateValue( val, pos ) {
+          if (val) {
+            this.formInstruction.startBitField[pos] = [0];
+            this.formInstruction.stopBitField[pos] =[0];
+              if (this.formInstruction.typeField[pos] == 'co')
+                  this.formInstruction.co = ['0'];
+          } else {
+            this.formInstruction.startBitField[pos] = 0;
+            this.formInstruction.stopBitField[pos] =0;
+              if (this.formInstruction.typeField[pos] == 'co')
+                  this.formInstruction.co = '0';
+          }
+      },
+
+      addMoreFieldsToSeparateValues(event, pos) {
+        this.formInstruction.startBitField[pos].push(0);
+        this.formInstruction.stopBitField[pos].push(0);
+          if (this.formInstruction.typeField[pos] == 'co')
+              this.formInstruction.co.push('0')
+        app.$forceUpdate();
+      },
+
+
+    lessFieldsToSeparateValues(event, pos) {
+        this.formInstruction.startBitField[pos].pop();
+        this.formInstruction.stopBitField[pos].pop();
+          if (this.formInstruction.typeField[pos] == 'co')
+              this.formInstruction.co.pop()
+        app.$forceUpdate();
+    },
 
       /*Load the available architectures and check if exists backup*/
       load_arch_available(){
@@ -1622,11 +1662,19 @@ try{
 
         this.formInstruction.cop = auxCop;
 
-        for (var i = 0; i < this.formInstruction.co.length; i++){
-          if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-              show_notification('The value of co must be binary', 'danger') ;
-              return;
-          }
+          if (typeof(this.formInstruction.co) != 'object')
+            for (var i = 0; i < this.formInstruction.co.length; i++){
+              if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+                  show_notification('The value of co must be binary', 'danger') ;
+                  return;
+              }
+            }
+        else {
+            for (let val in this.formInstruction.co)
+                if (!/[01]+/.test(val)) {
+                  show_notification('The value of co must be binary', 'danger') ;
+                  return;
+                }
         }
 
         for (var i = 0; i < this.formInstruction.numfields; i++){
@@ -1638,15 +1686,17 @@ try{
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
             show_notification('Please complete all fields', 'danger') ;
         } 
-        else if (isNaN(this.formInstruction.co)){
+        else if (typeof(this.formInstruction.co) != 'object' && isNaN(this.formInstruction.co)){
                  show_notification('The field co must be numbers', 'danger') ;
-        }
+        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some(val => isNaN(val)))
+                 show_notification('The field co must be numbers', 'danger') ;
         else if(isNaN(this.formInstruction.cop)){
                  show_notification('The field cop must be numbers', 'danger') ;
         }
-        else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+        else if(typeof(this.formInstruction.co) != 'object' && (this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
                  show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
-        }
+        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some((val, ind) => val.length !== app.formInstruction.startBitField[0][ind] - app.formInstruction.stopBitField[0][ind] +1))
+                 show_notification('The length of co don\'t match with the desription', 'danger');
         else {
           this.newInstruction();
         }
@@ -1662,8 +1712,10 @@ try{
           }
         }
 
+        let auxcop = (() => this.formInstruction.co instanceof Array ? this.formInstrucion.co.join("") : this.formInstruction.co)() + this.formInstruction.cop;
+
         for (var i = 0; i < architecture.instructions.length; i++){
-          if ((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false)){
+          if ((auxcop == architecture.instructions[i].cop) && (!auxcop == false)){
                show_notification('The instruction already exists', 'danger') ;
                return;
           }
@@ -1682,13 +1734,28 @@ try{
           this.formInstruction.cop='';
         }*/
 
-        var newInstruction = {name: this.formInstruction.name, type: this.formInstruction.type, signature_definition: this.formInstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, co: this.formInstruction.co , cop: this.formInstruction.cop, nwords: this.formInstruction.nwords , fields: [], definition: this.formInstruction.definition};
+        var newInstruction = {
+          name: this.formInstruction.name,
+          type: this.formInstruction.type,
+          signature_definition: this.formInstruction.signature_definition,
+          signature: signature, signatureRaw: signatureRaw,
+          co: this.formInstruction.co,
+          cop: this.formInstruction.cop,
+          nwords: this.formInstruction.nwords ,
+          fields: [],
+          definition: this.formInstruction.definition,
+          separated:[]
+        };
+        newInstruction.separated = this.formInstruction.startBitField.map((e, i) => this.formInstruction.separated[i] || false)
         architecture.instructions.push(newInstruction);
-
         for (var i = 0; i < this.formInstruction.numfields; i++){
-          var newField = {name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i], startbit: parseInt(this.formInstruction.startBitField[i]), stopbit: parseInt(this.formInstruction.stopBitField[i]), valueField: this.formInstruction.valueField[i]};
+          var newField = { name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i],
+                           startbit: !this.formInstruction.separated[i] ? parseInt(this.formInstruction.startBitField[i]) : this.formInstruction.startBitField[i].map(val => parseInt(val)),
+                           stopbit: !this.formInstruction.separated[i] ? parseInt(this.formInstruction.stopBitField[i]) : this.formInstruction.stopBitField[i].map(val => parseInt(val)),
+                           valueField: this.formInstruction.valueField[i]
+                        };
           architecture.instructions[architecture.instructions.length-1].fields.push(newField);
-        }   
+        }
       },
       /*Show edit instruction modal*/
       editInstModal(elem, co, cop, button){
@@ -1707,15 +1774,27 @@ try{
             this.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
             this.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
             this.formInstruction.definition = architecture.instructions[i].definition;
+            this.formInstruction.separated = [];
 
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
               this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
               this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
-              this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-              this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+              //this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+              //this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+              if (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) {
+                this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+                this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+                this.formInstruction.separated.push(false);
+              }
+              else {
+                this.formInstruction.startBitField[j] = [...architecture.instructions[i].fields[j].startbit];
+                this.formInstruction.stopBitField[j] =  [...architecture.instructions[i].fields[j].stopbit];
+                this.formInstruction.separated.push(true);
+              }
               this.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
             }
             this.generateSignatureInst();
+            break;
           }
         }
         this.$root.$emit('bv::show::modal', 'modalEditInst', button);
@@ -1760,12 +1839,21 @@ try{
 
         this.formInstruction.cop = auxCop;
 
-        for (var i = 0; i < this.formInstruction.co.length; i++){
-          if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-              show_notification('The value of co must be binary', 'danger') ;
-              return;
+          if (typeof(this.formInstruction.co) !== 'object')
+            for (var i = 0; i < this.formInstruction.co.length; i++){
+              if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
+                  show_notification('The value of co must be binary', 'danger') ;
+                  return;
+              }
+            }
+          else {
+              for (let val in this.formInstruction.co) {
+                  if (!/^[01]+$/.test(val)) {
+                      show_notification('The value of co must be binary', 'danger') ;
+                      return;
+                  }
+              }
           }
-        }
 
         for (var i = 0; i < this.formInstruction.numfields; i++){
           if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
@@ -1775,15 +1863,15 @@ try{
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
           show_notification('Please complete all fields', 'danger') ;
         }
-        else if(isNaN(this.formInstruction.co)){
-          show_notification('The field co must be numbers', 'danger') ;
-        }
+        if ((typeof(this.formInstruction.co) != 'object' && isNaN(this.formInstruction.co)) || (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some(val => isNaN(val))))
+                 show_notification('The field co must be numbers', 'danger') ;
         else if(isNaN(this.formInstruction.cop)){
           show_notification('The field cop must be numbers', 'danger') ;
         }
-        else if((this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-          show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger') ;
-        }
+        else if(typeof(this.formInstruction.co) != 'object' && (this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
+                 show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
+        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some((val, ind) => val.length !== app.formInstruction.startBitField[0][ind] - app.formInstruction.stopBitField[0][ind] +1))
+                 show_notification('The length of co don\'t match with the desription', 'danger');
         else {
           this.editInstruction(inst, co, cop);
         }
@@ -1809,8 +1897,11 @@ try{
           }
         }
 
+          
+        let auxcop = (() => this.formInstruction.co instanceof Array ? this.formInstrucion.co.join("") : this.formInstruction.co)() + this.formInstruction.cop;
+
         for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
-          if ((this.formInstruction.cop == architecture.instructions[i].cop) && (!this.formInstruction.cop == false) && (this.formInstruction.cop != cop)){
+          if ((auxcop == architecture.instructions[i].cop) && (!auxcop == false) && (auxcop != cop)){
                show_notification('The instruction already exists', 'danger') ;
                return;
           }
@@ -1818,10 +1909,8 @@ try{
 
         this.showEditInstruction = false;
 
-        for (var i = 0; i < architecture.instructions.length; i++)
-	{
-          if (architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop)
-	  {
+        for (var i = 0; i < architecture.instructions.length; i++){
+          if (architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop) {
             architecture.instructions[i].name = this.formInstruction.name;
             architecture.instructions[i].type = this.formInstruction.type;
             architecture.instructions[i].co = this.formInstruction.co;
@@ -1829,16 +1918,18 @@ try{
             architecture.instructions[i].nwords = this.formInstruction.nwords;
             architecture.instructions[i].signature_definition = this.formInstruction.signature_definition;
             architecture.instructions[i].definition = this.formInstruction.definition;
+            if (!architecture.instructions[i].separated)
+                architecture.instructions[i].separated =Array(this.formInstruction.numfields).fill(false);
 
-            for (var j = 0; j < this.formInstruction.numfields; j++)
-	    {
-              if (j < architecture.instructions[i].fields.length)
-              {
+            for (var j = 0; j < this.formInstruction.numfields; j++) {
+              if (j < architecture.instructions[i].fields.length) {
                 architecture.instructions[i].fields[j].name = this.formInstruction.nameField[j];
                 architecture.instructions[i].fields[j].type = this.formInstruction.typeField[j];
-                architecture.instructions[i].fields[j].startbit = parseInt(this.formInstruction.startBitField[j]);
-                architecture.instructions[i].fields[j].stopbit = parseInt(this.formInstruction.stopBitField[j]);
+                architecture.instructions[i].fields[j].startbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.startBitField[j]) : this.formInstruction.startBitField[j].map(val => parseInt(val));
+                architecture.instructions[i].fields[j].stopbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.stopBitField[j]): this.formInstruction.stopBitField[j].map(val => parseInt(val));
                 architecture.instructions[i].fields[j].valueField = this.formInstruction.valueField[j];
+                /*add data to store if the field is fragmented or not.*/
+                architecture.instructions[i].separated[j] = this.formInstruction.separated[j];
               }
               else{
                 var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j], valueField: this.formInstruction.valueField[j]};
@@ -1861,6 +1952,7 @@ try{
             if(architecture.instructions[i].fields.length > this.formInstruction.numfields){
               architecture.instructions[i].fields.splice(this.formInstruction.numfields, (architecture.instructions[i].fields.length - this.formInstruction.numfields));
             }
+            break;
           }
         }
 
@@ -1937,6 +2029,7 @@ try{
         this.formInstruction.startBitField = [];
         this.formInstruction.stopBitField = [];
         this.formInstruction.valueField = [];
+        this.formInstruction.separated = [];
         this.formInstruction.assignedCop = false;
         this.formInstruction.signature ='';
         this.formInstruction.signatureRaw = '';
@@ -4948,7 +5041,9 @@ try{
 
                   break;
                 case "align":
-                  console_log("align");
+                case "balign":
+                  console_log("[b]align");
+                  let pow_mode = token == "align";
 
                   this.next_token();
                   token = this.get_token();
@@ -4974,7 +5069,7 @@ try{
                   }
 
                   console_log(align);
-                  align = Math.pow(2, parseInt(token));
+                  align = pow_mode ? Math.pow(2, parseInt(token)) : token;
                   console_log(align);
 
                   this.next_token();
@@ -6175,8 +6270,17 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                  
+			//aqui
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+			/*
+                      if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                      else 
+                        fieldsLength = architecture.instructions[i].fields[a].startbit
+                          .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
+                          .reduce((old, newV) => old+newV);
+			*/
+                      
                       var inm;
 
                       if(token.match(/^0x/)){
@@ -6309,7 +6413,30 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+			/*
+                        if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        else {                            
+                            // check if the value fit on the first segment
+                            let myInm = inm; //it is created to evit edit the global variable
+                            for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
+                                let sb = architecture.instructions[i].fields[a].startbit[index],
+                                    stb = architecture.instructions[i].fields[a].stopbit[index],
+                                    diff = sb - stb+1;
+                                if (myInm.length <= diff) {
+                                    binary = binary.substring(0, binary.length - (sb+1)) +
+                                        myInm.padStart(diff, "0") +
+                                        binary.substring((binary.length - stb), binary.length);
+                                    break;
+                                } else {
+                                    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
+                                    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+                                    myInm = myInm.substring(0,(myInm.length-diff));
+                                } 
+                            }
+                        }
+			*/
                       }
                       
                       //re = RegExp("[fF][0-9]+");
@@ -6328,7 +6455,17 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+
+                      if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                      else {
+                        fieldsLength = architecture.instructions[i].fields[a].startbit
+                          .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
+                          .reduce((old, newV) => old+newV);
+                      }
+
+                      //fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
                   
                       var inm;
 
@@ -6440,8 +6577,34 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+			/*
+                        if (!architecture.instructions[i].separated[a])
+                            binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        else {
+                            // check if the value fit on the first segment
+                            let myInm = inm; //it is created to evit edit the global variable
+                            for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
+                                let sb = architecture.instructions[i].fields[a].startbit[index],
+                                    stb = architecture.instructions[i].fields[a].stopbit[index],
+                                    diff = sb - stb+1;
+                                if (myInm.length <= diff) {
+                                    binary = binary.substring(0, binary.length - (sb+1)) +
+                                        myInm.padStart(diff, "0") +
+                                        binary.substring((binary.length - stb), binary.length);
+                                    break;
+                                } else {
+                                    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
+                                    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+                                    myInm = myInm.substring(0,(myInm.length-diff));
+                                } 
+                            }
+                        }
+			*/
                       }
+                  
                       
                       //re = RegExp("[fF][0-9]+");
                       re = RegExp("Field[0-9]+");
@@ -6458,7 +6621,8 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			//aqui
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
 
                       if(token.match(/^0x/)){
                         var value = token.split("x");
@@ -6474,7 +6638,8 @@ try{
                         }
 
                         addr = (parseInt(token, 16)).toString(2);
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                         //re = RegExp("[fF][0-9]+");
                         re = RegExp("Field[0-9]+");
                         instruction = instruction.replace(re, token);
@@ -6497,7 +6662,7 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                        fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
                   
                       var inm;
 
@@ -6631,7 +6796,8 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                       }
                       
                       //re = RegExp("[fF][0-9]+");
@@ -6652,7 +6818,7 @@ try{
 
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
                   
                       var inm;
 
@@ -6776,7 +6942,8 @@ try{
                           return -1;
                         }
 
-                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+                        //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
+			binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                       }
                       
                       //re = RegExp("[fF][0-9]+");
@@ -6797,11 +6964,28 @@ try{
                   for(var a = 0; a < architecture.instructions[i].fields.length; a++){
                     console_log(architecture.instructions[i].fields[a].name);
                     if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-                      fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                      
-                      console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
+                      // Si el co es un array hay que separarlo
+                      /**/
+                      if (typeof(architecture.instructions[i].fields[a].startbit) == 'object') {
+                          fieldsLength = architecture.instructions[i].fields[a].startbit.reduce((t, cv, ind) => {
+                            t = !ind ? 0 : t;
+                            t+(cv-architecture.instructions[i].fields[a].stopbit[ind]+1)
+                          }); 
+                          console_log(architecture.instructions[i].co.join("").padStart(fieldsLength, "0"));
+                          // aqui_ahora
+                      } else {
+                        fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+			console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
+                        binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
+                      }
+                      /*
+                      fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                      let co =typeof(architecture.instructions[i].fields[a].startbit) == 'object' ?
+                        architecture.instructions[i].co.join("").padStart(fieldsLength, "0") :
+                        (architecture.instructions[i].co).padStart(fieldsLength, "0");
+                      binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm, fieldsLength, a);
+                      */
 
-                      binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (architecture.instructions[i].co).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit), binary.length);
                       
                       console_log(binary);
 
@@ -7872,40 +8056,40 @@ try{
             console_log(auxDef);
 
             /*Write in memory*/
-            re = /MP.([whb]).\[(.*?)\] *=/;
+            re = /MP.([whbd]).\[(.*?)\] *=/;
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               var auxDir;
               //eval("auxDir="+match[2]);
 
-              re = /MP.[whb].\[(.*?)\] *=/;
+              re = /MP.[whbd].\[(.*?)\] *=/;
               auxDef = auxDef.replace(re, "dir=");
               auxDef = "var dir=null\n" + auxDef;
               auxDef = auxDef + "\n this.writeMemory(dir"+","+match[2]+",'"+match[1]+"');"
               re = /MP.([whb]).\[(.*?)\] *=/;
             }
 
-            re = new RegExp("MP.([whb]).(.*?) *=");
+            re = new RegExp("MP.([whbd]).(.*?) *=");
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
               auxDef = auxDef.replace(re, "dir=");
               auxDef = "var dir=null\n" + auxDef;
               auxDef = auxDef + "\n this.writeMemory(dir,"+match[2]+",'"+match[1]+"');"
-              re = new RegExp("MP.([whb]).(.*?) *=");
+              re = new RegExp("MP.([whbd]).(.*?) *=");
             }
 
-            re = /MP.([whb]).\[(.*?)\]/;
+            re = /MP.([whbd]).\[(.*?)\]/;
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               var auxDir;
               //eval("auxDir="+match[2]);
-              re = /MP.[whb].\[(.*?)\]/;
+              re = /MP.[whbd].\[(.*?)\]/;
               auxDef = auxDef.replace(re, "this.readMemory("+match[2]+", '"+match[1]+"')");
-              re = /MP.([whb]).\[(.*?)\]/;
+              re = /MP.([whbd]).\[(.*?)\]/;
             }
 
-            re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
+            re = new RegExp("MP.([whbd]).([0-9]*[a-z]*[0-9]*)");
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               re = new RegExp("MP."+match[1]+"."+match[2]);
@@ -7916,7 +8100,7 @@ try{
             console_log(auxDef);
 
             // preload instruction
-            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.") + " }; ") ;
+            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.").replace(/\"/g, "'") + " }; ") ;
           }
 
           try{
@@ -8172,6 +8356,35 @@ try{
         var memValue = '';
         var index;
 
+	if (type == "d") {
+		debugger;
+          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
+            instructions[executionIndex]._rowVariant = 'danger';
+            executionIndex = -1;
+            return;
+          }
+          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value) index = memory_hash[0];
+
+          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value) index = memory_hash[2];
+
+          for (var i = 0; i < memory[index].length; i++){
+            for (var j = 0; j < memory[index][i].Binary.length; j++){
+              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+		for (let k = 0; k<2; k++)
+			for (var z = 0; z < memory[index][i].Binary.length; z++)
+				  memValue = memory[index][k].Binary[z].Bin + memValue;
+                //return bigInt(memValue, 16).value;
+		return parseInt(memValue, 16);
+              }
+            }
+          }
+	return 0;
+          
+          
+
+	}
         if (type == "w"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
@@ -9807,4 +10020,87 @@ catch(e)
    setTimeout(function(){
      location.reload(true)
    }, 3000);
+}
+
+
+/** methods that not necessary must be load by vue */
+
+/**
+ * method in charge of return the length of the value. The most use are whene the field are fragment
+ * this funciton is create with the intention of reduce errors on the code in case of add new fragments field
+ * @return {int} the size of the field
+*/
+function getFieldLength(separated, startbit, stopbit,a) {
+	let fieldsLength;
+	if (!separated || !separated[a])
+		fieldsLength = startbit - stopbit + 1;
+	else 
+		fieldsLength = startbit
+		  .map((b, i) => b - stopbit[i]+1)
+		  .reduce((old, newV) => old+newV);
+	return fieldsLength;
+}
+
+/**
+ * method in charge of return the binary instruction after add the inmediate value of the instruction
+ * @return {string} the new binary update
+*/
+function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a) {
+	if (!separated ||!separated[a])
+	    binary = binary.substring(0, binary.length - (startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (stopbit ), binary.length);
+	else {                            
+	    // check if the value fit on the first segment
+	    let myInm = inm;
+	    for (let i = startbit.length-1; i >= 0;  i--) {
+		let sb = startbit[i],
+		    stb = stopbit[i],
+		    diff = sb - stb+1;
+		if (myInm.length <= diff) {
+		    binary = binary.substring(0, binary.length - (sb+1)) +
+			myInm.padStart(diff, "0") +
+			binary.substring((binary.length - stb), binary.length);
+		    break;
+		} else {
+		    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
+		    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+		    myInm = myInm.substring(0,(myInm.length-diff));
+		} 
+	    }
+	}
+	return binary;
+}
+
+
+/**
+ * method in chage of map a float number separated in parts and determinte what it.
+ * @param s {Number} the sing of the number
+ * @param e {Number} the exponent of the number.
+ * @param m {Number} the mantinsa of the number
+ * @return {number} 2^n with n as
+ *      0 -> -infinite
+ *      1 -> -normal number
+ *      2 -> -subnormal number
+ *      3 -> -0
+ *      4 -> +0
+ *      5 -> +normal number
+ *      6 -> +subnormal number
+ *      7 -> +inf
+ *      8 -> -NaN
+ *      9 -> +NaN
+ */
+function checkTypeIEEE(s, e, m) {
+    let rd = 0;
+
+    if (!m && !e)
+        rd = s ? 1<<3 : 1<<4;
+    else if (!e)
+        rd = s ? 1<<2 : 1<<5;
+    else if (!(e ^ 255))
+        if (m)
+            rd = s ? 1<<8 : 1<<9;
+        else
+            rd = s ? 1<<0 : 1<<7;
+    else
+        rd = s ? 1<<1 : 1<<6;
+    return rd;
 }
