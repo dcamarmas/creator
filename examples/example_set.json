@@ -1,0 +1,9 @@
+[
+  {
+    "name": "MIPS",
+    "id": "default",
+    "architecture":"MIPS-32-like",
+    "url":"examples/MIPS/available_example.json",
+    "description": "MIPS default examples"
+  }
+]
