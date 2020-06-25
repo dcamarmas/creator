@@ -2916,13 +2916,25 @@ try{
       },
       /*Load the available examples*/
       load_examples_available(){
+        /*
         $.getJSON('examples/available_example.json', function(cfg){
           example_available = cfg;
           app._data.example_available = example_available;
+        });*/
+        var set_name = "default";
+        $.getJSON('examples/example_set.json', function(set){
+          for (var i = 0; i < set.length; i++) {
+            if(set[i].id.toUpperCase()==set_name.toUpperCase()){
+              $.getJSON(set[i].url, function(cfg){
+                example_available = cfg;
+                app._data.example_available = example_available;
+              });
+            }
+          }
         });
       },
       /*Load a selected example*/
-      load_example(id){
+      load_example(url){
         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
 
         var xhttp = new XMLHttpRequest();
@@ -2934,8 +2946,34 @@ try{
             show_notification(' The selected example has been loaded correctly', 'success') ;
           }
         };
-        xhttp.open("GET", "examples/"+id+".txt", true);
+        xhttp.open("GET", url, true);
         xhttp.send();
+      },
+       /*Load a selected example and compile*/
+      load_example_init(url){
+        this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+          if (this.readyState == 4 && this.status == 200) {
+            code_assembly = this.responseText;
+
+            app.change_UI_mode('assembly');
+
+            setTimeout(function(){
+              textarea_assembly_editor.setValue(code_assembly);
+              app.assembly_compiler();
+
+              show_notification(' The selected example has been loaded correctly', 'success') ;
+
+              app.change_UI_mode('simulator');
+            },100);
+
+          }
+        };
+        xhttp.open("GET", url, true);
+        xhttp.send();
+
       },
       /*Save a binary in a local file*/
       library_save(){
@@ -7732,26 +7770,69 @@ try{
                     }
                   }
                 }
-                if(architecture.instructions[auxIndex].fields[j].type == "inm-signed"){
+                /*if(architecture.instructions[auxIndex].fields[j].type == "inm-signed"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
                   var valueSign = value.charAt(0);
                   var newValue =  value.padStart(32, valueSign) ;
                   newValue = parseInt(newValue, 2) ;
                   var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                   auxDef = auxDef.replace(re, newValue >> 0);
-                }
-                if(architecture.instructions[auxIndex].fields[j].type == "inm-unsigned"){
-                  var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                }*/
+                if(architecture.instructions[auxIndex].fields[j].type == "inm-signed"){
+                	var value = "";
+                	if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
+                		for (var sep_index = 0; sep_index < architecture.instructions[auxIndex].fields[j].startbit.length; sep_index++) {
+                			value = value + instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit[sep_index]), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit[sep_index]))
+                		}
+                	}
+                	else{
+                		value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                	}
+                	var valueSign = value.charAt(0);
+                  var newValue =  value.padStart(32, valueSign) ;
                   newValue = parseInt(newValue, 2) ;
                   var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                   auxDef = auxDef.replace(re, newValue >> 0);
                 }
-                if(architecture.instructions[auxIndex].fields[j].type == "address"){
+                /*if(architecture.instructions[auxIndex].fields[j].type == "inm-unsigned"){
+                  var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                  newValue = parseInt(newValue, 2) ;
+                  var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                  auxDef = auxDef.replace(re, newValue >> 0);
+                }*/
+                if(architecture.instructions[auxIndex].fields[j].type == "inm-unsigned"){
+                	var value = "";
+                	if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
+                		for (var sep_index = 0; sep_index < architecture.instructions[auxIndex].fields[j].startbit.length; sep_index++) {
+                			value = value + instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit[sep_index]), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit[sep_index]))
+                		}
+                	}
+                	else{
+                		value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                	}
+                  newValue = parseInt(newValue, 2) ;
+                  var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                  auxDef = auxDef.replace(re, newValue >> 0);
+                }
+                /*if(architecture.instructions[auxIndex].fields[j].type == "address"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
                   var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                   auxDef = auxDef.replace(re, parseInt(value, 2));
+                }*/
+                if(architecture.instructions[auxIndex].fields[j].type == "address"){
+									var value = "";
+                	if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
+                		for (var sep_index = 0; sep_index < architecture.instructions[auxIndex].fields[j].startbit.length; sep_index++) {
+                			value = value + instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit[sep_index]), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit[sep_index]))
+                		}
+                	}
+                	else{
+                		value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                	}
+                	var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                  auxDef = auxDef.replace(re, parseInt(value, 2));
                 }
-                if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
+                /*if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
                   var valueSign = value.charAt(0);
                   var newValue =  value.padStart(32, valueSign) ;
@@ -7759,10 +7840,44 @@ try{
 //danger
                   var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
                   auxDef = auxDef.replace(re, newValue >> 0);
+                }*/
+								if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
+									var value = "";
+                	if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
+                		for (var sep_index = 0; sep_index < architecture.instructions[auxIndex].fields[j].startbit.length; sep_index++) {
+                			value = value + instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit[sep_index]), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit[sep_index]))
+                		}
+                	}
+                	else{
+                		value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                	}                  
+                	var valueSign = value.charAt(0);
+                  var newValue =  value.padStart(32, valueSign) ;
+                  newValue = parseInt(newValue, 2) ;
+//danger
+                  var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                  auxDef = auxDef.replace(re, newValue >> 0);
                 }
-                if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
+                /*if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
                   var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
                   var valueSign = value.charAt(0);
+                  var newValue =  value.padStart(32, valueSign) ;
+                  newValue = parseInt(newValue, 2) ;
+//danger
+                  var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
+                  auxDef = auxDef.replace(re, newValue >> 0);
+                }*/
+                if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
+                  var value = "";
+                	if(architecture.instructions[auxIndex].separated &&  architecture.instructions[auxIndex].separated[j] == true){
+                		for (var sep_index = 0; sep_index < architecture.instructions[auxIndex].fields[j].startbit.length; sep_index++) {
+                			value = value + instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit[sep_index]), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit[sep_index]))
+                		}
+                	}
+                	else{
+                		value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
+                	} 
+                	var valueSign = value.charAt(0);
                   var newValue =  value.padStart(32, valueSign) ;
                   newValue = parseInt(newValue, 2) ;
 //danger

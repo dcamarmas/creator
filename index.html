@@ -1729,7 +1729,7 @@
             <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
               <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
               <b-list-group>
-                <b-list-group-item button v-for="item in example_available" @click="load_example(item.id)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+                <b-list-group-item button v-for="item in example_available" @click="load_example(item.url)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
               </b-list-group>
             </b-modal>
 
@@ -1888,11 +1888,12 @@
             </div>
 
             <div class="col-lg-2 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
-                  </div>
+              <div class="col-lg-12 col-sm-12 buttons row">
+                <div class="col-lg-6 col-sm-6 buttons">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.examples2><span class="fas fa-file-alt"></span> Examples</b-button>
+                </div>
+                <div class="col-lg-6 col-sm-6 buttons">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
                 </div>
               </div>
             </div>
@@ -1922,6 +1923,14 @@
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
                   </b-popover>
+
+                  <!-- Examples modal -->
+                  <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
+                    <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
+                    <b-list-group>
+                      <b-list-group-item button v-for="item in example_available" @click="load_example_init(item.url)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+                    </b-list-group>
+                  </b-modal>
 
                   <!-- Calculator -->
                   <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
