@@ -19,12 +19,7 @@
  */
 
 
-  /*
-   * Notifications
-   */
-
-  function show_notification ( msg, type ) 
-  {
+  function show_notification ( msg, type ){
     // show notification
     app._data.alertMessage = msg ;
     app._data.type         = type ;
@@ -43,13 +38,6 @@
                          date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
     return true ;
   }
-
-
-  /*
-   * Loading...
-   */
-
-  var toHandler = null;
 
   function show_loading(){
     // if loading is programmed, skip
