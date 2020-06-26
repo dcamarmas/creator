@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso, Lucas Elvira Martín, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of Creator.
  *
