@@ -552,7 +552,7 @@ try{
     /*Created vue instance*/
     created(){
       this.load_arch_available();
-      this.load_examples_available();
+      this.load_examples_available('default');
       this.detectNavigator();
     },
 
@@ -561,6 +561,10 @@ try{
     mounted(){
       this.backupCopyModal();
       this.verifyNavigator();
+
+      // pre-load following URL params
+      var url_hash = creator_preload_get2hash(window.location) ;
+      creator_preload_fromHash(this, url_hash) ;
     },
 
     beforeUpdate(){
@@ -2850,17 +2854,11 @@ try{
         downloadLink.click();
       },
       /*Load the available examples*/
-      load_examples_available(){
-        /*
-        $.getJSON('examples/available_example.json', function(cfg){
-          example_available = cfg;
-          app._data.example_available = example_available;
-        });*/
-        var set_name = "default";
-        $.getJSON('examples/example_set.json', function(set){
+      load_examples_available( set_name ) {
+        $.getJSON('examples/example_set.json', function(set) {
           for (var i = 0; i < set.length; i++) {
-            if(set[i].id.toUpperCase()==set_name.toUpperCase()){
-              $.getJSON(set[i].url, function(cfg){
+            if(set[i].id.toUpperCase()==set_name.toUpperCase()) {
+              $.getJSON(set[i].url, function(cfg) {
                 example_available = cfg;
                 app._data.example_available = example_available;
               });
