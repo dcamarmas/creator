@@ -561,11 +561,11 @@ try{
     mounted(){
       this.backupCopyModal();
       this.verifyNavigator();
+      this.get_configuration();
 
       // pre-load following URL params
       var url_hash = creator_preload_get2hash(window.location) ;
       creator_preload_fromHash(this, url_hash) ;
-      this.get_configuration();
     },
 
     beforeUpdate(){
