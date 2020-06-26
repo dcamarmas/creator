@@ -2927,11 +2927,13 @@ try{
       load_examples_available( set_name ) {
         $.getJSON('examples/example_set.json', function(set) {
           for (var i = 0; i < set.length; i++) {
-            if(set[i].id.toUpperCase()==set_name.toUpperCase() && set[i].architecture.toUpperCase()==app._data.architecture_name.toUpperCase()){
-              $.getJSON(set[i].url, function(cfg){
-                example_available = cfg;
-                app._data.example_available = example_available;
-              });
+            if (set[i].id.toUpperCase()==set_name.toUpperCase())
+              //set[i].architecture.toUpperCase()==app._data.architecture_name.toUpperCase())
+            {
+                $.getJSON(set[i].url, function(cfg){
+                  example_available = cfg;
+                  app._data.example_available = example_available;
+                });
             }
           }
         });
