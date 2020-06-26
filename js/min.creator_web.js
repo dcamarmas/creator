@@ -735,6 +735,7 @@ try{
     mounted(){
       this.backupCopyModal();
       this.verifyNavigator();
+      this.get_configuration();
 
       // pre-load following URL params
       var url_hash = creator_preload_get2hash(window.location) ;
@@ -742,38 +743,13 @@ try{
     },
 
     beforeUpdate(){
-      this.get_configuration();
+      this.get_dark_mode();
     },  
 
 
     /*Vue methods*/
     methods:{
       /*Generic*/
-      /*Dark  Mode*/
-      change_dark_mode(){
-        app._data.dark= !app._data.dark;
-        if (app._data.dark){
-          document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
-          localStorage.setItem("dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
-        }
-        else{
-          document.getElementsByTagName("body")[0].style = "";
-          localStorage.setItem("dark_mode", "");
-
-        }
-      },
-
-      get_configuration(){
-        if(localStorage.getItem("dark_mode") != null){
-          document.getElementsByTagName("body")[0].style = localStorage.getItem("dark_mode");
-          if(localStorage.getItem("dark_mode") == ""){
-            app._data.dark = false;
-          }
-          else{
-            app._data.dark = true;
-          }
-        }
-      },
 
       verifyNavigator(){
         if (navigator.userAgent.indexOf("OPR") > -1) {
@@ -798,6 +774,96 @@ try{
           this.$refs.navigator.show();
         }
       },
+
+      /*loads the configuration values from the last use*/
+      get_configuration(){
+      	if(localStorage.getItem("instructionsPacked") != null){
+          this.instructionsPacked = parseInt(localStorage.getItem("instructionsPacked"));
+        }
+
+        if(localStorage.getItem("notificationTime") != null){
+          this.notificationTime = parseInt(localStorage.getItem("notificationTime"));
+
+        }
+      },
+
+      /*Verify if dark mode was activated de last use*/
+      get_dark_mode(){
+        if(localStorage.getItem("dark_mode") != null){
+          document.getElementsByTagName("body")[0].style = localStorage.getItem("dark_mode");
+          if(localStorage.getItem("dark_mode") == ""){
+            app._data.dark = false;
+          }
+          else{
+            app._data.dark = true;
+          }
+        }
+        else{
+        	var default_style = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        	if(default_style == true){
+        		document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
+        		app._data.dark = true;
+        	}
+        	else{
+        		document.getElementsByTagName("body")[0].style = "";
+          	app._data.dark = false;
+        	}
+        }
+      },
+
+      /*Change the execution speed*/
+      change_execution_speed(value){
+      	if(value){
+	      	this.instructionsPacked= this.instructionsPacked + value;
+	      	if(this.instructionsPacked < 1){
+	      		this.instructionsPacked = 1;
+	      	}
+	      	if (this.instructionsPacked > 101) {
+	      		this.instructionsPacked = 101;
+	      	}
+	      }
+	      else{
+	      	this.instructionsPacked = parseInt(this.instructionsPacked);
+	      }
+      	
+      	localStorage.setItem("instructionsPacked", this.instructionsPacked);
+
+      },
+
+      /*change the time a notification is displayed*/
+      change_notification_time(value){
+      	if(value){
+	      	this.notificationTime= this.notificationTime + value;
+	      	if(this.notificationTime < 1000){
+	      		this.notificationTime = 1000;
+	      	}
+	      	if (this.notificationTime > 3500) {
+	      		this.notificationTime = 3500;
+	      	}
+	      }
+	      else{
+	      	this.notificationTime = parseInt(this.notificationTime);
+	      }
+
+      	localStorage.setItem("notificationTime", this.notificationTime);
+
+      },
+
+      /*Dark  Mode*/
+      change_dark_mode(){
+        app._data.dark= !app._data.dark;
+        if (app._data.dark){
+          document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
+          localStorage.setItem("dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
+        }
+        else{
+          document.getElementsByTagName("body")[0].style = "";
+          localStorage.setItem("dark_mode", "");
+
+        }
+      },
+
+      /*Screen change*/
       change_UI_mode(e){
         app._data.register_popover = '';
       	// slow transition <any> => "architecture"
@@ -1003,6 +1069,8 @@ try{
             app.$forceUpdate();
             hide_loading();
 
+            app.load_examples_available();
+
             show_notification('The selected architecture has been loaded correctly', 'success') ;
             return;
           }
@@ -1029,6 +1097,8 @@ try{
           app.change_data_view('registers' , 'int');
           app.$forceUpdate();
           hide_loading();
+
+          app.load_examples_available();
 
           show_notification('The selected architecture has been loaded correctly', 'success') ;
         })
@@ -3031,8 +3101,8 @@ try{
       load_examples_available( set_name ) {
         $.getJSON('examples/example_set.json', function(set) {
           for (var i = 0; i < set.length; i++) {
-            if(set[i].id.toUpperCase()==set_name.toUpperCase()) {
-              $.getJSON(set[i].url, function(cfg) {
+            if(set[i].id.toUpperCase()==set_name.toUpperCase() && set[i].architecture.toUpperCase()==app._data.architecture_name.toUpperCase()){
+              $.getJSON(set[i].url, function(cfg){
                 example_available = cfg;
                 app._data.example_available = example_available;
               });
@@ -4377,6 +4447,7 @@ try{
 
                     for(var z = 0; z < architecture.directives.length; z++){
                       if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+
                         isWord = false;
                       }
                     }
@@ -5232,7 +5303,7 @@ try{
 
             else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
               app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-              return;
+              return 0;
             }
           
           }
@@ -10025,7 +10096,6 @@ try{
 
 
       select_stack_type(record, index){
-        console.log(index);
         app._data.row_index = index;
         this.$refs['stack_modal'].show();
       },
