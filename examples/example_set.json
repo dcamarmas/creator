@@ -5,5 +5,12 @@
     "architecture":"MIPS-32-like",
     "url":"examples/MIPS/available_example.json",
     "description": "MIPS default examples"
+  },
+  {
+    "name": "MIPS Examples",
+    "id": "snips",
+    "architecture":"MIPS-32-like",
+    "url":"examples/snips/list.json",
+    "description": "MIPS examples"
   }
 ]
