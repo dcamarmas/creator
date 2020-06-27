@@ -726,7 +726,7 @@ try{
     /*Created vue instance*/
     created(){
       this.load_arch_available();
-      this.load_examples_available('default');
+      //this.load_examples_available('default');
       this.detectNavigator();
     },
 
@@ -1041,6 +1041,7 @@ try{
         localStorage.removeItem("date_copy");
         this.$refs.copyRef.hide();
       },
+
       /*Load the selected architecture*/
       load_arch_select(e){
         show_loading();
@@ -1069,7 +1070,7 @@ try{
             app.$forceUpdate();
             hide_loading();
 
-            app.load_examples_available();
+            //app.load_examples_available('default');
 
             show_notification('The selected architecture has been loaded correctly', 'success') ;
             return;
@@ -1098,7 +1099,7 @@ try{
           app.$forceUpdate();
           hide_loading();
 
-          app.load_examples_available();
+          //app.load_examples_available('default');
 
           show_notification('The selected architecture has been loaded correctly', 'success') ;
         })
@@ -1108,6 +1109,7 @@ try{
           show_notification('The selected architecture is not currently available', 'info') ;
         });
       },
+
       /*Read the JSON of new architecture*/
       read_arch(e){
         show_loading();
@@ -3097,13 +3099,15 @@ try{
 
         downloadLink.click();
       },
+
       /*Load the available examples*/
       load_examples_available( set_name ) {
         $.getJSON('examples/example_set.json', function(set) {
           for (var i = 0; i < set.length; i++) {
             if (set[i].id.toUpperCase()==set_name.toUpperCase())
-              //set[i].architecture.toUpperCase()==app._data.architecture_name.toUpperCase())
             {
+                app.load_arch_select(set[i].architecture) ;
+
                 $.getJSON(set[i].url, function(cfg){
                   example_available = cfg;
                   app._data.example_available = example_available;
@@ -3112,6 +3116,7 @@ try{
           }
         });
       },
+
       /*Load a selected example*/
       load_example(url){
         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
@@ -3128,6 +3133,7 @@ try{
         xhttp.open("GET", url, true);
         xhttp.send();
       },
+
        /*Load a selected example and compile*/
       load_example_init(url){
         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
@@ -3152,8 +3158,8 @@ try{
         };
         xhttp.open("GET", url, true);
         xhttp.send();
-
       },
+
       /*Save a binary in a local file*/
       library_save(){
         if(this.assembly_compiler() == -1){
