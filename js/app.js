@@ -443,6 +443,7 @@ try{
       
       /*Available examples*/
       example_available: example_available,
+      example_loaded: null,
       
       load_assembly: '',
       /*Saved file name*/
@@ -2928,19 +2929,25 @@ try{
 
       /*Load the available examples*/
       load_examples_available( set_name ) {
-        $.getJSON('examples/example_set.json', function(set) {
-          for (var i = 0; i < set.length; i++) {
-            if (set[i].id.toUpperCase()==set_name.toUpperCase())
-            {
-                app.load_arch_select(set[i].architecture) ;
+	this._data.example_loaded = new Promise(function(resolve, reject) {
+			$.getJSON('examples/example_set.json', function(set) {
+			  for (var i = 0; i < set.length; i++) 
+                          {
+				if (set[i].id.toUpperCase()==set_name.toUpperCase())
+				{
+					app.load_arch_select(set[i].architecture) ;
 
-                $.getJSON(set[i].url, function(cfg){
-                  example_available = cfg;
-                  app._data.example_available = example_available;
-                });
-            }
-          }
-        });
+					$.getJSON(set[i].url, function(cfg){
+					  example_available = cfg;
+					  app._data.example_available = example_available;
+					  resolve('loaded') ;
+					});
+                                        return ;
+				}
+			  }
+			  reject('unavailable') ;
+			});
+               }) ;
       },
 
       /*Load a selected example*/
