@@ -30,11 +30,17 @@
 	    'name':   'example_set',
 	    'action': function( app, hash )
 		      {
-			 app.load_examples_available(hash.example_set) ;
+                          var result = 'not loaded' ;
 
-			 return '<li>Examples set titled <strong>' +
-			         hash.example_set +
-			         '</strong>' + '.</li>';
+			  if (hash.example_set.trim() !== "")
+		          {
+			      app.load_examples_available(hash.example_set) ;
+                              result = 'has been loaded' ;
+		          }
+
+			  return '<li>Examples set titled <strong>' +
+			          hash.example_set +
+			          '</strong> ' + result + '.</li> ' ;
 		      }
 	 },
 
@@ -43,12 +49,18 @@
 	    'name':   'example',
 	    'action': function( app, hash )
 		      {
+                          var result = 'not loaded' ;
 			  var example_index = parseInt(hash.example) ;
-                          // TODO: load example
 
-			  return '<li>Example titled <strong>' +
-			         example_obj.title +
-			         '</strong> has been loaded.</li> ' ;
+                          if (typeof example_available[example_index] !== "undefined")
+		          {
+                              load_example_init(example_available[example_index].url) ;
+                              result = 'has been loaded' ;
+		          }
+
+			  return '<li>Example Id. <strong>' +
+			         hash.example +
+			         '</strong> ' + result + '.</li> ' ;
 		      }
 	 }
 
