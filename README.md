@@ -22,3 +22,9 @@ GitHub Repository:
      * https://github.com/luck5941/creator/
      * https://github.com/acaldero/creator/
 
+## ChangeLog
+1.5:
+   * RISC-V Support (Thanks to Lucas Elvira Martín)
+   * Creator accept some GET values for preloading examples:
+     * https://acaldero.github.io/creator/?example_set=snips&example=5
+
