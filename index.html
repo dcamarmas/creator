@@ -1928,7 +1928,7 @@
                   <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
                     <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
                     <b-list-group>
-                      <b-list-group-item button v-for="item in example_available" @click="load_example_init(item.url)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+                      <b-list-group-item button v-for="item in example_available" @click="load_example_init(item.url)" ref="closeExample">{{item.name}}: <span v-html="item.description"></span></b-list-group-item>
                     </b-list-group>
                   </b-modal>
 
