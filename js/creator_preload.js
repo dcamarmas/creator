@@ -51,12 +51,18 @@
 		      {
                           var result = 'not loaded' ;
 			  var example_index = parseInt(hash.example) ;
+                          if (app._data.example_loaded == null) {
+                              app._data.example_loaded = new Promise(function(resolve, reject) {
+									resolve('unavailable') ;
+                                                         }) ;
+                          }
 
-                          if (typeof example_available[example_index] !== "undefined")
-		          {
-                              load_example_init(example_available[example_index].url) ;
-                              result = 'has been loaded' ;
-		          }
+			  app._data.example_loaded.then(function() {
+				  if (typeof example_available[example_index] !== "undefined") {
+				      app.load_example_init(example_available[example_index].url) ;
+				      result = 'has been loaded' ;
+				  }
+			  }) ;
 
 			  return '<li>Example Id. <strong>' +
 			         hash.example +
