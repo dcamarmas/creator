@@ -77,7 +77,7 @@
         <!-- Navbar  -->
         <header>
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.3 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.5 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
 
@@ -1928,7 +1928,7 @@
                   <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
                     <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
                     <b-list-group>
-                      <b-list-group-item button v-for="item in example_available" @click="load_example_init(item.url)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+                      <b-list-group-item button v-for="item in example_available" @click="load_example_init(item.url)" ref="closeExample">{{item.name}}: <span v-html="item.description"></span></b-list-group-item>
                     </b-list-group>
                   </b-modal>
 
