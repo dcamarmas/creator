@@ -2967,8 +2967,8 @@ try{
 
             if(instructionParts.length < (architecture.pseudoinstructions[i].fields.length + 1)){
               for (var j = 0; j < ((architecture.pseudoinstructions[i].fields.length + 1)-instructionParts.length ); j++){
-                this.next_token();
-                token = this.get_token();
+                next_token();
+                token = get_token();
 
                 console_log(token);
 
@@ -3356,10 +3356,10 @@ try{
             if(oriInstruction.search(re) == -1){
 
               if(isPseudo == false){
-                console_log(this.get_token())
+                console_log(get_token())
 
                 tokenIndex =  instInit;
-                token = this.get_token();
+                token = get_token();
 
                 console_log(token);
               }
@@ -3383,8 +3383,8 @@ try{
                   for (var a = 1; a < numToken; a++){
                     if(architecture.instructions[i].fields[a].type != "cop"){
                       if(isPseudo == false){
-                        this.next_token();
-                        token = this.get_token();
+                        next_token();
+                        token = get_token();
 
                         if(token != null){
                           var re = new RegExp(",+$");
@@ -3419,8 +3419,8 @@ try{
                   instruction = instruction + token;
 
                   for (var i = 0; i < numToken; i++){
-                    this.next_token();
-                    token = this.get_token();
+                    next_token();
+                    token = get_token();
 
                     if(token != null){
                       var re = new RegExp(",+$");
