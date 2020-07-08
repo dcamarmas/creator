@@ -1,8 +1,8 @@
 # CREATOR: didaCtic and geneRic assEmbly progrAmming simulaTOR
 
 ## Author
-Diego Camarmas Alonso
-Lucas Elvira Martín (RISC-V)
+* Diego Camarmas Alonso
+* Lucas Elvira Martín (RISC-V)
 
 ## Links
 CREATOR:

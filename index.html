@@ -77,14 +77,19 @@
         <!-- Navbar  -->
         <header>
           <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.5 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+            <b-navbar-brand style="color: #2196F3; margin: 0px;" href=".">
+            	<h1>CREATOR <b-badge pill variant="secondary"> 1.5 </b-badge>
+            	<span style="padding-left: 4%;">{{architecture_name}}</span>
+            	<br>
+            	<strong><p style="color: #383d41; font-size: 11px;margin-top: 2%;">didaCtic and geneRic assEmbly progrAmming simulaTOR</p></strong></h1>
+            </b-navbar-brand>
 
-            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+            <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>
 
             <b-collapse is-nav id="nav_collapse">
               <b-navbar-nav class="ml-auto">
-                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
-                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
+                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
+                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
               </b-navbar-nav>
             </b-collapse>
           </b-navbar>
@@ -101,7 +106,7 @@
           </b-modal>
           
           <!-- About modal -->
-          <b-modal id="about" hide-footer scrollable>
+          <b-modal id="about" title="About us" hide-footer scrollable>
             <b-card-group>
               <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>
                 <b-card-text>
@@ -109,11 +114,11 @@
                     <h6>Félix García Carballeira</h6>
                   </div>
                   <hr>
-                  <a><span class="fab fa-linkedin"></span> linkedin</a>
+                  <a aria-label="linkedin Felix"><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a aria-label="r-gate Felix" href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a><span class="fab fa-github"></span> github</a>
+                  <a aria-label="GitHub Felix"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
 
@@ -123,11 +128,11 @@
                     <h6>Alejandro Calderón Mateos</h6>
                   </div>
                   <hr>
-                  <a href='https://www.linkedin.com/in/alejandro-calderon-mateos/' target="_blank"><span class="fab fa-linkedin"></span> linkedin</a>
+                  <a aria-label="linkedin Alejandro" href='https://www.linkedin.com/in/alejandro-calderon-mateos/' target="_blank"><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a href='https://www.researchgate.net/profile/Alejandro_Calderon2' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a aria-label="r-gate Alejandro" href='https://www.researchgate.net/profile/Alejandro_Calderon2' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a href='https://github.com/acaldero/wepsim' target="_blank"><span class="fab fa-github"></span> github</a>
+                  <a aria-label="GitHub Alejandro" href='https://github.com/acaldero/wepsim' target="_blank"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
 
@@ -137,11 +142,11 @@
                     <h6>Diego Camarmas Alonso</h6>
                   </div>
                   <hr>
-                  <a><span class="fab fa-linkedin"></span> linkedin</a>
+                  <a aria-label="linkedin Diego" href='https://www.linkedin.com/in/dcamarmas' target="_blank"><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a aria-label="r-gate Diego"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a href='https://github.com/dcamarmas' target="_blank"><span class="fab fa-github"></span> github</a>
+                  <a aria-label="GitHub Diego" href='https://github.com/dcamarmas' target="_blank"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
             </b-card-group>
@@ -159,7 +164,7 @@
     	        <b-input-group-prepend>
     	          <b-btn variant="outline-secondary" @click="change_execution_speed(-5)">-</b-btn>
     	        </b-input-group-prepend>
-              <b-form-input v-model="instructionsPacked" @change="change_execution_speed(0)" type="range" min="1" max="101" step="5" ></b-form-input>
+              <b-form-input v-model="instructionsPacked" @change="change_execution_speed(0)" type="range" min="1" max="101" step="5" title="Execution Speed"></b-form-input>
     	        <b-input-group-append>
     	          <b-btn variant="outline-secondary" @click="change_execution_speed(5)">+</b-btn>
     	        </b-input-group-append>
@@ -172,7 +177,7 @@
               <b-input-group-prepend>
                 <b-btn variant="outline-secondary" @click="change_notification_time(-20)">-</b-btn>
               </b-input-group-prepend>
-              <b-form-input v-model="notificationTime" @change="change_notification_time(0)" type="range" min="1000" max="3500" step="10"></b-form-input>
+              <b-form-input v-model="notificationTime" @change="change_notification_time(0)" type="range" min="1000" max="3500" step="10" title="Notification Time"></b-form-input>
               <b-input-group-append>
                 <b-btn variant="outline-secondary" @click="change_notification_time(20)">+</b-btn>
               </b-input-group-append>
@@ -246,7 +251,7 @@
                         </b-col>
 
                         <b-col md="7" @click="load_arch_select(item.name)">
-                          <b-card-body :title=item.name title-tag="h4">
+                          <b-card-body :title=item.name title-tag="h2">
                             <b-card-text style="text-align: justify; font-size: 11pt;">
                               {{item.description}}
                             </b-card-text>
@@ -301,7 +306,7 @@
                         </b-col>
 
                         <b-col md="9">
-                          <b-card-body title="New Architecture" title-tag="h4" >
+                          <b-card-body title="New Architecture" title-tag="h2" >
                             <b-card-text style="text-align: justify; font-size: 11pt;">
                               Allows you to define an architecture from scratch.
                             </b-card-text>
@@ -317,7 +322,7 @@
                         </b-col>
 
                         <b-col md="9">
-                          <b-card-body title="Load Architecture" title-tag="h4">
+                          <b-card-body title="Load Architecture" title-tag="h2">
                             <b-card-text style="text-align: justify; font-size: 11pt;">
                               Allows to load the definition of an already created architecture.
                             </b-card-text>
@@ -328,9 +333,9 @@
                       <!-- Load new architecture modal -->
                       <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
                         <b-form>
-                          <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
+                          <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)" title="Architecture Name"></b-form-input>
                           <br>
-                          <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+                          <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3" title="Architecture Description"></b-form-textarea>
                           <br>
                           <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
                         </b-form>
@@ -912,7 +917,7 @@
                       <!-- Page 4 -->
                       <div id="newInstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Assembly Definition:">
-                          <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                          <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4" title="Instruction Definition">
                           </b-form-textarea>
                         </b-form-group>
                       </div>
@@ -949,7 +954,7 @@
                       </template>
 
                       <template slot="definition" slot-scope="row">
-                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
+                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4" title="Instruction Definition"></b-form-textarea>
                       </template>
 
                       <template slot="actions" slot-scope="row">
@@ -1242,7 +1247,7 @@
                         <!-- Page 4 -->
                         <div id="editInstForm4" v-if="instructionFormPage == 4">
                           <b-form-group label="Assembly Definition:">
-                            <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                            <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4" title="Instruction Definition">
                             </b-form-textarea>
                           </b-form-group>
                         </div>
@@ -1375,7 +1380,7 @@
                       <!-- Page 4 -->
                       <div id="newPseudoinstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Pseudoinstruction Definition:">
-                          <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                          <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4" title="Pseudoinstruction Definition">
                           </b-form-textarea>
                         </b-form-group>
                       </div>
@@ -1408,7 +1413,7 @@
                       </template>
 
                       <template slot="definition" slot-scope="row">
-                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
+                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4" title="Pseudoinstruction Definition"></b-form-textarea>
                       </template>
 
                       <template slot="actions" slot-scope="row">
@@ -1588,7 +1593,7 @@
                         <!-- Page 4 -->
                         <div id="editPseudoinstForm4" v-if="instructionFormPage == 4">
                           <b-form-group label="Pseudoinstruction Definition:">
-                            <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                            <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4" title="Pseudoinstruction Definition">
                             </b-form-textarea>
                           </b-form-group>
                         </div>
@@ -1721,7 +1726,7 @@
               <p> Please write the file name: </p> 
               <b-form-input v-on:input="debounce('save_assembly', $event)" :value="save_assembly"
                   type="text"
-                  placeholder="File name where assembly will be saved">
+                  placeholder="File name where assembly will be saved" title="File name">
               </b-form-input>
             </b-modal>
 
@@ -1764,7 +1769,8 @@
               <p> Please write the file name: </p> 
               <b-form-input v-on:input="debounce('name_binary_save', $event)" :value="name_binary_save"
                   type="text"
-                  placeholder="File name where binary will be saved">
+                  placeholder="File name where binary will be saved"
+                  title="File name">
               </b-form-input>
             </b-modal>
 
@@ -1801,7 +1807,7 @@
           <div class="contenedor row">
             <div class="col-lg-12 col-sm-12" id="divAssembly">
               <h5>Assembly: (To comment a block of code press ctrl + /)</h5>
-              <textarea id="textarea_assembly" rows="14" class="code-scroll-y">
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code">
               </textarea>
             </div>
 
@@ -1887,7 +1893,7 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-6 col-sm-6 buttons">
                   <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.examples2><span class="fas fa-file-alt"></span> Examples</b-button>
@@ -1952,7 +1958,7 @@
                     <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
                       <div class="col-lg-2 col-2"></div>
                       <div class="col-lg-6 col-8">
-                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.hexadecimal', $event)" :value="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter hexadecimal" :maxlength="calculator.lengthHexadecimal"></b-form-input>
+                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.hexadecimal', $event)" :value="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter name of the architecture" :maxlength="calculator.lengthHexadecimal" title="Hexadecimal"></b-form-input>
                       </div>
                       <div class="col-lg-4"></div>
                     </div>
@@ -1970,13 +1976,13 @@
                       <div class="col-lg-8 col-12 nopadding">
                         <div class="col-lg-12 col-12 row nomargin nopadding">
                           <div class="col-lg-2 col-2" style="padding: 1%;">
-                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.sign', $event)" :value="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign"></b-form-input>
+                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.sign', $event)" :value="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign" title="Sign"></b-form-input>
                           </div>
                           <div class="col-lg-4 col-4" style="padding: 1%;">
-                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.exponent', $event)" :value="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent"></b-form-input>
+                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.exponent', $event)" :value="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent" title="Exponent"></b-form-input>
                           </div>
                           <div class="col-lg-6 col-6" style="padding: 1%;">
-                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.mantissa', $event)" :value="calculator.mantissa" @change="calculatorFunct(1)" placeholder="Enter mantissa" :maxlength="calculator.lengthMantissa"></b-form-input>
+                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.mantissa', $event)" :value="calculator.mantissa" @change="calculatorFunct(1)" placeholder="Enter mantissa" :maxlength="calculator.lengthMantissa" title="Mantisa"></b-form-input>
                           </div>
                         </div>
                       </div>
@@ -2003,7 +2009,7 @@
                         </div>
                       </div>
                       <div class="col-lg-3" style="padding-top: 3%">
-                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.decimal', $event)" :value="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal"></b-form-input>
+                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.decimal', $event)" :value="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal" title="Decimal"></b-form-input>
                       </div>
                     </div>
 
@@ -2085,9 +2091,9 @@
                       <!-- Control and integer registers -->
                       <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
-                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
-                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
+                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
 
                         <!-- Register popover -->
@@ -2131,7 +2137,7 @@
 
                           <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                             <div class="col-lg-6 col-sm-6 popoverFooter">
-                              <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+                              <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
                             </div>
                             <div class="col-lg-6 col-sm-6 popoverFooter">
                               <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -2144,7 +2150,7 @@
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
-                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
+                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2183,7 +2189,7 @@
 
                             <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
                               </div>
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2195,7 +2201,7 @@
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
-                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
+                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2234,7 +2240,7 @@
 
                             <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
                               </div>
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2255,7 +2261,7 @@
                 			<!-- Control and integer registers -->
   	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
@@ -2299,7 +2305,7 @@
 
   												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  					            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+  					            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
   					            		</div>
   					            		<div class="col-lg-6 col-sm-6 popoverFooter">
   					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -2313,7 +2319,7 @@
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
+  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2352,7 +2358,7 @@
 
   													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
   						            		</div>
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2364,7 +2370,7 @@
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
+  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2403,7 +2409,7 @@
 
   													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
   						            		</div>
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2545,7 +2551,7 @@
                 <b-img src="./images/monitor2.png" fluid alt="Monitor"></b-img>
               </div>
               <div class="col-lg-12 col-sm-12">
-                <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled no-resize></b-form-textarea>
+                <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled no-resize title="Display"></b-form-textarea>
               </div>
             </div>
           </div>
@@ -2557,7 +2563,7 @@
                 <b-img src="./images/keyboard1.png" fluid alt="Keyboard"></b-img>
               </div>
               <div class="col-lg-12 col-sm-12">
-                <b-form-textarea id="textarea_keyboard" v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" no-resize :state = "enter"></b-form-textarea>
+                <b-form-textarea id="textarea_keyboard" v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" no-resize :state = "enter" title="Keyboard"></b-form-textarea>
               </div>
             </div>
 
