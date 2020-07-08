@@ -1683,7 +1683,7 @@ function data_segment_compiler()
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
-                      token = this.hex2float(token);
+                      token = app.hex2float(token);
                     }
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
@@ -1693,7 +1693,7 @@ function data_segment_compiler()
                         return -1;
                       }
                       auxToken = parseFloat(token, 10);
-                      auxTokenString = (this.bin2hex(this.float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
+                      auxTokenString = (app.bin2hex(app.float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();
@@ -1793,7 +1793,7 @@ function data_segment_compiler()
                         return -1;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
-                      token = this.hex2double(token);
+                      token = app.hex2double(token);
                     }
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
@@ -1803,7 +1803,7 @@ function data_segment_compiler()
                         return -1;
                       }
                       auxToken = parseFloat(token, 10);console_log(auxTokenString);
-                      auxTokenString = (this.bin2hex(this.double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
+                      auxTokenString = (app.bin2hex(app.double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();
