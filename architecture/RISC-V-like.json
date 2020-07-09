@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "0",
+          "value": "12",
           "default_value": "0",
           "properties": [
             "read",
@@ -352,7 +352,7 @@
         {
           "name": "ft0",
           "nbits": "32",
-          "value": 0,
+          "value": 4.5,
           "default_value": 0,
           "properties": [
             "read",
@@ -679,7 +679,7 @@
         {
           "name": "FP0",
           "nbits": "64",
-          "value": 0,
+          "value": 4.5,
           "simple_reg": [
             "f0",
             "f1"
@@ -3314,9 +3314,9 @@
     {
       "name": "fsd",
       "type": "Memory access",
-      "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "fsd,cop,inm-signed,(DFP-Reg)",
-      "signatureRaw": "fsd cop offset (rs2)",
+      "signature_definition": "F0 F2 F1 (F3)",
+      "signature": "fsd,DFP-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "fsd rs2 inm (rs1)",
       "co": "0100111",
       "cop": "011",
       "nwords": 1,
@@ -3328,7 +3328,7 @@
           "stopbit": 0
         },
         {
-          "name": "offset",
+          "name": "inm",
           "type": "inm-signed",
           "startbit": [
             31,
@@ -3360,7 +3360,7 @@
           "valueField": "011"
         }
       ],
-      "definition": "MP.w.[rs1+offset] = splitDouble(rs2; 1); MP.w.[rs1+offset+4] = splitDouble(rs2; 0);",
+      "definition": "MP.w.[inm+rs2] = splitDouble(rs1; 1); MP.w.[inm+rs2+4] = splitDouble(rs1; 0);",
       "separated": [
         false,
         true,
@@ -4755,7 +4755,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd =~(rs1*rs2)+rs3",
+      "definition": "rd = -rs1 * rs2 + rs3",
       "separated": [
         false,
         false,
@@ -4813,7 +4813,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd =~(rs1*rs2)-\nrs3",
+      "definition": "rd = -rs1 * rs2 -\nrs3",
       "separated": [
         false,
         false,
@@ -5945,9 +5945,9 @@
     {
       "name": "fld",
       "type": "Memory access",
-      "signature_definition": "F0 F4 F1(F2)",
-      "signature": "fld,DFP-Reg,inm-signed(INT-Reg)",
-      "signatureRaw": "fld rd inm(rs1)",
+      "signature_definition": "F0 F4 F1 (F2)",
+      "signature": "fld,DFP-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "fld rd inm (rs1)",
       "co": "0000111",
       "cop": "011",
       "nwords": 1,
@@ -5984,7 +5984,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[inm+rs1];\narr[1] =  MP.w.[inm+rs1+4]\nrd = (new Float64Array(buf))[0];",
+      "definition": "assert((inm+rs1)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[inm+rs1];\narr[1] =  MP.w.[inm+rs1+4]\nrd = (new Float64Array(buf))[0];",
       "separated": [
         false,
         false,
@@ -6170,14 +6170,14 @@
       "name": "fnmadd.d",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F4 F3 F1",
-      "signature": "FNMADD.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
-      "signatureRaw": "FNMADD.D rd rs1 rs2 rs3",
+      "signature": "fnmadd.d,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fnmadd.d rd rs1 rs2 rs3",
       "co": "1001111",
       "cop": "01",
       "nwords": 1,
       "fields": [
         {
-          "name": "FNMADD.D",
+          "name": "fnmadd.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6214,7 +6214,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = ~(rs1*rs2)-rs3",
+      "definition": "rd = -rs1 * rs2 - rs3",
       "separated": [
         false,
         false,
@@ -6228,14 +6228,14 @@
       "name": "fnmsub.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F5 F4 F3 F1",
-      "signature": "FNMSUB.D,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
-      "signatureRaw": "FNMSUB.D rd rs1 rs2 rs3",
+      "signature": "fnmsub.d,DFP-Reg,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fnmsub.d rd rs1 rs2 rs3",
       "co": "1001011",
       "cop": "01",
       "nwords": 1,
       "fields": [
         {
-          "name": "FNMSUB.D",
+          "name": "fnmsub.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6272,7 +6272,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = ~(rs1*rs2)+rs3",
+      "definition": "rd = -rs1 * rs2 + rs3",
       "separated": [
         false,
         false,
@@ -6542,14 +6542,14 @@
       "name": "fsgnj.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F5 F3 F2",
-      "signature": "FSGNJ.D,DFP-Reg,DFP-Reg,DFP-Reg",
-      "signatureRaw": "FSGNJ.D rd rs1 rs2",
+      "signature": "fsgnj.d,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fsgnj.d rd rs1 rs2",
       "co": "1010011",
       "cop": "0010001000",
       "nwords": 1,
       "fields": [
         {
-          "name": "FSGNJ.D",
+          "name": "fsgnj.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6588,7 +6588,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd =rs > 0 ? Math.abs(rs2) : - Math.abs(rs1)",
+      "definition": "rd = rs2 > 0 ? Math.abs(rs1) : -Math.abs(rs1)",
       "separated": [
         false,
         false,
@@ -6602,14 +6602,14 @@
       "name": "fsgnjn.d",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F5 F3 F2",
-      "signature": "FSGNJN.D,DFP-Reg,DFP-Reg,DFP-Reg",
-      "signatureRaw": "FSGNJN.D rd rs1 rs2",
+      "signature": "fsgnjn.d,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fsgnjn.d rd rs1 rs2",
       "co": "1010011",
       "cop": "0010001001",
       "nwords": 1,
       "fields": [
         {
-          "name": "FSGNJN.D",
+          "name": "fsgnjn.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6648,7 +6648,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd =rs < 0 ? Math.abs(rs2) : - Math.abs(rs1)",
+      "definition": "rd = rs2 > 0 ? -Math.abs(rs1) : +Math.abs(rs1)",
       "separated": [
         false,
         false,
@@ -6662,14 +6662,14 @@
       "name": "fsgnjx.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F5 F3 F2",
-      "signature": "FSGNJX.D,DFP-Reg,DFP-Reg,DFP-Reg",
-      "signatureRaw": "FSGNJX.D rd rs1 rs2",
+      "signature": "fsgnjx.d,DFP-Reg,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fsgnjx.d rd rs1 rs2",
       "co": "1010011",
       "cop": "0010001010",
       "nwords": 1,
       "fields": [
         {
-          "name": "FSGNJX.D",
+          "name": "fsgnjx.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6708,7 +6708,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? Math.abs(rs1) : -Math.abs(rs1);",
+      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? -Math.abs(rs1) : Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -6842,14 +6842,14 @@
       "name": "fcvt.s.d",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
-      "signature": "FCVT.S.D,SFP-Reg,DFP-Reg",
-      "signatureRaw": "FCVT.S.D rd rs1",
+      "signature": "fcvt.s.d,SFP-Reg,DFP-Reg",
+      "signatureRaw": "fcvt.s.d rd rs1",
       "co": "1010011",
       "cop": "010000000001",
       "nwords": 1,
       "fields": [
         {
-          "name": "FCVT.S.D",
+          "name": "fcvt.s.d",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6881,7 +6881,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1",
+      "definition": "rd = rs1",
       "separated": [
         false,
         false,
@@ -6895,14 +6895,14 @@
       "name": "fcvt.d.s",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
-      "signature": "FCVT.D.S,DFP-Reg,SFP-Reg",
-      "signatureRaw": "FCVT.D.S rd rs1",
+      "signature": "fcvt.d.s,DFP-Reg,SFP-Reg",
+      "signatureRaw": "fcvt.d.s rd rs1",
       "co": "1010011",
       "cop": "010000100000",
       "nwords": 1,
       "fields": [
         {
-          "name": "FCVT.D.S",
+          "name": "fcvt.d.s",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -6934,7 +6934,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1",
+      "definition": "rd = rs1",
       "separated": [
         false,
         false,
@@ -6993,7 +6993,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1==rs2",
+      "definition": "rd = rs1==rs2 ? 1 : 0",
       "separated": [
         false,
         false,
@@ -7052,7 +7052,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1<s2",
+      "definition": "rd = rs1<rs2 ? 1 : 0",
       "separated": [
         false,
         false,
@@ -7111,7 +7111,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1<=s2",
+      "definition": "rd = rs1<=rs2 ? 1 : 0",
       "separated": [
         false,
         false,
@@ -7291,14 +7291,14 @@
       "name": "fcvt.d.w",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
-      "signature": "FCVT.D.W,DFP-Reg,INT-Reg",
-      "signatureRaw": "FCVT.D.W rd rs1",
+      "signature": "fcvt.d.w,DFP-Reg,INT-Reg",
+      "signatureRaw": "fcvt.d.w rd rs1",
       "co": "1010011",
       "cop": "110100100000",
       "nwords": 1,
       "fields": [
         {
-          "name": "FCVT.D.W",
+          "name": "fcvt.d.w",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -7330,7 +7330,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1",
+      "definition": "rd = parseFloat(rs1)",
       "separated": [
         false,
         false,
@@ -7344,14 +7344,14 @@
       "name": "fcvt.d.wu",
       "type": "Transfer between registers",
       "signature_definition": "F0 F4 F3",
-      "signature": "FCVT.D.WU,DFP-Reg,INT-Reg",
-      "signatureRaw": "FCVT.D.WU rd rs1",
+      "signature": "fcvt.d.wu,DFP-Reg,INT-Reg",
+      "signatureRaw": "fcvt.d.wu rd rs1",
       "co": "1010011",
       "cop": "110100100001",
       "nwords": 1,
       "fields": [
         {
-          "name": "FCVT.D.WU",
+          "name": "fcvt.d.wu",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -7383,7 +7383,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1>>>0",
+      "definition": "rd = parseFloat(rs1)>>>0",
       "separated": [
         false,
         false,
@@ -9312,7 +9312,7 @@
     },
     {
       "name": ".double",
-      "action": "double_word",
+      "action": "double",
       "size": "8"
     }
   ],
