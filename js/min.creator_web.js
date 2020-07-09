@@ -8093,17 +8093,25 @@ try{
               }
               for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
                 var re;
-
+                let myMatch;
                 /*Write in the register*/
-                re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
+                re = new RegExp( "(?:\\W|^)(" + architecture.components[i].elements[j].name+" *=[^=])", "g");
+                /*
                 if (auxDef.search(re) != -1){
-                  re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
+                  re = new RegExp( "(\n|^)" + architecture.components[i].elements[j].name+" *=","g");
 
                   auxDef = auxDef.replace(re, "reg"+ regIndex+"=");
                   auxDef = "var reg" + regIndex + "=null;\n" + auxDef;
                   auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
                   regIndex++;
                 }
+                */
+                while ((myMatch = re.exec(auxDef)) != null) {
+                    auxDef = auxDef.replace(myMatch[1], `reg${regIndex}=`)
+                    auxDef = `var reg${regIndex}=null\n${auxDef}\nthis.writeRegister(reg${regIndex}, ${i}, ${j});`;
+                    myMatch.index=0;
+                }
+
 
                 if(architecture.components[i].type == "integer"){
                   re = new RegExp("R"+regNum+" *=[^=]");
