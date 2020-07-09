@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "12",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -315,7 +315,7 @@
         {
           "name": "t4",
           "nbits": "32",
-          "value": "536870912",
+          "value": "268435452",
           "default_value": "268435452",
           "properties": [
             "read",
@@ -325,7 +325,7 @@
         {
           "name": "t5",
           "nbits": "32",
-          "value": "2147483649",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -335,7 +335,7 @@
         {
           "name": "t6",
           "nbits": "32",
-          "value": "4",
+          "value": "4294967295",
           "default_value": "4294967295",
           "properties": [
             "read",
@@ -1244,7 +1244,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=parseInt(inm)",
+      "definition": "rd = parseInt(inm)",
       "separated": [
         false,
         false,
@@ -3312,27 +3312,27 @@
       ]
     },
     {
-      "name": "sd",
+      "name": "fsd",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "sd,INT-Reg,inm-signed (INT-Reg)",
-      "signatureRaw": "sd rd inm (rs2)",
-      "co": "0100011",
+      "signature": "fsd,cop,inm-signed,(DFP-Reg)",
+      "signatureRaw": "fsd cop offset (rs2)",
+      "co": "0100111",
       "cop": "011",
       "nwords": 1,
       "fields": [
         {
-          "name": "sd",
+          "name": "fsd",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
         },
         {
-          "name": "inm",
+          "name": "offset",
           "type": "inm-signed",
           "startbit": [
             31,
-            0
+            11
           ],
           "stopbit": [
             25,
@@ -3341,9 +3341,16 @@
         },
         {
           "name": "rs2",
-          "type": "INT-Reg",
+          "type": "DFP-Reg",
           "startbit": 24,
           "stopbit": 20
+        },
+        {
+          "name": "rs1",
+          "type": "INT-Reg",
+          "startbit": 19,
+          "stopbit": 15,
+          "valueField": "011"
         },
         {
           "name": "cop",
@@ -3351,15 +3358,9 @@
           "startbit": 14,
           "stopbit": 12,
           "valueField": "011"
-        },
-        {
-          "name": "rd",
-          "type": "INT-Reg",
-          "startbit": 11,
-          "stopbit": 7
         }
       ],
-      "definition": "assert(inm+rs2)%8 == 0; \"The memory must be align\");\nMP.d.[inm+rs2] = rd;",
+      "definition": "MP.w.[rs1+offset] = splitDouble(rs2; 1); MP.w.[rs1+offset+4] = splitDouble(rs2; 0);",
       "separated": [
         false,
         true,
@@ -4484,9 +4485,9 @@
     {
       "name": "flw",
       "type": "Memory access",
-      "signature_definition": "F0 F4 F2(F1)",
-      "signature": "flw,SFP-Reg,INT-Reg(inm-signed)",
-      "signatureRaw": "flw rd rs2(inm)",
+      "signature_definition": "F0 F4 F1 (F2)",
+      "signature": "flw,SFP-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "flw rd inm (rs2)",
       "co": "0000111",
       "cop": "010",
       "nwords": 1,
@@ -4523,7 +4524,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd=MP.w.[val+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "var buff = new ArrayBuffer(4);\n(new Uint32Array(buff))[0] = MP.w.[inm+rs2];\nrd = (new Float32Array(buff))[0];",
       "separated": [
         false,
         false,
@@ -4535,9 +4536,9 @@
     {
       "name": "fsw",
       "type": "Memory access",
-      "signature_definition": "F0 F3 F2(F1)",
-      "signature": "fsw,SFP-Reg,INT-Reg(inm-signed)",
-      "signatureRaw": "fsw rs1 rs2(inm)",
+      "signature_definition": "F0 F3 F1 (F2)",
+      "signature": "fsw,SFP-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "fsw rs1 inm (rs2)",
       "co": "0100111",
       "cop": "010",
       "nwords": 1,
@@ -4581,7 +4582,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "assert((val+rs2)%4==0; \"The memory must be align\")\nMP.w.[val+rs2]=rs1",
+      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = rs1;\nMP.w.[inm+rs2] = (new Uint32Array(buf))[0];",
       "separated": [
         false,
         true,
@@ -4864,7 +4865,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd =rs2+rs1",
+      "definition": "rd = rs2+rs1",
       "separated": [
         false,
         false,
@@ -4916,7 +4917,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 - rs1;",
+      "definition": "rd = rs1 - rs2;",
       "separated": [
         false,
         false,
@@ -5253,7 +5254,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? Math.abs(rs1) : -Math.abs(rs1);",
+      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? -Math.abs(rs1) : Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -5313,7 +5314,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=Math.min(rs1, rs2)",
+      "definition": "rd = Math.min(rs1, rs2)",
       "separated": [
         false,
         false,
@@ -5373,7 +5374,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=Math.max(rs1, rs2)",
+      "definition": "rd = Math.max(rs1, rs2)",
       "separated": [
         false,
         false,
@@ -5396,37 +5397,37 @@
         {
           "name": "fcvt.w.s",
           "type": "co",
-          "startbit": "6",
+          "startbit": 6,
           "stopbit": 0
         },
         {
           "name": "cop",
           "type": "cop",
-          "startbit": "31",
-          "stopbit": "25",
+          "startbit": 31,
+          "stopbit": 25,
           "valueField": "1100000"
         },
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "24",
-          "stopbit": "20",
+          "startbit": 24,
+          "stopbit": 20,
           "valueField": "00000"
         },
         {
           "name": "rs1",
           "type": "SFP-Reg",
-          "startbit": "19",
-          "stopbit": "15"
+          "startbit": 19,
+          "stopbit": 15
         },
         {
           "name": "rd",
           "type": "INT-Reg",
-          "startbit": "11",
-          "stopbit": "7"
+          "startbit": 11,
+          "stopbit": 7
         }
       ],
-      "definition": "rd=parseInt(rs1)",
+      "definition": "rd = parseInt(rs1)",
       "separated": [
         false,
         false,
@@ -5440,14 +5441,14 @@
       "name": "fcvt.wu.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3",
-      "signature": "FCVT.WU.S,INT-Reg,SFP-Reg",
-      "signatureRaw": "FCVT.WU.S rd rs1",
+      "signature": "fcvt.wu.s,INT-Reg,SFP-Reg",
+      "signatureRaw": "fcvt.wu.s rd rs1",
       "co": "1010011",
       "cop": "110000000001",
       "nwords": 1,
       "fields": [
         {
-          "name": "FCVT.WU.S",
+          "name": "fcvt.wu.s",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -5479,7 +5480,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=parseInt(rs1) >>> 0",
+      "definition": "rd = (parseInt(rs1) >>> 0)",
       "separated": [
         false,
         false,
@@ -5546,14 +5547,14 @@
       "name": "feq.s",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F4 F3 F2",
-      "signature": "FEQ.S,INT-Reg,SFP-Reg,SFP-Reg",
-      "signatureRaw": "FEQ.S rd rs1 rs2",
+      "signature": "feq.s,INT-Reg,SFP-Reg,SFP-Reg",
+      "signatureRaw": "feq.s rd rs1 rs2",
       "co": "1010011",
       "cop": "1010000010",
       "nwords": 1,
       "fields": [
         {
-          "name": "FEQ.S",
+          "name": "feq.s",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -5587,12 +5588,12 @@
         {
           "name": "cop2",
           "type": "cop",
-          "startbit": "14",
-          "stopbit": "12",
+          "startbit": 14,
+          "stopbit": 12,
           "valueField": "010"
         }
       ],
-      "definition": "rd=rs1===rs2",
+      "definition": "rd = rs1 === rs2 ? 1 : 0",
       "separated": [
         false,
         false,
@@ -5652,7 +5653,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd=rs1<rs2",
+      "definition": "rd = rs1<rs2 ? 1 : 0",
       "separated": [
         false,
         false,
@@ -5712,7 +5713,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd=rs1<=rs2",
+      "definition": "rd = rs1<=rs2 ? 1 : 0",
       "separated": [
         false,
         false,
@@ -5785,15 +5786,15 @@
     {
       "name": "fcvt.s.w",
       "type": "Arithmetic floating point",
-      "signature_definition": "F0 F4 F3 F4",
-      "signature": "FCVT.S.W,SFP-Reg,INT-Reg,SFP-Reg",
-      "signatureRaw": "FCVT.S.W rd rs1 rd",
+      "signature_definition": "F0 F4 F3",
+      "signature": "fcvt.s.w,SFP-Reg,INT-Reg",
+      "signatureRaw": "fcvt.s.w rd rs1",
       "co": "1010011",
       "cop": "110100000000",
       "nwords": 1,
       "fields": [
         {
-          "name": "FCVT.S.W",
+          "name": "fcvt.s.w",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -5825,7 +5826,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1",
+      "definition": "rd = rs1",
       "separated": [
         false,
         false,
@@ -5838,15 +5839,15 @@
     {
       "name": "fcvt.s.wu",
       "type": "Arithmetic floating point",
-      "signature_definition": "F0 F4 F3 F4",
-      "signature": "FCVT.S.WU,SFP-Reg,INT-Reg,SFP-Reg",
-      "signatureRaw": "FCVT.S.WU rd rs1 rd",
+      "signature_definition": "F0 F4 F3",
+      "signature": "fcvt.s.wu,SFP-Reg,INT-Reg",
+      "signatureRaw": "fcvt.s.wu rd rs1",
       "co": "1010011",
       "cop": "110100000001",
       "nwords": 1,
       "fields": [
         {
-          "name": "FCVT.S.WU",
+          "name": "fcvt.s.wu",
           "type": "co",
           "startbit": 6,
           "stopbit": 0
@@ -5878,7 +5879,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1>>>0",
+      "definition": "rd= (rs1>>>0)",
       "separated": [
         false,
         false,
@@ -5983,7 +5984,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = MP.d[rs1+inm];",
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[inm+rs1];\narr[1] =  MP.w.[inm+rs1+4]\nrd = (new Float64Array(buf))[0];",
       "separated": [
         false,
         false,
