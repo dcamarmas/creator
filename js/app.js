@@ -390,7 +390,6 @@ try{
     /*Created vue instance*/
     created(){
       this.load_arch_available();
-      //this.load_examples_available('default');
       this.detectNavigator();
     },
 
@@ -710,10 +709,12 @@ try{
       /*Load the selected architecture*/
       load_arch_select(e)
       {
+        var i = -1;
+
         show_loading();
 
-        for (var i = 0; i < load_architectures.length; i++){
-          if(e == load_architectures[i].id){
+        for (i = 0; i < load_architectures.length; i++){
+          if(e.name == load_architectures[i].id){
             var auxArchitecture = JSON.parse(load_architectures[i].architecture);
             architecture = bigInt_deserialize(auxArchitecture);
 
@@ -728,7 +729,7 @@ try{
             backup_stack_address = architecture.memory_layout[4].value;
             backup_data_address = architecture.memory_layout[3].value;
 
-            app._data.architecture_name = e;
+            app._data.architecture_name = e.name;
 
             //$("#architecture_menu").hide();
             app.change_UI_mode('simulator');
@@ -736,20 +737,20 @@ try{
             app.$forceUpdate();
             hide_loading();
 
-            //app.load_examples_available('default');
+            app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
 
             show_notification('The selected architecture has been loaded correctly', 'success') ;
             return;
           }
         }
 
-        $.getJSON('architecture/'+e+'.json', function(cfg){
+        $.getJSON('architecture/'+e.name+'.json', function(cfg){
           var auxArchitecture = cfg;
           architecture = bigInt_deserialize(auxArchitecture);
           app._data.architecture = architecture;
 
           architecture_hash = [];
-          for (var i = 0; i < architecture.components.length; i++){
+          for (i = 0; i < architecture.components.length; i++){
             architecture_hash.push({name: architecture.components[i].name, index: i}); 
             app._data.architecture_hash = architecture_hash;
           }
@@ -757,7 +758,7 @@ try{
           backup_stack_address = architecture.memory_layout[4].value;
           backup_data_address = architecture.memory_layout[3].value;
 
-          app._data.architecture_name = e;
+          app._data.architecture_name = e.name;
 
           //$("#architecture_menu").hide();
           app.change_UI_mode('simulator');
@@ -765,7 +766,7 @@ try{
           app.$forceUpdate();
           hide_loading();
 
-          //app.load_examples_available('default');
+          app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
 
           show_notification('The selected architecture has been loaded correctly', 'success') ;
 
@@ -2712,6 +2713,10 @@ try{
 
       /*Compilator*/
 
+      assembly_compiler(){
+        assembly_compiler();
+      },
+
       /*Empty assembly textarea*/
       newAssembly(){
         textarea_assembly_editor.setValue("");
@@ -2771,9 +2776,9 @@ try{
 			$.getJSON('examples/example_set.json', function(set) {
 			  for (var i = 0; i < set.length; i++) 
                           {
-				if (set[i].id.toUpperCase()==set_name.toUpperCase())
+				if ((set[i].id.toUpperCase()==set_name.toUpperCase()) && (set[i].architecture.toUpperCase() == app._data.architecture_name.toUpperCase()))
 				{
-					app.load_arch_select(set[i].architecture) ;
+					//app.load_arch_select(set[i].architecture) ;
 
 					$.getJSON(set[i].url, function(cfg){
 					  example_available = cfg;
