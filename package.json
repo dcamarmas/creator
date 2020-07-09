@@ -7,8 +7,9 @@
     "jshint": "^2.6.0"
   },
   "scripts": {
-    "test-creator-node":   "./mk_test.sh"
+    "test-creator-node": "./mk_test.sh"
   },
   "dependencies": {
+    "terser": "^4.8.0"
   }
 }
