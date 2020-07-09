@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
    var fs      = require('fs') ;
-   //var bigInt = require("big-integer");
+ //var bigInt = require("big-integer");
    var creator = require('./min.creator_node.js') ;
 
 
@@ -45,6 +45,7 @@
            return ;
        }  
 
+/*
        // (4) ejecutar
        result = creator.execute_program() ;     
        if (result.status !== "ok") {
@@ -55,6 +56,7 @@
        // (5) print finalmachine state
        result = creator.print_state();
        console.log(result.msg) ;
+*/
    }
    catch (e)
    {
