@@ -23,6 +23,10 @@ cat js/creator_compiler.js \
 terser -o js/min.creator_web.js js/creator_web.js
 rm -fr js/creator_web.js
 
+echo "  * min.creator_node.js..."
+cat js/creator_compiler.js \
+    node/creator_node.js > node/min.creator_node.js
+
 
 # the end
 echo ""
