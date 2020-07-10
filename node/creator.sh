@@ -45,14 +45,12 @@
            return ;
        }  
 
-/*
        // (4) ejecutar
        result = creator.execute_program() ;     
        if (result.status !== "ok") {
            console.log("[ERROR 2]: " + result.msg) ;
            return ;
        }  
-*/
 
        // (5) print finalmachine state
        result = creator.print_state();
