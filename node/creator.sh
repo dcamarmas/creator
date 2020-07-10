@@ -52,11 +52,11 @@
            console.log("[ERROR 2]: " + result.msg) ;
            return ;
        }  
+*/
 
        // (5) print finalmachine state
        result = creator.print_state();
        console.log(result.msg) ;
-*/
    }
    catch (e)
    {
