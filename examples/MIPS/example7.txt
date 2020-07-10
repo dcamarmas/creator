@@ -1,3 +1,8 @@
+
+#
+# Creator (https://creatorsim.github.io/creator/)
+#
+
 .data
   w3: .word 1, 2, 3, 4, 5
 
@@ -13,7 +18,7 @@ main:
   li  $t2  5
 
   # loop header
-loop1: beq $t1 $t2 fin1     #if($t1 == $t2) --> jump to fin1
+loop1: beq $t1 $t2 end1     #if($t1 == $t2) --> jump to fin1
 
   # loop body
   mul $t6 $t1 $t4             # $t1 * $t4 -> $t6
@@ -26,7 +31,7 @@ loop1: beq $t1 $t2 fin1     #if($t1 == $t2) --> jump to fin1
   b loop1
 
   # loop end
-fin1: 
+end1: 
   li $v0 10
   syscall
 
