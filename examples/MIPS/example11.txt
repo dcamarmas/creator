@@ -1,7 +1,7 @@
 .text
 
 main:
-	li $a0 23
+    li $a0 23
     li $a1 -77
     li $a2 45
     jal suma
@@ -14,14 +14,14 @@ main:
     li $v0 10
     syscall
     
-    
 suma:
-	add $t1 $a0 $a1
+    add $t1 $a0 $a1
     add $t2 $a2 $a2
     move $v0 $t1
     move $v1 $t2
-  	jr $ra  
+    jr $ra  
+
 resta:
-	sub $v0 $a0 $a1
-  	jr $ra
-    
+    sub $v0 $a0 $a1
+    jr $ra
+ 

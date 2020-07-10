@@ -41,7 +41,7 @@
        // (3) compile
        result = creator.assembly_compile(assembly) ;     
        if (result.status !== "ok") {
-           console.log("[ERROR 1]: " + result) ;
+           console.log("[ERROR 1]: " + JSON.stringify(result)) ;
            return ;
        }  
 
