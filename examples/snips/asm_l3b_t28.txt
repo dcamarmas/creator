@@ -1,0 +1,15 @@
+
+#
+# Creator (https://creatorsim.github.io/creator/)
+#
+
+.data
+   v1: .byte  0
+   v2: .word  0
+   v3: .float 3.14
+
+   v4: .space 10
+   v5: .asciiz "ec"
+
+   v6: .word 20, 22
+

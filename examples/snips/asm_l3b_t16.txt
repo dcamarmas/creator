@@ -1,0 +1,15 @@
+
+#
+# Creator (https://creatorsim.github.io/creator/)
+#
+
+.data
+  msg_hola: .asciiz "hola mundo\n"
+
+.text
+  main:
+        # printf("Hola mundo\n") ;
+        li $v0 4
+        la $a0 msg_hola
+        syscall
+
