@@ -25,22 +25,45 @@
 
     var creator_preload_tasks = [
 
+	 // parameter: architecture
+	 {
+	    'name':   'architecture',
+	    'action': function( app, hash )
+		      {
+  			  var arch_name = hash.architecture.trim() ;
+			  if (arch_name === "") {
+                              return new Promise(function(resolve, reject) {
+						    resolve('Empty architecture.') ;
+                                                 }) ;
+			  }
+
+                          return $.getJSON('architecture/available_arch.json',
+					   function (arch_availables) {
+						for (var i=0; i<arch_availables.length; i++) {
+							if (arch_availables[i].name == arch_name) {
+							    app.load_arch_select(arch_availables[i]) ;
+							    return 'Architecture loaded.' ;
+							}
+						}
+						return 'Unavailable architecture.' ;
+					   }) ;
+		      }
+	 },
+
 	 // parameter: example_set
 	 {
 	    'name':   'example_set',
 	    'action': function( app, hash )
 		      {
-                          var result = 'not loaded' ;
+			  var exa_set = hash.example_set.trim() ;
+			  if (exa_set === "") {
+                              return new Promise(function(resolve, reject) {
+						    resolve('Empty example set.') ;
+                                                 }) ;
+			  }
 
-			  if (hash.example_set.trim() !== "")
-		          {
-			      app.load_examples_available(hash.example_set) ;
-                              result = 'has been loaded' ;
-		          }
-
-			  return '<li>Examples set titled <strong>' +
-			          hash.example_set +
-			          '</strong> ' + result + '.</li> ' ;
+			  app.load_examples_available(hash.example_set) ;
+			  return app._data.example_loaded ;
 		      }
 	 },
 
@@ -49,24 +72,17 @@
 	    'name':   'example',
 	    'action': function( app, hash )
 		      {
-                          var result = 'not loaded' ;
-			  var example_index = parseInt(hash.example) ;
-                          if (app._data.example_loaded == null) {
-                              app._data.example_loaded = new Promise(function(resolve, reject) {
-									resolve('unavailable') ;
-                                                         }) ;
-                          }
+                          return new Promise(
+                                  function(resolve, reject) {
+			                 var example_index = parseInt(hash.example) ;
+					 if (typeof example_available[example_index] === "undefined") {
+					     reject('Example not found.') ;
+					 }
 
-			  app._data.example_loaded.then(function() {
-				  if (typeof example_available[example_index] !== "undefined") {
-				      app.load_example_init(example_available[example_index].url) ;
-				      result = 'has been loaded' ;
-				  }
-			  }) ;
-
-			  return '<li>Example Id. <strong>' +
-			         hash.example +
-			         '</strong> ' + result + '.</li> ' ;
+					 app.load_example_init(example_available[example_index].url) ;
+					 resolve('Example loaded.') ;
+				 }
+                          ) ;
 		      }
 	 }
 
@@ -104,7 +120,7 @@
 	 return hash ;
     }
 
-    function creator_preload_fromHash ( app, hash )
+    async function creator_preload_fromHash ( app, hash )
     {
         var key = '' ;
         var act = function() {} ;
@@ -116,12 +132,19 @@
 	    key = creator_preload_tasks[i].name ;
 	    act = creator_preload_tasks[i].action ;
 
-	    if (hash[key] !== '') {
-	        o = o + act(app, hash) ;
+	    if (hash[key] !== '') 
+            {
+                try {
+	           var v = await act(app, hash) ;
+                   o = o + v + '<br>' ;
+                } 
+                catch(e) {
+                   o = o + e + '<br>' ;
+                }
             }
         }
 
 	// return ok
-	return 0 ;
+	return o ;
     }
 
