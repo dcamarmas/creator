@@ -4818,3 +4818,196 @@ function binaryStringToInt( b ) {
     return parseInt(b, 2);
 }
 
+/*
+ *  Copyright 2018-2019 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+// todo: draw_info y draw_space añadirlo a ret...
+function packExecute(error, err_msg, err_type, draw)
+{
+    var ret = {} ;
+
+    ret.error    = error ;
+    ret.msg      = err_msg ;
+    ret.type     = err_type ;
+    ret.draw     = draw ;
+
+    return ret ;
+}
+
+function executeInstruction()
+{
+    return packExecute(false, null, null, null) ;
+}
+
+function executeProgramOneShot()
+{
+    var ret = null;
+
+    for (var i=0; i<10000000; i++)
+    {
+       ret = executeInstruction();
+
+       if (ret.error == true){
+           return ret;
+       }
+       if (executionIndex < -1) {
+           return ret;
+       }
+    }
+
+  //return packExecute(true, '"ERROR:" Infinite loop', null, null) ;
+    return packExecute(false, '', null, null) ;
+}
+
+/*Read register value*/
+function readRegister(indexComp, indexElem)
+{
+}
+
+/*Write value in register*/
+function writeRegister(value, indexComp, indexElem)
+{
+}
+
+
+/*Read memory value*/
+function readMemory(addr, type)
+{
+}
+
+/*Write value in memory*/
+function writeMemory(value, addr, type)
+{
+}
+
+/*Modify the stack limit*/
+function writeStackLimit(stackLimit)
+{
+}
+
+/*Syscall*/
+function syscall(action, indexComp, indexElem, indexComp2, indexElem2)
+{
+}
+
+/*Divides a double into two parts*/
+function divDouble(reg, index)
+{
+  var value = bin2hex(double2bin(reg));
+  console_log(value);
+  if(index == 0){
+    return "0x" + value.substring(0,8);
+  }
+  if(index == 1) {
+    return "0x" + value.substring(8,16);
+  }
+}
+
+
+/*Reset execution*/
+function reset ()
+{
+}
+
+
+function load_architecture ( arch_str )
+{
+    var ret = {} ;
+
+    if (typeof bigInt === "undefined") {
+        bigInt = BigInt ;
+    }
+
+    arch_obj = JSON.parse(arch_str) ;
+    ret = load_arch_select(arch_obj) ;
+
+    return ret ;
+}
+
+function assembly_compile ( code )
+{
+    var ret = {} ;
+
+    code_assembly = code ;
+    ret = assembly_compiler() ;
+    if (ret.status == "error")
+    {
+        var mess = compileError[ret.errorcode] ;
+        ret.msg = mess.mess1 + ret.token + mess.mess2 ;
+    }
+    if (ret.status == "ok")
+    {
+        ret.msg = 'Compilation completed successfully' ;
+    }
+
+    return ret ;
+}
+
+
+function execute_program ()
+{
+    var ret = {} ;
+
+    if (typeof bigInt === "undefined") {
+        bigInt = BigInt ;
+    }
+
+    ret = executeProgramOneShot() ;
+    if (ret.error === true) 
+    {
+        ret.status = "ko" ;
+        return ret ;
+    }
+
+    ret.status = "ok" ;
+    return ret ;
+}
+
+function print_state ()
+{
+    var ret = {} ;
+
+    if (typeof bigInt === "undefined") {
+        bigInt = BigInt ;
+    }
+
+    ret.msg = "" ;
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j <  architecture.components[i].elements.length; j++) {
+            if(architecture.components[i].elements[j].default_value != architecture.components[i].elements[j].value){
+                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + architecture.components[i].elements[j].value.toString() + "; ";
+            }
+        }
+    }
+
+    ret.status = "ok" ;
+    return ret ;
+}
+
+
+//
+// Module interface
+//
+
+module.exports.load_architecture = load_architecture ;
+module.exports.assembly_compile = assembly_compile ;
+module.exports.execute_program = execute_program ;
+module.exports.print_state = print_state ;
+
