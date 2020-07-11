@@ -1,28 +1,28 @@
 # CREATOR: didaCtic and geneRic assEmbly progrAmming simulaTOR
 
-## Author
+## Authors
 * Diego Camarmas Alonso
 * Lucas Elvira Martín (RISC-V)
 
 ## Links
-CREATOR:
-   * Stable  build: 
-     * https://creatorsim.github.io/creator/
-   * Nightly build:
-     * https://dcamarmas.github.io/creator/
-     * https://luck5941.github.io/creator/
-     * https://acaldero.github.io/creator/
 
-Documentation available at:
-   * https://creatorsim.github.io/
+ * Stable  build:
+ 
+| Source Code                             | Documentation                  | Creator                                | 
+|-----------------------------------------|--------------------------------|----------------------------------------| 
+| https://github.com/creatorsim/creator/  |  https://creatorsim.github.io/ |  https://creatorsim.github.io/creator/ | 
+
+* Nightly build:
+
+CREATOR:
+   * https://dcamarmas.github.io/creator/
+   * https://luck5941.github.io/creator/
+   * https://acaldero.github.io/creator/
 
 Source Code available on GitHub Repository:
-   * Stable  build: 
-     * https://github.com/creatorsim/creator/
-   * Nightly build: 
-     * https://github.com/dcamarmas/creator/
-     * https://github.com/luck5941/creator/
-     * https://github.com/acaldero/creator/
+   * https://github.com/dcamarmas/creator/
+   * https://github.com/luck5941/creator/
+   * https://github.com/acaldero/creator/
 
 ## ChangeLog
 1.5.x:
