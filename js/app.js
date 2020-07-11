@@ -3950,17 +3950,20 @@ try{
               }
               for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
                 var re;
-                let myMatch;
+                let myMatch, isMatch=false;
                 /*Write in the register*/
 
                 /*TODO: Conflicto RISC-V*/
-                /*re = new RegExp( "(?:\\W|^)(" + architecture.components[i].elements[j].name+" *=[^=])", "g");
+                re = new RegExp( "(?:\\W|^)((" + architecture.components[i].elements[j].name+") *=[^=])", "g");
                 while ((myMatch = re.exec(auxDef)) != null) {
-                    auxDef = auxDef.replace(myMatch[1], `reg${regIndex}=`)
-                    auxDef = `var reg${regIndex}=null\n${auxDef}\nthis.writeRegister(reg${regIndex}, ${i}, ${j});`;
+                    auxDef = auxDef.replace(myMatch[2], "reg"+regIndex)
+                    auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nthis.writeRegister(reg"+ regIndex+", "+i+", "+j+");";
                     myMatch.index=0;
-                }*/
+			isMatch = true;
+                }
+		      if (isMatch) regIndex++;
 
+		      /*
                 re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
                 if (auxDef.search(re) != -1){
                   re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
@@ -3970,6 +3973,7 @@ try{
                   auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
                   regIndex++;
                 }
+		*/
 
 
                 if(architecture.components[i].type == "integer"){
