@@ -33,6 +33,14 @@ function packExecute ( error, err_msg, err_type, draw )
 
 function executeInstruction ( )
 {
+	  var draw = {
+	    space: [] ,
+	    info: [] ,
+	    success: [] ,
+	    danger: [],
+	    flash: []
+	  } ;
+
         console_log(mutexRead);
         newExecution = false;
 
@@ -41,17 +49,19 @@ function executeInstruction ( )
           console_log(architecture.components[0].elements[0].value);
 
           if(instructions.length == 0){
-            show_notification('No instructions in memory', 'danger');
-            return;
+           /* show_notification('No instructions in memory', 'danger');
+            return;*/
+            return packExecute(true, 'No instructions in memory', 'danger', null);
           }
-
           if(executionIndex < -1){
-            show_notification('The program has finished', app._data.type ='danger') ;
-            return;
+            /*show_notification('The program has finished', app._data.type ='danger') ;
+            return;*/
+            return packExecute(true, 'The program has finished', 'danger', null);
           }
-          else if(executionIndex == -1){
-            show_notification('The program has finished with errors', 'danger') ;
-            return;
+          if(executionIndex == -1){
+            /*show_notification('The program has finished with errors', 'danger') ;
+            return;*/
+            return packExecute(true, 'The program has finished with errors', 'danger', null);
           }
           else if(mutexRead == true){
             return;
@@ -61,15 +71,17 @@ function executeInstruction ( )
           if(executionInit == 1){
             for (var i = 0; i < instructions.length; i++) {
               if(instructions[i].Label == "main"){
-                instructions[executionIndex]._rowVariant = 'success';
+                //instructions[executionIndex]._rowVariant = 'success';
+                draw.success.push(executionIndex) ;
                 architecture.components[0].elements[0].value = bigInt(parseInt(instructions[i].Address, 16)).value;
                 executionInit = 0;
                 break;
               }
               else if(i == instructions.length-1){
-                show_notification('Label "main" not found', 'danger') ;
                 executionIndex = -1;
-                return;
+                /*show_notification('Label "main" not found', 'danger') ;
+                return;*/
+                return packExecute(true, 'Label "main" not found', 'danger', null);
               }
             }
           }
@@ -86,12 +98,16 @@ function executeInstruction ( )
               console_log(instructions[i].Address)
 
               if(instructions[executionIndex].hide == false){
-                instructions[executionIndex]._rowVariant = 'info';
+                //instructions[executionIndex]._rowVariant = 'info';
+                draw.info.push(executionIndex);
               }
             }
             else{
-              if(instructions[executionIndex].hide == false){
-                instructions[i]._rowVariant = '';
+              if (instructions[executionIndex].hide == false){
+                 //instructions[i]._rowVariant = '';
+                 if (instructions[i]._rowVariant != '') 
+                     draw.space.push(i);
+
               }
             }
           }
@@ -822,21 +838,40 @@ function executeInstruction ( )
             console_log(auxDef);
 
             // preload instruction
-            eval("instructions[" + executionIndex + "].preload = function(elto) { " + auxDef.replace(/this./g,"elto.").replace(/\"/g, "'") + " }; ") ;
+	    eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
+      	        "try {\n" +
+      	           auxDef.replace(/this./g,"elto.") + "\n" +
+      	        "}\n" +
+      	        "catch(e){\n" +
+      	        "  return e;\n" +
+              	"}\n" +
+      	        " }; ") ;        
+
+            // eval("instructions[" + executionIndex + "].preload = function(elto) { " +  
+            //       auxDef.replace(/this./g,"elto.").replace(/\"/g, "'") + " }; ") ;
           }
 
+
           try{
-            instructions[executionIndex].preload(this);
+            var result = instructions[executionIndex].preload(this);
+            if (result.error) {
+                return result;
+            }
+
+            //instructions[executionIndex].preload(this);
             //eval(auxDef);
+
           }
           catch(e){
             if (e instanceof SyntaxError) {
               console_log("Error");
               error = 1;
-              instructions[executionIndex]._rowVariant = 'danger';
+              // instructions[executionIndex]._rowVariant = 'danger';
+              draw.danger.push(executionIndex) ;
               executionIndex = -1;
-              show_notification('The definition of the instruction contains errors, please review it', 'danger') ;
-              return;
+              //show_notification('The definition of the instruction contains errors, please review it', 'danger') ;
+              //return;
+              return packExecute('The definition of the instruction contains errors, please review it', 'danger', null);
             }
           }
 
@@ -862,14 +897,16 @@ function executeInstruction ( )
             for (var i = 0; i < instructions.length; i++){
               if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
                 executionIndex = i;
-                instructions[executionIndex]._rowVariant = 'success';
+                //instructions[executionIndex]._rowVariant = 'success';
+                draw.success.push(executionIndex) ;
                 break;
               }
               else if(i == instructions.length-1 && mutexRead == true){
                 executionIndex = instructions.length+1;
               }
               else if(i == instructions.length-1){
-                instructions[executionIndex]._rowVariant = '';
+                //instructions[executionIndex]._rowVariant = '';
+                draw.space.push(executionIndex) ;
                 executionIndex = instructions.length+1;
               }
             }
@@ -885,21 +922,26 @@ function executeInstruction ( )
           }
           else if(executionIndex >= instructions.length && mutexRead == false){
             for (var i = 0; i < instructions.length; i++){
-              instructions[i]._rowVariant = '';
+                 //instructions[i]._rowVariant = '';
+                 draw.space.push(i) ;
             }
 
             executionIndex = -2;
-            show_notification('The execution of the program has finished', 'success') ;
-            return;
+            //show_notification('The execution of the program has finished', 'success') ;
+            //return;
+            return packExecute(false, 'The execution of the program has finished', 'success', draw);
           }
           else{
             if(error != 1){
-              instructions[executionIndex]._rowVariant = 'success';
+              //instructions[executionIndex]._rowVariant = 'success';
+              draw.success.push(executionIndex);
             }
           }
-          console_log(executionIndex);
+          console_log(executionIndex) ;
         }
-        while(instructions[executionIndex].hide == true);
+        while(instructions[executionIndex].hide == true) ;
+
+        return packExecute(false, null, null, draw) ;
 }
 
 function executeProgramOneShot ( )
