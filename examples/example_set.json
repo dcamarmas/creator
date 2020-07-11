@@ -14,8 +14,8 @@
     "description": "MIPS examples"
   },
   {
-    "name": "RV Examples",
-    "id": "default",
+    "name": "RISC-V Examples",
+    "id": "default_rv",
     "architecture":"RISC-V-like",
     "url":"examples/riscv/list.json",
     "description": "RISC-V examples"
