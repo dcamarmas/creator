@@ -1,5 +1,9 @@
-# CREATOR: 
-## didaCtic and geneRic assEmbly progrAmming simulaTOR
+
+<html>
+ <h1 align="center">CREATOR: <br>didaCtic and geneRic assEmbly progrAmming simulaTOR</h1>
+ <h2 align="center"> https://creatorsim.github.io/ </h2>
+ <h1 align="center"><img alt="Image of Yaktocat" width="700vw" src="https://creatorsim.github.io/images/user_mode/execute_program.PNG"></h1>
+</html>
 
 ## Authors
 * Diego Camarmas Alonso
