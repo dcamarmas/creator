@@ -17,6 +17,10 @@ h2 {
   font-size: 1.5em;
 }
 
+.table td{
+  vertical-align: middle;
+}
+
 .contenedor {
   display: -webkit-flex;
   display: flex;

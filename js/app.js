@@ -669,7 +669,11 @@ try{
         app._data.assembly_code = localStorage.getItem("assembly_copy");
         //textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
 
-        //app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+        for (var i = 0; i < app._data.arch_available.length; i++) {
+        	if(this.arch_available[i].name === this.architecture_name){
+        		app.load_examples_available(this.arch_available[i].examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+        	}
+        }
 
         architecture_hash = [];
         for (var i = 0; i < architecture.components.length; i++){
@@ -5701,11 +5705,12 @@ try{
           }
         }
         if(e == "memory"){
-          app._data.data_mode = "stats";
+        	app._data.data_mode = e;
+          /*app._data.data_mode = "stats";
           setTimeout(function(){
             app.$forceUpdate();
             app._data.data_mode = e;
-          }, 10);
+          }, 10);*/
         }
 
         app.$forceUpdate();
