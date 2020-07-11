@@ -1,3 +1,8 @@
+
+#
+# Creator (https://creatorsim.github.io/creator/)
+#
+
 .text
       main:
       li $t0 4
@@ -9,7 +14,7 @@
       li $v0 10
       syscall
 
-      jump1:
+    jump1:
       li $t9 11
       li $t8 555
       b jump2
