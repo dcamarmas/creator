@@ -708,74 +708,57 @@ try{
       },
 
 
-      /*Load the selected architecture*/
+      /*Auxiliar to Load the selected architecture*/
+      load_arch_select_aux(ename, cfg, load_associated_examples, e)
+      {
+	  var auxArchitecture = cfg;
+	  architecture = bigInt_deserialize(auxArchitecture);
+	  app._data.architecture = architecture;
+
+	  architecture_hash = [];
+	  for (i = 0; i < architecture.components.length; i++){
+	       architecture_hash.push({name: architecture.components[i].name, index: i}); 
+	       app._data.architecture_hash = architecture_hash;
+	  }
+
+	  backup_stack_address = architecture.memory_layout[4].value;
+	  backup_data_address  = architecture.memory_layout[3].value;
+
+	  app._data.architecture_name = ename;
+
+	  //$("#architecture_menu").hide();
+	  app.change_UI_mode('simulator');
+	  app.change_data_view('registers', 'int');
+	  app.$forceUpdate();
+
+          if (load_associated_examples)
+	      app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+      },
+
       load_arch_select(e)
       {
         var i = -1;
 
         show_loading();
-
-        for (i = 0; i < load_architectures.length; i++){
-          if(e.name == load_architectures[i].id){
-            var auxArchitecture = JSON.parse(load_architectures[i].architecture);
-            architecture = bigInt_deserialize(auxArchitecture);
-
-            app._data.architecture = architecture;
-
-            architecture_hash = [];
-            for (var i = 0; i < architecture.components.length; i++){
-              architecture_hash.push({name: architecture.components[i].name, index: i}); 
-              app._data.architecture_hash = architecture_hash;
-            }
-
-            backup_stack_address = architecture.memory_layout[4].value;
-            backup_data_address = architecture.memory_layout[3].value;
-
-            app._data.architecture_name = e.name;
-
-            //$("#architecture_menu").hide();
-            app.change_UI_mode('simulator');
-            app.change_data_view('registers' , 'int');
-            app.$forceUpdate();
-            hide_loading();
-
-            app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-
-            show_notification('The selected architecture has been loaded correctly', 'success') ;
-            return;
-          }
+        for (i = 0; i < load_architectures.length; i++) {
+             if (e.name == load_architectures[i].id) {
+                 var auxArchitecture = JSON.parse(load_architectures[i].architecture);
+                 app.load_arch_select_aux(e.name, auxArchitecture, true, e) ;
+	         hide_loading();
+	         show_notification('The selected architecture has been loaded correctly', 'success') ;
+                 return;
+             }
         }
 
-        $.getJSON('architecture/'+e.name+'.json', function(cfg){
-          var auxArchitecture = cfg;
-          architecture = bigInt_deserialize(auxArchitecture);
-          app._data.architecture = architecture;
-
-          architecture_hash = [];
-          for (i = 0; i < architecture.components.length; i++){
-            architecture_hash.push({name: architecture.components[i].name, index: i}); 
-            app._data.architecture_hash = architecture_hash;
-          }
-
-          backup_stack_address = architecture.memory_layout[4].value;
-          backup_data_address = architecture.memory_layout[3].value;
-
-          app._data.architecture_name = e.name;
-
-          //$("#architecture_menu").hide();
-          app.change_UI_mode('simulator');
-          app.change_data_view('registers' , 'int');
-          app.$forceUpdate();
-          hide_loading();
-
-          app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-
-          show_notification('The selected architecture has been loaded correctly', 'success') ;
-
+        $.getJSON('architecture/'+e.name+'.json', function(cfg) {
+             app.load_arch_select_aux(e.name, cfg, true, e) ;
+	     hide_loading();
+	     show_notification('The selected architecture has been loaded correctly', 'success') ;
         }).fail(function() {
-          hide_loading();
-          show_notification('The selected architecture is not currently available', 'info') ;
+             hide_loading();
+             show_notification('The selected architecture is not currently available', 'info') ;
         });
+
       },
 
       /*Read the JSON of new architecture*/
@@ -2826,23 +2809,47 @@ try{
       /*Load the available examples*/
       load_examples_available( set_name ) {
 	this._data.example_loaded = new Promise(function(resolve, reject) {
-			$.getJSON('examples/example_set.json', function(set) {
-			  for (var i = 0; i < set.length; i++) 
-                          {
-				if ((set[i].id.toUpperCase()==set_name.toUpperCase()) && (set[i].architecture.toUpperCase() == app._data.architecture_name.toUpperCase()))
-				{
-					//app.load_arch_select(set[i].architecture) ;
 
+		      $.getJSON('examples/example_set.json', function(set) {
+
+                          // current architecture in upperCase
+                          var current_architecture = app._data.architecture_name.toUpperCase() ;
+
+                          // search for set_name in the example set 'set'
+			  for (var i=0; i<set.length; i++) 
+                          {
+                                // if set_name in set[i]...
+				if (set[i].id.toUpperCase() == set_name.toUpperCase())
+				{
+                                        // if current_architecture active but not the associated with set, skip
+				        if ( (current_architecture != '') && 
+      					     (set[i].architecture.toUpperCase() != current_architecture) ) 
+				        {
+				             continue ;
+				        }
+
+                                        // if no current_architecture loaded then load the associated
+				        if (current_architecture == '') {
+					    $.getJSON('architecture/'+ set[i].architecture +'.json', 
+						       function(cfg) {
+						          app.load_arch_select_aux(set[i].architecture,
+										   cfg, false, null);
+					               }) ;
+				        }
+
+                                        // load the associate example list
 					$.getJSON(set[i].url, function(cfg){
-					  example_available = cfg;
-					  app._data.example_available = example_available;
-					  resolve('loaded') ;
+					    example_available = cfg ;
+					    app._data.example_available = example_available ;
+					    resolve('Example list loaded.') ;
 					});
+
                                         return ;
 				}
 			  }
-			  reject('unavailable') ;
-			});
+
+			  reject('Unavailable example list.') ;
+		      });
                }) ;
       },
 
