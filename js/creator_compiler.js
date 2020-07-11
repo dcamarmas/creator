@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2019 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -656,7 +656,7 @@ function assembly_compiler()
                 else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
                   empty = true;
                   //tokenIndex = 0;
-                  return packCompileError(15, token, '', "danger");
+                  return packCompileError(15, token, 'error', "danger");
                 } 
               }
             }
@@ -1192,7 +1192,7 @@ function data_segment_compiler()
               hide_loading();*/
 
               //TODO: Revisar
-              return packCompileError(0, "", '', "danger");
+              return packCompileError(0, "", 'error', "danger");
             }
 
             for(var i = 0; i < data_tag.length; i++){
@@ -1201,7 +1201,7 @@ function data_segment_compiler()
               if(data_tag[i].tag == token.substring(0,token.length-1)){
                 /*app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 hide_loading();*/
-                return packCompileError(1, token.substring(0,token.length-1), '', "danger") ;
+                return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
               }
             }
 
@@ -1209,7 +1209,7 @@ function data_segment_compiler()
               if(instructions[i].Label == token.substring(0,token.length-1)){
                 /*app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 hide_loading();*/
-                return packCompileError(1, token.substring(0,token.length-1), '', "danger") ;
+                return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
               } 
             }
 
@@ -1232,14 +1232,14 @@ function data_segment_compiler()
                     if(token == null){
                       /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(23, "", '', "danger") ;
+                      return packCompileError(23, "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(24, token, '', "danger") ;
+                      return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1280,20 +1280,20 @@ function data_segment_compiler()
                       if(value[1].search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(19, token, '', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
 
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1302,14 +1302,14 @@ function data_segment_compiler()
                       if(token.search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1354,14 +1354,14 @@ function data_segment_compiler()
                     if(token == null){
                       /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(23,"", '', "danger") ;
+                      return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(24, token, '', "danger") ;
+                      return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1379,7 +1379,7 @@ function data_segment_compiler()
                       if(value[1].search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
@@ -1387,12 +1387,12 @@ function data_segment_compiler()
                       if(value[1].length == 0){
                         /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(19, token, '', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1401,14 +1401,14 @@ function data_segment_compiler()
                       if(token.search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1453,14 +1453,14 @@ function data_segment_compiler()
                     if(token == null){
                       /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(23,"", '', "danger") ;
+                      return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(24, token, '', "danger") ;
+                      return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1477,19 +1477,19 @@ function data_segment_compiler()
                       if(value[1].search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(19, token, '', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1498,14 +1498,14 @@ function data_segment_compiler()
                       if(token.search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1551,14 +1551,14 @@ function data_segment_compiler()
                     if(token == null){
                       /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(23,"", '', "danger") ;
+                      return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(24, token, '', "danger") ;
+                      return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1575,19 +1575,19 @@ function data_segment_compiler()
                       if(value[1].search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(19, token, '', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1596,14 +1596,14 @@ function data_segment_compiler()
                       if(token.search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1647,14 +1647,14 @@ function data_segment_compiler()
                     if(token == null){
                       /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(23,"", '', "danger") ;
+                      return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(24, token, '', "danger") ;
+                      return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1683,19 +1683,19 @@ function data_segment_compiler()
                       if(value[1].search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(19, token, '', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                       token = hex2float(token);
@@ -1705,14 +1705,14 @@ function data_segment_compiler()
                       if(token.search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseFloat(token, 10);
                       auxTokenString = (bin2hex(float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1758,14 +1758,14 @@ function data_segment_compiler()
                     if(token == null){
                       /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(23,"", '', "danger") ;
+                      return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
                       /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();*/
-                      return packCompileError(24, token, '', "danger") ;
+                      return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g")
@@ -1794,19 +1794,19 @@ function data_segment_compiler()
                       if(value[1].search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
                         /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(19, token, '', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                       token = hex2double(token);
@@ -1816,14 +1816,14 @@ function data_segment_compiler()
                       if(token.search(re) == -1){
                         /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(16, token, '', "danger") ;
+                        return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseFloat(token, 10);console_log(auxTokenString);
                       auxTokenString = (bin2hex(double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
                         /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         hide_loading();*/
-                        return packCompileError(18, token, '', "danger") ;
+                        return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -2258,20 +2258,20 @@ function data_segment_compiler()
                   if(token == null){
                     /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     hide_loading();*/
-                    return packCompileError(23, "", '', "danger") ;
+                    return packCompileError(23, "", 'error', "danger") ;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
                     /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     hide_loading();*/
-                    return packCompileError(16, token, '', "danger") ;
+                    return packCompileError(16, token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
                     /*app.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     hide_loading();*/
-                    return packCompileError(22, token, '', "danger") ;
+                    return packCompileError(22, token, 'error', "danger") ;
                   }
 
                   var auxToken = parseInt(token) * architecture.directives[j].size;
@@ -2353,20 +2353,20 @@ function data_segment_compiler()
                   if(token == null){
                     /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     hide_loading();*/
-                    return packCompileError(23, "", '', "danger") ;
+                    return packCompileError(23, "", 'error', "danger") ;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
                     /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     hide_loading();*/
-                    return packCompileError(16, token, '', "danger") ;
+                    return packCompileError(16, token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
                     /*app.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     hide_loading();*/
-                    return packCompileError(22, token, '', "danger") ;
+                    return packCompileError(22, token, 'error', "danger") ;
                   }
 
                   console_log(align);
@@ -2432,7 +2432,7 @@ function data_compiler(value, size, dataLabel, DefValue, type)
           if(data_address % size != 0 && i == 0){
             /*app.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
             hide_loading();*/
-            return packCompileError(21, "", '', "danger") ;
+            return packCompileError(21, "", 'error', "danger") ;
           }
 
           if(data_address % 4 == 0){
@@ -2543,7 +2543,7 @@ function code_segment_compiler()
             if(token.length == 1){
               /*app.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
               hide_loading();*/
-              return packCompileError(0, "", '', "danger") ;
+              return packCompileError(0, "", 'error', "danger") ;
             }
 
             for(var i = 0; i < memory[memory_hash[0]].length; i++){
@@ -2553,7 +2553,7 @@ function code_segment_compiler()
                   app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                   hide_loading();
 */
-                  return packCompileError(1, token.substring(0,token.length-1), '', "danger") ;
+                  return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
                 }
               }
             }
@@ -2562,7 +2562,7 @@ function code_segment_compiler()
               if(instructions[i].Label == token.substring(0,token.length-1)){
                 /*app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
                 hide_loading();*/
-                return packCompileError(1, token.substring(0,token.length-1), '') ;
+                return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
               } 
             }
 
@@ -2725,7 +2725,7 @@ function code_segment_compiler()
                     memory[memory_hash[2]] = memory[memory_hash[2]];
                     app._data.instructions = instructions;
                     hide_loading();*/
-                    ret = packCompileError(26, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, '', "danger") ;
+                    ret = packCompileError(26, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 'error', "danger") ;
 
                     return ret;
                   }
@@ -2753,7 +2753,7 @@ function code_segment_compiler()
               app._data.instructions = instructions;
               hide_loading();*/
 
-              ret = packCompileError(2, token, '', "danger");
+              ret = packCompileError(2, token, 'error', "danger");
               return ret;
             }
 
@@ -2781,7 +2781,7 @@ function code_segment_compiler()
               //TODO: revisar, error comentado
 
               //app.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
-              ret = packCompileError(2, token, '', "danger");
+              ret = packCompileError(2, token, 'error', "danger");
               return ret;
             }
 
@@ -2804,7 +2804,7 @@ function code_segment_compiler()
               memory[memory_hash[2]] = memory[memory_hash[2]];
               app._data.instructions = instructions;
               hide_loading();*/
-              ret = packCompileError(25, "", '', "danger") ;
+              ret = packCompileError(25, "", 'error', "danger") ;
               return ret;
             }
 
@@ -3005,7 +3005,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
             if(resultPseudo == -1){
               /*this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
               return -1;*/
-              return packCompileError(3, auxSignature, '', "danger") ;
+              return packCompileError(3, auxSignature, 'error', "danger") ;
             }
           }
         }
@@ -3027,7 +3027,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
       if(resultPseudo == null){
         /*this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
         return -1;*/
-        return packCompileError(3, auxSignature, '', "danger") ;
+        return packCompileError(3, auxSignature, 'error', "danger") ;
       }
       console_log(oriInstruction);
       match = re.exec(oriInstruction);
@@ -3041,7 +3041,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
         //TODO: posible fallo
 
         //return -2;
-        return packCompileError(14, "Error instruction", '') ;
+        return packCompileError(14, "Error instruction", 'error', "danger") ;
       }
       
       console_log(instructionParts);
@@ -3090,7 +3090,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                         /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         return -1;*/
 
-                        return packCompileError(12, token, '', "danger") ;
+                        return packCompileError(12, token, 'error', "danger") ;
                       }
 
                       console_log(reg)
@@ -3117,7 +3117,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                       if(reg.toString(2).length > fieldsLength){
                         /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         return -1;*/
-                        return packCompileError(12, token, '', "danger") ;
+                        return packCompileError(12, token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3129,7 +3129,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
 
-                      return packCompileError(4, token, '', "danger") ;
+                      return packCompileError(4, token, 'error', "danger") ;
                     }
                     regNum++;
                   }
@@ -3162,7 +3162,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                         /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         return -1;*/
 
-                        return packCompileError(12, token, '', "danger") ;
+                        return packCompileError(12, token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3176,7 +3176,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
 
-                      return packCompileError(4, token, '', "danger") ;
+                      return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
                       regNum++;
@@ -3211,7 +3211,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                         /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         return -1;*/
 
-                        return packCompileError(12, token, '', "danger") ;
+                        return packCompileError(12, token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3223,7 +3223,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
 
-                      return packCompileError(4, token, '', "danger") ;
+                      return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
                       regNum++;
@@ -3258,7 +3258,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                         /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                         return -1;*/
 
-                        return packCompileError(12, token, '', "danger") ;
+                        return packCompileError(12, token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3270,7 +3270,7 @@ function instruction_compiler(instruction, userInstruction, label, line, pending
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
 
-                      return packCompileError(4, token, '', "danger") ;
+                      return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "control"){
                       regNum++;
@@ -3329,7 +3329,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                   if(isNaN(parseInt(token, 16)) == true){
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 16)).toString(2);
@@ -3359,7 +3359,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
@@ -3437,7 +3437,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -3449,7 +3449,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(12, token, '', "danger") ;
+                    return packCompileError(12, token, 'error', "danger") ;
                   }
 
 binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
@@ -3535,7 +3535,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 16)).toString(2);
@@ -3566,7 +3566,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
@@ -3622,7 +3622,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -3634,7 +3634,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(12, token, '', "danger") ;
+                    return packCompileError(12, token, 'error', "danger") ;
                   }
 
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3691,14 +3691,14 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(8, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(8, token, '', "danger") ;
+                    return packCompileError(8, token, 'error', "danger") ;
                   }
 
                   if(isNaN(parseInt(token, 16)) == true){
                     /*this.compileError(9, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(9, token, '', "danger") ;
+                    return packCompileError(9, token, 'error', "danger") ;
                   }
 
                   addr = (parseInt(token, 16)).toString(2);
@@ -3757,7 +3757,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 16)).toString(2);
@@ -3788,7 +3788,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
@@ -3867,7 +3867,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -3878,7 +3878,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                     /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(12, token, '', "danger") ;
+                    return packCompileError(12, token, 'error', "danger") ;
                   }
 
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3934,7 +3934,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 16)).toString(2);
@@ -3965,7 +3965,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
@@ -4033,7 +4033,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(6, token, '', "danger") ;
+                    return packCompileError(6, token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -4045,7 +4045,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                     return -1;*/
 
-                    return packCompileError(12, token, '', "danger") ;
+                    return packCompileError(12, token, 'error', "danger") ;
                   }
 
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -4285,7 +4285,7 @@ function pseudoinstruction_compiler(instruction, label, line){
       if(instruction.search(re) == -1 && i == architecture.pseudoinstructions.length-1){
         //return -1;
 
-        return packCompileError(5, token, '', "danger") ;
+        return packCompileError(5, token, 'error', "danger") ;
       }
 
       if(instruction.search(re) == -1 && i < architecture.pseudoinstructions.length-1){
@@ -4366,13 +4366,13 @@ function pseudoinstruction_compiler(instruction, label, line){
           catch(e){
             if (e instanceof SyntaxError){
               //return -1;
-              return packCompileError(5, token, '', "danger") ;
+              return packCompileError(5, token, 'error', "danger") ;
             }
           }
 
           if(value == -1){
             //return -1;
-            return packCompileError(5, token, '', "danger") ;
+            return packCompileError(5, token, 'error', "danger") ;
           }
 
           definition = definition.replace("Field." + match[1] + ".(" + match[2]+ ")." + match[3], value);
@@ -4410,12 +4410,12 @@ function pseudoinstruction_compiler(instruction, label, line){
           }
           catch(e){
             if (e instanceof SyntaxError){
-              return packCompileError(5, token, '', "danger") ;
+              return packCompileError(5, token, 'error', "danger") ;
             }
           }
 
           if(value == -1){
-            return packCompileError(5, token, '', "danger") ;
+            return packCompileError(5, token, 'error', "danger") ;
           }
 
           console_log(value);
@@ -4500,7 +4500,7 @@ function pseudoinstruction_compiler(instruction, label, line){
           if(error == true){
             console_log("Error pseudo");
             //return -2;
-            return packCompileError(14, "Error pseudoinstruction", '', "danger") ;
+            return packCompileError(14, "Error pseudoinstruction", 'error', "danger") ;
           }
           console_log("Fin pseudo");
           return ret;
@@ -4508,7 +4508,7 @@ function pseudoinstruction_compiler(instruction, label, line){
         catch(e){
           if (e instanceof SyntaxError) {
             //return -2;
-            return packCompileError(14, "Error pseudoinstruction", '', "danger") ;
+            return packCompileError(14, "Error pseudoinstruction", 'error', "danger") ;
           }
         }
       }
@@ -4518,7 +4518,7 @@ function pseudoinstruction_compiler(instruction, label, line){
 
   if(!found){
     //return -1;
-    return packCompileError(5, token, '', "danger") ;
+    return packCompileError(5, token, 'error', "danger") ;
   }
 
   return ret;

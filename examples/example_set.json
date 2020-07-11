@@ -15,8 +15,8 @@
   },
   {
     "name": "RV Examples",
-    "id": "default-rv",
-    "architecture":"RISCV-V-like",
+    "id": "default",
+    "architecture":"RISC-V-like",
     "url":"examples/riscv/list.json",
     "description": "RISC-V examples"
   }
