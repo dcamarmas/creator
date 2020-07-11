@@ -19,24 +19,21 @@
  */
 
 
-
-
-
 /*General*/
 var toHandler = null;
-
 
 
 /****************
  * Vue instance *
  ****************/
-try{
+
+try
+{
 
   window.app = new Vue({
 
     /*DOM ID*/
     el: "#app",
-
 
     /*Vue data*/
     data: {
@@ -49,8 +46,6 @@ try{
       c_debug: false,
       /*Dark Mode*/
       dark: false,
-      
-
 
       /*Architecture editor*/
 
@@ -273,15 +268,15 @@ try{
       },
       /* Allow instruction with fractioned fields */
       fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
-      
+
 
 
       /*Compilator*/
-      
+
       /*Available examples*/
       example_available: example_available,
       example_loaded: null,
-      
+
       load_assembly: '',
       /*Saved file name*/
       save_assembly: '',
@@ -301,9 +296,9 @@ try{
       name_binary_save: '',
       /*Assembly code*/
       assembly_code: "",
-      
 
-      
+
+
       /*Simulator*/
 
       /*Alert toasts content*/
@@ -382,17 +377,15 @@ try{
       /*Display*/
       display: '',
       /*Keyboard*/
-      keyboard: '', 
+      keyboard: '',
       enter: null,
     },
-
 
     /*Created vue instance*/
     created(){
       this.load_arch_available();
       this.detectNavigator();
     },
-
 
     /*Mounted vue instance*/
     mounted(){
@@ -407,32 +400,31 @@ try{
 
     beforeUpdate(){
       this.get_dark_mode();
-    },  
-
+    },
 
     /*Vue methods*/
-    methods:{
+    methods: {
       /*Generic*/
 
-      verifyNavigator(){
+      verifyNavigator() {
         if (navigator.userAgent.indexOf("OPR") > -1) {
           this.$refs.navigator.show();
-        } 
+        }
         else if (navigator.userAgent.indexOf("MIE") > -1) {
           this.$refs.navigator.show();
         }
         else if (navigator.userAgent.indexOf("Edge") > -1) {
           this.$refs.navigator.show();
-        } 
+        }
         else if(navigator.userAgent.indexOf("Chrome") > -1) {
           return;
-        } 
+        }
         else if (navigator.userAgent.indexOf("Safari") > -1) {
           return;
-        } 
+        }
         else if (navigator.userAgent.indexOf("Firefox") > -1) {
           return
-        } 
+        }
         else{
           this.$refs.navigator.show();
         }
@@ -475,62 +467,60 @@ try{
       },
 
       /*Change the execution speed*/
-      change_execution_speed(value){
-      	if(value){
-	      	this.instructionsPacked= this.instructionsPacked + value;
-	      	if(this.instructionsPacked < 1){
-	      		this.instructionsPacked = 1;
-	      	}
-	      	if (this.instructionsPacked > 101) {
-	      		this.instructionsPacked = 101;
-	      	}
-	      }
-	      else{
-	      	this.instructionsPacked = parseInt(this.instructionsPacked);
-	      }
+      change_execution_speed(value) {
+      	 if (value) 
+         {
+	     this.instructionsPacked= this.instructionsPacked + value;
+	     if (this.instructionsPacked < 1){
+	       	 this.instructionsPacked = 1;
+	     }
+	     if (this.instructionsPacked > 101) {
+	     	 this.instructionsPacked = 101;
+	     }
+	 }
+	 else {
+	    this.instructionsPacked = parseInt(this.instructionsPacked);
+	 }
       	
-      	localStorage.setItem("instructionsPacked", this.instructionsPacked);
-
+      	 localStorage.setItem("instructionsPacked", this.instructionsPacked);
       },
 
       /*change the time a notification is displayed*/
       change_notification_time(value){
-      	if(value){
-	      	this.notificationTime= this.notificationTime + value;
-	      	if(this.notificationTime < 1000){
-	      		this.notificationTime = 1000;
-	      	}
-	      	if (this.notificationTime > 3500) {
-	      		this.notificationTime = 3500;
-	      	}
-	      }
-	      else{
+      	 if (value) {
+	     this.notificationTime= this.notificationTime + value;
+	     if (this.notificationTime < 1000){
+	      	 this.notificationTime = 1000;
+	     }
+	     if (this.notificationTime > 3500) {
+	      	 this.notificationTime = 3500;
+	     }
+	 }
+	 else {
 	      	this.notificationTime = parseInt(this.notificationTime);
-	      }
+	 }
 
-      	localStorage.setItem("notificationTime", this.notificationTime);
-
+      	 localStorage.setItem("notificationTime", this.notificationTime);
       },
 
       /*Dark  Mode*/
       change_dark_mode(){
         app._data.dark= !app._data.dark;
         if (app._data.dark){
-          document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
-          localStorage.setItem("dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
+            document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
+            localStorage.setItem("dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
         }
-        else{
-          document.getElementsByTagName("body")[0].style = "";
-          localStorage.setItem("dark_mode", "");
-
+        else {
+            document.getElementsByTagName("body")[0].style = "";
+            localStorage.setItem("dark_mode", "");
         }
       },
 
       /*Screen change*/
-      change_UI_mode(e){
+      change_UI_mode(e) {
         app._data.register_popover = '';
       	// slow transition <any> => "architecture"
-      	if (e == "architecture") 
+      	if (e == "architecture")
       	{
       	    $(".loading").show();
             setTimeout(function(){
@@ -568,7 +558,7 @@ try{
       /*Architecture editor*/
 
       /**
-        * method in charge of create the array corresponent to the 
+        * method in charge of create the array corresponent to the
         * current position of start bit and end bit
        */
 
@@ -604,10 +594,10 @@ try{
       },
 
       /*Load the available architectures and check if exists backup*/
-      load_arch_available(){
+      load_arch_available() {
         $.getJSON('architecture/available_arch.json', function(cfg){
           architecture_available = cfg;
-          
+
           if (typeof(Storage) !== "undefined"){
             if(localStorage.getItem("load_architectures_available") != null){
               var auxArch = localStorage.getItem("load_architectures_available");
@@ -631,6 +621,7 @@ try{
           }
         });
       },
+
       /*Change the background of selected achitecture card*/
       change_background(name, type){
         if(type == 1){
@@ -649,6 +640,7 @@ try{
           }
         }
       },
+
       /*Show backup modal*/
       backupCopyModal(){
         if (typeof(Storage) !== "undefined"){
@@ -658,10 +650,11 @@ try{
           }
         }
       },
+
       /*Load backup*/
       load_copy(){
         this.architecture_name = localStorage.getItem("arch_name");
-        
+
         var auxArchitecture = JSON.parse(localStorage.getItem("architecture_copy"));
         architecture = bigInt_deserialize(auxArchitecture);
 
@@ -677,7 +670,7 @@ try{
 
         architecture_hash = [];
         for (var i = 0; i < architecture.components.length; i++){
-          architecture_hash.push({name: architecture.components[i].name, index: i}); 
+          architecture_hash.push({name: architecture.components[i].name, index: i});
           app._data.architecture_hash = architecture_hash;
         }
 
@@ -703,6 +696,7 @@ try{
 
         show_notification('The backup has been loaded correctly', 'success') ;
       },
+
       /*Delete backup*/
       remove_copy(){
         localStorage.removeItem("architecture_copy");
@@ -710,7 +704,6 @@ try{
         localStorage.removeItem("date_copy");
         this.$refs.copyRef.hide();
       },
-
 
       /*Auxiliar to Load the selected architecture*/
       load_arch_select_aux(ename, cfg, load_associated_examples, e)
@@ -721,7 +714,7 @@ try{
 
 	  architecture_hash = [];
 	  for (i = 0; i < architecture.components.length; i++){
-	       architecture_hash.push({name: architecture.components[i].name, index: i}); 
+	       architecture_hash.push({name: architecture.components[i].name, index: i});
 	       app._data.architecture_hash = architecture_hash;
 	  }
 
@@ -804,7 +797,7 @@ try{
           }
 
           show_notification('The selected architecture has been loaded correctly', 'success') ;
-          
+
           app._data.name_arch = '';
           app._data.description_arch = '';
           app._data.load_arch = '';
@@ -812,6 +805,7 @@ try{
           hide_loading();
         }
       },
+
       /*Create a new architecture*/
       new_arch(){
         //$("#architecture_menu").hide();
@@ -820,6 +814,7 @@ try{
         app.$forceUpdate();
         hide_loading();
       },
+
       /*Check if it is a new architecture*/
       default_arch(item){
         for (var i = 0; i < load_architectures_available.length; i++) {
@@ -829,12 +824,14 @@ try{
         }
         return false;
       },
+
       /*Show remove architecture modal*/
       modal_remove_cache_arch(index, elem, button){
         this.modalDeletArch.title = "Delete Architecture";
         this.modalDeletArch.index = index;
         this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
       },
+
       /*Remove architecture*/
       remove_cache_arch(index){
         var id = architecture_available[index].name;
@@ -861,6 +858,7 @@ try{
 
         show_notification('Architecture deleted successfully', 'success') ;
       },
+
       /*Save the current architecture in a JSON file*/
       arch_save(){
         var auxObject = jQuery.extend(true, {}, architecture);
@@ -892,6 +890,7 @@ try{
 
         show_notification('Save architecture', 'success') ;
       },
+
       /*Change the execution mode of architecture editor*/
       change_mode(){
         if(app._data.advanced_mode == false){
@@ -901,12 +900,14 @@ try{
           app._data.advanced_mode = false;
         }
       },
+
       /*Show reset modal of memory layout*/
       resetMemModal(elem, button){
         this.modalResetMem.title = "Reset memory layout";
         this.modalResetMem.element = elem;
         this.$root.$emit('bv::show::modal', 'modalResetMem', button);
       },
+
       /*Reset memory layout*/
       resetMemory(arch){
         show_loading();
@@ -921,7 +922,7 @@ try{
 
             hide_loading();
             show_notification('The memory layout has been reset correctly', 'success') ;
-            
+
             return;
           }
         }
@@ -937,6 +938,7 @@ try{
           show_notification('The memory layout has been reset correctly', 'success') ;
         });
       },
+
       /*Check de memory layout changes*/
       changeMemoryLayout(){
         var auxMemoryLayout = jQuery.extend(true, {}, architecture.memory_layout);
@@ -985,6 +987,7 @@ try{
         }
         app.$forceUpdate();
       },
+
       /*Register ID assigment*/
       element_id(name, type, double){
         var id = 0;
@@ -999,12 +1002,14 @@ try{
           }
         }
       },
+
       /*Show reset modal of components*/
       resetArchModal(elem, button){
         this.modalResetArch.title = "Reset " + elem + " registers";
         this.modalResetArch.element = elem;
         this.$root.$emit('bv::show::modal', 'modalResetArch', button);
       },
+
       /*Reset components*/
       resetArchitecture(arch){
         show_loading();
@@ -1019,13 +1024,13 @@ try{
 
             architecture_hash = [];
             for (var i = 0; i < architecture.components.length; i++) {
-              architecture_hash.push({name: architecture.components[i].name, index: i}); 
+              architecture_hash.push({name: architecture.components[i].name, index: i});
               app._data.architecture_hash = architecture_hash;
             }
 
             hide_loading();
             show_notification('The registers has been reset correctly', 'success') ;
-            
+
             return;
           }
         }
@@ -1040,7 +1045,7 @@ try{
 
           architecture_hash = [];
           for (var i = 0; i < architecture.components.length; i++){
-            architecture_hash.push({name: architecture.components[i].name, index: i}); 
+            architecture_hash.push({name: architecture.components[i].name, index: i});
             app._data.architecture_hash = architecture_hash;
           }
 
@@ -1054,7 +1059,7 @@ try{
         evt.preventDefault();
         if (!this.formArchitecture.name || !this.formArchitecture.type) {
             show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else{
           this.newComponent();
         }
@@ -1092,11 +1097,12 @@ try{
         evt.preventDefault();
         if (!this.formArchitecture.name) {
             show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else {
             this.editComponent(comp);
         }
       },
+
       /*Edit the component*/
       editComponent(comp){
         for (var i = 0; i < architecture_hash.length; i++){
@@ -1116,12 +1122,14 @@ try{
         }
         this.formArchitecture.name ='';
       },
+
       /*Show delete component modal*/
       delCompModal(elem, button){
         this.modalDeletComp.title = "Delete Component";
         this.modalDeletComp.element = elem;
         this.$root.$emit('bv::show::modal', 'modalDeletComp', button);
       },
+
       /*Delete the component*/
       delComponent(comp){
         for (var i = 0; i < architecture_hash.length; i++){
@@ -1134,6 +1142,7 @@ try{
           }
         }
       },
+
       /*Show new element modal*/
       newElemModal(comp, index, button){
         this.modalNewElement.title = "New element";
@@ -1163,12 +1172,13 @@ try{
           }
         }
       },
+
       /*Verify all field of new element*/
       newElementVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name){
              show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else{
           if (!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
              show_notification('Please complete all fields', 'danger') ;
@@ -1182,6 +1192,7 @@ try{
         }
       },
 
+
       /*Create a new element*/
       newElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
@@ -1190,7 +1201,7 @@ try{
                 show_notification('The element already exists', 'danger') ;
                 return;
             }
-          } 
+          }
         }
 
         this.showNewElement = false;
@@ -1237,6 +1248,7 @@ try{
           }
         }
       },
+
       /*Show edit element modal*/
       editElemModal(elem, comp, button){
         this.modalEditElement.title = "Edit Element";
@@ -1279,12 +1291,13 @@ try{
 
         this.$root.$emit('bv::show::modal', 'modalEditElement', button);
       },
+
       /*Check all field of modified element*/
       editElementVerify(evt, comp){
         evt.preventDefault();
         if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
           show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else if(isNaN(this.formArchitecture.defValue)){
           show_notification('The default value must be a number', 'danger') ;
         }
@@ -1292,6 +1305,7 @@ try{
           this.editElement(comp);
         }
       },
+
       /*Modify element*/
       editElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
@@ -1300,7 +1314,7 @@ try{
                 show_notification('The element already exists', 'danger') ;
                 return;
             }
-          } 
+          }
         }
 
         this.showEditElement = false;
@@ -1317,7 +1331,7 @@ try{
                   architecture.components[i].elements[j].default_value = parseFloat(this.formArchitecture.defValue, 10);
                 }
                 else{
-                  
+
                   var aux_value;
                   var aux_sim1;
                   var aux_sim2;
@@ -1344,14 +1358,16 @@ try{
               architecture.components[i].elements[j].properties = this.formArchitecture.properties;
             }
           }
-        } 
+        }
       },
+
       /*Show delete element modal*/
       delElemModal(elem, button){
         this.modalDeletElement.title = "Delete Element";
         this.modalDeletElement.element = elem;
         this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
       },
+
       /*Delete the element*/
       delElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
@@ -1362,6 +1378,7 @@ try{
           }
         }
       },
+
       /*Empty form*/
       emptyFormArch(){
         this.formArchitecture.name = '';
@@ -1371,12 +1388,14 @@ try{
         this.formArchitecture.properties = [];
         this.formArchitecture.precision = '';
       },
+
       /*Show reset instructions modal*/
       resetInstModal(elem, button){
         this.modalResetInst.title = "Reset " + elem + " instructions";
         this.modalResetInst.element = elem;
         this.$root.$emit('bv::show::modal', 'modalResetInst', button);
       },
+
       /*Reset instructions*/
       resetInstructions(arch){
         show_loading();
@@ -1391,7 +1410,7 @@ try{
 
             hide_loading();
             show_notification('The instruction set has been reset correctly', 'success') ;
-            
+
             return;
           }
         }
@@ -1408,6 +1427,7 @@ try{
           show_notification('The instruction set has been reset correctly', 'success') ;
         });
       },
+
       /*Verify new number of fields*/
       changeNumfield(type){
         if(type == 0){
@@ -1437,6 +1457,7 @@ try{
           }
         }
       },
+
       /*Show instruction fields modal*/
       viewFielsInst(elem, co, cop, button){
         this.modalViewFields.title = "Fields of " + elem;
@@ -1462,6 +1483,7 @@ try{
         }
         this.$root.$emit('bv::show::modal', 'modalViewFields', button);
       },
+
       /*Verify all fields of new instructions*/
       newInstVerify(evt){
         evt.preventDefault();
@@ -1525,7 +1547,7 @@ try{
 
         if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
             show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else if (typeof(this.formInstruction.co) != 'object' && isNaN(this.formInstruction.co)){
                  show_notification('The field co must be numbers', 'danger') ;
         } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some(val => isNaN(val)))
@@ -1541,6 +1563,7 @@ try{
           this.newInstruction();
         }
       },
+
       /*Create a new instruction*/
       newInstruction(){
         for (var i = 0; i < architecture.instructions.length; i++){
@@ -1597,6 +1620,7 @@ try{
           architecture.instructions[architecture.instructions.length-1].fields.push(newField);
         }
       },
+
       /*Show edit instruction modal*/
       editInstModal(elem, co, cop, button){
         this.modalEditInst.title = "Edit Instruction";
@@ -1639,6 +1663,7 @@ try{
         }
         this.$root.$emit('bv::show::modal', 'modalEditInst', button);
       },
+
       /*Check all fields of modify instruction*/
       editInstVerify(evt, inst, co, cop){
         evt.preventDefault();
@@ -1737,7 +1762,7 @@ try{
           }
         }
 
-          
+
         let auxcop = (() => this.formInstruction.co instanceof Array ? this.formInstrucion.co.join("") : this.formInstruction.co)() + this.formInstruction.cop;
 
         for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
@@ -1798,6 +1823,7 @@ try{
 
         show_notification('The instruction has been modified, please check the definition of the pseudoinstructions', 'info') ;
       },
+
       /*Show delete instruction modal*/
       delInstModal(elem, index, button){
         this.modalDeletInst.title = "Delete Instruction";
@@ -1805,10 +1831,12 @@ try{
         this.modalDeletInst.index = index;
         this.$root.$emit('bv::show::modal', 'modalDeletInst', button);
       },
+
       /*Delete the instruction*/
       delInstruction(index){
         architecture.instructions.splice(index,1);
       },
+
       /*Generate the instruction signature*/
       generateSignatureInst(){
         var signature = this.formInstruction.signature_definition;
@@ -1855,6 +1883,7 @@ try{
         this.formInstruction.signature = signature;
         this.formInstruction.signatureRaw = signatureRaw;
       },
+
       /*Empty instruction form*/
       emptyFormInst(){
         this.formInstruction.name = '';
@@ -1877,11 +1906,12 @@ try{
         this.formInstruction.definition = '';
         this.instructionFormPage = 1;
       },
+
       /*Show pseudoinstruction fields modal*/
       viewFielsPseudo(elem, index, button){
         this.modalViewFields.title = "Fields of " + elem;
         this.modalViewFields.element = elem;
-        
+
         this.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
         this.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
         this.formPseudoinstruction.numfieldsAux = architecture.pseudoinstructions[index].fields.length;
@@ -1895,12 +1925,14 @@ try{
 
         this.$root.$emit('bv::show::modal', 'modalViewPseudoFields', button);
       },
+
       /*Show reset pseudoinstructions modal*/
       resetPseudoinstModal(elem, button){
         this.modalResetPseudoinst.title = "Reset " + elem + " pseudoinstructions";
         this.modalResetPseudoinst.element = elem;
         this.$root.$emit('bv::show::modal', 'modalResetPseudoinst', button);
       },
+
       /*Reset pseudoinstructions*/
       resetPseudoinstructionsModal(arch){
         show_loading();
@@ -1915,7 +1947,7 @@ try{
 
             hide_loading();
             show_notification('The registers has been reset correctly', 'success') ;
-            
+
             return;
           }
         }
@@ -1932,6 +1964,7 @@ try{
           show_notification('The pseudoinstruction set has been reset correctly', 'success') ;
         });
       },
+
       /*Check all fields of new pseudoinstruction*/
       newPseudoinstVerify(evt){
         evt.preventDefault();
@@ -1961,11 +1994,12 @@ try{
 
         if (!this.formPseudoinstruction.name || !this.formPseudoinstruction.nwords || !this.formPseudoinstruction.numfields || !this.formPseudoinstruction.signature_definition || !this.formPseudoinstruction.definition || vacio == 1) {
           show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else {
           this.newPseudoinstruction();
         }
       },
+
       /*Create a new pseudoinstruction*/
       newPseudoinstruction(){
         this.showNewPseudoinstruction = false;
@@ -1983,12 +2017,13 @@ try{
           architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(newField);
         }
       },
+
       /*Show edit pseudoinstruction modal*/
       editPseudoinstModal(elem, index, button){
         this.modalEditPseudoinst.title = "Edit Pseudoinstruction";
         this.modalEditPseudoinst.element = elem;
         this.modalEditPseudoinst.index = index;
-        
+
         this.formPseudoinstruction.name = architecture.pseudoinstructions[index].name;
         this.formPseudoinstruction.nwords = architecture.pseudoinstructions[index].nwords;
         this.formPseudoinstruction.numfields = architecture.pseudoinstructions[index].fields.length;
@@ -2007,6 +2042,7 @@ try{
 
         this.$root.$emit('bv::show::modal', 'modalEditPseudoinst', button);
       },
+
       /*Check all fields of modify pseudoinstruction*/
       editPseudoinstVerify(evt, inst, index){
         evt.preventDefault();
@@ -2041,11 +2077,12 @@ try{
           this.editPseudoinstruction(inst, index);
         }
       },
+
       /*Edit the pseudoinstruction*/
       editPseudoinstruction(comp, index){
 
         this.showEditPseudoinstruction = false;
-        
+
         architecture.pseudoinstructions[index].name = this.formPseudoinstruction.name;
         architecture.pseudoinstructions[index].nwords = this.formPseudoinstruction.nwords;
         architecture.pseudoinstructions[index].definition = this.formPseudoinstruction.definition;
@@ -2076,6 +2113,7 @@ try{
           architecture.pseudoinstructions[index].fields.splice(this.formPseudoinstruction.numfields, (architecture.pseudoinstructions[i].fields.length - this.formPseudoinstruction.numfields));
         }
       },
+
       /*Show delete pseudoinstruction modal*/
       delPseudoinstModal(elem, index, button){
         this.modalDeletPseudoinst.title = "Delete Pseudointruction";
@@ -2083,21 +2121,24 @@ try{
         this.modalDeletPseudoinst.index = index;
         this.$root.$emit('bv::show::modal', 'modalDeletPseudoinst', button);
       },
+
       /*Delete the pseudoinstruction*/
       delPseudoinstruction(index){
         architecture.pseudoinstructions.splice(index,1);
       },
+
       /*Verify the pseudoinstruction definition*/
       pseudoDefValidator(name, definition, fields){
         var re = new RegExp("^\n+");
         definition = definition.replace(re, "");
-        
+
         re = new RegExp("\n+", "g");
         definition = definition.replace(re, "");
 
         var newDefinition = definition;
 
         re = /{([^}]*)}/g;
+
         var code = re.exec(definition);
 
         if(code != null)
@@ -2227,7 +2268,7 @@ try{
                         }
                       }
                       else if(isNaN(parseInt(instructionParts[z]))){
-                        
+
                       }
                       else {
                         var numAux = parseInt(instructionParts[z], 10);
@@ -2267,7 +2308,7 @@ try{
                         if(value[1].length*4 > fieldsLength){
                           show_notification("Address " + instructionParts[z] + " is too big", 'danger') ;
                           return -1;
-                        } 
+                        }
                       }
                     }
 
@@ -2414,7 +2455,7 @@ try{
                       }
                     }
                     else if(isNaN(parseInt(instructionParts[z]))){
-                      
+
                     }
                     else {
                       var numAux = parseInt(instructionParts[z], 10);
@@ -2454,7 +2495,7 @@ try{
                       if(value[1].length*4 > fieldsLength){
                         show_notification("Address " + instructionParts[z] + " is too big", 'danger') ;
                         return -1;
-                      } 
+                      }
                     }
                   }
 
@@ -2474,6 +2515,7 @@ try{
 
         return 0;
       },
+
       /*Generate the pseudoinstruction signature*/
       generateSignaturePseudo(){
         var signature = this.formPseudoinstruction.signature_definition;
@@ -2516,6 +2558,7 @@ try{
         this.formPseudoinstruction.signature = signature;
         this.formPseudoinstruction.signatureRaw = signatureRaw;
       },
+
       /*Empty pseudoinstruction form*/
       emptyFormPseudo(){
         this.formPseudoinstruction.name = '';
@@ -2532,19 +2575,23 @@ try{
         this.formPseudoinstruction.definition = '';
         this.instructionFormPage = 1;
       },
+
       /*Pagination bar names*/
       linkGen (pageNum) {
         return this.instructionFormPageLink[pageNum - 1]
       },
+
       pageGen (pageNum) {
         return this.instructionFormPageLink[pageNum - 1].slice(1)
       },
+
       /*Show reset directive modal*/
       resetDirModal(elem, button){
         this.modalResetDir.title = "Reset " + elem + " directives";
         this.modalResetDir.element = elem;
         this.$root.$emit('bv::show::modal', 'modalResetDir', button);
       },
+
       /*Reset directives*/
       resetDirectives(arch){
         show_loading();
@@ -2575,13 +2622,14 @@ try{
           show_notification('The directive set has been reset correctly', 'success') ;
         });
       },
+
       /*Verify all fields of new directive*/
       newDirVerify(evt){
         evt.preventDefault();
 
         if (!this.formDirective.name || !this.formDirective.action) {
           show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else {
           if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
             show_notification('Please complete all fields', 'danger') ;
@@ -2591,6 +2639,7 @@ try{
           }
         }
       },
+
       /*Create new directive*/
       newDirective(){
         for (var i = 0; i < architecture.directives.length; i++) {
@@ -2608,6 +2657,7 @@ try{
         var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
         architecture.directives.push(newDir);
       },
+
       /*Show edit directive modal*/
       editDirModal(elem, button){
         this.modalEditDirective.title = "Edit " + elem;
@@ -2622,13 +2672,14 @@ try{
         }
         this.$root.$emit('bv::show::modal', 'modalEditDirective', button);
       },
+
       /*Verify all fields of modify directive*/
       editDirVerify(evt, name){
         evt.preventDefault();
 
         if (!this.formDirective.name || !this.formDirective.action) {
           show_notification('Please complete all fields', 'danger') ;
-        } 
+        }
         else {
           if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
             show_notification('Please complete all fields', 'danger') ;
@@ -2638,6 +2689,7 @@ try{
           }
         }
       },
+
       /*edit directive*/
       editDirective(name){
         for (var i = 0; i < architecture.directives.length; i++) {
@@ -2663,12 +2715,14 @@ try{
           }
         }
       },
+
       /*Show delete directive modal*/
       delDirModal(elem, button){
         this.modalDeletDir.title = "Delete " + elem;
         this.modalDeletDir.element = elem;
         this.$root.$emit('bv::show::modal', 'modalDeletDir', button);
       },
+
       /*Delete directive*/
       delDirective(comp){
         for (var i = 0; i < architecture.directives.length; i++) {
@@ -2677,12 +2731,14 @@ try{
           }
         }
       },
+
       /*Empty directive form*/
       emptyFormDirective(){
         this.formDirective.name = '';
         this.formDirective.action = '';
         this.formDirective.size = 0;
       },
+
       /*Form validator*/
       valid(value){
         if(parseInt(value) != 0){
@@ -2697,8 +2753,6 @@ try{
           return true;
         }
       },
-
-
 
       /*Compilator*/
 
@@ -2721,7 +2775,7 @@ try{
             app.reset();
 
             /*Save a backup in the cache memory*/
-            if (typeof(Storage) !== "undefined") 
+            if (typeof(Storage) !== "undefined")
             {
               var auxObject = jQuery.extend(true, {}, architecture);
               var auxArchitecture = bigInt_serialize(auxObject);
@@ -2745,10 +2799,10 @@ try{
             }
             else if (ret.type == "warning") {
                 show_notification(ret.token, ret.bgcolor) ;
-            }       
+            }
             else {
                 show_notification('Compilation completed successfully', 'success') ;
-            }       
+            }
 
             // end
             resolve("0");
@@ -2761,6 +2815,7 @@ try{
       newAssembly(){
         textarea_assembly_editor.setValue("");
       },
+
       /*Load external assembly code*/
       read_assembly(e){
         show_loading();
@@ -2780,9 +2835,11 @@ try{
         }
         hide_loading();
       },
+
       assembly_update(){
         textarea_assembly_editor.setValue(code_assembly);
       },
+
       /*Save assembly code in a local file*/
       assembly_save(){
         var textToWrite = textarea_assembly_editor.getValue();
@@ -2820,21 +2877,21 @@ try{
                           var current_architecture = app._data.architecture_name.toUpperCase() ;
 
                           // search for set_name in the example set 'set'
-			  for (var i=0; i<set.length; i++) 
+			  for (var i=0; i<set.length; i++)
                           {
                                 // if set_name in set[i]...
 				if (set[i].id.toUpperCase() == set_name.toUpperCase())
 				{
                                         // if current_architecture active but not the associated with set, skip
-				        if ( (current_architecture != '') && 
-      					     (set[i].architecture.toUpperCase() != current_architecture) ) 
+				        if ( (current_architecture != '') &&
+      					     (set[i].architecture.toUpperCase() != current_architecture) )
 				        {
 				             continue ;
 				        }
 
                                         // if no current_architecture loaded then load the associated
 				        if (current_architecture == '') {
-					    $.getJSON('architecture/'+ set[i].architecture +'.json', 
+					    $.getJSON('architecture/'+ set[i].architecture +'.json',
 						       function(cfg) {
 						          app.load_arch_select_aux(set[i].architecture,
 										   cfg, false, null);
@@ -2951,6 +3008,7 @@ try{
           show_notification('Save binary', 'success') ;
         });
       },
+
       /*Load binary file*/
       library_load(e){
         var file;
@@ -2968,6 +3026,7 @@ try{
           code_binary = event.currentTarget.result;
         }
       },
+
       library_update(){
         update_binary = JSON.parse(code_binary);
         this.update_binary = update_binary;
@@ -2976,6 +3035,7 @@ try{
         $("#divTags").show();
         this.load_binary = true;
       },
+
       /*Remove a loaded binary*/
       removeLibrary(){
         update_binary = "";
@@ -2985,7 +3045,7 @@ try{
         $("#divTags").hide();
         this.load_binary = false;
       },
-      
+
       /*Show error message in the compilation*/
       compileError(error, token, line){
         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
@@ -3009,8 +3069,6 @@ try{
         this.modalAssemblyError.error = compileError[error].mess1 + token + compileError[error].mess2;
       },
 
-
-
       /*Simulator*/
 
       /*Detects the browser being used*/
@@ -3019,7 +3077,7 @@ try{
           this.navigator = "Mac";
           return;
         }
-    
+
         if (navigator.userAgent.search("Chrome") >= 0) {
           this.navigator = "Chrome";
         }
@@ -3060,6 +3118,7 @@ try{
         this.calculator.exponentDec = "";
         this.calculator.mantissaDec = "";
       },
+
       /*Calculator functionality*/
       calculatorFunct(index){
         switch(index){
@@ -3245,6 +3304,7 @@ try{
             break;
         }
       },
+
       /*Update a new register value*/
       updateReg(comp, elem, type, precision){
         for (var i = 0; i < architecture.components[comp].elements.length; i++) {
@@ -3299,7 +3359,7 @@ try{
       },
 
       /*Execute one instruction*/
-      executeInstruction() 
+      executeInstruction()
       {
         console_log(mutexRead);
         newExecution = false;
@@ -3434,7 +3494,7 @@ try{
               for(var j = 1; j < match.length; j++){
                 signatureRawParts.push(match[j]);
               }
-              
+
               console_log(signatureParts);
               console_log(signatureRawParts);
 
@@ -3592,7 +3652,7 @@ try{
                         console_log(auxLength);
                         console_log((w.toString(2)).padStart(auxLength, "0"));
                         if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
-                        
+
                         }
                       }
                     }
@@ -3711,7 +3771,7 @@ try{
                 	}
                 	else{
                 		value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
-                	}                  
+                	}
                 	var valueSign = value.charAt(0);
                   var newValue =  value.padStart(32, valueSign) ;
                   newValue = parseInt(newValue, 2) ;
@@ -3737,7 +3797,7 @@ try{
                 	}
                 	else{
                 		value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
-                	} 
+                	}
                 	var valueSign = value.charAt(0);
                   var newValue =  value.padStart(32, valueSign) ;
                   newValue = parseInt(newValue, 2) ;
@@ -3757,7 +3817,7 @@ try{
             var elemIndex2;
 
             console_log(auxDef);
-            
+
             re = /print_int\((.*?)\)/;
             if (auxDef.search(re) != -1){
               match = re.exec(auxDef);
@@ -3769,7 +3829,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('print_int',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_int',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /print_float\((.*?)\)/;
@@ -3783,7 +3843,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('print_float',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_float',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
 
@@ -3798,7 +3858,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('print_double',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_double',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /print_string\((.*?)\)/;
@@ -3812,7 +3872,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('print_string',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_string',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /read_int\((.*?)\)/;
@@ -3826,7 +3886,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('read_int',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_int',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /read_float\((.*?)\)/;
@@ -3840,7 +3900,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('read_float',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_float',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /read_double\((.*?)\)/;
@@ -3854,7 +3914,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('read_double',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_double',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /read_string\((.*?)\)/;
@@ -3884,7 +3944,7 @@ try{
                 }
               }
               re = /read_string\((.*?)\)/
-              auxDef = auxDef.replace(re, "this.syscall('read_string',"+compIndex+" , "+elemIndex+","+compIndex2+" , "+elemIndex2+")");
+              auxDef = auxDef.replace(re, "syscall('read_string',"+compIndex+" , "+elemIndex+","+compIndex2+" , "+elemIndex2+")");
             }
 
             re = /sbrk\((.*?)\)/
@@ -3898,11 +3958,11 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('sbrk',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('sbrk',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /exit\((.*?)\)/;
-            auxDef = auxDef.replace(re, "this.syscall('exit', null, null, null, null)");
+            auxDef = auxDef.replace(re, "syscall('exit', null, null, null, null)");
 
             re = /print_char\((.*?)\)/;
             if (auxDef.search(re) != -1){
@@ -3915,7 +3975,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('print_char',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_char',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             re = /read_char\((.*?)\)/
@@ -3929,7 +3989,7 @@ try{
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "this.syscall('read_char',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_char',"+compIndex+" , "+elemIndex+", null, null)");
             }
 
             console_log(auxDef);
@@ -3939,7 +3999,7 @@ try{
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               match[1] = match[1].replace(";", ",");
-              auxDef = auxDef.replace(re, "this.divDouble(" + match [1] + ")");
+              auxDef = auxDef.replace(re, "divDouble(" + match [1] + ")");
             }
 
             console_log(auxDef);
@@ -3961,7 +4021,7 @@ try{
                 re = new RegExp( "(?:\\W|^)((" + architecture.components[i].elements[j].name+") *=[^=])", "g");
                 while ((myMatch = re.exec(auxDef)) != null) {
                     auxDef = auxDef.replace(myMatch[2], "reg"+regIndex)
-                    auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nthis.writeRegister(reg"+ regIndex+", "+i+", "+j+");";
+                    auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
                     myMatch.index=0;
 			isMatch = true;
                 }
@@ -3974,7 +4034,7 @@ try{
 
                   auxDef = auxDef.replace(re, "reg"+ regIndex+"=");
                   auxDef = "var reg" + regIndex + "=null;\n" + auxDef;
-                  auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
+                  auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+");"
                   regIndex++;
                 }
 		*/
@@ -3986,7 +4046,7 @@ try{
                     re = new RegExp("R"+regNum+" *=","g");
                     auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
                     auxDef = "var reg" + regIndex + "=null\n" + auxDef;
-                    auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
+                    auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+");"
                     regIndex++;
                   }
                 }
@@ -3995,14 +4055,14 @@ try{
                 re = new RegExp("([^a-zA-Z0-9])" + architecture.components[i].elements[j].name + "(?!\.name)");
                 while(auxDef.search(re) != -1){
                   var match = re.exec(auxDef);
-                  auxDef = auxDef.replace(re, match[1] + "this.readRegister("+i+" ,"+j+")");
+                  auxDef = auxDef.replace(re, match[1] + "readRegister("+i+" ,"+j+")");
                 }
 
                 if(architecture.components[i].type == "integer"){
                   re = new RegExp("R"+regNum+"[^0-9]|[\\s]","g");
                   if(auxDef.search(re) != -1){
                     re = new RegExp("R"+regNum,"g");
-                    auxDef = auxDef.replace(re, "this.readRegister("+i+" ,"+j+")");
+                    auxDef = auxDef.replace(re, "readRegister("+i+" ,"+j+")");
                   }
                 }
 
@@ -4029,7 +4089,7 @@ try{
               }
               re = /check_stack_limit\((.*)\)/;
               auxDef = auxDef.replace(re, "");
-              auxDef = auxDef + "\n\nif('"+args[0]+"'=='"+args[1]+"'){\n\tif(("+args[2]+") != architecture.memory_layout[4].value){\n\t\tthis.writeStackLimit("+args[2]+")\n\t}\n}";
+              auxDef = auxDef + "\n\nif('"+args[0]+"'=='"+args[1]+"'){\n\tif(("+args[2]+") != architecture.memory_layout[4].value){\n\t\twriteStackLimit("+args[2]+")\n\t}\n}";
             }
 
             console_log(auxDef);
@@ -4055,7 +4115,7 @@ try{
               re = /MP.[whbd].\[(.*?)\] *=/;
               auxDef = auxDef.replace(re, "dir=");
               auxDef = "var dir=null\n" + auxDef;
-              auxDef = auxDef + "\n this.writeMemory(dir"+","+match[2]+",'"+match[1]+"');"
+              auxDef = auxDef + "\n writeMemory(dir"+","+match[2]+",'"+match[1]+"');"
               re = /MP.([whb]).\[(.*?)\] *=/;
             }
 
@@ -4065,7 +4125,7 @@ try{
               re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
               auxDef = auxDef.replace(re, "dir=");
               auxDef = "var dir=null\n" + auxDef;
-              auxDef = auxDef + "\n this.writeMemory(dir,"+match[2]+",'"+match[1]+"');"
+              auxDef = auxDef + "\n writeMemory(dir,"+match[2]+",'"+match[1]+"');"
               re = new RegExp("MP.([whbd]).(.*?) *=");
             }
 
@@ -4075,7 +4135,7 @@ try{
               var auxDir;
               //eval("auxDir="+match[2]);
               re = /MP.[whbd].\[(.*?)\]/;
-              auxDef = auxDef.replace(re, "this.readMemory("+match[2]+", '"+match[1]+"')");
+              auxDef = auxDef.replace(re, "readMemory("+match[2]+", '"+match[1]+"')");
               re = /MP.([whbd]).\[(.*?)\]/;
             }
 
@@ -4083,7 +4143,7 @@ try{
             while (auxDef.search(re) != -1){
               var match = re.exec(auxDef);
               re = new RegExp("MP."+match[1]+"."+match[2]);
-              auxDef = auxDef.replace(re, "this.readMemory("+match[2]+",'"+match[1]+"')");
+              auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
               re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
             }
 
@@ -4249,1103 +4309,6 @@ try{
         app._data.runExecution = true;
       },
 
-      /*Read register value*/
-      readRegister(indexComp, indexElem){
-        if(architecture.components[indexComp].elements[indexElem].properties[0] != "read" && architecture.components[indexComp].elements[indexElem].properties[1] != "read"){
-          show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read', 'danger') ;
-          instructions[executionIndex]._rowVariant = 'danger';
-          executionIndex = -1;
-          return;
-        }
-
-        if(architecture.components[indexComp].type == "control" || architecture.components[indexComp].type == "integer"){
-          console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
-          return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
-        }
-        if(architecture.components[indexComp].type == "floating point"){
-          return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString());
-        }
-        
-      },
-      /*Write value in register*/
-      writeRegister(value, indexComp, indexElem){
-        if(value == null){
-          return;
-        }
-
-        if(architecture.components[indexComp].type == "integer" || architecture.components[indexComp].type == "control"){
-          if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-            show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-
-          architecture.components[indexComp].elements[indexElem].value = bigInt(parseInt(value) >>> 0).value;
-
-          var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
-          var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
-
-          $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-          $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-
-          setTimeout(function() {
-            $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-            $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-          }, 500);
-        }
-
-        else if(architecture.components[indexComp].type =="floating point"){
-          if(architecture.components[indexComp].double_precision == false){
-            if(architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-              show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
-              return;
-            }
-
-            architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
-
-            this.updateDouble(indexComp, indexElem);
-
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
-
-            $(buttonDec).attr("style", "background-color:#c2c2c2;");
-            $(buttonHex).attr("style", "background-color:#c2c2c2;");
-
-            setTimeout(function() {
-              $(buttonDec).attr("style", "background-color:#f5f5f5;");
-              $(buttonHex).attr("style", "background-color:#f5f5f5;");
-            }, 500);
-          }
-          
-          else if(architecture.components[indexComp].double_precision == true){
-            if (architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write"){
-	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
-                return;
-            }
-
-            architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
-
-            this.updateSimple(indexComp, indexElem);
-
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
-
-            $(buttonDec).attr("style", "background-color:#c2c2c2;");
-            $(buttonHex).attr("style", "background-color:#c2c2c2;");
-
-            setTimeout(function() {
-              $(buttonDec).attr("style", "background-color:#f5f5f5;");
-              $(buttonHex).attr("style", "background-color:#f5f5f5;");
-            }, 500);
-          }
-        }  
-      },
-      /*Read memory value*/
-      readMemory(addr, type){
-        var memValue = '';
-        var index;
-
-	if (type == "d") {
-		debugger;
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value) index = memory_hash[0];
-
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value) index = memory_hash[2];
-
-          for (var i = 0; i < memory[index].length; i++){
-            for (var j = 0; j < memory[index][i].Binary.length; j++){
-              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-		for (let k = 0; k<2; k++)
-			for (var z = 0; z < memory[index][i].Binary.length; z++)
-				  memValue = memory[index][k].Binary[z].Bin + memValue;
-                //return bigInt(memValue, 16).value;
-		return parseInt(memValue, 16);
-              }
-            }
-          }
-	return 0;
-          
-          
-
-	}
-        if (type == "w"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-            index = memory_hash[0];
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-            index = memory_hash[2];
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            for (var j = 0; j < memory[index][i].Binary.length; j++){
-              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                for (var z = 0; z < memory[index][i].Binary.length; z++){
-                  memValue = memory[index][i].Binary[z].Bin + memValue;
-                }
-                //return bigInt(memValue, 16).value;
-                return parseInt(memValue,16);
-              }
-            }
-          }
-          //return bigInt(0).value;
-          return 0;
-        }
-
-        if (type == "h"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-            index = memory_hash[0];
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-            index = memory_hash[2];
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            for (var j = 0; j < memory[index][i].Binary.length; j++){
-              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                if(j < 2){
-                  for (var z = 0; z < memory[index][i].Binary.length -2; z++){
-                    memValue = memory[index][i].Binary[z].Bin + memValue;
-                  }
-                  //return bigInt(memValue, 16).value;
-                  return parseInt(memValue,16);
-                }
-                else{
-                  for (var z = 2; z < memory[index][i].Binary.length; z++){
-                    memValue = memory[index][i].Binary[z].Bin + memValue;
-                  }
-                  //return bigInt(memValue, 16).value;
-                  return parseInt(memValue,16);
-                }
-              }
-            }
-          }
-          //return bigInt(0).value;
-          return 0;
-        }
-
-        if (type == "b"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-            index = memory_hash[0];
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-            index = memory_hash[2];
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            for (var j = 0; j < memory[index][i].Binary.length; j++){
-              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                memValue = memory[index][i].Binary[j].Bin + memValue;
-                //return bigInt(memValue, 16).value;
-                return parseInt(memValue,16);
-              }
-            }
-          }
-          //return bigInt(0).value; 
-          return 0;
-        }
-      },
-      /*Write value in memory*/
-      writeMemory(value, addr, type){
-
-        if(value == null){
-          return;
-        }
-
-        var memValue = (value.toString(16)).padStart(8, "0");
-        var index;
-
-        if (type == "w"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-            index = memory_hash[0];
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-            index = memory_hash[2];
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            for (var j = 0; j < memory[index][i].Binary.length; j++){
-              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                //memory[index][i].Value = parseInt(memValue, 16);
-                if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
-                }
-                else{
-                  memory[index][i].Value = (parseInt(memValue, 16) >> 0);
-                }
-
-                var charIndex = memValue.length-1;
-                for (var z = 0; z < memory[index][i].Binary.length; z++){
-                  memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                  charIndex = charIndex - 2;
-                }
-                //memory[index][i].Value = parseInt(memValue, 16);
-
-                if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
-                }
-                else{
-                  memory[index][i].Value = (parseInt(memValue, 16) >> 0);
-                }
-
-                app._data.memory[index] = memory[index];
-                return;
-              }
-            }
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            if(memory[index][i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
-                charIndex = charIndex - 2;
-              }
-              app._data.memory[index] = memory[index];
-              return;
-            }
-            else if(i == memory[index].length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].push({Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
-                charIndex = charIndex - 2;
-              }
-              app._data.memory[index] = memory[index];
-              return;
-            }
-          }
-
-          if(memory[index].length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            memory[index].push({Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
-              charIndex = charIndex - 2;
-            }
-            app._data.memory[index] = memory[index];
-            return;
-          }
-        }
-
-        if (type == "h"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-            index = memory_hash[0];
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-            index = memory_hash[2];
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            for (var j = 0; j < memory[index][i].Binary.length; j++){
-              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                 if(j < 2){
-                  var charIndex = memValue.length-1;
-                  for (var z = 0; z < memory[index][i].Binary.length - 2; z++){
-                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                    charIndex = charIndex - 2;
-                  }
-
-                  memory[index][i].Value = null;
-                  for (var z = 3; z < 4; z=z-2){
-                    memory[index][i].Value = memory[index][i].Value + (parseInt((memory[index][i].Binary[z].Bin + memory[index][i].Binary[z-1].Bin), 16) >> 0) + " ";
-                  }
-                  app._data.memory[index] = memory[index];
-                  return;
-                }
-                else{
-                  var charIndex = memValue.length-1;
-                  for (var z = 2; z < memory[index][i].Binary.length; z++){
-                    memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                    charIndex = charIndex - 2;
-                  }
-                  app._data.memory[index] = memory[index];
-                  return;
-                }
-              }
-            }
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            if(memory[index][i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < memory[index][i].Binary.length; j++){
-                var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-                if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                   if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < memory[index][i].Binary.length - 2; z++){
-                      memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                      charIndex = charIndex - 2;
-                    }
-                    memory[index][i].Value = "0 " + (parseInt(memValue, 16) >> 0); 
-                    app._data.memory[index] = memory[index];
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < memory[index][i].Binary.length; z++){
-                      memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                      charIndex = charIndex - 2;
-                    }
-                    memory[index][i].Value = (parseInt(memValue, 16) >> 0) + " 0";    
-                    app._data.memory[index] = memory[index];             
-                    return;
-                  }
-                }
-              }
-              return;
-            }
-            else if(i == memory[index].length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < memory[index][i+1].Binary.length; j++){
-                var aux = "0x"+(memory[index][i+1].Binary[j].Addr).toString(16);
-                if(aux == addr || memory[index][i+1].Binary[j].Tag == addr){
-                   if(j < 2){
-                    var charIndex = memValue.length-1;
-                    for (var z = 0; z < memory[index][i+1].Binary.length - 2; z++){
-                      memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                      charIndex = charIndex - 2;
-                    }
-                    memory[index][i+1].Value = "0 " + (parseInt(memValue, 16) >> 0); 
-                    app._data.memory[index] = memory[index];
-                    return;
-                  }
-                  else{
-                    var charIndex = memValue.length-1;
-                    for (var z = 2; z < memory[index][i].Binary.length; z++){
-                      memory[index][i+1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                      charIndex = charIndex - 2;
-                    }
-                    memory[index][i+1].Value = parseInt(memValue, 16) + " 0"; 
-                    app._data.memory[index] = memory[index];
-                    return;
-                  }
-                }
-              }
-              return;
-            }
-          }
-
-          if(memory[index].length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-            }
-            for (var j = 0; j < memory[index][memory[index].length-1].Binary.length; j++){
-              var aux = "0x"+(memory[index][memory[index].length-1].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][memory[index].length-1].Binary[j].Tag == addr){
-                 if(j < 2){
-                  var charIndex = memValue.length-1;
-                  for (var z = 0; z < memory[index][memory[index].length-1].Binary.length - 2; z++){
-                    memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                    charIndex = charIndex - 2;
-                  }
-                  memory[index][memory[index].length-1].Value = "0 " + (parseInt(memValue, 16) >> 0); 
-                  app._data.memory[index] = memory[index];
-                  return;
-                }
-                else{
-                  var charIndex = memValue.length-1;
-                  for (var z = 2; z < memory[index][i].Binary.length; z++){
-                    memory[index][memory[index].length-1].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                    charIndex = charIndex - 2;
-                  }
-                  memory[index][memory[index].length-1].Value = (parseInt(memValue, 16) >> 0) + " 0"; 
-                  app._data.memory[index] = memory[index];
-                  return;
-                }
-              }
-            }
-            return;
-          }
-        }
-
-        if (type == "b"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-            index = memory_hash[0];
-          }
-
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-            index = memory_hash[2];
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            for (var j = 0; j < memory[index][i].Binary.length; j++){
-              var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                var charIndex = memValue.length-1;
-                memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                memory[index][i].Value = null;
-                for (var z = 3; z < 4; z--){
-                  memory[index][i].Value = memory[index][i].Value + parseInt(memory[index][i].Binary[z].Bin, 16) + " ";
-                }
-                return;
-              }
-            }
-          }
-
-          for (var i = 0; i < memory[index].length; i++){
-            if(memory[index][i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < memory[index][i].Binary.length; j++){
-                var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-                if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-                  var charIndex = memValue.length-1;
-                  memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                  for (var z = 3; z < 4; z--){
-                    memory[index][i+1].Value = memory[index][i+1].Value + parseInt(memory[index][i+1].Binary[z].Bin, 16) + " ";
-                  }
-                  return;
-                }
-              }
-              return;
-            }
-            else if(i == memory[index].length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-              memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
-              var charIndex = memValue.length-1;
-              for (var z = 0; z < 4; z++){
-                (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-              }
-              for (var j = 0; j < memory[index][i+1].Binary.length; j++){
-                var aux = "0x"+(memory[index][i+1].Binary[j].Addr).toString(16);
-                if(aux == addr || memory[index][i+1].Binary[j].Tag == addr){
-                  var charIndex = memValue.length-1;
-                  memory[index][i+1].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                  for (var z = 3; z < 4; z--){
-                    memory[index][i+1].Value = memory[index][i+1].Value + parseInt(memory[index][i+1].Binary[z].Bin, 16) + " ";
-                  }
-                  return;
-                }
-              }
-              return;
-            }
-          }
-
-          if(memory[index].length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
-            memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
-            var charIndex = memValue.length-1;
-            for (var z = 0; z < 4; z++){
-              (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: "00", Tag: null},);
-            }
-            for (var j = 0; j < memory[index][memory[index].length-1].Binary.length; j++){
-              var aux = "0x"+(memory[index][memory[index].length-1].Binary[j].Addr).toString(16);
-              if(aux == addr || memory[index][memory[index].length-1].Binary[j].Tag == addr){
-                var charIndex = memValue.length-1;
-                memory[index][memory[index].length-1].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
-                for (var z = 3; z < 4; z--){
-                  memory[index][memory[index].length-1].Value = memory[index][memory[index].length-1].Value + parseInt(memory[index][memory[index].length-1].Binary[z].Bin, 16) + " ";
-                }
-                return;
-              }
-            }
-            return;
-          }
-        }
-      },
-      /*Modify the stack limit*/
-      writeStackLimit(stackLimit){
-        if(stackLimit != null){
-          if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-            show_notification('Segmentation fault. You tried to write in the data segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-          else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-            show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
-            return;
-          }
-          else{
-            if(stackLimit < architecture.memory_layout[4].value){
-              var diff = architecture.memory_layout[4].value - stackLimit;
-              var auxStackLimit = stackLimit;
-
-              for (var i = 0; i < (diff/4); i++){
-                if(unallocated_memory.length > 0){
-                  memory[memory_hash[2]].splice(i, 0, unallocated_memory[unallocated_memory.length-1]);
-                  memory[memory_hash[2]][0].unallocated = false;
-                  unallocated_memory.splice(unallocated_memory.length-1, 1);
-                }
-                else{
-                  memory[memory_hash[2]].splice(i, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
-                  for (var z = 0; z < 4; z++){
-                    (memory[memory_hash[2]][i].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
-                    auxStackLimit++;
-                  }
-                }
-              }
-            }
-            else if(stackLimit > architecture.memory_layout[4].value){
-              var diff = stackLimit - architecture.memory_layout[4].value;
-              for (var i = 0; i < (diff/4); i++){
-                unallocated_memory.push(memory[memory_hash[2]][0]);
-                unallocated_memory[unallocated_memory.length-1].unallocated = true;
-                app._data.unallocated_memory = unallocated_memory;
-                memory[memory_hash[2]].splice(0, 1);
-                if(unallocated_memory.length > 20){
-                  unallocated_memory.splice(0, 15);
-                }
-              }
-            }
-            
-            architecture.memory_layout[4].value = stackLimit;
-            
-          }
-        }
-      },
-      /*Syscall*/
-      syscall(action, indexComp, indexElem, indexComp2, indexElem2){
-        switch(action){
-          case "print_int":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + (parseInt(value.toString()) >> 0);
-            break;
-          case "print_float":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + value;
-            break;
-          case "print_double":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + value;
-            break;
-          case "print_string":
-            var addr = architecture.components[indexComp].elements[indexElem].value;
-            var index;
-
-            if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-              show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-              instructions[executionIndex]._rowVariant = 'danger';
-              executionIndex = -1;
-              this.keyboard = "";
-              return;
-            }
-
-            if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-              index = memory_hash[0];
-            }
-
-            if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-              index = memory_hash[2];
-            }
-
-            for (var i = 0; i < memory[index].length; i++){
-              for (var j = 0; j < memory[index][i].Binary.length; j++){
-                var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-                if(aux == addr){
-                  for (var i; i < memory[index].length; i++){
-                    for (var k = j; k < memory[index][i].Binary.length; k++){
-                      console_log(parseInt(memory[index][i].Binary[k].Bin, 16));
-                      console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
-                      app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
-                      if(memory[index][i].Binary[k].Bin == 0){
-                        return
-                      }
-                      else if(i == memory[index].length-1 && k == memory[index][i].Binary.length-1){
-                        return;
-                      }
-                      j=0;
-                    }
-                  }
-                }
-              }
-            }
-
-            break;
-          case "read_int":
-            mutexRead = true;
-            app._data.enter = false;
-
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-	      			show_notification('The data has been uploaded', 'info') ;
-
-              if(runExecution == false){
-                this.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseInt(this.keyboard);
-              console_log(value);
-              this.writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++){
-                  instructions[i]._rowVariant = '';
-                }
-
-                executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
-              }
-              else if(runExecution == false){
-                this.executeProgram();
-              }
-              break;
-            }
-
-            break;
-          case "read_float":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(runExecution == false){
-                this.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseFloat(this.keyboard, 10);
-              console_log(value);
-              this.writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                  instructions[i]._rowVariant = '';
-                }
-
-                executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
-              }
-              else if(runExecution == false){
-                this.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
-          case "read_double":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(runExecution == false){
-                this.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseFloat(this.keyboard, 10);
-              console_log(value);
-              this.writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                  instructions[i]._rowVariant = '';
-                }
-
-                executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
-              }
-              else if(runExecution == false){
-                this.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
-          case "read_string":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(runExecution == false){
-                this.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var addr = architecture.components[indexComp].elements[indexElem].value;
-              var value = "";
-              var valueIndex = 0;
-
-              for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++){
-                value = value + this.keyboard.charAt(i);
-              }
-
-              console_log(value);
-
-              var auxAddr = data_address;
-              var index;
-
-              if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-                show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-                instructions[executionIndex-1]._rowVariant = 'danger';
-                executionIndex = -1;
-                this.keyboard = "";
-                return;
-              }
-
-              if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-                index = memory_hash[0];
-              }
-
-              if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-                index = memory_hash[2];
-              }
-
-              for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
-                for (var j = 0; j < memory[index][i].Binary.length; j++){
-                  var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-                  if(aux == addr){
-                    for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-                      memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                      auxAddr = memory[index][i].Binary[j].Addr;
-                      valueIndex++;
-                      addr++;
-                    }
-
-                    memory[index][i].Value = "";
-                    for (var j = 0; j < memory[index][i].Binary.length; j++){
-                      memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                    }
-
-                    if((i+1) < memory[index].length && valueIndex < value.length){
-                      i++;
-                      for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-                        memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                        auxAddr = memory[index][i].Binary[j].Addr;
-                        valueIndex++;
-                        addr++;
-                      }
-
-                      memory[index][i].Value = "";
-                      for (var j = 0; j < memory[index][i].Binary.length; j++){
-                        memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                      }
-
-                    }
-                    else if(valueIndex < value.length){
-                      data_address = auxAddr;
-                      memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
-                      i++;
-                      for (var z = 0; z < 4; z++){
-                        if(valueIndex < value.length){
-                          (memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                          valueIndex++;
-                          data_address++;
-                        }
-                        else{
-                          (memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                          data_address++;
-                        }
-                      }
-                      
-                      memory[index][i].Value = "";
-                      for (var j = 0; j < memory[index][i].Binary.length; j++){
-                        memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                      }
-                    }
-                  }
-                }
-              }
-
-              if(valueIndex == value.length){
-                this.keyboard = "";
-                consoleMutex = false;
-                mutexRead = false;
-                app._data.enter = null;
-
-		      			show_notification('The data has been uploaded', 'info') ;
-
-                if(executionIndex >= instructions.length){
-                  for (var i = 0; i < instructions.length; i++) {
-                    instructions[i]._rowVariant = '';
-                  }
-
-                  executionIndex = -2;
-                  show_notification('The execution of the program has finished', 'success') ;
-                  return;
-                }
-                else if(runExecution == false){
-                  this.executeProgram();
-                }
-
-                return;
-              }
-
-              var auxAddr = parseInt(addr);
-
-              while(valueIndex < value.length){
-                memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
-                for (var z = 0; z < 4; z++){
-                  if(valueIndex > value.length-1){
-                    (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
-                  }
-                  else{
-                    (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                    memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
-                  }
-                  auxAddr++;
-                  valueIndex++;
-                }
-                i++;
-              }
-
-              app._data.memory[index] = memory[index];
-              
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                  instructions[i]._rowVariant = '';
-                }
-
-                executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
-              }
-              else if(runExecution == false){
-                this.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
-          case "sbrk":
-            var aux_addr = architecture.memory_layout[3].value;
-
-            if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-		    			show_notification('Not enough memory for data segment', 'danger') ;
-              instructions[executionIndex]._rowVariant = 'danger';
-              executionIndex = -1;
-              return;
-            }
-
-            for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
-              memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
-              for (var z = 0; z < 4; z++){
-                (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
-                aux_addr++;
-              }
-            }
-
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-            architecture.memory_layout[3].value = aux_addr-1;
-            this.architecture.memory_layout[3].value = aux_addr-1;
-
-            break;
-          case "exit":
-            executionIndex = instructions.length + 1;
-            break;
-          case "print_char":
-            var aux = architecture.components[indexComp].elements[indexElem].value;
-            var aux2 = aux.toString(16);
-            var length = aux2.length;
-
-            var value = aux2.substring(length-2, length);
-            this.display = this.display + String.fromCharCode(parseInt(value, 16));
-            break;
-          case "read_char":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              if(runExecution == false){
-                this.executeProgram();
-              }
-
-              return;
-            }
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = (this.keyboard).charCodeAt(0);
-              this.writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-		    			show_notification('The data has been uploaded', 'info') ;
-
-              console_log(mutexRead);
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++){
-                  instructions[i]._rowVariant = '';
-                }
-
-                executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
-              }
-              else if(runExecution == false){
-                this.executeProgram();
-              }
-
-              break;
-            }
-            break;
-        }
-      },
       /*Exception Notification*/
       exception(error){
         show_notification("There is been an exception. Error description: '" + error, 'danger') ;
@@ -5353,112 +4316,25 @@ try{
         executionIndex = -1;
         return;
       },
-      /*Divides a double into two parts*/
-      divDouble(reg, index){
-            var value = this.bin2hex(this.double2bin(reg));
-            console_log(value);
-            if(index == 0){
-              return "0x" + value.substring(0,8);
-            }
-            if(index == 1) {
-              return "0x" + value.substring(8,16);
-            }
-      },
 
       /*Reset execution*/
       reset(){
         show_loading();
-        setTimeout(function(){
-          app._data.resetBut = true;
-          for (var i = 0; i < instructions.length; i++) {
-            instructions[i]._rowVariant = '';
-          }
-          executionIndex = 0;
-          executionInit = 1;
-          
-          /*Reset stats*/
-          totalStats=0;
-          for (var i = 0; i < stats.length; i++){
-            stats[i].percentage = 0;
-            stats[i].number_instructions = 0;
-          }
+        setTimeout(function() {
 
-          /*Reset console*/
+          app._data.resetBut = true;
           app._data.keyboard = "";
           app._data.display = "";
-          mutexRead = false;
           app._data.enter = null;
-          newExecution = true;
 
-          for (var i = 0; i < architecture_hash.length; i++) {
-            for (var j = 0; j < architecture.components[i].elements.length; j++) {
-              if(architecture.components[i].double_precision == false){
-                architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
-              }
+          reset() ;
 
-              else{
-                var aux_value;
-                var aux_sim1;
-                var aux_sim2;
-
-                for (var a = 0; a < architecture_hash.length; a++) {
-                  for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-                      aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-                    }
-                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-                      aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-                    }
-                  }
-                }
-
-                aux_value = aux_sim1 + aux_sim2;
-                architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
-              }
-            }
-          }
-
-          architecture.memory_layout[4].value = backup_stack_address;
-          architecture.memory_layout[3].value = backup_data_address;
-
-          for (var i = 0; i < memory[memory_hash[0]].length; i++) {
-            if(memory[memory_hash[0]][i].reset == true){
-              memory[memory_hash[0]].splice(i, 1);
-              i--;
-            }
-            else{
-              memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
-              for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
-                memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
-              }
-            }
-          }
-
-          for (var i = 0; i < memory[memory_hash[2]].length; i++) {
-            if(memory[memory_hash[2]][i].reset == true){
-              memory[memory_hash[2]].splice(i, 1);
-              i--;
-            }
-            else{
-              memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
-              for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
-                memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
-              }
-            }
-          }
-
-          unallocated_memory = [];
           app._data.unallocated_memory = unallocated_memory;
-
-          for (var i = 0; i < instructions.length; i++) {
-            if(instructions[i].Label == "main"){
-              instructions[i]._rowVariant = 'success';
-            }
-          }
-
           hide_loading();
+
         }, 25);
       },
+
       /*Enter a breakpoint*/
       breakPoint(record, index){
         for (var i = 0; i < instructions.length; i++) {
@@ -5477,17 +4353,20 @@ try{
           app._data.instructions[index].Break = null;
         }
       },
+
       /*Console mutex*/
       consoleEnter(){
         if(this.keyboard != ""){
           consoleMutex = true;
         }
       },
+
       /*Empty keyboard and display*/
       consoleClear(){
         this.keyboard = "";
         this.display = "";
       },
+
       /*Convert hexadecimal number to floating point number*/
       hex2float ( hexvalue ){
         /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
@@ -5518,6 +4397,7 @@ try{
         new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
         return new DataView( buffer ).getFloat32(0, false);
       },
+
       /*Convert hexadecimal number to double floating point number*/
       hex2double ( hexvalue ){
         var value = hexvalue.split('x');
@@ -5533,6 +4413,7 @@ try{
         new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
         return new DataView( buffer ).getFloat64(0, false);
       },
+
       /*Convert hexadecimal number to char*/
       hex2char8 ( hexvalue ){
         var num_char = ((hexvalue.toString().length))/2;
@@ -5555,6 +4436,7 @@ try{
 
         return  characters;
       },
+
       /*Convert floating point number to binary*/
       float2bin (number){
         var i, result = "";
@@ -5571,6 +4453,7 @@ try{
         }
         return result;
       },
+
       /*Convert double floating point number to binary*/
       double2bin(number) {
         var i, result = "";
@@ -5587,6 +4470,7 @@ try{
         }
         return result;
       },
+
       /*Convert binary number to hexadecimal number*/
       bin2hex(s) {
         var i, k, part, accum, ret = '';
@@ -5595,14 +4479,14 @@ try{
           part = s.substr(i+1-4, 4);
           accum = 0;
           for (k = 0; k < 4; k += 1){
-            if (part[k] !== '0' && part[k] !== '1'){     
+            if (part[k] !== '0' && part[k] !== '1'){
                 return { valid: false };
             }
             accum = accum * 2 + parseInt(part[k], 10);
           }
           if (accum >= 10){
             ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
-          } 
+          }
           else {
             ret = String(accum) + ret;
           }
@@ -5620,6 +4504,7 @@ try{
         }
         return ret;
       },
+
       /*Modifies double precision registers according to simple precision registers*/
       updateDouble(comp, elem){
         for (var j = 0; j < architecture.components.length; j++) {
@@ -5641,6 +4526,7 @@ try{
           }
         }
       },
+
       /*Modifies single precision registers according to double precision registers*/
       updateSimple(comp, elem){
         var part1 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
@@ -5657,6 +4543,7 @@ try{
           }
         }
       },
+
       /*Filter table instructions*/
       filter(row, filter){
         if(row.hide == true){
@@ -5666,13 +4553,16 @@ try{
           return true;
         }
       },
+
       /*Popover functions*/
       popoverId(i){
         return 'popoverValueContent' + i;
       },
+
       closePopover(){
         this.$root.$emit('bv::hide::popover')
       },
+
       /*Show integer registers*/
       /*showIntReg(){
         app._data.register_type = 'integer';
@@ -5681,6 +4571,7 @@ try{
         app._data.data_mode = "registers";
         app.$forceUpdate();
       },*/
+
       /*Show floating point registers*/
       /*showFpReg(){
         app._data.register_type = 'floating point';
@@ -5689,6 +4580,7 @@ try{
         app._data.data_mode = "registers";
         app.$forceUpdate();
       },*/
+
       change_data_view(e, type){
         app._data.data_mode = e;
 
@@ -5715,12 +4607,14 @@ try{
 
         app.$forceUpdate();
       },
+
       select_space_type(record, index){
         if(record.type == "space" && (memory[memory_hash[0]][index].Binary[0].Tag != null) || memory[memory_hash[0]][index].Binary[1].Tag != null || memory[memory_hash[0]][index].Binary[2].Tag != null || memory[memory_hash[0]][index].Binary[3].Tag != null){
         	app._data.row_index = index;
         	this.$refs['space_modal'].show();
         }
       },
+
       change_space_view(){
       	if(app._data.selected_space_view == "sig_int"){
     			var hex = "";
@@ -5785,18 +4679,16 @@ try{
       		i++;
       	}
       },
+
       hide_space_modal(){
         app._data.selected_space_view = null;
       },
-
-
-
-
 
       select_stack_type(record, index){
         app._data.row_index = index;
         this.$refs['stack_modal'].show();
       },
+
       change_stack_view(){
         if(app._data.selected_stack_view == "sig_int"){
           var hex = "";
@@ -5827,6 +4719,7 @@ try{
           memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
         }
       },
+
       hide_stack_modal(){
         app._data.selected_stack_view = null;
       },
@@ -5834,14 +4727,15 @@ try{
       hide_space_modal(){
       	app._data.selected_space_view = null;
       },
+
       change_popover_register(e){
         this.$root.$emit('bv::hide::popover');
         setTimeout(function(){
           app._data.register_popover = e;
           app.$forceUpdate();
         }, 120);
-        
       },
+
       /*Stop user interface refresh*/
       debounce: _.debounce(function (param, e) {
         console_log(param);
@@ -5873,9 +4767,9 @@ try{
         //this[param] = e.toString();
         app.$forceUpdate();
       }, getDebounceTime())
+
     },
   });
-
 
 
   /*************
@@ -5907,23 +4801,20 @@ try{
       return 1000;
     }
   }
+
   /*Stop the transmission of events to children*/
   function destroyClickedElement(event) {
     document.body.removeChild(event.target);
   }
+
   /*console.log*/
   function console_log(m){
     if(app._data.c_debug){
-      console.log(m); 
+      console.log(m);
     }
   }
 
   /*Architecture editor*/
-
-
-
-
-  /*Compilator*/
 
   /*Codemirror*/
   function codemirrorStart(){
@@ -5948,8 +4839,6 @@ try{
     }
   }
 
-
-
   /*Simulator*/
 
   /*Binary string to integer number*/
@@ -5965,5 +4854,4 @@ catch(e)
      location.reload(true)
    }, 3000);
 }
-
 
