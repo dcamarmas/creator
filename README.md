@@ -12,7 +12,6 @@
 | Source Code                             | Documentation                  | Creator                                | 
 |-----------------------------------------|--------------------------------|----------------------------------------| 
 | https://github.com/creatorsim/creator/  |  https://creatorsim.github.io/ |  https://creatorsim.github.io/creator/ | 
-|-----------------------------------------|--------------------------------|----------------------------------------| 
 
 * Nightly build:
 
@@ -23,7 +22,6 @@
 | Lucas     | https://github.com/luck5941/creator/    |  https://luck5941.github.io/creator/   | 
 |-----------|-----------------------------------------|----------------------------------------| 
 | Alejandro | https://github.com/acaldero/creator/    |  https://acaldero.github.io/creator/   | 
-|-----------|-----------------------------------------|----------------------------------------| 
 
 
 ## Default Examples
@@ -43,14 +41,12 @@
 | I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=9   |
 | I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=10  |
 | Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=11  |
-|----------------------------|----------------------------------------------------------------------|
 
  * RISC-V
 
 | Description                | Link                                                                  |
 |----------------------------|-----------------------------------------------------------------------| 
 | Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=1 |
-|----------------------------|-----------------------------------------------------------------------| 
 
     
 ## ChangeLog
