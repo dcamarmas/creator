@@ -8,9 +8,9 @@
   },
   "scripts": {
     "test-creator-node": "./mk_test.sh",
-    "terser_web": "cat js/creator_compiler.js js/creator_executor.js js/creator_ui.js js/creator_preload.js js/app.js > js/creator_web.js && terser -o js/min.creator_web.js js/creator_web.js && rm -fr js/creator_web.js",
-    "terser_node": "cat js/creator_compiler.js js/creator_executor.js node/creator_node.js > node/min.creator_node.js",
-    "terser": "npm run terser_web && npm run terser_node"
+    "terser_web":  "./mk_min.sh",
+    "terser_node": "./mk_min.sh",
+    "terser":      "./mk_min.sh"
   },
   "dependencies": {
     "terser": "^4.8.0"
