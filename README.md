@@ -1,4 +1,5 @@
-# CREATOR: didaCtic and geneRic assEmbly progrAmming simulaTOR
+# CREATOR: 
+## didaCtic and geneRic assEmbly progrAmming simulaTOR
 
 ## Authors
 * Diego Camarmas Alonso
@@ -6,8 +7,6 @@
 
 
 ## Links
-
-#### Stable  build:
  
 | Source Code                             | Documentation                  | Creator                                | 
 |-----------------------------------------|--------------------------------|----------------------------------------| 
@@ -22,7 +21,7 @@
 | Alejandro | https://github.com/acaldero/creator/    |  https://acaldero.github.io/creator/   | 
 
 
-## Default Examples
+## Examples included in CREATOR
 
 #### RISC-V
 
@@ -50,12 +49,11 @@
 ## ChangeLog
 
 ### 1.5.x:
-   * RISC-V Support (Thanks to Lucas Elvira Martín)
-   * Bootstrap-vue upgraded up to v2.15.0
-   * Initial support for a command line version based on nodejs
-   * Creator now accepts some GET values:
+- [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
+- [x] Bootstrap-vue upgraded up to v2.15.0
+- [x] Creator now accepts some GET values:
      * Preload architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like
      * Preload example from example set:
        * https://dcamarmas.github.io/creator/?example_set=snips&example=5
-
+- [ ] Initial support for a **command line version based on NodeJS**
