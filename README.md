@@ -6,8 +6,8 @@
 </html>
 
 ## Authors
-* Diego Camarmas Alonso
-* Lucas Elvira Martín (RISC-V)
+* :technologist: Diego Camarmas Alonso
+* :technologist: Lucas Elvira Martín (RISC-V)
 
 
 ## CREATOR project
@@ -27,13 +27,13 @@
 
 ## Examples included in CREATOR
 
-#### RISC-V
+#### :point_right:	 RISC-V
 
 | Description                | Link                                                                  |
 |----------------------------|-----------------------------------------------------------------------| 
 | Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=1 |
 
-#### MIPS
+#### :point_right:	 MIPS
 
 | Description                | Link                                                                |
 |----------------------------|---------------------------------------------------------------------|
