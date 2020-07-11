@@ -16,7 +16,7 @@
 |-----------------------------------------|--------------------------------|----------------------------------------| 
 | https://github.com/creatorsim/creator/  |  https://creatorsim.github.io/ |  https://creatorsim.github.io/creator/ | 
 
-### Nightly build:
+### :microscope:	 Nightly build:
 
 | GitHub Repository | Source Code                     | Creator                                | 
 |-------------------|-----------------------------------------|----------------------------------------| 
@@ -48,11 +48,11 @@
 | I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=9  |
 | I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=10 |
 | Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=11 |
-
+ 
     
 ## ChangeLog
 
-### 1.5.x:
+### :atom:	 1.5.x:
 - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
 - [x] Bootstrap-vue upgraded up to v2.15.0
 - [x] Creator now accepts some GET values:
