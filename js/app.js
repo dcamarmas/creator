@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2019 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -337,7 +337,7 @@ try{
       /*Reset button*/
       resetBut: false,
       /*Instrutions table fields*/
-      archInstructions: ['Break', 'Address', 'Label', 'User Instructions', 'Loaded Instructions'],
+      archInstructions: ['Break', 'Address', 'Label', 'userInstructions', 'loadedInstructions'],
       /*Instructions memory*/
       instructions: instructions,
       /*Register type displayed*/
@@ -533,11 +533,11 @@ try{
       	if (e == "architecture") 
       	{
       	    $(".loading").show();
-                  setTimeout(function(){
-      		          app._data.creator_mode = e;
+            setTimeout(function(){
+      		    app._data.creator_mode = e;
       			  app.$forceUpdate();
-      	                  $(".loading").hide();
-      		       }, 50) ;
+      	       $(".loading").hide();
+      	     }, 50) ;
       	    return ;
       	}
 
@@ -595,13 +595,13 @@ try{
       },
 
 
-    lessFieldsToSeparateValues(event, pos) {
-        this.formInstruction.startBitField[pos].pop();
-        this.formInstruction.stopBitField[pos].pop();
-          if (this.formInstruction.typeField[pos] == 'co')
-              this.formInstruction.co.pop()
-        app.$forceUpdate();
-    },
+      lessFieldsToSeparateValues(event, pos) {
+          this.formInstruction.startBitField[pos].pop();
+          this.formInstruction.stopBitField[pos].pop();
+            if (this.formInstruction.typeField[pos] == 'co')
+                this.formInstruction.co.pop()
+          app.$forceUpdate();
+      },
 
       /*Load the available architectures and check if exists backup*/
       load_arch_available(){
@@ -668,6 +668,8 @@ try{
         app._data.architecture = architecture;
         app._data.assembly_code = localStorage.getItem("assembly_copy");
         //textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
+
+        //app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
 
         architecture_hash = [];
         for (var i = 0; i < architecture.components.length; i++){
@@ -2751,10 +2753,10 @@ try{
             // show error/warning
             hide_loading();
 
-            if (ret.status == "error") {
+            if (ret.type == "error") {
                 app.compileError(ret.errorcode, ret.token, textarea_assembly_editor.posFromIndex(ret.tokenIndex).line);
             }
-            else if (ret.status == "warning") {
+            else if (ret.type == "warning") {
                 show_notification(ret.token, ret.bgcolor) ;
             }       
             else {
@@ -3943,21 +3945,23 @@ try{
                 var re;
                 let myMatch;
                 /*Write in the register*/
-                re = new RegExp( "(?:\\W|^)(" + architecture.components[i].elements[j].name+" *=[^=])", "g");
-                /*
+
+                /*TODO: Conflicto RISC-V*/
+                /*re = new RegExp( "(?:\\W|^)(" + architecture.components[i].elements[j].name+" *=[^=])", "g");
+                while ((myMatch = re.exec(auxDef)) != null) {
+                    auxDef = auxDef.replace(myMatch[1], `reg${regIndex}=`)
+                    auxDef = `var reg${regIndex}=null\n${auxDef}\nthis.writeRegister(reg${regIndex}, ${i}, ${j});`;
+                    myMatch.index=0;
+                }*/
+
+                re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
                 if (auxDef.search(re) != -1){
-                  re = new RegExp( "(\n|^)" + architecture.components[i].elements[j].name+" *=","g");
+                  re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
 
                   auxDef = auxDef.replace(re, "reg"+ regIndex+"=");
                   auxDef = "var reg" + regIndex + "=null;\n" + auxDef;
                   auxDef = auxDef + "\n this.writeRegister(reg"+regIndex+","+i+" ,"+j+");"
                   regIndex++;
-                }
-                */
-                while ((myMatch = re.exec(auxDef)) != null) {
-                    auxDef = auxDef.replace(myMatch[1], `reg${regIndex}=`)
-                    auxDef = `var reg${regIndex}=null\n${auxDef}\nthis.writeRegister(reg${regIndex}, ${i}, ${j});`;
-                    myMatch.index=0;
                 }
 
 
@@ -5811,20 +5815,16 @@ try{
         app._data.selected_stack_view = null;
       },
 
-
-
-
-
-
-
-
-
       hide_space_modal(){
       	app._data.selected_space_view = null;
       },
       change_popover_register(e){
-        app._data.register_popover = e;
-        app.$forceUpdate();
+        this.$root.$emit('bv::hide::popover');
+        setTimeout(function(){
+          app._data.register_popover = e;
+          app.$forceUpdate();
+        }, 120);
+        
       },
       /*Stop user interface refresh*/
       debounce: _.debounce(function (param, e) {
@@ -5951,84 +5951,3 @@ catch(e)
 }
 
 
-/** methods that not necessary must be load by vue */
-
-/**
- * method in charge of return the length of the value. The most use are whene the field are fragment
- * this funciton is create with the intention of reduce errors on the code in case of add new fragments field
- * @return {int} the size of the field
-*/
-function getFieldLength(separated, startbit, stopbit,a) {
-	let fieldsLength;
-	if (!separated || !separated[a])
-		fieldsLength = startbit - stopbit + 1;
-	else 
-		fieldsLength = startbit
-		  .map((b, i) => b - stopbit[i]+1)
-		  .reduce((old, newV) => old+newV);
-	return fieldsLength;
-}
-
-/**
- * method in charge of return the binary instruction after add the inmediate value of the instruction
- * @return {string} the new binary update
-*/
-function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a) {
-	if (!separated ||!separated[a])
-	    binary = binary.substring(0, binary.length - (startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (stopbit ), binary.length);
-	else {                            
-	    // check if the value fit on the first segment
-	    let myInm = inm;
-	    for (let i = startbit.length-1; i >= 0;  i--) {
-		let sb = startbit[i],
-		    stb = stopbit[i],
-		    diff = sb - stb+1;
-		if (myInm.length <= diff) {
-		    binary = binary.substring(0, binary.length - (sb+1)) +
-			myInm.padStart(diff, "0") +
-			binary.substring((binary.length - stb), binary.length);
-		    break;
-		} else {
-		    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
-		    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
-		    myInm = myInm.substring(0,(myInm.length-diff));
-		} 
-	    }
-	}
-	return binary;
-}
-
-
-/**
- * method in chage of map a float number separated in parts and determinte what it.
- * @param s {Number} the sing of the number
- * @param e {Number} the exponent of the number.
- * @param m {Number} the mantinsa of the number
- * @return {number} 2^n with n as
- *      0 -> -infinite
- *      1 -> -normal number
- *      2 -> -subnormal number
- *      3 -> -0
- *      4 -> +0
- *      5 -> +normal number
- *      6 -> +subnormal number
- *      7 -> +inf
- *      8 -> -NaN
- *      9 -> +NaN
- */
-function checkTypeIEEE(s, e, m) {
-    let rd = 0;
-
-    if (!m && !e)
-        rd = s ? 1<<3 : 1<<4;
-    else if (!e)
-        rd = s ? 1<<2 : 1<<5;
-    else if (!(e ^ 255))
-        if (m)
-            rd = s ? 1<<8 : 1<<9;
-        else
-            rd = s ? 1<<0 : 1<<7;
-    else
-        rd = s ? 1<<1 : 1<<6;
-    return rd;
-}

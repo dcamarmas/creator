@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
    var fs      = require('fs') ;
-   //var bigInt = require("big-integer");
+ //var bigInt = require("big-integer");
    var creator = require('./min.creator_node.js') ;
 
 
@@ -41,7 +41,7 @@
        // (3) compile
        result = creator.assembly_compile(assembly) ;     
        if (result.status !== "ok") {
-           console.log("[ERROR 1]: " + result) ;
+           console.log("[ERROR 1]: " + JSON.stringify(result)) ;
            return ;
        }  
 

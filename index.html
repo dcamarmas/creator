@@ -12,15 +12,18 @@
 
     <!-- Required stylesheets -->
     <link type="text/css" rel="stylesheet" href="external/bootstrap.min.css"/>
-    <link type="text/css" rel="stylesheet" href="external/bootstrap-vue.css"/>
+    <link type="text/css" rel="stylesheet" href="external/bootstrap-vue.min.css"/>
     <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
     <link rel="stylesheet" href="css/style.css">
     
+    <!-- Load polyfills to support older browsers -->
+    <!--<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>-->
+
     <!-- Required scripts -->
-    <script src="external/vue"></script>
     <script src="external/polyfill.min.js"></script>
-    <script src="external/bootstrap-vue.js"></script>
+    <script src="external/vue.min.js"></script>
+    <script src="external/bootstrap-vue.min.js"></script>
     <script src="external/jquery.min.js"></script>
     <script src="external/BigInteger.min.js"></script>
     <script src="external/lodash.js"></script>
@@ -221,7 +224,7 @@
 
           <!-- Information popover -->
           <b-popover target="info_men" triggers="click blur">
-            <template slot="title">
+            <template v-slot:title>
               <b-button @click="closePopover" class="close" aria-label="Close">
                 <span class="d-inline-block" aria-hidden="true">&times;</span>
               </b-button>
@@ -423,7 +426,7 @@
 
             <!-- Information popover -->
             <b-popover target="info_arch" triggers="click blur">
-              <template slot="title">
+              <template v-slot:title>
                 <b-button @click="closePopover" class="close" aria-label="Close">
                   <span class="d-inline-block" aria-hidden="true">&times;</span>
                 </b-button>
@@ -600,14 +603,14 @@
                           <b-card-body>
 
                             <!-- Elements table -->
-                             <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
+                             <b-table :items="architecture.components[item.index].elements" class="text-center" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0" sticky-header>
 
                               <!-- For each element -->
-                              <template slot="ID" slot-scope="row">
+                              <template v-slot:cell(ID)="row">
                                 {{element_id(architecture.components[item.index].elements[row.index].name, architecture.components[item.index].type, architecture.components[item.index].double_precision)}}
                               </template>
 
-                              <template slot="properties" slot-scope="row">
+                              <template v-slot:cell(properties)="row">
                                 <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'read' || architecture.components[item.index].elements[row.index].properties[1] == 'read'"> Read </b-form-checkbox>
 
                                 <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'read' && architecture.components[item.index].elements[row.index].properties[1] != 'read'"> Read </b-form-checkbox>
@@ -617,7 +620,7 @@
                                 <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'write' && architecture.components[item.index].elements[row.index].properties[1] != 'write'"> Write </b-form-checkbox>
                               </template>
 
-                              <template slot="actions" slot-scope="row">
+                              <template v-slot:cell(actions)="row">
                                 <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                                 <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                               </template>
@@ -932,32 +935,32 @@
                   </b-modal >
 
                   <!-- Instruction set table -->
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
+                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table text-center" sticky-header="60vh"> 
 
                       <!-- Change the title of each column -->
-                      <template slot="HEAD_cop" scope="row">
+                      <template v-slot:head(cop)="row">
                         Extended CO
                       </template>
 
-                      <template slot="HEAD_signature" scope="row">
+                      <template v-slot:head(signature)="row">
                         Detailed Syntax
                       </template>
 
-                      <template slot="HEAD_signatureRaw" scope="row">
+                      <template v-slot:head(signatureRaw)="row">
                         Instruction syntax
                       </template>
 
                       <!-- For each instruction -->
-                      <template slot="fields" slot-scope="row">
+                      <template v-slot:cell(fields)="row">
                         <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100">View Fields</b-button>
                       </template>
 
-                      <template slot="definition" slot-scope="row">
+                      <template v-slot:cell(definition)="row">
                         <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4" title="Instruction Definition"></b-form-textarea>
                       </template>
 
-                      <template slot="actions" slot-scope="row">
+                      <template v-slot:cell(actions)="row">
                         <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                         <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
@@ -1212,9 +1215,9 @@
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
-                                  <b-form-group else v-for="(j, ind) in formInstruction.stopBitField[i-1]">
+                                  <!--<b-form-group else v-for="(j, ind) in formInstruction.stopBitField[i-1]">
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.co['+ind+']', $event)" :value="formInstruction.co[ind]" required :state="valid(formInstruction.co[ind])" size="sm">
-                                    </b-form-input>
+                                    </b-form-input>-->
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
                                   <b-form-group>
@@ -1395,28 +1398,28 @@
                   </b-modal >
 
                   <!-- Pseudoinstruction set table -->
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-                    <b-table small :items="architecture.pseudoinstructions" :fields="pseudoinstFields" class="instruction_table">
+                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                    <b-table small :items="architecture.pseudoinstructions" :fields="pseudoinstFields" class="instruction_table  text-center" sticky-header="60vh">
 
                       <!-- Change the title of each column -->
-                      <template slot="HEAD_signature" scope="row">
+                      <template v-slot:head(signature)="row">
                         Detailed Syntax
                       </template>
 
-                      <template slot="HEAD_signatureRaw" scope="row">
+                      <template v-slot:head(signatureRaw)="row">
                         Instruction syntax
                       </template>
 
                       <!-- For each pseudoinstruction -->
-                      <template slot="fields" slot-scope="row">
+                      <template v-slot:cell(fields)="row">
                         <b-button @click.stop="viewFielsPseudo(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100">View Fields</b-button>
                       </template>
 
-                      <template slot="definition" slot-scope="row">
+                      <template v-slot:cell(definition)="row">
                         <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4" title="Pseudoinstruction Definition"></b-form-textarea>
                       </template>
 
-                      <template slot="actions" slot-scope="row">
+                      <template v-slot:cell(actions)="row">
                         <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                         <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
@@ -1647,10 +1650,10 @@
                   </b-modal >
 
                   <!-- Directives set table -->
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-                    <b-table small :items="architecture.directives" :fields="directivesFields" class="instruction_table">
+                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                    <b-table small :items="architecture.directives" :fields="directivesFields" class="instruction_table  text-center" sticky-header="60vh">
                       <!-- For each directive -->
-                      <template slot="actions" slot-scope="row" class="">
+                      <template v-slot:cell(actions)="row" class="">
                         <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                         <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
@@ -1789,7 +1792,7 @@
           </div>
 
           <b-popover target="info_ass" triggers="click blur">
-            <template slot="title">
+            <template v-slot:title>
               <b-button @click="closePopover" class="close" aria-label="Close">
                 <span class="d-inline-block" aria-hidden="true">&times;</span>
               </b-button>
@@ -1917,7 +1920,7 @@
 
                   <!-- Information popover -->
                   <b-popover target="info_sim" triggers="click blur">
-                    <template slot="title">
+                    <template v-slot:title>
                       <b-button @click="closePopover" class="close" aria-label="Close">
                         <span class="d-inline-block" aria-hidden="true">&times;</span>
                       </b-button>
@@ -1958,7 +1961,7 @@
                     <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
                       <div class="col-lg-2 col-2"></div>
                       <div class="col-lg-6 col-8">
-                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.hexadecimal', $event)" :value="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter name of the architecture" :maxlength="calculator.lengthHexadecimal" title="Hexadecimal"></b-form-input>
+                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.hexadecimal', $event)" :value="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter hexadecimal number" :maxlength="calculator.lengthHexadecimal" title="Hexadecimal"></b-form-input>
                       </div>
                       <div class="col-lg-4"></div>
                     </div>
@@ -2009,7 +2012,7 @@
                         </div>
                       </div>
                       <div class="col-lg-3" style="padding-top: 3%">
-                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.decimal', $event)" :value="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal" title="Decimal"></b-form-input>
+                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.decimal', $event)" :value="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal number" title="Decimal"></b-form-input>
                       </div>
                     </div>
 
@@ -2025,26 +2028,37 @@
 
           <!-- Execution instruction -->
           <div class="col-lg-7 col-sm-12">
-            <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
+            <div class="col-lg-12 col-sm-12">
               <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;" :filter-function=filter filter=" ">
+
+                <!-- Change the title of each column -->
+                <template v-slot:head(userInstructions)="row">
+                  User Instruction
+                </template>
+
+                <template v-slot:head(loadedInstructions)="row">
+                  Loaded Instructions
+                </template>
+
+
                 <!-- For each instruction -->
-                <template slot="Break" slot-scope="row">
+                <template v-slot:cell(Break)="row">
                   <div class="break" :id="row.index">
                     <br v-if="row.item.Break == null">
                     <b-img alt="Break" src="./images/stop_classic.gif" class="shadow" rounded="circle" style="width:auto !important;height:4vh;" v-if="row.item.Break == true"></b-img>
                   </div>
                 </template>
-                <template slot="Address" slot-scope="row">
+                <template v-slot:cell(Address)="row"slot="Address">
                   <h6>{{row.item.Address}}</h6>
                 </template>
-                <template slot="Label" slot-scope="row">
+                <template v-slot:cell(Label)="row"slot="Label">
                   <b-badge pill variant="info">{{row.item.Label}}</b-badge>
                 </template>
-                <template slot="User Instructions" slot-scope="row">
+                <template v-slot:cell(userInstructions)="row">
                   <h6 v-if="row.item.visible == true">{{row.item.user}}</h6>
                   <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
                 </template>
-                <template slot="Loaded Instructions" slot-scope="row">
+                <template v-slot:cell(loadedInstructions)="row">
                     <h6 v-if="row.item.visible == true">{{row.item.loaded}} <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge></h6>
                     <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt; <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge></h6>
                 </template> 
@@ -2098,7 +2112,7 @@
 
                         <!-- Register popover -->
                         <b-popover show :target="popoverId(item2.name + 'Int')" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name + 'Int')">
-                          <template slot="title">
+                          <template v-slot:title>
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
                             </b-button>
@@ -2137,7 +2151,7 @@
 
                           <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                             <div class="col-lg-6 col-sm-6 popoverFooter">
-                              <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
+                              <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
                             </div>
                             <div class="col-lg-6 col-sm-6 popoverFooter">
                               <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -2155,7 +2169,7 @@
 
                           <!-- Register popover -->
                           <b-popover show :target="popoverId(item2.name + 'FP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'FP')">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2189,7 +2203,7 @@
 
                             <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
+                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
                               </div>
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2206,7 +2220,7 @@
 
                           <!-- Register popover -->
                           <b-popover show :target="popoverId(item2.name + 'DFP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'DFP')">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2240,7 +2254,7 @@
 
                             <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
+                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
                               </div>
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2266,7 +2280,7 @@
 
                         <!-- Register popover -->
   	                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name)">
-                          <template slot="title">
+                          <template v-slot:title>
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
                             </b-button>
@@ -2305,7 +2319,7 @@
 
   												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  					            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
+  					            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
   					            		</div>
   					            		<div class="col-lg-6 col-sm-6 popoverFooter">
   					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -2324,7 +2338,7 @@
 
                           <!-- Register popover -->
   		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2358,7 +2372,7 @@
 
   													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
+  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
   						            		</div>
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2375,7 +2389,7 @@
 
                           <!-- Register popover -->
   		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2409,7 +2423,7 @@
 
   													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value"></b-form-input>
+  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
   						            		</div>
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2430,12 +2444,12 @@
 
                 <!-- Data memory -->
                 <b-tab title="Data" active>
-                  <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table" @row-clicked="select_space_type" id="data_memory_table">
-                      <template slot="Address" slot-scope="row">
+                  <div class="col-lg-12 col-sm-12">
+                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table" sticky-header="75vh">
+                      <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
-                      <template slot="Binary" slot-scope="row">
+                      <template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 13px">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
@@ -2443,7 +2457,7 @@
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[0].Tag}}</b-badge>
                         </h6>
                       </template>
-                      <template slot="Value" slot-scope="row">
+                      <template v-slot:cell(value)="row">
                         <h6 style="font-size: 13px">{{row.item.Value}} <span class="fas fa-eye" v-if="row.item.type == 'space' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)" style="float: right; margin-right: 2%;"></span></h6> 
                       </template>
                     </b-table>
@@ -2459,12 +2473,12 @@
 
                 <!-- Text memory -->
                 <b-tab title="Text">
-                  <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table" :filter-function=filter filter=" ">
-                      <template slot="Address" slot-scope="row">
+                  <div class="col-lg-12 col-sm-12">
+                    <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table  " :filter-function=filter filter=" " sticky-header="75vh">
+                      <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
-                      <template slot="Binary" slot-scope="row">
+                      <template template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 13px">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
@@ -2472,7 +2486,7 @@
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[0].Tag}}</b-badge>
                         </h6>
                       </template>
-                      <template slot="Value" slot-scope="row">
+                      <template v-slot:cell(value)="row">
                         <h6 style="font-size: 13px">{{row.item.Value}}</h6>
                       </template>
                     </b-table>
@@ -2481,13 +2495,13 @@
 
                 <!-- Stack memory -->
                 <b-tab title="Stack">
-                  <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table" @row-clicked="select_stack_type">
-                      <template slot="Address" slot-scope="row">
+                  <div class="col-lg-12 col-sm-12">
+                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table " @row-clicked="select_stack_type" sticky-header="75vh">
+                      <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
-                      <template slot="Binary" slot-scope="row">
+                      <template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
@@ -2501,7 +2515,7 @@
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[0].Tag}}</b-badge>
                         </h6>
                       </template>
-                      <template slot="Value" slot-scope="row">
+                      <template v-slot:cell(Value)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</h6>
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">{{row.item.Value}}</h6>
                       </template>
@@ -2522,7 +2536,7 @@
             <!-- Stats--->
             <div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == 'stats'">
               <div class="col-lg-12 col-sm-12">
-                <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table"></b-table>
+                <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
                 <br>
                 <h6>Graphic</h6>
                 <b-progress class="mb-3">
