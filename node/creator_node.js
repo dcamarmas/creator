@@ -29,11 +29,11 @@ function assembly_compile ( code )
 }
 
 
-function execute_program ()
+function execute_program ( limit_n_instructions )
 {
     var ret = {} ;
 
-    ret = executeProgramOneShot() ;
+    ret = executeProgramOneShot(limit_n_instructions) ;
     if (ret.error === true) 
     {
         ret.status = "ko" ;
@@ -60,9 +60,11 @@ function print_state ( )
             elto_value  = architecture.components[i].elements[j].value ;
             elto_dvalue = architecture.components[i].elements[j].default_value ;
 
-            //if (elto_value != elto_dvalue)
+            if (elto_value != elto_dvalue)
             {
-                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_value + "; ";
+                ret.msg = ret.msg + 
+			  architecture.components[i].elements[j].name + ":" + 
+			  "0x" + elto_value.toString(16) + "; ";
             }
         }
     }
@@ -76,7 +78,7 @@ function print_state ( )
 //
 
 module.exports.load_architecture = load_architecture ;
-module.exports.assembly_compile = assembly_compile ;
-module.exports.execute_program = execute_program ;
-module.exports.print_state = print_state ;
+module.exports.assembly_compile  = assembly_compile ;
+module.exports.execute_program   = execute_program ;
+module.exports.print_state       = print_state ;
 

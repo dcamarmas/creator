@@ -1208,12 +1208,12 @@ try
 
         for (var i = 0; i < architecture_hash.length; i++){
           if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: this.formArchitecture.properties};
+            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bi_intToBigInt(this.formArchitecture.defValue,10), default_value:bi_intToBigInt(this.formArchitecture.defValue,10), properties: this.formArchitecture.properties};
             architecture.components[i].elements.push(newElement);
             break;
           }
           if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "control")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, default_value:bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value, properties: ["read", "write"]};
+            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bi_intToBigInt(this.formArchitecture.defValue,10), default_value:bi_intToBigInt(this.formArchitecture.defValue,10), properties: ["read", "write"]};
             architecture.components[i].elements.push(newElement);
             break;
           }
@@ -1324,7 +1324,7 @@ try
             if(comp == architecture.components[i].elements[j].name){
               architecture.components[i].elements[j].name = this.formArchitecture.name;
               if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
-                architecture.components[i].elements[j].default_value = bigInt(parseInt(this.formArchitecture.defValue) >>> 0, 10).value;
+                architecture.components[i].elements[j].default_value = bi_intToBigInt(this.formArchitecture.defValue,10) ;
               }
               else{
                 if(architecture.components[i].double_precision == false){
@@ -3314,13 +3314,13 @@ try
               if(value[1].length * 4 > architecture.components[comp].elements[i].nbits){
                 value[1] = value[1].substring(((value[1].length * 4) - architecture.components[comp].elements[i].nbits)/4, value[1].length)
               }
-              architecture.components[comp].elements[i].value = bigInt(value[1], 16).value;
+              architecture.components[comp].elements[i].value = bi_intToBigInt(value[1], 16);
             }
             else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-              architecture.components[comp].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10).value;
+              architecture.components[comp].elements[i].value = bi_intToBigInt(this.newValue,10);
             }
             else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-              architecture.components[comp].elements[i].value = bigInt(parseInt(this.newValue) >>> 0, 10).value;
+              architecture.components[comp].elements[i].value = bi_intToBigInt(this.newValue,10);
             }
           }
           else if(type =="floating point"){

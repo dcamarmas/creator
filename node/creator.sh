@@ -17,10 +17,6 @@
                      error:   'bgRed'
                    }) ;
 
-   if (typeof bigInt === "undefined") {
-        bigInt = BigInt ;
-   }
-
    function show_success ( msg ) {
        console.log(msg.success) ;
    }
@@ -90,7 +86,8 @@
        else show_success("[Compiler] Code compiled successfully.") ;
 
        // (4) ejecutar
-       result = creator.execute_program() ;
+       var limit_n_instructions = 10000000 ;
+       result = creator.execute_program(limit_n_instructions) ;
        if (result.status !== "ok") 
        {
            show_error("[Executor] Error found.\n" +
