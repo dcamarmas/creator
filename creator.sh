@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 
-   var fs      = require('fs') ;
-   var colors  = require('colors') ;
-   var creator = require('./min.creator_node.js') ;
-
-
    //
-   // Auxiliar functions
+   // Import
    //
 
+   // filesystem
+   var fs = require('fs') ;
+
+   // filesystem
+   var creator = require('./js/min.creator_node.js') ;
+
+   // color
+   var colors = require('colors') ;
    colors.setTheme({
                      info:    'bgGreen',
                      help:    'green',
@@ -25,21 +28,30 @@
        console.log(msg.error) ;
    }
 
-   function show_welcome ( ) 
-   {
-       console.log("") ;
-       console.log("  CREATOR") ;
-       console.log(" ---------") ;
-       console.log("") ;
-       console.log("  version: 1.5.2") ;
-       console.log("  website: https://creatorsim.github.io/") ;
-       console.log("") ;
-   }
+   // arguments
+   console.log("\n" +
+               "CREATOR\n".help +
+               "-------\n".help +
+               "version: 1.5.2\n".help +
+               "website: https://creatorsim.github.io/\n".help) ;
 
-   function show_usage ( ) 
-   {
-       console.log("  Usage: ./creator.sh <architecture> <assembly file>".help) ;
-       console.log("") ;
+   var argv = require('yargs')
+              .usage('Usage: $0 --arc <file name> --asm <file name> [--maxins <limit # instructions>]')
+              .example('./creator.sh --arc architecture/MIPS-32-like.json --asm examples/MIPS/example11.txt --maxins 10000')
+              .describe('--arc', 'Architecture')
+              .nargs('--arc', 1)
+              .describe('--asm', 'Assembly file')
+              .nargs('--asm', 1)
+              .describe('--maxins', 'Maximum number of instructions to be executed')
+              .nargs('--maxins', 1)
+              .help('h')
+              .alias('h', 'help')
+              .demandOption(['arc', 'asm'])
+              .argv ;
+
+   var limit_n_instructions = 10000000 ;
+   if (typeof argv.maxins !== "undefined") {
+       limit_n_instructions = parseInt(argv.maxins) ;
    }
 
 
@@ -47,41 +59,11 @@
    // Main
    //
 
-   // (1) Welcome
-
-   show_welcome() ; 
-   if (process.argv.length < 4)
-   {
-       show_usage() ; 
-       return 0 ;
-   }
-
-   // (2) Get work done
-
-   var architec_name = process.argv[2] ;
+   var architec_name = argv.arc ;
    var architecture = null ;
-   var assembly_name = process.argv[3] ;
+   var assembly_name = argv.asm ;
    var assembly = null ;
    var result = null ;
-
-   var options = [] ;
-   var options_string = process.argv[4] ;
-   if (typeof options_string != "undefined") {
-       options = options_string.split(",") ;
-   }
-
-   var option = '' ;
-   var limit_n_instructions = 10000000 ;
-   for (var i=0; i<options.length; i++) 
-   {
-        option = options[i].split("=") ;
-        if (option.length != 2) {
-            continue ;
-        }
-        if (option[0].toUpperCase() == "MAXINS") {
-            limit_n_instructions = parseInt(option[1]) ;
-        }
-   }
 
    try
    {
@@ -93,7 +75,7 @@
            show_error("[Loader] " + result + "\n") ;
            return -1 ;
        }
-       else show_success("[Loader] Architecture loaded successfully.") ;
+       else show_success("[Loader] Architecture '" + argv.arc + "' loaded successfully.") ;
 
        // (b) compile
        assembly = fs.readFileSync(assembly_name, 'utf8') ;
@@ -104,7 +86,7 @@
                       "[Compiler] " + result.msg + "\n") ;
            return -1 ;
        }
-       else show_success("[Compiler] Code compiled successfully.") ;
+       else show_success("[Compiler] Code '" + argv.asm + "' compiled successfully.") ;
 
        // (c) ejecutar
        result = creator.execute_program(limit_n_instructions) ;
@@ -118,7 +100,7 @@
 
        // (d) print finalmachine state
        result = creator.print_state() ;
-       console.log("[Final state] " + result.msg + "\n") ;
+       console.log("[Final state] ".success + result.msg + "\n") ;
    }
    catch (e)
    {
