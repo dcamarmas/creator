@@ -18,6 +18,7 @@ echo "  Packing:"
 echo "  * min.creator_web.js..."
 cat js/creator_compiler.js \
     js/creator_executor.js \
+    js/creator_bigint.js \
     js/creator_ui.js \
     js/creator_preload.js \
     js/app.js > js/creator_web.js
@@ -27,6 +28,7 @@ rm -fr js/creator_web.js
 echo "  * min.creator_node.js..."
 cat js/creator_compiler.js \
     js/creator_executor.js \
+    js/creator_bigint.js \
     node/creator_node.js > node/min.creator_node.js
 
 
