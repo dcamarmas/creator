@@ -7189,6 +7189,7 @@ function print_state ( )
 {
     var elto_value  = null ;
     var elto_dvalue = null ;
+    var elto_string = null ;
 
     var ret = {} ;
     ret.msg = "" ;
@@ -7201,11 +7202,14 @@ function print_state ( )
             elto_value  = architecture.components[i].elements[j].value ;
             elto_dvalue = architecture.components[i].elements[j].default_value ;
 
-            if (elto_value != elto_dvalue)
+            if (elto_value != elto_dvalue) 
             {
-                ret.msg = ret.msg + 
-			  architecture.components[i].elements[j].name + ":" + 
-			  "0x" + elto_value.toString(16) + "; ";
+                elto_string = elto_value.toString() ;
+                if (architecture.components[i].type == "integer") {
+                    elto_string = "0x" + elto_value.toString(16) ;
+                }
+
+                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_string + "; ";
             }
         }
     }
