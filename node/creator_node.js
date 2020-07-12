@@ -44,20 +44,29 @@ function execute_program ()
     return ret ;
 }
 
-function print_state ()
+function print_state ( )
 {
-    var ret = {} ;
+    var elto_value  = null ;
+    var elto_dvalue = null ;
 
+    var ret = {} ;
     ret.msg = "" ;
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j <  architecture.components[i].elements.length; j++) {
-            if(architecture.components[i].elements[j].default_value != architecture.components[i].elements[j].value){
-                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + architecture.components[i].elements[j].value.toString() + "; ";
+    ret.status = "ok" ;
+
+    for (var i=0; i<architecture.components.length; i++) 
+    {
+        for (var j=0; j<architecture.components[i].elements.length; j++) 
+        {
+            elto_value  = architecture.components[i].elements[j].value ;
+            elto_dvalue = architecture.components[i].elements[j].default_value ;
+
+            //if (elto_value != elto_dvalue)
+            {
+                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_value + "; ";
             }
         }
     }
 
-    ret.status = "ok" ;
     return ret ;
 }
 
