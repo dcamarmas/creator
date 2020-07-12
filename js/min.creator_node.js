@@ -6550,11 +6550,12 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
             var index;
 
             if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-              show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-              instructions[executionIndex]._rowVariant = 'danger';
+              //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
+              //instructions[executionIndex]._rowVariant = 'danger';
               executionIndex = -1;
               this.keyboard = "";
-              return;
+              //return;
+              return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
             }
 
             if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
@@ -6599,13 +6600,14 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-	      			show_notification('The data has been uploaded', 'info') ;
+	      // show_notification('The data has been uploaded', 'info') ; // TODO
 
-              if(runExecution == false){
-                this.executeProgram();
+              if (runExecution == false) {
+                  app.executeProgram();
               }
 
-              return;
+              //return;
+              return packExecute(true, 'The data has been uploaded', 'danger', null);
             }
 
             if(consoleMutex == false){
@@ -6620,24 +6622,28 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		show_notification('The data has been uploaded', 'info') ;
+              if (window.document)
+		  show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){
-                  instructions[i]._rowVariant = '';
+                     //instructions[i]._rowVariant = '';
+                     draw.space.push(i) ;
                 }
 
                 executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
+                //show_notification('The execution of the program has finished', 'success') ;
+                //return;
+                return packExecute(true, 'The execution of the program has finished', 'success', null);
               }
-              else if(runExecution == false){
-                this.executeProgram();
+              else if (runExecution == false){
+                       app.executeProgram();
               }
               break;
             }
 
             break;
+
           case "read_float":
             mutexRead = true;
             app._data.enter = false;
@@ -6648,10 +6654,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+              if (window.document)
+		  show_notification('The data has been uploaded', 'info') ;
 
-              if(runExecution == false){
-                this.executeProgram();
+              if (runExecution == false){
+                  app.executeProgram();
               }
 
               return;
@@ -6669,25 +6676,29 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+              if (window.document)
+		  show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
-                  instructions[i]._rowVariant = '';
+                     // instructions[i]._rowVariant = '';
+                     draw.space.push(i) ;
                 }
 
                 executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
+                //show_notification('The execution of the program has finished', 'success') ;
+                //return;
+                return packExecute(true, 'The execution of the program has finished', 'success', null);
               }
-              else if(runExecution == false){
-                this.executeProgram();
+              else if (runExecution == false){
+                       app.executeProgram();
               }
 
               break;
             }
 
             break;
+
           case "read_double":
             mutexRead = true;
             app._data.enter = false;
@@ -6698,10 +6709,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+              if (window.document)
+		  show_notification('The data has been uploaded', 'info') ;
 
-              if(runExecution == false){
-                this.executeProgram();
+              if (runExecution == false){
+                  app.executeProgram();
               }
 
               return;
@@ -6719,25 +6731,29 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+              if (window.document)
+		  show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
-                  instructions[i]._rowVariant = '';
+                     //instructions[i]._rowVariant = '';
+                     draw.space.push(i) ;
                 }
 
                 executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
+                //show_notification('The execution of the program has finished', 'success') ;
+                //return;
+                return packExecute(true, 'The execution of the program has finished', 'success', null);
               }
-              else if(runExecution == false){
-                this.executeProgram();
+              else if (runExecution == false){
+                       app.executeProgram();
               }
 
               break;
             }
 
             break;
+
           case "read_string":
             mutexRead = true;
             app._data.enter = false;
@@ -6748,10 +6764,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+              if (window.document)
+		  show_notification('The data has been uploaded', 'info') ;
 
-              if(runExecution == false){
-                this.executeProgram();
+              if (runExecution == false){
+                  app.executeProgram();
               }
 
               return;
@@ -6775,11 +6792,12 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               var index;
 
               if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-                show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-                instructions[executionIndex-1]._rowVariant = 'danger';
+                //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
+                //instructions[executionIndex-1]._rowVariant = 'danger';
                 executionIndex = -1;
                 this.keyboard = "";
-                return;
+                //return;
+                return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
               }
 
               if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
@@ -6852,19 +6870,22 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 mutexRead = false;
                 app._data.enter = null;
 
-		      			show_notification('The data has been uploaded', 'info') ;
+                if (window.document)
+		    show_notification('The data has been uploaded', 'info') ;
 
                 if(executionIndex >= instructions.length){
                   for (var i = 0; i < instructions.length; i++) {
-                    instructions[i]._rowVariant = '';
+                       //instructions[i]._rowVariant = '';
+                       draw.space.push(i) ;
                   }
 
                   executionIndex = -2;
-                  show_notification('The execution of the program has finished', 'success') ;
-                  return;
+                  //show_notification('The execution of the program has finished', 'success') ;
+                  //return;
+                  return packExecute(true, 'The execution of the program has finished', 'success', null);
                 }
-                else if(runExecution == false){
-                  this.executeProgram();
+                else if (runExecution == false){
+                         app.executeProgram();
                 }
 
                 return;
@@ -6895,33 +6916,38 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+                if (window.document)
+		    show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++) {
-                  instructions[i]._rowVariant = '';
+                     //instructions[i]._rowVariant = '';
+                     draw.space.push(i) ;
                 }
 
                 executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
+                //show_notification('The execution of the program has finished', 'success') ;
+                //return;
+                return packExecute(true, 'The execution of the program has finished', 'success', null);
               }
-              else if(runExecution == false){
-                this.executeProgram();
+              else if (runExecution == false){
+                       app.executeProgram();
               }
 
               break;
             }
 
             break;
+
           case "sbrk":
             var aux_addr = architecture.memory_layout[3].value;
 
             if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-		    			show_notification('Not enough memory for data segment', 'danger') ;
-              instructions[executionIndex]._rowVariant = 'danger';
+	      //show_notification('Not enough memory for data segment', 'danger') ;
+              //instructions[executionIndex]._rowVariant = 'danger';
               executionIndex = -1;
-              return;
+              //return;
+              return packExecute(true, 'Not enough memory for data segment', 'danger', null);
             }
 
             for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
@@ -6958,10 +6984,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+                if (window.document)
+		    show_notification('The data has been uploaded', 'info') ;
 
-              if(runExecution == false){
-                this.executeProgram();
+              if (runExecution == false){
+                  app.executeProgram();
               }
 
               return;
@@ -6977,21 +7004,24 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+                if (window.document)
+		    show_notification('The data has been uploaded', 'info') ;
 
               console_log(mutexRead);
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){
-                  instructions[i]._rowVariant = '';
+                     //instructions[i]._rowVariant = '';
+                     draw.space.push(i) ;
                 }
 
                 executionIndex = -2;
-                show_notification('The execution of the program has finished', 'success') ;
-                return;
+                //show_notification('The execution of the program has finished', 'success') ;
+                //return;
+                return packExecute(true, 'The execution of the program has finished', 'success', null);
               }
-              else if(runExecution == false){
-                this.executeProgram();
+              else if (runExecution == false) {
+                       app.executeProgram();
               }
 
               break;
@@ -7013,7 +7043,6 @@ function divDouble(reg, index)
   }
 }
 
-// TODO: review for command line
 /*Reset execution*/
 function reset ()
 {
