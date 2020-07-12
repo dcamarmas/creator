@@ -79,20 +79,30 @@
 
         <!-- Navbar  -->
         <header>
-          <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href=".">
-            	<h1>CREATOR <b-badge pill variant="secondary"> 1.5 </b-badge>
-            	<span style="padding-left: 4%;">{{architecture_name}}</span>
-            	<br>
-            	<strong><p style="color: #383d41; font-size: 11px;margin-top: 2%;">didaCtic and geneRic assEmbly progrAmming simulaTOR</p></strong></h1>
+          <b-navbar toggleable="sm" class="header my-0 mx-1 py-0 px-2">
+            <b-navbar-brand class="p-0 m-0" style="color:#2196F3; margin:0px;" href=".">
+                <div class="container">
+                  <div class="row">
+                  <div class="col-auto my-0 py-0 pr-1 text-uppercase">
+		       Creator <b-badge pill variant="secondary">1.5.2</b-badge>
+	          </div>
+                  <div class="col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
+                  <div class="w-100"></div>
+                  <div class="col-auto my-0 py-0 font-weight-bold mx-1" style="color:#383d41; font-size:11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</div>
+                  </div>
+                </div>
             </b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>
 
             <b-collapse is-nav id="nav_collapse">
               <b-navbar-nav class="ml-auto">
-                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
-                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
+                <b-nav-item class="mb-0 pb-0" target="_blank" href='https://www.arcos.inf.uc3m.es/'><img 
+                            alt="ARCOS"
+                            src="./images/arcos.svg" style="height:7vh"></b-nav-item>
+                <b-nav-item class="mb-0 pb-0" target="_blank" href='https://www.inf.uc3m.es/'><img 
+                            alt="Computer Science and Engineering Departament" 
+                            src="./images/dptoinf.png" style="height:7vh"></b-nav-item>
               </b-navbar-nav>
             </b-collapse>
           </b-navbar>
@@ -250,7 +260,7 @@
                     <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                       <b-row no-gutters>
                         <b-col md="3" @click="load_arch_select(item)">
-                          <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
+                          <b-card-img :src=item.img :alt=item.alt thumbnail fluid class="rounded-0"></b-card-img>
                         </b-col>
 
                         <b-col md="7" @click="load_arch_select(item)">
@@ -1845,7 +1855,7 @@
         	<!-- Navbar -->
           <div class="contenedor menu row mb-3">
             <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_sim"  @click="change_UI_mode('architecture')"><span class="fas fa-sitemap"></span> Architecture</b-button>
@@ -1861,7 +1871,7 @@
               <div class="col-lg-12 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <!-- Execution actions -->
-                  <div class="col-lg-12 col-sm-12">
+                  <div class="col-lg-12 col-sm-12 py-0 px-1">
                     <div class="col-lg-12 col-sm-12 buttons row">
                       <div class="col-lg-4 col-sm-4 buttons">
                         <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
@@ -1896,7 +1906,7 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12">
+            <div class="col-lg-2 col-sm-12 py-0 px-1">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-6 col-sm-6 buttons">
                   <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.examples2><span class="fas fa-file-alt"></span> Examples</b-button>
@@ -1908,7 +1918,7 @@
             </div>
 
             <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_sim" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
