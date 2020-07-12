@@ -76,7 +76,7 @@ function executeInstruction ( )
               if(instructions[i].Label == "main"){
                 //instructions[executionIndex]._rowVariant = 'success';
                 draw.success.push(executionIndex) ;
-                architecture.components[0].elements[0].value = bigInt(parseInt(instructions[i].Address, 16)).value;
+                architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 16);
                 executionInit = 0;
                 break;
               }
@@ -195,7 +195,7 @@ function executeInstruction ( )
           }
 
           /*Increase PC*/
-          architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bigInt((nwords * 4)).value;
+          architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * 4,10) ;
 
           console_log(auxDef);
 
@@ -217,7 +217,7 @@ function executeInstruction ( )
               for (var i = 1; i < signatureRawParts.length; i++){
                 /*if(signatureParts[i] == "inm"){
                   var re = new RegExp(signatureRawParts[i],"g");
-                  auxDef = auxDef.replace(re, "bigInt(" + instructionExecParts[i] + ").value");
+                  auxDef = auxDef.replace(re, "bi_intToBigInt(" + instructionExecParts[i] + ",10)");
                 }
                 else{
                   var re = new RegExp(signatureRawParts[i],"g");
@@ -945,11 +945,12 @@ function executeInstruction ( )
         return packExecute(false, null, null, draw) ;
 }
 
-function executeProgramOneShot ( )
+function executeProgramOneShot ( limit_n_instructions )
 {
     var ret = null;
 
-    for (var i=0; i<10000000; i++)
+    // execute program
+    for (var i=0; i<limit_n_instructions; i++)
     {
        ret = executeInstruction();
 
@@ -961,8 +962,7 @@ function executeProgramOneShot ( )
        }
     }
 
-  //return packExecute(true, '"ERROR:" Infinite loop', null, null) ; // TODO: leaft this
-    return packExecute(false, '', null, null) ;
+    return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
 /*Read register value*/
@@ -1046,7 +1046,7 @@ function writeRegister ( value, indexComp, indexElem )
 	        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', draw);
             }
 
-            architecture.components[indexComp].elements[indexElem].value = bigInt(parseInt(value) >>> 0).value;
+            architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
 
             var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
             var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -1156,7 +1156,7 @@ function readMemory ( addr, type )
 		for (let k = 0; k<2; k++)
 			for (var z = 0; z < memory[index][i].Binary.length; z++)
 				  memValue = memory[index][k].Binary[z].Bin + memValue;
-                //return bigInt(memValue, 16).value;
+                //return bi_intToBigInt(memValue, 16) ;
 		return parseInt(memValue, 16);
               }
             }
@@ -1189,12 +1189,12 @@ function readMemory ( addr, type )
                 for (var z = 0; z < memory[index][i].Binary.length; z++){
                   memValue = memory[index][i].Binary[z].Bin + memValue;
                 }
-                //return bigInt(memValue, 16).value;
+                //return bi_intToBigInt(memValue, 16) ;
                 return parseInt(memValue,16);
               }
             }
           }
-          //return bigInt(0).value;
+          //return bi_intToBigInt(0,10) ;
           return 0;
         }
 
@@ -1224,20 +1224,20 @@ function readMemory ( addr, type )
                   for (var z = 0; z < memory[index][i].Binary.length -2; z++){
                     memValue = memory[index][i].Binary[z].Bin + memValue;
                   }
-                  //return bigInt(memValue, 16).value;
+                  //return bi_intToBigInt(memValue, 16) ;
                   return parseInt(memValue,16);
                 }
                 else{
                   for (var z = 2; z < memory[index][i].Binary.length; z++){
                     memValue = memory[index][i].Binary[z].Bin + memValue;
                   }
-                  //return bigInt(memValue, 16).value;
+                  //return bi_intToBigInt(memValue, 16) ;
                   return parseInt(memValue,16);
                 }
               }
             }
           }
-          //return bigInt(0).value;
+          //return bi_intToBigInt(0,10) ;
           return 0;
         }
 
@@ -1264,12 +1264,12 @@ function readMemory ( addr, type )
               var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                 memValue = memory[index][i].Binary[j].Bin + memValue;
-                //return bigInt(memValue, 16).value;
+                //return bi_intToBigInt(memValue, 16) ;
                 return parseInt(memValue,16);
               }
             }
           }
-          //return bigInt(0).value;
+          //return bi_intToBigInt(0,10) ;
           return 0;
         }
 }
@@ -1794,7 +1794,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+		show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){

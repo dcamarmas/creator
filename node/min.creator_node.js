@@ -189,24 +189,25 @@ function bigInt_deserialize(object)
 {
     var auxObject = object;
 
-    for (var i = 0; i < auxObject.components.length; i++)
+    for (var i=0; i<auxObject.components.length; i++)
     {
-      if (auxObject.components[i].type != "floating point")
-      {
-        for (var j = 0; j < auxObject.components[i].elements.length; j++)
-	{
-             var aux = auxObject.components[i].elements[j].value;
-             var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-             auxObject.components[i].elements[j].value = auxBigInt;
+        var aux = null ;
+        var auxBigInt = null ;
 
-             if (auxObject.components[i].double_precision != true)
-	     {
-               var aux = auxObject.components[i].elements[j].default_value;
-               var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-               auxObject.components[i].elements[j].default_value = auxBigInt;
-             }
+        if (auxObject.components[i].type != "floating point")
+        {
+            for (var j = 0; j < auxObject.components[i].elements.length; j++)
+	    {
+                 aux = auxObject.components[i].elements[j].value;
+                 auxObject.components[i].elements[j].value = bi_intToBigInt(aux,10) ;
+
+                 if (auxObject.components[i].double_precision != true)
+	         {
+                     aux = auxObject.components[i].elements[j].default_value;
+                     auxObject.components[i].elements[j].default_value = bi_intToBigInt(aux,10) ;
+                 }
+            }
         }
-      }
     }
 
     return auxObject;
@@ -217,24 +218,22 @@ function bigInt_serialize(object)
 {
     var auxObject = jQuery.extend(true, {}, object);
 
-    for (var i = 0; i < architecture.components.length; i++)
+    for (var i=0; i<architecture.components.length; i++)
     {
-      if (architecture.components[i].type != "floating point")
-	 {
-           for (var j = 0; j < architecture.components[i].elements.length; j++)
-	   {
-                var aux = architecture.components[i].elements[j].value;
-                var auxString = aux.toString();
-                auxObject.components[i].elements[j].value = auxString;
+        if (architecture.components[i].type != "floating point")
+  	   {
+               for (var j = 0; j < architecture.components[i].elements.length; j++)
+	       {
+                    var aux = architecture.components[i].elements[j].value;
+                    auxObject.components[i].elements[j].value = aux.toString();
 
-                if (architecture.components[i].double_precision != true)
-		{
-                    var aux = architecture.components[i].elements[j].default_value;
-                    var auxString = aux.toString();
-                    auxObject.components[i].elements[j].default_value = auxString;
-                }
+                    if (architecture.components[i].double_precision != true)
+		    {
+                        var aux = architecture.components[i].elements[j].default_value;
+                        auxObject.components[i].elements[j].default_value = aux.toString();
+                    }
+               }
            }
-         }
     }
 
     return auxObject;
@@ -514,10 +513,10 @@ function assembly_compiler()
             data_address = parseInt(architecture.memory_layout[2].value);
             stack_address = parseInt(architecture.memory_layout[4].value);
 
-            architecture.components[1].elements[29].value = bigInt(stack_address).value;
-            architecture.components[0].elements[0].value = bigInt(address).value;
-            architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
-            architecture.components[0].elements[0].default_value = bigInt(address).value;
+            architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
+            architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
+            architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
+            architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;
 
             /*Reset stats*/
             totalStats = 0;
@@ -4903,7 +4902,7 @@ function executeInstruction ( )
               if(instructions[i].Label == "main"){
                 //instructions[executionIndex]._rowVariant = 'success';
                 draw.success.push(executionIndex) ;
-                architecture.components[0].elements[0].value = bigInt(parseInt(instructions[i].Address, 16)).value;
+                architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 16);
                 executionInit = 0;
                 break;
               }
@@ -5022,7 +5021,7 @@ function executeInstruction ( )
           }
 
           /*Increase PC*/
-          architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bigInt((nwords * 4)).value;
+          architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * 4,10) ;
 
           console_log(auxDef);
 
@@ -5044,7 +5043,7 @@ function executeInstruction ( )
               for (var i = 1; i < signatureRawParts.length; i++){
                 /*if(signatureParts[i] == "inm"){
                   var re = new RegExp(signatureRawParts[i],"g");
-                  auxDef = auxDef.replace(re, "bigInt(" + instructionExecParts[i] + ").value");
+                  auxDef = auxDef.replace(re, "bi_intToBigInt(" + instructionExecParts[i] + ",10)");
                 }
                 else{
                   var re = new RegExp(signatureRawParts[i],"g");
@@ -5772,11 +5771,12 @@ function executeInstruction ( )
         return packExecute(false, null, null, draw) ;
 }
 
-function executeProgramOneShot ( )
+function executeProgramOneShot ( limit_n_instructions )
 {
     var ret = null;
 
-    for (var i=0; i<10000000; i++)
+    // execute program
+    for (var i=0; i<limit_n_instructions; i++)
     {
        ret = executeInstruction();
 
@@ -5788,8 +5788,7 @@ function executeProgramOneShot ( )
        }
     }
 
-  //return packExecute(true, '"ERROR:" Infinite loop', null, null) ; // TODO: leaft this
-    return packExecute(false, '', null, null) ;
+    return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
 /*Read register value*/
@@ -5873,7 +5872,7 @@ function writeRegister ( value, indexComp, indexElem )
 	        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', draw);
             }
 
-            architecture.components[indexComp].elements[indexElem].value = bigInt(parseInt(value) >>> 0).value;
+            architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
 
             var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
             var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -5983,7 +5982,7 @@ function readMemory ( addr, type )
 		for (let k = 0; k<2; k++)
 			for (var z = 0; z < memory[index][i].Binary.length; z++)
 				  memValue = memory[index][k].Binary[z].Bin + memValue;
-                //return bigInt(memValue, 16).value;
+                //return bi_intToBigInt(memValue, 16) ;
 		return parseInt(memValue, 16);
               }
             }
@@ -6016,12 +6015,12 @@ function readMemory ( addr, type )
                 for (var z = 0; z < memory[index][i].Binary.length; z++){
                   memValue = memory[index][i].Binary[z].Bin + memValue;
                 }
-                //return bigInt(memValue, 16).value;
+                //return bi_intToBigInt(memValue, 16) ;
                 return parseInt(memValue,16);
               }
             }
           }
-          //return bigInt(0).value;
+          //return bi_intToBigInt(0,10) ;
           return 0;
         }
 
@@ -6051,20 +6050,20 @@ function readMemory ( addr, type )
                   for (var z = 0; z < memory[index][i].Binary.length -2; z++){
                     memValue = memory[index][i].Binary[z].Bin + memValue;
                   }
-                  //return bigInt(memValue, 16).value;
+                  //return bi_intToBigInt(memValue, 16) ;
                   return parseInt(memValue,16);
                 }
                 else{
                   for (var z = 2; z < memory[index][i].Binary.length; z++){
                     memValue = memory[index][i].Binary[z].Bin + memValue;
                   }
-                  //return bigInt(memValue, 16).value;
+                  //return bi_intToBigInt(memValue, 16) ;
                   return parseInt(memValue,16);
                 }
               }
             }
           }
-          //return bigInt(0).value;
+          //return bi_intToBigInt(0,10) ;
           return 0;
         }
 
@@ -6091,12 +6090,12 @@ function readMemory ( addr, type )
               var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                 memValue = memory[index][i].Binary[j].Bin + memValue;
-                //return bigInt(memValue, 16).value;
+                //return bi_intToBigInt(memValue, 16) ;
                 return parseInt(memValue,16);
               }
             }
           }
-          //return bigInt(0).value;
+          //return bi_intToBigInt(0,10) ;
           return 0;
         }
 }
@@ -6621,7 +6620,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               mutexRead = false;
               app._data.enter = null;
 
-		    			show_notification('The data has been uploaded', 'info') ;
+		show_notification('The data has been uploaded', 'info') ;
 
               if(executionIndex >= instructions.length){
                 for (var i = 0; i < instructions.length; i++){
@@ -7095,6 +7094,38 @@ function reset ()
           return true ;
 }
 
+/*
+ *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+  function bi_intToBigInt ( int_value, int_base )
+  {
+       var auxBigInt = null ;
+
+       if (typeof bigInt !== "undefined")
+            auxBigInt = bigInt(parseInt(int_value) >>> 0, int_base).value ;
+       else auxBigInt = BigInt(parseInt(int_value) >>> 0, int_base) ;
+
+       return auxBigInt ;
+  }
+
 
 function load_architecture ( arch_str )
 {
@@ -7126,11 +7157,11 @@ function assembly_compile ( code )
 }
 
 
-function execute_program ()
+function execute_program ( limit_n_instructions )
 {
     var ret = {} ;
 
-    ret = executeProgramOneShot() ;
+    ret = executeProgramOneShot(limit_n_instructions) ;
     if (ret.error === true) 
     {
         ret.status = "ko" ;
@@ -7145,6 +7176,7 @@ function print_state ( )
 {
     var elto_value  = null ;
     var elto_dvalue = null ;
+    var elto_string = null ;
 
     var ret = {} ;
     ret.msg = "" ;
@@ -7157,9 +7189,14 @@ function print_state ( )
             elto_value  = architecture.components[i].elements[j].value ;
             elto_dvalue = architecture.components[i].elements[j].default_value ;
 
-            //if (elto_value != elto_dvalue)
+            if (elto_value != elto_dvalue) 
             {
-                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_value + "; ";
+                elto_string = "0x" + elto_value.toString(16) ;
+                if (architecture.components[i].type == "floating point") {
+                    elto_string = elto_value.toString() ;
+                }
+
+                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_string + "; ";
             }
         }
     }
@@ -7173,7 +7210,7 @@ function print_state ( )
 //
 
 module.exports.load_architecture = load_architecture ;
-module.exports.assembly_compile = assembly_compile ;
-module.exports.execute_program = execute_program ;
-module.exports.print_state = print_state ;
+module.exports.assembly_compile  = assembly_compile ;
+module.exports.execute_program   = execute_program ;
+module.exports.print_state       = print_state ;
 

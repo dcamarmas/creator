@@ -17,10 +17,6 @@
                      error:   'bgRed'
                    }) ;
 
-   if (typeof bigInt === "undefined") {
-        bigInt = BigInt ;
-   }
-
    function show_success ( msg ) {
        console.log(msg.success) ;
    }
@@ -62,24 +58,45 @@
 
    // (2) Get work done
 
+   var architec_name = process.argv[2] ;
+   var architecture = null ;
+   var assembly_name = process.argv[3] ;
+   var assembly = null ;
    var result = null ;
+
+   var options = [] ;
+   var options_string = process.argv[4] ;
+   if (typeof options_string != "undefined") {
+       options = options_string.split(",") ;
+   }
+
+   var option = '' ;
+   var limit_n_instructions = 10000000 ;
+   for (var i=0; i<options.length; i++) 
+   {
+        option = options[i].split("=") ;
+        if (option.length != 2) {
+            continue ;
+        }
+        if (option[0].toUpperCase() == "MAXINS") {
+            limit_n_instructions = parseInt(option[1]) ;
+        }
+   }
 
    try
    {
-       // (1) load data
-       var architecture = fs.readFileSync(process.argv[2], 'utf8') ;
-       var assembly     = fs.readFileSync(process.argv[3], 'utf8') ;
-
-       // (2) load architecture
-       result  = creator.load_architecture(architecture) ;
+       // (a) load architecture
+       architecture = fs.readFileSync(architec_name, 'utf8') ;
+       result = creator.load_architecture(architecture) ;
        if (result.status !== "ok") 
        {
            show_error("[Loader] " + result + "\n") ;
            return -1 ;
        }
-       else show_success("[Loader] Files loaded successfully.") ;
+       else show_success("[Loader] Architecture loaded successfully.") ;
 
-       // (3) compile
+       // (b) compile
+       assembly = fs.readFileSync(assembly_name, 'utf8') ;
        result = creator.assembly_compile(assembly) ;
        if (result.status !== "ok") 
        {
@@ -89,8 +106,8 @@
        }
        else show_success("[Compiler] Code compiled successfully.") ;
 
-       // (4) ejecutar
-       result = creator.execute_program() ;
+       // (c) ejecutar
+       result = creator.execute_program(limit_n_instructions) ;
        if (result.status !== "ok") 
        {
            show_error("[Executor] Error found.\n" +
@@ -99,7 +116,7 @@
        }
        else show_success("[Executor] Executed successfully.") ;
 
-       // (5) print finalmachine state
+       // (d) print finalmachine state
        result = creator.print_state() ;
        console.log("[Final state] " + result.msg + "\n") ;
    }

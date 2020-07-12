@@ -189,24 +189,25 @@ function bigInt_deserialize(object)
 {
     var auxObject = object;
 
-    for (var i = 0; i < auxObject.components.length; i++)
+    for (var i=0; i<auxObject.components.length; i++)
     {
-      if (auxObject.components[i].type != "floating point")
-      {
-        for (var j = 0; j < auxObject.components[i].elements.length; j++)
-	{
-             var aux = auxObject.components[i].elements[j].value;
-             var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-             auxObject.components[i].elements[j].value = auxBigInt;
+        var aux = null ;
+        var auxBigInt = null ;
 
-             if (auxObject.components[i].double_precision != true)
-	     {
-               var aux = auxObject.components[i].elements[j].default_value;
-               var auxBigInt = bigInt(parseInt(aux) >>> 0, 10).value;
-               auxObject.components[i].elements[j].default_value = auxBigInt;
-             }
+        if (auxObject.components[i].type != "floating point")
+        {
+            for (var j = 0; j < auxObject.components[i].elements.length; j++)
+	    {
+                 aux = auxObject.components[i].elements[j].value;
+                 auxObject.components[i].elements[j].value = bi_intToBigInt(aux,10) ;
+
+                 if (auxObject.components[i].double_precision != true)
+	         {
+                     aux = auxObject.components[i].elements[j].default_value;
+                     auxObject.components[i].elements[j].default_value = bi_intToBigInt(aux,10) ;
+                 }
+            }
         }
-      }
     }
 
     return auxObject;
@@ -217,24 +218,22 @@ function bigInt_serialize(object)
 {
     var auxObject = jQuery.extend(true, {}, object);
 
-    for (var i = 0; i < architecture.components.length; i++)
+    for (var i=0; i<architecture.components.length; i++)
     {
-      if (architecture.components[i].type != "floating point")
-	 {
-           for (var j = 0; j < architecture.components[i].elements.length; j++)
-	   {
-                var aux = architecture.components[i].elements[j].value;
-                var auxString = aux.toString();
-                auxObject.components[i].elements[j].value = auxString;
+        if (architecture.components[i].type != "floating point")
+  	   {
+               for (var j = 0; j < architecture.components[i].elements.length; j++)
+	       {
+                    var aux = architecture.components[i].elements[j].value;
+                    auxObject.components[i].elements[j].value = aux.toString();
 
-                if (architecture.components[i].double_precision != true)
-		{
-                    var aux = architecture.components[i].elements[j].default_value;
-                    var auxString = aux.toString();
-                    auxObject.components[i].elements[j].default_value = auxString;
-                }
+                    if (architecture.components[i].double_precision != true)
+		    {
+                        var aux = architecture.components[i].elements[j].default_value;
+                        auxObject.components[i].elements[j].default_value = aux.toString();
+                    }
+               }
            }
-         }
     }
 
     return auxObject;
@@ -514,10 +513,10 @@ function assembly_compiler()
             data_address = parseInt(architecture.memory_layout[2].value);
             stack_address = parseInt(architecture.memory_layout[4].value);
 
-            architecture.components[1].elements[29].value = bigInt(stack_address).value;
-            architecture.components[0].elements[0].value = bigInt(address).value;
-            architecture.components[1].elements[29].default_value = bigInt(stack_address).value;
-            architecture.components[0].elements[0].default_value = bigInt(address).value;
+            architecture.components[1].elements[29].value = bi_intToBigInt(stack_address,10) ;
+            architecture.components[0].elements[0].value  = bi_intToBigInt(address,10) ;
+            architecture.components[1].elements[29].default_value = bi_intToBigInt(stack_address,10) ;
+            architecture.components[0].elements[0].default_value  = bi_intToBigInt(address,10) ;
 
             /*Reset stats*/
             totalStats = 0;
