@@ -7100,10 +7100,6 @@ function load_architecture ( arch_str )
 {
     var ret = {} ;
 
-    if (typeof bigInt === "undefined") {
-        bigInt = BigInt ;
-    }
-
     arch_obj = JSON.parse(arch_str) ;
     ret = load_arch_select(arch_obj) ;
 
@@ -7134,10 +7130,6 @@ function execute_program ()
 {
     var ret = {} ;
 
-    if (typeof bigInt === "undefined") {
-        bigInt = BigInt ;
-    }
-
     ret = executeProgramOneShot() ;
     if (ret.error === true) 
     {
@@ -7152,10 +7144,6 @@ function execute_program ()
 function print_state ()
 {
     var ret = {} ;
-
-    if (typeof bigInt === "undefined") {
-        bigInt = BigInt ;
-    }
 
     ret.msg = "" ;
     for (var i = 0; i < architecture.components.length; i++) {
