@@ -1706,6 +1706,14 @@ function writeStackLimit ( stackLimit )
 /*Syscall*/
 function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 {
+	  var draw = {
+	    space: [] ,
+	    info: [] ,
+	    success: [] ,
+	    danger: [],
+	    flash: []
+	  } ;
+
         switch(action){
           case "print_int":
             var value = architecture.components[indexComp].elements[indexElem].value;
