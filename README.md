@@ -56,7 +56,10 @@
 - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
 - [x] Bootstrap-vue upgraded up to v2.15.0
 - [X] Initial command line version of CREATOR: 
-     * ./creator.sh
+     * Help:
+       * ./creator.sh -h
+     * Example: creator compiles and executes the example2.txt:
+       * ./creator.sh --arc architecture/MIPS-32-like.json --asm examples/MIPS/example2.txt
 - [x] Creator now accepts three GET values:
      * Preload architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like
