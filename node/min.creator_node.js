@@ -5775,22 +5775,10 @@ function executeProgramOneShot ( limit_n_instructions )
 {
     var ret = null;
 
-    // reset
-    for (var i=0; i<architecture.components.length; i++)
-    {
-        for (var j=0; j<architecture.components[i].elements.length; j++)
-        {
-            architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value ;
-        }
-    }
-
     // execute program
     for (var i=0; i<limit_n_instructions; i++)
     {
-//console.log(">> PC " + architecture.components[0].elements[0].value) ;
        ret = executeInstruction();
-//console.log(">> " + executionIndex);
-//console.log(">> " + JSON.stringify(ret));
 
        if (ret.error == true){
            return ret;
@@ -5800,8 +5788,7 @@ function executeProgramOneShot ( limit_n_instructions )
        }
     }
 
-  //return packExecute(true, '"ERROR:" Infinite loop', null, null) ; // TODO: leaft this
-    return packExecute(false, '', null, null) ;
+    return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
 /*Read register value*/
