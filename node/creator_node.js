@@ -63,9 +63,9 @@ function print_state ( )
 
             if (elto_value != elto_dvalue) 
             {
-                elto_string = elto_value.toString() ;
-                if (architecture.components[i].type == "integer") {
-                    elto_string = "0x" + elto_value.toString(16) ;
+                elto_string = "0x" + elto_value.toString(16) ;
+                if (architecture.components[i].type == "floating point") {
+                    elto_string = elto_value.toString() ;
                 }
 
                 ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_string + "; ";
