@@ -17,6 +17,10 @@
                      error:   'bgRed'
                    }) ;
 
+   if (typeof bigInt === "undefined") {
+        bigInt = BigInt ;
+   }
+
    function show_success ( msg ) {
        console.log(msg.success) ;
    }
