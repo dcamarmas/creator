@@ -242,23 +242,29 @@ function bigInt_serialize(object)
 
 // Load architecture
 
-function load_arch_select(cfg)
+function load_arch_select ( cfg )
 {
-	    var ret = {};
+	    var ret = {
+                        errorcode: "",
+                        token: "",
+                        type: "",
+                        update: "",
+                        status: "ok"
+                      } ;
 
 	    var auxArchitecture = cfg;
 	    architecture = bigInt_deserialize(auxArchitecture);
 
 	    architecture_hash = [];
-	    for (var i = 0; i < architecture.components.length; i++){
-	      architecture_hash.push({name: architecture.components[i].name, index: i});
+	    for (var i = 0; i < architecture.components.length; i++) {
+	         architecture_hash.push({name: architecture.components[i].name, index: i});
 	    }
 
 	    backup_stack_address = architecture.memory_layout[4].value;
-	    backup_data_address = architecture.memory_layout[3].value;
+	    backup_data_address  = architecture.memory_layout[3].value;
 
 	    ret.token = "The selected architecture has been loaded correctly";
-	    ret.type = "success";
+	    ret.type  = "success";
 	    return ret;
 }
 
@@ -326,17 +332,19 @@ function first_token()
 function get_token()
 {
         // var assembly = textarea_assembly_editor.getValue(); // TODO: interface
+        // TODO: contar el n'umero de '\n' para dar los mensaje de error con la línea (no preguntar a textarea)
+
         var assembly = code_assembly ;
         var index = tokenIndex;
 
-        if(index >= assembly.length){
-          return null;
+        if (index >= assembly.length) {
+            return null;
         }
 
         console_log(assembly.charAt(index));
         console_log(index);
 
-        if(assembly.charAt(index) == "'"){
+        if(assembly.charAt(index) == "'") {
           index++;
           while(assembly.charAt(index) != "'" && index < assembly.length){
             console_log(assembly.charAt(index));
@@ -1155,7 +1163,6 @@ function assembly_compiler()
 
 
 }
-
 
 /*Compile data segment*/
 function data_segment_compiler()
@@ -2485,7 +2492,6 @@ function data_compiler(value, size, dataLabel, DefValue, type)
         return ret;
 }
 
-
 /*Compile text segment*/
 function code_segment_compiler()
 {
@@ -2831,18 +2837,10 @@ function code_segment_compiler()
 }
 
 
-
-
-
-
-
-
-
-
-
 /*Compile instruction*/
-function instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit, instIndex, isPseudo){
-  
+function instruction_compiler ( instruction, userInstruction, label, line, 
+				pending, pendingAddress, instInit, instIndex, isPseudo )
+{
   var ret = {
           errorcode: "",
           token: "",
@@ -4197,14 +4195,9 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
   return ret;
 }
 
-
-
-
-
-
 /*Compile pseudoinstructions*/
-function pseudoinstruction_compiler(instruction, label, line){
-
+function pseudoinstruction_compiler ( instruction, label, line )
+{
   var ret = {
           errorcode: "",
           token: "",
@@ -4525,9 +4518,9 @@ function pseudoinstruction_compiler(instruction, label, line){
 }
 
 
-
 /*Get pseudoinstruction fields*/
-function field(field, action, type){
+function field(field, action, type)
+{
   console_log(field);
   console_log(action);
   console_log(type);
@@ -4601,7 +4594,8 @@ function field(field, action, type){
 //TODO: funciones duplicadas en el app.js
 
 /*Convert hexadecimal number to floating point number*/
-function hex2float ( hexvalue ){
+function hex2float ( hexvalue )
+{
   /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
   var exponent = ((hexvalue >> 23) & 0xff) - 127;
   var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
@@ -4630,8 +4624,10 @@ function hex2float ( hexvalue ){
   new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
   return new DataView( buffer ).getFloat32(0, false);
 }
+
 /*Convert hexadecimal number to double floating point number*/
-function hex2double ( hexvalue ){
+function hex2double ( hexvalue )
+{
   var value = hexvalue.split('x');
   var value_bit = '';
 
@@ -4645,8 +4641,10 @@ function hex2double ( hexvalue ){
   new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
   return new DataView( buffer ).getFloat64(0, false);
 }
+
 /*Convert hexadecimal number to char*/
-function hex2char8 ( hexvalue ){
+function hex2char8 ( hexvalue )
+{
   var num_char = ((hexvalue.toString().length))/2;
   var exponent = 0;
   var pos = 0;
@@ -4667,8 +4665,10 @@ function hex2char8 ( hexvalue ){
 
   return  characters;
 }
+
 /*Convert floating point number to binary*/
-function float2bin (number){
+function float2bin (number)
+{
   var i, result = "";
   var dv = new DataView(new ArrayBuffer(4));
 
@@ -4683,8 +4683,10 @@ function float2bin (number){
   }
   return result;
 }
+
 /*Convert double floating point number to binary*/
-function double2bin(number) {
+function double2bin(number) 
+{
   var i, result = "";
   var dv = new DataView(new ArrayBuffer(8));
 
@@ -4699,8 +4701,10 @@ function double2bin(number) {
   }
   return result;
 }
+
 /*Convert binary number to hexadecimal number*/
-function bin2hex(s) {
+function bin2hex(s) 
+{
   var i, k, part, accum, ret = '';
   for (i = s.length-1; i >= 3; i -= 4){
 
@@ -4739,7 +4743,8 @@ function bin2hex(s) {
  * this funciton is create with the intention of reduce errors on the code in case of add new fragments field
  * @return {int} the size of the field
 */
-function getFieldLength(separated, startbit, stopbit,a) {
+function getFieldLength(separated, startbit, stopbit,a) 
+{
 	let fieldsLength;
 	if (!separated || !separated[a])
 		fieldsLength = startbit - stopbit + 1;
@@ -4754,7 +4759,8 @@ function getFieldLength(separated, startbit, stopbit,a) {
  * method in charge of return the binary instruction after add the inmediate value of the instruction
  * @return {string} the new binary update
 */
-function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a) {
+function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a) 
+{
 	if (!separated ||!separated[a])
 	    binary = binary.substring(0, binary.length - (startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (stopbit ), binary.length);
 	else {                            
@@ -4797,7 +4803,8 @@ function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, 
  *      8 -> -NaN
  *      9 -> +NaN
  */
-function checkTypeIEEE(s, e, m) {
+function checkTypeIEEE(s, e, m) 
+{
     let rd = 0;
 
     if (!m && !e)
