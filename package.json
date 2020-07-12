@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
-    "terser": "^4.8.0"
+    "terser": "^4.8.0",
+    "yargs": "^15.4.1"
   }
 }

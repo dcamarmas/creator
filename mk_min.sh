@@ -6,7 +6,9 @@ echo "  CREATOR packer"
 echo " ----------------"
 echo ""
 echo "  Requirements:"
-echo "  * apt-get install terser"
+echo "  * terser (npm install terser)"
+echo "  * colors (npm install colors)"
+echo "  * yargs  (npm install  yargs)"
 echo ""
 if [ $# -gt 0 ]; then
      set -x
@@ -29,10 +31,11 @@ echo "  * min.creator_node.js..."
 cat js/creator_compiler.js \
     js/creator_executor.js \
     js/creator_bigint.js \
-    node/creator_node.js > node/min.creator_node.js
+    js/creator_node.js > js/min.creator_node.js
 
 
 # the end
 echo ""
 echo "  CREATOR packed (if no error was shown)."
+echo ""
 

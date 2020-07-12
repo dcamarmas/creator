@@ -55,12 +55,13 @@
 ### :atom:	 1.5.x:
 - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
 - [x] Bootstrap-vue upgraded up to v2.15.0
-- [x] Creator now accepts some GET values:
+- [X] Initial command line version of CREATOR: 
+     * ./creator.sh
+- [x] Creator now accepts three GET values:
      * Preload architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like
      * Preload example from example set:
        * https://dcamarmas.github.io/creator/?example_set=snips&example=5
-- [ ] Initial support for a **command line version based on NodeJS**
 
 
 ## Badges
