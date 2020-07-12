@@ -21,12 +21,15 @@
                    }) ;
 
    // arguments
+   var creator_version = '1.5.2' ;
+   var welcome = function () { return '\n' +
+                                      'CREATOR\n'.help +
+                                      '-------\n'.help +
+                                      'version: '.help + creator_version.help + '\n'.help +
+                                      'website: https://creatorsim.github.io/\n'.help; } ;
+
    var argv = require('yargs')
-              .usage('\n' +
-                     'CREATOR\n'.help +
-                     '-------\n'.help +
-                     'version: 1.5.2\n'.help +
-                     'website: https://creatorsim.github.io/\n'.help +
+              .usage(welcome() + '\n' +
                      'Usage: $0 --arc <file name> --asm <file name> [--maxins <limit # instructions>]')
               .example('./creator.sh --arc architecture/MIPS-32-like.json ' + 
                        '             --asm examples/MIPS/example11.txt --maxins 10000')
@@ -69,6 +72,8 @@
 
    try
    {
+       show_success(welcome()) ;
+
        // (a) load architecture
        architecture = fs.readFileSync(architec_name, 'utf8') ;
        result = creator.load_architecture(architecture) ;
