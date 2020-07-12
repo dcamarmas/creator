@@ -48,17 +48,20 @@ function executeInstruction ( )
           console_log(executionIndex);
           console_log(architecture.components[0].elements[0].value);
 
-          if(instructions.length == 0){
+          if (instructions.length == 0)
+          {
            /* show_notification('No instructions in memory', 'danger');
             return;*/
             return packExecute(true, 'No instructions in memory', 'danger', null);
           }
-          if(executionIndex < -1){
+          if (executionIndex < -1)
+          {
             /*show_notification('The program has finished', app._data.type ='danger') ;
             return;*/
             return packExecute(true, 'The program has finished', 'danger', null);
           }
-          if(executionIndex == -1){
+          if (executionIndex == -1)
+          {
             /*show_notification('The program has finished with errors', 'danger') ;
             return;*/
             return packExecute(true, 'The program has finished with errors', 'danger', null);
@@ -965,6 +968,14 @@ function executeProgramOneShot ( )
 /*Read register value*/
 function readRegister ( indexComp, indexElem )
 {
+	    var draw = {
+		  space: [] ,
+		  info: [] ,
+		  success: [] ,
+		  danger: [],
+		  flash: []
+		} ;
+
       if ((architecture.components[indexComp].elements[indexElem].properties[0] != "read") && 
           (architecture.components[indexComp].elements[indexElem].properties[1] != "read"))
       {
@@ -974,14 +985,6 @@ function readRegister ( indexComp, indexElem )
           executionIndex = -1;
           return;
 */
-
-	    var draw = {
-		  space: [] ,
-		  info: [] ,
-		  success: [] ,
-		  danger: [],
-		  flash: []
-		} ;
 
 	    for (var i = 0; i < instructions.length; i++) {
 		 draw.space.push(i);
@@ -1010,6 +1013,14 @@ function readRegister ( indexComp, indexElem )
 /*Write value in register*/
 function writeRegister ( value, indexComp, indexElem )
 {
+	  var draw = {
+	    space: [] ,
+	    info: [] ,
+	    success: [] ,
+	    danger: [],
+	    flash: []
+	  } ;
+
         if (value == null) {
             return;
         }
@@ -1026,18 +1037,9 @@ function writeRegister ( value, indexComp, indexElem )
                 executionIndex = -1;
                 return;
 */
-	        var draw = {
-	  	    space: [] ,
-		    info: [] ,
-		    success: [] ,
-		    danger: [],
-		    flash: []
-		} ;
-
 	        for (var i = 0; i < instructions.length; i++) {
 	  	     draw.space.push(i);
 	        }
-
 	        draw.danger.push(executionIndex);
 
 	        executionIndex = -1;
@@ -1066,7 +1068,7 @@ function writeRegister ( value, indexComp, indexElem )
             {
                 //show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
                 //return;
-                return packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
+                throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
@@ -1093,7 +1095,7 @@ function writeRegister ( value, indexComp, indexElem )
 	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
                 return;
 */
-                return packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
+                throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
@@ -1123,16 +1125,25 @@ function readMemory ( addr, type )
 {
         var memValue = '';
         var index;
+	  var draw = {
+	    space: [] ,
+	    info: [] ,
+	    success: [] ,
+	    danger: [],
+	    flash: []
+	  } ;
+
 
 	if (type == "d") {
-		debugger; // TODO: Really George? :-)
+	    //	debugger; // TODO: this line was commented...
 
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
             //return;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	    draw.danger.push(executionIndex);
+            executionIndex = -1;
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value) index = memory_hash[0];
 
@@ -1157,9 +1168,10 @@ function readMemory ( addr, type )
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
             //return;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	    draw.danger.push(executionIndex);
+            executionIndex = -1;
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
           if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
@@ -1190,9 +1202,10 @@ function readMemory ( addr, type )
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
             //return;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	    draw.danger.push(executionIndex);
+            executionIndex = -1;
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
           if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
@@ -1232,9 +1245,10 @@ function readMemory ( addr, type )
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
             //return;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	    draw.danger.push(executionIndex);
+            executionIndex = -1;
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
           if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
@@ -1263,6 +1277,14 @@ function readMemory ( addr, type )
 /*Write value in memory*/
 function writeMemory ( value, addr, type )
 {
+	  var draw = {
+	    space: [] ,
+	    info: [] ,
+	    success: [] ,
+	    danger: [],
+	    flash: []
+	  } ;
+
         if (value == null) {
             return;
         }
@@ -1274,9 +1296,10 @@ function writeMemory ( value, addr, type )
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
             //return;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	    draw.danger.push(executionIndex);
+            executionIndex = -1;
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
           if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
@@ -1361,9 +1384,10 @@ function writeMemory ( value, addr, type )
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
             //return;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	    draw.danger.push(executionIndex);
+            executionIndex = -1;
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
           if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
@@ -1516,9 +1540,10 @@ function writeMemory ( value, addr, type )
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
             //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
-            executionIndex = -1;
             //return;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	    draw.danger.push(executionIndex);
+            executionIndex = -1;
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
           if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
@@ -1613,20 +1638,30 @@ function writeMemory ( value, addr, type )
 /*Modify the stack limit*/
 function writeStackLimit ( stackLimit )
 {
+	  var draw = {
+	    space: [] ,
+	    info: [] ,
+	    success: [] ,
+	    danger: [],
+	    flash: []
+	  } ;
+
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
             //show_notification('Segmentation fault. You tried to write in the data segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
             //return;
+	    draw.danger.push(executionIndex);
             executionIndex = -1;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
             //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
             //instructions[executionIndex]._rowVariant = 'danger';
             //return;
+	    draw.danger.push(executionIndex);
             executionIndex = -1;
-            return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else{
             if(stackLimit < architecture.memory_layout[4].value){
@@ -2156,9 +2191,6 @@ function divDouble(reg, index)
 /*Reset execution*/
 function reset ()
 {
-          for (var i = 0; i < instructions.length; i++) {
-            instructions[i]._rowVariant = '';
-          }
           executionIndex = 0;
           executionInit = 1;
 
@@ -2233,10 +2265,6 @@ function reset ()
           unallocated_memory = [];
           app._data.unallocated_memory = unallocated_memory;
 
-          for (var i = 0; i < instructions.length; i++) {
-            if(instructions[i].Label == "main"){
-              instructions[i]._rowVariant = 'success';
-            }
-          }
+          return true ;
 }
 
