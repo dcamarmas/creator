@@ -1,31 +1,70 @@
 #!/usr/bin/env node
 
    var fs      = require('fs') ;
- //var bigInt = require("big-integer");
+   var colors  = require('colors') ;
    var creator = require('./min.creator_node.js') ;
 
 
    //
-   // (1) Usage
+   // Auxiliar functions
    //
 
-   if (process.argv.length < 4)
+   colors.setTheme({
+                     info:    'bgGreen',
+                     help:    'green',
+                     warn:    'yellow',
+                     success: 'cyan',
+                     error:   'bgRed'
+                   }) ;
+
+   if (typeof bigInt === "undefined") {
+        bigInt = BigInt ;
+   }
+
+   function show_success ( msg ) {
+       console.log(msg.success) ;
+   }
+
+   function show_error ( msg ) {
+       console.log(msg.error) ;
+   }
+
+   function show_welcome ( ) 
    {
        console.log("") ;
-       console.log("Usage: creator.sh <architecture> <assembly file>") ;
+       console.log("  CREATOR") ;
+       console.log(" ---------") ;
        console.log("") ;
+       console.log("  version: 1.5.2") ;
+       console.log("  website: https://creatorsim.github.io/") ;
+       console.log("") ;
+   }
 
-       return 0 ;
+   function show_usage ( ) 
+   {
+       console.log("  Usage: ./creator.sh <architecture> <assembly file>".help) ;
+       console.log("") ;
    }
 
 
    //
-   // (2) Get arguments
+   // Main
    //
- 
+
+   // (1) Welcome
+
+   show_welcome() ; 
+   if (process.argv.length < 4)
+   {
+       show_usage() ; 
+       return 0 ;
+   }
+
+   // (2) Get work done
+
    var result = null ;
 
-   try 
+   try
    {
        // (1) load data
        var architecture = fs.readFileSync(process.argv[2], 'utf8') ;
@@ -33,32 +72,40 @@
 
        // (2) load architecture
        result  = creator.load_architecture(architecture) ;
-       if (result.xxx == false) {
-           console.log(result) ;
-           return ;
-       }  
+       if (result.status !== "ok") 
+       {
+           show_error("[Loader] " + result + "\n") ;
+           return -1 ;
+       }
+       else show_success("[Loader] Files loaded successfully.") ;
 
        // (3) compile
-       result = creator.assembly_compile(assembly) ;     
-       if (result.status !== "ok") {
-           console.log("[ERROR 1]: " + JSON.stringify(result)) ;
-           return ;
-       }  
+       result = creator.assembly_compile(assembly) ;
+       if (result.status !== "ok") 
+       {
+           show_error("[Compiler] Error at token " + result.tokenIndex + " (" + result.token + ").\n" +
+                      "[Compiler] " + result.msg + "\n") ;
+           return -1 ;
+       }
+       else show_success("[Compiler] Code compiled successfully.") ;
 
        // (4) ejecutar
-       result = creator.execute_program() ;     
-       if (result.status !== "ok") {
-           console.log("[ERROR 2]: " + result.msg) ;
-           return ;
-       }  
+       result = creator.execute_program() ;
+       if (result.status !== "ok") 
+       {
+           show_error("[Executor] Error found.\n" +
+                      "[Executor] " + result.msg + "\n") ;
+           return -1 ;
+       }
+       else show_success("[Executor] Executed successfully.") ;
 
        // (5) print finalmachine state
-       result = creator.print_state();
-       console.log(result.msg) ;
+       result = creator.print_state() ;
+       console.log("[Final state] " + result.msg + "\n") ;
    }
    catch (e)
    {
-       console.log(e);
+       console.log(e.error) ;
        return false ;
    }
 
