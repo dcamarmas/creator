@@ -3478,17 +3478,31 @@ try
 
       /*Reset execution*/
       reset(){
+
         show_loading();
         setTimeout(function() {
 
-          app._data.resetBut = true;
-          app._data.keyboard = "";
-          app._data.display = "";
-          app._data.enter = null;
+          // UI: reset I/O
+          app._data.resetBut = true ;
+          app._data.keyboard = "" ;
+          app._data.display  = "" ;
+          app._data.enter    = null ;
+
+          // UI: reset row color...
+          for (var i = 0; i < instructions.length; i++) {
+               instructions[i]._rowVariant = '' ;
+          }
 
           reset() ;
 
-          app._data.unallocated_memory = unallocated_memory;
+          // UI: set default row color...
+          for (var i = 0; i < instructions.length; i++) {
+               if (instructions[i].Label == "main") {
+                   instructions[i]._rowVariant = 'success' ;
+               }
+          }
+
+          app._data.unallocated_memory = unallocated_memory ;
           hide_loading();
 
         }, 25);
