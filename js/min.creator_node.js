@@ -6532,6 +6532,14 @@ function writeStackLimit ( stackLimit )
 /*Syscall*/
 function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 {
+	  var draw = {
+	    space: [] ,
+	    info: [] ,
+	    success: [] ,
+	    danger: [],
+	    flash: []
+	  } ;
+
         switch(action){
           case "print_int":
             var value = architecture.components[indexComp].elements[indexElem].value;
@@ -7211,21 +7219,48 @@ function print_state ( )
     ret.msg = "" ;
     ret.status = "ok" ;
 
+    // dump registers
     for (var i=0; i<architecture.components.length; i++) 
     {
         for (var j=0; j<architecture.components[i].elements.length; j++) 
         {
+            // get value + default value
             elto_value  = architecture.components[i].elements[j].value ;
             elto_dvalue = architecture.components[i].elements[j].default_value ;
+
+            // skip default results
+            if (typeof elto_dvalue == "undefined") {
+                continue ;
+            }
+            if (elto_value == elto_dvalue) {
+                continue ;
+            }
+
+            // value != default value => dumpt it
+            elto_string = "0x" + elto_value.toString(16) ;
+            if (architecture.components[i].type == "floating point") {
+                elto_string = elto_value.toString() ;
+            }
+            ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_string + "; ";
+        }
+    }
+
+    // dump memory
+    for (var i in memory) 
+    {
+        if ("instructions_memory" == i) {
+             continue ; // instruction memory area stores high-level instructions
+        }
+
+        for (var j=0; j<memory[i].length; j++) 
+        {
+            elto_value  = memory[i][j].Value ;
+            elto_dvalue = memory[i][j].DefValue ;
 
             if (elto_value != elto_dvalue) 
             {
                 elto_string = "0x" + elto_value.toString(16) ;
-                if (architecture.components[i].type == "floating point") {
-                    elto_string = elto_value.toString() ;
-                }
-
-                ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_string + "; ";
+                ret.msg = ret.msg + "memory[0x" + j.toString(16) + "]" + ":" + elto_string + "; ";
             }
         }
     }
