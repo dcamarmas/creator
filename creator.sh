@@ -20,30 +20,24 @@
                      error:   'bgRed'
                    }) ;
 
-   function show_success ( msg ) {
-       console.log(msg.success) ;
-   }
-
-   function show_error ( msg ) {
-       console.log(msg.error) ;
-   }
-
    // arguments
-   console.log("\n" +
-               "CREATOR\n".help +
-               "-------\n".help +
-               "version: 1.5.2\n".help +
-               "website: https://creatorsim.github.io/\n".help) ;
-
    var argv = require('yargs')
-              .usage('Usage: $0 --arc <file name> --asm <file name> [--maxins <limit # instructions>]')
-              .example('./creator.sh --arc architecture/MIPS-32-like.json --asm examples/MIPS/example11.txt --maxins 10000')
-              .describe('--arc', 'Architecture')
+              .usage('\n' +
+                     'CREATOR\n'.help +
+                     '-------\n'.help +
+                     'version: 1.5.2\n'.help +
+                     'website: https://creatorsim.github.io/\n'.help +
+                     'Usage: $0 --arc <file name> --asm <file name> [--maxins <limit # instructions>]')
+              .example('./creator.sh --arc architecture/MIPS-32-like.json ' + 
+                       '             --asm examples/MIPS/example11.txt --maxins 10000')
+              .describe('arc', 'Architecture')
               .nargs('--arc', 1)
-              .describe('--asm', 'Assembly file')
+              .describe('asm', 'Assembly file')
               .nargs('--asm', 1)
-              .describe('--maxins', 'Maximum number of instructions to be executed')
+              .describe('maxins', 'Maximum number of instructions to be executed')
               .nargs('--maxins', 1)
+              .describe('quiet', 'Minimum output')
+              .nargs('--quiet', 0)
               .help('h')
               .alias('h', 'help')
               .demandOption(['arc', 'asm'])
@@ -54,10 +48,18 @@
        limit_n_instructions = parseInt(argv.maxins) ;
    }
 
+   var quiet = false ;
+   if (typeof argv.quiet !== "undefined") {
+       quiet = argv.quiet ;
+   }
+
 
    //
    // Main
    //
+
+   var show_success = function ( msg ) { if (false == quiet) console.log(msg.success) ; }
+   var show_error   = function ( msg ) { if (false == quiet) console.log(msg.error) ; }
 
    var architec_name = argv.arc ;
    var architecture = null ;
@@ -100,7 +102,9 @@
 
        // (d) print finalmachine state
        result = creator.print_state() ;
-       console.log("[Final state] ".success + result.msg + "\n") ;
+       if (false == quiet)
+            console.log("[Final state] ".success + result.msg + "\n") ;
+       else console.log(result.msg + "\n") ;
    }
    catch (e)
    {
