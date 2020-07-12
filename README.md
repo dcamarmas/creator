@@ -61,3 +61,10 @@
      * Preload example from example set:
        * https://dcamarmas.github.io/creator/?example_set=snips&example=5
 - [ ] Initial support for a **command line version based on NodeJS**
+
+
+## Badges
+
+[![Build Status](https://travis-ci.org/dcamarmas/creator.svg?branch=master)](https://travis-ci.org/dcamarmas/creator)
+
+
