@@ -35,8 +35,14 @@ try
     /*DOM ID*/
     el: "#app",
 
+    /*Import Graph component*/
+    components: {
+      apexchart: VueApexCharts,
+    },
+
     /*Vue data*/
     data: {
+
       /*Global*/
       /*View*/
       creator_mode: "load_architecture",
@@ -373,7 +379,54 @@ try
         },
       },
       /*Stats*/
+      totalStats: totalStats,
       stats: stats,
+
+      /*Stats Graph values*/
+      stats_value: stats_value,
+
+      /*Stats Graph configure*/
+      chartOptions: {
+        colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
+        chart: {
+          type: 'donut',
+        },
+        labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
+        dataLabels: {
+          enabled: true
+        },
+        donut: {
+          labels: {
+            show: true,
+            total: {
+              show: true,
+              showAlways: true,
+              label: "Total",
+            },
+          },
+        },
+        fill: {
+          type: 'gradient',
+          gradient: {
+            shade: 'dark',
+            type: "horizontal",
+            shadeIntensity: 0.8,
+            gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
+            inverseColors: true,
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 50, 100],
+            colorStops: []
+          },
+          colors: ['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
+        },
+        legend: {
+          formatter: function(val, opts) {
+            return val + " - " + opts.w.globals.series[opts.seriesIndex]
+          }
+        }
+      },
+
       /*Display*/
       display: '',
       /*Keyboard*/

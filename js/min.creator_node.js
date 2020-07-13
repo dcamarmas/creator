@@ -163,6 +163,7 @@ var code_binary = '';
 var update_binary = '';
 /*Stats*/
 var totalStats = 0;
+var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 var stats = [
   { type: 'Arithmetic integer', number_instructions: 0, percentage: 0, abbreviation: "AI" },
   { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0, abbreviation: "AFP" },
@@ -520,9 +521,11 @@ function assembly_compiler()
 
             /*Reset stats*/
             totalStats = 0;
+            app._data.totalStats=0;
             for (var i = 0; i < stats.length; i++){
               stats[i].percentage = 0;
               stats[i].number_instructions = 0;
+              stats_value[i] = 0;
             }
 
             align = 0;
@@ -5709,7 +5712,9 @@ function executeInstruction ( )
           for (var i = 0; i < stats.length; i++){
             if(type == stats[i].type){
               stats[i].number_instructions++;
+              stats_value[i] ++;
               totalStats++;
+              app._data.totalStats++;
             }
           }
           for (var i = 0; i < stats.length; i++){
@@ -7080,9 +7085,11 @@ function reset ()
 
           /*Reset stats*/
           totalStats=0;
+          app._data.totalStats=0;
           for (var i = 0; i < stats.length; i++){
             stats[i].percentage = 0;
             stats[i].number_instructions = 0;
+            stats_value[i] = 0;
           }
 
           /*Reset console*/
