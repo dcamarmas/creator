@@ -1,5 +1,6 @@
 body{
   background-color: #FFFFFF;
+  overflow-x: hidden;
 }
 
 hr {
@@ -170,6 +171,7 @@ h2 {
 
 .instructions_table{
   font-size: 15px;
+  padding-right: 1%;
 }
 
 .table-inst-wrapper-scroll-y {
@@ -220,4 +222,18 @@ h2 {
   max-height: 60vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+#chart {
+  margin: 35px auto;
+  padding: 0;
+}
+
+.apexcharts-legend-text tspan:nth-child(1) {
+  font-weight: lighter;
+  fill: #999;
+}
+
+.apexcharts-legend-text tspan:nth-child(3) {
+  font-weight: bold;
 }
