@@ -2588,7 +2588,7 @@
                   <b-progress-bar :value="stats[12].percentage" style="background:cyan;">{{stats[12].abbreviation}}</b-progress-bar>
                 </b-progress>-->
 
-                <div id="chart">
+                <div id="chart" v-if="totalStats>0">
 						      <apexchart type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
 						    </div>
 

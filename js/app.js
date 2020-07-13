@@ -379,6 +379,7 @@ try
         },
       },
       /*Stats*/
+      totalStats: totalStats,
       stats: stats,
 
       /*Stats Graph values*/
