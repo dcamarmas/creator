@@ -16,7 +16,7 @@
     <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
     <link rel="stylesheet" href="css/style.css">
-    
+   
     <!-- Load polyfills to support older browsers -->
     <!--<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>-->
 
@@ -28,6 +28,7 @@
     <script src="external/BigInteger.min.js"></script>
     <script src="external/lodash.js"></script>
 
+    <!--Codemirror scripts-->
     <script src="external/codemirror/codemirror.js"></script>
     <script src="external/codemirror/keymap/vim.js"></script>
     <script src="external/codemirror/keymap/sublime.js"></script>
@@ -36,6 +37,24 @@
     <script src="external/codemirror/addon/display/autorefresh.js"></script>
     <script src="external/codemirror/addon/comment/comment.js"></script>
     <script src="external/codemirror/addon/hint/show-hint.js"></script>
+
+    <!--Apexcharts scripts-->
+    <script>
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/polyfill.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/classList.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/findindex_polyfill_mdn"><\/script>'
+        )
+    </script>
+    <script src="external/apexcharts/apexcharts"></script>
+    <script src="external/apexcharts/vue-apexcharts"></script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="./images/icons/apple-icon-57x57.png">
@@ -84,8 +103,8 @@
                 <div class="container">
                   <div class="row">
                   <div class="col-auto my-0 py-0 pr-1 text-uppercase">
-		       Creator <b-badge pill variant="secondary">1.5.2</b-badge>
-	          </div>
+							      Creator <b-badge pill variant="secondary">1.5.2</b-badge>
+						      </div>
                   <div class="col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
                   <div class="w-100"></div>
                   <div class="col-auto my-0 py-0 font-weight-bold mx-1" style="color:#383d41; font-size:11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</div>
@@ -97,12 +116,13 @@
 
             <b-collapse is-nav id="nav_collapse">
               <b-navbar-nav class="ml-auto">
-                <b-nav-item class="mb-0 pb-0" target="_blank" href='https://www.arcos.inf.uc3m.es/'><img 
-                            alt="ARCOS"
-                            src="./images/arcos.svg" style="height:7vh"></b-nav-item>
-                <b-nav-item class="mb-0 pb-0" target="_blank" href='https://www.inf.uc3m.es/'><img 
-                            alt="Computer Science and Engineering Departament" 
-                            src="./images/dptoinf.png" style="height:7vh"></b-nav-item>
+                <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.arcos.inf.uc3m.es/'>
+                	<img alt="ARCOS" class="nopadding" src="./images/arcos.svg" style="height:5vh">
+                </b-nav-item>
+
+                <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.inf.uc3m.es/'>
+                	<img alt="Computer Science and Engineering Departament" class="nopadding" src="./images/dptoinf.png" style="height:5vh">
+                </b-nav-item>
               </b-navbar-nav>
             </b-collapse>
           </b-navbar>
@@ -558,7 +578,7 @@
                 </b-tab>
 
                 <!-- Components -->
-                <b-tab title="Components" :disabled="advanced_mode">
+                <b-tab title="Components" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Components of the architecture:</h6>
 
@@ -737,7 +757,7 @@
                 </b-tab>
 
                 <!-- Instruction definition -->
-                <b-tab title="Instructions Definition" :disabled="advanced_mode">
+                <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Instruction set:</h6>
 
@@ -1277,7 +1297,7 @@
                 </b-tab>
 
                 <!-- Pseudoinstruction definition -->
-                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode">
+                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Pseudoinstructions set:</h6>
 
@@ -1623,7 +1643,7 @@
                 </b-tab>
 
                 <!-- Directives definition -->
-                <b-tab title="Directives Definition" :disabled="advanced_mode">
+                <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Directives set:</h6>
 
@@ -2551,7 +2571,7 @@
               <div class="col-lg-12 col-sm-12">
                 <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
                 <br>
-                <h6>Graphic</h6>
+                <!--<h6>Graphic</h6>
                 <b-progress class="mb-3">
                   <b-progress-bar :value="stats[0].percentage" style="background:red;">{{stats[0].abbreviation}}</b-progress-bar>
                   <b-progress-bar :value="stats[1].percentage" style="background:blue;">{{stats[1].abbreviation}}</b-progress-bar>
@@ -2566,14 +2586,19 @@
                   <b-progress-bar :value="stats[10].percentage" style="background:lime;">{{stats[10].abbreviation}}</b-progress-bar>
                   <b-progress-bar :value="stats[11].percentage" style="background:indigo;">{{stats[11].abbreviation}}</b-progress-bar>
                   <b-progress-bar :value="stats[12].percentage" style="background:cyan;">{{stats[12].abbreviation}}</b-progress-bar>
-                </b-progress>
+                </b-progress>-->
+
+                <div id="chart">
+						      <apexchart type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
+						    </div>
+
               </div>
             </div>
           </div>
 
           <!-- Monitor -->
           <div class="col-lg-6 col-sm-12 my-2 mx-0">
-            <div class="row col-lg-12 col-sm-12 mx-0">
+            <div class="row col-lg-12 col-sm-12 mx-0 pl-0">
               <div class="col-lg-1 col-sm-1">
                 <i style="height:5vh; opacity:0.6;" class="fas fa-desktop fa-2x mb-2"></i>
               </div>
