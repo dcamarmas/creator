@@ -521,6 +521,7 @@ function assembly_compiler()
 
             /*Reset stats*/
             totalStats = 0;
+            app._data.totalStats=0;
             for (var i = 0; i < stats.length; i++){
               stats[i].percentage = 0;
               stats[i].number_instructions = 0;

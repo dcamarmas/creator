@@ -521,10 +521,11 @@ function assembly_compiler()
 
             /*Reset stats*/
             totalStats = 0;
+            app._data.totalStats=0;
             for (var i = 0; i < stats.length; i++){
               stats[i].percentage = 0;
               stats[i].number_instructions = 0;
-              this.stats_value[i] = 0;
+              stats_value[i] = 0;
             }
 
             align = 0;
@@ -5711,8 +5712,9 @@ function executeInstruction ( )
           for (var i = 0; i < stats.length; i++){
             if(type == stats[i].type){
               stats[i].number_instructions++;
-              this.stats_value[i] ++;
+              stats_value[i] ++;
               totalStats++;
+              app._data.totalStats++;
             }
           }
           for (var i = 0; i < stats.length; i++){
@@ -7083,10 +7085,11 @@ function reset ()
 
           /*Reset stats*/
           totalStats=0;
+          app._data.totalStats=0;
           for (var i = 0; i < stats.length; i++){
             stats[i].percentage = 0;
             stats[i].number_instructions = 0;
-            this.stats_value[i] = 0;
+            stats_value[i] = 0;
           }
 
           /*Reset console*/
