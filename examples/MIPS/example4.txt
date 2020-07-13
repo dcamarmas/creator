@@ -4,7 +4,7 @@
 #
  
 .data
-	a: .double 34.544
+    a: .double 34.544
     b: .double 11.443
     c: .double 665.4
     
@@ -12,7 +12,7 @@
     
 .text
 main:
-	la $t0 a
+    la $t0 a
     la $t1 b
     la $t2 c
     la $t3 d
@@ -30,5 +30,5 @@ main:
     addi $t3 $t3 8
     s.d $FP12 ($t3)
 
-	li $v0 10
+    li $v0 10
     syscall

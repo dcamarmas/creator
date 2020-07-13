@@ -3372,15 +3372,16 @@ try
              show_notification(ret.msg, ret.type);
          }
 
-         if (ret.draw != null) {
+         if (ret.draw != null) 
+         {
+             for (var i=0; i<ret.draw.space.length; i++) {
+                  instructions[ret.draw.space[i]]._rowVariant = '';
+             }
              for (var i=0; i<ret.draw.success.length; i++) {
                   instructions[ret.draw.success[i]]._rowVariant = 'success';
              }
              for (var i=0; i<ret.draw.info.length; i++) {
                   instructions[ret.draw.info[i]]._rowVariant = 'info';
-             }
-             for (var i=0; i<ret.draw.space.length; i++) {
-                  instructions[ret.draw.space[i]]._rowVariant = '';
              }
              for (var i=0; i<ret.draw.danger.length; i++) {
                   instructions[ret.draw.danger[i]]._rowVariant = 'danger';
