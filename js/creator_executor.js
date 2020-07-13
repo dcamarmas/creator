@@ -863,17 +863,20 @@ function executeInstruction ( )
             //eval(auxDef);
 
           }
-          catch(e){
-            if (e instanceof SyntaxError) {
-              console_log("Error");
-              error = 1;
-              // instructions[executionIndex]._rowVariant = 'danger';
-              draw.danger.push(executionIndex) ;
-              executionIndex = -1;
-              //show_notification('The definition of the instruction contains errors, please review it', 'danger') ;
-              //return;
-              return packExecute('The definition of the instruction contains errors, please review it', 'danger', null);
-            }
+          catch(e)
+          {
+              if (e instanceof SyntaxError) 
+              {
+                  console_log("Error");
+                  error = 1;
+                  // instructions[executionIndex]._rowVariant = 'danger';
+                  draw.danger.push(executionIndex) ;
+                  executionIndex = -1;
+                  //show_notification('The definition of the instruction contains errors, please review it', 'danger') ;
+                  //return;
+
+                  return packExecute(true, 'The definition of the instruction contains errors, please review it', 'danger', null);
+              }
           }
 
           /*Refresh stats*/
@@ -1714,19 +1717,29 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 	    flash: []
 	  } ;
 
-        switch(action){
+        switch(action)
+        {
           case "print_int":
             var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + (parseInt(value.toString()) >> 0);
+            if (typeof app !== "undefined")
+                 app._data.display += (parseInt(value.toString()) >> 0);
+            else process.stdout.write((parseInt(value.toString()) >> 0)) ;
             break;
+
           case "print_float":
             var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + value;
+            if (typeof app !== "undefined")
+                 app._data.display += value;
+            else process.stdout.write(value) ;
             break;
+
           case "print_double":
             var value = architecture.components[indexComp].elements[indexElem].value;
-            app._data.display = app._data.display + value;
+            if (typeof app !== "undefined")
+                 app._data.display += value;
+            else process.stdout.write(value) ;
             break;
+
           case "print_string":
             var addr = architecture.components[indexComp].elements[indexElem].value;
             var index;
@@ -1753,15 +1766,22 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
                 if(aux == addr){
                   for (var i; i < memory[index].length; i++){
-                    for (var k = j; k < memory[index][i].Binary.length; k++){
+                    for (var k = j; k < memory[index][i].Binary.length; k++)
+                    {
                       console_log(parseInt(memory[index][i].Binary[k].Bin, 16));
                       console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
-                      app._data.display = app._data.display + String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+
+                      if (typeof app !== "undefined")
+                           app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+                      else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
+
                       if(memory[index][i].Binary[k].Bin == 0){
-                        return
+                        //return
+                        return packExecute(false, 'printed', 'info', null);
                       }
                       else if(i == memory[index].length-1 && k == memory[index][i].Binary.length-1){
-                        return;
+                        //return;
+                        return packExecute(false, 'printed', 'info', null);
                       }
                       j=0;
                     }
@@ -1771,6 +1791,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
             }
 
             break;
+
           case "read_int":
             mutexRead = true;
             app._data.enter = false;
@@ -1789,7 +1810,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               }
 
               //return;
-              return packExecute(true, 'The data has been uploaded', 'danger', null);
+              return packExecute(false, 'The data has been uploaded', 'danger', null);
             }
 
             if(consoleMutex == false){
@@ -1940,31 +1961,31 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
             mutexRead = true;
             app._data.enter = false;
             console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
+            if (newExecution == true){
+               this.keyboard = "";
+               consoleMutex = false;
+               mutexRead = false;
+               app._data.enter = null;
 
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
+               if (window.document)
+	 	   show_notification('The data has been uploaded', 'info') ;
 
-              if (runExecution == false){
-                  app.executeProgram();
-              }
+               if (runExecution == false){
+                   app.executeProgram();
+               }
 
-              return;
+               return;
             }
 
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
+            if (consoleMutex == false){
+                setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
             }
             else{
               var addr = architecture.components[indexComp].elements[indexElem].value;
               var value = "";
               var valueIndex = 0;
 
-              for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++){
+              for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++) {
                 value = value + this.keyboard.charAt(i);
               }
 
