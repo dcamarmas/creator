@@ -9,7 +9,7 @@
     msg3: .asciiz "The result is: "
 .text
 main:
-	la $a0 msg
+    la $a0 msg
     li $v0 4
     syscall
     
@@ -30,6 +30,7 @@ main:
     la $a0 msg3
     li $v0 4
     syscall
+
     move $a0 $t2
     li $v0 1
     syscall
