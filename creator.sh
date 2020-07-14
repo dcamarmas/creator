@@ -7,7 +7,7 @@
    // filesystem
    var fs = require('fs') ;
 
-   // filesystem
+   // creator
    var creator = require('./js/min.creator_node.js') ;
 
    // color
@@ -113,7 +113,7 @@
    }
    catch (e)
    {
-       console.log(e.error) ;
+       console.log(e.stack) ;
        return false ;
    }
 
