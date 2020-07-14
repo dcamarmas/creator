@@ -2827,12 +2827,13 @@ try
         show_loading();
         promise = new Promise((resolve, reject) => {
 
-          setTimeout(function(){
+          setTimeout(function() {
             /* compile */
             code_assembly = textarea_assembly_editor.getValue();
             var ret = assembly_compiler() ;
 
-            /* update */
+            /* update/reset */
+            app._data.totalStats   = 0;
             app._data.instructions = instructions;
             app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
             app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
@@ -2840,7 +2841,7 @@ try
             tokenIndex = 0;
             app.reset();
 
-            /*Save a backup in the cache memory*/
+            /* Save a backup in the cache memory */
             if (typeof(Storage) !== "undefined")
             {
               var auxObject = jQuery.extend(true, {}, architecture);

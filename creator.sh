@@ -21,7 +21,7 @@
                    }) ;
 
    // arguments
-   var creator_version = '1.5.2' ;
+   var creator_version = '2.0b1' ;
    var welcome = function () { return '\n' +
                                       'CREATOR\n'.help +
                                       '-------\n'.help +
