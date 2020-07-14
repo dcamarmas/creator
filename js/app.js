@@ -2822,7 +2822,8 @@ try
       /*Compilator*/
 
       /*Compile assembly code*/
-      assembly_compiler(){
+      assembly_compiler()
+      {
         show_loading();
         promise = new Promise((resolve, reject) => {
 
