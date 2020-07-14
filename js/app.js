@@ -492,7 +492,6 @@ try
         }
 
         if(localStorage.getItem("autoscroll") != null){
-          console.log((localStorage.getItem("autoscroll") === "true"));
           this.autoscroll = (localStorage.getItem("autoscroll") === "true");
         }
 
@@ -548,7 +547,6 @@ try
       /*Change autoscroll mode*/
       change_autoscroll() {
         app._data.autoscroll= !app._data.autoscroll;
-        console.log(app._data.autoscroll);
         localStorage.setItem("autoscroll", app._data.autoscroll);
       },
 
