@@ -141,6 +141,7 @@ var example_available = [];
 /*Execution*/
 var executionIndex = 0;
 var runExecution = false;
+var runProgram = false;
 var iter1 = 1;
 var executionInit = 1;
 /*Keyboard*/
