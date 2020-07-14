@@ -48,6 +48,8 @@ try
       creator_mode: "load_architecture",
       /*Notification speed*/
       notificationTime: 1500,
+      /*Auto Scroll*/
+      autoscroll: true,
       /*Debug*/
       c_debug: false,
       /*Dark Mode*/
@@ -489,6 +491,11 @@ try
           this.instructionsPacked = parseInt(localStorage.getItem("instructionsPacked"));
         }
 
+        if(localStorage.getItem("autoscroll") != null){
+          console.log((localStorage.getItem("autoscroll") === "true"));
+          this.autoscroll = (localStorage.getItem("autoscroll") === "true");
+        }
+
         if(localStorage.getItem("notificationTime") != null){
           this.notificationTime = parseInt(localStorage.getItem("notificationTime"));
 
@@ -523,35 +530,42 @@ try
       change_execution_speed(value) {
       	 if (value) 
          {
-	     this.instructionsPacked= this.instructionsPacked + value;
-	     if (this.instructionsPacked < 1){
-	       	 this.instructionsPacked = 1;
-	     }
-	     if (this.instructionsPacked > 101) {
-	     	 this.instructionsPacked = 101;
-	     }
-	 }
-	 else {
-	    this.instructionsPacked = parseInt(this.instructionsPacked);
-	 }
+      	     this.instructionsPacked= this.instructionsPacked + value;
+      	     if (this.instructionsPacked < 1){
+      	       	 this.instructionsPacked = 1;
+      	     }
+      	     if (this.instructionsPacked > 101) {
+      	     	 this.instructionsPacked = 101;
+      	     }
+      	 }
+      	 else {
+      	    this.instructionsPacked = parseInt(this.instructionsPacked);
+      	 }
       	
       	 localStorage.setItem("instructionsPacked", this.instructionsPacked);
       },
 
+      /*Change autoscroll mode*/
+      change_autoscroll() {
+        app._data.autoscroll= !app._data.autoscroll;
+        console.log(app._data.autoscroll);
+        localStorage.setItem("autoscroll", app._data.autoscroll);
+      },
+
       /*change the time a notification is displayed*/
       change_notification_time(value){
-      	 if (value) {
-	     this.notificationTime= this.notificationTime + value;
-	     if (this.notificationTime < 1000){
-	      	 this.notificationTime = 1000;
-	     }
-	     if (this.notificationTime > 3500) {
-	      	 this.notificationTime = 3500;
-	     }
-	 }
-	 else {
-	      	this.notificationTime = parseInt(this.notificationTime);
-	 }
+      	if (value) {
+      	     this.notificationTime= this.notificationTime + value;
+      	     if (this.notificationTime < 1000){
+      	      	 this.notificationTime = 1000;
+      	     }
+      	     if (this.notificationTime > 3500) {
+      	      	 this.notificationTime = 3500;
+      	     }
+      	 }
+      	 else {
+      	      	this.notificationTime = parseInt(this.notificationTime);
+      	 }
 
       	 localStorage.setItem("notificationTime", this.notificationTime);
       },
@@ -3439,7 +3453,22 @@ try
              for (var i=0; i<ret.draw.danger.length; i++) {
                   instructions[ret.draw.danger[i]]._rowVariant = 'danger';
              }
-             
+
+            /*Auto-scroll*/
+            if(app._data.autoscroll == true && runProgram == false){
+              if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
+                var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
+                var rowpos = $(id).position(); 
+                if(rowpos){
+                  var pos = rowpos.top - $('.instructions_table').height();
+                  $('.instructions_table').animate({scrollTop: (pos)}, 200);
+                }
+              }
+              else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
+                $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
+              }
+            }
+
              return ;
          }
       },
@@ -3449,17 +3478,21 @@ try
       {
         app._data.runExecution = true;
         this.runExecution = false;
+        runProgram=true;
 
         if (instructions.length == 0){
             show_notification('No instructions in memory', 'danger') ;
+            runProgram=false;
             return;
         }
         if (executionIndex < -1){
             show_notification('The program has finished', 'danger') ;
+            runProgram=false;
             return;
         }
         if (executionIndex == -1){
             show_notification('The program has finished with errors', 'danger') ;
+            runProgram=false;
             return;
         }
 
@@ -3477,12 +3510,14 @@ try
             iter1 = 1;
             $("#stopExecution").hide();
             $("#playExecution").show();
+            runProgram=false;
             return;
           }
           else if(instructions[executionIndex].Break == true && iter1 == 0){
             iter1 = 1;
             $("#stopExecution").hide();
             $("#playExecution").show();
+            runProgram=false;
             return;
           }
           else if(this.runExecution == true){
@@ -3490,6 +3525,7 @@ try
             iter1 = 1;
             $("#stopExecution").hide();
             $("#playExecution").show();
+            runProgram=false;
             return;
           }
           else if(but == true && i == 0){
@@ -3500,6 +3536,7 @@ try
 
             $("#stopExecution").hide();
             $("#playExecution").show();
+            runProgram=false;
             return;
           }
           else{
@@ -3557,9 +3594,27 @@ try
           }
 
           app._data.unallocated_memory = unallocated_memory ;
+
+          /*Auto-scroll*/
+          if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
+            var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
+            var rowpos = $(id).position(); 
+            if(rowpos){
+              var pos = rowpos.top - $('.instructions_table').height();
+              $('.instructions_table').animate({scrollTop: (pos)}, 200);
+            }
+          }
+          else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
+            $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
+          }
+          
           hide_loading();
 
         }, 25);
+
+        
+
+
       },
 
       /*Enter a breakpoint*/
