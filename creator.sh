@@ -55,11 +55,10 @@
                   nargs:    1,
                   default:  '1000000'
                })
-              .option('quite', {
-                  type:     'string',
+              .option('quiet', {
+                  type:     'boolean',
                   describe: 'Minimum output',
-                  nargs:    0,
-                  default:  'false'
+                  default:  false
                })
               .demandOption(['architecture', 'assembly'], 'Please provide both architecture and assembly files.')
               .help('h')
@@ -77,9 +76,9 @@
    var limit_n_instructions = parseInt(argv.maxins) ;
    var quiet = argv.quiet ;
 
-   var architec_name = argv.a ;
+   var architec_name = argv.architecture ;
    var architecture  = null ;
-   var assembly_name = argv.s ;
+   var assembly_name = argv.assembly ;
    var assembly = null ;
    var result = null ;
 
