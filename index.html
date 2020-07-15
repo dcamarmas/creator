@@ -12,19 +12,23 @@
 
     <!-- Required stylesheets -->
     <link type="text/css" rel="stylesheet" href="external/bootstrap.min.css"/>
-    <link type="text/css" rel="stylesheet" href="external/bootstrap-vue.css"/>
+    <link type="text/css" rel="stylesheet" href="external/bootstrap-vue.min.css"/>
     <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
     <link rel="stylesheet" href="css/style.css">
-    
+   
+    <!-- Load polyfills to support older browsers -->
+    <!--<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>-->
+
     <!-- Required scripts -->
-    <script src="external/vue"></script>
     <script src="external/polyfill.min.js"></script>
-    <script src="external/bootstrap-vue.js"></script>
+    <script src="external/vue.min.js"></script>
+    <script src="external/bootstrap-vue.min.js"></script>
     <script src="external/jquery.min.js"></script>
     <script src="external/BigInteger.min.js"></script>
     <script src="external/lodash.js"></script>
 
+    <!--Codemirror scripts-->
     <script src="external/codemirror/codemirror.js"></script>
     <script src="external/codemirror/keymap/vim.js"></script>
     <script src="external/codemirror/keymap/sublime.js"></script>
@@ -33,6 +37,24 @@
     <script src="external/codemirror/addon/display/autorefresh.js"></script>
     <script src="external/codemirror/addon/comment/comment.js"></script>
     <script src="external/codemirror/addon/hint/show-hint.js"></script>
+
+    <!--Apexcharts scripts-->
+    <script>
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/polyfill.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/classList.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/findindex_polyfill_mdn"><\/script>'
+        )
+    </script>
+    <script src="external/apexcharts/apexcharts"></script>
+    <script src="external/apexcharts/vue-apexcharts"></script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="./images/icons/apple-icon-57x57.png">
@@ -76,15 +98,31 @@
 
         <!-- Navbar  -->
         <header>
-          <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href="."><h5>CREATOR <b-badge pill variant="secondary"> 1.3 </b-badge><font style="padding-left: 4%;">{{architecture_name}}</font><br><b><font style="color: #383d41; font-size: 11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</font></b></h5></b-navbar-brand>
+          <b-navbar toggleable="sm" class="header my-0 mx-1 py-0 px-2">
+            <b-navbar-brand class="p-0 m-0" style="color:#2196F3; margin:0px;" href=".">
+                <div class="container">
+                  <div class="row">
+                  <div class="col-auto my-0 py-0 pr-1 text-uppercase">
+							      Creator <b-badge pill variant="secondary">2.0b1</b-badge>
+						      </div>
+                  <div class="col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
+                  <div class="w-100"></div>
+                  <div class="col-auto my-0 py-0 font-weight-bold mx-1" style="color:#383d41; font-size:11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</div>
+                  </div>
+                </div>
+            </b-navbar-brand>
 
-            <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+            <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>
 
             <b-collapse is-nav id="nav_collapse">
               <b-navbar-nav class="ml-auto">
-                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS logo" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
-                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament logo" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
+                <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.arcos.inf.uc3m.es/'>
+                	<img alt="ARCOS" class="nopadding" src="./images/arcos.svg" style="height:5vh">
+                </b-nav-item>
+
+                <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.inf.uc3m.es/'>
+                	<img alt="Computer Science and Engineering Departament" class="nopadding" src="./images/dptoinf.png" style="height:5vh">
+                </b-nav-item>
               </b-navbar-nav>
             </b-collapse>
           </b-navbar>
@@ -101,7 +139,7 @@
           </b-modal>
           
           <!-- About modal -->
-          <b-modal id="about" hide-footer scrollable>
+          <b-modal id="about" title="About us" hide-footer scrollable>
             <b-card-group>
               <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>
                 <b-card-text>
@@ -109,11 +147,11 @@
                     <h6>Félix García Carballeira</h6>
                   </div>
                   <hr>
-                  <a><span class="fab fa-linkedin"></span> linkedin</a>
+                  <a aria-label="linkedin Felix"><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a aria-label="r-gate Felix" href='https://www.researchgate.net/profile/Felix_Garcia-Carballeira' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a><span class="fab fa-github"></span> github</a>
+                  <a aria-label="GitHub Felix"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
 
@@ -123,11 +161,11 @@
                     <h6>Alejandro Calderón Mateos</h6>
                   </div>
                   <hr>
-                  <a href='https://www.linkedin.com/in/alejandro-calderon-mateos/' target="_blank"><span class="fab fa-linkedin"></span> linkedin</a>
+                  <a aria-label="linkedin Alejandro" href='https://www.linkedin.com/in/alejandro-calderon-mateos/' target="_blank"><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a href='https://www.researchgate.net/profile/Alejandro_Calderon2' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a aria-label="r-gate Alejandro" href='https://www.researchgate.net/profile/Alejandro_Calderon2' target="_blank"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a href='https://github.com/acaldero/wepsim' target="_blank"><span class="fab fa-github"></span> github</a>
+                  <a aria-label="GitHub Alejandro" href='https://github.com/acaldero/wepsim' target="_blank"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
 
@@ -137,11 +175,11 @@
                     <h6>Diego Camarmas Alonso</h6>
                   </div>
                   <hr>
-                  <a><span class="fab fa-linkedin"></span> linkedin</a>
+                  <a aria-label="linkedin Diego" href='https://www.linkedin.com/in/dcamarmas' target="_blank"><span class="fab fa-linkedin"></span> linkedin</a>
                   <hr>
-                  <a><span class="fab fa-researchgate"></span> r-gate</a>
+                  <a aria-label="r-gate Diego"><span class="fab fa-researchgate"></span> r-gate</a>
                   <hr>
-                  <a href='https://github.com/dcamarmas' target="_blank"><span class="fab fa-github"></span> github</a>
+                  <a aria-label="GitHub Diego" href='https://github.com/dcamarmas' target="_blank"><span class="fab fa-github"></span> github</a>
                 </b-card-text>
               </b-card>
             </b-card-group>
@@ -151,53 +189,58 @@
 
 
         <b-modal id="configuration" title="Configuration" hide-footer>
-	  	<b-list-group>
+    	  	<b-list-group>
 
-	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-        <label for="range-2">Execution Speed:</label>
-		    <b-input-group>
-	        <b-input-group-prepend>
-	          <b-btn variant="outline-secondary" @click="instructionsPacked-=5">-</b-btn>
-	        </b-input-group-prepend>
-	        <b-form-input v-model="instructionsPacked" type="range" min="1" max="101" step="5"></b-form-input>
-	        <b-input-group-append>
-	          <b-btn variant="outline-secondary" @click="instructionsPacked+=5">+</b-btn>
-	        </b-input-group-append>
-		    </b-input-group>
-	    </b-list-group-item>
+    	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Execution Speed:</label>
+    		    <b-input-group>
+    	        <b-input-group-prepend>
+    	          <b-btn variant="outline-secondary" @click="change_execution_speed(-5)">-</b-btn>
+    	        </b-input-group-prepend>
+              <b-form-input v-model="instructionsPacked" @change="change_execution_speed(0)" type="range" min="1" max="101" step="5" title="Execution Speed"></b-form-input>
+    	        <b-input-group-append>
+    	          <b-btn variant="outline-secondary" @click="change_execution_speed(5)">+</b-btn>
+    	        </b-input-group-append>
+    		    </b-input-group>
+    	    </b-list-group-item>
 
-	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-        <label for="range-2">Notification Time:</label>
-		    <b-input-group>
-          <b-input-group-prepend>
-            <b-btn variant="outline-secondary" @click="notificationTime-=20">-</b-btn>
-          </b-input-group-prepend>
-          <b-form-input v-model="notificationTime" type="range" min="1000" max="3500" step="10"></b-form-input>
-          <b-input-group-append>
-            <b-btn variant="outline-secondary" @click="notificationTime+=20">+</b-btn>
-          </b-input-group-append>
-		    </b-input-group>
-	    </b-list-group-item>
+    	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Execution Autoscroll:</label>
+            <b-form-checkbox v-model="autoscroll" name="check-button" switch size="lg" @change="change_autoscroll"></b-form-checkbox>
+    	    </b-list-group-item>
 
-	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-        <label for="range-2">Dark Mode:</label>
-        <b-form-checkbox name="check-button" switch size="lg" v-model="dark" @change="change_dark_mode"></b-form-checkbox>
-	    </b-list-group-item>
+    	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Notification Time:</label>
+    		    <b-input-group>
+              <b-input-group-prepend>
+                <b-btn variant="outline-secondary" @click="change_notification_time(-20)">-</b-btn>
+              </b-input-group-prepend>
+              <b-form-input v-model="notificationTime" @change="change_notification_time(0)" type="range" min="1000" max="3500" step="10" title="Notification Time"></b-form-input>
+              <b-input-group-append>
+                <b-btn variant="outline-secondary" @click="change_notification_time(20)">+</b-btn>
+              </b-input-group-append>
+    		    </b-input-group>
+    	    </b-list-group-item>
 
-	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-        <label for="range-2">Debug:</label>
-        <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
-	    </b-list-group-item>
+    	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Dark Mode:</label>
+            <b-form-checkbox name="check-button" switch size="lg" v-model="dark" @change="change_dark_mode"></b-form-checkbox>
+    	    </b-list-group-item>
 
-	  </b-list-group>
-        </b-modal>
+    	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Debug:</label>
+            <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
+    	    </b-list-group-item>
+
+    	  </b-list-group>
+      </b-modal>
 
 
         <!-- Load architecture menu -->
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
           
           <!-- Navbar -->
-          <div class="contenedor menu row">
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding"></div>
             <div class="col-lg-6 col-sm-12 nopadding"></div>
             <div class="col-lg-3 col-sm-12 nopadding">
@@ -216,7 +259,7 @@
 
           <!-- Information popover -->
           <b-popover target="info_men" triggers="click blur">
-            <template slot="title">
+            <template v-slot:title>
               <b-button @click="closePopover" class="close" aria-label="Close">
                 <span class="d-inline-block" aria-hidden="true">&times;</span>
               </b-button>
@@ -241,12 +284,12 @@
                   <b-list-group-item>
                     <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                       <b-row no-gutters>
-                        <b-col md="3" @click="load_arch_select(item.name)">
-                          <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
+                        <b-col md="3" @click="load_arch_select(item)">
+                          <b-card-img :src=item.img :alt=item.alt thumbnail fluid class="rounded-0"></b-card-img>
                         </b-col>
 
-                        <b-col md="7" @click="load_arch_select(item.name)">
-                          <b-card-body :title=item.name title-tag="h4">
+                        <b-col md="7" @click="load_arch_select(item)">
+                          <b-card-body :title=item.name title-tag="h2">
                             <b-card-text style="text-align: justify; font-size: 11pt;">
                               {{item.description}}
                             </b-card-text>
@@ -301,7 +344,7 @@
                         </b-col>
 
                         <b-col md="9">
-                          <b-card-body title="New Architecture" title-tag="h4" >
+                          <b-card-body title="New Architecture" title-tag="h2" >
                             <b-card-text style="text-align: justify; font-size: 11pt;">
                               Allows you to define an architecture from scratch.
                             </b-card-text>
@@ -317,7 +360,7 @@
                         </b-col>
 
                         <b-col md="9">
-                          <b-card-body title="Load Architecture" title-tag="h4">
+                          <b-card-body title="Load Architecture" title-tag="h2">
                             <b-card-text style="text-align: justify; font-size: 11pt;">
                               Allows to load the definition of an already created architecture.
                             </b-card-text>
@@ -328,9 +371,9 @@
                       <!-- Load new architecture modal -->
                       <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
                         <b-form>
-                          <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)"></b-form-input>
+                          <b-form-input v-on:input="debounce('name_arch', $event)" :value="name_arch" placeholder="Enter the name of the architecture" :state="valid(name_arch)" title="Architecture Name"></b-form-input>
                           <br>
-                          <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3"></b-form-textarea>
+                          <b-form-textarea v-on:input="debounce('description_arch', $event)" :value="description_arch" placeholder="Enter a description of the architecture" rows="3" title="Architecture Description"></b-form-textarea>
                           <br>
                           <b-form-file v-model="load_arch" placeholder="Choose a file..." id="arch_file" accept=".json" :state="valid(load_arch)"></b-form-file>
                         </b-form>
@@ -369,7 +412,7 @@
         <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
 
       		<!-- Navbar -->
-          <div class="contenedor menu row">
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -418,7 +461,7 @@
 
             <!-- Information popover -->
             <b-popover target="info_arch" triggers="click blur">
-              <template slot="title">
+              <template v-slot:title>
                 <b-button @click="closePopover" class="close" aria-label="Close">
                   <span class="d-inline-block" aria-hidden="true">&times;</span>
                 </b-button>
@@ -540,7 +583,7 @@
                 </b-tab>
 
                 <!-- Components -->
-                <b-tab title="Components" :disabled="advanced_mode">
+                <b-tab title="Components" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Components of the architecture:</h6>
 
@@ -595,14 +638,14 @@
                           <b-card-body>
 
                             <!-- Elements table -->
-                             <b-table :items="architecture.components[item.index].elements" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0">
+                             <b-table :items="architecture.components[item.index].elements" class="text-center" :fields="archFields" v-if="architecture.components[item.index].elements.length > 0" sticky-header>
 
                               <!-- For each element -->
-                              <template slot="ID" slot-scope="row">
+                              <template v-slot:cell(ID)="row">
                                 {{element_id(architecture.components[item.index].elements[row.index].name, architecture.components[item.index].type, architecture.components[item.index].double_precision)}}
                               </template>
 
-                              <template slot="properties" slot-scope="row">
+                              <template v-slot:cell(properties)="row">
                                 <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'read' || architecture.components[item.index].elements[row.index].properties[1] == 'read'"> Read </b-form-checkbox>
 
                                 <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'read' && architecture.components[item.index].elements[row.index].properties[1] != 'read'"> Read </b-form-checkbox>
@@ -612,7 +655,7 @@
                                 <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'write' && architecture.components[item.index].elements[row.index].properties[1] != 'write'"> Write </b-form-checkbox>
                               </template>
 
-                              <template slot="actions" slot-scope="row">
+                              <template v-slot:cell(actions)="row">
                                 <b-button @click.stop="editElemModal(row.item.name, item.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                                 <b-button @click.stop="delElemModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                               </template>
@@ -719,7 +762,7 @@
                 </b-tab>
 
                 <!-- Instruction definition -->
-                <b-tab title="Instructions Definition" :disabled="advanced_mode">
+                <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Instruction set:</h6>
 
@@ -755,8 +798,8 @@
 
                       <!-- Page 2 -->
                       <div id="newInstForm2" v-if="instructionFormPage == 2">
-                        <div class="col-lg-12 col-sm-12 row">
-                          <div class="col-lg-2 col-2 fields">
+                        <div class="col-lg-14 col-sm-14 row">
+                          <div class="col-lg-1 col-1 fields">
                             
                           </div>
                           <div class="col-lg-2 col-2 fields">
@@ -764,6 +807,9 @@
                           </div>
                           <div class="col-lg-2 col-2 fields">
                             <h6>Type</h6>
+                          </div>
+                          <div class="col-lg-1 col-1 fields">
+                            <h6>Break</h6>
                           </div>
                           <div class="col-lg-2 col-2 fields">
                             <h6>Start Bit</h6>
@@ -778,8 +824,8 @@
 
                         <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
                           <div v-for="i in parseInt(formInstruction.numfieldsAux)">
-                            <div class="col-lg-12 col-sm-12 row">
-                              <div class="col-lg-2 col-2 fields">
+                            <div class="col-lg-14 col-sm-14 row">
+                              <div class="col-lg-1 col-1 fields">
                                 <h6>Field {{i-1}}</h6>
                               </div>
                               <div class="col-lg-2 col-2 fields">
@@ -808,22 +854,74 @@
                                   </b-form-input>
                                 </b-form-group>
                               </div>
+                            <div class="col-lg-1 col-1 fields">
+                                <b-form-checkbox
+                                    :id="'fragment-'+ i"
+                                    :value="true"
+                                    v-model="formInstruction.separated[i-1]"
+                                    @change="changeToSeparateValue($event, i-1)"
+                                    v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
+                                    class="ml-3"
+                                    >
+                              </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
-                                  </b-form-input>
+                                    <b-form-input
+                                       type="number"
+                                       min="0"
+                                       :max="32 * formInstruction.nwords - 1"
+                                       v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm"
+                                     v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+                                    <b-form-input
+                                       v-else v-for="(j, ind) in formInstruction.startBitField[i-1]"
+                                       type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                       v-on:input="debounce('formInstruction.startBitField['+i+'-1]['+ind+']', $event)"
+                                       :value="formInstruction.startBitField[i-1][ind]" required
+                                       :state="valid(j)"
+                                       size="sm"
+                                       class="mb-2">
+                                    </b-form-input>
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
-                                  <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                  <b-form-input
+                                      type="number"
+                                      min="0"
+                                      :max="32 * formInstruction.nwords - 1"
+                                      v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)"
+                                      :value="formInstruction.stopBitField[i-1]"
+                                      required
+                                      :state="valid(formInstruction.stopBitField[i-1])"
+                                      size="sm"
+                                      v-if="typeof(formInstruction.stopBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+
+                                    <b-form-input
+                                      v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]"
+                                      type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                      v-on:input="debounce('formInstruction.stopBitField['+i+'-1]['+ind+']', $event)"
+                                      :value="formInstruction.stopBitField[i-1][ind]" required
+                                      :state="valid(j)"
+                                      size="sm"
+                                      class="mb-2">
                                   </b-form-input>
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                <b-form-group>
+                                <b-form-group v-if="typeof(formInstruction.stopBitField[i-1]) != 'object'">
                                   <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                   </b-form-input>
+                                </b-form-group>
+                                <b-form-group v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]">
+                                  <b-form-input type="text"
+                                      v-on:input="debounce('formInstruction.co['+ ind + ']', $event)"
+                                      :value="formInstruction.co[ind]"
+                                      required :state="valid(formInstruction.co[ind])"
+                                      size="sm">
+                                  </b-form-input>
+                                    
                                 </b-form-group>
                               </div>
                               <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
@@ -831,6 +929,10 @@
                                   <b-form-input type="text" v-on:input="debounce('formInstruction.valueField['+i+'-1]', $event)" :value="formInstruction.valueField[i-1]" required :state="valid(formInstruction.valueField[i-1])" size="sm">
                                   </b-form-input>
                                 </b-form-group>
+                              </div>
+                              <div class="col-lg-2 col-2 fields" v-if="formInstruction.separated[i-1]">
+                                  <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)" size="sm"> + </b-button>
+                                  <b-button v-if="formInstruction.startBitField[i-1].length > 1" variant="danger" size="sm" @click="lessFieldsToSeparateValues($event, i-1)"> - </b-button>
                               </div>
                             </div>
                           </div>
@@ -853,7 +955,7 @@
                       <!-- Page 4 -->
                       <div id="newInstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Assembly Definition:">
-                          <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                          <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4" title="Instruction Definition">
                           </b-form-textarea>
                         </b-form-group>
                       </div>
@@ -868,32 +970,32 @@
                   </b-modal >
 
                   <!-- Instruction set table -->
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table">
+                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                    <b-table small :items="architecture.instructions" :fields="instFields" class="instruction_table text-center" sticky-header="60vh"> 
 
                       <!-- Change the title of each column -->
-                      <template slot="HEAD_cop" scope="row">
+                      <template v-slot:head(cop)="row">
                         Extended CO
                       </template>
 
-                      <template slot="HEAD_signature" scope="row">
+                      <template v-slot:head(signature)="row">
                         Detailed Syntax
                       </template>
 
-                      <template slot="HEAD_signatureRaw" scope="row">
+                      <template v-slot:head(signatureRaw)="row">
                         Instruction syntax
                       </template>
 
                       <!-- For each instruction -->
-                      <template slot="fields" slot-scope="row">
+                      <template v-slot:cell(fields)="row">
                         <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100">View Fields</b-button>
                       </template>
 
-                      <template slot="definition" slot-scope="row">
-                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
+                      <template v-slot:cell(definition)="row">
+                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4" title="Instruction Definition"></b-form-textarea>
                       </template>
 
-                      <template slot="actions" slot-scope="row">
+                      <template v-slot:cell(actions)="row">
                         <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                         <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
@@ -903,8 +1005,8 @@
                     <b-modal size="lg" id ="modalViewFields" :title="modalViewFields.title" hide-footer @hidden="emptyFormInst">
                       <b-form>
                         <div id="viewFields" >
-                          <div class="col-lg-12 col-sm-12 row">
-                            <div class="col-lg-2 col-2 fields">
+                          <div class="col-lg-14 col-sm-14 row">
+                            <div class="col-lg-1 col-1 fields">
                               
                             </div>
                             <div class="col-lg-2 col-2 fields">
@@ -913,6 +1015,9 @@
                             <div class="col-lg-2 col-2 fields">
                               <h6>Type</h6>
                             </div>
+                              <div class="col-lg-1 col-1 fields">
+                                <h6>Break</h6>
+                              </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Start Bit</h6>
                             </div>
@@ -926,8 +1031,8 @@
 
                           <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
                             <div v-for="i in parseInt(formInstruction.numfieldsAux)">
-                              <div class="col-lg-12 col-sm-12 row">
-                                <div class="col-lg-2 col-2 fields">
+                              <div class="col-lg-14 col-sm-14 row">
+                                <div class="col-lg-1 col-1 fields">
                                   <h6>Field {{i-1}}</h6>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
@@ -944,16 +1049,58 @@
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
+                                <div class="col-lg-1 col-1 fields">
+                                    <b-form-checkbox
+                                        :id="'view-fragment-'+ i"
+                                        v-model="formInstruction.separated[i-1]"
+                                        v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
+                                        class="ml-3"
+                                        disabled
+                                        >
+                                </div>
+                                <!-- start bit description -->
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
-                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.startBitField[i-1]" required size="sm" disabled>
+                                    <b-form-input
+                                        :value="true"
+                                       type="number"
+                                       min="0"
+                                       :max="32 * formInstruction.nwords - 1"
+                                       v-model="formInstruction.startBitField[i-1]"
+                                       required size="sm"
+                                       disabled
+                                     v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
                                     </b-form-input>
+                                    <b-form-input 
+                                       v-else v-for="(j, ind) in formInstruction.startBitField[i-1]"
+                                       type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                       v-model="formInstruction.startBitField[i-1][ind]" required
+                                      class="mb-2"
+                                       disabled>
                                   </b-form-group>
                                 </div>
+                                <!-- stop bit description -->
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
-                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-model="formInstruction.stopBitField[i-1]" required size="sm" disabled>
+                                    <b-form-input
+                                        type="number"
+                                        min="0"
+                                        :max="32 * formInstruction.nwords - 1"
+                                        v-model="formInstruction.stopBitField[i-1]"
+                                        required
+                                        size="sm"
+                                        disabled
+                                        v-if="typeof(formInstruction.stopBitField[i-1]) !== 'object'">
                                     </b-form-input>
+                                    <b-form-input
+                                      v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]"
+                                      type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                      v-model="formInstruction.stopBitField[i-1][ind]"
+                                      required
+                                      class="mb-2"
+                                      disabled>
+                                    </b-form-input>
+                                    
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
@@ -1004,8 +1151,8 @@
 
                         <!-- Page 2 -->
                         <div id="editInstForm2" v-if="instructionFormPage == 2">
-                          <div class="col-lg-12 col-sm-12 row">
-                            <div class="col-lg-2 col-2 fields">
+                          <div class="col-lg-14 col-sm-14 row">
+                            <div class="col-lg-1 col-1 fields">
                               
                             </div>
                             <div class="col-lg-2 col-2 fields">
@@ -1013,6 +1160,9 @@
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Type</h6>
+                            </div>
+                            <div class="col-lg-1 col-1 fields">
+                              <h6>Break</h6>
                             </div>
                             <div class="col-lg-2 col-2 fields">
                               <h6>Start Bit</h6>
@@ -1028,8 +1178,8 @@
 
                           <div v-if="isNaN(parseInt(formInstruction.numfieldsAux)) == false">
                             <div v-for="i in parseInt(formInstruction.numfieldsAux)">
-                              <div class="col-lg-12 col-sm-12 row">
-                                <div class="col-lg-2 col-2 fields">
+                              <div class="col-lg-14 col-sm-14 row">
+                                <div class="col-lg-1 col-1 fields">
                                   <h6>Field {{i-1}}</h6>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
@@ -1058,29 +1208,61 @@
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
+                                <div class="col-lg-1 col-1 fields">
+                                    <b-form-checkbox
+                                        :id="'fragment-'+ i"
+                                        :value="true"
+                                        v-model="formInstruction.separated[i-1]"
+                                        @change="changeToSeparateValue($event, i-1)"
+                                        v-if="fragmentData.indexOf(formInstruction.typeField[i-1]) !== -1"
+                                        class="ml-3"
+                                        >
+                                </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
-                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm">
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.startBitField['+i+'-1]', $event)" :value="formInstruction.startBitField[i-1]" required :state="valid(formInstruction.startBitField[i-1])" size="sm" v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+                                    <b-form-input v-else v-for="(j, ind) in formInstruction.startBitField[i-1]"
+                                                  type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                                  v-on:input="debounce('formInstruction.startBitField['+i+'-1]['+ind+']', $event)"
+                                                  :value="formInstruction.startBitField[i-1][ind]" required
+                                                  :state="valid(j)" size="sm"
+                                                  class="mb-2">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
-                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm">
+                                    <b-form-input type="number" min="0" :max="32 * formInstruction.nwords - 1" v-on:input="debounce('formInstruction.stopBitField['+i+'-1]', $event)" :value="formInstruction.stopBitField[i-1]" required :state="valid(formInstruction.stopBitField[i-1])" size="sm"
+                                        v-if="typeof(formInstruction.startBitField[i-1]) !== 'object'">
+                                    </b-form-input>
+                                    <b-form-input v-else v-for="(j, ind) in formInstruction.stopBitField[i-1]"
+                                                  type="number" min="0" :max="32 * formInstruction.nwords - 1"
+                                                  v-on:input="debounce('formInstruction.stopBitField['+i+'-1]['+ind+']', $event)"
+                                                  :value="formInstruction.stopBitField[i-1][ind]" required
+                                                  :state="valid(j)" size="sm"
+                                                  class="mb-2">
                                     </b-form-input>
                                   </b-form-group>
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'co'">
-                                  <b-form-group>
+                                  <b-form-group v-if="typeof(formInstruction.stopBitField[i-1]) !== 'object'">
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.co', $event)" :value="formInstruction.co" required :state="valid(formInstruction.co)" size="sm">
                                     </b-form-input>
                                   </b-form-group>
+                                  <!--<b-form-group else v-for="(j, ind) in formInstruction.stopBitField[i-1]">
+                                    <b-form-input type="text" v-on:input="debounce('formInstruction.co['+ind+']', $event)" :value="formInstruction.co[ind]" required :state="valid(formInstruction.co[ind])" size="sm">
+                                    </b-form-input>-->
                                 </div>
                                 <div class="col-lg-2 col-2 fields" v-if="formInstruction.typeField[i-1] == 'cop'">
                                   <b-form-group>
                                     <b-form-input type="text" v-on:input="debounce('formInstruction.valueField['+i+'-1]', $event)" :value="formInstruction.valueField[i-1]" required :state="valid(formInstruction.valueField[i-1])" size="sm">
                                     </b-form-input>
                                   </b-form-group>
+                                </div>
+                                <div class="col-lg-2 col-2 fields" v-if="formInstruction.separated[i-1]">
+                                    <b-button variant="primary" @click="addMoreFieldsToSeparateValues($event, i-1)" size="sm"> + </b-button>
+                                    <b-button v-if="formInstruction.startBitField[i-1].length > 1" variant="danger" size="sm"  @click="lessFieldsToSeparateValues($event, i-1)"> - </b-button>
                                 </div>
                               </div>
                             </div>
@@ -1103,7 +1285,7 @@
                         <!-- Page 4 -->
                         <div id="editInstForm4" v-if="instructionFormPage == 4">
                           <b-form-group label="Assembly Definition:">
-                            <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4">
+                            <b-form-textarea v-on:input="debounce('formInstruction.definition', $event)" :value="formInstruction.definition" placeholder="Example: reg1=reg2+reg3" :state="valid(formInstruction.definition)" :rows="4" title="Instruction Definition">
                             </b-form-textarea>
                           </b-form-group>
                         </div>
@@ -1120,7 +1302,7 @@
                 </b-tab>
 
                 <!-- Pseudoinstruction definition -->
-                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode">
+                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Pseudoinstructions set:</h6>
 
@@ -1236,7 +1418,7 @@
                       <!-- Page 4 -->
                       <div id="newPseudoinstForm4" v-if="instructionFormPage == 4">
                         <b-form-group label="Pseudoinstruction Definition:">
-                          <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                          <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4" title="Pseudoinstruction Definition">
                           </b-form-textarea>
                         </b-form-group>
                       </div>
@@ -1251,28 +1433,28 @@
                   </b-modal >
 
                   <!-- Pseudoinstruction set table -->
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-                    <b-table small :items="architecture.pseudoinstructions" :fields="pseudoinstFields" class="instruction_table">
+                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                    <b-table small :items="architecture.pseudoinstructions" :fields="pseudoinstFields" class="instruction_table  text-center" sticky-header="60vh">
 
                       <!-- Change the title of each column -->
-                      <template slot="HEAD_signature" scope="row">
+                      <template v-slot:head(signature)="row">
                         Detailed Syntax
                       </template>
 
-                      <template slot="HEAD_signatureRaw" scope="row">
+                      <template v-slot:head(signatureRaw)="row">
                         Instruction syntax
                       </template>
 
                       <!-- For each pseudoinstruction -->
-                      <template slot="fields" slot-scope="row">
+                      <template v-slot:cell(fields)="row">
                         <b-button @click.stop="viewFielsPseudo(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100">View Fields</b-button>
                       </template>
 
-                      <template slot="definition" slot-scope="row">
-                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4"></b-form-textarea>
+                      <template v-slot:cell(definition)="row">
+                        <b-form-textarea v-model="row.item.definition" disabled no-resize rows="4" title="Pseudoinstruction Definition"></b-form-textarea>
                       </template>
 
-                      <template slot="actions" slot-scope="row">
+                      <template v-slot:cell(actions)="row">
                         <b-button @click.stop="editPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                         <b-button @click.stop="delPseudoinstModal(row.item.name, row.index, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
@@ -1449,7 +1631,7 @@
                         <!-- Page 4 -->
                         <div id="editPseudoinstForm4" v-if="instructionFormPage == 4">
                           <b-form-group label="Pseudoinstruction Definition:">
-                            <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4">
+                            <b-form-textarea v-on:input="debounce('formPseudoinstruction.definition', $event)" :value="formPseudoinstruction.definition" placeholder="Example: add reg1 reg0 reg2" :state="valid(formPseudoinstruction.definition)" :rows="4" title="Pseudoinstruction Definition">
                             </b-form-textarea>
                           </b-form-group>
                         </div>
@@ -1466,7 +1648,7 @@
                 </b-tab>
 
                 <!-- Directives definition -->
-                <b-tab title="Directives Definition" :disabled="advanced_mode">
+                <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Directives set:</h6>
 
@@ -1503,10 +1685,10 @@
                   </b-modal >
 
                   <!-- Directives set table -->
-                  <div class="col-lg-12 col-sm-12 architecture-scroll-y" style="margin-top: 3vh">
-                    <b-table small :items="architecture.directives" :fields="directivesFields" class="instruction_table">
+                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                    <b-table small :items="architecture.directives" :fields="directivesFields" class="instruction_table  text-center" sticky-header="60vh">
                       <!-- For each directive -->
-                      <template slot="actions" slot-scope="row" class="">
+                      <template v-slot:cell(actions)="row" class="">
                         <b-button @click.stop="editDirModal(row.item.name, $event.target)" class="btn btn-outline-secondary btn-sm buttonBackground h-100"><span class="far fa-edit"></span> Edit</b-button>
                         <b-button @click.stop="delDirModal(row.item.name, $event.target)" class="btn btn-outline-danger btn-sm buttonBackground h-100"><span class="far fa-trash-alt"></span> Delete</b-button> 
                       </template>
@@ -1546,7 +1728,7 @@
         <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
           <!-- Navbar -->
-          <div class="contenedor menu row">
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -1582,7 +1764,7 @@
               <p> Please write the file name: </p> 
               <b-form-input v-on:input="debounce('save_assembly', $event)" :value="save_assembly"
                   type="text"
-                  placeholder="File name where assembly will be saved">
+                  placeholder="File name where assembly will be saved" title="File name">
               </b-form-input>
             </b-modal>
 
@@ -1590,7 +1772,7 @@
             <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
               <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
               <b-list-group>
-                <b-list-group-item button v-for="item in example_available" @click="load_example(item.id)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
+                <b-list-group-item button v-for="item in example_available" @click="load_example(item.url)" ref="closeExample">{{item.name}}: {{item.description}}</b-list-group-item>
               </b-list-group>
             </b-modal>
 
@@ -1625,7 +1807,8 @@
               <p> Please write the file name: </p> 
               <b-form-input v-on:input="debounce('name_binary_save', $event)" :value="name_binary_save"
                   type="text"
-                  placeholder="File name where binary will be saved">
+                  placeholder="File name where binary will be saved"
+                  title="File name">
               </b-form-input>
             </b-modal>
 
@@ -1644,7 +1827,7 @@
           </div>
 
           <b-popover target="info_ass" triggers="click blur">
-            <template slot="title">
+            <template v-slot:title>
               <b-button @click="closePopover" class="close" aria-label="Close">
                 <span class="d-inline-block" aria-hidden="true">&times;</span>
               </b-button>
@@ -1662,7 +1845,7 @@
           <div class="contenedor row">
             <div class="col-lg-12 col-sm-12" id="divAssembly">
               <h5>Assembly: (To comment a block of code press ctrl + /)</h5>
-              <textarea id="textarea_assembly" rows="14" class="code-scroll-y">
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code" style="display: none">
               </textarea>
             </div>
 
@@ -1694,10 +1877,10 @@
         <!-- Simulator view -->
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
-        	<!-- Navbar -->
-          <div class="contenedor menu row mb-3">
+       	  <!-- Navbar -->
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_sim"  @click="change_UI_mode('architecture')"><span class="fas fa-sitemap"></span> Architecture</b-button>
@@ -1713,7 +1896,7 @@
               <div class="col-lg-12 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <!-- Execution actions -->
-                  <div class="col-lg-12 col-sm-12">
+                  <div class="col-lg-12 col-sm-12 py-0 px-1">
                     <div class="col-lg-12 col-sm-12 buttons row">
                       <div class="col-lg-4 col-sm-4 buttons">
                         <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
@@ -1748,18 +1931,19 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
-                  </div>
+            <div class="col-lg-2 col-sm-12 py-0 px-1">
+              <div class="col-lg-12 col-sm-12 buttons row">
+                <div class="col-lg-6 col-sm-6 buttons">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.examples2><span class="fas fa-file-alt"></span> Examples</b-button>
+                </div>
+                <div class="col-lg-6 col-sm-6 buttons">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.calculator><span class="fas fa-calculator"></span> Calculator</b-button>
                 </div>
               </div>
             </div>
 
             <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_sim" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
@@ -1771,7 +1955,7 @@
 
                   <!-- Information popover -->
                   <b-popover target="info_sim" triggers="click blur">
-                    <template slot="title">
+                    <template v-slot:title>
                       <b-button @click="closePopover" class="close" aria-label="Close">
                         <span class="d-inline-block" aria-hidden="true">&times;</span>
                       </b-button>
@@ -1783,6 +1967,14 @@
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" v-b-modal.about><span class="fas fa-address-card"></span> About us</b-button>
                     </div>
                   </b-popover>
+
+                  <!-- Examples modal -->
+                  <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
+                    <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
+                    <b-list-group>
+                      <b-list-group-item button v-for="item in example_available" @click="load_example_init(item.url)" ref="closeExample">{{item.name}}: <span v-html="item.description"></span></b-list-group-item>
+                    </b-list-group>
+                  </b-modal>
 
                   <!-- Calculator -->
                   <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
@@ -1804,7 +1996,7 @@
                     <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
                       <div class="col-lg-2 col-2"></div>
                       <div class="col-lg-6 col-8">
-                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.hexadecimal', $event)" :value="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter hexadecimal" :maxlength="calculator.lengthHexadecimal"></b-form-input>
+                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.hexadecimal', $event)" :value="calculator.hexadecimal" @change="calculatorFunct(0)" placeholder="Enter hexadecimal number" :maxlength="calculator.lengthHexadecimal" title="Hexadecimal"></b-form-input>
                       </div>
                       <div class="col-lg-4"></div>
                     </div>
@@ -1822,13 +2014,13 @@
                       <div class="col-lg-8 col-12 nopadding">
                         <div class="col-lg-12 col-12 row nomargin nopadding">
                           <div class="col-lg-2 col-2" style="padding: 1%;">
-                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.sign', $event)" :value="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign"></b-form-input>
+                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.sign', $event)" :value="calculator.sign" @change="calculatorFunct(1)" placeholder="Enter sign" :maxlength="calculator.lengthSign" title="Sign"></b-form-input>
                           </div>
                           <div class="col-lg-4 col-4" style="padding: 1%;">
-                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.exponent', $event)" :value="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent"></b-form-input>
+                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.exponent', $event)" :value="calculator.exponent" @change="calculatorFunct(1)" placeholder="Enter exponent" :maxlength="calculator.lengthExponent" title="Exponent"></b-form-input>
                           </div>
                           <div class="col-lg-6 col-6" style="padding: 1%;">
-                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.mantissa', $event)" :value="calculator.mantissa" @change="calculatorFunct(1)" placeholder="Enter mantissa" :maxlength="calculator.lengthMantissa"></b-form-input>
+                            <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.mantissa', $event)" :value="calculator.mantissa" @change="calculatorFunct(1)" placeholder="Enter mantissa" :maxlength="calculator.lengthMantissa" title="Mantisa"></b-form-input>
                           </div>
                         </div>
                       </div>
@@ -1855,7 +2047,7 @@
                         </div>
                       </div>
                       <div class="col-lg-3" style="padding-top: 3%">
-                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.decimal', $event)" :value="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal"></b-form-input>
+                        <b-form-input class="form-control form-control-sm" v-on:input="debounce('calculator.decimal', $event)" :value="calculator.decimal" @change="calculatorFunct(2)" placeholder="Enter decimal number" title="Decimal"></b-form-input>
                       </div>
                     </div>
 
@@ -1870,27 +2062,41 @@
           </div>
 
           <!-- Execution instruction -->
-          <div class="col-lg-7 col-sm-12">
-            <div class="col-lg-12 col-sm-12 table-inst-wrapper-scroll-y ">
-              <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;" :filter-function=filter filter=" ">
+          <div class="col-xl-7 col-lg-6 col-sm-12 px-0">
+            <div class="col-lg-12 col-sm-12 px-2">
+
+              <b-table id="inst_table" sticky-header striped small hover :items="instructions" :fields="archInstructions" 
+                       class="instructions_table responsive" @row-clicked="breakPoint" 
+                       style="cursor:pointer; max-height:75vh !important;" :filter-function=filter filter=" " primary-key="Address">
+
+                <!-- Change the title of each column -->
+                <template v-slot:head(userInstructions)="row">
+                  User Instruction
+                </template>
+
+                <template v-slot:head(loadedInstructions)="row">
+                  Loaded Instructions
+                </template>
+
+
                 <!-- For each instruction -->
-                <template slot="Break" slot-scope="row">
+                <template v-slot:cell(Break)="row">
                   <div class="break" :id="row.index">
                     <br v-if="row.item.Break == null">
                     <b-img alt="Break" src="./images/stop_classic.gif" class="shadow" rounded="circle" style="width:auto !important;height:4vh;" v-if="row.item.Break == true"></b-img>
                   </div>
                 </template>
-                <template slot="Address" slot-scope="row">
+                <template v-slot:cell(Address)="row"slot="Address">
                   <h6>{{row.item.Address}}</h6>
                 </template>
-                <template slot="Label" slot-scope="row">
+                <template v-slot:cell(Label)="row"slot="Label">
                   <b-badge pill variant="info">{{row.item.Label}}</b-badge>
                 </template>
-                <template slot="User Instructions" slot-scope="row">
+                <template v-slot:cell(userInstructions)="row">
                   <h6 v-if="row.item.visible == true">{{row.item.user}}</h6>
                   <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
                 </template>
-                <template slot="Loaded Instructions" slot-scope="row">
+                <template v-slot:cell(loadedInstructions)="row">
                     <h6 v-if="row.item.visible == true">{{row.item.loaded}} <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge></h6>
                     <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt; <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge></h6>
                 </template> 
@@ -1903,10 +2109,10 @@
           </div>
 
           <!-- Execution data -->
-          <div class="col-lg-5 col-sm-12">
+          <div class="col-xl-5 col-lg-6 col-sm-12">
 
             <!-- View selector -->
-            <div class="col-lg-12 col-sm-12 mb-3">
+            <div class="col-lg-12 col-sm-12 mb-3 px-0">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
                   <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary">
@@ -1926,7 +2132,7 @@
             </div>
 
             <!-- Registers view -->
-            <div class="col-lg-12 col-sm-12" id="registers" v-if="data_mode == 'registers'">
+            <div class="col-lg-12 col-sm-12 px-0" id="registers" v-if="data_mode == 'registers'">
               <b-tabs content-class="mt-3">
 
                 <!-- Decimal view -->
@@ -1935,16 +2141,16 @@
                     <div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
                       
                       <!-- Control and integer registers -->
-                      <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
+                      <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
-                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                           <span class="text-truncate">{{item2.name}}</span> <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
-                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
+                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
 
                         <!-- Register popover -->
                         <b-popover show :target="popoverId(item2.name + 'Int')" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name + 'Int')">
-                          <template slot="title">
+                          <template v-slot:title>
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
                             </b-button>
@@ -1983,7 +2189,7 @@
 
                           <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                             <div class="col-lg-6 col-sm-6 popoverFooter">
-                              <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+                              <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
                             </div>
                             <div class="col-lg-6 col-sm-6 popoverFooter">
                               <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -1992,16 +2198,16 @@
                         </b-popover>
                       </div>
 
-                      <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
+                      <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
-                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
+                            <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
                           <b-popover show :target="popoverId(item2.name + 'FP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'FP')">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2035,7 +2241,7 @@
 
                             <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
                               </div>
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2047,12 +2253,12 @@
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
-                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{item2.value}}</b-badge>
+                             <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
                           <b-popover show :target="popoverId(item2.name + 'DFP')" triggers="click blur" v-if="register_popover == popoverId(item2.name + 'DFP')">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2086,7 +2292,7 @@
 
                             <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+                                <b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
                               </div>
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2104,15 +2310,15 @@
                 	<div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
                 		<div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
 
-                			<!-- Control and integer registers -->
-  	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
+                	  <!-- Control and integer registers -->
+  	                  <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+  	                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
   	                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" class="popover" v-if="register_popover == popoverId(item2.name)">
-                          <template slot="title">
+                          <template v-slot:title>
                             <b-button @click="closePopover" class="close" aria-label="Close">
                               <span class="d-inline-block" aria-hidden="true">&times;</span>
                             </b-button>
@@ -2151,7 +2357,7 @@
 
   												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  					            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+  					            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
   					            		</div>
   					            		<div class="col-lg-6 col-sm-6 popoverFooter">
   					            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">Update</b-button>
@@ -2160,17 +2366,17 @@
   								      </b-popover>
   	                  </div>
 
-  	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
+  	                  <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
 
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(float2bin(item2.value))}}</b-badge>
+  	                      	<span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
   		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2204,7 +2410,7 @@
 
   													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
   						            		</div>
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2216,12 +2422,12 @@
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" :id="item2.name">{{bin2hex(double2bin(item2.value))}}</b-badge>
+  		                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
   		                    <b-popover show :target="popoverId(item2.name)" triggers="click blur" v-if="register_popover == popoverId(item2.name)">
-                            <template slot="title">
+                            <template v-slot:title>
                               <b-button @click="closePopover" class="close" aria-label="Close">
                                 <span class="d-inline-block" aria-hidden="true">&times;</span>
                               </b-button>
@@ -2255,7 +2461,7 @@
 
   													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm"></b-form-input>
+  						            			<b-form-input v-on:input="debounce('newValue', $event)" :value="newValue" type="text" size="sm" title="New Register Value" placeholder="Enter new value"></b-form-input>
   						            		</div>
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-button class="btn btn-primary btn-block btn-sm" @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">Update</b-button>
@@ -2276,12 +2482,12 @@
 
                 <!-- Data memory -->
                 <b-tab title="Data" active>
-                  <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table" @row-clicked="select_space_type" id="data_memory_table">
-                      <template slot="Address" slot-scope="row">
+                  <div class="col-lg-12 col-sm-12">
+                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table" sticky-header="75vh">
+                      <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
-                      <template slot="Binary" slot-scope="row">
+                      <template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 13px">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
@@ -2289,7 +2495,7 @@
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[0].Tag}}</b-badge>
                         </h6>
                       </template>
-                      <template slot="Value" slot-scope="row">
+                      <template v-slot:cell(value)="row">
                         <h6 style="font-size: 13px">{{row.item.Value}} <span class="fas fa-eye" v-if="row.item.type == 'space' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)" style="float: right; margin-right: 2%;"></span></h6> 
                       </template>
                     </b-table>
@@ -2305,12 +2511,12 @@
 
                 <!-- Text memory -->
                 <b-tab title="Text">
-                  <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table" :filter-function=filter filter=" ">
-                      <template slot="Address" slot-scope="row">
+                  <div class="col-lg-12 col-sm-12">
+                    <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table  " :filter-function=filter filter=" " sticky-header="75vh">
+                      <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
-                      <template slot="Binary" slot-scope="row">
+                      <template template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 13px">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
@@ -2318,7 +2524,7 @@
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[0].Tag}}</b-badge>
                         </h6>
                       </template>
-                      <template slot="Value" slot-scope="row">
+                      <template v-slot:cell(value)="row">
                         <h6 style="font-size: 13px">{{row.item.Value}}</h6>
                       </template>
                     </b-table>
@@ -2327,13 +2533,13 @@
 
                 <!-- Stack memory -->
                 <b-tab title="Stack">
-                  <div class="col-lg-12 col-sm-12 table-mem-wrapper-scroll-y ">
-                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table" @row-clicked="select_stack_type">
-                      <template slot="Address" slot-scope="row">
+                  <div class="col-lg-12 col-sm-12">
+                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table " @row-clicked="select_stack_type" sticky-header="75vh">
+                      <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
-                      <template slot="Binary" slot-scope="row">
+                      <template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
@@ -2347,7 +2553,7 @@
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[0].Tag}}</b-badge>
                         </h6>
                       </template>
-                      <template slot="Value" slot-scope="row">
+                      <template v-slot:cell(Value)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</h6>
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">{{row.item.Value}}</h6>
                       </template>
@@ -2368,9 +2574,9 @@
             <!-- Stats--->
             <div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == 'stats'">
               <div class="col-lg-12 col-sm-12">
-                <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table"></b-table>
+                <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
                 <br>
-                <h6>Graphic</h6>
+                <!--<h6>Graphic</h6>
                 <b-progress class="mb-3">
                   <b-progress-bar :value="stats[0].percentage" style="background:red;">{{stats[0].abbreviation}}</b-progress-bar>
                   <b-progress-bar :value="stats[1].percentage" style="background:blue;">{{stats[1].abbreviation}}</b-progress-bar>
@@ -2385,31 +2591,39 @@
                   <b-progress-bar :value="stats[10].percentage" style="background:lime;">{{stats[10].abbreviation}}</b-progress-bar>
                   <b-progress-bar :value="stats[11].percentage" style="background:indigo;">{{stats[11].abbreviation}}</b-progress-bar>
                   <b-progress-bar :value="stats[12].percentage" style="background:cyan;">{{stats[12].abbreviation}}</b-progress-bar>
-                </b-progress>
+                </b-progress>-->
+
+                <div id="chart" v-if="totalStats>0">
+						      <apexchart type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
+						    </div>
+
               </div>
             </div>
           </div>
 
           <!-- Monitor -->
-          <div class="col-lg-6 col-sm-12" style="margin-bottom: 2%; margin-top: 2%;">
-            <div class="col-lg-12 col-sm-12">
-              <div class="col-lg-2 col-sm-2">
-                <b-img src="./images/monitor2.png" fluid alt="Monitor"></b-img>
+          <div class="col-lg-6 col-sm-12 my-2 mx-0">
+            <div class="row col-lg-12 col-sm-12 mx-0 pl-0">
+              <div class="col-lg-1 col-sm-1">
+                <i style="height:5vh; opacity:0.6;" class="fas fa-desktop fa-2x mb-2"></i>
               </div>
-              <div class="col-lg-12 col-sm-12">
-                <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled no-resize></b-form-textarea>
+              <div class="col-lg-11 col-sm-11 pr-0">
+                <b-form-textarea id="textarea_display" v-model="display" rows="5" 
+                   disabled no-resize title="Display"></b-form-textarea>
               </div>
             </div>
           </div>
 
           <!-- Keyboard -->
-          <div class="col-lg-6 col-sm-12" style="margin-bottom: 2%; margin-top: 2%;">
-            <div class="col-lg-12 col-sm-12">
-              <div class="col-lg-4 col-sm-4">
-                <b-img src="./images/keyboard1.png" fluid alt="Keyboard"></b-img>
+          <div class="col-lg-6 col-sm-12 my-2 mx-0">
+            <div class="row col-lg-12 col-sm-12 mx-0 pl-0">
+              <div class="col-lg-1 col-sm-1">
+                <i style="height:5vh; opacity:0.6;" class="fa fa-keyboard fa-2x mb-2"></i>
               </div>
-              <div class="col-lg-12 col-sm-12">
-                <b-form-textarea id="textarea_keyboard" v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" no-resize :state = "enter"></b-form-textarea>
+              <div class="col-lg-11 col-sm-11 pr-0">
+                <b-form-textarea id="textarea_keyboard" 
+                   v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" 
+                   no-resize :state = "enter" title="Keyboard"></b-form-textarea>
               </div>
             </div>
 
