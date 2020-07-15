@@ -74,16 +74,13 @@
 		      {
                           return new Promise(
                                   function(resolve, reject) {
-					 for (var i=0; i<example_available.length; i++) 
-    				         {
-					    if (example_available[i].id === hash.example) 
-                                            {
-					        app.load_example_init(example_available[i].url) ;
-					        resolve('Example loaded.') ;
-					    }
+					 var example_index = parseInt(hash.example) ;
+					 if (typeof example_available[example_index] === 'undefined') {
+					     reject('Example not found.') ;
 					 }
 
-					 reject('Example not found.') ;
+					 app.load_example_init(example_available[example_index].url) ;
+					 resolve('Example loaded.') ;
 				 }
                           ) ;
 		      }
