@@ -59,7 +59,7 @@
      * Help:
        * ./creator.sh -h
      * Example: creator compiles and executes the example2.txt:
-       * ./creator.sh --arc architecture/MIPS-32-like.json --asm examples/MIPS/example2.txt
+       * ./creator.sh -a architecture/MIPS-32-like.json -s examples/MIPS/example2.txt
 - [x] Creator now accepts three GET values:
      * Preload architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like

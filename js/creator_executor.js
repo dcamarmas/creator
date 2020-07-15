@@ -2117,8 +2117,6 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 
           case "sbrk":
 
-               // TODO: review for command line
-
                 var aux_addr = architecture.memory_layout[3].value;
     
                 if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
@@ -2136,6 +2134,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
     
                 if (typeof app !== "undefined")
                     app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+
                 architecture.memory_layout[3].value = aux_addr-1;
                 this.architecture.memory_layout[3].value = aux_addr-1;
                 break;
