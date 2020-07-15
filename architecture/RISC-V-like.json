@@ -23,7 +23,7 @@
       "double_precision": false,
       "elements": [
         {
-          "name": "ZERO",
+          "name": "zero",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -33,7 +33,7 @@
           ]
         },
         {
-          "name": "RA",
+          "name": "ra",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -43,7 +43,7 @@
           ]
         },
         {
-          "name": "SP",
+          "name": "sp",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -53,7 +53,7 @@
           ]
         },
         {
-          "name": "GP",
+          "name": "gp",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -63,7 +63,7 @@
           ]
         },
         {
-          "name": "TP",
+          "name": "tp",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -103,7 +103,7 @@
           ]
         },
         {
-          "name": "s0/fp",
+          "name": "s0",
           "nbits": "32",
           "value": "0",
           "default_value": "0",
