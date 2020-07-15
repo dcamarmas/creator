@@ -1,10 +1,25 @@
 body{
   background-color: #FFFFFF;
+  overflow-x: hidden;
 }
 
 hr {
   height: 1px;
   background-color: #9E9E9E;
+}
+
+h1 {
+  display: block;
+  font-size: 1em;;
+}
+
+h2 {
+  display: block;
+  font-size: 1.5em;
+}
+
+.table td{
+  vertical-align: middle;
 }
 
 .contenedor {
@@ -156,6 +171,7 @@ hr {
 
 .instructions_table{
   font-size: 15px;
+  padding-right: 1%;
 }
 
 .table-inst-wrapper-scroll-y {
@@ -206,4 +222,18 @@ hr {
   max-height: 60vh;
   overflow-y: auto;
   -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+#chart {
+  margin: 35px auto;
+  padding: 0;
+}
+
+.apexcharts-legend-text tspan:nth-child(1) {
+  font-weight: lighter;
+  fill: #999;
+}
+
+.apexcharts-legend-text tspan:nth-child(3) {
+  font-weight: bold;
 }

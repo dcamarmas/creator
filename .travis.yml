@@ -1,0 +1,16 @@
+
+language: node_js
+
+node_js:
+  - "node"
+
+before_install:
+  - npm install jshint
+  - npm install terser
+  - npm install colors
+  - npm install yargs
+
+script:
+  - npm run build-creator-node
+  - npm run test-creator-node
+
