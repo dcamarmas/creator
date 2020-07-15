@@ -1658,7 +1658,6 @@ function writeStackLimit ( stackLimit )
         }
 }
 
-// TODO: review for command line
 /*Syscall*/
 function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 {
@@ -1673,43 +1672,46 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
         switch(action)
         {
           case "print_int":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            if (typeof app !== "undefined")
-                 app._data.display += (parseInt(value.toString()) >> 0);
-            else process.stdout.write((parseInt(value.toString()) >> 0)) ;
-            break;
+               var value   = architecture.components[indexComp].elements[indexElem].value;
+               var val_int = parseInt(value.toString()) >> 0 ;
+
+               if (typeof app !== "undefined")
+                    app._data.display += val_int ;
+               else console.log(val_int) ; //process.stdout.write(val_int) ;
+               break;
 
           case "print_float":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            if (typeof app !== "undefined")
-                 app._data.display += value;
-            else process.stdout.write(value) ;
-            break;
+               var value = architecture.components[indexComp].elements[indexElem].value;
+
+               if (typeof app !== "undefined")
+                    app._data.display += value;
+               else console.log(value) ; //process.stdout.write(value) ;
+               break;
 
           case "print_double":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            if (typeof app !== "undefined")
-                 app._data.display += value;
-            else process.stdout.write(value) ;
-            break;
+               var value = architecture.components[indexComp].elements[indexElem].value;
+               if (typeof app !== "undefined")
+                    app._data.display += value;
+               else console.log(value) ; //process.stdout.write(value) ;
+               break;
 
           case "print_string":
-            var addr = architecture.components[indexComp].elements[indexElem].value;
-            var index;
+               var addr = architecture.components[indexComp].elements[indexElem].value;
+               var index;
 
-            if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-              executionIndex = -1;
-              this.keyboard = "";
-              return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
-            }
+               if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+                 executionIndex = -1;
+                 this.keyboard = "";
+                 return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
+               }
 
-            if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-              index = memory_hash[0];
-            }
+               if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+                 index = memory_hash[0];
+               }
 
-            if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-              index = memory_hash[2];
-            }
+               if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+                 index = memory_hash[2];
+               }
 
             for (var i = 0; i < memory[index].length; i++){
               for (var j = 0; j < memory[index][i].Binary.length; j++){
@@ -1740,453 +1742,479 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               }
             }
 
-            break;
+               break;
 
           case "read_int":
-            mutexRead = true;
-            if (typeof app !== "undefined")
+
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read integer> ') ;
+                    var value        = parseInt(keystroke) ;
+
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
+                }
+
+                // UI
+                mutexRead = true;
                 app._data.enter = false;
-
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
+    
+                console_log(mutexRead);
+                if (newExecution == true) {
+                    this.keyboard = "";
+                    consoleMutex  = false;
+                    mutexRead     = false;
+                    app._data.enter = null;
+    
+    	            show_notification('The data has been uploaded', 'info') ;
+    
+                    if (runExecution == false) {
+                        app.executeProgram();
+                    }
+    
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
+                }
+    
+                if (consoleMutex == false) {
+                    setTimeout(syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else {
+                  var value = parseInt(this.keyboard);
+                  console_log(value);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
                   app._data.enter = null;
-
-	      // show_notification('The data has been uploaded', 'info') ; // TODO
-
-              if (runExecution == false) {
-                  if (typeof app !== "undefined")
-                      app.executeProgram();
-              }
-
-              //return;
-              return packExecute(false, 'The data has been uploaded', 'danger', null);
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseInt(this.keyboard);
-              console_log(value);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
-                  app._data.enter = null;
-
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
-
-              if (executionIndex >= instructions.length)
-              {
-                 for (var i = 0; i < instructions.length; i++) {
-                      draw.space.push(i) ;
-                 }
-                 executionIndex = -2;
-                 return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false) {
-                       if (typeof app !== "undefined")
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (executionIndex >= instructions.length)
+                  {
+                     for (var i = 0; i < instructions.length; i++) {
+                          draw.space.push(i) ;
+                     }
+                     executionIndex = -2;
+                     return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false) {
                            app.executeProgram();
-              }
-              break;
-            }
-
-            break;
+                  }
+                }
+    
+                break;
 
           case "read_float":
-               mutexRead = true;
-               if (typeof app !== "undefined")
-                   app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
-                  app._data.enter = null;
 
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read integer> ') ;
+                    var value        = parseFloat(keystroke) ;
 
-              if (runExecution == false){
-                  if (typeof app !== "undefined")
-                      app.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseFloat(this.keyboard, 10);
-              console_log(value);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
-                  app._data.enter = null;
-
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                     draw.space.push(i) ;
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                executionIndex = -2;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false){
-                       if (typeof app !== "undefined")
+                mutexRead = true;
+                app._data.enter = false;
+                console_log(mutexRead);
+                if(newExecution == true){
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (runExecution == false){
+                      app.executeProgram();
+                  }
+    
+                  return;
+                }
+    
+                if (consoleMutex == false) {
+                    setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var value = parseFloat(this.keyboard, 10);
+                  console_log(value);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++) {
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false){
                            app.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
+                  }
+                }
+    
+                break;
 
           case "read_double":
-            mutexRead = true;
-            if (typeof app !== "undefined")
-                app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
-                  app._data.enter = null;
 
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read integer> ') ;
+                    var value        = parseFloat(keystroke) ;
 
-              if (runExecution == false){
-                  if (typeof app !== "undefined")
-                      app.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseFloat(this.keyboard, 10);
-              console_log(value);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
-                  app._data.enter = null;
-
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                     draw.space.push(i) ;
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                executionIndex = -2;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false){
-                       if (typeof app !== "undefined")
+                mutexRead = true;
+                app._data.enter = false;
+                console_log(mutexRead);
+                if(newExecution == true){
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (runExecution == false){
+                      app.executeProgram();
+                  }
+    
+                  return;
+                }
+    
+                if (consoleMutex == false) {
+                    setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var value = parseFloat(this.keyboard, 10);
+                  console_log(value);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++) {
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false){
                            app.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
+                  }
+    
+                  break;
+                }
+    
+                break;
 
           case "read_string":
+
+               // TODO: review for command line
+
                mutexRead = true;
                if (typeof app !== "undefined")
                    app._data.enter = false;
                console_log(mutexRead);
-            if (newExecution == true){
-               this.keyboard = "";
-               consoleMutex = false;
-               mutexRead = false;
-               if (typeof app !== "undefined")
-                   app._data.enter = null;
-
-               if (window.document)
-	 	   show_notification('The data has been uploaded', 'info') ;
-
-               if (runExecution == false){
+                if (newExecution == true){
+                   this.keyboard = "";
+                   consoleMutex = false;
+                   mutexRead = false;
                    if (typeof app !== "undefined")
-                       app.executeProgram();
-               }
-
-               return;
-            }
-
-            if (consoleMutex == false){
-                setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var addr = architecture.components[indexComp].elements[indexElem].value;
-              var value = "";
-              var valueIndex = 0;
-
-              for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++) {
-                value = value + this.keyboard.charAt(i);
-              }
-
-              console_log(value);
-
-              var auxAddr = data_address;
-              var index;
-
-              if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-                executionIndex = -1;
-                this.keyboard = "";
-                return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-              }
-
-              if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-                index = memory_hash[0];
-              }
-
-              if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-                index = memory_hash[2];
-              }
-
-              for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
-                for (var j = 0; j < memory[index][i].Binary.length; j++){
-                  var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-                  if(aux == addr){
-                    for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-                      memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                      auxAddr = memory[index][i].Binary[j].Addr;
-                      valueIndex++;
-                      addr++;
-                    }
-
-                    memory[index][i].Value = "";
-                    for (var j = 0; j < memory[index][i].Binary.length; j++){
-                      memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                    }
-
-                    if((i+1) < memory[index].length && valueIndex < value.length){
-                      i++;
-                      for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-                        memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                        auxAddr = memory[index][i].Binary[j].Addr;
-                        valueIndex++;
-                        addr++;
-                      }
-
-                      memory[index][i].Value = "";
-                      for (var j = 0; j < memory[index][i].Binary.length; j++){
-                        memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                      }
-
-                    }
-                    else if(valueIndex < value.length){
-                      data_address = auxAddr;
-                      memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
-                      i++;
-                      for (var z = 0; z < 4; z++){
-                        if(valueIndex < value.length){
-                          (memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                          valueIndex++;
-                          data_address++;
-                        }
-                        else{
-                          (memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                          data_address++;
-                        }
-                      }
-
-                      memory[index][i].Value = "";
-                      for (var j = 0; j < memory[index][i].Binary.length; j++){
-                        memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                      }
-                    }
-                  }
-                }
-              }
-
-              if (valueIndex == value.length){
-                 this.keyboard = "";
-                 consoleMutex = false;
-                 mutexRead = false;
-                 if (typeof app !== "undefined")
-                     app._data.enter = null;
-
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
-
-                if(executionIndex >= instructions.length){
-                  for (var i = 0; i < instructions.length; i++) {
-                       draw.space.push(i) ;
-                  }
-
-                  executionIndex = -2;
-                  return packExecute(true, 'The execution of the program has finished', 'success', null);
-                }
-                else if (runExecution == false){
-                         if (typeof app !== "undefined")
-                             app.executeProgram();
-                }
-
-                return;
-              }
-
-              var auxAddr = parseInt(addr);
-
-              while(valueIndex < value.length){
-                memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
-                for (var z = 0; z < 4; z++){
-                  if(valueIndex > value.length-1){
-                    (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
-                  }
-                  else{
-                    (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                    memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
-                  }
-                  auxAddr++;
-                  valueIndex++;
-                }
-                i++;
-              }
-
-              if (typeof app !== "undefined")
-                  app._data.memory[index] = memory[index];
-
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
-                  app._data.enter = null;
-
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                     draw.space.push(i) ;
-                }
-
-                executionIndex = -2;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false){
+                       app._data.enter = null;
+    
+                   if (window.document)
+    	 	   show_notification('The data has been uploaded', 'info') ;
+    
+                   if (runExecution == false){
                        if (typeof app !== "undefined")
                            app.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
+                   }
+    
+                   return;
+                }
+    
+                if (consoleMutex == false){
+                    setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var addr = architecture.components[indexComp].elements[indexElem].value;
+                  var value = "";
+                  var valueIndex = 0;
+    
+                  for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++) {
+                    value = value + this.keyboard.charAt(i);
+                  }
+    
+                  console_log(value);
+    
+                  var auxAddr = data_address;
+                  var index;
+    
+                  if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+                    executionIndex = -1;
+                    this.keyboard = "";
+                    return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+                  }
+    
+                  if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+                    index = memory_hash[0];
+                  }
+    
+                  if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+                    index = memory_hash[2];
+                  }
+    
+                  for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
+                    for (var j = 0; j < memory[index][i].Binary.length; j++){
+                      var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+                      if(aux == addr){
+                        for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+                          memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                          auxAddr = memory[index][i].Binary[j].Addr;
+                          valueIndex++;
+                          addr++;
+                        }
+    
+                        memory[index][i].Value = "";
+                        for (var j = 0; j < memory[index][i].Binary.length; j++){
+                          memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                        }
+    
+                        if((i+1) < memory[index].length && valueIndex < value.length){
+                          i++;
+                          for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+                            memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                            auxAddr = memory[index][i].Binary[j].Addr;
+                            valueIndex++;
+                            addr++;
+                          }
+    
+                          memory[index][i].Value = "";
+                          for (var j = 0; j < memory[index][i].Binary.length; j++){
+                            memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                          }
+    
+                        }
+                        else if(valueIndex < value.length){
+                          data_address = auxAddr;
+                          memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          i++;
+                          for (var z = 0; z < 4; z++){
+                            if(valueIndex < value.length){
+                              (memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                              valueIndex++;
+                              data_address++;
+                            }
+                            else{
+                              (memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                              data_address++;
+                            }
+                          }
+    
+                          memory[index][i].Value = "";
+                          for (var j = 0; j < memory[index][i].Binary.length; j++){
+                            memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                          }
+                        }
+                      }
+                    }
+                  }
+    
+                  if (valueIndex == value.length){
+                     this.keyboard = "";
+                     consoleMutex = false;
+                     mutexRead = false;
+                     if (typeof app !== "undefined")
+                         app._data.enter = null;
+    
+                    if (window.document)
+    		    show_notification('The data has been uploaded', 'info') ;
+    
+                    if(executionIndex >= instructions.length){
+                      for (var i = 0; i < instructions.length; i++) {
+                           draw.space.push(i) ;
+                      }
+    
+                      executionIndex = -2;
+                      return packExecute(true, 'The execution of the program has finished', 'success', null);
+                    }
+                    else if (runExecution == false){
+                             if (typeof app !== "undefined")
+                                 app.executeProgram();
+                    }
+    
+                    return;
+                  }
+    
+                  var auxAddr = parseInt(addr);
+    
+                  while(valueIndex < value.length){
+                    memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
+                    for (var z = 0; z < 4; z++){
+                      if(valueIndex > value.length-1){
+                        (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
+                      }
+                      else{
+                        (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                        memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
+                      }
+                      auxAddr++;
+                      valueIndex++;
+                    }
+                    i++;
+                  }
+    
+                  if (typeof app !== "undefined")
+                      app._data.memory[index] = memory[index];
+    
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  if (typeof app !== "undefined")
+                      app._data.enter = null;
+    
+                    if (window.document)
+    		    show_notification('The data has been uploaded', 'info') ;
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++) {
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false){
+                           if (typeof app !== "undefined")
+                               app.executeProgram();
+                  }
+    
+                  break;
+                }
+    
+                break;
 
           case "sbrk":
-            var aux_addr = architecture.memory_layout[3].value;
 
-            if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-              executionIndex = -1;
-              return packExecute(true, 'Not enough memory for data segment', 'danger', null);
-            }
+               // TODO: review for command line
 
-            for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
-              memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
-              for (var z = 0; z < 4; z++){
-                (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
-                aux_addr++;
-              }
-            }
-
-            if (typeof app !== "undefined")
-                app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-            architecture.memory_layout[3].value = aux_addr-1;
-            this.architecture.memory_layout[3].value = aux_addr-1;
-            break;
+                var aux_addr = architecture.memory_layout[3].value;
+    
+                if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
+                    executionIndex = -1;
+                    return packExecute(true, 'Not enough memory for data segment', 'danger', null);
+                }
+    
+                for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
+                  memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
+                  for (var z = 0; z < 4; z++){
+                    (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
+                    aux_addr++;
+                  }
+                }
+    
+                if (typeof app !== "undefined")
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                architecture.memory_layout[3].value = aux_addr-1;
+                this.architecture.memory_layout[3].value = aux_addr-1;
+                break;
 
           case "exit":
-            executionIndex = instructions.length + 1;
-            break;
+                executionIndex = instructions.length + 1;
+                break;
 
           case "print_char":
-            var aux = architecture.components[indexComp].elements[indexElem].value;
-            var aux2 = aux.toString(16);
-            var length = aux2.length;
-
-            var value = aux2.substring(length-2, length);
-            this.display = this.display + String.fromCharCode(parseInt(value, 16));
-            break;
+                var aux = architecture.components[indexComp].elements[indexElem].value;
+                var aux2 = aux.toString(16);
+                var length = aux2.length;
+    
+                var value = aux2.substring(length-2, length);
+                if (typeof app !== "undefined")
+                     app._data.display += String.fromCharCode(parseInt(value, 16));
+                else process.stdout.write(value) ;
+                break;
 
           case "read_char":
-               mutexRead = true;
-               if (typeof app !== "undefined")
-                   app._data.enter = false;
-               console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-               if (typeof app !== "undefined")
-                   app._data.enter = null;
 
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read char> ') ;
+                    var value        = keystroke.charCodeAt(0);
 
-              if (runExecution == false){
-                  if (typeof app !== "undefined")
-                      app.executeProgram();
-              }
-
-              return;
-            }
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = (this.keyboard).charCodeAt(0);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              if (typeof app !== "undefined")
-                  app._data.enter = null;
-
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
-
-              console_log(mutexRead);
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++){
-                     draw.space.push(i) ;
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                executionIndex = -2;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false) {
-                       if (typeof app !== "undefined")
-                           app.executeProgram();
-              }
+               mutexRead = true;
+               app._data.enter = false;
+               console_log(mutexRead);
+                if(newExecution == true){
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (runExecution == false){
+                      app.executeProgram();
+                  }
+    
+                  return;
+                }
 
-              break;
-            }
-            break;
+                if(consoleMutex == false){
+                  setTimeout(this.syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var value = (this.keyboard).charCodeAt(0);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  console_log(mutexRead);
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++){
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false) {
+                           app.executeProgram();
+                  }
+                }
+
+                break;
         }
 }
 
