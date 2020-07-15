@@ -30,31 +30,40 @@
 
    var argv = require('yargs')
               .usage(welcome() + '\n' +
-                     'Usage: $0 --arc <file name> --asm <file name> [--maxins <limit # instructions>]')
-              .example('./creator.sh --arc architecture/MIPS-32-like.json ' + 
-                       '             --asm examples/MIPS/example11.txt --maxins 10000')
-              .describe('arc', 'Architecture')
-              .nargs('--arc', 1)
-              .describe('asm', 'Assembly file')
-              .nargs('--asm', 1)
-              .describe('maxins', 'Maximum number of instructions to be executed')
-              .nargs('--maxins', 1)
-              .describe('quiet', 'Minimum output')
-              .nargs('--quiet', 0)
+                     'Usage: $0 -a <file name> -s <file name>')
+              .example([['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt',
+                         'To compile and execute example5.txt'],
+                        ['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt --maxins 10',
+                         'To compile and execute example5.txt, executing 10 instruction at max.']])
+              .option('architecture', {
+                  alias:    'a',
+                  type:     'string',
+                  describe: 'Architecture file',
+                  nargs:    1,
+                  default:  ''
+               })
+              .option('assembly', {
+                  alias:    's',
+                  type:     'string',
+                  describe: 'Assembly file',
+                  nargs:    1,
+                  default:  ''
+               })
+              .option('maxins', {
+                  type:     'string',
+                  describe: 'Maximum number of instructions to be executed',
+                  nargs:    1,
+                  default:  '1000000'
+               })
+              .option('quiet', {
+                  type:     'boolean',
+                  describe: 'Minimum output',
+                  default:  false
+               })
+              .demandOption(['architecture', 'assembly'], 'Please provide both architecture and assembly files.')
               .help('h')
               .alias('h', 'help')
-              .demandOption(['arc', 'asm'])
               .argv ;
-
-   var limit_n_instructions = 10000000 ;
-   if (typeof argv.maxins !== "undefined") {
-       limit_n_instructions = parseInt(argv.maxins) ;
-   }
-
-   var quiet = false ;
-   if (typeof argv.quiet !== "undefined") {
-       quiet = argv.quiet ;
-   }
 
 
    //
@@ -64,11 +73,19 @@
    var show_success = function ( msg ) { if (false == quiet) console.log(msg.success) ; }
    var show_error   = function ( msg ) { if (false == quiet) console.log(msg.error) ; }
 
-   var architec_name = argv.arc ;
-   var architecture = null ;
-   var assembly_name = argv.asm ;
+   var limit_n_instructions = parseInt(argv.maxins) ;
+   var quiet = argv.quiet ;
+
+   var architec_name = argv.architecture ;
+   var architecture  = null ;
+   var assembly_name = argv.assembly ;
    var assembly = null ;
    var result = null ;
+
+   if ( (argv.a == "") || (argv.s == "") ) {
+         console.log(welcome() + '\n' + 'Usage: ./creator.sh -a <file name> -s <file name>\n')
+         return false ;
+   }
 
    try
    {
@@ -77,27 +94,27 @@
        // (a) load architecture
        architecture = fs.readFileSync(architec_name, 'utf8') ;
        result = creator.load_architecture(architecture) ;
-       if (result.status !== "ok") 
+       if (result.status !== "ok")
        {
            show_error("[Loader] " + result + "\n") ;
            return -1 ;
        }
-       else show_success("[Loader] Architecture '" + argv.arc + "' loaded successfully.") ;
+       else show_success("[Loader] Architecture '" + argv.a + "' loaded successfully.") ;
 
        // (b) compile
        assembly = fs.readFileSync(assembly_name, 'utf8') ;
        result = creator.assembly_compile(assembly) ;
-       if (result.status !== "ok") 
+       if (result.status !== "ok")
        {
            show_error("[Compiler] Error at token " + result.tokenIndex + " (" + result.token + ").\n" +
                       "[Compiler] " + result.msg + "\n") ;
            return -1 ;
        }
-       else show_success("[Compiler] Code '" + argv.asm + "' compiled successfully.") ;
+       else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
 
        // (c) ejecutar
        result = creator.execute_program(limit_n_instructions) ;
-       if (result.status !== "ok") 
+       if (result.status !== "ok")
        {
            show_error("[Executor] Error found.\n" +
                       "[Executor] " + result.msg + "\n") ;

@@ -31,23 +31,23 @@
 
 | Description                | Link                                                                  |
 |----------------------------|-----------------------------------------------------------------------| 
-| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=1 |
+| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=0 |
 
 #### :point_right:	 MIPS
 
 | Description                | Link                                                                |
 |----------------------------|---------------------------------------------------------------------|
-| Data Storage               | https://dcamarmas.github.io/creator/?example_set=default&example=1  |
-| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=2  |
-| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?example_set=default&example=3  |
-| FPU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=4  |
-| Loop                       | https://dcamarmas.github.io/creator/?example_set=default&example=5  |
-| Branch                     | https://dcamarmas.github.io/creator/?example_set=default&example=6  |
-| Loop + Memory              | https://dcamarmas.github.io/creator/?example_set=default&example=7  |
-| Copy of matrices           | https://dcamarmas.github.io/creator/?example_set=default&example=8  |
-| I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=9  |
-| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=10 |
-| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=11 |
+| Data Storage               | https://dcamarmas.github.io/creator/?example_set=default&example=0  |
+| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=1  |
+| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?example_set=default&example=2  |
+| FPU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=3  |
+| Loop                       | https://dcamarmas.github.io/creator/?example_set=default&example=4  |
+| Branch                     | https://dcamarmas.github.io/creator/?example_set=default&example=5  |
+| Loop + Memory              | https://dcamarmas.github.io/creator/?example_set=default&example=6  |
+| Copy of matrices           | https://dcamarmas.github.io/creator/?example_set=default&example=7  |
+| I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=8  |
+| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=9  |
+| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=10 |
  
     
 ## ChangeLog
@@ -59,7 +59,7 @@
      * Help:
        * ./creator.sh -h
      * Example: creator compiles and executes the example2.txt:
-       * ./creator.sh --arc architecture/MIPS-32-like.json --asm examples/MIPS/example2.txt
+       * ./creator.sh -a architecture/MIPS-32-like.json -s examples/MIPS/example2.txt
 - [x] Creator now accepts three GET values:
      * Preload architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like
