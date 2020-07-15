@@ -348,6 +348,7 @@ try
       /*Register select*/
       nameTabReg: 'Decimal',
       nameReg: 'INT Registers',
+      regType: 'int',
       register_popover: '',
       /*Data mode*/
       data_mode: 'registers',
@@ -374,11 +375,7 @@ try
         percentage: {
           label: 'Percentage',
           sortable: true
-        },
-        abbreviation: {
-          label: 'Abbreviation',
-          sortable: false
-        },
+        }
       },
       /*Stats*/
       totalStats: totalStats,
@@ -3871,11 +3868,13 @@ try
             app._data.register_type = 'integer';
             app._data.nameTabReg = "Decimal";
             app._data.nameReg = 'INT Registers';
+            app._data.regType = 'int';
           }
           else if(type == "fp"){
             app._data.register_type = 'floating point';
             app._data.nameTabReg = "Real";
             app._data.nameReg = 'FP Registers';
+            app._data.regType = 'fp';
           }
         }
         if(e == "memory"){

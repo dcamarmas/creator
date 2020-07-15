@@ -9,4 +9,3 @@ do
   ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example$I.txt
   echo ""
 done
-
