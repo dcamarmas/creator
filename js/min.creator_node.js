@@ -166,19 +166,19 @@ var update_binary = '';
 var totalStats = 0;
 var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 var stats = [
-  { type: 'Arithmetic integer', number_instructions: 0, percentage: 0, abbreviation: "AI" },
-  { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0, abbreviation: "AFP" },
+  { type: 'Arithmetic integer', number_instructions: 0, percentage: 0 },
+  { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0},
   { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log" },
-  { type: 'Transfer between registers', number_instructions: 0, percentage: 0, abbreviation: "Trans" },
-  { type: 'Memory access', number_instructions: 0, percentage: 0, abbreviation: "Mem" },
-  { type: 'Comparison', number_instructions: 0, percentage: 0, abbreviation: "Comp" },
-  { type: 'I/O', number_instructions: 0, percentage: 0, abbreviation: "I/O" },
-  { type: 'Syscall', number_instructions: 0, percentage: 0, abbreviation: "Sys" },
-  { type: 'Control', number_instructions: 0, percentage: 0, abbreviation: "Ctrl" },
-  { type: 'Function call', number_instructions: 0, percentage: 0, abbreviation: "FC" },
-  { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0, abbreviation: "CB" },
-  { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0, abbreviation: "UB" },
-  { type: 'Other', number_instructions: 0, percentage: 0, abbreviation: "Oth" },
+  { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
+  { type: 'Memory access', number_instructions: 0, percentage: 0},
+  { type: 'Comparison', number_instructions: 0, percentage: 0},
+  { type: 'I/O', number_instructions: 0, percentage: 0},
+  { type: 'Syscall', number_instructions: 0, percentage: 0},
+  { type: 'Control', number_instructions: 0, percentage: 0},
+  { type: 'Function call', number_instructions: 0, percentage: 0},
+  { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
+  { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
+  { type: 'Other', number_instructions: 0, percentage: 0},
 ];
 
 
@@ -5168,7 +5168,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('print_int',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_int',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /print_float\((.*?)\)/;
@@ -5182,7 +5182,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('print_float',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_float',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
 
@@ -5197,7 +5197,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('print_double',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_double',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /print_string\((.*?)\)/;
@@ -5211,7 +5211,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('print_string',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_string',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /read_int\((.*?)\)/;
@@ -5225,7 +5225,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('read_int',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_int',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /read_float\((.*?)\)/;
@@ -5239,7 +5239,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('read_float',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_float',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /read_double\((.*?)\)/;
@@ -5253,7 +5253,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('read_double',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_double',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /read_string\((.*?)\)/;
@@ -5283,7 +5283,7 @@ function executeInstruction ( )
                 }
               }
               re = /read_string\((.*?)\)/
-              auxDef = auxDef.replace(re, "syscall('read_string',"+compIndex+" , "+elemIndex+","+compIndex2+" , "+elemIndex2+")");
+              auxDef = auxDef.replace(re, "syscall('read_string',"+compIndex+" , "+elemIndex+","+compIndex2+" , "+elemIndex2+", true)");
             }
 
             re = /sbrk\((.*?)\)/
@@ -5297,7 +5297,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('sbrk',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('sbrk',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /exit\((.*?)\)/;
@@ -5314,7 +5314,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('print_char',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('print_char',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             re = /read_char\((.*?)\)/
@@ -5328,7 +5328,7 @@ function executeInstruction ( )
                   }
                 }
               }
-              auxDef = auxDef.replace(re, "syscall('read_char',"+compIndex+" , "+elemIndex+", null, null)");
+              auxDef = auxDef.replace(re, "syscall('read_char',"+compIndex+" , "+elemIndex+", null, null, true)");
             }
 
             console_log(auxDef);
@@ -6323,7 +6323,7 @@ function writeStackLimit ( stackLimit )
 }
 
 /*Syscall*/
-function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
+function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_time)
 {
 	  var draw = {
 	    space: [] ,
@@ -6413,13 +6413,17 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 // CL
                 if (typeof app === "undefined") 
                 {
-		    var readlineSync = require('readline-sync') ;
-		    var keystroke    = readlineSync.question(' $> ') ;
+								    var readlineSync = require('readline-sync') ;
+								    var keystroke    = readlineSync.question(' $> ') ;
                     var value        = parseInt(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
+
+                if(firs_time == true){
+	                document.getElementById('enter_keyboard').scrollIntoView();
+	              }
 
                 // UI
                 mutexRead = true;
@@ -6432,7 +6436,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                     mutexRead     = false;
                     app._data.enter = null;
     
-    	            show_notification('The data has been uploaded', 'info') ;
+    	            	show_notification('The data has been uploaded', 'info') ;
     
                     if (runExecution == false) {
                         app.executeProgram();
@@ -6442,7 +6446,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 }
     
                 if (consoleMutex == false) {
-                    setTimeout(syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
+                    setTimeout(syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2, false);
                 }
                 else {
                   var value = parseInt(app._data.keyboard);
@@ -6453,7 +6457,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                   mutexRead = false;
                   app._data.enter = null;
     
-    		  show_notification('The data has been uploaded', 'info') ;
+    		  				show_notification('The data has been uploaded', 'info') ;
     
                   if (executionIndex >= instructions.length)
                   {
@@ -6475,13 +6479,17 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 // CL
                 if (typeof app === "undefined") 
                 {
-		    var readlineSync = require('readline-sync') ;
-		    var keystroke    = readlineSync.question(' $> ') ;
+								    var readlineSync = require('readline-sync') ;
+								    var keystroke    = readlineSync.question(' $> ') ;
                     var value        = parseFloat(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
+
+                if(firs_time == true){
+	                document.getElementById('enter_keyboard').scrollIntoView();
+	              }
 
                 mutexRead = true;
                 app._data.enter = false;
@@ -6492,7 +6500,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                   mutexRead = false;
                   app._data.enter = null;
     
-    		  show_notification('The data has been uploaded', 'info') ;
+    		  				show_notification('The data has been uploaded', 'info') ;
     
                   if (runExecution == false){
                       app.executeProgram();
@@ -6502,7 +6510,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 }
     
                 if (consoleMutex == false) {
-                    setTimeout(syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
+                    setTimeout(syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2, false);
                 }
                 else{
                   var value = parseFloat(app._data.keyboard, 10);
@@ -6513,7 +6521,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                   mutexRead = false;
                   app._data.enter = null;
     
-    		  show_notification('The data has been uploaded', 'info') ;
+    		  				show_notification('The data has been uploaded', 'info') ;
     
                   if(executionIndex >= instructions.length){
                     for (var i = 0; i < instructions.length; i++) {
@@ -6543,6 +6551,10 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
+                if(firs_time == true){
+	                document.getElementById('enter_keyboard').scrollIntoView();
+	              }
+
                 mutexRead = true;
                 app._data.enter = false;
                 console_log(mutexRead);
@@ -6562,7 +6574,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 }
     
                 if (consoleMutex == false) {
-                    setTimeout(syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
+                    setTimeout(syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2, false);
                 }
                 else{
                   var value = parseFloat(app._data.keyboard, 10);
@@ -6618,6 +6630,9 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
               }
 
+              if(firs_time == true){
+                document.getElementById('enter_keyboard').scrollIntoView();
+              }
 
                mutexRead = true;
 
@@ -6643,7 +6658,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 }
     
                 if (consoleMutex == false){
-                    setTimeout(syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
+                    setTimeout(syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2, false);
                 }
                 else {
                   var keystroke = '' ;
@@ -6736,16 +6751,20 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 
           case "read_char":
 
-                // CL
-                if (typeof app === "undefined") 
-                {
-		    var readlineSync = require('readline-sync') ;
-		    var keystroke    = readlineSync.question(' read char> ') ;
-                    var value        = keystroke.charCodeAt(0);
+              // CL
+              if (typeof app === "undefined") 
+              {
+							    var readlineSync = require('readline-sync') ;
+							    var keystroke    = readlineSync.question(' read char> ') ;
+                  var value        = keystroke.charCodeAt(0);
 
-                    writeRegister(value, indexComp, indexElem);
-                    return packExecute(false, 'The data has been uploaded', 'danger', null);
-                }
+                  writeRegister(value, indexComp, indexElem);
+                  return packExecute(false, 'The data has been uploaded', 'danger', null);
+              }
+
+              if(firs_time == true){
+                document.getElementById('enter_keyboard').scrollIntoView();
+              }
 
                mutexRead = true;
                app._data.enter = false;
@@ -6756,7 +6775,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                   mutexRead = false;
                   app._data.enter = null;
     
-    		  show_notification('The data has been uploaded', 'info') ;
+    		  				show_notification('The data has been uploaded', 'info') ;
     
                   if (runExecution == false){
                       app.executeProgram();
@@ -6766,7 +6785,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                 }
 
                 if(consoleMutex == false){
-                  setTimeout(syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
+                  setTimeout(syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2, false);
                 }
                 else{
                   var value = (app._data.keyboard).charCodeAt(0);
@@ -6776,7 +6795,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
                   mutexRead = false;
                   app._data.enter = null;
     
-    		  show_notification('The data has been uploaded', 'info') ;
+    		  				show_notification('The data has been uploaded', 'info') ;
     
                   console_log(mutexRead);
     
@@ -6795,24 +6814,24 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 
                 break;
         }
-}
+			}
 
-/*Divides a double into two parts*/
-function divDouble(reg, index)
-{
-  var value = bin2hex(double2bin(reg));
-  console_log(value);
-  if(index == 0){
-    return "0x" + value.substring(0,8);
-  }
-  if(index == 1) {
-    return "0x" + value.substring(8,16);
-  }
-}
+			/*Divides a double into two parts*/
+			function divDouble(reg, index)
+			{
+			  var value = bin2hex(double2bin(reg));
+			  console_log(value);
+			  if(index == 0){
+			    return "0x" + value.substring(0,8);
+			  }
+			  if(index == 1) {
+			    return "0x" + value.substring(8,16);
+			  }
+			}
 
-/*Reset execution*/
-function reset ()
-{
+			/*Reset execution*/
+			function reset ()
+			{
           executionIndex = 0;
           executionInit = 1;
 
