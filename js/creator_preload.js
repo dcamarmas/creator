@@ -74,8 +74,8 @@
 		      {
                           return new Promise(
                                   function(resolve, reject) {
-			                 var example_index = parseInt(hash.example) ;
-					 if (typeof example_available[example_index] === "undefined") {
+					 var example_index = parseInt(hash.example) ;
+					 if (typeof example_available[example_index] === 'undefined') {
 					     reject('Example not found.') ;
 					 }
 
