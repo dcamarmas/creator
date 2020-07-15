@@ -34,7 +34,7 @@ function execute_program ( limit_n_instructions )
     var ret = {} ;
 
     ret = executeProgramOneShot(limit_n_instructions) ;
-    if (ret.error === true) 
+    if (ret.error === true)
     {
         ret.status = "ko" ;
         return ret ;
@@ -55,9 +55,9 @@ function print_state ( )
     ret.status = "ok" ;
 
     // dump registers
-    for (var i=0; i<architecture.components.length; i++) 
+    for (var i=0; i<architecture.components.length; i++)
     {
-        for (var j=0; j<architecture.components[i].elements.length; j++) 
+        for (var j=0; j<architecture.components[i].elements.length; j++)
         {
             // get value + default value
             elto_value  = architecture.components[i].elements[j].value ;
@@ -81,20 +81,26 @@ function print_state ( )
     }
 
     // dump memory
-    for (var i in memory) 
+    for (var i in memory)
     {
-        if ("instructions_memory" == i) {
-             continue ; // instruction memory area stores high-level instructions
-        }
-
-        for (var j=0; j<memory[i].length; j++) 
+        for (var j=0; j<memory[i].length; j++)
         {
-            elto_value  = memory[i][j].Value ;
-            elto_dvalue = memory[i][j].DefValue ;
-
-            if (elto_value != elto_dvalue) 
+            if ("instructions_memory" != i) 
             {
-                elto_string = "0x" + elto_value.toString(16) ;
+                elto_value  = memory[i][j].Value ;
+                elto_dvalue = memory[i][j].DefValue ;
+            }
+            else
+            {
+                elto_value  = memory[i][j].Binary[0].Bin    + ' ' + memory[i][j].Binary[1].Bin + ' ' +
+                              memory[i][j].Binary[2].Bin    + ' ' + memory[i][j].Binary[3].Bin ;
+                elto_dvalue = memory[i][j].Binary[0].DefBin + ' ' + memory[i][j].Binary[1].DefBin + ' ' +
+                              memory[i][j].Binary[2].DefBin + ' ' + memory[i][j].Binary[3].DefBin ;
+            }
+
+            if (elto_value != elto_dvalue)
+            {
+                elto_string = "0x" + elto_value ;
                 ret.msg = ret.msg + "memory[0x" + j.toString(16) + "]" + ":" + elto_string + "; ";
             }
         }
