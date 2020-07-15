@@ -464,7 +464,6 @@ function assembly_compiler()
           status: "ok"
         } ;
 	
-        //show_loading();
             instructions = [];
             instructions_tag = [];
             pending_instructions = [];
@@ -522,7 +521,6 @@ function assembly_compiler()
 
             /*Reset stats*/
             totalStats = 0;
-            app._data.totalStats=0;
             for (var i = 0; i < stats.length; i++){
               stats[i].percentage = 0;
               stats[i].number_instructions = 0;
@@ -532,38 +530,19 @@ function assembly_compiler()
             align = 0;
             var empty = false;
 
-            //TODO: duplicado
-
-            /*Save a backup in the cache memory*/
-            /*if (typeof(Storage) !== "undefined") {
-              var auxObject = jQuery.extend(true, {}, architecture);
-
-              var auxArchitecture = bigInt_serialize(auxObject);
-              var auxArch = JSON.stringify(auxArchitecture, null, 2);
-
-              var date = new Date();
-              var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
-              console_log(app._data.architecture_name);
-              localStorage.setItem("arch_name", app._data.architecture_name);
-              localStorage.setItem("architecture_copy", auxArch);
-              localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
-              localStorage.setItem("date_copy", auxDate);
-            }*/
-
             /*Start of compilation*/
             first_token();
 
-            if(get_token() == null){
-              hide_loading();
-
-              return packCompileError(0, 'Please enter the assembly code before compiling', 'warning', 'danger') ;
-
+            if (get_token() == null){
+               hide_loading();
+               return packCompileError(0, 'Please enter the assembly code before compiling', 'warning', 'danger') ;
             }
 
             token = get_token();
             console_log(token)
 
-            while(!empty){
+            while(!empty)
+            {
               token = get_token();
               console_log(token)
 
@@ -574,17 +553,20 @@ function assembly_compiler()
 
               var change = false;
 
-              for(var i = 0; i < architecture.directives.length; i++){
-                if(token == architecture.directives[i].name){
-                  switch(architecture.directives[i].action){
+              for (var i = 0; i < architecture.directives.length; i++)
+              {
+                if (token == architecture.directives[i].name)
+                {
+                  switch(architecture.directives[i].action)
+                  {
                     case "data_segment":
-                      console_log("data_segment")
+                      console_log("data_segment");
                       ret = data_segment_compiler();
-                      if(ret.status == "ok"){
-                        change = true;
+                      if (ret.status == "ok") {
+                          change = true;
                       }
-                      if(ret.status != "ok"){
-                        //tokenIndex = 0;
+                      if (ret.status != "ok")
+                      {
                         instructions = [];
                         pending_instructions = [];
                         pending_tags = [];
@@ -595,42 +577,35 @@ function assembly_compiler()
                         memory[memory_hash[2]] = [];
                         data = [];
                         extern = [];
-                        /*app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-                        app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                        app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                        app._data.instructions = instructions;
-                        hide_loading();*/
-                        return ret;
-                      }
-                      break;
-                    case "code_segment":
-                      console_log("code_segment")
-                      ret = code_segment_compiler();
-                      if(ret.status == "ok"){
-                        change = true;
-                      }
-                      if(ret.status != "ok"){
-                        //tokenIndex = 0;
-                        instructions = [];
-                        pending_instructions = [];
-                        pending_tags = [];
-                        memory[memory_hash[0]] = [];
-                        data_tag = [];
-                        instructions_binary = [];
-                        memory[memory_hash[1]] = [];
-                        extern = [];
-                        memory[memory_hash[2]] = [];
-                        data = [];
-                        /*app._data.instructions = instructions;
-                        app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-                        app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                        app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                        hide_loading();*/
-                        return ret;
-                      }
-                      break;
-                    case "global_symbol":
 
+                        return ret;
+                      }
+                      break;
+
+                    case "code_segment":
+                      console_log("code_segment") ;
+                      ret = code_segment_compiler();
+                      if (ret.status == "ok") {
+                          change = true;
+                      }
+                      if (ret.status != "ok")
+                      {
+                        instructions = [];
+                        pending_instructions = [];
+                        pending_tags = [];
+                        memory[memory_hash[0]] = [];
+                        data_tag = [];
+                        instructions_binary = [];
+                        memory[memory_hash[1]] = [];
+                        extern = [];
+                        memory[memory_hash[2]] = [];
+                        data = [];
+
+                        return ret;
+                      }
+                      break;
+
+                    case "global_symbol":
                       var isGlobl = true;
                       next_token();
 
@@ -647,7 +622,7 @@ function assembly_compiler()
                         next_token();
                         token = get_token();
 
-                        console_log(token)
+                        console_log(token);
 
                         for(var z = 0; z < architecture.directives.length; z++){
                           if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
@@ -655,16 +630,17 @@ function assembly_compiler()
                           }
                         }
                       }
-
                       break;
+
                     default:
-                      console_log("default")
+                      console_log("default") ;
                       empty = true;
                       break;
                   }
                 }
 
-                else if(i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null){
+                else if (i== architecture.directives.length-1 && token != architecture.directives[i].name && change == false && token != null)
+                {
                   empty = true;
                   //tokenIndex = 0;
                   return packCompileError(15, token, 'error', "danger");
@@ -785,11 +761,6 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    /*app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                    app._data.instructions = instructions;
-                    hide_loading();*/
                     ret = packCompileError(7, instructionParts[j], pending_instructions[i].line, "danger");
                     return ret;
                   }
@@ -854,12 +825,6 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    /*app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                    app._data.instructions = instructions;
-                    app.compileError(7, instructionParts[j], pending_instructions[i].line);
-                    hide_loading();*/
                     ret = packCompileError(7, instructionParts[j], pending_instructions[i].line, "danger");
                     return ret;
                   }
@@ -919,11 +884,6 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    /*app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                    app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                    app._data.instructions = instructions;
-                    hide_loading();*/
                     ret = packCompileError(7, instructionParts[j], pending_instructions[i].line, "danger");
                     return -1;
                   }
@@ -932,8 +892,10 @@ function assembly_compiler()
             }
 
             /*Enter the binary in the text segment*/
-            if(update_binary.instructions_binary != null){
-              for (var i = 0; i < update_binary.instructions_binary.length; i++){
+            if (update_binary.instructions_binary != null) 
+            {
+              for (var i = 0; i < update_binary.instructions_binary.length; i++) 
+              {
                 var hex = bin2hex(update_binary.instructions_binary[i].loaded);
                 var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
                 var label = update_binary.instructions_binary[i].Label;
@@ -993,23 +955,24 @@ function assembly_compiler()
                 }
 
                 if (typeof app != "undefined")
-                    app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO
+                    app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
               }
             }
 
             /*Enter the compilated instructions in the text segment*/
-            for (var i = 0; i < instructions_binary.length; i++){
+            for (var i = 0; i < instructions_binary.length; i++)
+            {
               var hex = bin2hex(instructions_binary[i].loaded);
               var auxAddr = parseInt(instructions_binary[i].Address, 16);
               var label = instructions_binary[i].Label;
               var binNum = 0;
 
-              if(update_binary.instructions_binary != null){
-                binNum = update_binary.instructions_binary.length
+              if (update_binary.instructions_binary != null) {
+                  binNum = update_binary.instructions_binary.length
               }
 
-              for(var a = 0; a < hex.length/2; a++){
-                if(auxAddr % 4 == 0){
+              for (var a = 0; a < hex.length/2; a++) {
+                if (auxAddr % 4 == 0) {
                   memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
                   if(label == ""){
                     label=null;
@@ -1061,14 +1024,8 @@ function assembly_compiler()
                 extern = [];
                 memory[memory_hash[2]] = [];
                 data = [];
-                /*app._data.instructions = instructions;
-                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-                app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                hide_loading();*/
 
                 return packCompileError(0, 'Data overflow', 'warning', "danger") ;
-
               }
             }
 
@@ -1085,11 +1042,6 @@ function assembly_compiler()
                 extern = [];
                 memory[memory_hash[2]] = [];
                 data = [];
-                /*app._data.instructions = instructions;
-                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-                app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-                hide_loading();*/
 
                 return packCompileError(0, 'Instruction overflow', 'warning', "danger");
               }
@@ -1148,23 +1100,14 @@ function assembly_compiler()
               (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
             }
 
-            //app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-
-            //show_notification('Compilation completed successfully', 'success') ;
-
-            //tokenIndex = 0;
-            
-            //app.reset();
+            if (typeof app !== "undefined")
+                app._data.memory[memory_hash[2]] = memory[memory_hash[2]]; // CHECK
 
             address = architecture.memory_layout[0].value;
             data_address = architecture.memory_layout[2].value;
             stack_address = architecture.memory_layout[4].value;
 
-            //hide_loading();
-
             return ret;
-
-
 }
 
 /*Compile data segment*/
@@ -1197,29 +1140,27 @@ function data_segment_compiler()
           var found = false;
 
           if(token.search(/\:$/) != -1){
-            if(token.length == 1){
+            if(token.length == 1)
+            {
               /*app.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
               hide_loading();*/
 
-              //TODO: Revisar
+              //TODO: Revisar el n'umero de l'inea para error
               return packCompileError(0, "", 'error', "danger");
             }
 
-            for(var i = 0; i < data_tag.length; i++){
+            for (var i = 0; i < data_tag.length; i++)
+            {
               console_log(data_tag[i].tag);
               console_log(token.substring(0,token.length-1))
-              if(data_tag[i].tag == token.substring(0,token.length-1)){
-                /*app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                hide_loading();*/
-                return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+              if (data_tag[i].tag == token.substring(0,token.length-1)) {
+                  return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
               }
             }
 
-            for(var i = 0; i < instructions.length; i++){
-              if(instructions[i].Label == token.substring(0,token.length-1)){
-                /*app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                hide_loading();*/
-                return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+            for (var i = 0; i < instructions.length; i++) {
+              if (instructions[i].Label == token.substring(0,token.length-1)) {
+                  return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
               } 
             }
 
@@ -1239,17 +1180,13 @@ function data_segment_compiler()
                   while(isByte){
                     token = get_token();
 
-                    if(token == null){
-                      /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
-                      return packCompileError(23, "", 'error', "danger") ;
+                    if (token == null) {
+                        return packCompileError(23, "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                    if(token.search(re) != -1){
-                      /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
-                      return packCompileError(24, token, 'error', "danger") ;
+                    if (token.search(re) != -1) {
+                        return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1261,65 +1198,55 @@ function data_segment_compiler()
                     var auxToken;
                     var auxTokenString;
 
-                    if(token.match(/^\'(.*?)\'$/)){
-                      var re = /^\'(.*?)\'$/;
-                      console_log(re);
-                      var match = re.exec(token);
-                      console_log(match);
-                      var asciiCode;
+                    if (token.match(/^\'(.*?)\'$/)) {
+                        var re = /^\'(.*?)\'$/;
+                        console_log(re);
+                        var match = re.exec(token);
+                        console_log(match);
+                        var asciiCode;
 
-                      console_log(match[1]);
+                        console_log(match[1]);
 
-                      if(token.search(/^\'\\n\'$/) != -1){
-                        asciiCode = 10;
-                      }
-                      else if(token.search(/^\'\\t\'$/) != -1){
-                        asciiCode = 9;
-                      }
-                      else{
-                        asciiCode = match[1].charCodeAt(0);
-                      }
+                        if(token.search(/^\'\\n\'$/) != -1){
+                          asciiCode = 10;
+                        }
+                        else if(token.search(/^\'\\t\'$/) != -1){
+                          asciiCode = 9;
+                        }
+                        else{
+                          asciiCode = match[1].charCodeAt(0);
+                        }
 
-                      console_log(asciiCode);
-                      auxTokenString = asciiCode.toString(16);
+                        console_log(asciiCode);
+                        auxTokenString = asciiCode.toString(16);
                     }
                     else if(token.match(/^0x/)){
                       var value = token.split('x');
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(19, token, 'error', "danger") ;
                       }
 
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
-                      if(token.search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
-                        return packCompileError(16, token, 'error', "danger") ;
+                      if (token.search(re) == -1) {
+                          return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
-                      if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
-                        return packCompileError(18, token, 'error', "danger") ;
+                      if (auxTokenString.length > 2*architecture.directives[j].size) {
+                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1328,7 +1255,7 @@ function data_segment_compiler()
 
                     ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "byte")
                     if (ret.status != 'ok') {
-                      return ret ;
+                        return ret ;
                     }
 
                     label = null;
@@ -1341,10 +1268,10 @@ function data_segment_compiler()
 
                     console_log(token);
 
-                    for(var z = 0; z < architecture.directives.length; z++){
-                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                        isByte = false;
-                      }
+                    for (var z = 0; z < architecture.directives.length; z++) {
+                         if (token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                             isByte = false;
+                         }
                     }
                   }
 
@@ -1353,25 +1280,19 @@ function data_segment_compiler()
                   break;
                 case "half_word":
                   console_log("half_word")
-
                   var ishalf = true;
 
                   next_token();
-
-                  while(ishalf){
+                  while(ishalf)
+                  {
                     token = get_token();
-
-                    if(token == null){
-                      /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
-                      return packCompileError(23,"", 'error', "danger") ;
+                    if (token == null) {
+                        return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                    if(token.search(re) != -1){
-                      /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
-                      return packCompileError(24, token, 'error', "danger") ;
+                    if (token.search(re) != -1) {
+                        return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1386,39 +1307,29 @@ function data_segment_compiler()
                       var value = token.split('x');
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
-                      if(value[1].search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
-                        return packCompileError(16, token, 'error', "danger") ;
+                      if (value[1].search(re) == -1) {
+                         return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
 
-                      if(value[1].length == 0){
-                        /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
-                        return packCompileError(19, token, 'error', "danger") ;
+                      if (value[1].length == 0) {
+                          return packCompileError(19, token, 'error', "danger") ;
                       }
-                      if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
-                        return packCompileError(18, token, 'error', "danger") ;
+                      if (auxTokenString.length > 2*architecture.directives[j].size) {
+                          return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
-                      if(token.search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
-                        return packCompileError(16, token, 'error', "danger") ;
+                      if (token.search(re) == -1) {
+                          return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
-                      if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
-                        return packCompileError(18, token, 'error', "danger") ;
+                      if (auxTokenString.length > 2*architecture.directives[j].size) {
+                          return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1427,7 +1338,7 @@ function data_segment_compiler()
 
                     ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "half")
                     if (ret.status != 'ok') {
-                      return ret ;
+                        return ret ;
                     }
 
                     label = null;
@@ -1448,29 +1359,23 @@ function data_segment_compiler()
                   }
 
                   j=0;
-
                   break;
+
                 case "word":
                   var isWord = true;
-
                   next_token();
 
                   while(isWord){
                     console_log("word")
 
                     token = get_token();
-
-                    if(token == null){
-                      /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
-                      return packCompileError(23,"", 'error', "danger") ;
+                    if (token == null) {
+                        return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                    if(token.search(re) != -1){
-                      /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
-                      return packCompileError(24, token, 'error', "danger") ;
+                    if (token.search(re) != -1) {
+                        return packCompileError(24, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1485,20 +1390,14 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -1506,15 +1405,11 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -1546,8 +1441,8 @@ function data_segment_compiler()
                   }
 
                   j=0;
-
                   break;
+
                 case "double_word":
                   var isDoubleWord = true;
 
@@ -1642,8 +1537,8 @@ function data_segment_compiler()
                   }
 
                   j=0;
-
                   break;
+
                 case "float":
                   var isFloat = true;
 
@@ -1753,8 +1648,8 @@ function data_segment_compiler()
                   }
 
                   j=0;
-
                   break;
+
                 case "double":
                   var isDouble = true;
 
@@ -1865,8 +1760,8 @@ function data_segment_compiler()
                   }
 
                   j=0;
-
                   break;
+
                 case "ascii_not_null_end":
                   console_log("ascii_not_null_end");
 
@@ -2055,8 +1950,8 @@ function data_segment_compiler()
                   }
 
                   j=0;
-
                   break;
+
                 case "ascii_null_end":
                   console_log("ascii_null_end");
                   
@@ -2253,8 +2148,8 @@ function data_segment_compiler()
                   }
 
                   j=0;
-
                   break;
+
                 case "space":
                   console_log("space");
 
@@ -2266,21 +2161,15 @@ function data_segment_compiler()
                   console_log(label);
 
                   if(token == null){
-                    /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    hide_loading();*/
                     return packCompileError(23, "", 'error', "danger") ;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
-                    /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    hide_loading();*/
                     return packCompileError(16, token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
-                    /*app.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    hide_loading();*/
                     return packCompileError(22, token, 'error', "danger") ;
                   }
 
@@ -2349,8 +2238,8 @@ function data_segment_compiler()
                   token = get_token();
 
                   console_log("space Terminado");
-
                   break;
+
                 case "align":
                 case "balign":
                   console_log("[b]align");
@@ -2359,10 +2248,7 @@ function data_segment_compiler()
                   next_token();
                   token = get_token();
                   console_log(token);
-
                   if(token == null){
-                    /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    hide_loading();*/
                     return packCompileError(23, "", 'error', "danger") ;
                   }
 
@@ -2387,8 +2273,8 @@ function data_segment_compiler()
                   token = get_token();
 
                   console_log("align Terminado");
-
                   break;
+
                 default:
                   console_log("Default");
                   existsData = false;
@@ -2397,13 +2283,17 @@ function data_segment_compiler()
             }
 
             else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-              //app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+              if (typeof app !== "undefined")
+                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
               return ret;
             }
           
           }
         }
-        //app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+
+        if (typeof app !== "undefined")
+            app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
+
         return ret;
 }
 
@@ -2440,8 +2330,6 @@ function data_compiler(value, size, dataLabel, DefValue, type)
           }
 
           if(data_address % size != 0 && i == 0){
-            /*app.compileError(21, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-            hide_loading();*/
             return packCompileError(21, "", 'error', "danger") ;
           }
 
@@ -2550,18 +2438,12 @@ function code_segment_compiler()
 
           if(token.search(/\:$/) != -1){
             if(token.length == 1){
-              /*app.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              hide_loading();*/
               return packCompileError(0, "", 'error', "danger") ;
             }
 
             for(var i = 0; i < memory[memory_hash[0]].length; i++){
               for(var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++){
                 if(memory[memory_hash[0]][i].Binary[j].Tag == token.substring(0,token.length-1)){
-/*
-                  app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                  hide_loading();
-*/
                   return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
                 }
               }
@@ -2569,8 +2451,6 @@ function code_segment_compiler()
 
             for(var i = 0; i < instructions.length; i++){
               if(instructions[i].Label == token.substring(0,token.length-1)){
-                /*app.compileError(1, token.substring(0,token.length-1), textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                hide_loading();*/
                 return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
               } 
             }
@@ -2591,7 +2471,6 @@ function code_segment_compiler()
                   instIndex = i;
                 }
               }
-              //instruction_compiler("nop", "nop", label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0, instInit, instIndex, false); // TODO
               instruction_compiler("nop", "nop", label, tokenIndex, false, 0, instInit, instIndex, false);
               end = true;
               found = true;
@@ -2639,38 +2518,19 @@ function code_segment_compiler()
                 if(token != null){
                   var re = new RegExp(",+$");
                   token = token.replace(re, "");
-                  /*for(var a = 0; a < architecture.instructions.length; a++){
-                    if(architecture.instructions[a].name == token){
-                      new_ins = 1;
-                    }
-                  }
-                  if(new_ins == 0){
-                    instruction = instruction + " " + token;
-                    userInstruction = userInstruction + " " + token;
-                  }*/
                   instruction = instruction + " " + token;
                   userInstruction = userInstruction + " " + token;
                 }  
-
-                /*if(new_ins == 1){
-                  break;
-                }*/
               }
 
               console_log(instruction);
               console_log(label);
 
-              //ret = instruction_compiler(instruction, userInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line, false, 0, instInit, i, false);
               ret = instruction_compiler(instruction, userInstruction, label, tokenIndex, false, 0, instInit, i, false);
-
               if (ret.status != 'ok'){
-                return ret ;
+                  return ret ;
               }
 
-              /*if (new_ins == 0){
-                next_token();
-              }
-              new_ins = 0;*/
               next_token();
               instInit = tokenIndex; //PRUEBA
               stopFor = true;
@@ -2704,7 +2564,6 @@ function code_segment_compiler()
 
                   instruction = instruction + " " + token;
                 }
-                //resultPseudo = pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line); //TODO: revisar linea
                 resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex); //TODO: line->ti?
                 console_log(resultPseudo);
               }
@@ -2727,13 +2586,6 @@ function code_segment_compiler()
                     extern = [];
                     memory[memory_hash[2]] = [];
                     data = [];
-                    /*
-                    app.compileError(26, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-                    memory[memory_hash[1]] = memory[memory_hash[1]];
-                    memory[memory_hash[2]] = memory[memory_hash[2]];
-                    app._data.instructions = instructions;
-                    hide_loading();*/
                     ret = packCompileError(26, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 'error', "danger") ;
 
                     return ret;
@@ -2755,12 +2607,6 @@ function code_segment_compiler()
               extern = [];
               memory[memory_hash[2]] = [];
               data = [];
-              /*app.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
-              app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-              memory[memory_hash[1]] = memory[memory_hash[1]];
-              memory[memory_hash[2]] = memory[memory_hash[2]];
-              app._data.instructions = instructions;
-              hide_loading();*/
 
               ret = packCompileError(2, token, 'error', "danger");
               return ret;
@@ -2781,16 +2627,10 @@ function code_segment_compiler()
               extern = [];
               memory[memory_hash[2]] = [];
               data = [];
-              /*app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-              memory[memory_hash[1]] = memory[memory_hash[1]];
-              memory[memory_hash[2]] = memory[memory_hash[2]];
-              app._data.instructions = instructions;
-              hide_loading();*/
 
-              //TODO: revisar, error comentado
-
-              //app.compileError(2, token, textarea_assembly_editor.posFromIndex(tokenIndex).line); //PRUEBA para dar error con mas detalle
+              //PRUEBA para dar error con mas detalle
               ret = packCompileError(2, token, 'error', "danger");
+
               return ret;
             }
 
@@ -2807,12 +2647,6 @@ function code_segment_compiler()
               extern = [];
               memory[memory_hash[2]] = [];
               data = [];
-              /*app.compileError(25, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-              memory[memory_hash[1]] = memory[memory_hash[1]];
-              memory[memory_hash[2]] = memory[memory_hash[2]];
-              app._data.instructions = instructions;
-              hide_loading();*/
               ret = packCompileError(25, "", 'error', "danger") ;
               return ret;
             }
@@ -4874,46 +4708,34 @@ function executeInstruction ( )
         console_log(mutexRead);
         newExecution = false;
 
-        do{
+        do {
           console_log(executionIndex);
           console_log(architecture.components[0].elements[0].value);
 
-          if (instructions.length == 0)
-          {
-           /* show_notification('No instructions in memory', 'danger');
-            return;*/
-            return packExecute(true, 'No instructions in memory', 'danger', null);
+          if (instructions.length == 0) {
+              return packExecute(true, 'No instructions in memory', 'danger', null);
           }
-          if (executionIndex < -1)
-          {
-            /*show_notification('The program has finished', app._data.type ='danger') ;
-            return;*/
-            return packExecute(true, 'The program has finished', 'danger', null);
+          if (executionIndex < -1) {
+              return packExecute(true, 'The program has finished', 'danger', null);
           }
-          if (executionIndex == -1)
-          {
-            /*show_notification('The program has finished with errors', 'danger') ;
-            return;*/
-            return packExecute(true, 'The program has finished with errors', 'danger', null);
+          if (executionIndex == -1) {
+              return packExecute(true, 'The program has finished with errors', 'danger', null);
           }
-          else if(mutexRead == true){
-            return;
-          }
+          else if (mutexRead == true) {
+                   return packExecute(false, '', 'info', null);
+               }
 
           /*Search a main tag*/
-          if(executionInit == 1){
+          if (executionInit == 1) {
             for (var i = 0; i < instructions.length; i++) {
-              if(instructions[i].Label == "main"){
-                //instructions[executionIndex]._rowVariant = 'success';
-                draw.success.push(executionIndex) ;
-                architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 16);
-                executionInit = 0;
-                break;
+              if (instructions[i].Label == "main") {
+                  draw.success.push(executionIndex) ;
+                  architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 16);
+                  executionInit = 0;
+                  break;
               }
               else if(i == instructions.length-1){
                 executionIndex = -1;
-                /*show_notification('Label "main" not found', 'danger') ;
-                return;*/
                 return packExecute(true, 'Label "main" not found', 'danger', null);
               }
             }
@@ -4930,15 +4752,13 @@ function executeInstruction ( )
               console_log(executionIndex)
               console_log(instructions[i].Address)
 
-              if(instructions[executionIndex].hide == false){
-                //instructions[executionIndex]._rowVariant = 'info';
-                draw.info.push(executionIndex);
+              if (instructions[executionIndex].hide == false) {
+                  draw.info.push(executionIndex);
               }
             }
             else{
-              if (instructions[executionIndex].hide == false){
-                 //instructions[i]._rowVariant = '';
-                   draw.space.push(i);
+              if (instructions[executionIndex].hide == false) {
+                  draw.space.push(i);
               }
             }
           }
@@ -5677,9 +5497,6 @@ function executeInstruction ( )
       	        "  return e;\n" +
               	"}\n" +
       	        " }; ") ;        
-
-            // eval("instructions[" + executionIndex + "].preload = function(elto) { " +  
-            //       auxDef.replace(/this./g,"elto.").replace(/\"/g, "'") + " }; ") ;
           }
 
 
@@ -5688,10 +5505,6 @@ function executeInstruction ( )
             if (result.error) {
                 return result;
             }
-
-            //instructions[executionIndex].preload(this);
-            //eval(auxDef);
-
           }
           catch(e)
           {
@@ -5699,12 +5512,8 @@ function executeInstruction ( )
               {
                   console_log("Error");
                   error = 1;
-                  // instructions[executionIndex]._rowVariant = 'danger';
                   draw.danger.push(executionIndex) ;
                   executionIndex = -1;
-                  //show_notification('The definition of the instruction contains errors, please review it', 'danger') ;
-                  //return;
-
                   return packExecute(true, 'The definition of the instruction contains errors, please review it', 'danger', null);
               }
           }
@@ -5715,61 +5524,60 @@ function executeInstruction ( )
               stats[i].number_instructions++;
               stats_value[i] ++;
               totalStats++;
-              app._data.totalStats++;
+              if (typeof app !== "undefined")
+                  app._data.totalStats++;
             }
           }
           for (var i = 0; i < stats.length; i++){
-            stats[i].percentage = (stats[i].number_instructions/totalStats)*100;
+               stats[i].percentage = (stats[i].number_instructions/totalStats)*100;
           }
 
           /*Execution error*/
-          if(executionIndex == -1){
-            error = 1;
-            return;
+          if (executionIndex == -1){
+             error = 1;
+             return packExecute(false, '', 'info', null); //CHECK
+             //return;
           }
 
           /*Next instruction to execute*/
-          if(error != 1 && executionIndex < instructions.length){
+          if (error != 1 && executionIndex < instructions.length)
+          {
             for (var i = 0; i < instructions.length; i++){
-              if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
-                executionIndex = i;
-                //instructions[executionIndex]._rowVariant = 'success';
-                draw.success.push(executionIndex) ;
-                break;
+              if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
+                  executionIndex = i;
+                  draw.success.push(executionIndex) ;
+                  break;
               }
-              else if(i == instructions.length-1 && mutexRead == true){
-                executionIndex = instructions.length+1;
+              else if (i == instructions.length-1 && mutexRead == true){
+                       executionIndex = instructions.length+1;
               }
-              else if(i == instructions.length-1){
-                //instructions[executionIndex]._rowVariant = '';
-                draw.space.push(executionIndex) ;
-                executionIndex = instructions.length+1;
+              else if (i == instructions.length-1){
+                       draw.space.push(executionIndex) ;
+                       executionIndex = instructions.length+1;
               }
             }
           }
 
           console_log(executionIndex);
 
-          if(executionIndex >= instructions.length && mutexRead == true){
-            /*for (var i = 0; i < instructions.length; i++){
-              instructions[i]._rowVariant = '';
-            }*/
-            return;
+          if (executionIndex >= instructions.length && mutexRead == true)
+          {
+              for (var i = 0; i < instructions.length; i++) {
+	  	   draw.space.push(i);
+              }
+              return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
           }
-          else if(executionIndex >= instructions.length && mutexRead == false){
+          else if(executionIndex >= instructions.length && mutexRead == false)
+          {
             for (var i = 0; i < instructions.length; i++){
-                 //instructions[i]._rowVariant = '';
                  draw.space.push(i) ;
             }
 
             executionIndex = -2;
-            //show_notification('The execution of the program has finished', 'success') ;
-            //return;
             return packExecute(false, 'The execution of the program has finished', 'success', draw);
           }
           else{
             if(error != 1){
-              //instructions[executionIndex]._rowVariant = 'success';
               draw.success.push(executionIndex);
             }
           }
@@ -5814,13 +5622,6 @@ function readRegister ( indexComp, indexElem )
       if ((architecture.components[indexComp].elements[indexElem].properties[0] != "read") && 
           (architecture.components[indexComp].elements[indexElem].properties[1] != "read"))
       {
-/*
-          show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read', 'danger') ;
-          instructions[executionIndex]._rowVariant = 'danger';
-          executionIndex = -1;
-          return;
-*/
-
 	    for (var i = 0; i < instructions.length; i++) {
 		 draw.space.push(i);
 	    }
@@ -5901,8 +5702,6 @@ function writeRegister ( value, indexComp, indexElem )
           {
             if (architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write")
             {
-                //show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
-                //return;
                 throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
             }
 
@@ -5970,12 +5769,9 @@ function readMemory ( addr, type )
 
 
 	if (type == "d") {
-	    //	debugger; // TODO: this line was commented...
+	    debugger;
 
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6001,9 +5797,6 @@ function readMemory ( addr, type )
 
         if (type == "w"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6035,9 +5828,6 @@ function readMemory ( addr, type )
 
         if (type == "h"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6078,9 +5868,6 @@ function readMemory ( addr, type )
 
         if (type == "b"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            //show_notification('Segmentation fault. You tried to read in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6129,9 +5916,6 @@ function writeMemory ( value, addr, type )
 
         if (type == "w"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6171,7 +5955,8 @@ function writeMemory ( value, addr, type )
                   memory[index][i].Value = (parseInt(memValue, 16) >> 0);
                 }
 
-                app._data.memory[index] = memory[index];
+                if (typeof app !== "undefined")
+                    app._data.memory[index] = memory[index];
                 return;
               }
             }
@@ -6186,7 +5971,8 @@ function writeMemory ( value, addr, type )
                 (memory[index][i].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
                 charIndex = charIndex - 2;
               }
-              app._data.memory[index] = memory[index];
+              if (typeof app !== "undefined")
+                  app._data.memory[index] = memory[index];
               return;
             }
             else if(i == memory[index].length-1){
@@ -6197,7 +5983,8 @@ function writeMemory ( value, addr, type )
                 (memory[index][i+1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
                 charIndex = charIndex - 2;
               }
-              app._data.memory[index] = memory[index];
+              if (typeof app !== "undefined")
+                  app._data.memory[index] = memory[index];
               return;
             }
           }
@@ -6210,16 +5997,14 @@ function writeMemory ( value, addr, type )
               (memory[index][memory[index].length-1].Binary).push({Addr: aux_addr + z, DefBin: "00", Bin: memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase(), Tag: null},);
               charIndex = charIndex - 2;
             }
-            app._data.memory[index] = memory[index];
+            if (typeof app !== "undefined")
+                app._data.memory[index] = memory[index];
             return;
           }
         }
 
         if (type == "h"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6248,7 +6033,8 @@ function writeMemory ( value, addr, type )
                   for (var z = 3; z < 4; z=z-2){
                     memory[index][i].Value = memory[index][i].Value + (parseInt((memory[index][i].Binary[z].Bin + memory[index][i].Binary[z-1].Bin), 16) >> 0) + " ";
                   }
-                  app._data.memory[index] = memory[index];
+                  if (typeof app !== "undefined")
+                      app._data.memory[index] = memory[index];
                   return;
                 }
                 else{
@@ -6257,7 +6043,8 @@ function writeMemory ( value, addr, type )
                     memory[index][i].Binary[z].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
                     charIndex = charIndex - 2;
                   }
-                  app._data.memory[index] = memory[index];
+                  if (typeof app !== "undefined")
+                      app._data.memory[index] = memory[index];
                   return;
                 }
               }
@@ -6282,7 +6069,8 @@ function writeMemory ( value, addr, type )
                       charIndex = charIndex - 2;
                     }
                     memory[index][i].Value = "0 " + (parseInt(memValue, 16) >> 0);
-                    app._data.memory[index] = memory[index];
+                    if (typeof app !== "undefined")
+                        app._data.memory[index] = memory[index];
                     return;
                   }
                   else{
@@ -6292,7 +6080,8 @@ function writeMemory ( value, addr, type )
                       charIndex = charIndex - 2;
                     }
                     memory[index][i].Value = (parseInt(memValue, 16) >> 0) + " 0";
-                    app._data.memory[index] = memory[index];
+                    if (typeof app !== "undefined")
+                        app._data.memory[index] = memory[index];
                     return;
                   }
                 }
@@ -6316,7 +6105,8 @@ function writeMemory ( value, addr, type )
                       charIndex = charIndex - 2;
                     }
                     memory[index][i+1].Value = "0 " + (parseInt(memValue, 16) >> 0);
-                    app._data.memory[index] = memory[index];
+                    if (typeof app !== "undefined")
+                        app._data.memory[index] = memory[index];
                     return;
                   }
                   else{
@@ -6326,7 +6116,8 @@ function writeMemory ( value, addr, type )
                       charIndex = charIndex - 2;
                     }
                     memory[index][i+1].Value = parseInt(memValue, 16) + " 0";
-                    app._data.memory[index] = memory[index];
+                    if (typeof app !== "undefined")
+                        app._data.memory[index] = memory[index];
                     return;
                   }
                 }
@@ -6352,7 +6143,8 @@ function writeMemory ( value, addr, type )
                     charIndex = charIndex - 2;
                   }
                   memory[index][memory[index].length-1].Value = "0 " + (parseInt(memValue, 16) >> 0);
-                  app._data.memory[index] = memory[index];
+                  if (typeof app !== "undefined")
+                      app._data.memory[index] = memory[index];
                   return;
                 }
                 else{
@@ -6362,7 +6154,8 @@ function writeMemory ( value, addr, type )
                     charIndex = charIndex - 2;
                   }
                   memory[index][memory[index].length-1].Value = (parseInt(memValue, 16) >> 0) + " 0";
-                  app._data.memory[index] = memory[index];
+                  if (typeof app !== "undefined")
+                      app._data.memory[index] = memory[index];
                   return;
                 }
               }
@@ -6373,9 +6166,6 @@ function writeMemory ( value, addr, type )
 
         if (type == "b"){
           if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-            //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6483,17 +6273,11 @@ function writeStackLimit ( stackLimit )
 
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-            //show_notification('Segmentation fault. You tried to write in the data segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-            //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-            //instructions[executionIndex]._rowVariant = 'danger';
-            //return;
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
@@ -6523,7 +6307,8 @@ function writeStackLimit ( stackLimit )
               for (var i = 0; i < (diff/4); i++){
                 unallocated_memory.push(memory[memory_hash[2]][0]);
                 unallocated_memory[unallocated_memory.length-1].unallocated = true;
-                app._data.unallocated_memory = unallocated_memory;
+                if (typeof app !== "undefined")
+                    app._data.unallocated_memory = unallocated_memory;
                 memory[memory_hash[2]].splice(0, 1);
                 if(unallocated_memory.length > 20){
                   unallocated_memory.splice(0, 15);
@@ -6537,7 +6322,6 @@ function writeStackLimit ( stackLimit )
         }
 }
 
-// TODO: review for command line
 /*Syscall*/
 function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
 {
@@ -6552,46 +6336,46 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
         switch(action)
         {
           case "print_int":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            if (typeof app !== "undefined")
-                 app._data.display += (parseInt(value.toString()) >> 0);
-            else process.stdout.write((parseInt(value.toString()) >> 0)) ;
-            break;
+               var value   = architecture.components[indexComp].elements[indexElem].value;
+               var val_int = parseInt(value.toString()) >> 0 ;
+
+               if (typeof app !== "undefined")
+                    app._data.display += val_int ;
+               else console.log(val_int) ; //process.stdout.write(val_int) ;
+               break;
 
           case "print_float":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            if (typeof app !== "undefined")
-                 app._data.display += value;
-            else process.stdout.write(value) ;
-            break;
+               var value = architecture.components[indexComp].elements[indexElem].value;
+
+               if (typeof app !== "undefined")
+                    app._data.display += value;
+               else console.log(value) ; //process.stdout.write(value) ;
+               break;
 
           case "print_double":
-            var value = architecture.components[indexComp].elements[indexElem].value;
-            if (typeof app !== "undefined")
-                 app._data.display += value;
-            else process.stdout.write(value) ;
-            break;
+               var value = architecture.components[indexComp].elements[indexElem].value;
+               if (typeof app !== "undefined")
+                    app._data.display += value;
+               else console.log(value) ; //process.stdout.write(value) ;
+               break;
 
           case "print_string":
-            var addr = architecture.components[indexComp].elements[indexElem].value;
-            var index;
+               var addr = architecture.components[indexComp].elements[indexElem].value;
+               var index;
 
-            if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-              //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-              //instructions[executionIndex]._rowVariant = 'danger';
-              executionIndex = -1;
-              this.keyboard = "";
-              //return;
-              return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
-            }
+               if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+                 executionIndex = -1;
+                 this.keyboard = "";
+                 return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
+               }
 
-            if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-              index = memory_hash[0];
-            }
+               if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+                 index = memory_hash[0];
+               }
 
-            if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-              index = memory_hash[2];
-            }
+               if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+                 index = memory_hash[2];
+               }
 
             for (var i = 0; i < memory[index].length; i++){
               for (var j = 0; j < memory[index][i].Binary.length; j++){
@@ -6622,446 +6406,479 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2 )
               }
             }
 
-            break;
+               break;
 
           case "read_int":
-            mutexRead = true;
-            app._data.enter = false;
 
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read integer> ') ;
+                    var value        = parseInt(keystroke) ;
 
-	      // show_notification('The data has been uploaded', 'info') ; // TODO
-
-              if (runExecution == false) {
-                  app.executeProgram();
-              }
-
-              //return;
-              return packExecute(false, 'The data has been uploaded', 'danger', null);
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseInt(this.keyboard);
-              console_log(value);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++){
-                     //instructions[i]._rowVariant = '';
-                     draw.space.push(i) ;
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                executionIndex = -2;
-                //show_notification('The execution of the program has finished', 'success') ;
-                //return;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false){
-                       app.executeProgram();
-              }
-              break;
-            }
-
-            break;
+                // UI
+                mutexRead = true;
+                app._data.enter = false;
+    
+                console_log(mutexRead);
+                if (newExecution == true) {
+                    this.keyboard = "";
+                    consoleMutex  = false;
+                    mutexRead     = false;
+                    app._data.enter = null;
+    
+    	            show_notification('The data has been uploaded', 'info') ;
+    
+                    if (runExecution == false) {
+                        app.executeProgram();
+                    }
+    
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
+                }
+    
+                if (consoleMutex == false) {
+                    setTimeout(syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else {
+                  var value = parseInt(this.keyboard);
+                  console_log(value);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (executionIndex >= instructions.length)
+                  {
+                     for (var i = 0; i < instructions.length; i++) {
+                          draw.space.push(i) ;
+                     }
+                     executionIndex = -2;
+                     return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false) {
+                           app.executeProgram();
+                  }
+                }
+    
+                break;
 
           case "read_float":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
 
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read integer> ') ;
+                    var value        = parseFloat(keystroke) ;
 
-              if (runExecution == false){
-                  app.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseFloat(this.keyboard, 10);
-              console_log(value);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                     // instructions[i]._rowVariant = '';
-                     draw.space.push(i) ;
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                executionIndex = -2;
-                //show_notification('The execution of the program has finished', 'success') ;
-                //return;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false){
-                       app.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
+                mutexRead = true;
+                app._data.enter = false;
+                console_log(mutexRead);
+                if(newExecution == true){
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (runExecution == false){
+                      app.executeProgram();
+                  }
+    
+                  return;
+                }
+    
+                if (consoleMutex == false) {
+                    setTimeout(this.syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var value = parseFloat(this.keyboard, 10);
+                  console_log(value);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++) {
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false){
+                           app.executeProgram();
+                  }
+                }
+    
+                break;
 
           case "read_double":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
 
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read integer> ') ;
+                    var value        = parseFloat(keystroke) ;
 
-              if (runExecution == false){
-                  app.executeProgram();
-              }
-
-              return;
-            }
-
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = parseFloat(this.keyboard, 10);
-              console_log(value);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-              if (window.document)
-		  show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                     //instructions[i]._rowVariant = '';
-                     draw.space.push(i) ;
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                executionIndex = -2;
-                //show_notification('The execution of the program has finished', 'success') ;
-                //return;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false){
-                       app.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
+                mutexRead = true;
+                app._data.enter = false;
+                console_log(mutexRead);
+                if(newExecution == true){
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (runExecution == false){
+                      app.executeProgram();
+                  }
+    
+                  return;
+                }
+    
+                if (consoleMutex == false) {
+                    setTimeout(this.syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var value = parseFloat(this.keyboard, 10);
+                  console_log(value);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++) {
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false){
+                           app.executeProgram();
+                  }
+    
+                  break;
+                }
+    
+                break;
 
           case "read_string":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if (newExecution == true){
-               this.keyboard = "";
-               consoleMutex = false;
-               mutexRead = false;
-               app._data.enter = null;
 
-               if (window.document)
-	 	   show_notification('The data has been uploaded', 'info') ;
+               // TODO: review for command line
 
-               if (runExecution == false){
-                   app.executeProgram();
-               }
-
-               return;
-            }
-
-            if (consoleMutex == false){
-                setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var addr = architecture.components[indexComp].elements[indexElem].value;
-              var value = "";
-              var valueIndex = 0;
-
-              for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++) {
-                value = value + this.keyboard.charAt(i);
-              }
-
-              console_log(value);
-
-              var auxAddr = data_address;
-              var index;
-
-              if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-                //show_notification('Segmentation fault. You tried to write in the text segment', 'danger') ;
-                //instructions[executionIndex-1]._rowVariant = 'danger';
-                executionIndex = -1;
-                this.keyboard = "";
-                //return;
-                return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-              }
-
-              if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-                index = memory_hash[0];
-              }
-
-              if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-                index = memory_hash[2];
-              }
-
-              for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
-                for (var j = 0; j < memory[index][i].Binary.length; j++){
-                  var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-                  if(aux == addr){
-                    for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-                      memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                      auxAddr = memory[index][i].Binary[j].Addr;
-                      valueIndex++;
-                      addr++;
-                    }
-
-                    memory[index][i].Value = "";
+               mutexRead = true;
+               if (typeof app !== "undefined")
+                   app._data.enter = false;
+               console_log(mutexRead);
+                if (newExecution == true){
+                   this.keyboard = "";
+                   consoleMutex = false;
+                   mutexRead = false;
+                   if (typeof app !== "undefined")
+                       app._data.enter = null;
+    
+                   if (window.document)
+    	 	   show_notification('The data has been uploaded', 'info') ;
+    
+                   if (runExecution == false){
+                       if (typeof app !== "undefined")
+                           app.executeProgram();
+                   }
+    
+                   return;
+                }
+    
+                if (consoleMutex == false){
+                    setTimeout(this.syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var addr = architecture.components[indexComp].elements[indexElem].value;
+                  var value = "";
+                  var valueIndex = 0;
+    
+                  for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < this.keyboard.length; i++) {
+                    value = value + this.keyboard.charAt(i);
+                  }
+    
+                  console_log(value);
+    
+                  var auxAddr = data_address;
+                  var index;
+    
+                  if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+                    executionIndex = -1;
+                    this.keyboard = "";
+                    return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+                  }
+    
+                  if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+                    index = memory_hash[0];
+                  }
+    
+                  if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+                    index = memory_hash[2];
+                  }
+    
+                  for (var i = 0; i < memory[index].length && this.keyboard.length > 0; i++){
                     for (var j = 0; j < memory[index][i].Binary.length; j++){
-                      memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                    }
-
-                    if((i+1) < memory[index].length && valueIndex < value.length){
-                      i++;
-                      for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-                        memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-                        auxAddr = memory[index][i].Binary[j].Addr;
-                        valueIndex++;
-                        addr++;
-                      }
-
-                      memory[index][i].Value = "";
-                      for (var j = 0; j < memory[index][i].Binary.length; j++){
-                        memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-                      }
-
-                    }
-                    else if(valueIndex < value.length){
-                      data_address = auxAddr;
-                      memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
-                      i++;
-                      for (var z = 0; z < 4; z++){
-                        if(valueIndex < value.length){
-                          (memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                      var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+                      if(aux == addr){
+                        for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+                          memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                          auxAddr = memory[index][i].Binary[j].Addr;
                           valueIndex++;
-                          data_address++;
+                          addr++;
                         }
-                        else{
-                          (memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                          data_address++;
+    
+                        memory[index][i].Value = "";
+                        for (var j = 0; j < memory[index][i].Binary.length; j++){
+                          memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
                         }
-                      }
-
-                      memory[index][i].Value = "";
-                      for (var j = 0; j < memory[index][i].Binary.length; j++){
-                        memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+    
+                        if((i+1) < memory[index].length && valueIndex < value.length){
+                          i++;
+                          for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+                            memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+                            auxAddr = memory[index][i].Binary[j].Addr;
+                            valueIndex++;
+                            addr++;
+                          }
+    
+                          memory[index][i].Value = "";
+                          for (var j = 0; j < memory[index][i].Binary.length; j++){
+                            memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                          }
+    
+                        }
+                        else if(valueIndex < value.length){
+                          data_address = auxAddr;
+                          memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+                          i++;
+                          for (var z = 0; z < 4; z++){
+                            if(valueIndex < value.length){
+                              (memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                              valueIndex++;
+                              data_address++;
+                            }
+                            else{
+                              (memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+                              data_address++;
+                            }
+                          }
+    
+                          memory[index][i].Value = "";
+                          for (var j = 0; j < memory[index][i].Binary.length; j++){
+                            memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+                          }
+                        }
                       }
                     }
                   }
-                }
-              }
-
-              if(valueIndex == value.length){
-                this.keyboard = "";
-                consoleMutex = false;
-                mutexRead = false;
-                app._data.enter = null;
-
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
-
-                if(executionIndex >= instructions.length){
-                  for (var i = 0; i < instructions.length; i++) {
-                       //instructions[i]._rowVariant = '';
-                       draw.space.push(i) ;
+    
+                  if (valueIndex == value.length){
+                     this.keyboard = "";
+                     consoleMutex = false;
+                     mutexRead = false;
+                     if (typeof app !== "undefined")
+                         app._data.enter = null;
+    
+                    if (window.document)
+    		    show_notification('The data has been uploaded', 'info') ;
+    
+                    if(executionIndex >= instructions.length){
+                      for (var i = 0; i < instructions.length; i++) {
+                           draw.space.push(i) ;
+                      }
+    
+                      executionIndex = -2;
+                      return packExecute(true, 'The execution of the program has finished', 'success', null);
+                    }
+                    else if (runExecution == false){
+                             if (typeof app !== "undefined")
+                                 app.executeProgram();
+                    }
+    
+                    return;
                   }
-
-                  executionIndex = -2;
-                  //show_notification('The execution of the program has finished', 'success') ;
-                  //return;
-                  return packExecute(true, 'The execution of the program has finished', 'success', null);
-                }
-                else if (runExecution == false){
-                         app.executeProgram();
-                }
-
-                return;
-              }
-
-              var auxAddr = parseInt(addr);
-
-              while(valueIndex < value.length){
-                memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
-                for (var z = 0; z < 4; z++){
-                  if(valueIndex > value.length-1){
-                    (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
+    
+                  var auxAddr = parseInt(addr);
+    
+                  while(valueIndex < value.length){
+                    memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
+                    for (var z = 0; z < 4; z++){
+                      if(valueIndex > value.length-1){
+                        (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
+                      }
+                      else{
+                        (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+                        memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
+                      }
+                      auxAddr++;
+                      valueIndex++;
+                    }
+                    i++;
                   }
-                  else{
-                    (memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-                    memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
+    
+                  if (typeof app !== "undefined")
+                      app._data.memory[index] = memory[index];
+    
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  if (typeof app !== "undefined")
+                      app._data.enter = null;
+    
+                    if (window.document)
+    		    show_notification('The data has been uploaded', 'info') ;
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++) {
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
                   }
-                  auxAddr++;
-                  valueIndex++;
+                  else if (runExecution == false){
+                           if (typeof app !== "undefined")
+                               app.executeProgram();
+                  }
+    
+                  break;
                 }
-                i++;
-              }
-
-              app._data.memory[index] = memory[index];
-
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++) {
-                     //instructions[i]._rowVariant = '';
-                     draw.space.push(i) ;
-                }
-
-                executionIndex = -2;
-                //show_notification('The execution of the program has finished', 'success') ;
-                //return;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false){
-                       app.executeProgram();
-              }
-
-              break;
-            }
-
-            break;
+    
+                break;
 
           case "sbrk":
-            var aux_addr = architecture.memory_layout[3].value;
 
-            if((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value){
-	      //show_notification('Not enough memory for data segment', 'danger') ;
-              //instructions[executionIndex]._rowVariant = 'danger';
-              executionIndex = -1;
-              //return;
-              return packExecute(true, 'Not enough memory for data segment', 'danger', null);
-            }
+               // TODO: review for command line
 
-            for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
-              memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
-              for (var z = 0; z < 4; z++){
-                (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
-                aux_addr++;
-              }
-            }
+                var aux_addr = architecture.memory_layout[3].value;
+    
+                if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
+                    executionIndex = -1;
+                    return packExecute(true, 'Not enough memory for data segment', 'danger', null);
+                }
+    
+                for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
+                  memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
+                  for (var z = 0; z < 4; z++){
+                    (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
+                    aux_addr++;
+                  }
+                }
+    
+                if (typeof app !== "undefined")
+                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+                architecture.memory_layout[3].value = aux_addr-1;
+                this.architecture.memory_layout[3].value = aux_addr-1;
+                break;
 
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-            architecture.memory_layout[3].value = aux_addr-1;
-            this.architecture.memory_layout[3].value = aux_addr-1;
-
-            break;
           case "exit":
-            executionIndex = instructions.length + 1;
-            break;
+                executionIndex = instructions.length + 1;
+                break;
+
           case "print_char":
-            var aux = architecture.components[indexComp].elements[indexElem].value;
-            var aux2 = aux.toString(16);
-            var length = aux2.length;
+                var aux = architecture.components[indexComp].elements[indexElem].value;
+                var aux2 = aux.toString(16);
+                var length = aux2.length;
+    
+                var value = aux2.substring(length-2, length);
+                if (typeof app !== "undefined")
+                     app._data.display += String.fromCharCode(parseInt(value, 16));
+                else process.stdout.write(value) ;
+                break;
 
-            var value = aux2.substring(length-2, length);
-            this.display = this.display + String.fromCharCode(parseInt(value, 16));
-            break;
           case "read_char":
-            mutexRead = true;
-            app._data.enter = false;
-            console_log(mutexRead);
-            if(newExecution == true){
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
 
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
+                // CL
+                if (typeof app === "undefined") 
+                {
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' read char> ') ;
+                    var value        = keystroke.charCodeAt(0);
 
-              if (runExecution == false){
-                  app.executeProgram();
-              }
-
-              return;
-            }
-            if(consoleMutex == false){
-              setTimeout(this.syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
-            }
-            else{
-              var value = (this.keyboard).charCodeAt(0);
-              writeRegister(value, indexComp, indexElem);
-              this.keyboard = "";
-              consoleMutex = false;
-              mutexRead = false;
-              app._data.enter = null;
-
-                if (window.document)
-		    show_notification('The data has been uploaded', 'info') ;
-
-              console_log(mutexRead);
-
-              if(executionIndex >= instructions.length){
-                for (var i = 0; i < instructions.length; i++){
-                     //instructions[i]._rowVariant = '';
-                     draw.space.push(i) ;
+                    writeRegister(value, indexComp, indexElem);
+                    return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                executionIndex = -2;
-                //show_notification('The execution of the program has finished', 'success') ;
-                //return;
-                return packExecute(true, 'The execution of the program has finished', 'success', null);
-              }
-              else if (runExecution == false) {
-                       app.executeProgram();
-              }
+               mutexRead = true;
+               app._data.enter = false;
+               console_log(mutexRead);
+                if(newExecution == true){
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  if (runExecution == false){
+                      app.executeProgram();
+                  }
+    
+                  return;
+                }
 
-              break;
-            }
-            break;
+                if(consoleMutex == false){
+                  setTimeout(this.syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2);
+                }
+                else{
+                  var value = (this.keyboard).charCodeAt(0);
+                  writeRegister(value, indexComp, indexElem);
+                  this.keyboard = "";
+                  consoleMutex = false;
+                  mutexRead = false;
+                  app._data.enter = null;
+    
+    		  show_notification('The data has been uploaded', 'info') ;
+    
+                  console_log(mutexRead);
+    
+                  if(executionIndex >= instructions.length){
+                    for (var i = 0; i < instructions.length; i++){
+                         draw.space.push(i) ;
+                    }
+    
+                    executionIndex = -2;
+                    return packExecute(true, 'The execution of the program has finished', 'success', null);
+                  }
+                  else if (runExecution == false) {
+                           app.executeProgram();
+                  }
+                }
+
+                break;
         }
 }
 
@@ -7085,8 +6902,9 @@ function reset ()
           executionInit = 1;
 
           /*Reset stats*/
-          totalStats=0;
-          app._data.totalStats=0;
+          totalStats = 0 ;
+          if (typeof app !== "undefined")
+              app._data.totalStats = 0 ;
           for (var i = 0; i < stats.length; i++){
             stats[i].percentage = 0;
             stats[i].number_instructions = 0;
@@ -7155,7 +6973,8 @@ function reset ()
           }
 
           unallocated_memory = [];
-          app._data.unallocated_memory = unallocated_memory;
+          if (typeof app !== "undefined")
+              app._data.unallocated_memory = unallocated_memory;
 
           return true ;
 }

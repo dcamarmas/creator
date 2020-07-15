@@ -6,9 +6,8 @@ echo "  CREATOR packer"
 echo " ----------------"
 echo ""
 echo "  Requirements:"
-echo "  * terser (npm install terser)"
-echo "  * colors (npm install colors)"
-echo "  * yargs  (npm install  yargs)"
+echo "  * terser, colors, yargs, readline-sync"
+npm install terser jshint colors yargs readline-sync
 echo ""
 if [ $# -gt 0 ]; then
      set -x

@@ -7,7 +7,7 @@
    // filesystem
    var fs = require('fs') ;
 
-   // filesystem
+   // creator
    var creator = require('./js/min.creator_node.js') ;
 
    // color
@@ -21,7 +21,7 @@
                    }) ;
 
    // arguments
-   var creator_version = '1.5.2' ;
+   var creator_version = '2.0b1' ;
    var welcome = function () { return '\n' +
                                       'CREATOR\n'.help +
                                       '-------\n'.help +
@@ -113,7 +113,7 @@
    }
    catch (e)
    {
-       console.log(e.error) ;
+       console.log(e.stack) ;
        return false ;
    }
 
