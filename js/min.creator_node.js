@@ -920,7 +920,7 @@ function assembly_compiler()
 
                 for(var a = 0; a < hex.length/2; a++){
                   if(auxAddr % 4 == 0){
-                    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
+                    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", DefValue: "********", hide: hide});
                     if(label == ""){
                       label=null;
                     }
@@ -973,7 +973,7 @@ function assembly_compiler()
 
               for (var a = 0; a < hex.length/2; a++) {
                 if (auxAddr % 4 == 0) {
-                  memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
+                  memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, DefValue: instructions[i + binNum].loaded, hide: false});
                   if(label == ""){
                     label=null;
                   }
