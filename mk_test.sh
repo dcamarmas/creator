@@ -1,8 +1,6 @@
 #!/bin/bash
 #set -x
 
-npm install
-
 for I in $(seq 1 1 8)
 do
   echo "Testing ./examples/MIPS/example$I..."
