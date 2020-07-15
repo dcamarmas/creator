@@ -29,25 +29,25 @@
 
 #### :point_right:	 RISC-V
 
-| Description                | Link                                                                  |
-|----------------------------|-----------------------------------------------------------------------| 
-| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=0 |
+| Description                | Link                                                                   |
+|----------------------------|------------------------------------------------------------------------| 
+| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e1 |
 
 #### :point_right:	 MIPS
 
-| Description                | Link                                                                |
-|----------------------------|---------------------------------------------------------------------|
-| Data Storage               | https://dcamarmas.github.io/creator/?example_set=default&example=0  |
-| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=1  |
-| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?example_set=default&example=2  |
-| FPU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=3  |
-| Loop                       | https://dcamarmas.github.io/creator/?example_set=default&example=4  |
-| Branch                     | https://dcamarmas.github.io/creator/?example_set=default&example=5  |
-| Loop + Memory              | https://dcamarmas.github.io/creator/?example_set=default&example=6  |
-| Copy of matrices           | https://dcamarmas.github.io/creator/?example_set=default&example=7  |
-| I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=8  |
-| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=9  |
-| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=10 |
+| Description                | Link                                                                 |
+|----------------------------|----------------------------------------------------------------------|
+| Data Storage               | https://dcamarmas.github.io/creator/?example_set=default&example=e1  |
+| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=e2  |
+| Store/Load Data in Memory  | https://dcamarmas.github.io/creator/?example_set=default&example=e3  |
+| FPU operations             | https://dcamarmas.github.io/creator/?example_set=default&example=e4  |
+| Loop                       | https://dcamarmas.github.io/creator/?example_set=default&example=e5  |
+| Branch                     | https://dcamarmas.github.io/creator/?example_set=default&example=e6  |
+| Loop + Memory              | https://dcamarmas.github.io/creator/?example_set=default&example=e7  |
+| Copy of matrices           | https://dcamarmas.github.io/creator/?example_set=default&example=e8  |
+| I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=e9  |
+| I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=e10 |
+| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=e10 |
  
     
 ## ChangeLog
@@ -70,5 +70,4 @@
 ## Badges
 
 [![Build Status](https://travis-ci.org/dcamarmas/creator.svg?branch=master)](https://travis-ci.org/dcamarmas/creator)
-
 
