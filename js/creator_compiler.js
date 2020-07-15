@@ -166,19 +166,19 @@ var update_binary = '';
 var totalStats = 0;
 var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 var stats = [
-  { type: 'Arithmetic integer', number_instructions: 0, percentage: 0, abbreviation: "AI" },
-  { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0, abbreviation: "AFP" },
+  { type: 'Arithmetic integer', number_instructions: 0, percentage: 0 },
+  { type: 'Arithmetic floating point', number_instructions: 0, percentage: 0},
   { type: 'Logic', number_instructions: 0, percentage: 0, abbreviation: "Log" },
-  { type: 'Transfer between registers', number_instructions: 0, percentage: 0, abbreviation: "Trans" },
-  { type: 'Memory access', number_instructions: 0, percentage: 0, abbreviation: "Mem" },
-  { type: 'Comparison', number_instructions: 0, percentage: 0, abbreviation: "Comp" },
-  { type: 'I/O', number_instructions: 0, percentage: 0, abbreviation: "I/O" },
-  { type: 'Syscall', number_instructions: 0, percentage: 0, abbreviation: "Sys" },
-  { type: 'Control', number_instructions: 0, percentage: 0, abbreviation: "Ctrl" },
-  { type: 'Function call', number_instructions: 0, percentage: 0, abbreviation: "FC" },
-  { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0, abbreviation: "CB" },
-  { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0, abbreviation: "UB" },
-  { type: 'Other', number_instructions: 0, percentage: 0, abbreviation: "Oth" },
+  { type: 'Transfer between registers', number_instructions: 0, percentage: 0},
+  { type: 'Memory access', number_instructions: 0, percentage: 0},
+  { type: 'Comparison', number_instructions: 0, percentage: 0},
+  { type: 'I/O', number_instructions: 0, percentage: 0},
+  { type: 'Syscall', number_instructions: 0, percentage: 0},
+  { type: 'Control', number_instructions: 0, percentage: 0},
+  { type: 'Function call', number_instructions: 0, percentage: 0},
+  { type: 'Conditional bifurcation', number_instructions: 0, percentage: 0},
+  { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
+  { type: 'Other', number_instructions: 0, percentage: 0},
 ];
 
 
@@ -920,7 +920,7 @@ function assembly_compiler()
 
                 for(var a = 0; a < hex.length/2; a++){
                   if(auxAddr % 4 == 0){
-                    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", hide: hide});
+                    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", DefValue: "********", hide: hide});
                     if(label == ""){
                       label=null;
                     }
@@ -973,7 +973,7 @@ function assembly_compiler()
 
               for (var a = 0; a < hex.length/2; a++) {
                 if (auxAddr % 4 == 0) {
-                  memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, hide: false});
+                  memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, DefValue: instructions[i + binNum].loaded, hide: false});
                   if(label == ""){
                     label=null;
                   }
