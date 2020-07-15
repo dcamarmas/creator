@@ -2115,7 +2115,7 @@
             <div class="col-lg-12 col-sm-12 mb-3 px-0">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary">
+                  <b-dropdown split right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary" @click="change_data_view('registers', regType)">
                     <b-dropdown-item @click="change_data_view('registers', 'int')">CPU-INT Registers</b-dropdown-item>
                     <b-dropdown-item @click="change_data_view('registers', 'fp')">CPU-FP Registers</b-dropdown-item>
                   </b-dropdown>
@@ -2574,29 +2574,18 @@
             <!-- Stats--->
             <div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == 'stats'">
               <div class="col-lg-12 col-sm-12">
-                <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
-                <br>
-                <!--<h6>Graphic</h6>
-                <b-progress class="mb-3">
-                  <b-progress-bar :value="stats[0].percentage" style="background:red;">{{stats[0].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[1].percentage" style="background:blue;">{{stats[1].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[2].percentage" style="background:yellow;">{{stats[2].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[3].percentage" style="background:purple;">{{stats[3].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[4].percentage" style="background:green;">{{stats[4].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[5].percentage" style="background:orange;">{{stats[5].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[6].percentage" style="background:gray;">{{stats[6].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[7].percentage" style="background:pink;">{{stats[7].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[8].percentage" style="background:teal;">{{stats[8].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[9].percentage" style="background:black;">{{stats[9].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[10].percentage" style="background:lime;">{{stats[10].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[11].percentage" style="background:indigo;">{{stats[11].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[12].percentage" style="background:cyan;">{{stats[12].abbreviation}}</b-progress-bar>
-                </b-progress>-->
 
-                <div id="chart" v-if="totalStats>0">
-						      <apexchart type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
-						    </div>
+                <b-tabs content-class="mt-3">
+                  <b-tab title="Ghaphic" active>
+                    <div id="chart">
+                      <apexchart type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
+                    </div>
+                  </b-tab>
 
+                  <b-tab title="Table">
+                    <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
+                  </b-tab>
+                </b-tabs>
               </div>
             </div>
           </div>
@@ -2635,7 +2624,7 @@
                 <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleClear"><span class="fas fa-broom"></span> Clear</b-button>
               </div>
               <div class="col-lg-4 col-sm-4">
-                <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-level-down-alt" style="transform: rotate(90deg);"></span> Enter</b-button>
+                <b-button id="enter_keyboard" class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-level-down-alt" style="transform: rotate(90deg);"></span> Enter</b-button>
               </div>
 
             </div>
