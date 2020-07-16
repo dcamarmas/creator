@@ -7140,6 +7140,9 @@ function get_state ( )
     for (var i=0; i<architecture.components.length; i++)
     {
         c_name = architecture.components[i].name ;
+        if (typeof c_name == "undefined") {
+            return ret ;
+        }
         c_name = c_name.split(' ').map(i => i.charAt(0)).join('').toLowerCase() ;
 
         for (var j=0; j<architecture.components[i].elements.length; j++)

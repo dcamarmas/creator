@@ -5,6 +5,7 @@
 # MIPS
 #
 
+echo " MIPS:"
 MIPS_TEST="2 3 4 5 6 7 8 11"
 for I in $MIPS_TEST;
 do
@@ -19,13 +20,13 @@ done
 # RISC-V
 #
 
-#RV_TEST="1 2"
-#for I in $RV_TEST;
-#do
-#  echo -n " * ./examples/riscv/example$I: "
-#  ./creator.sh -a ./architecture/RISC-V-like.json \
-#               -s ./examples/riscv/example$I.txt
-#               -r ./examples/riscv/example$I.output --quiet
-#  echo ""
-#done
+echo " RISC-V:"
+RV_TEST="1"
+for I in $RV_TEST;
+do
+  echo -n " * ./examples/riscv/example$I: "
+  ./creator.sh -a ./architecture/RISC-V-like.json \
+               -s ./examples/riscv/example$I.txt \
+               -r ./examples/riscv/example$I.output --quiet
+done
 
