@@ -21,7 +21,8 @@
                    }) ;
 
    // arguments
-   var creator_version = '2.0b2' ;
+
+   var creator_version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version ;
    var welcome = function () { return '\n' +
                                       'CREATOR\n'.help +
                                       '-------\n'.help +
