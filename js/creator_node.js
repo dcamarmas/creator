@@ -44,7 +44,7 @@ function execute_program ( limit_n_instructions )
     return ret ;
 }
 
-function print_state ( )
+function get_state ( )
 {
     var c_name      = '' ;
     var e_name      = '' ;
@@ -110,7 +110,7 @@ function print_state ( )
 function compare_states ( ref_state, alt_state )
 {
     var ret = {} ;
-    ret.msg    = "Equals" ;
+    ret.msg    = "" ;
     ret.status = "ok" ;
 
     // 1) check equals
@@ -118,30 +118,40 @@ function compare_states ( ref_state, alt_state )
     alt_state = alt_state.trim() ;
 
     if (ref_state == alt_state) {
+        ret.msg = "Equals" ;
         return ret ;
     }
 
     // 2) check m_alt included within m_ref
     var m_ref = {} ;
-    var m_alt = {} ;
     ref_state.split(';').map(function(i) {
-			         m_ref[i.split(':')[0]] = i.split(':')[1] ;
+			         var parts = i.split(':') ;
+                                 if (parts.length != 2) {
+                                     return ;
+                                 }
+
+			         m_ref[parts[0].trim()] = parts[1].trim() ;
                              }) ;
+    var m_alt = {} ;
     alt_state.split(';').map(function(i) {
-			         m_alt[i.split(':')[0]] = i.split(':')[1] ;
+			         var parts = i.split(':') ;
+                                 if (parts.length != 2) {
+                                     return ;
+                                 }
+
+			         m_alt[parts[0].trim()] = parts[1].trim() ;
                              }) ;
 
+    ret.msg = "Different: " ;
     for (elto in m_ref) 
     {
-         if (typeof m_alt[elto] === "undefined") {
-             ret.msg    = "Different: " + elto + "=" + m_ref[elto] + " is not available." ;
+         if (m_alt[elto] != m_ref[elto]) 
+         {
+             if (typeof m_alt[elto] === "undefined")
+                  ret.msg += elto + "=" + m_ref[elto] + " is not available. " ;
+             else ret.msg += elto + "=" + m_ref[elto] + " is =" + m_alt[elto] + ". " ;
+
              ret.status = "ko" ;
-             return ret ;
-         }
-         if (m_alt[elto] != m_ref[elto]) {
-             ret.msg    = "Different: " + elto + "=" + m_ref[elto] + " is =" + m_alt[elto] + "." ;
-             ret.status = "ko" ;
-             return ret ;
          }
     }
 
@@ -157,6 +167,6 @@ function compare_states ( ref_state, alt_state )
 module.exports.load_architecture = load_architecture ;
 module.exports.assembly_compile  = assembly_compile ;
 module.exports.execute_program   = execute_program ;
-module.exports.print_state       = print_state ;
+module.exports.get_state         = get_state ;
 module.exports.compare_states    = compare_states ;
 

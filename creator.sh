@@ -11,14 +11,22 @@
    var creator = require('./js/min.creator_node.js') ;
 
    // color
+   var color_theme = {
+                       info:    'bgGreen',
+                       help:    'green',
+                       warn:    'yellow',
+                       success: 'cyan',
+                       error:   'bgRed'
+                     } ;
+   var gray_theme  = {
+                       info:    'white',
+                       help:    'gray',
+                       warn:    'white',
+                       success: 'white',
+                       error:   'brightWhite'
+                     } ;
    var colors = require('colors') ;
-   colors.setTheme({
-                     info:    'bgGreen',
-                     help:    'green',
-                     warn:    'yellow',
-                     success: 'cyan',
-                     error:   'bgRed'
-                   }) ;
+   colors.setTheme(gray_theme) ;
 
    // arguments
 
@@ -69,6 +77,11 @@
                   describe: 'Minimum output',
                   default:  false
                })
+              .option('color', {
+                  type:     'boolean',
+                  describe: 'Colored output',
+                  default:  false
+               })
               .demandOption(['architecture', 'assembly'], 'Please provide both architecture and assembly files.')
               .help('h')
               .alias('h', 'help')
@@ -96,6 +109,9 @@
 
    try
    {
+       if (argv.color) {
+           colors.setTheme(color_theme) ;
+       }
        show_success(welcome()) ;
 
        // (a) load architecture
@@ -129,19 +145,23 @@
        }
        else show_success("[Executor] Executed successfully.") ;
 
-       // (d) print finalmachine state
-       ret = creator.print_state() ;
-       if (false == argv.quiet)
-            console.log("[Final state] ".success + ret.msg + "\n") ;
-       else console.log(ret.msg + "\n") ;
-
-       // (e) compare results
+       // (d) compare results
        if (argv.result !== '')
        {
            result = fs.readFileSync(argv.result, 'utf8') ;
+           ret = creator.get_state() ;
            ret = creator.compare_states(result, ret.msg) ;
-           console.log(ret.msg + "\n") ;
+           if (false == argv.quiet)
+                console.log("[state] ".success + ret.msg + "\n") ;
+           else console.log(ret.msg + "\n") ;
+           return 1 ;
        }
+
+       // (e) print finalmachine state
+       ret = creator.get_state() ;
+       if (false == argv.quiet)
+            console.log("[Final state] ".success + ret.msg + "\n") ;
+       else console.log(ret.msg + "\n") ;
    }
    catch (e)
    {
