@@ -44,6 +44,8 @@ try
     data: {
 
       /*Global*/
+      /*Number Version*/
+      version: '',
       /*View*/
       creator_mode: "load_architecture",
       /*Notification speed*/
@@ -348,6 +350,7 @@ try
       /*Register select*/
       nameTabReg: 'Decimal',
       nameReg: 'INT Registers',
+      regType: 'int',
       register_popover: '',
       /*Data mode*/
       data_mode: 'registers',
@@ -374,11 +377,7 @@ try
         percentage: {
           label: 'Percentage',
           sortable: true
-        },
-        abbreviation: {
-          label: 'Abbreviation',
-          sortable: false
-        },
+        }
       },
       /*Stats*/
       totalStats: totalStats,
@@ -438,6 +437,7 @@ try
 
     /*Created vue instance*/
     created(){
+      this.load_num_version();
       this.load_arch_available();
       this.detectNavigator();
     },
@@ -460,6 +460,13 @@ try
     /*Vue methods*/
     methods: {
       /*Generic*/
+
+      load_num_version(){
+        $.getJSON('package.json', function(cfg){
+          creator_information = cfg;
+          app._data.version = cfg.version;
+        });
+      },
 
       verifyNavigator() {
         if (navigator.userAgent.indexOf("OPR") > -1) {
@@ -3871,11 +3878,13 @@ try
             app._data.register_type = 'integer';
             app._data.nameTabReg = "Decimal";
             app._data.nameReg = 'INT Registers';
+            app._data.regType = 'int';
           }
           else if(type == "fp"){
             app._data.register_type = 'floating point';
             app._data.nameTabReg = "Real";
             app._data.nameReg = 'FP Registers';
+            app._data.regType = 'fp';
           }
         }
         if(e == "memory"){

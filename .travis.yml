@@ -5,10 +5,8 @@ node_js:
   - "node"
 
 before_install:
-  - npm install jshint
-  - npm install terser
-  - npm install colors
-  - npm install yargs
+  - rm -fr node_modules
+  - npm install 
 
 script:
   - npm run build-creator-node
