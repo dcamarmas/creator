@@ -44,6 +44,8 @@ try
     data: {
 
       /*Global*/
+      /*Number Version*/
+      version: '',
       /*View*/
       creator_mode: "load_architecture",
       /*Notification speed*/
@@ -435,6 +437,7 @@ try
 
     /*Created vue instance*/
     created(){
+      this.load_num_version();
       this.load_arch_available();
       this.detectNavigator();
     },
@@ -457,6 +460,13 @@ try
     /*Vue methods*/
     methods: {
       /*Generic*/
+
+      load_num_version(){
+        $.getJSON('package.json', function(cfg){
+          creator_information = cfg;
+          app._data.version = cfg.version;
+        });
+      },
 
       verifyNavigator() {
         if (navigator.userAgent.indexOf("OPR") > -1) {
