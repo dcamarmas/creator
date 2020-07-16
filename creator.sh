@@ -21,7 +21,7 @@
                    }) ;
 
    // arguments
-   var creator_version = '2.0b1' ;
+   var creator_version = '2.0b2' ;
    var welcome = function () { return '\n' +
                                       'CREATOR\n'.help +
                                       '-------\n'.help +
@@ -30,7 +30,8 @@
 
    var argv = require('yargs')
               .usage(welcome() + '\n' +
-                     'Usage: $0 -a <file name> -s <file name>')
+                     'Usage: $0 -a <file name> -s <file name>\n' +
+                     'Usage: $0 -h')
               .example([['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt',
                          'To compile and execute example5.txt'],
                         ['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt --maxins 10',
@@ -83,7 +84,7 @@
    var result = null ;
 
    if ( (argv.a == "") || (argv.s == "") ) {
-         console.log(welcome() + '\n' + 'Usage: ./creator.sh -a <file name> -s <file name>\n')
+         console.log(welcome() + '\n' + 'Usage: ./creator.sh -a <file name> -s <file name>\n' + 'Usage: ./creator.sh -h\n')
          return false ;
    }
 
