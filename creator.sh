@@ -50,6 +50,13 @@
                   nargs:    1,
                   default:  ''
                })
+              .option('result', {
+                  alias:    'r',
+                  type:     'string',
+                  describe: 'Result file to compare with',
+                  nargs:    1,
+                  default:  ''
+               })
               .option('maxins', {
                   type:     'string',
                   describe: 'Maximum number of instructions to be executed',
@@ -71,17 +78,15 @@
    // Main
    //
 
-   var show_success = function ( msg ) { if (false == quiet) console.log(msg.success) ; }
-   var show_error   = function ( msg ) { if (false == quiet) console.log(msg.error) ; }
+   var show_success = function ( msg ) { if (false == argv.quiet) console.log(msg.success) ; }
+   var show_error   = function ( msg ) { if (false == argv.quiet) console.log(msg.error) ; }
 
    var limit_n_instructions = parseInt(argv.maxins) ;
-   var quiet = argv.quiet ;
 
-   var architec_name = argv.architecture ;
-   var architecture  = null ;
-   var assembly_name = argv.assembly ;
-   var assembly = null ;
-   var result = null ;
+   var architecture  = '' ;
+   var assembly = '' ;
+   var result   = '' ;
+   var ret      = null ;
 
    if ( (argv.a == "") || (argv.s == "") ) {
          console.log(welcome() + '\n' + 'Usage: ./creator.sh -a <file name> -s <file name>\n' + 'Usage: ./creator.sh -h\n')
@@ -93,41 +98,49 @@
        show_success(welcome()) ;
 
        // (a) load architecture
-       architecture = fs.readFileSync(architec_name, 'utf8') ;
-       result = creator.load_architecture(architecture) ;
-       if (result.status !== "ok")
+       architecture = fs.readFileSync(argv.architecture, 'utf8') ;
+       ret = creator.load_architecture(architecture) ;
+       if (ret.status !== "ok")
        {
-           show_error("[Loader] " + result + "\n") ;
+           show_error("[Loader] " + ret + "\n") ;
            return -1 ;
        }
        else show_success("[Loader] Architecture '" + argv.a + "' loaded successfully.") ;
 
        // (b) compile
-       assembly = fs.readFileSync(assembly_name, 'utf8') ;
-       result = creator.assembly_compile(assembly) ;
-       if (result.status !== "ok")
+       assembly = fs.readFileSync(argv.assembly, 'utf8') ;
+       ret = creator.assembly_compile(assembly) ;
+       if (ret.status !== "ok")
        {
-           show_error("[Compiler] Error at token " + result.tokenIndex + " (" + result.token + ").\n" +
-                      "[Compiler] " + result.msg + "\n") ;
+           show_error("[Compiler] Error at token " + ret.tokenIndex + " (" + ret.token + ").\n" +
+                      "[Compiler] " + ret.msg + "\n") ;
            return -1 ;
        }
        else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
 
        // (c) ejecutar
-       result = creator.execute_program(limit_n_instructions) ;
-       if (result.status !== "ok")
+       ret = creator.execute_program(limit_n_instructions) ;
+       if (ret.status !== "ok")
        {
            show_error("[Executor] Error found.\n" +
-                      "[Executor] " + result.msg + "\n") ;
+                      "[Executor] " + ret.msg + "\n") ;
            return -1 ;
        }
        else show_success("[Executor] Executed successfully.") ;
 
        // (d) print finalmachine state
-       result = creator.print_state() ;
-       if (false == quiet)
-            console.log("[Final state] ".success + result.msg + "\n") ;
-       else console.log(result.msg + "\n") ;
+       ret = creator.print_state() ;
+       if (false == argv.quiet)
+            console.log("[Final state] ".success + ret.msg + "\n") ;
+       else console.log(ret.msg + "\n") ;
+
+       // (e) compare results
+       if (argv.result !== '')
+       {
+           result = fs.readFileSync(argv.result, 'utf8') ;
+           ret = creator.compare_states(result, ret.msg) ;
+           console.log(ret.msg + "\n") ;
+       }
    }
    catch (e)
    {
