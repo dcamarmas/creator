@@ -7113,7 +7113,7 @@ function execute_program ( limit_n_instructions )
     var ret = {} ;
 
     ret = executeProgramOneShot(limit_n_instructions) ;
-    if (ret.error === true) 
+    if (ret.error === true)
     {
         ret.status = "ko" ;
         return ret ;
@@ -7125,6 +7125,8 @@ function execute_program ( limit_n_instructions )
 
 function print_state ( )
 {
+    var c_name      = '' ;
+    var e_name      = '' ;
     var elto_value  = null ;
     var elto_dvalue = null ;
     var elto_string = null ;
@@ -7134,11 +7136,15 @@ function print_state ( )
     ret.status = "ok" ;
 
     // dump registers
-    for (var i=0; i<architecture.components.length; i++) 
+    for (var i=0; i<architecture.components.length; i++)
     {
-        for (var j=0; j<architecture.components[i].elements.length; j++) 
+        c_name = architecture.components[i].name ;
+        c_name = c_name.split(' ').map(i => i.charAt(0)).join('').toLowerCase() ;
+
+        for (var j=0; j<architecture.components[i].elements.length; j++)
         {
             // get value + default value
+            e_name      = architecture.components[i].elements[j].name ;
             elto_value  = architecture.components[i].elements[j].value ;
             elto_dvalue = architecture.components[i].elements[j].default_value ;
 
@@ -7155,25 +7161,23 @@ function print_state ( )
             if (architecture.components[i].type == "floating point") {
                 elto_string = elto_value.toString() ;
             }
-            ret.msg = ret.msg + architecture.components[i].elements[j].name + ":" + elto_string + "; ";
+            ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
         }
     }
 
     // dump memory
-    for (var i in memory) 
+    for (var i in memory)
     {
-        if ("instructions_memory" == i) {
-             continue ; // instruction memory area stores high-level instructions
-        }
-
-        for (var j=0; j<memory[i].length; j++) 
+        for (var j=0; j<memory[i].length; j++)
         {
-            elto_value  = memory[i][j].Value ;
-            elto_dvalue = memory[i][j].DefValue ;
+            elto_value  = memory[i][j].Binary[0].Bin    + memory[i][j].Binary[1].Bin +
+                          memory[i][j].Binary[2].Bin    + memory[i][j].Binary[3].Bin ;
+            elto_dvalue = memory[i][j].Binary[0].DefBin + memory[i][j].Binary[1].DefBin +
+                          memory[i][j].Binary[2].DefBin + memory[i][j].Binary[3].DefBin ;
 
-            if (elto_value != elto_dvalue) 
+            if (elto_value != elto_dvalue)
             {
-                elto_string = "0x" + elto_value.toString(16) ;
+                elto_string = "0x" + elto_value ;
                 ret.msg = ret.msg + "memory[0x" + j.toString(16) + "]" + ":" + elto_string + "; ";
             }
         }
