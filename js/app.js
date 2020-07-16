@@ -3022,9 +3022,17 @@ try
       },
 
       /*Load a selected example*/
-      load_example(url){
+      load_example(url)
+      {
         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
 
+        $.get(url, function(data) {
+		       code_assembly = data ;
+                       textarea_assembly_editor.setValue(code_assembly);
+		       show_notification(' The selected example has been loaded correctly', 'success') ;
+		   });
+
+/*
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
           if (this.readyState == 4 && this.status == 200) {
@@ -3036,12 +3044,21 @@ try
         };
         xhttp.open("GET", url, true);
         xhttp.send();
+*/
       },
 
        /*Load a selected example and compile*/
-      load_example_init(url){
+      load_example_init(url)
+      {
         this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
 
+        $.get(url, function(data) {
+		       code_assembly = data ;
+		       app.assembly_compiler(code_assembly);
+		       show_notification(' The selected example has been loaded correctly', 'success') ;
+		   });
+
+/*
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
           if (this.readyState == 4 && this.status == 200) {
@@ -3052,6 +3069,7 @@ try
         };
         xhttp.open("GET", url, true);
         xhttp.send();
+*/
       },
 
       /*Save a binary in a local file*/
