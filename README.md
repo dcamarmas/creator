@@ -31,7 +31,8 @@
 
 | Description                | Link                                                                   |
 |----------------------------|------------------------------------------------------------------------| 
-| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e1 |
+| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e1 |
+| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e2 |
 
 #### :point_right:	 MIPS
 
