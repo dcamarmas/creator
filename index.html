@@ -2086,10 +2086,10 @@
                     <b-img alt="Break" src="./images/stop_classic.gif" class="shadow" rounded="circle" style="width:auto !important;height:4vh;" v-if="row.item.Break == true"></b-img>
                   </div>
                 </template>
-                <template v-slot:cell(Address)="row"slot="Address">
+                <template v-slot:cell(Address)="row">
                   <h6>{{row.item.Address}}</h6>
                 </template>
-                <template v-slot:cell(Label)="row"slot="Label">
+                <template v-slot:cell(Label)="row">
                   <b-badge pill variant="info">{{row.item.Label}}</b-badge>
                 </template>
                 <template v-slot:cell(userInstructions)="row">

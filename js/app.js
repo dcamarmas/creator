@@ -2854,14 +2854,22 @@ try
       /*Compilator*/
 
       /*Compile assembly code*/
-      assembly_compiler()
+      assembly_compiler(code)
       {
+
         show_loading();
         promise = new Promise((resolve, reject) => {
 
           setTimeout(function() {
             /* compile */
-            code_assembly = textarea_assembly_editor.getValue();
+
+            if(typeof(code)!=="undefined"){
+              code_assembly=code;
+            }
+            else{
+              code_assembly = textarea_assembly_editor.getValue();
+            }
+
             var ret = assembly_compiler() ;
 
             /* update/reset */
@@ -3032,24 +3040,14 @@ try
 
        /*Load a selected example and compile*/
       load_example_init(url){
-        this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
+        this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
 
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function(){
           if (this.readyState == 4 && this.status == 200) {
             code_assembly = this.responseText;
-
-            app.change_UI_mode('assembly');
-
-            setTimeout(function(){
-              textarea_assembly_editor.setValue(code_assembly);
-              assembly_compiler();
-
-              show_notification(' The selected example has been loaded correctly', 'success') ;
-
-              app.change_UI_mode('simulator');
-            },100);
-
+            app.assembly_compiler(code_assembly);
+            show_notification(' The selected example has been loaded correctly', 'success') ;
           }
         };
         xhttp.open("GET", url, true);
@@ -3501,8 +3499,9 @@ try
               }
             }
 
-            ApexCharts.exec('graphic', 'updateSeries', stats_value);
-
+            if(app._data.data_mode == "stats"){
+              ApexCharts.exec('graphic', 'updateSeries', stats_value);
+            }
             return ;
          }
       },
@@ -3643,7 +3642,7 @@ try
           }
 
           /*Reset graphic*/
-          if(reset_graphic == true){
+          if(reset_graphic == true && app._data.data_mode == "stats"){
             ApexCharts.exec('graphic', 'updateSeries', stats_value);
           }
 
