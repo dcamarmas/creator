@@ -6,7 +6,7 @@ node_js:
 
 before_install:
   - rm -fr node_modules
-  - npm install 
+  - npm install terser jshint colors yargs readline-sync
 
 script:
   - npm run build-creator-node
