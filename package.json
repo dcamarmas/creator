@@ -4,8 +4,8 @@
   "author": "dcamarma@inf.uc3m.es",
   "version": "2.0.2",
   "devDependencies": {
-    "terser": "^4.8.0",
-    "jshint": "^2.11.1"
+    "jshint": "^2.11.1",
+    "terser": "^4.8.0"
   },
   "scripts": {
     "test-creator-node": "./mk_travis.sh",

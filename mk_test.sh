@@ -18,11 +18,11 @@ done
 # RISC-V
 #
 
-#echo " RISC-V:"
-#RV_TEST="1 2"
-#for I in $RV_TEST;
-#do
-#  echo " * ./examples/riscv/example$I... "
-#  ./creator.sh -a ./architecture/RISC-V-like.json -s ./examples/riscv/example$I.txt --quiet > ./examples/riscv/example$I.output
-#done
+echo " RISC-V:"
+RV_TEST="1"
+for I in $RV_TEST;
+do
+  echo " * ./examples/riscv/example$I... "
+  ./creator.sh -a ./architecture/RISC-V-like.json -s ./examples/riscv/example$I.txt --quiet > ./examples/riscv/example$I.output
+done
 
