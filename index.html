@@ -16,7 +16,7 @@
     <link type="text/css" rel='stylesheet' href="external/fontawesome/css/all.css">
     <link rel="stylesheet" href="external/codemirror/codemirror.css">
     <link rel="stylesheet" href="css/style.css">
-    
+   
     <!-- Load polyfills to support older browsers -->
     <!--<script src="//polyfill.io/v3/polyfill.min.js?features=es2015%2CIntersectionObserver" crossorigin="anonymous"></script>-->
 
@@ -28,6 +28,7 @@
     <script src="external/BigInteger.min.js"></script>
     <script src="external/lodash.js"></script>
 
+    <!--Codemirror scripts-->
     <script src="external/codemirror/codemirror.js"></script>
     <script src="external/codemirror/keymap/vim.js"></script>
     <script src="external/codemirror/keymap/sublime.js"></script>
@@ -36,6 +37,24 @@
     <script src="external/codemirror/addon/display/autorefresh.js"></script>
     <script src="external/codemirror/addon/comment/comment.js"></script>
     <script src="external/codemirror/addon/hint/show-hint.js"></script>
+
+    <!--Apexcharts scripts-->
+    <script>
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/polyfill.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/classList.min.js"><\/script>'
+        )
+      window.Promise ||
+        document.write(
+          '<script src="external/apexcharts/findindex_polyfill_mdn"><\/script>'
+        )
+    </script>
+    <script src="external/apexcharts/apexcharts"></script>
+    <script src="external/apexcharts/vue-apexcharts"></script>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="57x57" href="./images/icons/apple-icon-57x57.png">
@@ -79,20 +98,31 @@
 
         <!-- Navbar  -->
         <header>
-          <b-navbar toggleable="sm" class="header" style="margin: 1px; padding-right: 3%; padding-left: 3%;">
-            <b-navbar-brand style="color: #2196F3; margin: 0px;" href=".">
-            	<h1>CREATOR <b-badge pill variant="secondary"> 1.5 </b-badge>
-            	<span style="padding-left: 4%;">{{architecture_name}}</span>
-            	<br>
-            	<strong><p style="color: #383d41; font-size: 11px;margin-top: 2%;">didaCtic and geneRic assEmbly progrAmming simulaTOR</p></strong></h1>
+          <b-navbar toggleable="sm" class="header my-0 mx-1 py-0 px-2">
+            <b-navbar-brand class="p-0 m-0" style="color:#2196F3; margin:0px;" href=".">
+                <div class="container">
+                  <div class="row">
+                  <div class="col-auto my-0 py-0 pr-1 text-uppercase">
+							      Creator <b-badge pill variant="secondary">{{version}}</b-badge>
+						      </div>
+                  <div class="col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
+                  <div class="w-100"></div>
+                  <div class="col-auto my-0 py-0 font-weight-bold mx-1" style="color:#383d41; font-size:11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</div>
+                  </div>
+                </div>
             </b-navbar-brand>
 
             <b-navbar-toggle target="nav_collapse" aria-label="Open/Close more information"></b-navbar-toggle>
 
             <b-collapse is-nav id="nav_collapse">
               <b-navbar-nav class="ml-auto">
-                <b-nav-item href='https://www.arcos.inf.uc3m.es/' target="_blank"><img alt="ARCOS" src="./images/arcos.svg" style="height:30pt"></b-nav-item>
-                <b-nav-item href='https://www.inf.uc3m.es/' target="_blank"><img alt="Computer Science and Engineering Departament" src="./images/dptoinf.png" style="height:30pt"></b-nav-item>
+                <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.arcos.inf.uc3m.es/'>
+                	<img alt="ARCOS" class="nopadding" src="./images/arcos.svg" style="height:5vh">
+                </b-nav-item>
+
+                <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.inf.uc3m.es/'>
+                	<img alt="Computer Science and Engineering Departament" class="nopadding" src="./images/dptoinf.png" style="height:5vh">
+                </b-nav-item>
               </b-navbar-nav>
             </b-collapse>
           </b-navbar>
@@ -175,6 +205,11 @@
     	    </b-list-group-item>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Execution Autoscroll:</label>
+            <b-form-checkbox v-model="autoscroll" name="check-button" switch size="lg" @change="change_autoscroll"></b-form-checkbox>
+    	    </b-list-group-item>
+
+    	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
             <label for="range-2">Notification Time:</label>
     		    <b-input-group>
               <b-input-group-prepend>
@@ -205,7 +240,7 @@
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
           
           <!-- Navbar -->
-          <div class="contenedor menu row">
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding"></div>
             <div class="col-lg-6 col-sm-12 nopadding"></div>
             <div class="col-lg-3 col-sm-12 nopadding">
@@ -250,7 +285,7 @@
                     <b-card no-body class="overflow-hidden arch_card" v-for="(item, index) in arch_available" @mouseover="change_background(item.name, 1)" @mouseout="change_background(item.name, 0)" :border-variant=back_card[index].background style="cursor: pointer; margin-bottom: 3px;">
                       <b-row no-gutters>
                         <b-col md="3" @click="load_arch_select(item)">
-                          <b-card-img :src=item.img :alt=item.alt class="rounded-0"></b-card-img>
+                          <b-card-img :src=item.img :alt=item.alt thumbnail fluid class="rounded-0"></b-card-img>
                         </b-col>
 
                         <b-col md="7" @click="load_arch_select(item)">
@@ -377,7 +412,7 @@
         <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
 
       		<!-- Navbar -->
-          <div class="contenedor menu row">
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -548,7 +583,7 @@
                 </b-tab>
 
                 <!-- Components -->
-                <b-tab title="Components" :disabled="advanced_mode">
+                <b-tab title="Components" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Components of the architecture:</h6>
 
@@ -727,7 +762,7 @@
                 </b-tab>
 
                 <!-- Instruction definition -->
-                <b-tab title="Instructions Definition" :disabled="advanced_mode">
+                <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Instruction set:</h6>
 
@@ -1267,7 +1302,7 @@
                 </b-tab>
 
                 <!-- Pseudoinstruction definition -->
-                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode">
+                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Pseudoinstructions set:</h6>
 
@@ -1613,7 +1648,7 @@
                 </b-tab>
 
                 <!-- Directives definition -->
-                <b-tab title="Directives Definition" :disabled="advanced_mode">
+                <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
                   <h6>Directives set:</h6>
 
@@ -1693,7 +1728,7 @@
         <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
           <!-- Navbar -->
-          <div class="contenedor menu row">
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -1810,7 +1845,7 @@
           <div class="contenedor row">
             <div class="col-lg-12 col-sm-12" id="divAssembly">
               <h5>Assembly: (To comment a block of code press ctrl + /)</h5>
-              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code">
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code" style="display: none">
               </textarea>
             </div>
 
@@ -1842,10 +1877,10 @@
         <!-- Simulator view -->
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
-        	<!-- Navbar -->
-          <div class="contenedor menu row mb-3">
+       	  <!-- Navbar -->
+          <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" id="arch_btn_sim"  @click="change_UI_mode('architecture')"><span class="fas fa-sitemap"></span> Architecture</b-button>
@@ -1857,14 +1892,14 @@
               </div>
             </div>
 
-            <div class="col-lg-4 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <!-- Execution actions -->
-                  <div class="col-lg-12 col-sm-12">
+                  <div class="col-lg-12 col-sm-12 py-0 px-1">
                     <div class="col-lg-12 col-sm-12 buttons row">
                       <div class="col-lg-4 col-sm-4 buttons">
-                        <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
+                        <b-button @click="reset(true)" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
                           <span class="fas fa-power-off"></span>
                           Reset
                         </b-button>
@@ -1896,7 +1931,7 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12">
+            <div class="col-lg-3 col-sm-12 py-0 px-1">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-6 col-sm-6 buttons">
                   <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.examples2><span class="fas fa-file-alt"></span> Examples</b-button>
@@ -1908,13 +1943,13 @@
             </div>
 
             <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
+                  <div class="col-lg-7 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_sim" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
                   </div>
 
-                  <div class="col-lg-6 col-sm-6 buttons">
+                  <div class="col-lg-5 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;" ><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
 
@@ -2027,9 +2062,12 @@
           </div>
 
           <!-- Execution instruction -->
-          <div class="col-lg-7 col-sm-12">
-            <div class="col-lg-12 col-sm-12">
-              <b-table striped small hover :items="instructions" :fields="archInstructions" class="instructions_table" @row-clicked="breakPoint" style="cursor: pointer;" :filter-function=filter filter=" ">
+          <div class="col-xl-7 col-lg-6 col-sm-12 px-0">
+            <div class="col-lg-12 col-sm-12 px-2">
+
+              <b-table id="inst_table" sticky-header striped small hover :items="instructions" :fields="archInstructions" 
+                       class="instructions_table responsive" @row-clicked="breakPoint" 
+                       style="cursor:pointer; max-height:75vh !important;" :filter-function=filter filter=" " primary-key="Address">
 
                 <!-- Change the title of each column -->
                 <template v-slot:head(userInstructions)="row">
@@ -2048,10 +2086,10 @@
                     <b-img alt="Break" src="./images/stop_classic.gif" class="shadow" rounded="circle" style="width:auto !important;height:4vh;" v-if="row.item.Break == true"></b-img>
                   </div>
                 </template>
-                <template v-slot:cell(Address)="row"slot="Address">
+                <template v-slot:cell(Address)="row">
                   <h6>{{row.item.Address}}</h6>
                 </template>
-                <template v-slot:cell(Label)="row"slot="Label">
+                <template v-slot:cell(Label)="row">
                   <b-badge pill variant="info">{{row.item.Label}}</b-badge>
                 </template>
                 <template v-slot:cell(userInstructions)="row">
@@ -2071,13 +2109,13 @@
           </div>
 
           <!-- Execution data -->
-          <div class="col-lg-5 col-sm-12">
+          <div class="col-xl-5 col-lg-6 col-sm-12">
 
             <!-- View selector -->
-            <div class="col-lg-12 col-sm-12 mb-3">
+            <div class="col-lg-12 col-sm-12 mb-3 px-0">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-4 col-sm-4 buttons">
-                  <b-dropdown right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary">
+                  <b-dropdown split right :text="nameReg" size="sm" class="btn btn-block btn-sm nopadding h-100" variant="outline-secondary" @click="change_data_view('registers', regType)">
                     <b-dropdown-item @click="change_data_view('registers', 'int')">CPU-INT Registers</b-dropdown-item>
                     <b-dropdown-item @click="change_data_view('registers', 'fp')">CPU-FP Registers</b-dropdown-item>
                   </b-dropdown>
@@ -2094,7 +2132,7 @@
             </div>
 
             <!-- Registers view -->
-            <div class="col-lg-12 col-sm-12" id="registers" v-if="data_mode == 'registers'">
+            <div class="col-lg-12 col-sm-12 px-0" id="registers" v-if="data_mode == 'registers'">
               <b-tabs content-class="mt-3">
 
                 <!-- Decimal view -->
@@ -2103,9 +2141,9 @@
                     <div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
                       
                       <!-- Control and integer registers -->
-                      <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
+                      <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
-                           {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                           <span class="text-truncate">{{item2.name}}</span> <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
                            <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
@@ -2160,11 +2198,11 @@
                         </b-popover>
                       </div>
 
-                      <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
+                      <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
-                            {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
+                            <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2215,7 +2253,7 @@
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
-                             {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
+                             <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2272,10 +2310,10 @@
                 	<div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
                 		<div class="col-lg-12 col-sm-12 buttons row" style="margin-bottom: 2vh;" v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
 
-                			<!-- Control and integer registers -->
-  	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
+                	  <!-- Control and integer registers -->
+  	                  <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+  	                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
@@ -2328,12 +2366,12 @@
   								      </b-popover>
   	                  </div>
 
-  	                  <div class="col-lg-4 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
+  	                  <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="architecture.components[item.index].type == 'floating point'">
 
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                      	{{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(float2bin(item2.value))}}</b-badge>
+  	                      	<span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2384,7 +2422,7 @@
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  		                       {{item2.name}}  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(double2bin(item2.value))}}</b-badge>
+  		                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2536,48 +2574,45 @@
             <!-- Stats--->
             <div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == 'stats'">
               <div class="col-lg-12 col-sm-12">
-                <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
-                <br>
-                <h6>Graphic</h6>
-                <b-progress class="mb-3">
-                  <b-progress-bar :value="stats[0].percentage" style="background:red;">{{stats[0].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[1].percentage" style="background:blue;">{{stats[1].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[2].percentage" style="background:yellow;">{{stats[2].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[3].percentage" style="background:purple;">{{stats[3].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[4].percentage" style="background:green;">{{stats[4].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[5].percentage" style="background:orange;">{{stats[5].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[6].percentage" style="background:gray;">{{stats[6].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[7].percentage" style="background:pink;">{{stats[7].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[8].percentage" style="background:teal;">{{stats[8].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[9].percentage" style="background:black;">{{stats[9].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[10].percentage" style="background:lime;">{{stats[10].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[11].percentage" style="background:indigo;">{{stats[11].abbreviation}}</b-progress-bar>
-                  <b-progress-bar :value="stats[12].percentage" style="background:cyan;">{{stats[12].abbreviation}}</b-progress-bar>
-                </b-progress>
+
+                <b-tabs content-class="mt-3">
+                  <b-tab title="Ghaphic" active>
+                    <div id="chart" class="memory_table">
+                      <apexchart id="graphic" ref="chart" type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
+                    </div>
+                  </b-tab>
+
+                  <b-tab title="Table">
+                    <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
+                  </b-tab>
+                </b-tabs>
               </div>
             </div>
           </div>
 
           <!-- Monitor -->
-          <div class="col-lg-6 col-sm-12" style="margin-bottom: 2%; margin-top: 2%;">
-            <div class="col-lg-12 col-sm-12">
-              <div class="col-lg-2 col-sm-2">
-                <b-img src="./images/monitor2.png" fluid alt="Monitor"></b-img>
+          <div class="col-lg-6 col-sm-12 my-2 mx-0">
+            <div class="row col-lg-12 col-sm-12 mx-0 pl-0">
+              <div class="col-lg-1 col-sm-1">
+                <i style="height:5vh; opacity:0.6;" class="fas fa-desktop fa-2x mb-2"></i>
               </div>
-              <div class="col-lg-12 col-sm-12">
-                <b-form-textarea id="textarea_display" v-model="display" rows="5" disabled no-resize title="Display"></b-form-textarea>
+              <div class="col-lg-11 col-sm-11 pr-0">
+                <b-form-textarea id="textarea_display" v-model="display" rows="5" 
+                   disabled no-resize title="Display"></b-form-textarea>
               </div>
             </div>
           </div>
 
           <!-- Keyboard -->
-          <div class="col-lg-6 col-sm-12" style="margin-bottom: 2%; margin-top: 2%;">
-            <div class="col-lg-12 col-sm-12">
-              <div class="col-lg-4 col-sm-4">
-                <b-img src="./images/keyboard1.png" fluid alt="Keyboard"></b-img>
+          <div class="col-lg-6 col-sm-12 my-2 mx-0">
+            <div class="row col-lg-12 col-sm-12 mx-0 pl-0">
+              <div class="col-lg-1 col-sm-1">
+                <i style="height:5vh; opacity:0.6;" class="fa fa-keyboard fa-2x mb-2"></i>
               </div>
-              <div class="col-lg-12 col-sm-12">
-                <b-form-textarea id="textarea_keyboard" v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" no-resize :state = "enter" title="Keyboard"></b-form-textarea>
+              <div class="col-lg-11 col-sm-11 pr-0">
+                <b-form-textarea id="textarea_keyboard" 
+                   v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" 
+                   no-resize :state = "enter" title="Keyboard"></b-form-textarea>
               </div>
             </div>
 
@@ -2589,7 +2624,7 @@
                 <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleClear"><span class="fas fa-broom"></span> Clear</b-button>
               </div>
               <div class="col-lg-4 col-sm-4">
-                <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-level-down-alt" style="transform: rotate(90deg);"></span> Enter</b-button>
+                <b-button id="enter_keyboard" class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-level-down-alt" style="transform: rotate(90deg);"></span> Enter</b-button>
               </div>
 
             </div>
