@@ -31,7 +31,8 @@
 
 | Description                | Link                                                                   |
 |----------------------------|------------------------------------------------------------------------| 
-| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e1 |
+| ALU operations             | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e1 |
+| Subrutine                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e2 |
 
 #### :point_right:	 MIPS
 
@@ -52,22 +53,27 @@
     
 ## ChangeLog
 
-### :atom:	 1.5.x:
+### :atom: 2.0.x:
 - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
 - [x] Bootstrap-vue upgraded up to v2.15.0
 - [X] Initial command line version of CREATOR: 
      * Help:
        * ./creator.sh -h
-     * Example: creator compiles and executes the example2.txt:
+     * Example: creator compiles and executes the example2.txt, showing the final state:
        * ./creator.sh -a architecture/MIPS-32-like.json -s examples/MIPS/example2.txt
+     * Example: save final state into 'salida.txt' file:
+       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt --quiet > salida.txt
+     * Example: compare final state and the state saved on 'salida.txt' file:
+       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt --quiet -r salida.txt
 - [x] Creator now accepts three GET values:
-     * Preload architecture:
+     * Preload the MIPS architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like
-     * Preload example from example set:
-       * https://dcamarmas.github.io/creator/?example_set=snips&example=5
+     * Preload example 'L3AT6' from example set 'snips':
+       * https://dcamarmas.github.io/creator/?example_set=snips&example=L3AT6
 
 
 ## Badges
 
 [![Build Status](https://travis-ci.org/dcamarmas/creator.svg?branch=master)](https://travis-ci.org/dcamarmas/creator)
+
 

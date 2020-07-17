@@ -1892,14 +1892,14 @@
               </div>
             </div>
 
-            <div class="col-lg-4 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12 nopadding">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <!-- Execution actions -->
                   <div class="col-lg-12 col-sm-12 py-0 px-1">
                     <div class="col-lg-12 col-sm-12 buttons row">
                       <div class="col-lg-4 col-sm-4 buttons">
-                        <b-button @click="reset()" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
+                        <b-button @click="reset(true)" class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
                           <span class="fas fa-power-off"></span>
                           Reset
                         </b-button>
@@ -1931,7 +1931,7 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 py-0 px-1">
+            <div class="col-lg-3 col-sm-12 py-0 px-1">
               <div class="col-lg-12 col-sm-12 buttons row">
                 <div class="col-lg-6 col-sm-6 buttons">
                   <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" v-b-modal.examples2><span class="fas fa-file-alt"></span> Examples</b-button>
@@ -1945,11 +1945,11 @@
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
+                  <div class="col-lg-7 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="conf_btn_sim" v-b-modal.configuration><span class="fa fa-cogs"></span> Configuration</b-button>
                   </div>
 
-                  <div class="col-lg-6 col-sm-6 buttons">
+                  <div class="col-lg-5 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" id="info_sim" style="background-color:#D4DB17;" ><span class="fas fa-info-circle"></span> Info</b-button>
                   </div>
 
@@ -2086,10 +2086,10 @@
                     <b-img alt="Break" src="./images/stop_classic.gif" class="shadow" rounded="circle" style="width:auto !important;height:4vh;" v-if="row.item.Break == true"></b-img>
                   </div>
                 </template>
-                <template v-slot:cell(Address)="row"slot="Address">
+                <template v-slot:cell(Address)="row">
                   <h6>{{row.item.Address}}</h6>
                 </template>
-                <template v-slot:cell(Label)="row"slot="Label">
+                <template v-slot:cell(Label)="row">
                   <b-badge pill variant="info">{{row.item.Label}}</b-badge>
                 </template>
                 <template v-slot:cell(userInstructions)="row">
@@ -2578,7 +2578,7 @@
                 <b-tabs content-class="mt-3">
                   <b-tab title="Ghaphic" active>
                     <div id="chart" class="memory_table">
-                      <apexchart type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
+                      <apexchart id="graphic" ref="chart" type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
                     </div>
                   </b-tab>
 
