@@ -390,6 +390,7 @@ try
       chartOptions: {
         colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
         chart: {
+          id: 'graphic',
           type: 'donut',
         },
         labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
@@ -411,7 +412,7 @@ try
           gradient: {
             shade: 'dark',
             type: "horizontal",
-            shadeIntensity: 0.8,
+            shadeIntensity: 0.5,
             gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
             inverseColors: true,
             opacityFrom: 1,
@@ -425,7 +426,31 @@ try
           formatter: function(val, opts) {
             return val + " - " + opts.w.globals.series[opts.seriesIndex]
           }
-        }
+        },
+        plotOptions: {
+          pie: {
+            donut: {
+              labels: {
+                show: true,
+                value: {
+                  show: true,
+                  formatter: function (val) {
+                    return val
+                  }
+                },
+                total: {
+                  show: true,
+                  color: 'black',
+                  formatter: function (w) {
+                    return w.globals.seriesTotals.reduce((a, b) => {
+                      return a + b
+                    }, 0)
+                  }
+                }
+              }
+            }
+          }
+        },
       },
 
       /*Display*/
@@ -749,7 +774,7 @@ try
         backup_stack_address = architecture.memory_layout[4].value;
         backup_data_address = architecture.memory_layout[3].value;
 
-        this.reset();
+        this.reset(false);
 
         //$("#architecture_menu").hide();
         app.change_UI_mode('simulator');
@@ -2829,14 +2854,22 @@ try
       /*Compilator*/
 
       /*Compile assembly code*/
-      assembly_compiler()
+      assembly_compiler(code)
       {
+
         show_loading();
         promise = new Promise((resolve, reject) => {
 
           setTimeout(function() {
             /* compile */
-            code_assembly = textarea_assembly_editor.getValue();
+
+            if(typeof(code)!=="undefined"){
+              code_assembly=code;
+            }
+            else{
+              code_assembly = textarea_assembly_editor.getValue();
+            }
+
             var ret = assembly_compiler() ;
 
             /* update/reset */
@@ -2846,7 +2879,7 @@ try
             app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
             app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
             tokenIndex = 0;
-            app.reset();
+            app.reset(true);
 
             /* Save a backup in the cache memory */
             if (typeof(Storage) !== "undefined")
@@ -2989,46 +3022,27 @@ try
       },
 
       /*Load a selected example*/
-      load_example(url){
-        this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
+      load_example(url)
+      {
+         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
 
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-          if (this.readyState == 4 && this.status == 200) {
-            code_assembly = this.responseText;
-            textarea_assembly_editor.setValue(code_assembly);
-
-            show_notification(' The selected example has been loaded correctly', 'success') ;
-          }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.send();
+         $.get(url, function(data) {
+		        code_assembly = data ;
+                        textarea_assembly_editor.setValue(code_assembly) ;
+		        show_notification(' The selected example has been loaded correctly', 'success') ;
+		    });
       },
 
        /*Load a selected example and compile*/
-      load_example_init(url){
-        this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
+      load_example_init(url)
+      {
+         this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
 
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-          if (this.readyState == 4 && this.status == 200) {
-            code_assembly = this.responseText;
-
-            app.change_UI_mode('assembly');
-
-            setTimeout(function(){
-              textarea_assembly_editor.setValue(code_assembly);
-              assembly_compiler();
-
-              show_notification(' The selected example has been loaded correctly', 'success') ;
-
-              app.change_UI_mode('simulator');
-            },100);
-
-          }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.send();
+         $.get(url, function(data) {
+	 	        code_assembly = data ;
+		        app.assembly_compiler(code_assembly) ;
+		        show_notification(' The selected example has been loaded correctly', 'success') ;
+	 	    });
       },
 
       /*Save a binary in a local file*/
@@ -3476,7 +3490,10 @@ try
               }
             }
 
-             return ;
+            if(app._data.data_mode == "stats"){
+              ApexCharts.exec('graphic', 'updateSeries', stats_value);
+            }
+            return ;
          }
       },
 
@@ -3575,7 +3592,7 @@ try
       },
 
       /*Reset execution*/
-      reset(){
+      reset(reset_graphic){
 
         show_loading();
         setTimeout(function() {
@@ -3591,7 +3608,7 @@ try
                instructions[i]._rowVariant = '' ;
           }
 
-          reset() ;
+          reset(reset_graphic) ;
 
           // UI: set default row color...
           for (var i = 0; i < instructions.length; i++) {
@@ -3614,13 +3631,15 @@ try
           else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
             $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
           }
-          
+
+          /*Reset graphic*/
+          if(reset_graphic == true && app._data.data_mode == "stats"){
+            ApexCharts.exec('graphic', 'updateSeries', stats_value);
+          }
+
           hide_loading();
 
         }, 25);
-
-        
-
 
       },
 
@@ -4116,7 +4135,7 @@ try
 
     var textarea_assembly_obj = document.getElementById("textarea_assembly");
 
-    if(textarea_assembly_obj != null){
+    if (textarea_assembly_obj != null) {
       textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
       textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
       textarea_assembly_editor.setValue(app._data.assembly_code);
