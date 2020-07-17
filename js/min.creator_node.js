@@ -7163,7 +7163,7 @@ function get_state ( )
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
             if (architecture.components[i].type == "floating point") {
-                elto_string = elto_value.toString() ;
+                elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
             }
             ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
         }
@@ -7174,15 +7174,15 @@ function get_state ( )
     {
         for (var j=0; j<memory[i].length; j++)
         {
-            elto_value  = memory[i][j].Binary[0].Bin    + memory[i][j].Binary[1].Bin +
-                          memory[i][j].Binary[2].Bin    + memory[i][j].Binary[3].Bin ;
-            elto_dvalue = memory[i][j].Binary[0].DefBin + memory[i][j].Binary[1].DefBin +
-                          memory[i][j].Binary[2].DefBin + memory[i][j].Binary[3].DefBin ;
+            elto_value  = memory[i][j].Binary[3].Bin    + memory[i][j].Binary[2].Bin +
+                          memory[i][j].Binary[1].Bin    + memory[i][j].Binary[0].Bin ;
+            elto_dvalue = memory[i][j].Binary[3].DefBin + memory[i][j].Binary[2].DefBin +
+                          memory[i][j].Binary[1].DefBin + memory[i][j].Binary[0].DefBin ;
 
             if (elto_value != elto_dvalue)
             {
                 elto_string = "0x" + elto_value ;
-                ret.msg = ret.msg + "memory[0x" + j.toString(16) + "]" + ":" + elto_string + "; ";
+                ret.msg = ret.msg + "memory[0x" + memory[i][j].Address.toString(16) + "]" + ":" + elto_string + "; ";
             }
         }
     }
