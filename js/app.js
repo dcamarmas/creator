@@ -3024,52 +3024,25 @@ try
       /*Load a selected example*/
       load_example(url)
       {
-        this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
+         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
 
-        $.get(url, function(data) {
-		       code_assembly = data ;
-                       textarea_assembly_editor.setValue(code_assembly);
-		       show_notification(' The selected example has been loaded correctly', 'success') ;
-		   });
-
-/*
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-          if (this.readyState == 4 && this.status == 200) {
-            code_assembly = this.responseText;
-            textarea_assembly_editor.setValue(code_assembly);
-
-            show_notification(' The selected example has been loaded correctly', 'success') ;
-          }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.send();
-*/
+         $.get(url, function(data) {
+		        code_assembly = data ;
+                        textarea_assembly_editor.setValue(code_assembly) ;
+		        show_notification(' The selected example has been loaded correctly', 'success') ;
+		    });
       },
 
        /*Load a selected example and compile*/
       load_example_init(url)
       {
-        this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
+         this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
 
-        $.get(url, function(data) {
-		       code_assembly = data ;
-		       app.assembly_compiler(code_assembly);
-		       show_notification(' The selected example has been loaded correctly', 'success') ;
-		   });
-
-/*
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function(){
-          if (this.readyState == 4 && this.status == 200) {
-            code_assembly = this.responseText;
-            app.assembly_compiler(code_assembly);
-            show_notification(' The selected example has been loaded correctly', 'success') ;
-          }
-        };
-        xhttp.open("GET", url, true);
-        xhttp.send();
-*/
+         $.get(url, function(data) {
+	 	        code_assembly = data ;
+		        app.assembly_compiler(code_assembly) ;
+		        show_notification(' The selected example has been loaded correctly', 'success') ;
+	 	    });
       },
 
       /*Save a binary in a local file*/
@@ -3668,9 +3641,6 @@ try
 
         }, 25);
 
-        
-
-
       },
 
       /*Enter a breakpoint*/
@@ -4165,7 +4135,7 @@ try
 
     var textarea_assembly_obj = document.getElementById("textarea_assembly");
 
-    if(textarea_assembly_obj != null){
+    if (textarea_assembly_obj != null) {
       textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
       textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
       textarea_assembly_editor.setValue(app._data.assembly_code);
