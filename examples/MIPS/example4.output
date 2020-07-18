@@ -1,2 +1,11 @@
-cr[PC]:0x44; ir[v0]:0xa; ir[t0]:0x200000; ir[t1]:0x200008; ir[t2]:0x200010; ir[t3]:0x200028; memory[0x6]:0xA1455140; memory[0x7]:0xA1455140; memory[0x8]:0x7EA28240; memory[0x9]:0x7EA28240; memory[0xa]:0x15134D40; memory[0xb]:0x15134D40; 
-
+Error: ENOENT: no such file or directory, open
+    at Object.openSync (fs.js:443:3)
+    at Object.readFileSync (fs.js:348:35)
+    at Object.<anonymous> (/opt/apache/www/creator/creator.sh:152:21)
+    at Module._compile (internal/modules/cjs/loader.js:689:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:700:10)
+    at Module.load (internal/modules/cjs/loader.js:599:32)
+    at tryModuleLoad (internal/modules/cjs/loader.js:538:12)
+    at Function.Module._load (internal/modules/cjs/loader.js:530:3)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:742:12)
+    at startup (internal/bootstrap/node.js:266:19)

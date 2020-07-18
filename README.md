@@ -48,7 +48,7 @@
 | Copy of matrices           | https://dcamarmas.github.io/creator/?example_set=default&example=e8  |
 | I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default&example=e9  |
 | I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default&example=e10 |
-| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=e10 |
+| Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default&example=e11 |
  
     
 ## ChangeLog
@@ -68,8 +68,8 @@
 - [x] Creator now accepts three GET values:
      * Preload the MIPS architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like
-     * Preload example 'L3AT6' from example set 'snips':
-       * https://dcamarmas.github.io/creator/?example_set=snips&example=L3AT6
+     * Preload example 'e6' from example set 'snips':
+       * https://dcamarmas.github.io/creator/?example_set=snips&example=e6
 
 
 ## Badges
