@@ -8,7 +8,7 @@
         {
           "name": "PC",
           "nbits": "32",
-          "value": "12",
+          "value": "0",
           "default_value": "0",
           "properties": [
             "read",
@@ -352,7 +352,7 @@
         {
           "name": "ft0",
           "nbits": "32",
-          "value": 4.5,
+          "value": 0,
           "default_value": 0,
           "properties": [
             "read",
@@ -679,7 +679,7 @@
         {
           "name": "FP0",
           "nbits": "64",
-          "value": 4.5,
+          "value": 0,
           "simple_reg": [
             "f0",
             "f1"
@@ -1244,7 +1244,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt(inm)",
+      "definition": "rd = inm",
       "separated": [
         false,
         false,
@@ -1317,7 +1317,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC+4; PC=inm;",
+      "definition": "rd=PC;\nPC=inm;",
       "separated": [
         false,
         false,
@@ -1327,9 +1327,9 @@
     {
       "name": "jalr",
       "type": "Unconditional bifurcation",
-      "signature_definition": "F0 F3 F2 F1",
-      "signature": "jalr,INT-Reg,INT-Reg,inm-signed",
-      "signatureRaw": "jalr rd rs1 inm",
+      "signature_definition": "F0 F3 F1 (F2)",
+      "signature": "jalr,INT-Reg,inm-signed,(INT-Reg)",
+      "signatureRaw": "jalr rd inm (rs1)",
       "co": "1100111",
       "cop": "000",
       "nwords": 1,
@@ -1366,7 +1366,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd= PC+4;\npc=(rs1+inm)&~1;",
+      "definition": "rd= PC;\nPC = (rs1+inm)&~1;",
       "separated": [
         false,
         false,
