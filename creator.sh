@@ -149,14 +149,17 @@
        else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
 
        // (c) link
-       library = fs.readFileSync(argv.library, 'utf8') ;
-       ret = creator.load_library(library) ;
-       if (ret.status !== "ok")
+       if (argv.library !== '')
        {
-           show_error("[Linker] " + ret.msg + "\n") ;
-           return -1 ;
+           library = fs.readFileSync(argv.library, 'utf8') ;
+           ret = creator.load_library(library) ;
+           if (ret.status !== "ok")
+           {
+               show_error("[Linker] " + ret.msg + "\n") ;
+               return -1 ;
+           }
+           else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
        }
-       else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
 
        // (d) ejecutar
        ret = creator.execute_program(limit_n_instructions) ;
@@ -176,7 +179,7 @@
            ret = creator.compare_states(result, ret.msg) ;
            if (false == argv.quiet)
                 console.log("[state] ".success + ret.msg + "\n") ;
-           else console.log(ret.msg + "\n") ;
+           else console.log(ret.msg) ;
            return 1 ;
        }
 

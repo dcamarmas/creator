@@ -202,6 +202,9 @@ function compare_states ( ref_state, alt_state )
     }
 
     // last) is different...
+    if (ret.status != "ko")
+        ret.msg = "Equals" ;
+
     return ret ;
 }
 
