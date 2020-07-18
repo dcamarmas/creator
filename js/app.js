@@ -2902,7 +2902,7 @@ try
             hide_loading();
 
             if (ret.type == "error") {
-                app.compileError(ret.errorcode, ret.token, textarea_assembly_editor.posFromIndex(ret.tokenIndex).line);
+                app.compileError(ret.errorcode, ret.token, textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
             }
             else if (ret.type == "warning") {
                 show_notification(ret.token, ret.bgcolor) ;
@@ -3135,23 +3135,23 @@ try
       },
 
       /*Show error message in the compilation*/
-      compileError(error, token, line){
+      compileError(error, token, line) {
+        this.change_UI_mode('assembly');
         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
 
-        if (line > 0){
-          this.modalAssemblyError.code1 = line + "  " + textarea_assembly_editor.getLine(line - 1);
-        }
-        else{
-          this.modalAssemblyError.code1 = "";
+        // line 1
+        this.modalAssemblyError.code1 = "";
+        if (line > 0) {
+            this.modalAssemblyError.code1 = line + "  " + textarea_assembly_editor.getLine(line - 1);
         }
 
+        // line 2
         this.modalAssemblyError.code2 = (line + 1) + "  " + textarea_assembly_editor.getLine(line);
 
-        if(line < textarea_assembly_editor.lineCount() - 1){
-          this.modalAssemblyError.code3 = (line + 2) + "  " + textarea_assembly_editor.getLine(line + 1);
-        }
-        else{
-          this.modalAssemblyError.code3 = "";
+        // line 3
+        this.modalAssemblyError.code3 = "" ;
+        if (line < textarea_assembly_editor.lineCount() - 1){
+            this.modalAssemblyError.code3 = (line + 2) + "  " + textarea_assembly_editor.getLine(line + 1);
         }
 
         this.modalAssemblyError.error = compileError[error].mess1 + token + compileError[error].mess2;
