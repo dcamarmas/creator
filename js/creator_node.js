@@ -81,10 +81,33 @@ function get_state ( )
 
         for (var j=0; j<architecture.components[i].elements.length; j++)
         {
-            // get value + default value
+            // get value
             e_name      = architecture.components[i].elements[j].name ;
             elto_value  = architecture.components[i].elements[j].value ;
-            elto_dvalue = architecture.components[i].elements[j].default_value ;
+            
+            //get default value
+            if(architecture.components[i].double_precision == true){
+              var aux_value;
+              var aux_sim1;
+              var aux_sim2;
+
+              for (var a = 0; a < architecture_hash.length; a++) {
+                for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+                    aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                  }
+                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+                    aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                  }
+                }
+              }
+
+              aux_value = aux_sim1 + aux_sim2;
+              elto_dvalue = hex2double("0x" + aux_value)
+            }
+            else{
+              elto_dvalue = architecture.components[i].elements[j].default_value ;
+            }
 
             // skip default results
             if (typeof elto_dvalue == "undefined") {
@@ -97,7 +120,12 @@ function get_state ( )
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
             if (architecture.components[i].type == "floating point") {
-                elto_string = elto_value.toString() ;
+              if(architecture.components[i].double_precision == false){
+                elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
+              }
+              if (architecture.components[i].double_precision == true) {
+                elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
+              }
             }
             ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
         }
@@ -108,15 +136,15 @@ function get_state ( )
     {
         for (var j=0; j<memory[i].length; j++)
         {
-            elto_value  = memory[i][j].Binary[0].Bin    + memory[i][j].Binary[1].Bin +
-                          memory[i][j].Binary[2].Bin    + memory[i][j].Binary[3].Bin ;
-            elto_dvalue = memory[i][j].Binary[0].DefBin + memory[i][j].Binary[1].DefBin +
-                          memory[i][j].Binary[2].DefBin + memory[i][j].Binary[3].DefBin ;
+            elto_value  = memory[i][j].Binary[3].Bin    + memory[i][j].Binary[2].Bin +
+                          memory[i][j].Binary[1].Bin    + memory[i][j].Binary[0].Bin ;
+            elto_dvalue = memory[i][j].Binary[3].DefBin + memory[i][j].Binary[2].DefBin +
+                          memory[i][j].Binary[1].DefBin + memory[i][j].Binary[0].DefBin ;
 
             if (elto_value != elto_dvalue)
             {
                 elto_string = "0x" + elto_value ;
-                ret.msg = ret.msg + "memory[0x" + j.toString(16) + "]" + ":" + elto_string + "; ";
+                ret.msg = ret.msg + "memory[0x" + memory[i][j].Address.toString(16) + "]" + ":" + elto_string + "; ";
             }
         }
     }
