@@ -5358,20 +5358,17 @@ function executeInstruction ( )
           /*Write in the register*/
 
            /*TODO: Conflicto RISC-V*/
+
           re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name+") *=)[^=])", "g");
           while ((myMatch = re.exec(auxDef)) != null) {
               auxDef = auxDef.replace(myMatch[2], "reg"+regIndex + "=")
               auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
               myMatch.index=0;
               isMatch = true;
-          }
-
-
+          }  
     if (isMatch) regIndex++;
 
-		/*
-
-          re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
+		/*    re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
           if (auxDef.search(re) != -1){
             re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
 
@@ -7050,6 +7047,7 @@ show_notification('The data has been uploaded', 'info') ;
 
   return ret;
 }
+
 
 
 /*Modifies double precision registers according to simple precision registers*/
