@@ -59,6 +59,13 @@
                   nargs:    1,
                   default:  ''
                })
+              .option('library', {
+                  alias:    'l',
+                  type:     'string',
+                  describe: 'Assembly library file',
+                  nargs:    1,
+                  default:  ''
+               })
               .option('result', {
                   alias:    'r',
                   type:     'string',
@@ -99,11 +106,17 @@
 
    var architecture  = '' ;
    var assembly = '' ;
+   var library  = '' ;
    var result   = '' ;
    var ret      = null ;
 
    if ( (argv.a == "") || (argv.s == "") ) {
-         console.log(welcome() + '\n' + 'Usage: ./creator.sh -a <file name> -s <file name>\n' + 'Usage: ./creator.sh -h\n')
+         console.log(welcome() + '\n' + 
+                     'Usage:\n' + 
+                     ' * To compile and execute an assembly file on an architecture:\n' + 
+                     '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' + 
+                     ' * To get more information:\n' + 
+                     '   ./creator.sh -h\n')
          return false ;
    }
 
@@ -135,7 +148,17 @@
        }
        else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
 
-       // (c) ejecutar
+       // (c) link
+       library = fs.readFileSync(argv.library, 'utf8') ;
+       ret = creator.load_library(library) ;
+       if (ret.status !== "ok")
+       {
+           show_error("[Linker] " + ret.msg + "\n") ;
+           return -1 ;
+       }
+       else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
+
+       // (d) ejecutar
        ret = creator.execute_program(limit_n_instructions) ;
        if (ret.status !== "ok")
        {
@@ -145,7 +168,7 @@
        }
        else show_success("[Executor] Executed successfully.") ;
 
-       // (d) compare results
+       // (e) compare results
        if (argv.result !== '')
        {
            result = fs.readFileSync(argv.result, 'utf8') ;
@@ -157,7 +180,7 @@
            return 1 ;
        }
 
-       // (e) print finalmachine state
+       // (f) print finalmachine state
        ret = creator.get_state() ;
        if (false == argv.quiet)
             console.log("[Final state] ".success + ret.msg + "\n") ;
