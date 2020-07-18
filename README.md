@@ -68,8 +68,8 @@
 - [x] Creator now accepts three GET values:
      * Preload the MIPS architecture:
        * https://dcamarmas.github.io/creator/?architecture=MIPS-32-like
-     * Preload example 'e6' from example set 'snips':
-       * https://dcamarmas.github.io/creator/?example_set=snips&example=e6
+     * Preload example 'e3' from example set 'snips':
+       * https://dcamarmas.github.io/creator/?example_set=snips&example=e3
 
 
 ## Badges
