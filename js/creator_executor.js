@@ -693,17 +693,18 @@ function executeInstruction ( )
           let myMatch, isMatch=false;
           /*Write in the register*/
 
+           /*TODO: Conflicto RISC-V*/
+
           re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name+") *=)[^=])", "g");
           while ((myMatch = re.exec(auxDef)) != null) {
               auxDef = auxDef.replace(myMatch[2], "reg"+regIndex + "=")
               auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
               myMatch.index=0;
-isMatch = true;
-          }
+              isMatch = true;
+          }  
     if (isMatch) regIndex++;
 
-		/*
-          re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
+		/*    re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
           if (auxDef.search(re) != -1){
             re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
 
@@ -1044,7 +1045,7 @@ function writeRegister ( value, indexComp, indexElem )
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
 
-            this.updateDouble(indexComp, indexElem);
+            updateDouble(indexComp, indexElem);
 
             var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
             var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -1062,30 +1063,29 @@ function writeRegister ( value, indexComp, indexElem )
           {
             if (architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write")
             {
-/*
-	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
-                return;
-*/
-                throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
+              /*
+              	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
+                              return;
+              */
+              throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+            updateSimple(indexComp, indexElem);
 
-            this.updateSimple(indexComp, indexElem);
+            if (!window.document)
+            {
+                  var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
+                  var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-      if (!window.document)
-      {
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+                  $(buttonDec).attr("style", "background-color:#c2c2c2;");
+                  $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-            $(buttonDec).attr("style", "background-color:#c2c2c2;");
-            $(buttonHex).attr("style", "background-color:#c2c2c2;");
-
-            setTimeout(function() {
-              $(buttonDec).attr("style", "background-color:#f5f5f5;");
-              $(buttonHex).attr("style", "background-color:#f5f5f5;");
-            }, 500);
-      } // if
+                  setTimeout(function() {
+                    $(buttonDec).attr("style", "background-color:#f5f5f5;");
+                    $(buttonHex).attr("style", "background-color:#f5f5f5;");
+                  }, 500);
+            } // if
 
           }
         }
@@ -2382,4 +2382,45 @@ show_notification('The data has been uploaded', 'info') ;
   }
 
   return ret;
+}
+
+
+
+/*Modifies double precision registers according to simple precision registers*/
+function updateDouble(comp, elem){
+  for (var j = 0; j < architecture.components.length; j++) {
+    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
+      if(architecture.components[j].elements[z].simple_reg[0] == architecture.components[comp].elements[elem].name){
+        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
+        var newDouble = simple + double;
+
+        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+      }
+      if(architecture.components[j].elements[z].simple_reg[1] == architecture.components[comp].elements[elem].name){
+        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
+        var newDouble = double + simple;
+
+        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+      }
+    }
+  }
+}
+
+/*Modifies single precision registers according to double precision registers*/
+function updateSimple(comp, elem){
+  var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
+  var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
+
+  for (var j = 0; j < architecture.components.length; j++) {
+    for (var z = 0; z < architecture.components[j].elements.length; z++) {
+      if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[0]){
+        architecture.components[j].elements[z].value = hex2float("0x"+part1);
+      }
+      if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[1]){
+        architecture.components[j].elements[z].value = hex2float("0x"+part2);
+      }
+    }
+  }
 }
