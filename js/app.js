@@ -2894,7 +2894,7 @@ try
 
               localStorage.setItem("arch_name", app._data.architecture_name);
               localStorage.setItem("architecture_copy", auxArch);
-              localStorage.setItem("assembly_copy", textarea_assembly_editor.getValue());
+              localStorage.setItem("assembly_copy", code_assembly);
               localStorage.setItem("date_copy", auxDate);
             }
 
@@ -3415,30 +3415,30 @@ try
             if(precision == false){
               if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
                 architecture.components[comp].elements[i].value = this.hex2float(this.newValue);
-                this.updateDouble(comp, i);
+                updateDouble(comp, i);
               }
               else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
                 architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                this.updateDouble(comp, i);
+                updateDouble(comp, i);
               }
               else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
                 architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                this.updateDouble(comp, i);
+                updateDouble(comp, i);
               }
             }
 
             else if(precision == true){
               if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
                 architecture.components[comp].elements[i].value = this.hex2double(this.newValue);
-                this.updateSimple(comp, i);
+                updateSimple(comp, i);
               }
               else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
                 architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                this.updateSimple(comp, i);
+                updateSimple(comp, i);
               }
               else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
                 architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                this.updateSimple(comp, i)
+                updateSimple(comp, i)
               }
             }
           }
@@ -3813,44 +3813,6 @@ try
         return ret;
       },
 
-      /*Modifies double precision registers according to simple precision registers*/
-      updateDouble(comp, elem){
-        for (var j = 0; j < architecture.components.length; j++) {
-          for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
-            if(architecture.components[j].elements[z].simple_reg[0] == architecture.components[comp].elements[elem].name){
-              var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
-              var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
-              var newDouble = simple + double;
-
-              architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
-            }
-            if(architecture.components[j].elements[z].simple_reg[1] == architecture.components[comp].elements[elem].name){
-              var simple = this.bin2hex(this.float2bin(architecture.components[comp].elements[elem].value));
-              var double = this.bin2hex(this.double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
-              var newDouble = double + simple;
-
-              architecture.components[j].elements[z].value = this.hex2double("0x"+newDouble);
-            }
-          }
-        }
-      },
-
-      /*Modifies single precision registers according to double precision registers*/
-      updateSimple(comp, elem){
-        var part1 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
-        var part2 = this.bin2hex(this.double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
-
-        for (var j = 0; j < architecture.components.length; j++) {
-          for (var z = 0; z < architecture.components[j].elements.length; z++) {
-            if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[0]){
-              architecture.components[j].elements[z].value = this.hex2float("0x"+part1);
-            }
-            if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[1]){
-              architecture.components[j].elements[z].value = this.hex2float("0x"+part2);
-            }
-          }
-        }
-      },
 
       /*Filter table instructions*/
       filter(row, filter){
