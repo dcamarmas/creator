@@ -5362,9 +5362,10 @@ function executeInstruction ( )
               auxDef = auxDef.replace(myMatch[2], "reg"+regIndex)
               auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
               myMatch.index=0;
-isMatch = true;
+              isMatch = true;
           }
-    if (isMatch) regIndex++;
+          if (isMatch) 
+            regIndex++;
 
     /*
           re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
@@ -5708,7 +5709,7 @@ function writeRegister ( value, indexComp, indexElem )
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
 
-            this.updateDouble(indexComp, indexElem);
+            updateDouble(indexComp, indexElem);
 
             var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
             var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -5726,30 +5727,29 @@ function writeRegister ( value, indexComp, indexElem )
           {
             if (architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write")
             {
-/*
-	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
-                return;
-*/
-                throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
+              /*
+              	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
+                              return;
+              */
+              throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+            updateSimple(indexComp, indexElem);
 
-            this.updateSimple(indexComp, indexElem);
+            if (!window.document)
+            {
+                  var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
+                  var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-      if (!window.document)
-      {
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+                  $(buttonDec).attr("style", "background-color:#c2c2c2;");
+                  $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-            $(buttonDec).attr("style", "background-color:#c2c2c2;");
-            $(buttonHex).attr("style", "background-color:#c2c2c2;");
-
-            setTimeout(function() {
-              $(buttonDec).attr("style", "background-color:#f5f5f5;");
-              $(buttonHex).attr("style", "background-color:#f5f5f5;");
-            }, 500);
-      } // if
+                  setTimeout(function() {
+                    $(buttonDec).attr("style", "background-color:#f5f5f5;");
+                    $(buttonHex).attr("style", "background-color:#f5f5f5;");
+                  }, 500);
+            } // if
 
           }
         }
@@ -7046,6 +7046,46 @@ show_notification('The data has been uploaded', 'info') ;
   }
 
   return ret;
+}
+
+
+/*Modifies double precision registers according to simple precision registers*/
+function updateDouble(comp, elem){
+  for (var j = 0; j < architecture.components.length; j++) {
+    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
+      if(architecture.components[j].elements[z].simple_reg[0] == architecture.components[comp].elements[elem].name){
+        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
+        var newDouble = simple + double;
+
+        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+      }
+      if(architecture.components[j].elements[z].simple_reg[1] == architecture.components[comp].elements[elem].name){
+        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
+        var newDouble = double + simple;
+
+        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+      }
+    }
+  }
+}
+
+/*Modifies single precision registers according to double precision registers*/
+function updateSimple(comp, elem){
+  var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
+  var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
+
+  for (var j = 0; j < architecture.components.length; j++) {
+    for (var z = 0; z < architecture.components[j].elements.length; z++) {
+      if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[0]){
+        architecture.components[j].elements[z].value = hex2float("0x"+part1);
+      }
+      if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[1]){
+        architecture.components[j].elements[z].value = hex2float("0x"+part2);
+      }
+    }
+  }
 }/*
  *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
@@ -7147,10 +7187,33 @@ function get_state ( )
 
         for (var j=0; j<architecture.components[i].elements.length; j++)
         {
-            // get value + default value
+            // get value
             e_name      = architecture.components[i].elements[j].name ;
             elto_value  = architecture.components[i].elements[j].value ;
-            elto_dvalue = architecture.components[i].elements[j].default_value ;
+            
+            //get default value
+            if(architecture.components[i].double_precision == true){
+              var aux_value;
+              var aux_sim1;
+              var aux_sim2;
+
+              for (var a = 0; a < architecture_hash.length; a++) {
+                for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+                    aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                  }
+                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+                    aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                  }
+                }
+              }
+
+              aux_value = aux_sim1 + aux_sim2;
+              elto_dvalue = hex2double("0x" + aux_value)
+            }
+            else{
+              elto_dvalue = architecture.components[i].elements[j].default_value ;
+            }
 
             // skip default results
             if (typeof elto_dvalue == "undefined") {
@@ -7163,7 +7226,12 @@ function get_state ( )
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
             if (architecture.components[i].type == "floating point") {
+              if(architecture.components[i].double_precision == false){
                 elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
+              }
+              if (architecture.components[i].double_precision == true) {
+                elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
+              }
             }
             ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
         }
