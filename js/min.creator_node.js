@@ -5352,6 +5352,7 @@ function executeInstruction ( )
           regNum = architecture.components[i].elements.length-1;
         }
         for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
+          /*TODO: Conflicto RISC-V*/
           var re;
           let myMatch, isMatch=false;
           /*Write in the register*/
@@ -5364,9 +5365,12 @@ function executeInstruction ( )
               myMatch.index=0;
               isMatch = true;
           }
-          if (isMatch) 
-            regIndex++;
-    /*
+
+
+    if (isMatch) regIndex++;
+
+		/*
+
           re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
           if (auxDef.search(re) != -1){
             re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
@@ -5376,7 +5380,7 @@ function executeInstruction ( )
             auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+");"
             regIndex++;
           }
-*/
+	  */
 
 
           if(architecture.components[i].type == "integer"){
@@ -7085,7 +7089,8 @@ function updateSimple(comp, elem){
       }
     }
   }
-}/*
+}
+/*
  *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
