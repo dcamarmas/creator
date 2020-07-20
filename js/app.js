@@ -2902,7 +2902,7 @@ try
             hide_loading();
 
             if (ret.type == "error") {
-                app.compileError(ret.errorcode, ret.token, textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
+              app.compileError(ret.errorcode, ret.token, textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
             }
             else if (ret.type == "warning") {
                 show_notification(ret.token, ret.bgcolor) ;
@@ -3136,7 +3136,7 @@ try
 
       /*Show error message in the compilation*/
       compileError(error, token, line) {
-        this.change_UI_mode('assembly');
+        //this.change_UI_mode('assembly'); //TODO: crea dos codemirror porque tiene un start
         this.$root.$emit('bv::show::modal', 'modalAssemblyError');
 
         // line 1
