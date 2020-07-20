@@ -9,6 +9,19 @@ function load_architecture ( arch_str )
     return ret ;
 }
 
+function load_library ( lib_str )
+{
+    var ret = {
+                'status': 'ok',
+                'msg':    ''
+              } ;
+
+    code_binary   = lib_str ;
+    update_binary = JSON.parse(code_binary) ;
+
+    return ret ;
+}
+
 function assembly_compile ( code )
 {
     var ret = {} ;
@@ -46,15 +59,16 @@ function execute_program ( limit_n_instructions )
 
 function get_state ( )
 {
+    var ret = {
+                'status': 'ok',
+                'msg':    ''
+              } ;
+
     var c_name      = '' ;
     var e_name      = '' ;
     var elto_value  = null ;
     var elto_dvalue = null ;
     var elto_string = null ;
-
-    var ret = {} ;
-    ret.msg = "" ;
-    ret.status = "ok" ;
 
     // dump registers
     for (var i=0; i<architecture.components.length; i++)
@@ -140,9 +154,10 @@ function get_state ( )
 
 function compare_states ( ref_state, alt_state )
 {
-    var ret = {} ;
-    ret.msg    = "" ;
-    ret.status = "ok" ;
+    var ret = {
+                'status': 'ok',
+                'msg':    ''
+              } ;
 
     // 1) check equals
     ref_state = ref_state.trim() ;
@@ -187,6 +202,9 @@ function compare_states ( ref_state, alt_state )
     }
 
     // last) is different...
+    if (ret.status != "ko")
+        ret.msg = "Equals" ;
+
     return ret ;
 }
 
@@ -196,6 +214,7 @@ function compare_states ( ref_state, alt_state )
 //
 
 module.exports.load_architecture = load_architecture ;
+module.exports.load_library      = load_library ;
 module.exports.assembly_compile  = assembly_compile ;
 module.exports.execute_program   = execute_program ;
 module.exports.get_state         = get_state ;

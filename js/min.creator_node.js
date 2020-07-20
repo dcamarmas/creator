@@ -751,6 +751,7 @@ function assembly_compiler()
 
                   if(exit == 0 && isNaN(instructionParts[j]) == true){
                    //tokenIndex = 0;
+                    tokenIndex=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
@@ -761,7 +762,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    ret = packCompileError(7, instructionParts[j], pending_instructions[i].line, "danger");
+                    ret = packCompileError(7, instructionParts[j], "error", "danger");
                     return ret;
                   }
                 }
@@ -815,6 +816,7 @@ function assembly_compiler()
 
                   if(exit == 0){
                     //tokenIndex = 0;
+                    tokenIndex=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
@@ -825,7 +827,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    ret = packCompileError(7, instructionParts[j], pending_instructions[i].line, "danger");
+                    ret = packCompileError(7, instructionParts[j], "error", "danger");
                     return ret;
                   }
                 }
@@ -874,6 +876,7 @@ function assembly_compiler()
 
                   if(exit == 0){
                     //tokenIndex = 0;
+                    tokenIndex=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
@@ -884,7 +887,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    ret = packCompileError(7, instructionParts[j], pending_instructions[i].line, "danger");
+                    ret = packCompileError(7, instructionParts[j], "error", "danger");
                     return -1;
                   }
                 }
@@ -2566,9 +2569,14 @@ function code_segment_compiler()
                 }
                 resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex); //TODO: line->ti?
                 console_log(resultPseudo);
+
+                if (resultPseudo.status != 'ok') {
+                  return resultPseudo;
+                }
               }
             }
 
+            //TODO: revisar funcionamiento
             if(resultPseudo == -3){
               for (var i = 0; i < architecture.components.length; i++){
                 for (var j = 0; j < architecture.components[i].elements.length; j++){
@@ -2749,8 +2757,8 @@ function instruction_compiler ( instruction, userInstruction, label, line,
       console_log(signatureRawParts);
 
       re = new RegExp(signatureDef+"$");
+      console_log(re);
       if(oriInstruction.search(re) == -1){
-
         if(isPseudo == false){
           console_log(get_token())
 
@@ -2796,10 +2804,10 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               }
             }
             if(isPseudo == false){
-              instruction_compiler(instruction, instruction, label, line, pending, pendingAddress, instInit, index, false);
+              ret = instruction_compiler(instruction, instruction, label, line, pending, pendingAddress, instInit, index, false);
             }
             else{
-              instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit, index, false);
+              ret = instruction_compiler(instruction, userInstruction, label, line, pending, pendingAddress, instInit, index, false);
             }
             return ret;
           }
@@ -2834,14 +2842,17 @@ function instruction_compiler ( instruction, userInstruction, label, line,
             if (resultPseudo.status == 'ok') {
                 return resultPseudo ;
             }
+            if (resultPseudo.errorcode == 3) {
+                return resultPseudo ;
+            }
 
             //TODO: revisar que solo se puede salir con ok y -1
 
-            if(resultPseudo == -1){
+            /*if(resultPseudo == -1){*/
               /*this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
               return -1;*/
-              return packCompileError(3, auxSignature, 'error', "danger") ;
-            }
+              /*return packCompileError(3, auxSignature, 'error', "danger") ;
+            }*/
           }
         }
 
@@ -2865,6 +2876,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
         return packCompileError(3, auxSignature, 'error', "danger") ;
       }
       console_log(oriInstruction);
+      console_log(re)
       match = re.exec(oriInstruction);
       instructionParts = [];
       if(match != null){
@@ -2876,7 +2888,8 @@ function instruction_compiler ( instruction, userInstruction, label, line,
         //TODO: posible fallo
 
         //return -2;
-        return packCompileError(14, "Error instruction", 'error', "danger") ;
+        console_log("AQUI1");
+        return packCompileError(14, "", 'error', "danger") ;
       }
       
       console_log(instructionParts);
@@ -2963,7 +2976,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
-
                       return packCompileError(4, token, 'error', "danger") ;
                     }
                     regNum++;
@@ -3010,7 +3022,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
-
                       return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
@@ -3057,7 +3068,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
-
                       return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
@@ -3104,7 +3114,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                       /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;*/
-
                       return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "control"){
@@ -3252,7 +3261,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     console_log(label)
                     console_log(line)
                     resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
+                    console_log(resultPseudo);
                     /*if(resultPseudo == -1){
                       this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       return -1;
@@ -4067,6 +4076,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
   console_log(instructionParts);
 
+  var auxSignature;
+
   for (var i = 0; i < architecture.pseudoinstructions.length; i++){
     console_log(architecture.pseudoinstructions[i].name);
     if(architecture.pseudoinstructions[i].name != instructionParts[0]){
@@ -4085,6 +4096,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
       var signatureParts = architecture.pseudoinstructions[i].signature.split(',');
       var signatureRawParts = architecture.pseudoinstructions[i].signatureRaw.split(' ');
       var definition = architecture.pseudoinstructions[i].definition;
+
+      auxSignature = architecture.pseudoinstructions[i].signatureRaw;
 
       console_log(signatureDef);
       console_log(instruction);
@@ -4114,8 +4127,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
       console_log(re)
       if(instruction.search(re) == -1 && i == architecture.pseudoinstructions.length-1){
         //return -1;
-
-        return packCompileError(5, token, 'error', "danger") ;
+        return packCompileError(3, auxSignature, 'error', "danger") ;
       }
 
       if(instruction.search(re) == -1 && i < architecture.pseudoinstructions.length-1){
@@ -4298,10 +4310,10 @@ function pseudoinstruction_compiler ( instruction, label, line )
             for (var j = 0; j < instructions.length-1; j++){
               var aux;
               if(j == 0){
-                aux = "if(instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null, true) == -1){error = true}";
+                aux = "ret=instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
               }
               else{
-                aux = "if(instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null, true) == -1){error = true}";
+                aux = "ret=instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
               }
               definition = definition.replace(instructions[j]+";", aux+";\n");
             }
@@ -4314,10 +4326,10 @@ function pseudoinstruction_compiler ( instruction, label, line )
           for (var j = 0; j < instructions.length-1; j++){
             var aux;
             if(j == 0){
-              aux = "if(instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null, true) == -1){error = true}";
+              aux = "ret=instruction_compiler('" + instructions[j] + "','" + instruction + "','" + label + "'," + line + ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
             }
             else{
-              aux = "if(instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null, true) == -1){error = true}";
+              aux = "ret=instruction_compiler('" + instructions[j] + "','', ''," + line + ", false, 0, null, null, true)\nif(ret.status != 'ok'){error = true}";
             }
             definition = definition.replace(instructions[j]+";", aux+";\n");
           }
@@ -4330,7 +4342,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
           if(error == true){
             console_log("Error pseudo");
             //return -2;
-            return packCompileError(14, "Error pseudoinstruction", 'error', "danger") ;
+            //return packCompileError(14, "Error pseudoinstruction", 'error', "danger") ;
+            return ret;
           }
           console_log("Fin pseudo");
           return ret;
@@ -4338,7 +4351,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
         catch(e){
           if (e instanceof SyntaxError) {
             //return -2;
-            return packCompileError(14, "Error pseudoinstruction", 'error', "danger") ;
+            console_log("AQUI2");
+            return packCompileError(14, "", 'error', "danger") ;
           }
         }
       }
@@ -4348,7 +4362,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
   if(!found){
     //return -1;
-    return packCompileError(5, token, 'error', "danger") ;
+    return packCompileError(3, auxSignature, 'error', "danger") ;
   }
 
   return ret;
@@ -5352,23 +5366,23 @@ function executeInstruction ( )
           regNum = architecture.components[i].elements.length-1;
         }
         for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
+          /*TODO: Conflicto RISC-V*/
           var re;
           let myMatch, isMatch=false;
           /*Write in the register*/
 
-          /*TODO: Conflicto RISC-V*/
-          re = new RegExp( "(?:\\W|^)((" + architecture.components[i].elements[j].name+") *=[^=])", "g");
+           /*TODO: Conflicto RISC-V*/
+
+          re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name+") *=)[^=])", "g");
           while ((myMatch = re.exec(auxDef)) != null) {
-              auxDef = auxDef.replace(myMatch[2], "reg"+regIndex)
+              auxDef = auxDef.replace(myMatch[2], "reg"+regIndex + "=")
               auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
               myMatch.index=0;
               isMatch = true;
-          }
-          if (isMatch) 
-            regIndex++;
+          }  
+    if (isMatch) regIndex++;
 
-    /*
-          re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
+		/*    re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
           if (auxDef.search(re) != -1){
             re = new RegExp(architecture.components[i].elements[j].name+" *=","g");
 
@@ -5377,7 +5391,7 @@ function executeInstruction ( )
             auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+");"
             regIndex++;
           }
-*/
+	  */
 
 
           if(architecture.components[i].type == "integer"){
@@ -7049,6 +7063,7 @@ show_notification('The data has been uploaded', 'info') ;
 }
 
 
+
 /*Modifies double precision registers according to simple precision registers*/
 function updateDouble(comp, elem){
   for (var j = 0; j < architecture.components.length; j++) {
@@ -7086,7 +7101,8 @@ function updateSimple(comp, elem){
       }
     }
   }
-}/*
+}
+/*
  *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
@@ -7129,6 +7145,19 @@ function load_architecture ( arch_str )
     return ret ;
 }
 
+function load_library ( lib_str )
+{
+    var ret = {
+                'status': 'ok',
+                'msg':    ''
+              } ;
+
+    code_binary   = lib_str ;
+    update_binary = JSON.parse(code_binary) ;
+
+    return ret ;
+}
+
 function assembly_compile ( code )
 {
     var ret = {} ;
@@ -7166,15 +7195,16 @@ function execute_program ( limit_n_instructions )
 
 function get_state ( )
 {
+    var ret = {
+                'status': 'ok',
+                'msg':    ''
+              } ;
+
     var c_name      = '' ;
     var e_name      = '' ;
     var elto_value  = null ;
     var elto_dvalue = null ;
     var elto_string = null ;
-
-    var ret = {} ;
-    ret.msg = "" ;
-    ret.status = "ok" ;
 
     // dump registers
     for (var i=0; i<architecture.components.length; i++)
@@ -7260,9 +7290,10 @@ function get_state ( )
 
 function compare_states ( ref_state, alt_state )
 {
-    var ret = {} ;
-    ret.msg    = "" ;
-    ret.status = "ok" ;
+    var ret = {
+                'status': 'ok',
+                'msg':    ''
+              } ;
 
     // 1) check equals
     ref_state = ref_state.trim() ;
@@ -7307,6 +7338,9 @@ function compare_states ( ref_state, alt_state )
     }
 
     // last) is different...
+    if (ret.status != "ko")
+        ret.msg = "Equals" ;
+
     return ret ;
 }
 
@@ -7316,6 +7350,7 @@ function compare_states ( ref_state, alt_state )
 //
 
 module.exports.load_architecture = load_architecture ;
+module.exports.load_library      = load_library ;
 module.exports.assembly_compile  = assembly_compile ;
 module.exports.execute_program   = execute_program ;
 module.exports.get_state         = get_state ;
