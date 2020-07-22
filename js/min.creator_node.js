@@ -362,7 +362,7 @@ function get_token()
         if (assembly.charAt(index) == "'") {
             index++;
             while (assembly.charAt(index) != "'" && index < assembly.length) {
-                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
                   index++;
             }
             index++;
@@ -374,7 +374,7 @@ function get_token()
         if (assembly.charAt(index) == '"') {
             index++;
             while (assembly.charAt(index) != '"' && index < assembly.length) {
-                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
                   index++;
             }
             index++;
@@ -415,7 +415,7 @@ function get_token_old()
         if (assembly.charAt(index) == "'") {
             index++;
             while (assembly.charAt(index) != "'" && index < assembly.length) {
-                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
                   //console_log(assembly.charAt(index));
                   //console_log(index);
                   index++;
@@ -431,7 +431,7 @@ function get_token_old()
         if (assembly.charAt(index) == '"') {
             index++;
             while (assembly.charAt(index) != '"' && index < assembly.length) {
-                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
                   //console_log(assembly.charAt(index));
                   //console_log(index);
                   index++;
@@ -491,7 +491,7 @@ function next_token()
         if (assembly.charAt(index) == "'") {
             index++;
             while (assembly.charAt(index) != "'" && index < assembly.length) {
-                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
                   index++;
             }
             index++;
@@ -501,7 +501,7 @@ function next_token()
         if (assembly.charAt(index) == '"') {
             index++;
             while (assembly.charAt(index) != '"' && index < assembly.length) {
-                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
                   index++;
             }
             index++;
@@ -514,7 +514,7 @@ function next_token()
 
         while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
         {
-           if (assembly.charAt(index) != "\n") nEnters++ ;
+           if (assembly.charAt(index) == "\n") nEnters++ ;
            index++;
         }
 
@@ -522,7 +522,7 @@ function next_token()
         {
           while (",)]}:\t\n \r".includes( assembly.charAt(index) ) && (index < assembly.length))
           {
-             if (assembly.charAt(index) != "\n") nEnters++ ;
+             if (assembly.charAt(index) == "\n") nEnters++ ;
              index++;
           }
 
@@ -538,7 +538,7 @@ function next_token()
 
               while (("()[]{}:\t\n \r".includes( assembly.charAt(index) )) && (index < assembly.length))
               {
-                 if (assembly.charAt(index) != "\n") nEnters++ ;
+                 if (assembly.charAt(index) == "\n") nEnters++ ;
                  index++;
               }
           }
