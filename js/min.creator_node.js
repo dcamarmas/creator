@@ -83,7 +83,8 @@ var textarea_assembly_editor;
 /*Assembly code textarea*/
 var code_assembly = '';
 /*Compilation index*/
-var tokenIndex = 0;
+var tokenIndex = 0 ;
+var nEnters = 0 ;
 /*Instructions memory address*/
 var address;
 /*Data memory address*/
@@ -116,8 +117,8 @@ var compileError = [
   { mess1: "This field is too small to encode in binary '", mess2: "" },
   { mess1: "Incorrect pseudoinstruction definition ", mess2: "" },
   { mess1: "Invalid directive: ", mess2: "" },
-  { mess1: "Invalid data: ", mess2: " The data must be a number" }, 
-  { mess1: 'The string of characters must start with "', mess2: "" }, 
+  { mess1: "Invalid data: ", mess2: " The data must be a number" },
+  { mess1: 'The string of characters must start with "', mess2: "" },
   { mess1: "Number '", mess2: "' is too big" },
   { mess1: "Number '", mess2: "' is empty" },
   { mess1: "The text segment should start with '", mess2: "'" },
@@ -306,35 +307,100 @@ function packCompileError( err_code, err_msg, err_ti, err_bgcolor )
 /*Places the pointer in the first position*/
 function first_token()
 {
-        // var assembly = textarea_assembly_editor.getValue(); // TODO: interface
         var assembly = code_assembly ;
         var index = tokenIndex;
 
-        while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length)){
-          while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+        while ((
+                 (assembly.charAt(index) == ':') ||
+                 (assembly.charAt(index) == '\t') ||
+                 (assembly.charAt(index) == '\n') ||
+                 (assembly.charAt(index) == ' ') ||
+                 (assembly.charAt(index) == '\r') ||
+                 (assembly.charAt(index) == '#')) && (index < assembly.length))
+        {
+          while(((assembly.charAt(index) == ':') ||
+                 (assembly.charAt(index) == '\t') ||
+                 (assembly.charAt(index) == '\n') ||
+                 (assembly.charAt(index) == ' ') ||
+                 (assembly.charAt(index) == '\r')) && (index < assembly.length))
+          {
             index++;
           }
 
-          if(assembly.charAt(index) == '#'){
-            while((assembly.charAt(index) != '\n') && (index < assembly.length)){
-              index++;
-            }
+          if (assembly.charAt(index) == '#')
+          {
+              while ((assembly.charAt(index) != '\n') && (index < assembly.length)) {
+                      index++;
+              }
 
-            while(((assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
-              index++;
-            }
+              while (((assembly.charAt(index) == ':') ||
+                      (assembly.charAt(index) == '\t') ||
+                      (assembly.charAt(index) == '\n') ||
+                      (assembly.charAt(index) == ' ') ||
+                      (assembly.charAt(index) == '\r')) && (index < assembly.length))
+              {
+                   index++;
+              }
           }
         }
 
         tokenIndex = index;
 }
 
-/*Read token*/
+/* Read token */
 function get_token()
 {
-        // var assembly = textarea_assembly_editor.getValue(); // TODO: interface
-        // TODO: contar el n'umero de '\n' para dar los mensaje de error con la línea (no preguntar a textarea)
+        var assembly = code_assembly ;
+        var index    = tokenIndex;
 
+        if (index >= assembly.length) {
+            return null;
+        }
+
+        // '...'
+        if (assembly.charAt(index) == "'") {
+            index++;
+            while (assembly.charAt(index) != "'" && index < assembly.length) {
+                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  index++;
+            }
+            index++;
+
+            return assembly.substring(tokenIndex, index);
+        }
+
+        // "..."
+        if (assembly.charAt(index) == '"') {
+            index++;
+            while (assembly.charAt(index) != '"' && index < assembly.length) {
+                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  index++;
+            }
+            index++;
+
+            return assembly.substring(tokenIndex, index);
+        }
+
+        // ([{...
+        if ("([{".includes( assembly.charAt(index) )) {
+             index++;
+        }
+
+        while ( (",()[]{}:#\t\n ".includes(assembly.charAt(index)) == false) && (index < assembly.length) ) {
+                index++;
+        }
+
+        var res = assembly.substring(tokenIndex, index) ;
+        if (":)]}".includes( assembly.charAt(index) )) {
+            res = res + assembly.charAt(index);
+        }
+
+        return res;
+}
+
+/*
+function get_token_old()
+{
         var assembly = code_assembly ;
         var index = tokenIndex;
 
@@ -342,62 +408,146 @@ function get_token()
             return null;
         }
 
-        console_log(assembly.charAt(index));
-        console_log(index);
+        //console_log(assembly.charAt(index));
+        //console_log(index);
 
-        if(assembly.charAt(index) == "'") {
-          index++;
-          while(assembly.charAt(index) != "'" && index < assembly.length){
-            console_log(assembly.charAt(index));
-            console_log(index);
+        if (assembly.charAt(index) == "'") {
             index++;
-          }
-          index++;
-
-          console_log(assembly.substring(tokenIndex, index));
-          console_log(index);
-          console_log(assembly.substring(tokenIndex, index));
-          return assembly.substring(tokenIndex, index);
-        }
-
-        if(assembly.charAt(index) == '"'){
-          index++;
-          while(assembly.charAt(index) != '"' && index < assembly.length){
-            console_log(assembly.charAt(index));
-            console_log(index);
+            while (assembly.charAt(index) != "'" && index < assembly.length) {
+                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  //console_log(assembly.charAt(index));
+                  //console_log(index);
+                  index++;
+            }
             index++;
-          }
-          index++;
 
-          console_log(assembly.substring(tokenIndex, index));
-          console_log(index);
-          console_log(assembly.substring(tokenIndex, index));
-          return assembly.substring(tokenIndex, index);
+            //console_log(assembly.substring(tokenIndex, index));
+            //console_log(index);
+            //console_log(assembly.substring(tokenIndex, index));
+            return assembly.substring(tokenIndex, index);
         }
 
+        if (assembly.charAt(index) == '"') {
+            index++;
+            while (assembly.charAt(index) != '"' && index < assembly.length) {
+                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  //console_log(assembly.charAt(index));
+                  //console_log(index);
+                  index++;
+            }
+            index++;
 
-
-        if((assembly.charAt(index) == '(') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == '{')){
-          index++;
+            //console_log(assembly.substring(tokenIndex, index));
+            //console_log(index);
+            //console_log(assembly.substring(tokenIndex, index));
+            return assembly.substring(tokenIndex, index);
         }
 
-        while((assembly.charAt(index) != ',') && (assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
+        if ((assembly.charAt(index) == '(') ||
+            (assembly.charAt(index) == '[') ||
+            (assembly.charAt(index) == '{')) {
+             index++;
+        }
+
+        while ( (assembly.charAt(index) != ',') &&
+                (assembly.charAt(index) != '(') &&
+                (assembly.charAt(index) != ')') &&
+                (assembly.charAt(index) != '[') &&
+                (assembly.charAt(index) != ']') &&
+                (assembly.charAt(index) != '{') &&
+                (assembly.charAt(index) != '}') &&
+                (assembly.charAt(index) != ':') &&
+                (assembly.charAt(index) != '#') &&
+                (assembly.charAt(index) != '\t') &&
+                (assembly.charAt(index) != '\n') &&
+                (assembly.charAt(index) != ' ') &&
+                (assembly.charAt(index) != '\r') && (index < assembly.length)) {
           index++;
         }
 
         var res;
-        if((assembly.charAt(index) == ':') || (assembly.charAt(index) == ')') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '}')){
-          res = assembly.substring(tokenIndex, index) + assembly.charAt(index);
+        if (    (assembly.charAt(index) == ':') ||
+                (assembly.charAt(index) == ')') ||
+                (assembly.charAt(index) == ']') ||
+                (assembly.charAt(index) == '}')) {
+            res = assembly.substring(tokenIndex, index) + assembly.charAt(index);
         }
         else{
-          res = assembly.substring(tokenIndex, index);
+            res = assembly.substring(tokenIndex, index);
         }
 
         return res;
 }
+*/
 
 /*Places the pointer in the start of next token*/
 function next_token()
+{
+        var assembly = code_assembly ;
+        var index    = tokenIndex;
+
+        // '..'
+        if (assembly.charAt(index) == "'") {
+            index++;
+            while (assembly.charAt(index) != "'" && index < assembly.length) {
+                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  index++;
+            }
+            index++;
+        }
+
+        // ".."
+        if (assembly.charAt(index) == '"') {
+            index++;
+            while (assembly.charAt(index) != '"' && index < assembly.length) {
+                  if (assembly.charAt(index) != "\n") nEnters++ ;
+                  index++;
+            }
+            index++;
+        }
+
+        // ([..
+        if ("([{".includes( assembly.charAt(index) )) {
+             index++;
+        }
+
+        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
+        {
+           if (assembly.charAt(index) != "\n") nEnters++ ;
+           index++;
+        }
+
+        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) )) && (index < assembly.length))
+        {
+          while (",)]}:\t\n \r".includes( assembly.charAt(index) ) && (index < assembly.length))
+          {
+             if (assembly.charAt(index) != "\n") nEnters++ ;
+             index++;
+          }
+
+          if ("([{".includes( assembly.charAt(index) )) {
+               break;
+          }
+
+          if (assembly.charAt(index) == '#')
+          {
+              while ((assembly.charAt(index) != '\n') && (index < assembly.length)) {
+                    index++;
+              }
+
+              while (("()[]{}:\t\n \r".includes( assembly.charAt(index) )) && (index < assembly.length))
+              {
+                 if (assembly.charAt(index) != "\n") nEnters++ ;
+                 index++;
+              }
+          }
+        }
+
+        tokenIndex = index;
+}
+
+/*
+function next_token_old()
 {
         //var assembly = textarea_assembly_editor.getValue(); // TODO: interface
         var assembly = code_assembly ;
@@ -426,17 +576,52 @@ function next_token()
           index++;
         }
 
-        while((assembly.charAt(index) != ',') && (assembly.charAt(index) != '(') && (assembly.charAt(index) != ')') && (assembly.charAt(index) != '[') && (assembly.charAt(index) != ']') && (assembly.charAt(index) != '{') && (assembly.charAt(index) != '}') && (assembly.charAt(index) != ':') && (assembly.charAt(index) != '#') && (assembly.charAt(index) != '\t') && (assembly.charAt(index) != '\n') && (assembly.charAt(index) != ' ') && (assembly.charAt(index) != '\r') && (index < assembly.length)){
+        while ((assembly.charAt(index) != ',') && 
+               (assembly.charAt(index) != '(') && 
+               (assembly.charAt(index) != ')') && 
+               (assembly.charAt(index) != '[') && 
+               (assembly.charAt(index) != ']') && 
+               (assembly.charAt(index) != '{') && 
+               (assembly.charAt(index) != '}') && 
+               (assembly.charAt(index) != ':') && 
+               (assembly.charAt(index) != '#') && 
+               (assembly.charAt(index) != '\t') && 
+               (assembly.charAt(index) != '\n') && 
+               (assembly.charAt(index) != ' ') && 
+               (assembly.charAt(index) != '\r') && (index < assembly.length)){
           index++;
         }
 
-        while(((assembly.charAt(index) == ',') || (assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r') || (assembly.charAt(index) == '#')) && (index < assembly.length)){
+        while(((assembly.charAt(index) == ',') || 
+               (assembly.charAt(index) == '(') || 
+               (assembly.charAt(index) ==')') || 
+               (assembly.charAt(index) == '[') || 
+               (assembly.charAt(index) == ']') || 
+               (assembly.charAt(index) == '{') || 
+               (assembly.charAt(index) == '}') || 
+               (assembly.charAt(index) == ':') || 
+               (assembly.charAt(index) == '\t') || 
+               (assembly.charAt(index) == '\n') || 
+               (assembly.charAt(index) == ' ') || 
+               (assembly.charAt(index) == '\r') || 
+               (assembly.charAt(index) == '#')) && (index < assembly.length)){
 
-          while(((assembly.charAt(index) ==',') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+          while(((assembly.charAt(index) ==',') || 
+               (assembly.charAt(index) ==')') || 
+               (assembly.charAt(index) == ']') || 
+               (assembly.charAt(index) == '}') || 
+               (assembly.charAt(index) == ':') || 
+               (assembly.charAt(index) == '\t') || 
+               (assembly.charAt(index) == '\n') || 
+               (assembly.charAt(index) == ' ') || 
+               (assembly.charAt(index) == '\r')) && (index < assembly.length))
+          {
             index++;
           }
 
-          if((assembly.charAt(index) =='(') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == '{')){
+          if((assembly.charAt(index) =='(') || 
+               (assembly.charAt(index) == '[') || 
+               (assembly.charAt(index) == '{')){
             break;
           }
 
@@ -445,13 +630,25 @@ function next_token()
               index++;
             }
 
-            while(((assembly.charAt(index) == '(') || (assembly.charAt(index) ==')') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == ']') || (assembly.charAt(index) == '{') || (assembly.charAt(index) == '}') || (assembly.charAt(index) == ':') || (assembly.charAt(index) == '\t') || (assembly.charAt(index) == '\n') || (assembly.charAt(index) == ' ') || (assembly.charAt(index) == '\r')) && (index < assembly.length)){
+            while ( ((assembly.charAt(index) == '(') || 
+                     (assembly.charAt(index) ==')') || 
+                     (assembly.charAt(index) == '[') || 
+                     (assembly.charAt(index) == ']') || 
+                     (assembly.charAt(index) == '{') || 
+                     (assembly.charAt(index) == '}') || 
+                     (assembly.charAt(index) == ':') || 
+                     (assembly.charAt(index) == '\t') || 
+                     (assembly.charAt(index) == '\n') || 
+                     (assembly.charAt(index) == ' ') || 
+                     (assembly.charAt(index) == '\r')) && (index < assembly.length))
+            {
               index++;
             }
           }
         }
         tokenIndex = index;
 }
+*/
 
 /*Compile assembly code*/
 function assembly_compiler()
@@ -643,8 +840,9 @@ function assembly_compiler()
                 {
                   empty = true;
                   //tokenIndex = 0;
+                  //nEnters = 0 ;
                   return packCompileError(15, token, 'error', "danger");
-                } 
+                }
               }
             }
 
@@ -751,6 +949,7 @@ function assembly_compiler()
 
                   if(exit == 0 && isNaN(instructionParts[j]) == true){
                    //tokenIndex = 0;
+                   //nEnters = 0 ;
                     tokenIndex=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
@@ -762,8 +961,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    ret = packCompileError(7, instructionParts[j], "error", "danger");
-                    return ret;
+                    return packCompileError(7, instructionParts[j], "error", "danger");
                   }
                 }
 
@@ -816,6 +1014,7 @@ function assembly_compiler()
 
                   if(exit == 0){
                     //tokenIndex = 0;
+                    //nEnters = 0 ;
                     tokenIndex=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
@@ -827,8 +1026,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    ret = packCompileError(7, instructionParts[j], "error", "danger");
-                    return ret;
+                    return packCompileError(7, instructionParts[j], "error", "danger");
                   }
                 }
 
@@ -876,6 +1074,7 @@ function assembly_compiler()
 
                   if(exit == 0){
                     //tokenIndex = 0;
+                    //nEnters = 0 ;
                     tokenIndex=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
@@ -887,17 +1086,16 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    ret = packCompileError(7, instructionParts[j], "error", "danger");
-                    return -1;
+                    return packCompileError(7, instructionParts[j], "error", "danger");
                   }
                 }
               }
             }
 
             /*Enter the binary in the text segment*/
-            if (update_binary.instructions_binary != null) 
+            if (update_binary.instructions_binary != null)
             {
-              for (var i = 0; i < update_binary.instructions_binary.length; i++) 
+              for (var i = 0; i < update_binary.instructions_binary.length; i++)
               {
                 var hex = bin2hex(update_binary.instructions_binary[i].loaded);
                 var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
@@ -1017,6 +1215,7 @@ function assembly_compiler()
             if(memory[memory_hash[0]].length > 0){
               if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
                 //tokenIndex = 0;
+                //nEnters = 0 ;
                 instructions = [];
                 pending_instructions = [];
                 pending_tags = [];
@@ -1035,6 +1234,7 @@ function assembly_compiler()
             if(memory[memory_hash[1]].length > 0){
               if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary[3].Addr > architecture.memory_layout[1].value){
                 //tokenIndex = 0;
+                //nEnters = 0 ;
                 instructions = [];
                 pending_instructions = [];
                 pending_tags = [];
@@ -1068,7 +1268,7 @@ function assembly_compiler()
                     break;
                   }
                 }
-              } 
+              }
             }
 
             /*Save tags*/
@@ -1090,7 +1290,7 @@ function assembly_compiler()
                     break;
                   }
                 }
-              } 
+              }
             }
 
             if (typeof app != "undefined")
@@ -1098,7 +1298,7 @@ function assembly_compiler()
 
             /*Initialize stack*/
             memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false, unallocated: false});
-            
+
             for(var i = 0; i<4; i++){
               (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
             }
@@ -1142,34 +1342,31 @@ function data_segment_compiler()
 
           var found = false;
 
-          if(token.search(/\:$/) != -1){
-            if(token.length == 1)
-            {
-              /*app.compileError(0, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              hide_loading();*/
-
-              //TODO: Revisar el n'umero de l'inea para error
-              return packCompileError(0, "", 'error', "danger");
-            }
-
-            for (var i = 0; i < data_tag.length; i++)
-            {
-              console_log(data_tag[i].tag);
-              console_log(token.substring(0,token.length-1))
-              if (data_tag[i].tag == token.substring(0,token.length-1)) {
-                  return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+          if (token.search(/\:$/) != -1)
+          {
+              if (token.length == 1)
+              {
+                  return packCompileError(0, "", 'error', "danger");
               }
-            }
 
-            for (var i = 0; i < instructions.length; i++) {
-              if (instructions[i].Label == token.substring(0,token.length-1)) {
-                  return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
-              } 
-            }
+              for (var i = 0; i < data_tag.length; i++)
+              {
+                console_log(data_tag[i].tag);
+                console_log(token.substring(0,token.length-1))
+                if (data_tag[i].tag == token.substring(0,token.length-1)) {
+                    return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+                }
+              }
 
-            label = token.substring(0,token.length-1);
-            next_token();
-            token = get_token();
+              for (var i = 0; i < instructions.length; i++) {
+                if (instructions[i].Label == token.substring(0,token.length-1)) {
+                    return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+                }
+              }
+
+              label = token.substring(0,token.length-1);
+              next_token();
+              token = get_token();
           }
 
           for(var j = 0; j < architecture.directives.length; j++){
@@ -1253,7 +1450,7 @@ function data_segment_compiler()
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
-                    
+
                     console_log(auxTokenString)
 
                     ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "byte")
@@ -1281,6 +1478,7 @@ function data_segment_compiler()
                   j=0;
 
                   break;
+
                 case "half_word":
                   console_log("half_word")
                   var ishalf = true;
@@ -1336,7 +1534,7 @@ function data_segment_compiler()
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
-                    
+
                     console_log(auxTokenString)
 
                     ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "half")
@@ -1417,7 +1615,7 @@ function data_segment_compiler()
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
-                    
+
                     console_log(auxTokenString);
 
                     ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0, "word")
@@ -1457,15 +1655,11 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
                       return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
                       return packCompileError(24, token, 'error', "danger") ;
                     }
 
@@ -1481,20 +1675,14 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -1502,20 +1690,16 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
-                    
+
                     ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "double_word")
                     if (ret.status != 'ok') {
                         return ret ;
@@ -1553,15 +1737,11 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
                       return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
                       return packCompileError(24, token, 'error', "danger") ;
                     }
 
@@ -1589,20 +1769,14 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -1611,20 +1785,16 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseFloat(token, 10);
                       auxTokenString = (bin2hex(float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
-                    
+
                     console_log(auxTokenString);
 
                     data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
@@ -1664,15 +1834,11 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      /*app.compileError(23,"", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
                       return packCompileError(23,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      /*app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();*/
                       return packCompileError(24, token, 'error', "danger") ;
                     }
 
@@ -1700,20 +1866,14 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        /*app.compileError(19, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(19, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
@@ -1722,20 +1882,16 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(16, token, 'error', "danger") ;
                       }
                       auxToken = parseFloat(token, 10);console_log(auxTokenString);
                       auxTokenString = (bin2hex(double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        /*app.compileError(18, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();*/
                         return packCompileError(18, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
-                    
+
                     console_log(auxTokenString);
 
                     data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
@@ -1792,7 +1948,8 @@ function data_segment_compiler()
                       break;
                     }
 
-                    /*re = new RegExp('(.)","(.)');
+/************************
+                    re = new RegExp('(.)","(.)');
                     if(token.search(re) != -1){
                       app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();
@@ -1825,7 +1982,7 @@ function data_segment_compiler()
                       string = token.substring(1, token.length-1);
                       final = true;
                     }
-                    
+
                     while(final == false){
                       next_token();
                       token = get_token();
@@ -1866,7 +2023,8 @@ function data_segment_compiler()
                         string = string + " " + token;
                         final = false;
                       }
-                    }*/
+                    }
+**********************************/
 
                     console_log(string);
 
@@ -1904,7 +2062,7 @@ function data_segment_compiler()
                         }
 
                         data_address++;
-                      
+
                       }
                       else{
                         if(i == 0){
@@ -1957,7 +2115,7 @@ function data_segment_compiler()
 
                 case "ascii_null_end":
                   console_log("ascii_null_end");
-                  
+
                   var isAscii = true;
                   var nextToken = 1;
 
@@ -1982,7 +2140,8 @@ function data_segment_compiler()
                     string = string.replace(re, "");
                     console_log(string);
 
-                    /*re = new RegExp('(.)","(.)');
+/************************
+                    re = new RegExp('(.)","(.)');
                     if(token.search(re) != -1){
                       app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
                       hide_loading();
@@ -2002,7 +2161,7 @@ function data_segment_compiler()
 
                     var string = "";
                     var final = false;
-                    
+
                     re = new RegExp('"$');
                     console_log(re);
                     console_log(token);
@@ -2013,7 +2172,7 @@ function data_segment_compiler()
                       string = token.substring(1, token.length-1);
                       final = true;
                     }
-                    
+
                     while(final == false){
                       next_token();
                       token = get_token();
@@ -2053,7 +2212,8 @@ function data_segment_compiler()
                       }
                     }
 
-                    string = string;*/
+                    string = string;
+*********************************/
 
                     console_log(string);
 
@@ -2257,14 +2417,10 @@ function data_segment_compiler()
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
-                    /*app.compileError(16, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    hide_loading();*/
                     return packCompileError(16, token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
-                    /*app.compileError(22, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    hide_loading();*/
                     return packCompileError(22, token, 'error', "danger") ;
                   }
 
@@ -2290,7 +2446,7 @@ function data_segment_compiler()
                   app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
               return ret;
             }
-          
+
           }
         }
 
@@ -2407,8 +2563,8 @@ function code_segment_compiler()
 
           for(var i = 0; i < architecture.directives.length; i++){
             if(token == architecture.directives[i].name && architecture.directives[i].action == "global_symbol"){
-              next_token(); // .globl *main* 
-              next_token(); 
+              next_token(); // .globl *main*
+              next_token();
               token = get_token();
             }
             else if(token == architecture.directives[i].name){
@@ -2455,7 +2611,7 @@ function code_segment_compiler()
             for(var i = 0; i < instructions.length; i++){
               if(instructions[i].Label == token.substring(0,token.length-1)){
                 return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
-              } 
+              }
             }
 
             label = token.substring(0,token.length-1);
@@ -2487,7 +2643,7 @@ function code_segment_compiler()
             console_log(token)
             var stopFor = false;
           }
-          
+
 
           for(var i = 0; i < architecture.instructions.length && stopFor == false && end == false; i++){
             if(architecture.instructions[i].name != token){
@@ -2523,7 +2679,7 @@ function code_segment_compiler()
                   token = token.replace(re, "");
                   instruction = instruction + " " + token;
                   userInstruction = userInstruction + " " + token;
-                }  
+                }
               }
 
               console_log(instruction);
@@ -2584,6 +2740,7 @@ function code_segment_compiler()
                   if(token.search(re) != -1){
                     existsInstruction = false;
                     //tokenIndex = 0;
+                    //nEnters = 0 ;
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
@@ -2598,13 +2755,14 @@ function code_segment_compiler()
 
                     return ret;
                   }
-                }          
+                }
               }
 
 
 
               existsInstruction = false;
               //tokenIndex = 0;
+              //nEnters = 0 ;
               instructions = [];
               pending_instructions = [];
               pending_tags = [];
@@ -2621,10 +2779,11 @@ function code_segment_compiler()
             }
 
             if(resultPseudo == -2){
-    
+
 
               existsInstruction = false;
               //tokenIndex = 0;
+              //nEnters = 0 ;
               instructions = [];
               pending_instructions = [];
               pending_tags = [];
@@ -2645,6 +2804,7 @@ function code_segment_compiler()
             if(resultPseudo == -1){
               existsInstruction = false;
               //tokenIndex = 0;
+              //nEnters = 0 ;
               instructions = [];
               pending_instructions = [];
               pending_tags = [];
@@ -2668,7 +2828,7 @@ function code_segment_compiler()
         token = get_token();
         console_log(token);
 
-   
+
         if (typeof app !== "undefined")
             app._data.instructions = instructions;
 
@@ -2683,7 +2843,7 @@ function code_segment_compiler()
 
 
 /*Compile instruction*/
-function instruction_compiler ( instruction, userInstruction, label, line, 
+function instruction_compiler ( instruction, userInstruction, label, line,
 				pending, pendingAddress, instInit, instIndex, isPseudo )
 {
   var ret = {
@@ -2762,7 +2922,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
         if(isPseudo == false){
           console_log(get_token())
 
-          tokenIndex =  instInit;
+          tokenIndex = instInit;
           token = get_token();
 
           console_log(token);
@@ -2812,7 +2972,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
             return ret;
           }
         }
-        
+
 
 
 
@@ -2836,7 +2996,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
             console_log(instruction);
             //resultPseudo = pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line); //TODO: revisar linea
             resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex); //TODO: line->ti?
-          
+
             console_log(resultPseudo)
 
             if (resultPseudo.status == 'ok') {
@@ -2891,7 +3051,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
         console_log("AQUI1");
         return packCompileError(14, "", 'error', "danger") ;
       }
-      
+
       console_log(instructionParts);
 
       //PRUEBA
@@ -2949,7 +3109,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       console_log(binary.length - (architecture.instructions[i].fields[a].startbit + 1))
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                      
+
                       console_log(binary);
 
                       //re = RegExp("[fF][0-9]+");
@@ -2963,8 +3123,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       var reg = regNum;
 
                       if(reg.toString(2).length > fieldsLength){
-                        /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        return -1;*/
                         return packCompileError(12, token, 'error', "danger") ;
                       }
 
@@ -3006,8 +3164,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       var reg = regNum;
 
                       if(reg.toString(2).length > fieldsLength){
-                        /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        return -1;*/
 
                         return packCompileError(12, token, 'error', "danger") ;
                       }
@@ -3020,8 +3176,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       console_log(instruction);
                     }
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;*/
                       return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
@@ -3054,8 +3208,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       var reg = regNum;
 
                       if(reg.toString(2).length > fieldsLength){
-                        /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        return -1;*/
 
                         return packCompileError(12, token, 'error', "danger") ;
                       }
@@ -3066,8 +3218,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       instruction = instruction.replace(re, token);
                     }
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;*/
                       return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
@@ -3100,8 +3250,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       var reg = regNum;
 
                       if(reg.toString(2).length > fieldsLength){
-                        /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        return -1;*/
 
                         return packCompileError(12, token, 'error', "danger") ;
                       }
@@ -3112,8 +3260,6 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       instruction = instruction.replace(re, token);
                     }
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;*/
                       return packCompileError(4, token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "control"){
@@ -3139,12 +3285,12 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
 /*
                 if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
                   fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                else 
+                else
                   fieldsLength = architecture.instructions[i].fields[a].startbit
                     .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
                     .reduce((old, newV) => old+newV);
 */
-                
+
                 var inm;
 
                 if(token.match(/^0x/)){
@@ -3171,8 +3317,6 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                   }
 
                   if(isNaN(parseInt(token, 16)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
                     return packCompileError(6, token, 'error', "danger") ;
                   }
 
@@ -3200,8 +3344,6 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                   }
 
                   if(isNaN(parseFloat(token)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
 
                     return packCompileError(6, token, 'error', "danger") ;
                   }
@@ -3300,7 +3442,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
 /*
                   if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-                  else {                            
+                  else {
                       // check if the value fit on the first segment
                       let myInm = inm; //it is created to evit edit the global variable
                       for (let index = architecture.instructions[i].fields[a].startbit.length-1; index >= 0;  index--) {
@@ -3316,12 +3458,12 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                               let tmpinm = inm.substring(myInm.length - diff, myInm.length);
                               binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
                               myInm = myInm.substring(0,(myInm.length-diff));
-                          } 
+                          }
                       }
                   }
 */
                 }
-                
+
                 //re = RegExp("[fF][0-9]+");
                 re = RegExp("Field[0-9]+");
                 instruction = instruction.replace(re, token);
@@ -3349,7 +3491,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
 
                 //fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
 fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
-            
+
                 var inm;
 
                 if(token.match(/^0x/)){
@@ -3503,13 +3645,13 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                               let tmpinm = inm.substring(myInm.length - diff, myInm.length);
                               binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
                               myInm = myInm.substring(0,(myInm.length-diff));
-                          } 
+                          }
                       }
                   }
 */
                 }
-            
-                
+
+
                 //re = RegExp("[fF][0-9]+");
                 re = RegExp("Field[0-9]+");
                 instruction = instruction.replace(re, token);
@@ -3571,7 +3713,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                   fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
-            
+
                 var inm;
 
                 if(token.match(/^0x/)){
@@ -3728,7 +3870,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                   binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                 }
-                
+
                 //re = RegExp("[fF][0-9]+");
                 re = RegExp("Field[0-9]+");
                 console_log(instruction);
@@ -3748,7 +3890,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
 fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
-            
+
                 var inm;
 
                 if(token.match(/^0x/)){
@@ -3895,7 +4037,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
 binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                 }
-                
+
                 //re = RegExp("[fF][0-9]+");
                 re = RegExp("Field[0-9]+");
                 console_log(instruction);
@@ -3920,7 +4062,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                     fieldsLength = architecture.instructions[i].fields[a].startbit.reduce((t, cv, ind) => {
                       t = !ind ? 0 : t;
                       t+(cv-architecture.instructions[i].fields[a].stopbit[ind]+1)
-                    }); 
+                    });
                     console_log(architecture.instructions[i].co.join("").padStart(fieldsLength, "0"));
                     // aqui_ahora
                 } else {
@@ -3936,7 +4078,7 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
                 binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm, fieldsLength, a);
                 */
 
-                
+
                 console_log(binary);
 
                 //re = RegExp("[fF][0-9]+");
@@ -4152,7 +4294,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           var aux = "";
 
           for(var b = 0; b < architecture.components[3].elements.length; b++){
-            console_log(architecture.components[3].elements[b].name); 
+            console_log(architecture.components[3].elements[b].name);
             if(architecture.components[3].elements[b].name == args[0]){
               aux = architecture.components[3].elements[b].simple_reg[args[1]];
               console_log(aux);
@@ -4218,7 +4360,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           }
 
           definition = definition.replace("Field." + match[1] + ".(" + match[2]+ ")." + match[3], value);
-          
+
           re = /Field.(\d).\((.*?)\).(.*?)[;\s]/;
         }
 
@@ -4375,7 +4517,7 @@ function field(field, action, type)
   console_log(field);
   console_log(action);
   console_log(type);
-  
+
   if(action == "SIZE"){
     console_log("SIZE");
 
@@ -4536,7 +4678,7 @@ function float2bin (number)
 }
 
 /*Convert double floating point number to binary*/
-function double2bin(number) 
+function double2bin(number)
 {
   var i, result = "";
   var dv = new DataView(new ArrayBuffer(8));
@@ -4554,7 +4696,7 @@ function double2bin(number)
 }
 
 /*Convert binary number to hexadecimal number*/
-function bin2hex(s) 
+function bin2hex(s)
 {
   var i, k, part, accum, ret = '';
   for (i = s.length-1; i >= 3; i -= 4){
@@ -4562,14 +4704,14 @@ function bin2hex(s)
     part = s.substr(i+1-4, 4);
     accum = 0;
     for (k = 0; k < 4; k += 1){
-      if (part[k] !== '0' && part[k] !== '1'){     
+      if (part[k] !== '0' && part[k] !== '1'){
           return { valid: false };
       }
       accum = accum * 2 + parseInt(part[k], 10);
     }
     if (accum >= 10){
       ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
-    } 
+    }
     else {
       ret = String(accum) + ret;
     }
@@ -4594,12 +4736,12 @@ function bin2hex(s)
  * this funciton is create with the intention of reduce errors on the code in case of add new fragments field
  * @return {int} the size of the field
 */
-function getFieldLength(separated, startbit, stopbit,a) 
+function getFieldLength(separated, startbit, stopbit,a)
 {
 	let fieldsLength;
 	if (!separated || !separated[a])
 		fieldsLength = startbit - stopbit + 1;
-	else 
+	else
 		fieldsLength = startbit
 		  .map((b, i) => b - stopbit[i]+1)
 		  .reduce((old, newV) => old+newV);
@@ -4610,11 +4752,11 @@ function getFieldLength(separated, startbit, stopbit,a)
  * method in charge of return the binary instruction after add the inmediate value of the instruction
  * @return {string} the new binary update
 */
-function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a) 
+function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a)
 {
 	if (!separated ||!separated[a])
 	    binary = binary.substring(0, binary.length - (startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (stopbit ), binary.length);
-	else {                            
+	else {
 	    // check if the value fit on the first segment
 	    let myInm = inm;
 	    for (let i = startbit.length-1; i >= 0;  i--) {
@@ -4630,7 +4772,7 @@ function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, 
 		    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
 		    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
 		    myInm = myInm.substring(0,(myInm.length-diff));
-		} 
+		}
 	    }
 	}
 	return binary;
@@ -4654,7 +4796,7 @@ function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, 
  *      8 -> -NaN
  *      9 -> +NaN
  */
-function checkTypeIEEE(s, e, m) 
+function checkTypeIEEE(s, e, m)
 {
     let rd = 0;
 
@@ -6338,7 +6480,7 @@ function writeStackLimit ( stackLimit )
 }
 
 /*Syscall*/
-function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_time)
+function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_time)
 {
 	  var draw = {
 	    space: [] ,
@@ -6428,15 +6570,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                 // CL
                 if (typeof app === "undefined") 
                 {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $> ') ;
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' $> ') ;
                     var value        = parseInt(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(firs_time == true){
+                if(first_time == true){
 	                document.getElementById('enter_keyboard').scrollIntoView();
 	              }
 
@@ -6494,15 +6636,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                 // CL
                 if (typeof app === "undefined") 
                 {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $> ') ;
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' $> ') ;
                     var value        = parseFloat(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(firs_time == true){
+                if(first_time == true){
 	                document.getElementById('enter_keyboard').scrollIntoView();
 	              }
 
@@ -6558,15 +6700,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                 // CL
                 if (typeof app === "undefined") 
                 {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $>  ') ;
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' $>  ') ;
                     var value        = parseFloat(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(firs_time == true){
+                if(first_time == true){
 	                document.getElementById('enter_keyboard').scrollIntoView();
 	              }
 
@@ -6624,8 +6766,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                // CL
               if (typeof app === "undefined") 
               {
-							    var readlineSync = require('readline-sync') ;
-							    keystroke        = readlineSync.question(' $> ') ;
+		    var readlineSync = require('readline-sync') ;
+		    keystroke        = readlineSync.question(' $> ') ;
 
                   var value = "";
                   for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
@@ -6645,7 +6787,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
               }
 
-              if(firs_time == true){
+              if(first_time == true){
                 document.getElementById('enter_keyboard').scrollIntoView();
               }
 
@@ -6769,34 +6911,35 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
               // CL
               if (typeof app === "undefined") 
               {
-							    var readlineSync = require('readline-sync') ;
-							    var keystroke    = readlineSync.question(' read char> ') ;
+		  var readlineSync = require('readline-sync') ;
+		  var keystroke    = readlineSync.question(' read char> ') ;
                   var value        = keystroke.charCodeAt(0);
 
                   writeRegister(value, indexComp, indexElem);
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
               }
 
-              if(firs_time == true){
-                document.getElementById('enter_keyboard').scrollIntoView();
+              if (first_time == true) {
+                  document.getElementById('enter_keyboard').scrollIntoView();
               }
 
                mutexRead = true;
                app._data.enter = false;
                console_log(mutexRead);
-                if(newExecution == true){
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
+
+               if (newExecution == true) {
+                   app._data.keyboard = "";
+                   consoleMutex = false;
+                   mutexRead = false;
+                   app._data.enter = null;
     
-    		  				show_notification('The data has been uploaded', 'info') ;
+    		   show_notification('The data has been uploaded', 'info') ;
     
-                  if (runExecution == false){
-                      app.executeProgram();
-                  }
+                   if (runExecution == false){
+                       app.executeProgram();
+                   }
     
-                  return;
+                   return;
                 }
 
                 if(consoleMutex == false){
@@ -6810,7 +6953,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                   mutexRead = false;
                   app._data.enter = null;
     
-    		  				show_notification('The data has been uploaded', 'info') ;
+   		  show_notification('The data has been uploaded', 'info') ;
     
                   console_log(mutexRead);
     
