@@ -142,7 +142,7 @@
        ret = creator.assembly_compile(assembly) ;
        if (ret.status !== "ok")
        {
-           show_error("[Compiler] Error at token " + ret.tokenIndex + " (" + ret.token + ").\n" +
+           show_error("[Compiler] Error at line " + ret.line + " (" + ret.token + ").\n" +
                       "[Compiler] " + ret.msg + "\n") ;
            return -1 ;
        }
