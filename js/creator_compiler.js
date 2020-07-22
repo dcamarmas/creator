@@ -390,6 +390,7 @@ function get_token()
         while ( (",()[]{}:#\t\n ".includes(assembly.charAt(index)) == false) && (index < assembly.length) ) {
                 index++;
         }
+        if (assembly.charAt(index) == "\n") nEnters++ ;
 
         var res = assembly.substring(tokenIndex, index) ;
         if (":)]}".includes( assembly.charAt(index) )) {
@@ -514,9 +515,9 @@ function next_token()
 
         while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
         {
-           if (assembly.charAt(index) == "\n") nEnters++ ;
            index++;
         }
+        if (assembly.charAt(index) == "\n") nEnters++ ;
 
         while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) )) && (index < assembly.length))
         {
