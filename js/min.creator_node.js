@@ -309,42 +309,34 @@ function packCompileError( err_code, err_msg, err_ti, err_bgcolor )
 function first_token()
 {
         var assembly = code_assembly ;
-        var index = tokenIndex;
+        var index    = tokenIndex;
 
-        while ((
-                 (assembly.charAt(index) == ':') ||
-                 (assembly.charAt(index) == '\t') ||
-                 (assembly.charAt(index) == '\n') ||
-                 (assembly.charAt(index) == ' ') ||
-                 (assembly.charAt(index) == '\r') ||
-                 (assembly.charAt(index) == '#')) && (index < assembly.length))
+        // check that there are elements to read
+        if (index >= assembly.length) {
+            return null;
+        }
+
+        // skip till first token:
+        while ( (":\t\n \r#".includes(assembly.charAt(index))) && (index < assembly.length) ) 
         {
-          while(((assembly.charAt(index) == ':') ||
-                 (assembly.charAt(index) == '\t') ||
-                 (assembly.charAt(index) == '\n') ||
-                 (assembly.charAt(index) == ' ') ||
-                 (assembly.charAt(index) == '\r')) && (index < assembly.length))
-          {
-          	if (assembly.charAt(index) == "\n") nEnters++ ;
-            index++;
-          }
-
-          if (assembly.charAt(index) == '#')
-          {
-              while ((assembly.charAt(index) != '\n') && (index < assembly.length)) {
+              // skip <spaces>
+              while ( (":\t\n \r".includes(assembly.charAt(index))) && (index < assembly.length) ) {
+                      if (assembly.charAt(index) == "\n") nEnters++ ;
                       index++;
               }
 
-              while (((assembly.charAt(index) == ':') ||
-                      (assembly.charAt(index) == '\t') ||
-                      (assembly.charAt(index) == '\n') ||
-                      (assembly.charAt(index) == ' ') ||
-                      (assembly.charAt(index) == '\r')) && (index < assembly.length))
+              // skip line comment #...
+              if (assembly.charAt(index) == '#')
               {
-                if (assembly.charAt(index) == "\n") nEnters++ ;
-                index++;
+                  while ((assembly.charAt(index) != '\n') && (index < assembly.length)) {
+                          index++;
+                  }
+
+                  while ( (":\t\n \r".includes(assembly.charAt(index))) && (index < assembly.length) ) {
+                          if (assembly.charAt(index) == "\n") nEnters++ ;
+                          index++;
+                  }
               }
-          }
         }
 
         tokenIndex = index;
@@ -356,11 +348,12 @@ function get_token()
         var assembly = code_assembly ;
         var index    = tokenIndex;
 
+        // check that there are elements to read
         if (index >= assembly.length) {
             return null;
         }
 
-        // '...'
+        // read string: '...'
         if (assembly.charAt(index) == "'") {
             index++;
             while (assembly.charAt(index) != "'" && index < assembly.length) {
@@ -372,7 +365,7 @@ function get_token()
             return assembly.substring(tokenIndex, index);
         }
 
-        // "..."
+        // read string: "..."
         if (assembly.charAt(index) == '"') {
             index++;
             while (assembly.charAt(index) != '"' && index < assembly.length) {
@@ -402,87 +395,6 @@ function get_token()
         return res;
 }
 
-/*
-function get_token_old()
-{
-        var assembly = code_assembly ;
-        var index = tokenIndex;
-
-        if (index >= assembly.length) {
-            return null;
-        }
-
-        //console_log(assembly.charAt(index));
-        //console_log(index);
-
-        if (assembly.charAt(index) == "'") {
-            index++;
-            while (assembly.charAt(index) != "'" && index < assembly.length) {
-                  if (assembly.charAt(index) == "\n") nEnters++ ;
-                  //console_log(assembly.charAt(index));
-                  //console_log(index);
-                  index++;
-            }
-            index++;
-
-            //console_log(assembly.substring(tokenIndex, index));
-            //console_log(index);
-            //console_log(assembly.substring(tokenIndex, index));
-            return assembly.substring(tokenIndex, index);
-        }
-
-        if (assembly.charAt(index) == '"') {
-            index++;
-            while (assembly.charAt(index) != '"' && index < assembly.length) {
-                  if (assembly.charAt(index) == "\n") nEnters++ ;
-                  //console_log(assembly.charAt(index));
-                  //console_log(index);
-                  index++;
-            }
-            index++;
-
-            //console_log(assembly.substring(tokenIndex, index));
-            //console_log(index);
-            //console_log(assembly.substring(tokenIndex, index));
-            return assembly.substring(tokenIndex, index);
-        }
-
-        if ((assembly.charAt(index) == '(') ||
-            (assembly.charAt(index) == '[') ||
-            (assembly.charAt(index) == '{')) {
-             index++;
-        }
-
-        while ( (assembly.charAt(index) != ',') &&
-                (assembly.charAt(index) != '(') &&
-                (assembly.charAt(index) != ')') &&
-                (assembly.charAt(index) != '[') &&
-                (assembly.charAt(index) != ']') &&
-                (assembly.charAt(index) != '{') &&
-                (assembly.charAt(index) != '}') &&
-                (assembly.charAt(index) != ':') &&
-                (assembly.charAt(index) != '#') &&
-                (assembly.charAt(index) != '\t') &&
-                (assembly.charAt(index) != '\n') &&
-                (assembly.charAt(index) != ' ') &&
-                (assembly.charAt(index) != '\r') && (index < assembly.length)) {
-          index++;
-        }
-
-        var res;
-        if (    (assembly.charAt(index) == ':') ||
-                (assembly.charAt(index) == ')') ||
-                (assembly.charAt(index) == ']') ||
-                (assembly.charAt(index) == '}')) {
-            res = assembly.substring(tokenIndex, index) + assembly.charAt(index);
-        }
-        else{
-            res = assembly.substring(tokenIndex, index);
-        }
-
-        return res;
-}
-*/
 
 /*Places the pointer in the start of next token*/
 function next_token()
@@ -550,109 +462,6 @@ function next_token()
         tokenIndex = index;
 }
 
-/*
-function next_token_old()
-{
-        //var assembly = textarea_assembly_editor.getValue(); // TODO: interface
-        var assembly = code_assembly ;
-        var index = tokenIndex;
-
-        console_log(assembly.charAt(index));
-        if(assembly.charAt(index) == "'"){
-          index++;
-          while(assembly.charAt(index) != "'" && index < assembly.length){
-            console_log(assembly.charAt(index));
-            index++;
-          }
-          index++;
-        }
-
-        if(assembly.charAt(index) == '"'){
-          index++;
-          while(assembly.charAt(index) != '"' && index < assembly.length){
-            console_log(assembly.charAt(index));
-            index++;
-          }
-          index++;
-        }
-
-        if((assembly.charAt(index) == '(') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == '{')){
-          index++;
-        }
-
-        while ((assembly.charAt(index) != ',') && 
-               (assembly.charAt(index) != '(') && 
-               (assembly.charAt(index) != ')') && 
-               (assembly.charAt(index) != '[') && 
-               (assembly.charAt(index) != ']') && 
-               (assembly.charAt(index) != '{') && 
-               (assembly.charAt(index) != '}') && 
-               (assembly.charAt(index) != ':') && 
-               (assembly.charAt(index) != '#') && 
-               (assembly.charAt(index) != '\t') && 
-               (assembly.charAt(index) != '\n') && 
-               (assembly.charAt(index) != ' ') && 
-               (assembly.charAt(index) != '\r') && (index < assembly.length)){
-          index++;
-        }
-
-        while(((assembly.charAt(index) == ',') || 
-               (assembly.charAt(index) == '(') || 
-               (assembly.charAt(index) ==')') || 
-               (assembly.charAt(index) == '[') || 
-               (assembly.charAt(index) == ']') || 
-               (assembly.charAt(index) == '{') || 
-               (assembly.charAt(index) == '}') || 
-               (assembly.charAt(index) == ':') || 
-               (assembly.charAt(index) == '\t') || 
-               (assembly.charAt(index) == '\n') || 
-               (assembly.charAt(index) == ' ') || 
-               (assembly.charAt(index) == '\r') || 
-               (assembly.charAt(index) == '#')) && (index < assembly.length)){
-
-          while(((assembly.charAt(index) ==',') || 
-               (assembly.charAt(index) ==')') || 
-               (assembly.charAt(index) == ']') || 
-               (assembly.charAt(index) == '}') || 
-               (assembly.charAt(index) == ':') || 
-               (assembly.charAt(index) == '\t') || 
-               (assembly.charAt(index) == '\n') || 
-               (assembly.charAt(index) == ' ') || 
-               (assembly.charAt(index) == '\r')) && (index < assembly.length))
-          {
-            index++;
-          }
-
-          if((assembly.charAt(index) =='(') || 
-               (assembly.charAt(index) == '[') || 
-               (assembly.charAt(index) == '{')){
-            break;
-          }
-
-          if(assembly.charAt(index) == '#'){
-            while((assembly.charAt(index) != '\n') && (index < assembly.length)){
-              index++;
-            }
-
-            while ( ((assembly.charAt(index) == '(') || 
-                     (assembly.charAt(index) ==')') || 
-                     (assembly.charAt(index) == '[') || 
-                     (assembly.charAt(index) == ']') || 
-                     (assembly.charAt(index) == '{') || 
-                     (assembly.charAt(index) == '}') || 
-                     (assembly.charAt(index) == ':') || 
-                     (assembly.charAt(index) == '\t') || 
-                     (assembly.charAt(index) == '\n') || 
-                     (assembly.charAt(index) == ' ') || 
-                     (assembly.charAt(index) == '\r')) && (index < assembly.length))
-            {
-              index++;
-            }
-          }
-        }
-        tokenIndex = index;
-}
-*/
 
 /*Compile assembly code*/
 function assembly_compiler()
