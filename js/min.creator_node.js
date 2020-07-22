@@ -325,6 +325,7 @@ function first_token()
                  (assembly.charAt(index) == ' ') ||
                  (assembly.charAt(index) == '\r')) && (index < assembly.length))
           {
+          	if (assembly.charAt(index) == "\n") nEnters++ ;
             index++;
           }
 
@@ -340,7 +341,8 @@ function first_token()
                       (assembly.charAt(index) == ' ') ||
                       (assembly.charAt(index) == '\r')) && (index < assembly.length))
               {
-                   index++;
+                if (assembly.charAt(index) == "\n") nEnters++ ;
+                index++;
               }
           }
         }
@@ -362,7 +364,7 @@ function get_token()
         if (assembly.charAt(index) == "'") {
             index++;
             while (assembly.charAt(index) != "'" && index < assembly.length) {
-                  if (assembly.charAt(index) == "\n") nEnters++ ;
+                  //if (assembly.charAt(index) == "\n") nEnters++ ;
                   index++;
             }
             index++;
@@ -374,7 +376,7 @@ function get_token()
         if (assembly.charAt(index) == '"') {
             index++;
             while (assembly.charAt(index) != '"' && index < assembly.length) {
-                  if (assembly.charAt(index) == "\n") nEnters++ ;
+                  //if (assembly.charAt(index) == "\n") nEnters++ ;
                   index++;
             }
             index++;
@@ -390,7 +392,7 @@ function get_token()
         while ( (",()[]{}:#\t\n ".includes(assembly.charAt(index)) == false) && (index < assembly.length) ) {
                 index++;
         }
-        if (assembly.charAt(index) == "\n") nEnters++ ;
+        //if (assembly.charAt(index) == "\n") nEnters++ ;
 
         var res = assembly.substring(tokenIndex, index) ;
         if (":)]}".includes( assembly.charAt(index) )) {
@@ -517,7 +519,7 @@ function next_token()
         {
            index++;
         }
-        if (assembly.charAt(index) == "\n") nEnters++ ;
+        //if (assembly.charAt(index) == "\n") nEnters++ ;
 
         while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) )) && (index < assembly.length))
         {
@@ -676,6 +678,8 @@ function assembly_compiler()
             data = [];
             executionInit = 1;
             mutexRead = false;
+
+            nEnters = 0;
 
             if(update_binary.instructions_binary != null){
               for(var i = 0; i < update_binary.instructions_binary.length; i++){
@@ -952,7 +956,8 @@ function assembly_compiler()
                   if(exit == 0 && isNaN(instructionParts[j]) == true){
                    //tokenIndex = 0;
                    //nEnters = 0 ;
-                    tokenIndex=pending_instructions[i].line;
+                    //tokenIndex=pending_instructions[i].line;
+                    nEnters=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
@@ -1017,7 +1022,8 @@ function assembly_compiler()
                   if(exit == 0){
                     //tokenIndex = 0;
                     //nEnters = 0 ;
-                    tokenIndex=pending_instructions[i].line;
+                    //tokenIndex=pending_instructions[i].line;
+                    nEnters=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
@@ -1077,7 +1083,8 @@ function assembly_compiler()
                   if(exit == 0){
                     //tokenIndex = 0;
                     //nEnters = 0 ;
-                    tokenIndex=pending_instructions[i].line;
+                    //tokenIndex=pending_instructions[i].line;
+                    nEnters=pending_instructions[i].line;
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
@@ -4114,7 +4121,8 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
         console_log(bin2hex(binary));
 
       //pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: textarea_assembly_editor.posFromIndex(tokenIndex).line}); //TODO: revisar linea
-        pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: line}); //TODO: line->ti?
+      //pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: line}); //TODO: line->ti?
+      pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: nEnters});
 
         if(pending == false){
           instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
