@@ -300,6 +300,7 @@ function packCompileError( err_code, err_msg, err_ti, err_bgcolor )
   ret.type       = err_ti;
   ret.bgcolor    = err_bgcolor;
   ret.tokenIndex = tokenIndex ;
+  ret.line       = nEnters ;
 
   return ret ;
 }
