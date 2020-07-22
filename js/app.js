@@ -2902,7 +2902,9 @@ try
             hide_loading();
 
             if (ret.type == "error") {
-              app.compileError(ret.errorcode, ret.token, textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
+                app.compileError(ret.errorcode, 
+				 ret.token, 
+				 textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
             }
             else if (ret.type == "warning") {
                 show_notification(ret.token, ret.bgcolor) ;
