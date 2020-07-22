@@ -1660,7 +1660,7 @@ function writeStackLimit ( stackLimit )
 }
 
 /*Syscall*/
-function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_time)
+function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_time)
 {
 	  var draw = {
 	    space: [] ,
@@ -1750,15 +1750,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                 // CL
                 if (typeof app === "undefined") 
                 {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $> ') ;
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' $> ') ;
                     var value        = parseInt(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(firs_time == true){
+                if(first_time == true){
 	                document.getElementById('enter_keyboard').scrollIntoView();
 	              }
 
@@ -1816,15 +1816,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                 // CL
                 if (typeof app === "undefined") 
                 {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $> ') ;
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' $> ') ;
                     var value        = parseFloat(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(firs_time == true){
+                if(first_time == true){
 	                document.getElementById('enter_keyboard').scrollIntoView();
 	              }
 
@@ -1880,15 +1880,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                 // CL
                 if (typeof app === "undefined") 
                 {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $>  ') ;
+		    var readlineSync = require('readline-sync') ;
+		    var keystroke    = readlineSync.question(' $>  ') ;
                     var value        = parseFloat(keystroke) ;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(firs_time == true){
+                if(first_time == true){
 	                document.getElementById('enter_keyboard').scrollIntoView();
 	              }
 
@@ -1946,8 +1946,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                // CL
               if (typeof app === "undefined") 
               {
-							    var readlineSync = require('readline-sync') ;
-							    keystroke        = readlineSync.question(' $> ') ;
+		    var readlineSync = require('readline-sync') ;
+		    keystroke        = readlineSync.question(' $> ') ;
 
                   var value = "";
                   for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
@@ -1967,7 +1967,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
               }
 
-              if(firs_time == true){
+              if(first_time == true){
                 document.getElementById('enter_keyboard').scrollIntoView();
               }
 
@@ -2091,34 +2091,35 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
               // CL
               if (typeof app === "undefined") 
               {
-							    var readlineSync = require('readline-sync') ;
-							    var keystroke    = readlineSync.question(' read char> ') ;
+		  var readlineSync = require('readline-sync') ;
+		  var keystroke    = readlineSync.question(' read char> ') ;
                   var value        = keystroke.charCodeAt(0);
 
                   writeRegister(value, indexComp, indexElem);
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
               }
 
-              if(firs_time == true){
-                document.getElementById('enter_keyboard').scrollIntoView();
+              if (first_time == true) {
+                  document.getElementById('enter_keyboard').scrollIntoView();
               }
 
                mutexRead = true;
                app._data.enter = false;
                console_log(mutexRead);
-                if(newExecution == true){
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
+
+               if (newExecution == true) {
+                   app._data.keyboard = "";
+                   consoleMutex = false;
+                   mutexRead = false;
+                   app._data.enter = null;
     
-    		  				show_notification('The data has been uploaded', 'info') ;
+    		   show_notification('The data has been uploaded', 'info') ;
     
-                  if (runExecution == false){
-                      app.executeProgram();
-                  }
+                   if (runExecution == false){
+                       app.executeProgram();
+                   }
     
-                  return;
+                   return;
                 }
 
                 if(consoleMutex == false){
@@ -2132,7 +2133,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, firs_ti
                   mutexRead = false;
                   app._data.enter = null;
     
-    		  				show_notification('The data has been uploaded', 'info') ;
+   		  show_notification('The data has been uploaded', 'info') ;
     
                   console_log(mutexRead);
     
