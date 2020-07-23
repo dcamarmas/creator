@@ -14,7 +14,7 @@ do
 done
 
 echo " MIPS common errors:"
-MIPS_TEST="1 2"
+MIPS_TEST="1 2 3 4 5 6 7 8 9 10 11"
 for I in $MIPS_TEST;
 do
   echo " * ./MIPS/error/error$I... "
