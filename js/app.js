@@ -759,7 +759,7 @@ try
         architecture = bigInt_deserialize(auxArchitecture);
 
         app._data.architecture = architecture;
-        app._data.assembly_code = localStorage.getItem("assembly_copy");
+        code_assembly = localStorage.getItem("assembly_copy");
         //textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
 
         for (var i = 0; i < app._data.arch_available.length; i++) {
@@ -3516,7 +3516,7 @@ try
       executeProgram ( but )
       {
         app._data.runExecution = true;
-        this.runExecution = false;
+        app._data.runExecution = false;
         runProgram=true;
 
         if (instructions.length == 0){

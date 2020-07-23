@@ -100,7 +100,7 @@
    //
 
    var show_success = function ( msg ) { if (false == argv.quiet) console.log(msg.success) ; }
-   var show_error   = function ( msg ) { if (false == argv.quiet) console.log(msg.error) ; }
+   var show_error   = function ( msg ) {                          console.log(msg.error) ; }
 
    var limit_n_instructions = parseInt(argv.maxins) ;
 
