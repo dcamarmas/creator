@@ -1858,20 +1858,48 @@
           </div>
 
           <!-- Compile error -->
-          <b-modal  id = "modalAssemblyError" title = "Assembly Code Error" ref="errorAssembly" hide-footer>
+          <b-modal  id="modalAssemblyError" title="Assembly Code Error" ref="errorAssembly" hide-footer>
             <div style="padding: 3%; background: #EF9A9A;">
-              <h6>...</h6>
-              <h6>  {{modalAssemblyError.code1}}</h6>
-              <h6>* {{modalAssemblyError.code2}}</h6>
-              <h6>  {{modalAssemblyError.code3}}</h6>
-              <h6>...</h6>
+
+              <h6 class="text-monospace">
+                   <b-container>
+                   <b-row>
+                   <b-col cols="1">&nbsp;</b-col>
+                   <b-col cols="1">...</b-col>
+                   <b-col cols="10">&nbsp;</b-col>
+                   </b-row>
+                   <b-row>
+                   <b-col cols="1">&nbsp;</b-col>
+                   <b-col cols="1">{{app.modalAssemblyError.line1}}</b-col>
+                   <b-col cols="1">&nbsp;</b-col>
+                   <b-col cols="9">{{app.modalAssemblyError.code1}}</b-col>
+                   </b-row>
+                   <b-row>
+                   <b-col cols="1">*</b-col>
+                   <b-col cols="1">{{app.modalAssemblyError.line2}}</b-col>
+                   <b-col cols="1">&nbsp;</b-col>
+                   <b-col cols="9">{{app.modalAssemblyError.code2}}</b-col>
+                   </b-row>
+                   <b-row>
+                   <b-col cols="1">&nbsp;</b-col>
+                   <b-col cols="1">{{app.modalAssemblyError.line3}}</b-col>
+                   <b-col cols="1">&nbsp;</b-col>
+                   <b-col cols="9">{{app.modalAssemblyError.code3}}</b-col>
+                   </b-row>
+                   <b-row>
+                   <b-col cols="1">&nbsp;</b-col>
+                   <b-col cols="1">...</b-col>
+                   <b-col cols="10">&nbsp;</b-col>
+                   </b-row>
+                   </b-container>
+              </h6>
+
             </div>
             <br>
-            <h6>{{modalAssemblyError.error}}</h6>
+              <h6>{{modalAssemblyError.error}}</h6>
             <br>
           </b-modal>
         </div>
-
 
 
         <!-- Simulator view -->

@@ -28,14 +28,24 @@ function assembly_compile ( code )
 
     code_assembly = code ;
     ret = assembly_compiler() ;
-    if (ret.status == "error")
+    switch (ret.status)
     {
-        var mess = compileError[ret.errorcode] ;
-        ret.msg = mess.mess1 + ret.token + mess.mess2 ;
-    }
-    if (ret.status == "ok")
-    {
-        ret.msg = 'Compilation completed successfully' ;
+        case "error":
+             var mess = compileError[ret.errorcode] ;
+             ret.msg = mess.mess1 + ret.token + mess.mess2 ;
+             break;
+
+        case "warning":
+             ret.msg = 'warning: ' + ret.token ;
+             break;
+
+        case "ok":
+             ret.msg = 'Compilation completed successfully' ;
+             break;
+
+        default:
+             ret.msg = 'Unknow assembly compiler code :-/' ;
+             break;
     }
 
     return ret ;
