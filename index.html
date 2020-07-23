@@ -2067,7 +2067,7 @@
 
               <b-table id="inst_table" sticky-header striped small hover :items="instructions" :fields="archInstructions" 
                        class="instructions_table responsive" @row-clicked="breakPoint" 
-                       style="cursor:pointer; max-height:75vh !important;" :filter-function=filter filter=" " primary-key="Address">
+                       style="cursor:pointer; max-height:61vh !important;" :filter-function=filter filter=" " primary-key="Address">
 
                 <!-- Change the title of each column -->
                 <template v-slot:head(userInstructions)="row">
@@ -2483,7 +2483,7 @@
                 <!-- Data memory -->
                 <b-tab title="Data" active>
                   <div class="col-lg-12 col-sm-12">
-                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table" sticky-header="75vh">
+                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table" sticky-header="49vh">
                       <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
@@ -2512,7 +2512,7 @@
                 <!-- Text memory -->
                 <b-tab title="Text">
                   <div class="col-lg-12 col-sm-12">
-                    <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table  " :filter-function=filter filter=" " sticky-header="75vh">
+                    <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table  " :filter-function=filter filter=" " sticky-header="49vh">
                       <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
@@ -2534,7 +2534,7 @@
                 <!-- Stack memory -->
                 <b-tab title="Stack">
                   <div class="col-lg-12 col-sm-12">
-                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table " @row-clicked="select_stack_type" sticky-header="75vh">
+                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table " @row-clicked="select_stack_type" sticky-header="49vh">
                       <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
@@ -2591,44 +2591,46 @@
           </div>
 
           <!-- Monitor -->
+          <div class="col-xl-12 col-lg-12 col-sm-12 row" style="padding-right: 0px">
+            <div class="col-lg-6 col-sm-12 my-2 mx-0 nopadding">
+              <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
+                <div class="col-lg-1 col-sm-1">
+                  <i style="height:5vh; opacity:0.6;" class="fas fa-desktop fa-2x mb-2"></i>
+                </div>
+                <div class="col-lg-11 col-sm-11 pr-0">
+                  <b-form-textarea id="textarea_display" v-model="display" rows="5" 
+                     disabled no-resize title="Display"></b-form-textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Keyboard -->
+            <div class="col-lg-6 col-sm-12 my-2 mx-0 nopadding">
+              <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
+                <div class="col-lg-1 col-sm-1">
+                  <i style="height:5vh; opacity:0.6;" class="fa fa-keyboard fa-2x mb-2"></i>
+                </div>
+                <div class="col-lg-11 col-sm-11 pr-0">
+                  <b-form-textarea id="textarea_keyboard" 
+                     v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" 
+                     no-resize :state = "enter" title="Keyboard"></b-form-textarea>
+                </div>
+              </div>
+
+              <div class="col-lg-12 col-sm-12 row nomargin">
+                <div class="col-lg-4 col-sm-4">
+                 
+                </div>
+                <div class="col-lg-4 col-sm-4">
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleClear"><span class="fas fa-broom"></span> Clear</b-button>
+                </div>
+                <div class="col-lg-4 col-sm-4">
+                  <b-button id="enter_keyboard" class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-level-down-alt" style="transform: rotate(90deg);"></span> Enter</b-button>
+                </div>
+
+              </div>
+            </div>
           <div class="col-lg-6 col-sm-12 my-2 mx-0">
-            <div class="row col-lg-12 col-sm-12 mx-0 pl-0">
-              <div class="col-lg-1 col-sm-1">
-                <i style="height:5vh; opacity:0.6;" class="fas fa-desktop fa-2x mb-2"></i>
-              </div>
-              <div class="col-lg-11 col-sm-11 pr-0">
-                <b-form-textarea id="textarea_display" v-model="display" rows="5" 
-                   disabled no-resize title="Display"></b-form-textarea>
-              </div>
-            </div>
-          </div>
-
-          <!-- Keyboard -->
-          <div class="col-lg-6 col-sm-12 my-2 mx-0">
-            <div class="row col-lg-12 col-sm-12 mx-0 pl-0">
-              <div class="col-lg-1 col-sm-1">
-                <i style="height:5vh; opacity:0.6;" class="fa fa-keyboard fa-2x mb-2"></i>
-              </div>
-              <div class="col-lg-11 col-sm-11 pr-0">
-                <b-form-textarea id="textarea_keyboard" 
-                   v-on:input="debounce('keyboard', $event)" :value="keyboard" rows="5" 
-                   no-resize :state = "enter" title="Keyboard"></b-form-textarea>
-              </div>
-            </div>
-
-            <div class="col-lg-12 col-sm-12 row nomargin">
-              <div class="col-lg-4 col-sm-4">
-               
-              </div>
-              <div class="col-lg-4 col-sm-4">
-                <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleClear"><span class="fas fa-broom"></span> Clear</b-button>
-              </div>
-              <div class="col-lg-4 col-sm-4">
-                <b-button id="enter_keyboard" class="btn btn-outline-secondary btn-block menuGroup btn-sm" style="margin-top: 5%; float:right;" @click="consoleEnter"><span class="fas fa-level-down-alt" style="transform: rotate(90deg);"></span> Enter</b-button>
-              </div>
-
-            </div>
-          </div>
         </div>
       </template>
     </div>
