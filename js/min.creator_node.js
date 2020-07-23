@@ -119,6 +119,7 @@ var compileError = [
   { mess1: "Invalid directive: ", mess2: "" },
   { mess1: "Invalid data: ", mess2: " The data must be a number" },
   { mess1: 'The string of characters must start with "', mess2: "" },
+  { mess1: 'The string of characters must end with "', mess2: "" },
   { mess1: "Number '", mess2: "' is too big" },
   { mess1: "Number '", mess2: "' is empty" },
   { mess1: "The text segment should start with '", mess2: "'" },
@@ -1199,12 +1200,12 @@ function data_segment_compiler()
                     token = get_token();
 
                     if (token == null) {
-                        return packCompileError(23, "", 'error', "danger") ;
+                        return packCompileError(24, "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if (token.search(re) != -1) {
-                        return packCompileError(24, token, 'error', "danger") ;
+                        return packCompileError(25, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1248,11 +1249,11 @@ function data_segment_compiler()
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError(20, token, 'error', "danger") ;
                       }
 
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1264,7 +1265,7 @@ function data_segment_compiler()
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if (auxTokenString.length > 2*architecture.directives[j].size) {
-                         return packCompileError(18, token, 'error', "danger") ;
+                         return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1306,12 +1307,12 @@ function data_segment_compiler()
                   {
                     token = get_token();
                     if (token == null) {
-                        return packCompileError(23,"", 'error', "danger") ;
+                        return packCompileError(24,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if (token.search(re) != -1) {
-                        return packCompileError(24, token, 'error', "danger") ;
+                        return packCompileError(25, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1333,10 +1334,10 @@ function data_segment_compiler()
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
 
                       if (value[1].length == 0) {
-                          return packCompileError(19, token, 'error', "danger") ;
+                          return packCompileError(20, token, 'error', "danger") ;
                       }
                       if (auxTokenString.length > 2*architecture.directives[j].size) {
-                          return packCompileError(18, token, 'error', "danger") ;
+                          return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1348,7 +1349,7 @@ function data_segment_compiler()
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if (auxTokenString.length > 2*architecture.directives[j].size) {
-                          return packCompileError(18, token, 'error', "danger") ;
+                          return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1389,12 +1390,12 @@ function data_segment_compiler()
 
                     token = get_token();
                     if (token == null) {
-                        return packCompileError(23,"", 'error', "danger") ;
+                        return packCompileError(24,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if (token.search(re) != -1) {
-                        return packCompileError(24, token, 'error', "danger") ;
+                        return packCompileError(25, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1414,10 +1415,10 @@ function data_segment_compiler()
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError(20, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1429,7 +1430,7 @@ function data_segment_compiler()
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1473,12 +1474,12 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      return packCompileError(23,"", 'error', "danger") ;
+                      return packCompileError(24,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      return packCompileError(24, token, 'error', "danger") ;
+                      return packCompileError(25, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1498,10 +1499,10 @@ function data_segment_compiler()
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError(20, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1513,7 +1514,7 @@ function data_segment_compiler()
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1555,12 +1556,12 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      return packCompileError(23,"", 'error', "danger") ;
+                      return packCompileError(24,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      return packCompileError(24, token, 'error', "danger") ;
+                      return packCompileError(25, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1592,10 +1593,10 @@ function data_segment_compiler()
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError(20, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                       token = hex2float(token);
@@ -1608,7 +1609,7 @@ function data_segment_compiler()
                       auxToken = parseFloat(token, 10);
                       auxTokenString = (bin2hex(float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1652,12 +1653,12 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      return packCompileError(23,"", 'error', "danger") ;
+                      return packCompileError(24,"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      return packCompileError(24, token, 'error', "danger") ;
+                      return packCompileError(25, token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g")
@@ -1689,10 +1690,10 @@ function data_segment_compiler()
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError(20, token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                       token = hex2double(token);
@@ -1705,7 +1706,7 @@ function data_segment_compiler()
                       auxToken = parseFloat(token, 10);console_log(auxTokenString);
                       auxTokenString = (bin2hex(double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(18, token, 'error', "danger") ;
+                        return packCompileError(19, token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1756,11 +1757,21 @@ function data_segment_compiler()
                     string = token;
 
                     re = new RegExp('^"');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(17, "", 'error', "danger") ;
+		                }
                     re = new RegExp('"$');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(18, "", 'error', "danger") ;
+		                }
 
                     if(token == null){
                       break;
@@ -1952,11 +1963,21 @@ function data_segment_compiler()
                     string = token;
 
                     re = new RegExp('^"');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(17, "", 'error', "danger") ;
+		                }
                     re = new RegExp('"$');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(18, "", 'error', "danger") ;
+		                }
 
 /************************
                     re = new RegExp('(.)","(.)');
@@ -2142,7 +2163,7 @@ function data_segment_compiler()
                   console_log(label);
 
                   if(token == null){
-                    return packCompileError(23, "", 'error', "danger") ;
+                    return packCompileError(24, "", 'error', "danger") ;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
@@ -2151,7 +2172,7 @@ function data_segment_compiler()
                   }
 
                   if(parseInt(token) < 0){
-                    return packCompileError(22, token, 'error', "danger") ;
+                    return packCompileError(23, token, 'error', "danger") ;
                   }
 
                   var auxToken = parseInt(token) * architecture.directives[j].size;
@@ -2230,7 +2251,7 @@ function data_segment_compiler()
                   token = get_token();
                   console_log(token);
                   if(token == null){
-                    return packCompileError(23, "", 'error', "danger") ;
+                    return packCompileError(24, "", 'error', "danger") ;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
@@ -2239,7 +2260,7 @@ function data_segment_compiler()
                   }
 
                   if(parseInt(token) < 0){
-                    return packCompileError(22, token, 'error', "danger") ;
+                    return packCompileError(23, token, 'error', "danger") ;
                   }
 
                   console_log(align);
