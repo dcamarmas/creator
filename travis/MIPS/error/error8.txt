@@ -3,14 +3,14 @@
 # Creator (https://creatorsim.github.io/creator/)
 #
 
-# Error1: non-open string (..."")
+# Error8: illegal directive --> .bytes
 
 .data
-        str: .asciiz Bad string"
-	max: .byte 10
+        str: .asciiz "Good string"
+	max: .bytes a
 
 .text
-	main: 		lb $t0 max
+	main: 		la $t2 max
 			li $t1 0
 			move $a0 $zero
 	while:		bge $t1 $t0 end_while
