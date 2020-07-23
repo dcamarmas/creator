@@ -8,7 +8,7 @@
     "terser": "^4.8.0"
   },
   "scripts": {
-    "test-creator-node": "./mk_travis.sh",
+    "test-creator-node": "./travis_run.sh",
     "build-creator-web": "./mk_min.sh",
     "build-creator-node": "./mk_min.sh"
   },
