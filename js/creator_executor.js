@@ -1750,12 +1750,12 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 // CL
                 if (typeof app === "undefined") 
                 {
-		    var readlineSync = require('readline-sync') ;
-		    var keystroke    = readlineSync.question(' $> ') ;
-                    var value        = parseInt(keystroke) ;
+          		    var readlineSync = require('readline-sync') ;
+          		    var keystroke    = readlineSync.question(' $> ') ;
+                  var value        = parseInt(keystroke) ;
 
-                    writeRegister(value, indexComp, indexElem);
-                    return packExecute(false, 'The data has been uploaded', 'danger', null);
+                  writeRegister(value, indexComp, indexElem);
+                  return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
                 if(first_time == true){
@@ -1775,7 +1775,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
     
     	            	show_notification('The data has been uploaded', 'info') ;
     
-                    if (runExecution == false) {
+                    if (runProgram == false) {
                         app.executeProgram();
                     }
     
@@ -1804,7 +1804,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                      executionIndex = -2;
                      return packExecute(true, 'The execution of the program has finished', 'success', null);
                   }
-                  else if (runExecution == false) {
+                  else if (runProgram == false) {
                            app.executeProgram();
                   }
                 }
@@ -1839,7 +1839,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
     
     		  				show_notification('The data has been uploaded', 'info') ;
     
-                  if (runExecution == false){
+                  if (runProgram == false){
                       app.executeProgram();
                   }
     
@@ -1868,7 +1868,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                     executionIndex = -2;
                     return packExecute(true, 'The execution of the program has finished', 'success', null);
                   }
-                  else if (runExecution == false){
+                  else if (runProgram == false){
                            app.executeProgram();
                   }
                 }
@@ -1903,7 +1903,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
     
     		  				show_notification('The data has been uploaded', 'info') ;
     
-                  if (runExecution == false){
+                  if (runProgram == false){
                       app.executeProgram();
                   }
     
@@ -1932,7 +1932,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                     executionIndex = -2;
                     return packExecute(true, 'The execution of the program has finished', 'success', null);
                   }
-                  else if (runExecution == false){
+                  else if (runProgram == false){
                            app.executeProgram();
                   }
     
@@ -1986,7 +1986,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                    if (window.document)
     	 	   					show_notification('The data has been uploaded', 'info') ;
     
-                   if (runExecution == false){
+                   if (runProgram == false){
                        if (typeof app !== "undefined")
                            app.executeProgram();
                    }
@@ -2038,7 +2038,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       executionIndex = -2;
                       return packExecute(true, 'The execution of the program has finished', 'success', null);
                   }
-                  else if (runExecution == false){
+                  else if (runProgram == false){
                     app.executeProgram();
                   }
                 }
@@ -2115,7 +2115,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
     
     		   show_notification('The data has been uploaded', 'info') ;
     
-                   if (runExecution == false){
+                   if (runProgram == false){
                        app.executeProgram();
                    }
     
@@ -2145,7 +2145,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                     executionIndex = -2;
                     return packExecute(true, 'The execution of the program has finished', 'success', null);
                   }
-                  else if (runExecution == false) {
+                  else if (runProgram == false) {
                            app.executeProgram();
                   }
                 }
@@ -2356,7 +2356,7 @@ show_notification('The data has been uploaded', 'info') ;
         executionIndex = -2;
         return packExecute(true, 'The execution of the program has finished', 'success', null);
     }
-    else if (runExecution == false){
+    else if (runProgram == false){
              if (typeof app !== "undefined")
                  app.executeProgram();
     }
