@@ -1,0 +1,203 @@
+/*
+ *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+function get_token_old()
+{
+        var assembly = code_assembly ;
+        var index = tokenIndex;
+
+        if (index >= assembly.length) {
+            return null;
+        }
+
+        //console_log(assembly.charAt(index));
+        //console_log(index);
+
+        if (assembly.charAt(index) == "'") {
+            index++;
+            while (assembly.charAt(index) != "'" && index < assembly.length) {
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
+                  //console_log(assembly.charAt(index));
+                  //console_log(index);
+                  index++;
+            }
+            index++;
+
+            //console_log(assembly.substring(tokenIndex, index));
+            //console_log(index);
+            //console_log(assembly.substring(tokenIndex, index));
+            return assembly.substring(tokenIndex, index);
+        }
+
+        if (assembly.charAt(index) == '"') {
+            index++;
+            while (assembly.charAt(index) != '"' && index < assembly.length) {
+                  if (assembly.charAt(index) == "\n") nEnters++ ;
+                  //console_log(assembly.charAt(index));
+                  //console_log(index);
+                  index++;
+            }
+            index++;
+
+            //console_log(assembly.substring(tokenIndex, index));
+            //console_log(index);
+            //console_log(assembly.substring(tokenIndex, index));
+            return assembly.substring(tokenIndex, index);
+        }
+
+        if ((assembly.charAt(index) == '(') ||
+            (assembly.charAt(index) == '[') ||
+            (assembly.charAt(index) == '{')) {
+             index++;
+        }
+
+        while ( (assembly.charAt(index) != ',') &&
+                (assembly.charAt(index) != '(') &&
+                (assembly.charAt(index) != ')') &&
+                (assembly.charAt(index) != '[') &&
+                (assembly.charAt(index) != ']') &&
+                (assembly.charAt(index) != '{') &&
+                (assembly.charAt(index) != '}') &&
+                (assembly.charAt(index) != ':') &&
+                (assembly.charAt(index) != '#') &&
+                (assembly.charAt(index) != '\t') &&
+                (assembly.charAt(index) != '\n') &&
+                (assembly.charAt(index) != ' ') &&
+                (assembly.charAt(index) != '\r') && (index < assembly.length)) {
+          index++;
+        }
+
+        var res;
+        if (    (assembly.charAt(index) == ':') ||
+                (assembly.charAt(index) == ')') ||
+                (assembly.charAt(index) == ']') ||
+                (assembly.charAt(index) == '}')) {
+            res = assembly.substring(tokenIndex, index) + assembly.charAt(index);
+        }
+        else{
+            res = assembly.substring(tokenIndex, index);
+        }
+
+        return res;
+}
+
+function next_token_old()
+{
+        //var assembly = textarea_assembly_editor.getValue(); // TODO: interface
+        var assembly = code_assembly ;
+        var index = tokenIndex;
+
+        console_log(assembly.charAt(index));
+        if(assembly.charAt(index) == "'"){
+          index++;
+          while(assembly.charAt(index) != "'" && index < assembly.length){
+            console_log(assembly.charAt(index));
+            index++;
+          }
+          index++;
+        }
+
+        if(assembly.charAt(index) == '"'){
+          index++;
+          while(assembly.charAt(index) != '"' && index < assembly.length){
+            console_log(assembly.charAt(index));
+            index++;
+          }
+          index++;
+        }
+
+        if((assembly.charAt(index) == '(') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == '{')){
+          index++;
+        }
+
+        while ((assembly.charAt(index) != ',') && 
+               (assembly.charAt(index) != '(') && 
+               (assembly.charAt(index) != ')') && 
+               (assembly.charAt(index) != '[') && 
+               (assembly.charAt(index) != ']') && 
+               (assembly.charAt(index) != '{') && 
+               (assembly.charAt(index) != '}') && 
+               (assembly.charAt(index) != ':') && 
+               (assembly.charAt(index) != '#') && 
+               (assembly.charAt(index) != '\t') && 
+               (assembly.charAt(index) != '\n') && 
+               (assembly.charAt(index) != ' ') && 
+               (assembly.charAt(index) != '\r') && (index < assembly.length)){
+          index++;
+        }
+
+        while(((assembly.charAt(index) == ',') || 
+               (assembly.charAt(index) == '(') || 
+               (assembly.charAt(index) ==')') || 
+               (assembly.charAt(index) == '[') || 
+               (assembly.charAt(index) == ']') || 
+               (assembly.charAt(index) == '{') || 
+               (assembly.charAt(index) == '}') || 
+               (assembly.charAt(index) == ':') || 
+               (assembly.charAt(index) == '\t') || 
+               (assembly.charAt(index) == '\n') || 
+               (assembly.charAt(index) == ' ') || 
+               (assembly.charAt(index) == '\r') || 
+               (assembly.charAt(index) == '#')) && (index < assembly.length)){
+
+          while(((assembly.charAt(index) ==',') || 
+               (assembly.charAt(index) ==')') || 
+               (assembly.charAt(index) == ']') || 
+               (assembly.charAt(index) == '}') || 
+               (assembly.charAt(index) == ':') || 
+               (assembly.charAt(index) == '\t') || 
+               (assembly.charAt(index) == '\n') || 
+               (assembly.charAt(index) == ' ') || 
+               (assembly.charAt(index) == '\r')) && (index < assembly.length))
+          {
+            index++;
+          }
+
+          if((assembly.charAt(index) =='(') || 
+               (assembly.charAt(index) == '[') || 
+               (assembly.charAt(index) == '{')){
+            break;
+          }
+
+          if(assembly.charAt(index) == '#'){
+            while((assembly.charAt(index) != '\n') && (index < assembly.length)){
+              index++;
+            }
+
+            while ( ((assembly.charAt(index) == '(') || 
+                     (assembly.charAt(index) ==')') || 
+                     (assembly.charAt(index) == '[') || 
+                     (assembly.charAt(index) == ']') || 
+                     (assembly.charAt(index) == '{') || 
+                     (assembly.charAt(index) == '}') || 
+                     (assembly.charAt(index) == ':') || 
+                     (assembly.charAt(index) == '\t') || 
+                     (assembly.charAt(index) == '\n') || 
+                     (assembly.charAt(index) == ' ') || 
+                     (assembly.charAt(index) == '\r')) && (index < assembly.length))
+            {
+              index++;
+            }
+          }
+        }
+        tokenIndex = index;
+}
+

@@ -114,11 +114,11 @@ var compileError = [
   { mess1: "This field '", mess2: "' must start with a '('" },
   { mess1: "This field '", mess2: "' must end with a ')'" },
   { mess1: "This field is too small to encode in binary '", mess2: "" },
-  { mess1: "This field is too small to encode in binary '", mess2: "" },
   { mess1: "Incorrect pseudoinstruction definition ", mess2: "" },
   { mess1: "Invalid directive: ", mess2: "" },
   { mess1: "Invalid data: ", mess2: " The data must be a number" },
   { mess1: 'The string of characters must start with "', mess2: "" },
+  { mess1: 'The string of characters must end with "', mess2: "" },
   { mess1: "Number '", mess2: "' is too big" },
   { mess1: "Number '", mess2: "' is empty" },
   { mess1: "The text segment should start with '", mess2: "'" },
@@ -309,42 +309,34 @@ function packCompileError( err_code, err_msg, err_ti, err_bgcolor )
 function first_token()
 {
         var assembly = code_assembly ;
-        var index = tokenIndex;
+        var index    = tokenIndex;
 
-        while ((
-                 (assembly.charAt(index) == ':') ||
-                 (assembly.charAt(index) == '\t') ||
-                 (assembly.charAt(index) == '\n') ||
-                 (assembly.charAt(index) == ' ') ||
-                 (assembly.charAt(index) == '\r') ||
-                 (assembly.charAt(index) == '#')) && (index < assembly.length))
+        // check that there are elements to read
+        if (index >= assembly.length) {
+            return null;
+        }
+
+        // skip till first token:
+        while ( (":\t\n \r#".includes(assembly.charAt(index))) && (index < assembly.length) ) 
         {
-          while(((assembly.charAt(index) == ':') ||
-                 (assembly.charAt(index) == '\t') ||
-                 (assembly.charAt(index) == '\n') ||
-                 (assembly.charAt(index) == ' ') ||
-                 (assembly.charAt(index) == '\r')) && (index < assembly.length))
-          {
-          	if (assembly.charAt(index) == "\n") nEnters++ ;
-            index++;
-          }
-
-          if (assembly.charAt(index) == '#')
-          {
-              while ((assembly.charAt(index) != '\n') && (index < assembly.length)) {
+              // skip <spaces>
+              while ( (":\t\n \r".includes(assembly.charAt(index))) && (index < assembly.length) ) {
+                      if (assembly.charAt(index) == "\n") nEnters++ ;
                       index++;
               }
 
-              while (((assembly.charAt(index) == ':') ||
-                      (assembly.charAt(index) == '\t') ||
-                      (assembly.charAt(index) == '\n') ||
-                      (assembly.charAt(index) == ' ') ||
-                      (assembly.charAt(index) == '\r')) && (index < assembly.length))
+              // skip line comment #...
+              if (assembly.charAt(index) == '#')
               {
-                if (assembly.charAt(index) == "\n") nEnters++ ;
-                index++;
+                  while ((assembly.charAt(index) != '\n') && (index < assembly.length)) {
+                          index++;
+                  }
+
+                  while ( (":\t\n \r".includes(assembly.charAt(index))) && (index < assembly.length) ) {
+                          if (assembly.charAt(index) == "\n") nEnters++ ;
+                          index++;
+                  }
               }
-          }
         }
 
         tokenIndex = index;
@@ -356,11 +348,12 @@ function get_token()
         var assembly = code_assembly ;
         var index    = tokenIndex;
 
+        // check that there are elements to read
         if (index >= assembly.length) {
             return null;
         }
 
-        // '...'
+        // read string: '...'
         if (assembly.charAt(index) == "'") {
             index++;
             while (assembly.charAt(index) != "'" && index < assembly.length) {
@@ -372,7 +365,7 @@ function get_token()
             return assembly.substring(tokenIndex, index);
         }
 
-        // "..."
+        // read string: "..."
         if (assembly.charAt(index) == '"') {
             index++;
             while (assembly.charAt(index) != '"' && index < assembly.length) {
@@ -402,87 +395,6 @@ function get_token()
         return res;
 }
 
-/*
-function get_token_old()
-{
-        var assembly = code_assembly ;
-        var index = tokenIndex;
-
-        if (index >= assembly.length) {
-            return null;
-        }
-
-        //console_log(assembly.charAt(index));
-        //console_log(index);
-
-        if (assembly.charAt(index) == "'") {
-            index++;
-            while (assembly.charAt(index) != "'" && index < assembly.length) {
-                  if (assembly.charAt(index) == "\n") nEnters++ ;
-                  //console_log(assembly.charAt(index));
-                  //console_log(index);
-                  index++;
-            }
-            index++;
-
-            //console_log(assembly.substring(tokenIndex, index));
-            //console_log(index);
-            //console_log(assembly.substring(tokenIndex, index));
-            return assembly.substring(tokenIndex, index);
-        }
-
-        if (assembly.charAt(index) == '"') {
-            index++;
-            while (assembly.charAt(index) != '"' && index < assembly.length) {
-                  if (assembly.charAt(index) == "\n") nEnters++ ;
-                  //console_log(assembly.charAt(index));
-                  //console_log(index);
-                  index++;
-            }
-            index++;
-
-            //console_log(assembly.substring(tokenIndex, index));
-            //console_log(index);
-            //console_log(assembly.substring(tokenIndex, index));
-            return assembly.substring(tokenIndex, index);
-        }
-
-        if ((assembly.charAt(index) == '(') ||
-            (assembly.charAt(index) == '[') ||
-            (assembly.charAt(index) == '{')) {
-             index++;
-        }
-
-        while ( (assembly.charAt(index) != ',') &&
-                (assembly.charAt(index) != '(') &&
-                (assembly.charAt(index) != ')') &&
-                (assembly.charAt(index) != '[') &&
-                (assembly.charAt(index) != ']') &&
-                (assembly.charAt(index) != '{') &&
-                (assembly.charAt(index) != '}') &&
-                (assembly.charAt(index) != ':') &&
-                (assembly.charAt(index) != '#') &&
-                (assembly.charAt(index) != '\t') &&
-                (assembly.charAt(index) != '\n') &&
-                (assembly.charAt(index) != ' ') &&
-                (assembly.charAt(index) != '\r') && (index < assembly.length)) {
-          index++;
-        }
-
-        var res;
-        if (    (assembly.charAt(index) == ':') ||
-                (assembly.charAt(index) == ')') ||
-                (assembly.charAt(index) == ']') ||
-                (assembly.charAt(index) == '}')) {
-            res = assembly.substring(tokenIndex, index) + assembly.charAt(index);
-        }
-        else{
-            res = assembly.substring(tokenIndex, index);
-        }
-
-        return res;
-}
-*/
 
 /*Places the pointer in the start of next token*/
 function next_token()
@@ -550,109 +462,6 @@ function next_token()
         tokenIndex = index;
 }
 
-/*
-function next_token_old()
-{
-        //var assembly = textarea_assembly_editor.getValue(); // TODO: interface
-        var assembly = code_assembly ;
-        var index = tokenIndex;
-
-        console_log(assembly.charAt(index));
-        if(assembly.charAt(index) == "'"){
-          index++;
-          while(assembly.charAt(index) != "'" && index < assembly.length){
-            console_log(assembly.charAt(index));
-            index++;
-          }
-          index++;
-        }
-
-        if(assembly.charAt(index) == '"'){
-          index++;
-          while(assembly.charAt(index) != '"' && index < assembly.length){
-            console_log(assembly.charAt(index));
-            index++;
-          }
-          index++;
-        }
-
-        if((assembly.charAt(index) == '(') || (assembly.charAt(index) == '[') || (assembly.charAt(index) == '{')){
-          index++;
-        }
-
-        while ((assembly.charAt(index) != ',') && 
-               (assembly.charAt(index) != '(') && 
-               (assembly.charAt(index) != ')') && 
-               (assembly.charAt(index) != '[') && 
-               (assembly.charAt(index) != ']') && 
-               (assembly.charAt(index) != '{') && 
-               (assembly.charAt(index) != '}') && 
-               (assembly.charAt(index) != ':') && 
-               (assembly.charAt(index) != '#') && 
-               (assembly.charAt(index) != '\t') && 
-               (assembly.charAt(index) != '\n') && 
-               (assembly.charAt(index) != ' ') && 
-               (assembly.charAt(index) != '\r') && (index < assembly.length)){
-          index++;
-        }
-
-        while(((assembly.charAt(index) == ',') || 
-               (assembly.charAt(index) == '(') || 
-               (assembly.charAt(index) ==')') || 
-               (assembly.charAt(index) == '[') || 
-               (assembly.charAt(index) == ']') || 
-               (assembly.charAt(index) == '{') || 
-               (assembly.charAt(index) == '}') || 
-               (assembly.charAt(index) == ':') || 
-               (assembly.charAt(index) == '\t') || 
-               (assembly.charAt(index) == '\n') || 
-               (assembly.charAt(index) == ' ') || 
-               (assembly.charAt(index) == '\r') || 
-               (assembly.charAt(index) == '#')) && (index < assembly.length)){
-
-          while(((assembly.charAt(index) ==',') || 
-               (assembly.charAt(index) ==')') || 
-               (assembly.charAt(index) == ']') || 
-               (assembly.charAt(index) == '}') || 
-               (assembly.charAt(index) == ':') || 
-               (assembly.charAt(index) == '\t') || 
-               (assembly.charAt(index) == '\n') || 
-               (assembly.charAt(index) == ' ') || 
-               (assembly.charAt(index) == '\r')) && (index < assembly.length))
-          {
-            index++;
-          }
-
-          if((assembly.charAt(index) =='(') || 
-               (assembly.charAt(index) == '[') || 
-               (assembly.charAt(index) == '{')){
-            break;
-          }
-
-          if(assembly.charAt(index) == '#'){
-            while((assembly.charAt(index) != '\n') && (index < assembly.length)){
-              index++;
-            }
-
-            while ( ((assembly.charAt(index) == '(') || 
-                     (assembly.charAt(index) ==')') || 
-                     (assembly.charAt(index) == '[') || 
-                     (assembly.charAt(index) == ']') || 
-                     (assembly.charAt(index) == '{') || 
-                     (assembly.charAt(index) == '}') || 
-                     (assembly.charAt(index) == ':') || 
-                     (assembly.charAt(index) == '\t') || 
-                     (assembly.charAt(index) == '\n') || 
-                     (assembly.charAt(index) == ' ') || 
-                     (assembly.charAt(index) == '\r')) && (index < assembly.length))
-            {
-              index++;
-            }
-          }
-        }
-        tokenIndex = index;
-}
-*/
 
 /*Compile assembly code*/
 function assembly_compiler()
@@ -847,7 +656,7 @@ function assembly_compiler()
                   empty = true;
                   //tokenIndex = 0;
                   //nEnters = 0 ;
-                  return packCompileError(15, token, 'error', "danger");
+                  return packCompileError(14, token, 'error', "danger");
                 }
               }
             }
@@ -1434,7 +1243,7 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
@@ -1450,7 +1259,7 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if (token.search(re) == -1) {
-                          return packCompileError(16, token, 'error', "danger") ;
+                          return packCompileError(15, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
@@ -1518,7 +1327,7 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if (value[1].search(re) == -1) {
-                         return packCompileError(16, token, 'error', "danger") ;
+                         return packCompileError(15, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
@@ -1534,7 +1343,7 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if (token.search(re) == -1) {
-                          return packCompileError(16, token, 'error', "danger") ;
+                          return packCompileError(15, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
@@ -1600,7 +1409,7 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
@@ -1615,7 +1424,7 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
@@ -1684,7 +1493,7 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
@@ -1699,7 +1508,7 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
@@ -1778,7 +1587,7 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
@@ -1794,7 +1603,7 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
                       auxToken = parseFloat(token, 10);
                       auxTokenString = (bin2hex(float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
@@ -1875,7 +1684,7 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
@@ -1891,7 +1700,7 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError(15, token, 'error', "danger") ;
                       }
                       auxToken = parseFloat(token, 10);console_log(auxTokenString);
                       auxTokenString = (bin2hex(double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
@@ -1947,11 +1756,21 @@ function data_segment_compiler()
                     string = token;
 
                     re = new RegExp('^"');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(16, "", 'error', "danger") ;
+		                }
                     re = new RegExp('"$');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(17, "", 'error', "danger") ;
+		                }
 
                     if(token == null){
                       break;
@@ -2143,11 +1962,21 @@ function data_segment_compiler()
                     string = token;
 
                     re = new RegExp('^"');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(16, "", 'error', "danger") ;
+		                }
                     re = new RegExp('"$');
-                    string = string.replace(re, "");
-                    console_log(string);
+                    if(string.search(re) != -1){
+	                    string = string.replace(re, "");
+	                    console_log(string);
+		                }
+		                else{
+		                	return packCompileError(17, "", 'error', "danger") ;
+		                }
 
 /************************
                     re = new RegExp('(.)","(.)');
@@ -2338,7 +2167,7 @@ function data_segment_compiler()
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
-                    return packCompileError(16, token, 'error', "danger") ;
+                    return packCompileError(15, token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
@@ -2426,7 +2255,7 @@ function data_segment_compiler()
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
-                    return packCompileError(16, token, 'error', "danger") ;
+                    return packCompileError(15, token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
@@ -2478,9 +2307,9 @@ function data_compiler(value, size, dataLabel, DefValue, type)
 
 
         for(var i = 0; i < (value.length/2); i++)
-	{
+				{
           if ((data_address % align) != 0 && i == 0 && align != 0)
-	  {
+	  				{
             while((data_address % align) != 0){
               if(data_address % 4 == 0){
                 memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: type});
@@ -2760,7 +2589,7 @@ function code_segment_compiler()
                     extern = [];
                     memory[memory_hash[2]] = [];
                     data = [];
-                    ret = packCompileError(26, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 'error', "danger") ;
+                    ret = packCompileError(25, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 'error', "danger") ;
 
                     return ret;
                   }
@@ -2824,7 +2653,7 @@ function code_segment_compiler()
               extern = [];
               memory[memory_hash[2]] = [];
               data = [];
-              ret = packCompileError(25, "", 'error', "danger") ;
+              ret = packCompileError(24, "", 'error', "danger") ;
               return ret;
             }
 
@@ -3058,7 +2887,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
         //return -2;
         console_log("AQUI1");
-        return packCompileError(14, "", 'error', "danger") ;
+        return packCompileError(13, "", 'error', "danger") ;
       }
 
       console_log(instructionParts);
@@ -4494,7 +4323,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           if(error == true){
             console_log("Error pseudo");
             //return -2;
-            //return packCompileError(14, "Error pseudoinstruction", 'error', "danger") ;
+            //return packCompileError(13, "Error pseudoinstruction", 'error', "danger") ;
             return ret;
           }
           console_log("Fin pseudo");
@@ -4504,7 +4333,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           if (e instanceof SyntaxError) {
             //return -2;
             console_log("AQUI2");
-            return packCompileError(14, "", 'error', "danger") ;
+            return packCompileError(13, "", 'error', "danger") ;
           }
         }
       }
