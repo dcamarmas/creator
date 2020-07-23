@@ -3,14 +3,14 @@
 # Creator (https://creatorsim.github.io/creator/)
 #
 
-# Error2: illegal instruction lx
+# Error2: non-closed string ("...)
 
 .data
-        str: .asciiz "Good string"
+        str: .asciiz "Bad string
 	max: .byte 10
 
 .text
-	main: 		lx $t0 max
+	main: 		lb $t0 max
 			li $t1 0
 			move $a0 $zero
 	while:		bge $t1 $t0 end_while
@@ -19,6 +19,3 @@
 			b while
 	end_while: 	li $v0 1
 		        syscall	#print_int
-
-			
-		
