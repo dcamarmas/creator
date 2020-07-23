@@ -3516,7 +3516,7 @@ try
       executeProgram ( but )
       {
         app._data.runExecution = true;
-        this.runExecution = false;
+        app._data.runExecution = false;
         runProgram=true;
 
         if (instructions.length == 0){
