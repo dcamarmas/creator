@@ -66,7 +66,7 @@ function executeInstruction ( )
       for (var i = 0; i < instructions.length; i++) {
         if (instructions[i].Label == "main") {
             //draw.success.push(executionIndex) ;
-            architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 16);
+            architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
             executionInit = 0;
             break;
         }
@@ -182,7 +182,6 @@ function executeInstruction ( )
 
     /*Increase PC*/
     architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * 4,10) ;
-
     console_log(auxDef);
 
     // preload
