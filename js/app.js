@@ -615,40 +615,43 @@ try
 
       /*Screen change*/
       change_UI_mode(e) {
-        app._data.register_popover = '';
-      	// slow transition <any> => "architecture"
-      	if (e == "architecture")
-      	{
-      	    $(".loading").show();
-            setTimeout(function(){
-      		    app._data.creator_mode = e;
-      			  app.$forceUpdate();
-      	       $(".loading").hide();
-      	     }, 50) ;
-      	    return ;
-      	}
+        if(app._data.creator_mode != e){
+          app._data.register_popover = '';
+        	// slow transition <any> => "architecture"
+        	if (e == "architecture")
+        	{
+        	    $(".loading").show();
+              setTimeout(function(){
+        		    app._data.creator_mode = e;
+        			  app.$forceUpdate();
+        	       $(".loading").hide();
+        	     }, 50) ;
+        	    return ;
+        	}
 
-      	// fast transition <any> => <any> - "architecture"
-      	app._data.creator_mode = e;
+        	// fast transition <any> => <any> - "architecture"
+        	app._data.creator_mode = e;
 
-      	if(e == "assembly"){
-      	  setTimeout(function(){
-      	    codemirrorStart();
-      	    if(app._data.update_binary != ""){
-      	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-      	      $("#divTags").attr("class", "col-lg-2 col-sm-12");
-      	      $("#divTags").show();
-      	    }
-      	  },50);
-      	}
-      	else{
-      	  if(textarea_assembly_editor != null){
-      	    app._data.assembly_code = textarea_assembly_editor.getValue();
-      	    textarea_assembly_editor.toTextArea();
-      	  }
-      	}
+        	if(e == "assembly"){
+        	  setTimeout(function(){
+        	    codemirrorStart();
+              textarea_assembly_editor.setValue(code_assembly);
+        	    if(app._data.update_binary != ""){
+        	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+        	      $("#divTags").attr("class", "col-lg-2 col-sm-12");
+        	      $("#divTags").show();
+        	    }
+        	  },50);
+        	}
+        	else{
+        	  if(textarea_assembly_editor != null){
+        	    app._data.assembly_code = textarea_assembly_editor.getValue();
+        	    textarea_assembly_editor.toTextArea();
+        	  }
+        	}
 
-      	app.$forceUpdate();
+        	app.$forceUpdate();
+        }
       },
 
 
@@ -2902,7 +2905,14 @@ try
             hide_loading();
 
             if (ret.type == "error") {
-              app.compileError(ret.errorcode, ret.token, textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
+              /*app.compileError(ret.errorcode, 
+      				ret.token, 
+      				textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
+              */
+
+              app.compileError(ret.errorcode, 
+              ret.token, 
+              ret.line);
             }
             else if (ret.type == "warning") {
                 show_notification(ret.token, ret.bgcolor) ;
@@ -3136,25 +3146,30 @@ try
 
       /*Show error message in the compilation*/
       compileError(error, token, line) {
-        //this.change_UI_mode('assembly'); //TODO: crea dos codemirror porque tiene un start
-        this.$root.$emit('bv::show::modal', 'modalAssemblyError');
+        var code_assembly_segment = code_assembly.split('\n');
 
-        // line 1
-        this.modalAssemblyError.code1 = "";
-        if (line > 0) {
-            this.modalAssemblyError.code1 = line + "  " + textarea_assembly_editor.getLine(line - 1);
-        }
+        this.change_UI_mode('assembly');
 
-        // line 2
-        this.modalAssemblyError.code2 = (line + 1) + "  " + textarea_assembly_editor.getLine(line);
+        setTimeout(function(){ 
+          app.$root.$emit('bv::show::modal', 'modalAssemblyError');
 
-        // line 3
-        this.modalAssemblyError.code3 = "" ;
-        if (line < textarea_assembly_editor.lineCount() - 1){
-            this.modalAssemblyError.code3 = (line + 2) + "  " + textarea_assembly_editor.getLine(line + 1);
-        }
+          // line 1
+          app.modalAssemblyError.code1 = "";
+          if (line > 0) {
+              app.modalAssemblyError.code1 = line + "  " + code_assembly_segment[line - 1];
+          }
 
-        this.modalAssemblyError.error = compileError[error].mess1 + token + compileError[error].mess2;
+          // line 2
+          app.modalAssemblyError.code2 = (line + 1) + "  " + code_assembly_segment[line];
+
+          // line 3
+          app.modalAssemblyError.code3 = "" ;
+          if (line < code_assembly_segment.length - 1){
+              app.modalAssemblyError.code3 = (line + 2) + "  " + code_assembly_segment[line + 1];
+          }
+
+          app.modalAssemblyError.error = compileError[error].mess1 + token + compileError[error].mess2;
+        },75);
       },
 
       /*Simulator*/
