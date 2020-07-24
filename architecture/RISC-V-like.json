@@ -7449,7 +7449,7 @@
     },
     {
       "name": ".balign",
-      "action": "baling",
+      "action": "balign",
       "size": null
     },
     {
