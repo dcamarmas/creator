@@ -2126,24 +2126,24 @@
                 </template>
                 <template v-slot:cell(loadedInstructions)="row">
                     <h6 v-if="row.item.visible == true">{{row.item.loaded}} 
-                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == false">
                     		Current-Keyboard
                     	</b-badge>
-                    	<b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">
+                    	<b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='success'">
                     			Next
                     	</b-badge>
-                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == null">
                     		Current
                     	</b-badge>
                     </h6>
                     <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt; 
-                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == null">
                     		Current
                     	</b-badge>
-                    	<b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">
+                    	<b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='success'">
                     			Next
                     	</b-badge>
-                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == false">
                     		Current-Keyboard
                     	</b-badge>
                     </h6>
