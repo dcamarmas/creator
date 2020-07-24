@@ -72,7 +72,7 @@ var actionTypes = [
   { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
   { text: 'ASCII finished in null', value: 'ascii_null_end' },
   { text: 'Align', value: 'align' },
-  { text: 'Baling', value: 'baling'},
+  { text: 'Balign', value: 'balign'},
 ];
 
 
