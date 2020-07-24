@@ -101,34 +101,34 @@ var pending_tags = [];
 var extern = [];
 /*Error code messages*/
 var compileError = {
-			 'm0': { mess1: "Empty label", mess2: "" },
-			 'm1': { mess1: "Repeated tag: ", mess2: "" },
-			 'm2': { mess1: "Instruction '", mess2: "' not found" },
-			 'm3': { mess1: "Incorrect sintax --> ", mess2: "" },
-			 'm4': { mess1: "Register '", mess2: "' not found" },
-			 'm5': { mess1: "Immediate number '", mess2: "' is too big" },
-			 'm6': { mess1: "Immediate number '", mess2: "' is not valid" },
-			 'm7': { mess1: "Tag '", mess2: "' is not valid" },
-			 'm8': { mess1: "Address '", mess2: "' is too big" },
-			 'm9': { mess1: "Address '", mess2: "' is not valid" },
-			//'m10': { mess1: "This field '", mess2: "' must start with a '('" },
-			//'m11': { mess1: "This field '", mess2: "' must end with a ')'" },
-			'm12': { mess1: "This field is too small to encode in binary '", mess2: "" },
-			'm13': { mess1: "Incorrect pseudoinstruction definition ", mess2: "" },
-			'm14': { mess1: "Invalid directive: ", mess2: "" },
-			'm15': { mess1: "Invalid data: ", mess2: " The data must be a number" },
-			'm16': { mess1: 'The string of characters must start with "', mess2: "" },
-			'm17': { mess1: 'The string of characters must end with "', mess2: "" },
-			'm18': { mess1: "Number '", mess2: "' is too big" },
-			'm19': { mess1: "Number '", mess2: "' is empty" },
-			//'m20': { mess1: "The text segment should start with '", mess2: "'" },
-			'm21': { mess1: "The data must be aligned", mess2: "" },
-			'm22': { mess1: "The number should be positive '", mess2: "'" },
-			'm23': { mess1: "Empty directive", mess2: "" },
-			'm24': { mess1: "After the comma you should go a blank --> ", mess2: "" },
-			'm25': { mess1: "Incorrect sintax", mess2: "" },
-			'm26': { mess1: "Syntax error near line: ", mess2: "" }
-                   } ;
+	 'm0': function(ret) { return "Empty label "   + ret.token + "" },
+	 'm1': function(ret) { return "Repeated tag: " + ret.token + "" },
+	 'm2': function(ret) { return "Instruction '"  + ret.token + "' not found" },
+	 'm3': function(ret) { return "Incorrect instruction syntax --> " + ret.token + "" },
+	 'm4': function(ret) { return "Register '"     + ret.token + "' not found" },
+	 'm5': function(ret) { return "Immediate number '" + ret.token + "' is too big" },
+	 'm6': function(ret) { return "Immediate number '" + ret.token + "' is not valid" },
+	 'm7': function(ret) { return "Tag '"          + ret.token + "' is not valid" },
+	 'm8': function(ret) { return "Address '"      + ret.token + "' is too big" },
+	 'm9': function(ret) { return "Address '"      + ret.token + "' is not valid" },
+      //'m10': function(ret) { return "This field '"   + ret.token + "' must start with a '('" },
+      //'m11': function(ret) { return "This field '"   + ret.token + "' must end with a ')'" },
+	'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
+	'm13': function(ret) { return "Incorrect pseudoinstruction definition " + ret.token + "" },
+	'm14': function(ret) { return "Invalid directive: " + ret.token + "" },
+	'm15': function(ret) { return "Invalid data: " + ret.token + " The data must be a number" },
+	'm16': function(ret) { return 'The string of characters must start with "' + ret.token + "" },
+	'm17': function(ret) { return 'The string of characters must end with "'   + ret.token + "" },
+	'm18': function(ret) { return "Number '" + ret.token + "' is too big" },
+	'm19': function(ret) { return "Number '" + ret.token + "' is empty" },
+      //'m20': function(ret) { return "The text segment should start with '" + ret.token + "'" },
+	'm21': function(ret) { return "The data must be aligned"             + ret.token + "" },
+	'm22': function(ret) { return "The number should be positive '"      + ret.token + "'" },
+	'm23': function(ret) { return "Empty directive"                      + ret.token + "" },
+	'm24': function(ret) { return "After the comma you should go a blank --> " + ret.token + "" },
+	'm25': function(ret) { return "Incorrect syntax "        + ret.token + "" },
+	'm26': function(ret) { return "Syntax error near line: " + ret.token + "" }
+} ;
 /*Promise*/
 let promise;
 
@@ -297,11 +297,12 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor )
   ret.status     = "error" ;
   ret.errorcode  = err_code ;
   ret.token      = err_token ;
-  ret.msg        = compileError[err_code].mess1 + err_token + compileError[err_code].mess2 ;
   ret.type       = err_ti ;
   ret.bgcolor    = err_bgcolor ;
   ret.tokenIndex = tokenIndex ;
   ret.line       = nEnters ;
+
+  ret.msg = compileError[err_code](ret) ;
 
   return ret ;
 }

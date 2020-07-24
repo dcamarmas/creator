@@ -1,6 +1,6 @@
 [97m[39m
 [97m[Compiler] Error at line 13 (la $rd addr):[39m
-[97m[Compiler] Incorrect sintax --> la $rd addr[39m
+[97m[Compiler] Incorrect instruction syntax --> la $rd addr[39m
 [97m[Compiler] [39m
 [97m[Compiler]   12 .text[39m
 [97m[Compiler] ->13 	main: 		la t2 max[39m
