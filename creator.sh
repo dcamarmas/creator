@@ -31,11 +31,11 @@
    // arguments
 
    var creator_version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version ;
-   var welcome = function () { return '\n' +
-                                      'CREATOR\n'.help +
-                                      '-------\n'.help +
-                                      'version: '.help + creator_version.help + '\n'.help +
-                                      'website: https://creatorsim.github.io/\n'.help; } ;
+   var welcome = function() { return '\n' +
+                                     'CREATOR\n'.help +
+                                     '-------\n'.help +
+                                     'version: '.help + creator_version.help + '\n'.help +
+                                     'website: https://creatorsim.github.io/\n'.help; } ;
 
    var argv = require('yargs')
               .usage(welcome() + '\n' +
@@ -102,22 +102,24 @@
    var show_success = function ( msg ) { if (false == argv.quiet) console.log(msg.success) ; }
    var show_error   = function ( msg ) {                          console.log(msg.error) ; }
 
-   var limit_n_instructions = parseInt(argv.maxins) ;
-
+   var limit_n_ins   = parseInt(argv.maxins) ;
    var architecture  = '' ;
-   var assembly = '' ;
-   var library  = '' ;
-   var result   = '' ;
-   var ret      = null ;
+   var assembly      = '' ;
+   var library       = '' ;
+   var result        = '' ;
 
-   if ( (argv.a == "") || (argv.s == "") ) {
+   var ret       = null ;
+   var msg_error = '' ;
+
+   if ( (argv.a == "") || (argv.s == "") ) 
+   {
          console.log(welcome() + '\n' + 
                      'Usage:\n' + 
                      ' * To compile and execute an assembly file on an architecture:\n' + 
                      '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' + 
                      ' * To get more information:\n' + 
                      '   ./creator.sh -h\n')
-         return false ;
+         return process.exit(0) ;
    }
 
    try
@@ -132,8 +134,10 @@
        ret = creator.load_architecture(architecture) ;
        if (ret.status !== "ok")
        {
-           show_error("[Loader] " + ret + "\n") ;
-           return -1 ;
+           msg_error = "\n" + ret.errorcode ;
+           msg_error = msg_error.split("\n").join("\n[Loader] ") ;
+           show_error(msg_error) ;
+           return process.exit(-1) ;
        }
        else show_success("[Loader] Architecture '" + argv.a + "' loaded successfully.") ;
 
@@ -142,9 +146,12 @@
        ret = creator.assembly_compile(assembly) ;
        if (ret.status !== "ok")
        {
-           show_error("[Compiler] Error at line " + (ret.line+1) + " (" + ret.token + ").\n" +
-                      "[Compiler] " + ret.msg + "\n") ;
-           return -1 ;
+                                 msg_error  = "\nError at line " + (ret.line+1) ;
+           if (ret.token !== '') msg_error += " (" + ret.token + ")" ;
+                                 msg_error += ":\n" + ret.msg ;
+           msg_error = msg_error.split("\n").join("\n[Compiler] ") ;
+           show_error(msg_error) ;
+           return process.exit(-1) ;
        }
        else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
 
@@ -155,19 +162,23 @@
            ret = creator.load_library(library) ;
            if (ret.status !== "ok")
            {
-               show_error("[Linker] " + ret.msg + "\n") ;
-               return -1 ;
+               msg_error = "\n" + ret.msg ;
+               msg_error = msg_error.split("\n").join("\n[Linker] ") ;
+               show_error(msg_error) ;
+               return process.exit(-1) ;
            }
            else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
        }
 
        // (d) ejecutar
-       ret = creator.execute_program(limit_n_instructions) ;
+       ret = creator.execute_program(limit_n_ins) ;
        if (ret.status !== "ok")
        {
-           show_error("[Executor] Error found.\n" +
-                      "[Executor] " + ret.msg + "\n") ;
-           return -1 ;
+           msg_error = "\n[Executor] Error found." +
+                       "\n[Executor] " + ret.msg ;
+           msg_error = msg_error.split("\n").join("\n[Executor] ") ;
+           show_error(msg_error) ;
+           return process.exit(-1) ;
        }
        else show_success("[Executor] Executed successfully.") ;
 
@@ -180,7 +191,7 @@
            if (false == argv.quiet)
                 console.log("[state] ".success + ret.msg + "\n") ;
            else console.log(ret.msg) ;
-           return 1 ;
+           return process.exit(1) ;
        }
 
        // (f) print finalmachine state
@@ -192,6 +203,6 @@
    catch (e)
    {
        console.log(e.stack) ;
-       return false ;
+       return process.exit(-1) ;
    }
 
