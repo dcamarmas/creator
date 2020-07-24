@@ -1,3 +1,8 @@
 [97m[Compiler] Error at line 9 ().[39m
-[97m[Compiler] The string of characters must start with "[39m
+[97m[Compiler] The string of characters must start with "Bad[39m
+
+[97m  8 .data[39m
+[97m->9         str: .asciiz Bad string"[39m
+[97m  10 	max: .byte 10[39m
+
 [97m[39m

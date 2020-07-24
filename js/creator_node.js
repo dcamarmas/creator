@@ -31,8 +31,13 @@ function assembly_compile ( code )
     switch (ret.status)
     {
         case "error":
-             var mess = compileError[ret.errorcode] ;
-             ret.msg = mess.mess1 + ret.token + mess.mess2 ;
+	     var code_assembly_segment = code_assembly.split('\n') ;
+	     ret.msg += "\n\n" ;
+	     if (ret.line > 0)
+	         ret.msg += "  " + (ret.line+0) + " " + code_assembly_segment[ret.line - 1] + "\n" ;
+	         ret.msg += "->" + (ret.line+1) + " " + code_assembly_segment[ret.line] + "\n" ;
+	     if (ret.line < code_assembly_segment.length - 1)
+	         ret.msg += "  " + (ret.line+2) + " " + code_assembly_segment[ret.line + 1] + "\n" ;
              break;
 
         case "warning":
