@@ -1,3 +1,20 @@
 [97m[Compiler] Error at line 9 ().[39m
-[97m[Compiler] The string of characters must end with "[39m
+[97m[Compiler] The string of characters must end with ""Bad string[39m
+[97m	max: .byte 10[39m
+
+[97m.text[39m
+[97m	main: 		lb $t0 max[39m
+[97m			li $t1 0[39m
+[97m			move $a0 $zero[39m
+[97m	while:		bge $t1 $t0 end_while[39m
+[97m			add $a0 $a0 $t1[39m
+[97m			add $t1 $t1 1[39m
+[97m			b while[39m
+[97m	end_while: 	li $v0 1[39m
+[97m		        syscall	#print_int[39m
+
+[97m  8 .data[39m
+[97m->9         str: .asciiz "Bad string[39m
+[97m  10 	max: .byte 10[39m
+
 [97m[39m
