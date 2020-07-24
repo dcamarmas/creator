@@ -2095,8 +2095,7 @@
             <div class="col-lg-12 col-sm-12 px-2">
 
               <b-table id="inst_table" sticky-header striped small hover :items="instructions" :fields="archInstructions" 
-                       class="instructions_table responsive" @row-clicked="breakPoint" 
-                       style="cursor:pointer; max-height:61vh !important;" :filter-function=filter filter=" " primary-key="Address">
+                       class="instructions_table responsive" @row-clicked="breakPoint" :filter-function=filter filter=" " primary-key="Address">
 
                 <!-- Change the title of each column -->
                 <template v-slot:head(userInstructions)="row">
@@ -2126,8 +2125,28 @@
                   <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
                 </template>
                 <template v-slot:cell(loadedInstructions)="row">
-                    <h6 v-if="row.item.visible == true">{{row.item.loaded}} <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge></h6>
-                    <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt; <b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == null">Current</b-badge><b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='success'">Next</b-badge><b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right;" v-if="row.item._rowVariant=='info' && enter == false">Current-Keyboard</b-badge></h6>
+                    <h6 v-if="row.item.visible == true">{{row.item.loaded}} 
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == false">
+                    		Current-Keyboard
+                    	</b-badge>
+                    	<b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='success'">
+                    			Next
+                    	</b-badge>
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == null">
+                    		Current
+                    	</b-badge>
+                    </h6>
+                    <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt; 
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == null">
+                    		Current
+                    	</b-badge>
+                    	<b-badge variant="success" class="border border-success shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='success'">
+                    			Next
+                    	</b-badge>
+                    	<b-badge variant="info" class="border border-info shadow" style="position:relative;right:-12px; float:right; margin-left: -20vw;" v-if="row.item._rowVariant=='info' && enter == false">
+                    		Current-Keyboard
+                    	</b-badge>
+                    </h6>
                 </template> 
                 <template slot-scope="row">
                   <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
@@ -2512,7 +2531,7 @@
                 <!-- Data memory -->
                 <b-tab title="Data" active>
                   <div class="col-lg-12 col-sm-12">
-                    <b-table striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table" sticky-header="49vh">
+                    <b-table dticky-header striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table">
                       <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
@@ -2541,7 +2560,7 @@
                 <!-- Text memory -->
                 <b-tab title="Text">
                   <div class="col-lg-12 col-sm-12">
-                    <b-table striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table  " :filter-function=filter filter=" " sticky-header="49vh">
+                    <b-table sticky-header striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table  " :filter-function=filter filter=" ">
                       <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
@@ -2563,7 +2582,7 @@
                 <!-- Stack memory -->
                 <b-tab title="Stack">
                   <div class="col-lg-12 col-sm-12">
-                    <b-table striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table " @row-clicked="select_stack_type" sticky-header="49vh">
+                    <b-table sticky-header striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table " @row-clicked="select_stack_type">
                       <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                         <h6 style="font-size: 13px" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
@@ -2606,13 +2625,13 @@
 
                 <b-tabs content-class="mt-3">
                   <b-tab title="Ghaphic" active>
-                    <div id="chart" class="memory_table">
+                    <div id="chart" class="stats">
                       <apexchart id="graphic" ref="chart" type="donut" :options="chartOptions" :series="stats_value" height="150%" ></apexchart>
                     </div>
                   </b-tab>
 
                   <b-tab title="Table">
-                    <b-table striped small hover :items="stats" :fields="statsFields" class="memory_table text-center"></b-table>
+                    <b-table striped small hover :items="stats" :fields="statsFields" class="stats text-center"></b-table>
                   </b-tab>
                 </b-tabs>
               </div>
