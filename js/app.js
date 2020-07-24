@@ -432,14 +432,9 @@ try
             donut: {
               labels: {
                 show: true,
-                value: {
-                  show: true,
-                  formatter: function (val) {
-                    return val
-                  }
-                },
                 total: {
                   show: true,
+                  showAlways: true,
                   color: 'black',
                   formatter: function (w) {
                     return w.globals.seriesTotals.reduce((a, b) => {
