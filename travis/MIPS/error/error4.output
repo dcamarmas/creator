@@ -1,3 +1,8 @@
 [97m[Compiler] Error at line 13 (t20).[39m
 [97m[Compiler] Register 't20' not found[39m
+
+[97m  12 .text[39m
+[97m->13 	main: 		la $t20 max[39m
+[97m  14 			li $t1 0[39m
+
 [97m[39m
