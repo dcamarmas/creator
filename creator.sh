@@ -191,7 +191,7 @@
            if (false == argv.quiet)
                 console.log("[state] ".success + ret.msg + "\n") ;
            else console.log(ret.msg) ;
-           return process.exit(1) ;
+           return process.exit(0) ;
        }
 
        // (f) print finalmachine state
