@@ -1,5 +1,5 @@
 [97m[Compiler] Error at line 11 (max).[39m
-[97m[Compiler] Repeated tag: max:[39m
+[97m[Compiler] Repeated tag: max[39m
 
 [97m  10 	max: .byte 10[39m
 [97m->11 	max: .byte 10[39m
