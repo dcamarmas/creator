@@ -104,7 +104,7 @@ var compileError = {
 	 'm0': function(ret) { return "Empty label "   + ret.token + "" },
 	 'm1': function(ret) { return "Repeated tag: " + ret.token + "" },
 	 'm2': function(ret) { return "Instruction '"  + ret.token + "' not found" },
-	 'm3': function(ret) { return "Incorrect instruction syntax --> " + ret.token + "" },
+	 'm3': function(ret) { return "Incorrect instruction syntax for '" + ret.token + "'" },
 	 'm4': function(ret) { return "Register '"     + ret.token + "' not found" },
 	 'm5': function(ret) { return "Immediate number '" + ret.token + "' is too big" },
 	 'm6': function(ret) { return "Immediate number '" + ret.token + "' is not valid" },
