@@ -432,14 +432,9 @@ try
             donut: {
               labels: {
                 show: true,
-                value: {
-                  show: true,
-                  formatter: function (val) {
-                    return val
-                  }
-                },
                 total: {
                   show: true,
+                  showAlways: true,
                   color: 'black',
                   formatter: function (w) {
                     return w.globals.seriesTotals.reduce((a, b) => {
@@ -559,7 +554,7 @@ try
 
       /*Change the execution speed*/
       change_execution_speed(value) {
-      	 if (value) 
+      	 if (value)
          {
       	     this.instructionsPacked= this.instructionsPacked + value;
       	     if (this.instructionsPacked < 1){
@@ -2864,13 +2859,13 @@ try
         promise = new Promise((resolve, reject) => {
 
           setTimeout(function() {
-            /* compile */
 
-            if(typeof(code)!=="undefined"){
-              code_assembly=code;
+            /* compile */
+            if (typeof(code)!=="undefined") {
+                code_assembly=code;
             }
             else{
-              code_assembly = textarea_assembly_editor.getValue();
+                code_assembly = textarea_assembly_editor.getValue();
             }
 
             var ret = assembly_compiler() ;
@@ -2904,21 +2899,19 @@ try
             // show error/warning
             hide_loading();
 
-            if (ret.type == "error") {
-              /*app.compileError(ret.errorcode, 
-      				ret.token, 
-      				textarea_assembly_editor.posFromIndex(ret.tokenIndex).line); //TODO: textarea_assembly_editor doesn't work if user is not at the assembly editor screen
-              */
+            switch (ret.type)
+            {
+               case "error":
+                    app.compileError(ret.msg, ret.token, ret.line) ;
+                    break;
 
-              app.compileError(ret.errorcode, 
-              ret.token, 
-              ret.line);
-            }
-            else if (ret.type == "warning") {
-                show_notification(ret.token, ret.bgcolor) ;
-            }
-            else {
-                show_notification('Compilation completed successfully', 'success') ;
+               case "warning":
+                    show_notification(ret.token, ret.bgcolor) ;
+                    break;
+
+               default:
+                    show_notification('Compilation completed successfully', 'success') ;
+                    break;
             }
 
             // end
@@ -3145,30 +3138,37 @@ try
       },
 
       /*Show error message in the compilation*/
-      compileError(error, token, line) {
-        var code_assembly_segment = code_assembly.split('\n');
+      compileError(msg, token, line)
+      {
+        var code_assembly_segment = code_assembly.split('\n') ;
 
         this.change_UI_mode('assembly');
 
-        setTimeout(function(){ 
-          app.$root.$emit('bv::show::modal', 'modalAssemblyError');
+        setTimeout(function() {
+          app.$root.$emit('bv::show::modal', 'modalAssemblyError') ;
 
           // line 1
-          app.modalAssemblyError.code1 = "";
+          app.modalAssemblyError.line1 = "" ;
+          app.modalAssemblyError.code1 = "" ;
           if (line > 0) {
-              app.modalAssemblyError.code1 = line + "  " + code_assembly_segment[line - 1];
+              app.modalAssemblyError.line1 = line ;
+              app.modalAssemblyError.code1 = code_assembly_segment[line - 1] ;
           }
 
           // line 2
-          app.modalAssemblyError.code2 = (line + 1) + "  " + code_assembly_segment[line];
+          app.modalAssemblyError.line2 = line + 1 ;
+          app.modalAssemblyError.code2 = code_assembly_segment[line] ;
 
           // line 3
-          app.modalAssemblyError.code3 = "" ;
-          if (line < code_assembly_segment.length - 1){
-              app.modalAssemblyError.code3 = (line + 2) + "  " + code_assembly_segment[line + 1];
+          app.modalAssemblyError.line3 = "" ;
+          app.modalAssemblyError.code3 = ""  ;
+          if (line < code_assembly_segment.length - 1) {
+              app.modalAssemblyError.line3 = line + 2 ;
+              app.modalAssemblyError.code3 = code_assembly_segment[line + 1] ;
           }
 
-          app.modalAssemblyError.error = compileError[error].mess1 + token + compileError[error].mess2;
+          app.modalAssemblyError.error = msg ;
+
         },75);
       },
 
@@ -3475,7 +3475,7 @@ try
              show_notification(ret.msg, ret.type);
          }
 
-         if (ret.draw != null) 
+         if (ret.draw != null)
          {
              for (var i=0; i<ret.draw.space.length; i++) {
                   instructions[ret.draw.space[i]]._rowVariant = '';
@@ -3494,7 +3494,7 @@ try
             if(app._data.autoscroll == true && runProgram == false){
               if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
                 var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
-                var rowpos = $(id).position(); 
+                var rowpos = $(id).position();
                 if(rowpos){
                   var pos = rowpos.top - $('.instructions_table').height();
                   $('.instructions_table').animate({scrollTop: (pos)}, 200);
@@ -3637,7 +3637,7 @@ try
           /*Auto-scroll*/
           if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
             var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
-            var rowpos = $(id).position(); 
+            var rowpos = $(id).position();
             if(rowpos){
               var pos = rowpos.top - $('.instructions_table').height();
               $('.instructions_table').animate({scrollTop: (pos)}, 200);
