@@ -1,3 +1,8 @@
 [97m[Compiler] Error at line 13 (lx).[39m
 [97m[Compiler] Instruction 'lx' not found[39m
+
+[97m  12 .text[39m
+[97m->13 	main: 		lx $t0 max[39m
+[97m  14 			li $t1 0[39m
+
 [97m[39m
