@@ -111,8 +111,8 @@ var compileError = {
 			 'm7': { mess1: "Tag '", mess2: "' is not valid" },
 			 'm8': { mess1: "Address '", mess2: "' is too big" },
 			 'm9': { mess1: "Address '", mess2: "' is not valid" },
-			'm10': { mess1: "This field '", mess2: "' must start with a '('" },
-			'm11': { mess1: "This field '", mess2: "' must end with a ')'" },
+			//'m10': { mess1: "This field '", mess2: "' must start with a '('" },
+			//'m11': { mess1: "This field '", mess2: "' must end with a ')'" },
 			'm12': { mess1: "This field is too small to encode in binary '", mess2: "" },
 			'm13': { mess1: "Incorrect pseudoinstruction definition ", mess2: "" },
 			'm14': { mess1: "Invalid directive: ", mess2: "" },
@@ -121,7 +121,7 @@ var compileError = {
 			'm17': { mess1: 'The string of characters must end with "', mess2: "" },
 			'm18': { mess1: "Number '", mess2: "' is too big" },
 			'm19': { mess1: "Number '", mess2: "' is empty" },
-			'm20': { mess1: "The text segment should start with '", mess2: "'" },
+			//'m20': { mess1: "The text segment should start with '", mess2: "'" },
 			'm21': { mess1: "The data must be aligned", mess2: "" },
 			'm22': { mess1: "The number should be positive '", mess2: "'" },
 			'm23': { mess1: "Empty directive", mess2: "" },
@@ -297,7 +297,7 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor )
   ret.status     = "error" ;
   ret.errorcode  = err_code ;
   ret.token      = err_token ;
-  ret.msg        = compileError[err_code].mess1 + token + compileError[err_code].mess2 ;
+  ret.msg        = compileError[err_code].mess1 + err_token + compileError[err_code].mess2 ;
   ret.type       = err_ti ;
   ret.bgcolor    = err_bgcolor ;
   ret.tokenIndex = tokenIndex ;
@@ -2715,8 +2715,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
       else{
         //TODO: posible fallo
         //return -2;
-        console_log("AQUI1");
-        return packCompileError('m13', "", 'error', "danger") ;
+        return packCompileError('m3', "", 'error', "danger") ;
       }
 
       console_log(instructionParts);
@@ -3895,7 +3894,6 @@ function pseudoinstruction_compiler ( instruction, label, line )
         }
         catch(e){
           if (e instanceof SyntaxError) {
-            console_log("AQUI2");
             return packCompileError('m13', "", 'error', "danger") ;
           }
         }
