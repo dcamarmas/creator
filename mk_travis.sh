@@ -10,7 +10,7 @@ MIPS_TEST="2 3 4 5 6 7 8 11"
 for I in $MIPS_TEST;
 do
   echo " * ./MIPS/correct/example$I... "
-  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/correct/example$I.txt --quiet > ./travis/MIPS/correct/example$I.output
+  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/correct/example$I.txt --quiet | tail -2 > ./travis/MIPS/correct/example$I.output
 done
 
 echo " MIPS common errors:"
@@ -31,6 +31,6 @@ RV_TEST="1"
 for I in $RV_TEST;
 do
   echo " * ./riscv/correct/example$I... "
-  ./creator.sh -a ./architecture/RISC-V-like.json -s ./travis/riscv/correct/example$I.txt --quiet > ./travis/riscv/correct/example$I.output
+  ./creator.sh -a ./architecture/RISC-V-like.json -s ./travis/riscv/correct/example$I.txt --quiet | tail -2 > ./travis/riscv/correct/example$I.output
 done
 
