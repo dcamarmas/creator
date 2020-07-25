@@ -164,6 +164,12 @@ function get_state ( )
         }
     }
 
+    // dump keyboard
+    ret.msg = ret.msg + "keyboard[0x0]" + ":'" + encodeURIComponent(keyboard) + "'; ";
+
+    // dump display
+    ret.msg = ret.msg + "display[0x0]"  + ":'" + encodeURIComponent(display)  + "'; ";
+
     return ret ;
 }
 
@@ -217,8 +223,9 @@ function compare_states ( ref_state, alt_state )
     }
 
     // last) is different...
-    if (ret.status != "ko")
+    if (ret.status != "ko") {
         ret.msg = "Equals" ;
+    }
 
     return ret ;
 }
