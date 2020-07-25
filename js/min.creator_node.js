@@ -5044,7 +5044,7 @@ function executeInstruction ( )
       console_log(auxDef);
 
       // preload instruction
-eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
+			eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
 	        "try {\n" +
 	           auxDef.replace(/this./g,"elto.") + "\n" +
 	        "}\n" +
@@ -5490,7 +5490,7 @@ function writeMemory ( value, addr, type )
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                 //memory[index][i].Value = parseInt(memValue, 16);
                 if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                  memory[index][i].Value = hex2float("0x" + memValue);
                 }
                 else{
                   memory[index][i].Value = (parseInt(memValue, 16) >> 0);
@@ -5504,7 +5504,7 @@ function writeMemory ( value, addr, type )
                 //memory[index][i].Value = parseInt(memValue, 16);
 
                 if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                  memory[index][i].Value = hex2float("0x" + memValue);
                 }
                 else{
                   memory[index][i].Value = (parseInt(memValue, 16) >> 0);
