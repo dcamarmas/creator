@@ -2531,7 +2531,7 @@
                 <!-- Data memory -->
                 <b-tab title="Data" active>
                   <div class="col-lg-12 col-sm-12">
-                    <b-table dticky-header striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table">
+                    <b-table sticky-header striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table">
                       <template v-slot:cell(Address)="row">
                         <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
