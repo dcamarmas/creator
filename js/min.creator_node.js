@@ -181,6 +181,10 @@ var stats = [
   { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
   { type: 'Other', number_instructions: 0, percentage: 0},
 ];
+/*Keyboard*/
+var keyboard = '' ;
+/*Display*/
+var display = '' ;
 
 
 //
@@ -5897,6 +5901,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                if (typeof app !== "undefined")
                     app._data.display += val_int ;
                else process.stdout.write(val_int + '\n') ;
+
+               display += val_int ;
                break;
 
           case "print_float":
@@ -5905,13 +5911,18 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                if (typeof app !== "undefined")
                     app._data.display += value;
                else process.stdout.write(value + '\n') ;
+
+               display += value ;
                break;
 
           case "print_double":
                var value = architecture.components[indexComp].elements[indexElem].value;
+
                if (typeof app !== "undefined")
                     app._data.display += value;
                else process.stdout.write(value + '\n') ;
+
+               display += value ;
                break;
 
           case "print_string":
@@ -5945,6 +5956,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       if (typeof app !== "undefined")
                            app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
+
+                      display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
 
                       if (memory[index][i].Binary[k].Bin == 0) {
                           return packExecute(false, 'printed', 'info', null);
@@ -6292,32 +6305,36 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 break;
 
           case "print_char":
-                var aux = architecture.components[indexComp].elements[indexElem].value;
-                var aux2 = aux.toString(16);
+                var aux    = architecture.components[indexComp].elements[indexElem].value;
+                var aux2   = aux.toString(16);
                 var length = aux2.length;
     
-                var value = aux2.substring(length-2, length);
+                var value = aux2.substring(length-2, length) ;
+                    value = String.fromCharCode(parseInt(value, 16)) ;
+
                 if (typeof app !== "undefined")
-                     app._data.display += String.fromCharCode(parseInt(value, 16));
+                     app._data.display += value ;
                 else process.stdout.write(value) ;
+
+                display += value ;
                 break;
 
           case "read_char":
 
-              // CL
-              if (typeof app === "undefined") 
-              {
-		  var readlineSync = require('readline-sync') ;
-		  var keystroke    = readlineSync.question(' read char> ') ;
-                  var value        = keystroke.charCodeAt(0);
+               // CL
+               if (typeof app === "undefined") 
+               {
+	 	   var readlineSync = require('readline-sync') ;
+	 	   var keystroke    = readlineSync.question(' read char> ') ;
+                   var value        = keystroke.charCodeAt(0);
 
-                  writeRegister(value, indexComp, indexElem);
-                  return packExecute(false, 'The data has been uploaded', 'danger', null);
-              }
+                   writeRegister(value, indexComp, indexElem);
+                   return packExecute(false, 'The data has been uploaded', 'danger', null);
+               }
 
-              if (first_time == true) {
-                  document.getElementById('enter_keyboard').scrollIntoView();
-              }
+               if (first_time == true) {
+                   document.getElementById('enter_keyboard').scrollIntoView();
+               }
 
                mutexRead = true;
                app._data.enter = false;
@@ -6400,8 +6417,10 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           }
 
           /*Reset console*/
-          mutexRead = false;
-          newExecution = true;
+          mutexRead    = false ;
+          newExecution = true ;
+          keyboard = '' ;
+          display  = '' ;
 
           for (var i = 0; i < architecture_hash.length; i++) {
             for (var j = 0; j < architecture.components[i].elements.length; j++) {
@@ -6434,6 +6453,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           architecture.memory_layout[4].value = backup_stack_address;
           architecture.memory_layout[3].value = backup_data_address;
 
+          // reset memory
           for (var i = 0; i < memory[memory_hash[0]].length; i++) {
             if(memory[memory_hash[0]][i].reset == true){
               memory[memory_hash[0]].splice(i, 1);
@@ -6460,6 +6480,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
             }
           }
 
+          // reset unallocate_memory
           unallocated_memory = [];
           if (typeof app !== "undefined")
               app._data.unallocated_memory = unallocated_memory;
@@ -6839,6 +6860,12 @@ function get_state ( )
         }
     }
 
+    // dump keyboard
+    ret.msg = ret.msg + "keyboard[0x0]" + ":'" + encodeURIComponent(keyboard) + "'; ";
+
+    // dump display
+    ret.msg = ret.msg + "display[0x0]"  + ":'" + encodeURIComponent(display)  + "'; ";
+
     return ret ;
 }
 
@@ -6892,8 +6919,9 @@ function compare_states ( ref_state, alt_state )
     }
 
     // last) is different...
-    if (ret.status != "ko")
+    if (ret.status != "ko") {
         ret.msg = "Equals" ;
+    }
 
     return ret ;
 }

@@ -181,6 +181,10 @@ var stats = [
   { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
   { type: 'Other', number_instructions: 0, percentage: 0},
 ];
+/*Keyboard*/
+var keyboard = '' ;
+/*Display*/
+var display = '' ;
 
 
 //
