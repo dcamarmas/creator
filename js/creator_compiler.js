@@ -181,6 +181,10 @@ var stats = [
   { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
   { type: 'Other', number_instructions: 0, percentage: 0},
 ];
+/*Keyboard*/
+var keyboard = '' ;
+/*Display*/
+var display = '' ;
 
 
 //
@@ -1026,12 +1030,13 @@ function assembly_compiler()
                 }
               }
               if (typeof app != "undefined")
-                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO
+                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO: ¿se hace en memory tambi'en?
             }
 
 
             /*Check for overlap*/
-            if(memory[memory_hash[0]].length > 0){
+            if(memory[memory_hash[0]].length > 0)
+            {
               if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
                 //tokenIndex = 0;
                 //nEnters = 0 ;
@@ -2409,7 +2414,7 @@ function code_segment_compiler()
 
                   instruction = instruction + " " + token;
                 }
-                resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex); //TODO: line->ti?
+                resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex);
                 console_log(resultPseudo);
 
                 if (resultPseudo.status != 'ok') {
@@ -2682,8 +2687,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               instruction = instruction + " " + token;
             }
             console_log(instruction);
-            //resultPseudo = pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line); //TODO: revisar linea
-            resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex); //TODO: line->ti?
+            resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex);
 
             console_log(resultPseudo)
 
@@ -2693,12 +2697,8 @@ function instruction_compiler ( instruction, userInstruction, label, line,
             if (resultPseudo.errorcode == 3) {
                 return resultPseudo ;
             }
-
-            //TODO: revisar que solo se puede salir con ok y -1
           }
         }
-
-        //var resultPseudo = pseudoinstruction_compiler(oriInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
       }
 
       if (resultPseudo == null) {
@@ -2715,7 +2715,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
           }
       }
       else {
-        // TODO: posible fallo porque 'm3' precisa auxSignature como segundo par'ametro
+        // TODO: 'm3' precisa auxSignature como segundo par'ametro en otros usos, ¿vale con ""?
         return packCompileError('m3', "", 'error', "danger") ;
       }
 
@@ -3516,8 +3516,6 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
         console_log(binary);
         console_log(bin2hex(binary));
 
-      //pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: textarea_assembly_editor.posFromIndex(tokenIndex).line}); //TODO: revisar linea
-      //pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: line}); //TODO: line->ti?
       pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: nEnters});
 
         if(pending == false){
