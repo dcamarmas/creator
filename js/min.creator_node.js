@@ -4236,7 +4236,6 @@ function binaryStringToInt( b ) {
  *
  */
 
-// todo: draw_info y draw_space añadirlo a ret...
 function packExecute ( error, err_msg, err_type, draw )
 {
     var ret = {} ;
@@ -4252,12 +4251,12 @@ function packExecute ( error, err_msg, err_type, draw )
 function executeInstruction ( )
 {
   var draw = {
-    space: [] ,
-    info: [] ,
-    success: [] ,
-    danger: [],
-    flash: []
-  } ;
+                space:   [],
+                info:    [],
+                success: [],
+                danger:  [],
+                flash:   []
+              } ;
 
   console_log(mutexRead);
   newExecution = false;
@@ -4280,41 +4279,43 @@ function executeInstruction ( )
          }
 
     /*Search a main tag*/
-    if (executionInit == 1) {
-      for (var i = 0; i < instructions.length; i++) {
-        if (instructions[i].Label == "main") {
-            //draw.success.push(executionIndex) ;
-            architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
-            executionInit = 0;
-            break;
+    if (executionInit == 1) 
+    {
+        for (var i = 0; i < instructions.length; i++) {
+          if (instructions[i].Label == "main") {
+              //draw.success.push(executionIndex) ;
+              architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
+              executionInit = 0;
+              break;
+          }
+          else if(i == instructions.length-1){
+            executionIndex = -1;
+            return packExecute(true, 'Label "main" not found', 'danger', null);
+          }
         }
-        else if(i == instructions.length-1){
-          executionIndex = -1;
-          return packExecute(true, 'Label "main" not found', 'danger', null);
-        }
-      }
     }
 
     var error = 0;
     var index;
 
-    for (var i = 0; i < instructions.length; i++){
-      if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
-        executionIndex = i;
+    for (var i = 0; i < instructions.length; i++)
+    {
+      if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
+          executionIndex = i;
 
-        console_log(instructions[executionIndex].hide)
-        console_log(executionIndex)
-        console_log(instructions[i].Address)
+          console_log(instructions[executionIndex].hide)
+          console_log(executionIndex)
+          console_log(instructions[i].Address)
 
-        if (instructions[executionIndex].hide == false) {
-            draw.info.push(executionIndex);
+          if (instructions[executionIndex].hide == false) {
+              draw.info.push(executionIndex);
+          }
         }
-      }
-      else{
-        if (instructions[executionIndex].hide == false) {
-            draw.space.push(i);
+        else{
+          if (instructions[executionIndex].hide == false) {
+              draw.space.push(i);
+          }
         }
-      }
     }
 
     var instructionExec = instructions[executionIndex].loaded;
@@ -5895,7 +5896,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if (typeof app !== "undefined")
                     app._data.display += val_int ;
-               else console.log(val_int) ; //process.stdout.write(val_int) ;
+               else process.stdout.write(val_int + '\n') ;
                break;
 
           case "print_float":
@@ -5903,14 +5904,14 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if (typeof app !== "undefined")
                     app._data.display += value;
-               else console.log(value) ; //process.stdout.write(value) ;
+               else process.stdout.write(value + '\n') ;
                break;
 
           case "print_double":
                var value = architecture.components[indexComp].elements[indexElem].value;
                if (typeof app !== "undefined")
                     app._data.display += value;
-               else console.log(value) ; //process.stdout.write(value) ;
+               else process.stdout.write(value + '\n') ;
                break;
 
           case "print_string":
@@ -5945,14 +5946,13 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                            app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
 
-                      if(memory[index][i].Binary[k].Bin == 0){
-                        //return
-                        return packExecute(false, 'printed', 'info', null);
+                      if (memory[index][i].Binary[k].Bin == 0) {
+                          return packExecute(false, 'printed', 'info', null);
                       }
-                      else if(i == memory[index].length-1 && k == memory[index][i].Binary.length-1){
-                        //return;
-                        return packExecute(false, 'printed', 'info', null);
+                      if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
+                          return packExecute(false, 'printed', 'info', null);
                       }
+
                       j=0;
                     }
                   }
@@ -5967,17 +5967,17 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 // CL
                 if (typeof app === "undefined") 
                 {
-          		    var readlineSync = require('readline-sync') ;
-          		    var keystroke    = readlineSync.question(' $> ') ;
+                  var readlineSync = require('readline-sync') ;
+                  var keystroke    = readlineSync.question(' $> ') ;
                   var value        = parseInt(keystroke) ;
 
                   writeRegister(value, indexComp, indexElem);
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(first_time == true){
-	                document.getElementById('enter_keyboard').scrollIntoView();
-	              }
+                if (first_time == true) {
+	            document.getElementById('enter_keyboard').scrollIntoView();
+	        }
 
                 // UI
                 mutexRead = true;
@@ -6225,7 +6225,6 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                   }
                   console_log(value);
     
-                  // TODO: subrutine for UI+CL
                   var addr = architecture.components[indexComp].elements[indexElem].value;
                   var valueIndex = 0;
                   var auxAddr = data_address;
@@ -6233,8 +6232,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                   var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
                   if (ret.status != 'ok') {
-                    return ret ;
-                	}
+                      return ret ;
+               	  }
 
                   app._data.memory[index] = memory[index];
                   app.keyboard = "";
