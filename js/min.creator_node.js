@@ -72,7 +72,7 @@ var actionTypes = [
   { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
   { text: 'ASCII finished in null', value: 'ascii_null_end' },
   { text: 'Align', value: 'align' },
-  { text: 'Baling', value: 'baling'},
+  { text: 'Balign', value: 'balign'},
 ];
 
 
@@ -100,36 +100,35 @@ var pending_tags = [];
 /*Global functions*/
 var extern = [];
 /*Error code messages*/
-var compileError = [
-  { mess1: "Empty label", mess2: "" },
-  { mess1: "Repeated tag: ", mess2: "" },
-  { mess1: "Instruction '", mess2: "' not found" },
-  { mess1: "Incorrect sintax --> ", mess2: "" },
-  { mess1: "Register '", mess2: "' not found" },
-  { mess1: "Immediate number '", mess2: "' is too big" },
-  { mess1: "Immediate number '", mess2: "' is not valid" },
-  { mess1: "Tag '", mess2: "' is not valid" },
-  { mess1: "Address '", mess2: "' is too big" },
-  { mess1: "Address '", mess2: "' is not valid" },
-  { mess1: "This field '", mess2: "' must start with a '('" },
-  { mess1: "This field '", mess2: "' must end with a ')'" },
-  { mess1: "This field is too small to encode in binary '", mess2: "" },
-  { mess1: "This field is too small to encode in binary '", mess2: "" },
-  { mess1: "Incorrect pseudoinstruction definition ", mess2: "" },
-  { mess1: "Invalid directive: ", mess2: "" },
-  { mess1: "Invalid data: ", mess2: " The data must be a number" },
-  { mess1: 'The string of characters must start with "', mess2: "" },
-  { mess1: 'The string of characters must end with "', mess2: "" },
-  { mess1: "Number '", mess2: "' is too big" },
-  { mess1: "Number '", mess2: "' is empty" },
-  { mess1: "The text segment should start with '", mess2: "'" },
-  { mess1: "The data must be aligned", mess2: "" },
-  { mess1: "The number should be positive '", mess2: "'" },
-  { mess1: "Empty directive", mess2: "" },
-  { mess1: "After the comma you should go a blank --> ", mess2: "" },
-  { mess1: "Incorrect sintax", mess2: "" },
-  { mess1: "Syntax error near line: ", mess2: "" },
-];
+var compileError = {
+	 'm0': function(ret) { return ""                                   + ret.token + "" },
+	 'm1': function(ret) { return "Repeated tag: "                     + ret.token + "" },
+	 'm2': function(ret) { return "Instruction '"                      + ret.token + "' not found" },
+	 'm3': function(ret) { return "Incorrect instruction syntax for '" + ret.token + "'" },
+	 'm4': function(ret) { return "Register '"                         + ret.token + "' not found" },
+	 'm5': function(ret) { return "Immediate number '"                 + ret.token + "' is too big" },
+	 'm6': function(ret) { return "Immediate number '"                 + ret.token + "' is not valid" },
+	 'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
+	 'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
+	 'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
+      //'m10': function(ret) { return "This field '"                       + ret.token + "' must start with '('" },
+      //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
+	'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
+	'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
+	'm14': function(ret) { return "Invalid directive: "                        + ret.token + "" },
+	'm15': function(ret) { return "Invalid value '"                            + ret.token + "' as number." },
+	'm16': function(ret) { return 'The string of characters must start with "' + ret.token + "" },
+	'm17': function(ret) { return 'The string of characters must end with "'   + ret.token + "" },
+	'm18': function(ret) { return "Number '"                                   + ret.token + "' is too big" },
+	'm19': function(ret) { return "Number '"                                   + ret.token + "' is empty" },
+      //'m20': function(ret) { return "The text segment should start with '"       + ret.token + "'" },
+	'm21': function(ret) { return "The data must be aligned"                   + ret.token + "" },
+	'm22': function(ret) { return "The number should be positive '"            + ret.token + "'" },
+	'm23': function(ret) { return "Empty directive"                            + ret.token + "" },
+	'm24': function(ret) { return "After the comma you should go a blank --> " + ret.token + "" },
+	'm25': function(ret) { return "Incorrect syntax "                          + ret.token + "" },
+	'm26': function(ret) { return "Syntax error near line: "                   + ret.token + "" }
+} ;
 /*Promise*/
 let promise;
 
@@ -182,6 +181,10 @@ var stats = [
   { type: 'Unconditional bifurcation', number_instructions: 0, percentage: 0},
   { type: 'Other', number_instructions: 0, percentage: 0},
 ];
+/*Keyboard*/
+var keyboard = '' ;
+/*Display*/
+var display = '' ;
 
 
 //
@@ -291,17 +294,19 @@ function console_log ( msg )
 //
 
 /*Compile assembly code*/
-function packCompileError( err_code, err_msg, err_ti, err_bgcolor )
+function packCompileError(err_code, err_token, err_ti, err_bgcolor )
 {
   var ret = {} ;
 
   ret.status     = "error" ;
   ret.errorcode  = err_code ;
-  ret.token      = err_msg;
-  ret.type       = err_ti;
-  ret.bgcolor    = err_bgcolor;
+  ret.token      = err_token ;
+  ret.type       = err_ti ;
+  ret.bgcolor    = err_bgcolor ;
   ret.tokenIndex = tokenIndex ;
   ret.line       = nEnters ;
+
+  ret.msg = compileError[err_code](ret) ;
 
   return ret ;
 }
@@ -545,10 +550,9 @@ function assembly_compiler()
 
             /*Start of compilation*/
             first_token();
-
-            if (get_token() == null){
-               hide_loading();
-               return packCompileError(0, 'Please enter the assembly code before compiling', 'warning', 'danger') ;
+            if (get_token() == null) {
+                hide_loading();
+                return packCompileError('m0', 'Please enter the assembly code before compiling', 'warning', 'danger') ;
             }
 
             token = get_token();
@@ -657,7 +661,7 @@ function assembly_compiler()
                   empty = true;
                   //tokenIndex = 0;
                   //nEnters = 0 ;
-                  return packCompileError(15, token, 'error', "danger");
+                  return packCompileError('m14', token, 'error', "danger");
                 }
               }
             }
@@ -778,7 +782,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    return packCompileError(7, instructionParts[j], "error", "danger");
+                    return packCompileError('m7', instructionParts[j], "error", "danger");
                   }
                 }
 
@@ -844,7 +848,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    return packCompileError(7, instructionParts[j], "error", "danger");
+                    return packCompileError('m7', instructionParts[j], "error", "danger");
                   }
                 }
 
@@ -905,7 +909,7 @@ function assembly_compiler()
                     memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
-                    return packCompileError(7, instructionParts[j], "error", "danger");
+                    return packCompileError('m7', instructionParts[j], "error", "danger");
                   }
                 }
               }
@@ -1026,12 +1030,13 @@ function assembly_compiler()
                 }
               }
               if (typeof app != "undefined")
-                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO
+                  app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO: ¿se hace en memory tambi'en?
             }
 
 
             /*Check for overlap*/
-            if(memory[memory_hash[0]].length > 0){
+            if(memory[memory_hash[0]].length > 0)
+            {
               if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
                 //tokenIndex = 0;
                 //nEnters = 0 ;
@@ -1046,7 +1051,7 @@ function assembly_compiler()
                 memory[memory_hash[2]] = [];
                 data = [];
 
-                return packCompileError(0, 'Data overflow', 'warning', "danger") ;
+                return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
               }
             }
 
@@ -1065,7 +1070,7 @@ function assembly_compiler()
                 memory[memory_hash[2]] = [];
                 data = [];
 
-                return packCompileError(0, 'Instruction overflow', 'warning', "danger");
+                return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
               }
             }
 
@@ -1165,7 +1170,7 @@ function data_segment_compiler()
           {
               if (token.length == 1)
               {
-                  return packCompileError(0, "", 'error', "danger");
+                  return packCompileError('m0', "Empty label", 'error', "danger");
               }
 
               for (var i = 0; i < data_tag.length; i++)
@@ -1173,13 +1178,13 @@ function data_segment_compiler()
                 console_log(data_tag[i].tag);
                 console_log(token.substring(0,token.length-1))
                 if (data_tag[i].tag == token.substring(0,token.length-1)) {
-                    return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
                 }
               }
 
               for (var i = 0; i < instructions.length; i++) {
                 if (instructions[i].Label == token.substring(0,token.length-1)) {
-                    return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
                 }
               }
 
@@ -1200,12 +1205,12 @@ function data_segment_compiler()
                     token = get_token();
 
                     if (token == null) {
-                        return packCompileError(24, "", 'error', "danger") ;
+                        return packCompileError('m23', "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if (token.search(re) != -1) {
-                        return packCompileError(25, token, 'error', "danger") ;
+                        return packCompileError('m24', token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1244,28 +1249,28 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError('m15', token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(20, token, 'error', "danger") ;
+                        return packCompileError('m19', token, 'error', "danger") ;
                       }
 
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if (token.search(re) == -1) {
-                          return packCompileError(16, token, 'error', "danger") ;
+                          return packCompileError('m15', token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if (auxTokenString.length > 2*architecture.directives[j].size) {
-                         return packCompileError(19, token, 'error', "danger") ;
+                         return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1307,12 +1312,12 @@ function data_segment_compiler()
                   {
                     token = get_token();
                     if (token == null) {
-                        return packCompileError(24,"", 'error', "danger") ;
+                        return packCompileError('m23',"", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if (token.search(re) != -1) {
-                        return packCompileError(25, token, 'error', "danger") ;
+                        return packCompileError('m24', token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1328,28 +1333,28 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if (value[1].search(re) == -1) {
-                         return packCompileError(16, token, 'error', "danger") ;
+                         return packCompileError('m15', token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
 
                       if (value[1].length == 0) {
-                          return packCompileError(20, token, 'error', "danger") ;
+                          return packCompileError('m19', token, 'error', "danger") ;
                       }
                       if (auxTokenString.length > 2*architecture.directives[j].size) {
-                          return packCompileError(19, token, 'error', "danger") ;
+                          return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if (token.search(re) == -1) {
-                          return packCompileError(16, token, 'error', "danger") ;
+                          return packCompileError('m15', token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if (auxTokenString.length > 2*architecture.directives[j].size) {
-                          return packCompileError(19, token, 'error', "danger") ;
+                          return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1390,12 +1395,12 @@ function data_segment_compiler()
 
                     token = get_token();
                     if (token == null) {
-                        return packCompileError(24,"", 'error', "danger") ;
+                        return packCompileError('m23', "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if (token.search(re) != -1) {
-                        return packCompileError(25, token, 'error', "danger") ;
+                        return packCompileError('m24', token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1410,27 +1415,27 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError('m15', token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(20, token, 'error', "danger") ;
+                        return packCompileError('m19', token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError('m15', token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1474,12 +1479,12 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      return packCompileError(24,"", 'error', "danger") ;
+                      return packCompileError('m23', "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      return packCompileError(25, token, 'error', "danger") ;
+                      return packCompileError('m24', token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1494,27 +1499,27 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError('m15', token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(20, token, 'error', "danger") ;
+                        return packCompileError('m19', token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
                     else{
                       var re = new RegExp("[0-9-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError('m15', token, 'error', "danger") ;
                       }
                       auxToken = parseInt(token) >>> 0;
                       auxTokenString = (auxToken.toString(16).substring(auxToken.toString(16).length-2*architecture.directives[j].size, auxToken.toString(16).length)).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1556,12 +1561,12 @@ function data_segment_compiler()
                     token = get_token();
 
                     if(token == null){
-                      return packCompileError(24,"", 'error', "danger") ;
+                      return packCompileError('m23', "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
                     if(token.search(re) != -1){
-                      return packCompileError(25, token, 'error', "danger") ;
+                      return packCompileError('m24', token, 'error', "danger") ;
                     }
 
                     re = new RegExp(",", "g");
@@ -1588,15 +1593,15 @@ function data_segment_compiler()
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
                       if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError('m15', token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
                       if(value[1].length == 0){
-                        return packCompileError(20, token, 'error', "danger") ;
+                        return packCompileError('m19', token, 'error', "danger") ;
                       }
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                       token = hex2float(token);
@@ -1604,12 +1609,12 @@ function data_segment_compiler()
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
                       if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                        return packCompileError('m15', token, 'error', "danger") ;
                       }
                       auxToken = parseFloat(token, 10);
                       auxTokenString = (bin2hex(float2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
                       if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                        return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1651,17 +1656,16 @@ function data_segment_compiler()
                     console_log("double");
 
                     token = get_token();
-
-                    if(token == null){
-                      return packCompileError(24,"", 'error', "danger") ;
+                    if (token == null) {
+                        return packCompileError('m23', "", 'error', "danger") ;
                     }
 
                     re = new RegExp("([0-9A-Fa-f-]),([0-9A-Fa-f-])");
-                    if(token.search(re) != -1){
-                      return packCompileError(25, token, 'error', "danger") ;
+                    if (token.search(re) != -1) {
+                        return packCompileError('m24', token, 'error', "danger") ;
                     }
 
-                    re = new RegExp(",", "g")
+                    re = new RegExp(",", "g");
                     token = token.replace(re, "");
 
                     console_log(token);
@@ -1684,29 +1688,29 @@ function data_segment_compiler()
                       var value = token.split('x');
 
                       re = new RegExp("[0-9A-Fa-f]{"+value[1].length+"}","g");
-                      if(value[1].search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                      if (value[1].search(re) == -1) {
+                          return packCompileError('m15', token, 'error', "danger") ;
                       }
 
                       auxTokenString = value[1].padStart(2*architecture.directives[j].size, "0");
-                      if(value[1].length == 0){
-                        return packCompileError(20, token, 'error', "danger") ;
+                      if (value[1].length == 0) {
+                          return packCompileError('m19', token, 'error', "danger") ;
                       }
-                      if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                      if (auxTokenString.length > 2*architecture.directives[j].size) {
+                          return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                       token = hex2double(token);
                     }
                     else{
                       var re = new RegExp("[\+e0-9.-]{"+token.length+"}","g");
-                      if(token.search(re) == -1){
-                        return packCompileError(16, token, 'error', "danger") ;
+                      if (token.search(re) == -1) {
+                          return packCompileError('m15', token, 'error', "danger") ;
                       }
-                      auxToken = parseFloat(token, 10);console_log(auxTokenString);
+                      auxToken = parseFloat(token, 10); console_log(auxTokenString);
                       auxTokenString = (bin2hex(double2bin(auxToken))).padStart(2*architecture.directives[j].size, "0");
-                      if(auxTokenString.length > 2*architecture.directives[j].size){
-                        return packCompileError(19, token, 'error', "danger") ;
+                      if (auxTokenString.length > 2*architecture.directives[j].size) {
+                          return packCompileError('m18', token, 'error', "danger") ;
                       }
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
@@ -1729,10 +1733,10 @@ function data_segment_compiler()
 
                     console_log(token);
 
-                    for(var z = 0; z < architecture.directives.length; z++){
-                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                        isDouble = false;
-                      }
+                    for (var z = 0; z < architecture.directives.length; z++){
+                        if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                           isDouble = false;
+                        }
                     }
                     console_log(memory[memory_hash[0]]);
                   }
@@ -1757,103 +1761,26 @@ function data_segment_compiler()
                     string = token;
 
                     re = new RegExp('^"');
-                    if(string.search(re) != -1){
-	                    string = string.replace(re, "");
-	                    console_log(string);
-		                }
-		                else{
-		                	return packCompileError(17, "", 'error', "danger") ;
-		                }
+                    if (string.search(re) != -1){
+	                string = string.replace(re, "");
+	                console_log(string);
+		    }
+		    else {
+		        return packCompileError('m16', "", 'error', "danger") ;
+		    }
+
                     re = new RegExp('"$');
-                    if(string.search(re) != -1){
+                    if (string.search(re) != -1){
 	                    string = string.replace(re, "");
 	                    console_log(string);
 		                }
 		                else{
-		                	return packCompileError(18, "", 'error', "danger") ;
+		                	return packCompileError('m17', "", 'error', "danger") ;
 		                }
 
                     if(token == null){
                       break;
                     }
-
-/************************
-                    re = new RegExp('(.)","(.)');
-                    if(token.search(re) != -1){
-                      app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();
-                      return -1;
-                    }
-
-                    console_log(token);
-
-                    re = new RegExp(",", "g");
-                    token = token.replace(re, "");
-
-                    re = new RegExp('^"');
-                    console_log(re);
-                    if(token.search(re) == -1){
-                      app.compileError(17, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();
-                      return -1;
-                    }
-
-                    var string = "";
-                    var final = false;
-
-                    re = new RegExp('"$');
-                    console_log(re);
-                    console_log(token);
-                    if(token.search(re) == -1){
-                      string = token.substring(1, token.length);
-                    }
-                    else{
-                      string = token.substring(1, token.length-1);
-                      final = true;
-                    }
-
-                    while(final == false){
-                      next_token();
-                      token = get_token();
-                      console_log(token);
-
-                      if(token == null){
-                        break;
-                      }
-
-                      re = new RegExp('(.)","(.)');
-                      console_log(re);
-                      if(token.search(re) != -1){
-                        app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();
-                        return -1;
-                      }
-
-                      console_log(token);
-
-                      re = new RegExp(",", "g")
-                      token = token.replace(re, "");
-
-                      re = new RegExp('^"');
-                      console_log(re);
-                      if(token.search(re) != -1 && final == false){
-                        string = string + " ";
-                        final = true;
-                      }
-
-                      re = new RegExp('"$');
-                      console_log(re);
-                      if(token.search(re) != -1 && final == false){
-                        final = true;
-                        string = string + " " + token.substring(0, token.length-1);
-                      }
-
-                      if(final == false){
-                        string = string + " " + token;
-                        final = false;
-                      }
-                    }
-**********************************/
 
                     console_log(string);
 
@@ -1968,7 +1895,7 @@ function data_segment_compiler()
 	                    console_log(string);
 		                }
 		                else{
-		                	return packCompileError(17, "", 'error', "danger") ;
+		                	return packCompileError('m16', "", 'error', "danger") ;
 		                }
                     re = new RegExp('"$');
                     if(string.search(re) != -1){
@@ -1976,83 +1903,8 @@ function data_segment_compiler()
 	                    console_log(string);
 		                }
 		                else{
-		                	return packCompileError(18, "", 'error', "danger") ;
+		                	return packCompileError('m17', "", 'error', "danger") ;
 		                }
-
-/************************
-                    re = new RegExp('(.)","(.)');
-                    if(token.search(re) != -1){
-                      app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();
-                      return -1;
-                    }
-
-                    re = new RegExp(",", "g")
-                    token = token.replace(re, "");
-
-                    re = new RegExp('^"');
-                    console_log(re)
-                    if(token.search(re) == -1){
-                      app.compileError(17, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      hide_loading();
-                      return -1;
-                    }
-
-                    var string = "";
-                    var final = false;
-
-                    re = new RegExp('"$');
-                    console_log(re);
-                    console_log(token);
-                    if(token.search(re) == -1){
-                      string = token.substring(1, token.length);
-                    }
-                    else{
-                      string = token.substring(1, token.length-1);
-                      final = true;
-                    }
-
-                    while(final == false){
-                      next_token();
-                      token = get_token();
-                      console_log(token);
-                      if(token == null){
-                        break;
-                      }
-
-                      re = new RegExp('(.)","(.)');
-                      console_log(re);
-                      if(token.search(re) != -1){
-                        app.compileError(24, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        hide_loading();
-                        return -1;
-                      }
-
-                      re = new RegExp(",", "g")
-                      token = token.replace(re, "");
-
-                      re = new RegExp('^"');
-                      console_log(re);
-                      if(token.search(re) != -1 && final == false){
-                        string = string + " ";
-                        final = true;
-                      }
-
-                      re = new RegExp('"$');
-                      console_log(re);
-                      if(token.search(re) != -1 && final == false){
-                        final = true;
-                        string = string + " " + token.substring(0, token.length-1);
-                      }
-
-                      if(final == false){
-                        string = string + " " + token;
-                        final = false;
-                      }
-                    }
-
-                    string = string;
-*********************************/
 
                     console_log(string);
 
@@ -2163,16 +2015,16 @@ function data_segment_compiler()
                   console_log(label);
 
                   if(token == null){
-                    return packCompileError(24, "", 'error', "danger") ;
+                    return packCompileError('m23', "", 'error', "danger") ;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
-                    return packCompileError(16, token, 'error', "danger") ;
+                    return packCompileError('m15', token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
-                    return packCompileError(23, token, 'error', "danger") ;
+                    return packCompileError('m22', token, 'error', "danger") ;
                   }
 
                   var auxToken = parseInt(token) * architecture.directives[j].size;
@@ -2251,16 +2103,16 @@ function data_segment_compiler()
                   token = get_token();
                   console_log(token);
                   if(token == null){
-                    return packCompileError(24, "", 'error', "danger") ;
+                    return packCompileError('m23', "", 'error', "danger") ;
                   }
 
                   var re = new RegExp("[0-9-]{"+token.length+"}","g");
                   if(token.search(re) == -1){
-                    return packCompileError(16, token, 'error', "danger") ;
+                    return packCompileError('m15', token, 'error', "danger") ;
                   }
 
                   if(parseInt(token) < 0){
-                    return packCompileError(23, token, 'error', "danger") ;
+                    return packCompileError('m22', token, 'error', "danger") ;
                   }
 
                   console_log(align);
@@ -2308,9 +2160,9 @@ function data_compiler(value, size, dataLabel, DefValue, type)
 
 
         for(var i = 0; i < (value.length/2); i++)
-	{
+				{
           if ((data_address % align) != 0 && i == 0 && align != 0)
-	  {
+	  				{
             while((data_address % align) != 0){
               if(data_address % 4 == 0){
                 memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: type});
@@ -2328,7 +2180,7 @@ function data_compiler(value, size, dataLabel, DefValue, type)
           }
 
           if(data_address % size != 0 && i == 0){
-            return packCompileError(21, "", 'error', "danger") ;
+            return packCompileError('m21', "", 'error', "danger") ;
           }
 
           if(data_address % 4 == 0){
@@ -2436,20 +2288,20 @@ function code_segment_compiler()
 
           if(token.search(/\:$/) != -1){
             if(token.length == 1){
-              return packCompileError(0, "", 'error', "danger") ;
+              return packCompileError('m0', "Empty label", 'error', "danger") ;
             }
 
             for(var i = 0; i < memory[memory_hash[0]].length; i++){
               for(var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++){
                 if(memory[memory_hash[0]][i].Binary[j].Tag == token.substring(0,token.length-1)){
-                  return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+                  return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
                 }
               }
             }
 
             for(var i = 0; i < instructions.length; i++){
               if(instructions[i].Label == token.substring(0,token.length-1)){
-                return packCompileError(1, token.substring(0,token.length-1), 'error', "danger") ;
+                return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
               }
             }
 
@@ -2562,7 +2414,7 @@ function code_segment_compiler()
 
                   instruction = instruction + " " + token;
                 }
-                resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex); //TODO: line->ti?
+                resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex);
                 console_log(resultPseudo);
 
                 if (resultPseudo.status != 'ok') {
@@ -2590,7 +2442,9 @@ function code_segment_compiler()
                     extern = [];
                     memory[memory_hash[2]] = [];
                     data = [];
-                    ret = packCompileError(26, (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 'error', "danger") ;
+                 // ret = packCompileError('m25', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 
+                 //                        'error', "danger") ;
+                    ret = packCompileError('m25', nEnters+1, 'error', "danger") ;
 
                     return ret;
                   }
@@ -2613,7 +2467,7 @@ function code_segment_compiler()
               memory[memory_hash[2]] = [];
               data = [];
 
-              ret = packCompileError(2, token, 'error', "danger");
+              ret = packCompileError('m2', token, 'error', "danger");
               return ret;
             }
 
@@ -2635,7 +2489,7 @@ function code_segment_compiler()
               data = [];
 
               //PRUEBA para dar error con mas detalle
-              ret = packCompileError(2, token, 'error', "danger");
+              ret = packCompileError('m2', token, 'error', "danger");
 
               return ret;
             }
@@ -2654,7 +2508,7 @@ function code_segment_compiler()
               extern = [];
               memory[memory_hash[2]] = [];
               data = [];
-              ret = packCompileError(25, "", 'error', "danger") ;
+              ret = packCompileError('m24', "", 'error', "danger") ;
               return ret;
             }
 
@@ -2833,8 +2687,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               instruction = instruction + " " + token;
             }
             console_log(instruction);
-            //resultPseudo = pseudoinstruction_compiler(instruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line); //TODO: revisar linea
-            resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex); //TODO: line->ti?
+            resultPseudo = pseudoinstruction_compiler(instruction, label, tokenIndex);
 
             console_log(resultPseudo)
 
@@ -2844,51 +2697,26 @@ function instruction_compiler ( instruction, userInstruction, label, line,
             if (resultPseudo.errorcode == 3) {
                 return resultPseudo ;
             }
-
-            //TODO: revisar que solo se puede salir con ok y -1
-
-            /*if(resultPseudo == -1){*/
-              /*this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-              return -1;*/
-              /*return packCompileError(3, auxSignature, 'error', "danger") ;
-            }*/
           }
         }
-
-        //var resultPseudo = pseudoinstruction_compiler(oriInstruction, label, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-
-        /*console_log(resultPseudo)
-
-        if(resultPseudo == 0){
-          return;
-        }
-
-        if(resultPseudo == -1){
-          this.compileError(3, architecture.instructions[i].signatureRaw, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-          return -1;
-        }*/
       }
 
-      if(resultPseudo == null){
-        /*this.compileError(3, auxSignature, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-        return -1;*/
-        return packCompileError(3, auxSignature, 'error', "danger") ;
+      if (resultPseudo == null) {
+          return packCompileError('m3', auxSignature, 'error', "danger") ;
       }
+
       console_log(oriInstruction);
       console_log(re)
       match = re.exec(oriInstruction);
       instructionParts = [];
-      if(match != null){
-        for(var j = 1; j < match.length; j++){
-          instructionParts.push(match[j]);
-        }
+      if (match != null) {
+          for (var j = 1; j < match.length; j++) {
+               instructionParts.push(match[j]);
+          }
       }
-      else{
-        //TODO: posible fallo
-
-        //return -2;
-        console_log("AQUI1");
-        return packCompileError(14, "", 'error', "danger") ;
+      else {
+        // TODO: 'm3' precisa auxSignature como segundo par'ametro en otros usos, ¿vale con ""?
+        return packCompileError('m3', "", 'error', "danger") ;
       }
 
       console_log(instructionParts);
@@ -2933,11 +2761,8 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
                       var reg = w;
 
-                      if(reg.toString(2).length > fieldsLength){
-                        /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                        return -1;*/
-
-                        return packCompileError(12, token, 'error', "danger") ;
+                      if (reg.toString(2).length > fieldsLength) {
+                          return packCompileError('m12', token, 'error', "danger") ;
                       }
 
                       console_log(reg)
@@ -2962,7 +2787,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       var reg = regNum;
 
                       if(reg.toString(2).length > fieldsLength){
-                        return packCompileError(12, token, 'error', "danger") ;
+                        return packCompileError('m12', token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -2971,9 +2796,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       instruction = instruction.replace(re, token);
                     }
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      /*this.compileError(4, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;*/
-                      return packCompileError(4, token, 'error', "danger") ;
+                      return packCompileError('m4', token, 'error', "danger") ;
                     }
                     regNum++;
                   }
@@ -3004,7 +2827,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
                       if(reg.toString(2).length > fieldsLength){
 
-                        return packCompileError(12, token, 'error', "danger") ;
+                        return packCompileError('m12', token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3015,7 +2838,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       console_log(instruction);
                     }
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      return packCompileError(4, token, 'error', "danger") ;
+                      return packCompileError('m4', token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
                       regNum++;
@@ -3048,7 +2871,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
                       if(reg.toString(2).length > fieldsLength){
 
-                        return packCompileError(12, token, 'error', "danger") ;
+                        return packCompileError('m12', token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3057,7 +2880,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       instruction = instruction.replace(re, token);
                     }
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      return packCompileError(4, token, 'error', "danger") ;
+                      return packCompileError('m4', token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
                       regNum++;
@@ -3090,7 +2913,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
                       if(reg.toString(2).length > fieldsLength){
 
-                        return packCompileError(12, token, 'error', "danger") ;
+                        return packCompileError('m12', token, 'error', "danger") ;
                       }
 
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + (reg.toString(2)).padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3099,7 +2922,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       instruction = instruction.replace(re, token);
                     }
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
-                      return packCompileError(4, token, 'error', "danger") ;
+                      return packCompileError('m4', token, 'error', "danger") ;
                     }
                     if(architecture.components[z].type == "control"){
                       regNum++;
@@ -3142,21 +2965,10 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     if (resultPseudo.status != 'ok'){
                         return resultPseudo ;
                     }
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
                   }
 
                   if(isNaN(parseInt(token, 16)) == true){
-                    return packCompileError(6, token, 'error', "danger") ;
+                    return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 16)).toString(2);
@@ -3167,24 +2979,13 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
 
                     console_log(resultPseudo);
 
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
                     if (resultPseudo.status != 'ok'){
                         return resultPseudo ;
                     }
                   }
 
-                  if(isNaN(parseFloat(token)) == true){
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseFloat(token)) == true) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
@@ -3216,53 +3017,20 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                   console_log(comNumPos);
                   console_log(comNumNeg);
 
-                  /*var numAux = parseInt(token, 10) >>> 0;
-
-                  if((numAux.toString(2)).length > fieldsLength){
-                    console_log(oriInstruction)
-                    console_log(label)
-                    console_log(line)
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-                  }*/
-
                   if(parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg){
                     console_log(oriInstruction)
                     console_log(label)
                     console_log(line)
                     resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
                     console_log(resultPseudo);
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
 
                     if (resultPseudo.status != 'ok'){
                         return resultPseudo ;
                     }
                   }
 
-                  if(isNaN(parseInt(token)) == true && resultPseudo == -3){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -3270,11 +3038,9 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                 }
                 if(validTagPC == true){
                   console_log(inm.length);
-                  if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
-                    /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
+                  if (inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)) {
 
-                    return packCompileError(12, token, 'error', "danger") ;
+                      return packCompileError('m12', token, 'error', "danger") ;
                   }
 
 binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
@@ -3335,68 +3101,40 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
 
                 if(token.match(/^0x/)){
                   var value = token.split("x");
-                  if(value[1].length*4 > fieldsLength){
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                  if (value[1].length*4 > fieldsLength) 
+                  {
+                      resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
 
-                    console_log(resultPseudo);
+                      console_log(resultPseudo);
 
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
-
+                      if (resultPseudo.status != 'ok'){
+                          return resultPseudo ;
+                      }
                   }
 
-                  if(isNaN(parseInt(token, 16)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseInt(token, 16)) == true) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 16)).toString(2);
                 }
-                else if (token.match(/^(\d)+\.(\d)+/)){
-                  if(float2bin(parseFloat(token)).length > fieldsLength){
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
-
+                else if (token.match(/^(\d)+\.(\d)+/))
+                {
+                  if (float2bin(parseFloat(token)).length > fieldsLength) {
+                      resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                      console_log(resultPseudo);
+                      if (resultPseudo.status != 'ok') {
+                          return resultPseudo ;
+                      }
                   }
 
-                  if(isNaN(parseFloat(token)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseFloat(token)) == true) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
                 }
-                else if(token.match(/^\'(.*?)\'$/)){
+                else if(token.match(/^\'(.*?)\'$/)) {
                   var re = /^\'(.*?)\'$/;
                   console_log(re);
                   var match = re.exec(token);
@@ -3425,29 +3163,14 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                     console_log(label)
                     console_log(line)
                     resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
                     console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
+                    if (resultPseudo.status != 'ok') {
                         return resultPseudo ;
                     }
                   }
 
-                  if(isNaN(parseInt(token)) == true && resultPseudo == -3){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -3455,11 +3178,8 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                 }
                 if(validTagPC == true){
                   console_log(inm.length);
-                  if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
-                    /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(12, token, 'error', "danger") ;
+                  if (inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)) {
+                     return packCompileError('m12', token, 'error', "danger") ;
                   }
 
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3512,18 +3232,12 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                 if(token.match(/^0x/)){
                   var value = token.split("x");
 
-                  if(value[1].length*4 > fieldsLength){
-                    /*this.compileError(8, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(8, token, 'error', "danger") ;
+                  if (value[1].length*4 > fieldsLength) {
+                     return packCompileError('m8', token, 'error', "danger") ;
                   }
 
-                  if(isNaN(parseInt(token, 16)) == true){
-                    /*this.compileError(9, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(9, token, 'error', "danger") ;
+                  if (isNaN(parseInt(token, 16)) == true) {
+                      return packCompileError('m9', token, 'error', "danger") ;
                   }
 
                   addr = (parseInt(token, 16)).toString(2);
@@ -3555,65 +3269,36 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
 
                 var inm;
 
-                if(token.match(/^0x/)){
-                  var value = token.split("x");
-                  if(value[1].length*4 > fieldsLength){
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                if(token.match(/^0x/))
+                {
+                   var value = token.split("x");
+                   if (value[1].length*4 > fieldsLength)
+                   {
+                      resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                      console_log(resultPseudo);
+                      if (resultPseudo.status != 'ok'){
+                          return resultPseudo ;
+                      }
+                   }
+ 
+                   if (isNaN(parseInt(token, 16)) == true) {
+                       return packCompileError('m6', token, 'error', "danger") ;
+                   }
 
-                    console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
-
-                  }
-
-                  if(isNaN(parseInt(token, 16)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
-                  }
-
-                  inm = (parseInt(token, 16)).toString(2);
+                   inm = (parseInt(token, 16)).toString(2);
                 }
                 else if (token.match(/^(\d)+\.(\d)+/)){
-                  if(float2bin(parseFloat(token)).length > fieldsLength){
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
-
+                  if (float2bin(parseFloat(token)).length > fieldsLength)
+                  {
+                     resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                     console_log(resultPseudo);
+                     if (resultPseudo.status != 'ok'){
+                         return resultPseudo ;
+                     }
                   }
 
-                  if(isNaN(parseFloat(token)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseFloat(token)) == true) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
@@ -3632,67 +3317,20 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                   console_log(comNumPos);
                   console_log(comNumNeg);
 
+                  if (parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg)
+                  {
+                      console_log(oriInstruction)
+                      console_log(label)
+                      console_log(line)
+                      resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                      console_log(resultPseudo);
+                      if (resultPseudo.status != 'ok') {
+                          return resultPseudo ;
+                      }
+                   }
 
-
-
-
-
-                  /*var numAux = parseInt(token, 10) >>> 0;
-
-                  if((numAux.toString(2)).length > fieldsLength){
-                    console_log(oriInstruction)
-                    console_log(label)
-                    console_log(line)
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-                  }
-
-                  if(isNaN(parseInt(token)) == true && resultPseudo == -3){
-                    this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;
-                  }
-
-                  inm = (parseInt(token, 10) >>> 0).toString(2);*/
-
-                  if(parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg){
-                    console_log(oriInstruction)
-                    console_log(label)
-                    console_log(line)
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
-                  }
-
-                  if(isNaN(parseInt(token)) == true && resultPseudo == -3){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                     return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -3700,10 +3338,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                 }
                 if(validTagPC == true){
                   if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
-                    /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(12, token, 'error', "danger") ;
+                    return packCompileError('m12', token, 'error', "danger") ;
                   }
 
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3734,63 +3369,33 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
 
                 if(token.match(/^0x/)){
                   var value = token.split("x");
-                  if(value[1].length*4 > fieldsLength){
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
-
+                  if (value[1].length*4 > fieldsLength)
+                  {
+                     resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                     console_log(resultPseudo);
+                     if (resultPseudo.status != 'ok'){
+                         return resultPseudo ;
+                     }
                   }
 
-                  if(isNaN(parseInt(token, 16)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseInt(token, 16)) == true) {
+                     return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 16)).toString(2);
                 }
                 else if (token.match(/^(\d)+\.(\d)+/)){
-                  if(float2bin(parseFloat(token)).length > fieldsLength){
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
-
+                  if (float2bin(parseFloat(token)).length > fieldsLength)
+                  {
+                     resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                     console_log(resultPseudo);
+                     if (resultPseudo.status != 'ok'){
+                         return resultPseudo ;
+                     }
                   }
 
-                  if(isNaN(parseFloat(token)) == true){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseFloat(token)) == true) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = float2bin(parseFloat(token, 16));
@@ -3809,56 +3414,20 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                   console_log(comNumPos);
                   console_log(comNumNeg);
 
-
-                  /*var numAux = parseInt(token, 10) >>> 0;
-
-                  if((numAux.toString(2)).length > fieldsLength){
-                    console_log(oriInstruction)
-                    console_log(label)
-                    console_log(line)
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-                  }*/
-
-                  if(parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg){
-                    console_log(oriInstruction)
-                    console_log(label)
-                    console_log(line)
-                    resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
-
-                    console_log(resultPseudo);
-
-                    /*if(resultPseudo == -1){
-                      this.compileError(5, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }
-
-                    if(resultPseudo == -2){
-                      this.compileError(14, "", textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                      return -1;
-                    }*/
-
-                    if (resultPseudo.status != 'ok'){
-                        return resultPseudo ;
-                    }
+                  if (parseInt(token, 10) > comNumPos || parseInt(token, 10) < comNumNeg)
+                  {
+                      console_log(oriInstruction)
+                      console_log(label)
+                      console_log(line)
+                      resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
+                      console_log(resultPseudo);
+                      if (resultPseudo.status != 'ok'){
+                          return resultPseudo ;
+                      }
                   }
 
-                  if(isNaN(parseInt(token)) == true && resultPseudo == -3){
-                    /*this.compileError(6, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(6, token, 'error', "danger") ;
+                  if (isNaN(parseInt(token)) == true && resultPseudo == -3) {
+                      return packCompileError('m6', token, 'error', "danger") ;
                   }
 
                   inm = (parseInt(token, 10) >>> 0).toString(2);
@@ -3867,10 +3436,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                 }
                 if(validTagPC == true){
                   if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
-                    /*this.compileError(12, token, textarea_assembly_editor.posFromIndex(tokenIndex).line);
-                    return -1;*/
-
-                    return packCompileError(12, token, 'error', "danger") ;
+                      return packCompileError('m12', token, 'error', "danger") ;
                   }
 
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
@@ -3950,8 +3516,6 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
         console_log(binary);
         console_log(bin2hex(binary));
 
-      //pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: textarea_assembly_editor.posFromIndex(tokenIndex).line}); //TODO: revisar linea
-      //pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: line}); //TODO: line->ti?
       pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: nEnters});
 
         if(pending == false){
@@ -4107,9 +3671,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
       re = new RegExp(signatureDef+"$");
       console_log(re)
-      if(instruction.search(re) == -1 && i == architecture.pseudoinstructions.length-1){
-        //return -1;
-        return packCompileError(3, auxSignature, 'error', "danger") ;
+      if (instruction.search(re) == -1 && i == architecture.pseudoinstructions.length-1) {
+          return packCompileError('m3', auxSignature, 'error', "danger") ;
       }
 
       if(instruction.search(re) == -1 && i < architecture.pseudoinstructions.length-1){
@@ -4189,14 +3752,12 @@ function pseudoinstruction_compiler ( instruction, label, line )
           }
           catch(e){
             if (e instanceof SyntaxError){
-              //return -1;
-              return packCompileError(5, token, 'error', "danger") ;
+              return packCompileError('m5', token, 'error', "danger") ;
             }
           }
 
-          if(value == -1){
-            //return -1;
-            return packCompileError(5, token, 'error', "danger") ;
+          if (value == -1) {
+              return packCompileError('m5', token, 'error', "danger") ;
           }
 
           definition = definition.replace("Field." + match[1] + ".(" + match[2]+ ")." + match[3], value);
@@ -4234,12 +3795,12 @@ function pseudoinstruction_compiler ( instruction, label, line )
           }
           catch(e){
             if (e instanceof SyntaxError){
-              return packCompileError(5, token, 'error', "danger") ;
+              return packCompileError('m5', token, 'error', "danger") ;
             }
           }
 
           if(value == -1){
-            return packCompileError(5, token, 'error', "danger") ;
+            return packCompileError('m5', token, 'error', "danger") ;
           }
 
           console_log(value);
@@ -4324,7 +3885,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           if(error == true){
             console_log("Error pseudo");
             //return -2;
-            //return packCompileError(14, "Error pseudoinstruction", 'error', "danger") ;
+            //return packCompileError('m13', "Error pseudoinstruction", 'error', "danger") ;
             return ret;
           }
           console_log("Fin pseudo");
@@ -4332,9 +3893,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
         }
         catch(e){
           if (e instanceof SyntaxError) {
-            //return -2;
-            console_log("AQUI2");
-            return packCompileError(14, "", 'error', "danger") ;
+            return packCompileError('m13', "", 'error', "danger") ;
           }
         }
       }
@@ -4342,9 +3901,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
     }
   }
 
-  if(!found){
-    //return -1;
-    return packCompileError(3, auxSignature, 'error', "danger") ;
+  if (!found) {
+      return packCompileError('m3', auxSignature, 'error', "danger") ;
   }
 
   return ret;
@@ -4423,8 +3981,6 @@ function field(field, action, type)
   return -1;
 }
 
-
-//TODO: funciones duplicadas en el app.js
 
 /*Convert hexadecimal number to floating point number*/
 function hex2float ( hexvalue )
@@ -4678,7 +4234,6 @@ function binaryStringToInt( b ) {
  *
  */
 
-// todo: draw_info y draw_space añadirlo a ret...
 function packExecute ( error, err_msg, err_type, draw )
 {
     var ret = {} ;
@@ -4694,12 +4249,12 @@ function packExecute ( error, err_msg, err_type, draw )
 function executeInstruction ( )
 {
   var draw = {
-    space: [] ,
-    info: [] ,
-    success: [] ,
-    danger: [],
-    flash: []
-  } ;
+                space:   [],
+                info:    [],
+                success: [],
+                danger:  [],
+                flash:   []
+              } ;
 
   console_log(mutexRead);
   newExecution = false;
@@ -4722,41 +4277,43 @@ function executeInstruction ( )
          }
 
     /*Search a main tag*/
-    if (executionInit == 1) {
-      for (var i = 0; i < instructions.length; i++) {
-        if (instructions[i].Label == "main") {
-            //draw.success.push(executionIndex) ;
-            architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
-            executionInit = 0;
-            break;
+    if (executionInit == 1) 
+    {
+        for (var i = 0; i < instructions.length; i++) {
+          if (instructions[i].Label == "main") {
+              //draw.success.push(executionIndex) ;
+              architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
+              executionInit = 0;
+              break;
+          }
+          else if(i == instructions.length-1){
+            executionIndex = -1;
+            return packExecute(true, 'Label "main" not found', 'danger', null);
+          }
         }
-        else if(i == instructions.length-1){
-          executionIndex = -1;
-          return packExecute(true, 'Label "main" not found', 'danger', null);
-        }
-      }
     }
 
     var error = 0;
     var index;
 
-    for (var i = 0; i < instructions.length; i++){
-      if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
-        executionIndex = i;
+    for (var i = 0; i < instructions.length; i++)
+    {
+      if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
+          executionIndex = i;
 
-        console_log(instructions[executionIndex].hide)
-        console_log(executionIndex)
-        console_log(instructions[i].Address)
+          console_log(instructions[executionIndex].hide)
+          console_log(executionIndex)
+          console_log(instructions[i].Address)
 
-        if (instructions[executionIndex].hide == false) {
-            draw.info.push(executionIndex);
+          if (instructions[executionIndex].hide == false) {
+              draw.info.push(executionIndex);
+          }
         }
-      }
-      else{
-        if (instructions[executionIndex].hide == false) {
-            draw.space.push(i);
+        else{
+          if (instructions[executionIndex].hide == false) {
+              draw.space.push(i);
+          }
         }
-      }
     }
 
     var instructionExec = instructions[executionIndex].loaded;
@@ -5485,7 +5042,7 @@ function executeInstruction ( )
       console_log(auxDef);
 
       // preload instruction
-eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
+			eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
 	        "try {\n" +
 	           auxDef.replace(/this./g,"elto.") + "\n" +
 	        "}\n" +
@@ -5931,7 +5488,7 @@ function writeMemory ( value, addr, type )
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                 //memory[index][i].Value = parseInt(memValue, 16);
                 if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                  memory[index][i].Value = hex2float("0x" + memValue);
                 }
                 else{
                   memory[index][i].Value = (parseInt(memValue, 16) >> 0);
@@ -5945,7 +5502,7 @@ function writeMemory ( value, addr, type )
                 //memory[index][i].Value = parseInt(memValue, 16);
 
                 if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                  memory[index][i].Value = hex2float("0x" + memValue);
                 }
                 else{
                   memory[index][i].Value = (parseInt(memValue, 16) >> 0);
@@ -6337,7 +5894,9 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if (typeof app !== "undefined")
                     app._data.display += val_int ;
-               else console.log(val_int) ; //process.stdout.write(val_int) ;
+               else process.stdout.write(val_int + '\n') ;
+
+               display += val_int ;
                break;
 
           case "print_float":
@@ -6345,14 +5904,19 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if (typeof app !== "undefined")
                     app._data.display += value;
-               else console.log(value) ; //process.stdout.write(value) ;
+               else process.stdout.write(value + '\n') ;
+
+               display += value ;
                break;
 
           case "print_double":
                var value = architecture.components[indexComp].elements[indexElem].value;
+
                if (typeof app !== "undefined")
                     app._data.display += value;
-               else console.log(value) ; //process.stdout.write(value) ;
+               else process.stdout.write(value + '\n') ;
+
+               display += value ;
                break;
 
           case "print_string":
@@ -6387,14 +5951,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                            app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
 
-                      if(memory[index][i].Binary[k].Bin == 0){
-                        //return
-                        return packExecute(false, 'printed', 'info', null);
+                      display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+
+                      if (memory[index][i].Binary[k].Bin == 0) {
+                          return packExecute(false, 'printed', 'info', null);
                       }
-                      else if(i == memory[index].length-1 && k == memory[index][i].Binary.length-1){
-                        //return;
-                        return packExecute(false, 'printed', 'info', null);
+                      if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
+                          return packExecute(false, 'printed', 'info', null);
                       }
+
                       j=0;
                     }
                   }
@@ -6409,17 +5974,17 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 // CL
                 if (typeof app === "undefined") 
                 {
-          		    var readlineSync = require('readline-sync') ;
-          		    var keystroke    = readlineSync.question(' $> ') ;
+                  var readlineSync = require('readline-sync') ;
+                  var keystroke    = readlineSync.question(' $> ') ;
                   var value        = parseInt(keystroke) ;
 
                   writeRegister(value, indexComp, indexElem);
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(first_time == true){
-	                document.getElementById('enter_keyboard').scrollIntoView();
-	              }
+                if (first_time == true) {
+	            document.getElementById('enter_keyboard').scrollIntoView();
+	        }
 
                 // UI
                 mutexRead = true;
@@ -6667,7 +6232,6 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                   }
                   console_log(value);
     
-                  // TODO: subrutine for UI+CL
                   var addr = architecture.components[indexComp].elements[indexElem].value;
                   var valueIndex = 0;
                   var auxAddr = data_address;
@@ -6675,8 +6239,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                   var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
                   if (ret.status != 'ok') {
-                    return ret ;
-                	}
+                      return ret ;
+               	  }
 
                   app._data.memory[index] = memory[index];
                   app.keyboard = "";
@@ -6735,32 +6299,36 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 break;
 
           case "print_char":
-                var aux = architecture.components[indexComp].elements[indexElem].value;
-                var aux2 = aux.toString(16);
+                var aux    = architecture.components[indexComp].elements[indexElem].value;
+                var aux2   = aux.toString(16);
                 var length = aux2.length;
     
-                var value = aux2.substring(length-2, length);
+                var value = aux2.substring(length-2, length) ;
+                    value = String.fromCharCode(parseInt(value, 16)) ;
+
                 if (typeof app !== "undefined")
-                     app._data.display += String.fromCharCode(parseInt(value, 16));
+                     app._data.display += value ;
                 else process.stdout.write(value) ;
+
+                display += value ;
                 break;
 
           case "read_char":
 
-              // CL
-              if (typeof app === "undefined") 
-              {
-		  var readlineSync = require('readline-sync') ;
-		  var keystroke    = readlineSync.question(' read char> ') ;
-                  var value        = keystroke.charCodeAt(0);
+               // CL
+               if (typeof app === "undefined") 
+               {
+	 	   var readlineSync = require('readline-sync') ;
+	 	   var keystroke    = readlineSync.question(' read char> ') ;
+                   var value        = keystroke.charCodeAt(0);
 
-                  writeRegister(value, indexComp, indexElem);
-                  return packExecute(false, 'The data has been uploaded', 'danger', null);
-              }
+                   writeRegister(value, indexComp, indexElem);
+                   return packExecute(false, 'The data has been uploaded', 'danger', null);
+               }
 
-              if (first_time == true) {
-                  document.getElementById('enter_keyboard').scrollIntoView();
-              }
+               if (first_time == true) {
+                   document.getElementById('enter_keyboard').scrollIntoView();
+               }
 
                mutexRead = true;
                app._data.enter = false;
@@ -6843,8 +6411,10 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           }
 
           /*Reset console*/
-          mutexRead = false;
-          newExecution = true;
+          mutexRead    = false ;
+          newExecution = true ;
+          keyboard = '' ;
+          display  = '' ;
 
           for (var i = 0; i < architecture_hash.length; i++) {
             for (var j = 0; j < architecture.components[i].elements.length; j++) {
@@ -6877,6 +6447,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           architecture.memory_layout[4].value = backup_stack_address;
           architecture.memory_layout[3].value = backup_data_address;
 
+          // reset memory
           for (var i = 0; i < memory[memory_hash[0]].length; i++) {
             if(memory[memory_hash[0]][i].reset == true){
               memory[memory_hash[0]].splice(i, 1);
@@ -6903,6 +6474,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
             }
           }
 
+          // reset unallocate_memory
           unallocated_memory = [];
           if (typeof app !== "undefined")
               app._data.unallocated_memory = unallocated_memory;
@@ -7146,14 +6718,29 @@ function assembly_compile ( code )
 
     code_assembly = code ;
     ret = assembly_compiler() ;
-    if (ret.status == "error")
+    switch (ret.status)
     {
-        var mess = compileError[ret.errorcode] ;
-        ret.msg = mess.mess1 + ret.token + mess.mess2 ;
-    }
-    if (ret.status == "ok")
-    {
-        ret.msg = 'Compilation completed successfully' ;
+        case "error":
+	     var code_assembly_segment = code_assembly.split('\n') ;
+	     ret.msg += "\n\n" ;
+	     if (ret.line > 0)
+	         ret.msg += "  " + (ret.line+0) + " " + code_assembly_segment[ret.line - 1] + "\n" ;
+	         ret.msg += "->" + (ret.line+1) + " " + code_assembly_segment[ret.line] + "\n" ;
+	     if (ret.line < code_assembly_segment.length - 1)
+	         ret.msg += "  " + (ret.line+2) + " " + code_assembly_segment[ret.line + 1] + "\n" ;
+             break;
+
+        case "warning":
+             ret.msg = 'warning: ' + ret.token ;
+             break;
+
+        case "ok":
+             ret.msg = 'Compilation completed successfully' ;
+             break;
+
+        default:
+             ret.msg = 'Unknow assembly compiler code :-/' ;
+             break;
     }
 
     return ret ;
@@ -7267,6 +6854,12 @@ function get_state ( )
         }
     }
 
+    // dump keyboard
+    ret.msg = ret.msg + "keyboard[0x0]" + ":'" + encodeURIComponent(keyboard) + "'; ";
+
+    // dump display
+    ret.msg = ret.msg + "display[0x0]"  + ":'" + encodeURIComponent(display)  + "'; ";
+
     return ret ;
 }
 
@@ -7320,8 +6913,9 @@ function compare_states ( ref_state, alt_state )
     }
 
     // last) is different...
-    if (ret.status != "ko")
+    if (ret.status != "ko") {
         ret.msg = "Equals" ;
+    }
 
     return ret ;
 }

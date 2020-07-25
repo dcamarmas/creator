@@ -1,0 +1,7 @@
+[97m[39m
+[97m[Compiler] Error at line 10:[39m
+[97m[Compiler] Empty directive[39m
+[97m[Compiler] [39m
+[97m[Compiler]   9         str: .asciiz "Good string"[39m
+[97m[Compiler] ->10 	max: .byte [39m
+[97m[Compiler] [39m

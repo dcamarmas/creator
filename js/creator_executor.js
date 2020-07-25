@@ -18,7 +18,6 @@
  *
  */
 
-// todo: draw_info y draw_space añadirlo a ret...
 function packExecute ( error, err_msg, err_type, draw )
 {
     var ret = {} ;
@@ -34,12 +33,12 @@ function packExecute ( error, err_msg, err_type, draw )
 function executeInstruction ( )
 {
   var draw = {
-    space: [] ,
-    info: [] ,
-    success: [] ,
-    danger: [],
-    flash: []
-  } ;
+                space:   [],
+                info:    [],
+                success: [],
+                danger:  [],
+                flash:   []
+              } ;
 
   console_log(mutexRead);
   newExecution = false;
@@ -62,41 +61,43 @@ function executeInstruction ( )
          }
 
     /*Search a main tag*/
-    if (executionInit == 1) {
-      for (var i = 0; i < instructions.length; i++) {
-        if (instructions[i].Label == "main") {
-            //draw.success.push(executionIndex) ;
-            architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
-            executionInit = 0;
-            break;
+    if (executionInit == 1) 
+    {
+        for (var i = 0; i < instructions.length; i++) {
+          if (instructions[i].Label == "main") {
+              //draw.success.push(executionIndex) ;
+              architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
+              executionInit = 0;
+              break;
+          }
+          else if(i == instructions.length-1){
+            executionIndex = -1;
+            return packExecute(true, 'Label "main" not found', 'danger', null);
+          }
         }
-        else if(i == instructions.length-1){
-          executionIndex = -1;
-          return packExecute(true, 'Label "main" not found', 'danger', null);
-        }
-      }
     }
 
     var error = 0;
     var index;
 
-    for (var i = 0; i < instructions.length; i++){
-      if(parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value){
-        executionIndex = i;
+    for (var i = 0; i < instructions.length; i++)
+    {
+      if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
+          executionIndex = i;
 
-        console_log(instructions[executionIndex].hide)
-        console_log(executionIndex)
-        console_log(instructions[i].Address)
+          console_log(instructions[executionIndex].hide)
+          console_log(executionIndex)
+          console_log(instructions[i].Address)
 
-        if (instructions[executionIndex].hide == false) {
-            draw.info.push(executionIndex);
+          if (instructions[executionIndex].hide == false) {
+              draw.info.push(executionIndex);
+          }
         }
-      }
-      else{
-        if (instructions[executionIndex].hide == false) {
-            draw.space.push(i);
+        else{
+          if (instructions[executionIndex].hide == false) {
+              draw.space.push(i);
+          }
         }
-      }
     }
 
     var instructionExec = instructions[executionIndex].loaded;
@@ -825,7 +826,7 @@ function executeInstruction ( )
       console_log(auxDef);
 
       // preload instruction
-eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
+			eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
 	        "try {\n" +
 	           auxDef.replace(/this./g,"elto.") + "\n" +
 	        "}\n" +
@@ -1271,7 +1272,7 @@ function writeMemory ( value, addr, type )
               if(aux == addr || memory[index][i].Binary[j].Tag == addr){
                 //memory[index][i].Value = parseInt(memValue, 16);
                 if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                  memory[index][i].Value = hex2float("0x" + memValue);
                 }
                 else{
                   memory[index][i].Value = (parseInt(memValue, 16) >> 0);
@@ -1285,7 +1286,7 @@ function writeMemory ( value, addr, type )
                 //memory[index][i].Value = parseInt(memValue, 16);
 
                 if(memory[index][i].type == "float"){
-                  memory[index][i].Value = this.hex2float("0x" + memValue);
+                  memory[index][i].Value = hex2float("0x" + memValue);
                 }
                 else{
                   memory[index][i].Value = (parseInt(memValue, 16) >> 0);
@@ -1677,7 +1678,9 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if (typeof app !== "undefined")
                     app._data.display += val_int ;
-               else console.log(val_int) ; //process.stdout.write(val_int) ;
+               else process.stdout.write(val_int + '\n') ;
+
+               display += val_int ;
                break;
 
           case "print_float":
@@ -1685,14 +1688,19 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if (typeof app !== "undefined")
                     app._data.display += value;
-               else console.log(value) ; //process.stdout.write(value) ;
+               else process.stdout.write(value + '\n') ;
+
+               display += value ;
                break;
 
           case "print_double":
                var value = architecture.components[indexComp].elements[indexElem].value;
+
                if (typeof app !== "undefined")
                     app._data.display += value;
-               else console.log(value) ; //process.stdout.write(value) ;
+               else process.stdout.write(value + '\n') ;
+
+               display += value ;
                break;
 
           case "print_string":
@@ -1727,14 +1735,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                            app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
 
-                      if(memory[index][i].Binary[k].Bin == 0){
-                        //return
-                        return packExecute(false, 'printed', 'info', null);
+                      display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+
+                      if (memory[index][i].Binary[k].Bin == 0) {
+                          return packExecute(false, 'printed', 'info', null);
                       }
-                      else if(i == memory[index].length-1 && k == memory[index][i].Binary.length-1){
-                        //return;
-                        return packExecute(false, 'printed', 'info', null);
+                      if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
+                          return packExecute(false, 'printed', 'info', null);
                       }
+
                       j=0;
                     }
                   }
@@ -1749,17 +1758,17 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 // CL
                 if (typeof app === "undefined") 
                 {
-          		    var readlineSync = require('readline-sync') ;
-          		    var keystroke    = readlineSync.question(' $> ') ;
+                  var readlineSync = require('readline-sync') ;
+                  var keystroke    = readlineSync.question(' $> ') ;
                   var value        = parseInt(keystroke) ;
 
                   writeRegister(value, indexComp, indexElem);
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
                 }
 
-                if(first_time == true){
-	                document.getElementById('enter_keyboard').scrollIntoView();
-	              }
+                if (first_time == true) {
+	            document.getElementById('enter_keyboard').scrollIntoView();
+	        }
 
                 // UI
                 mutexRead = true;
@@ -2007,7 +2016,6 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                   }
                   console_log(value);
     
-                  // TODO: subrutine for UI+CL
                   var addr = architecture.components[indexComp].elements[indexElem].value;
                   var valueIndex = 0;
                   var auxAddr = data_address;
@@ -2015,8 +2023,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                   var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
                   if (ret.status != 'ok') {
-                    return ret ;
-                	}
+                      return ret ;
+               	  }
 
                   app._data.memory[index] = memory[index];
                   app.keyboard = "";
@@ -2075,32 +2083,36 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 break;
 
           case "print_char":
-                var aux = architecture.components[indexComp].elements[indexElem].value;
-                var aux2 = aux.toString(16);
+                var aux    = architecture.components[indexComp].elements[indexElem].value;
+                var aux2   = aux.toString(16);
                 var length = aux2.length;
     
-                var value = aux2.substring(length-2, length);
+                var value = aux2.substring(length-2, length) ;
+                    value = String.fromCharCode(parseInt(value, 16)) ;
+
                 if (typeof app !== "undefined")
-                     app._data.display += String.fromCharCode(parseInt(value, 16));
+                     app._data.display += value ;
                 else process.stdout.write(value) ;
+
+                display += value ;
                 break;
 
           case "read_char":
 
-              // CL
-              if (typeof app === "undefined") 
-              {
-		  var readlineSync = require('readline-sync') ;
-		  var keystroke    = readlineSync.question(' read char> ') ;
-                  var value        = keystroke.charCodeAt(0);
+               // CL
+               if (typeof app === "undefined") 
+               {
+	 	   var readlineSync = require('readline-sync') ;
+	 	   var keystroke    = readlineSync.question(' read char> ') ;
+                   var value        = keystroke.charCodeAt(0);
 
-                  writeRegister(value, indexComp, indexElem);
-                  return packExecute(false, 'The data has been uploaded', 'danger', null);
-              }
+                   writeRegister(value, indexComp, indexElem);
+                   return packExecute(false, 'The data has been uploaded', 'danger', null);
+               }
 
-              if (first_time == true) {
-                  document.getElementById('enter_keyboard').scrollIntoView();
-              }
+               if (first_time == true) {
+                   document.getElementById('enter_keyboard').scrollIntoView();
+               }
 
                mutexRead = true;
                app._data.enter = false;
@@ -2183,8 +2195,10 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           }
 
           /*Reset console*/
-          mutexRead = false;
-          newExecution = true;
+          mutexRead    = false ;
+          newExecution = true ;
+          keyboard = '' ;
+          display  = '' ;
 
           for (var i = 0; i < architecture_hash.length; i++) {
             for (var j = 0; j < architecture.components[i].elements.length; j++) {
@@ -2217,6 +2231,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           architecture.memory_layout[4].value = backup_stack_address;
           architecture.memory_layout[3].value = backup_data_address;
 
+          // reset memory
           for (var i = 0; i < memory[memory_hash[0]].length; i++) {
             if(memory[memory_hash[0]][i].reset == true){
               memory[memory_hash[0]].splice(i, 1);
@@ -2243,6 +2258,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
             }
           }
 
+          // reset unallocate_memory
           unallocated_memory = [];
           if (typeof app !== "undefined")
               app._data.unallocated_memory = unallocated_memory;
