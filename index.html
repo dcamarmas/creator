@@ -108,7 +108,7 @@
 						      </div>
                   <div class="col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
                   <div class="w-100"></div>
-                  <div class="col-auto my-0 py-0 font-weight-bold mx-1" style="color:#383d41; font-size:11px;">didaCtic and geneRic assEmbly progrAmming simulaTOR</div>
+                  <div class="col-auto my-0 py-0 font-weight-bold mx-1" style="color:#383d41; font-size:0.55em;">didaCtic and geneRic assEmbly progrAmming simulaTOR</div>
                   </div>
                 </div>
             </b-navbar-brand>
@@ -223,6 +223,19 @@
     		    </b-input-group>
     	    </b-list-group-item>
 
+          <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+            <label for="range-2">Font Size:</label>
+            <b-input-group>
+              <b-input-group-prepend>
+                <b-btn variant="outline-secondary" @click="change_font_size(-1)">-</b-btn>
+              </b-input-group-prepend>
+              <b-form-input v-model="fontSize" @change="change_font_size(0)" type="range" min="8" max="48" step="1" title="Font Size"></b-form-input>
+              <b-input-group-append>
+                <b-btn variant="outline-secondary" @click="change_font_size(1)">+</b-btn>
+              </b-input-group-append>
+            </b-input-group>
+          </b-list-group-item>
+
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
             <label for="range-2">Dark Mode:</label>
             <b-form-checkbox name="check-button" switch size="lg" v-model="dark" @change="change_dark_mode"></b-form-checkbox>
@@ -291,7 +304,7 @@
 
                         <b-col md="7" @click="load_arch_select(item)">
                           <b-card-body :title=item.name title-tag="h2">
-                            <b-card-text style="text-align: justify; font-size: 11pt;">
+                            <b-card-text style="text-align: justify; z">
                               {{item.description}}
                             </b-card-text>
                           </b-card-body>
@@ -346,7 +359,7 @@
 
                         <b-col md="9">
                           <b-card-body title="New Architecture" title-tag="h2" >
-                            <b-card-text style="text-align: justify; font-size: 11pt;">
+                            <b-card-text style="text-align: justify;">
                               Allows you to define an architecture from scratch.
                             </b-card-text>
                           </b-card-body>
@@ -362,7 +375,7 @@
 
                         <b-col md="9">
                           <b-card-body title="Load Architecture" title-tag="h2">
-                            <b-card-text style="text-align: justify; font-size: 11pt;">
+                            <b-card-text style="text-align: justify;">
                               Allows to load the definition of an already created architecture.
                             </b-card-text>
                           </b-card-body>
@@ -1846,7 +1859,7 @@
           <div class="contenedor row">
             <div class="col-lg-12 col-sm-12" id="divAssembly">
               <h5>Assembly: (To comment a block of code press ctrl + /)</h5>
-              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code" style="display: none">
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code" style="display: none;">
               </textarea>
             </div>
 
@@ -2191,9 +2204,9 @@
                       <!-- Control and integer registers -->
                       <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'Int')" @click="change_popover_register(popoverId(item2.name + 'Int'))">
-                           <span class="text-truncate">{{item2.name}}</span> <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
+                           <span class="text-truncate">{{item2.name}}</span> <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">{{parseInt(item2.value.toString(10))-0x100000000}}</b-badge>
 
-                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
+                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" class="regValue" v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">{{(item2.value).toString(10)}}</b-badge>
                         </b-button>
 
                         <!-- Register popover -->
@@ -2250,7 +2263,7 @@
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'FP')" @click="change_popover_register(popoverId(item2.name + 'FP'))">
-                            <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
+                            <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2301,7 +2314,7 @@
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name + 'DFP')" @click="change_popover_register(popoverId(item2.name + 'DFP'))">
-                             <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{item2.value}}</b-badge>
+                             <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" >{{item2.value}}</b-badge>
                           </b-button>
 
                           <!-- Register popover -->
@@ -2361,7 +2374,7 @@
                 	  <!-- Control and integer registers -->
   	                  <div class="col-lg-3 col-sm-4 buttons" v-for="item2 in architecture.components[item.index].elements" v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
+  	                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" class="regValue">{{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}</b-badge>
   	                    </b-button>
 
                         <!-- Register popover -->
@@ -2419,7 +2432,7 @@
   	                  	<!-- Simple floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  	                      	<span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(float2bin(item2.value))}}</b-badge>
+  	                      	<span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" >{{bin2hex(float2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2470,7 +2483,7 @@
   	                  	<!-- Double floating point registers -->
   	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" :id="popoverId(item2.name)" @click="change_popover_register(popoverId(item2.name))">
-  		                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-size:medium; font-weight:normal;" >{{bin2hex(double2bin(item2.value))}}</b-badge>
+  		                       <span class="text-truncate">{{item2.name}}</span>  <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" >{{bin2hex(double2bin(item2.value))}}</b-badge>
   		                    </b-button>
 
                           <!-- Register popover -->
@@ -2533,10 +2546,10 @@
                   <div class="col-lg-12 col-sm-12">
                     <b-table sticky-header striped small hover :items="Object.values(memory)[0]" :fields="memFields" class="memory_table  " @row-clicked="select_space_type" id="data_memory_table">
                       <template v-slot:cell(Address)="row">
-                        <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
+                        <h6 style="font-size: 0.85em;">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
                       <template v-slot:cell(Binary)="row">
-                        <h6 style="font-size: 13px">
+                        <h6 style="font-size: 0.85em;">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[1].Tag}}</b-badge>
@@ -2544,7 +2557,7 @@
                         </h6>
                       </template>
                       <template v-slot:cell(value)="row">
-                        <h6 style="font-size: 13px">{{row.item.Value}} <span class="fas fa-eye" v-if="row.item.type == 'space' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)" style="float: right; margin-right: 2%;"></span></h6> 
+                        <h6 style="font-size: 0.85em;">{{row.item.Value}} <span class="fas fa-eye" v-if="row.item.type == 'space' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)" style="float: right; margin-right: 2%;"></span></h6> 
                       </template>
                     </b-table>
 
@@ -2562,10 +2575,10 @@
                   <div class="col-lg-12 col-sm-12">
                     <b-table sticky-header striped small hover :items="Object.values(memory)[1]" :fields="memFields" class="memory_table  " :filter-function=filter filter=" ">
                       <template v-slot:cell(Address)="row">
-                        <h6 style="font-size: 13px">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
+                        <h6 style="font-size: 0.85em;">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
                       <template template v-slot:cell(Binary)="row">
-                        <h6 style="font-size: 13px">
+                        <h6 style="font-size: 0.85em;">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[1].Tag}}</b-badge>
@@ -2573,7 +2586,7 @@
                         </h6>
                       </template>
                       <template v-slot:cell(value)="row">
-                        <h6 style="font-size: 13px">{{row.item.Value}}</h6>
+                        <h6 style="font-size: 0.85em;">{{row.item.Value}}</h6>
                       </template>
                     </b-table>
                   </div>
@@ -2584,17 +2597,17 @@
                   <div class="col-lg-12 col-sm-12">
                     <b-table sticky-header striped small hover :items="unallocated_memory.concat(Object.values(memory)[2])" :fields="memFields" class="memory_table " @row-clicked="select_stack_type">
                       <template v-slot:cell(Address)="row">
-                        <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
-                        <h6 style="font-size: 13px" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
+                        <h6 style="font-size: 0.85em;" class="text-secondary" v-if="row.item.unallocated==true">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
+                        <h6 style="font-size: 0.85em;" v-if="row.item.unallocated==false">0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}</h6>
                       </template>
                       <template v-slot:cell(Binary)="row">
-                        <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">
+                        <h6 style="font-size: 0.85em;" class="text-secondary" v-if="row.item.unallocated==true">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[1].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[0].Tag == null">{{row.item.Binary[0].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[0].Tag}}</b-badge>
                         </h6>
-                        <h6 style="font-size: 13px" v-if="row.item.unallocated==false">
+                        <h6 style="font-size: 0.85em;" v-if="row.item.unallocated==false">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[3].Tag == null">{{row.item.Binary[3].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[3].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[2].Tag == null">{{row.item.Binary[2].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[2].Tag}}</b-badge>
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <span v-if="row.item.Binary[1].Tag == null">{{row.item.Binary[1].Bin.toUpperCase()}}</span> <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">{{row.item.Binary[1].Tag}}</b-badge>
@@ -2602,8 +2615,8 @@
                         </h6>
                       </template>
                       <template v-slot:cell(Value)="row">
-                        <h6 style="font-size: 13px" class="text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</h6>
-                        <h6 style="font-size: 13px" v-if="row.item.unallocated==false">{{row.item.Value}}</h6>
+                        <h6 style="font-size: 0.85em;" class="text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</h6>
+                        <h6 style="font-size: 0.85em;" v-if="row.item.unallocated==false">{{row.item.Value}}</h6>
                       </template>
                     </b-table>
 
