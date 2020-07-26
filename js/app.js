@@ -52,6 +52,8 @@ try
       notificationTime: 1500,
       /*Auto Scroll*/
       autoscroll: true,
+      /*Auto Scroll*/
+      fontSize: 15,
       /*Debug*/
       c_debug: false,
       /*Dark Mode*/
@@ -593,6 +595,25 @@ try
       	 }
 
       	 localStorage.setItem("notificationTime", this.notificationTime);
+      },
+
+      /*change the font size*/
+      change_font_size(value){
+        if (value) {
+           this.fontSize= this.fontSize + value;
+           if (this.fontSize < 8){
+               this.fontSize = 8;
+           }
+           if (this.fontSize > 48) {
+               this.fontSize = 48;
+           }
+         }
+         else {
+            this.fontSize = parseInt(this.fontSize);
+         }
+
+         document.getElementsByTagName("body")[0].style.fontSize = this.fontSize + "px";
+         //localStorage.setItem("fontSize", this.fontSize);
       },
 
       /*Dark  Mode*/

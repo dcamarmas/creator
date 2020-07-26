@@ -1,6 +1,7 @@
 body{
   background-color: #FFFFFF;
   overflow-x: hidden;
+  font-size: 15px
 }
 
 hr {
@@ -10,7 +11,7 @@ hr {
 
 h1 {
   display: block;
-  font-size: 1em;;
+  font-size: 1em;
 }
 
 h2 {
@@ -113,16 +114,19 @@ h2 {
   margin: 0px;
   margin-top: 1px;
   padding: 0px;
+  font-size: 1em;
 }
 
 .registers{
   background-color: #f5f5f5;
-  font-size: 95%;
+  //font-size: 95%;
+  font-size: 1.03em;
 }
 
 .modRegister{
   background-color: #c2c2c2;
-  font-size: 95%;
+  //font-size: 95%;
+  font-size: 1.03em;
 }
 
 .popover{
@@ -134,11 +138,13 @@ h2 {
 }
 
 .popoverText {
-  font-size: 16px;
+  //font-size: 16px;
+  font-size: 1.2em;
 }
 
 .instructions_table{
-  font-size: 15px;
+  //font-size: 15px;
+  font-size: 1em;
   padding-right: 1%;
   cursor:pointer; 
   max-height:61vh;
@@ -152,12 +158,12 @@ h2 {
 }
 
 .memory_table{
-  font-size: 13px;
+  //font-size: 13px;
   max-height:49vh;
 }
 
 .stats{
-  font-size: 13px;
+  font-size: 0.85em;
 }
 
 .table-mem-wrapper-scroll-y {
@@ -168,7 +174,7 @@ h2 {
 }
 
 .instruction_table{
-  font-size: 15px;
+  //font-size: 15px;
 }
 
 .memoryLayout{
@@ -190,6 +196,7 @@ h2 {
 .CodeMirror {
   border: 1px solid #eee;
   height: auto;
+  font-size: 0.85em;
 }
 
 .architecture-scroll-y {
@@ -213,15 +220,16 @@ h2 {
   font-weight: bold;
 }
 
-@media only screen and (min-width: 1920px){
+@media only screen and (min-width: 2560px){
   .instructions_table{
-    font-size: 15px;
+    //font-size: 15px;
     padding-right: 1%;
     cursor:pointer; 
     max-height:80vh;
   }
   .memory_table{
-    font-size: 13px;
+    //font-size: 13px;
+    font-size: 0.85em;
     max-height:70vh;
   }
 }
