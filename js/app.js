@@ -2968,7 +2968,13 @@ try
       },
 
       assembly_update(){
-        textarea_assembly_editor.setValue(code_assembly);
+        if(code_assembly != ""){
+          textarea_assembly_editor.setValue(code_assembly);
+          show_notification(' The selected program has been loaded correctly', 'success') ;
+        }
+        else{
+          show_notification("Please select one program", 'danger');
+        }
       },
 
       /*Save assembly code in a local file*/
@@ -3140,12 +3146,18 @@ try
       },
 
       library_update(){
-        update_binary = JSON.parse(code_binary);
-        this.update_binary = update_binary;
-        $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-        $("#divTags").attr("class", "col-lg-2 col-sm-12");
-        $("#divTags").show();
-        this.load_binary = true;
+        if(code_binary.length != 0){
+          update_binary = JSON.parse(code_binary);
+          this.update_binary = update_binary;
+          $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+          $("#divTags").attr("class", "col-lg-2 col-sm-12");
+          $("#divTags").show();
+          this.load_binary = true;
+          show_notification("The selected library has been loaded correctly", 'success');
+        }
+        else{
+          show_notification("Please select one library", 'danger');
+        }
       },
 
       /*Remove a loaded binary*/
