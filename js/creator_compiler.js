@@ -388,8 +388,9 @@ function get_token()
              index++;
         }
 
-        while ( (",()[]{}:#\t\n ".includes(assembly.charAt(index)) == false) && (index < assembly.length) ) {
-                index++;
+        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
+        {
+             index++;
         }
         //if (assembly.charAt(index) == "\n") nEnters++ ;
 
@@ -435,7 +436,7 @@ function next_token()
 
         while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
         {
-           index++;
+             index++;
         }
         //if (assembly.charAt(index) == "\n") nEnters++ ;
 
