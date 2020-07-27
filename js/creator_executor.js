@@ -116,10 +116,20 @@ function executeInstruction ( )
       var type;
       var auxIndex;
 
+      var coStartbit;
+      var coStopbit;
+
       var numCop = 0;
       var numCopCorrect = 0;
 
-      if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
+      for (var y = 0; y < architecture.instructions[i].fields.length; y++) {
+      	if(architecture.instructions[i].fields[y].type == "co"){
+					coStartbit = 31 - parseInt(architecture.instructions[i].fields[y].startbit);
+      		coStopbit = 32 - parseInt(architecture.instructions[i].fields[y].stopbit);
+      	}
+      }
+
+      if(architecture.instructions[i].co == instructionExecParts[0].substring(coStartbit,coStopbit)){
         if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != ''){
           for (var j = 0; j < architecture.instructions[i].fields.length; j++){
             if (architecture.instructions[i].fields[j].type == "cop") {
