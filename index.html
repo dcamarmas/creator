@@ -104,7 +104,7 @@
                 <div class="container">
                   <div class="row">
                     <div class="col-auto my-0 py-0 pr-1 text-uppercase">
-  							      Creator <b-badge pill variant="secondary">{{version}}</b-badge>
+  							      <h1>Creator <b-badge pill variant="secondary">{{version}}</b-badge></h1>
   						      </div>
                     <div class="col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
                     <div class="w-100"></div>
@@ -922,7 +922,8 @@
                                        required 
                                        v-model="formArchitecture.type" 
                                        :state="valid(formArchitecture.type)" 
-                                       size="sm">
+                                       size="sm"
+                                       title="Component type">
                       </b-form-select>
                       </b-form-group>
                       <b-form-group v-if="formArchitecture.type == 'floating point'">
@@ -1118,7 +1119,8 @@
                                              v-model="formArchitecture.simple1" 
                                              :state="valid(formArchitecture.simple1)" 
                                              size="sm" 
-                                             :options="simple_reg">
+                                             :options="simple_reg"
+                                             title="First part of double">
                               </b-form-select>
                             </div>
                             <div class="col-lg-6 col-sm-6">
@@ -1126,7 +1128,8 @@
                                              v-model="formArchitecture.simple2" 
                                              :state="valid(formArchitecture.simple2)" 
                                              size="sm" 
-                                             :options="simple_reg">
+                                             :options="simple_reg"
+                                             title="Second part of double">
                               </b-form-select>
                             </div>
                           </div>
@@ -1188,7 +1191,8 @@
                                              v-model="formArchitecture.simple1" 
                                              :state="valid(formArchitecture.simple1)" 
                                              size="sm" 
-                                             :options="simple_reg">
+                                             :options="simple_reg"
+                                             title="First part of double">
                               </b-form-select>
                             </div>
                             <div class="col-lg-6 col-sm-6">
@@ -1196,7 +1200,8 @@
                                              v-model="formArchitecture.simple2" 
                                              :state="valid(formArchitecture.simple2)" 
                                              size="sm" 
-                                             :options="simple_reg">
+                                             :options="simple_reg"
+                                             title="Second part of double">
                               </b-form-select>
                             </div>
                           </div>
@@ -1261,7 +1266,8 @@
                           <b-form-select v-model="formInstruction.type" 
                                          :options="instructionsTypes" 
                                          :state="valid(formInstruction.type)" 
-                                         size="sm">
+                                         size="sm"
+                                         title="Instruction type">
                           </b-form-select>
                         </b-form-group>
                         <b-form-group label="Number of Words:">
@@ -1357,7 +1363,8 @@
                                                  required 
                                                  :state="valid(formInstruction.typeField[i-1])" 
                                                  size="sm" 
-                                                 v-if="(i-1) != 0">
+                                                 v-if="(i-1) != 0"
+                                                 title="Field type">
                                     <option value="INT-Reg">INT-Reg</option>
                                     <option value="SFP-Reg">SFP-Reg</option>
                                     <option value="DFP-Reg">DFP-Reg</option>
@@ -1800,7 +1807,8 @@
                                           :value="formInstruction.type" 
                                           :options="instructionsTypes" 
                                           :state="valid(formInstruction.type)" 
-                                          size="sm">
+                                          size="sm"
+                                          title="Instruction type">
                             </b-form-select>
                           </b-form-group>
                           <b-form-group label="Number of Words:">
@@ -1897,7 +1905,8 @@
                                                    required 
                                                    :state="valid(formInstruction.typeField[i-1])" 
                                                    size="sm" 
-                                                   v-if="(i-1) != 0">
+                                                   v-if="(i-1) != 0"
+                                                   title="Field type">
                                       <option value="INT-Reg">INT-Reg</option>
                                       <option value="SFP-Reg">SFP-Reg</option>
                                       <option value="DFP-Reg">DFP-Reg</option>
@@ -2225,7 +2234,8 @@
                                   <b-form-select v-model="formPseudoinstruction.typeField[i-1]" 
                                                  required 
                                                  :state="valid(formPseudoinstruction.typeField[i-1])" 
-                                                 size="sm">
+                                                 size="sm"
+                                                 title="Field type">
                                     <option value="INT-Reg">INT-Reg</option>
                                     <option value="SFP-Reg">SFP-Reg</option>
                                     <option value="DFP-Reg">DFP-Reg</option>
@@ -2576,7 +2586,8 @@
                                     <b-form-select v-model="formPseudoinstruction.typeField[i-1]" 
                                                    required 
                                                    :state="valid(formPseudoinstruction.typeField[i-1])" 
-                                                   size="sm">
+                                                   size="sm"
+                                                   title="Field type">
                                       <option value="INT-Reg">INT-Reg</option>
                                       <option value="SFP-Reg">SFP-Reg</option>
                                       <option value="DFP-Reg">DFP-Reg</option>
@@ -2741,7 +2752,8 @@
                                        required 
                                        v-model="formDirective.action" 
                                        :state="valid(formDirective.action)" 
-                                       size="sm">
+                                       size="sm"
+                                       title="Action">
                         </b-form-select>
                       </b-form-group>
                       <b-form-group label="Size:" 
@@ -2815,8 +2827,8 @@
                                          required 
                                          v-model="formDirective.action" 
                                          :state="valid(formDirective.action)" 
-                                         size="sm">
-                                          
+                                         size="sm"
+                                         title="Action">
                           </b-form-select>
                         </b-form-group>
                         <b-form-group label="Size:" 
@@ -4162,21 +4174,6 @@
               </b-tabs>
             </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <!-- Memory view-->
             <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
               <b-tabs content-class="mt-3">
@@ -4198,6 +4195,7 @@
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
                         </h6>
                       </template>
+
                       <template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 0.85em;">
                           <span style="border:1px solid gray;" 
@@ -4207,34 +4205,49 @@
                           <span v-if="row.item.Binary[3].Tag == null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[1].Tag == null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span>
                           <span v-if="row.item.Binary[0].Tag == null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
                         </h6>
@@ -4280,6 +4293,7 @@
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
                         </h6>
                       </template>
+
                       <template template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 0.85em;">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">
@@ -4288,34 +4302,49 @@
                           <span v-if="row.item.Binary[3].Tag == null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[1].Tag == null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[0].Tag == null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
                         </h6>
@@ -4346,6 +4375,7 @@
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
                         </h6>
                       </template>
+
                       <template v-slot:cell(Binary)="row">
                         <h6 style="font-size: 0.85em;" class="text-secondary" v-if="row.item.unallocated==true">
                           <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">
@@ -4354,34 +4384,49 @@
                           <span v-if="row.item.Binary[3].Tag == null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[1].Tag == null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[0].Tag == null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span>
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
                         </h6>
@@ -4393,34 +4438,49 @@
                           <span v-if="row.item.Binary[3].Tag == null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span>
                           <span v-if="row.item.Binary[1].Tag == null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
+
                           <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[0].Tag == null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
-                          <b-badge pill variant="info" class="border border-info shadow" style="position:relative;top:-9px;">
+                          <b-badge pill variant="info" 
+                                   class="border border-info shadow" s
+                                   tyle="position:relative;top:-9px;" 
+                                   v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
                         </h6>
