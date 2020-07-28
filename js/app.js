@@ -4149,7 +4149,7 @@ try
       textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
       textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
       textarea_assembly_editor.setValue(app._data.assembly_code);
-      textarea_assembly_editor.setSize("auto", "550px");
+      textarea_assembly_editor.setSize("auto", "70vh");
 
       // add Ctrl-m
       /*var map = {
