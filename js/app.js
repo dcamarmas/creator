@@ -651,6 +651,10 @@ try
         	if(e == "assembly"){
         	  setTimeout(function(){
         	    codemirrorStart();
+              if (codemirrorHistory != null ){
+                textarea_assembly_editor.setHistory(codemirrorHistory);
+                textarea_assembly_editor.undo();
+              }
               textarea_assembly_editor.setValue(code_assembly);
         	    if(app._data.update_binary != ""){
         	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
@@ -662,7 +666,9 @@ try
         	else{
         	  if(textarea_assembly_editor != null){
         	    app._data.assembly_code = textarea_assembly_editor.getValue();
+              code_assembly = textarea_assembly_editor.getValue();
         	    textarea_assembly_editor.toTextArea();
+              codemirrorHistory = textarea_assembly_editor.getHistory()
         	  }
         	}
 

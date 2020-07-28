@@ -80,6 +80,7 @@ var actionTypes = [
 
 /*Codemirror*/
 var textarea_assembly_editor;
+var codemirrorHistory = null;
 /*Assembly code textarea*/
 var code_assembly = '';
 /*Compilation index*/
