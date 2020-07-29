@@ -76,7 +76,7 @@ function assembly_compile ( code )
              ret.msg = 'Unknow assembly compiler code :-/' ;
              break;
     }
-
+    
     return ret ;
 }
 

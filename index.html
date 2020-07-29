@@ -86,8 +86,8 @@
 
 
         <!-- Loading spinner-->
-        <div id="spinnerBack" class="spinnerBack loading" style="display:none" ref="spinnerBack"></div>
-        <div id="spinner" class="spinner loading" style="display:none">
+        <div id="spinnerBack" class="spinnerBack loading d-none" ref="spinnerBack"></div>
+        <div id="spinner" class="spinner loading d-none">
           <div class="spinnerBox">
             <b-spinner variant="primary" class="spinnerIcon"></b-spinner>
           </div>
@@ -222,12 +222,13 @@
     	  	<b-list-group>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Execution Speed:</label>
+            <label for="range-1">Execution Speed:</label>
     		    <b-input-group>
     	        <b-input-group-prepend>
     	          <b-btn variant="outline-secondary" @click="change_execution_speed(-5)">-</b-btn>
     	        </b-input-group-prepend>
-              <b-form-input v-model="instructionsPacked" 
+              <b-form-input id="range-1"
+                            v-model="instructionsPacked" 
                             @change="change_execution_speed(0)" 
                             type="range" 
                             min="1" 
@@ -243,7 +244,8 @@
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
             <label for="range-2">Execution Autoscroll:</label>
-            <b-form-checkbox v-model="autoscroll" 
+            <b-form-checkbox id="range-2"
+                             v-model="autoscroll" 
                              name="check-button" 
                              switch 
                              size="lg" 
@@ -252,12 +254,13 @@
     	    </b-list-group-item>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Notification Time:</label>
+            <label for="range-3">Notification Time:</label>
     		    <b-input-group>
               <b-input-group-prepend>
                 <b-btn variant="outline-secondary" @click="change_notification_time(-20)">-</b-btn>
               </b-input-group-prepend>
-              <b-form-input v-model="notificationTime" 
+              <b-form-input id="range-3"
+                            v-model="notificationTime" 
                             @change="change_notification_time(0)" 
                             type="range" 
                             min="1000" 
@@ -272,12 +275,13 @@
     	    </b-list-group-item>
 
           <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Font Size:</label>
+            <label for="range-4">Font Size:</label>
             <b-input-group>
               <b-input-group-prepend>
                 <b-btn variant="outline-secondary" @click="change_font_size(-1)">-</b-btn>
               </b-input-group-prepend>
-              <b-form-input v-model="fontSize" 
+              <b-form-input id="range-4"
+                            v-model="fontSize" 
                             @change="change_font_size(0)" 
                             type="range" 
                             min="8" 
@@ -292,8 +296,9 @@
           </b-list-group-item>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Dark Mode:</label>
-            <b-form-checkbox name="check-button"
+            <label for="range-5">Dark Mode:</label>
+            <b-form-checkbox id="range-5"
+                             name="check-button"
                              switch size="lg"
                              v-model="dark" 
                              @change="change_dark_mode">
@@ -301,8 +306,8 @@
     	    </b-list-group-item>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Debug:</label>
-            <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
+            <label for="range-6">Debug:</label>
+            <b-form-checkbox id="range-6" v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
     	    </b-list-group-item>
 
     	  </b-list-group>
@@ -1291,7 +1296,7 @@
                                         title="Intruction fields">
                           </b-form-input>
                         </b-form-group>
-                        <div style="display: none">
+                        <div class="d-none">
                           <b-form-input type="text" 
                                         v-model="formInstruction.numfieldsAux" 
                                         title="Intruction fields">
@@ -1832,7 +1837,7 @@
                                           title="Instruction fields">
                             </b-form-input>
                           </b-form-group>
-                          <div style="display: none">
+                          <div class="d-none">
                             <b-form-input type="text" 
                                           v-model="formInstruction.numfieldsAux" 
                                           title="Instruction fields"></b-form-input>
@@ -2175,7 +2180,7 @@
                                         title="Pseudoinstruction fields">
                           </b-form-input>
                         </b-form-group>
-                        <div style="display: none;">
+                        <div class="d-none">
                           <b-form-input type="text" 
                                         v-model="formPseudoinstruction.numfieldsAux" 
                                         title="Pseudoinstruction fields">
@@ -2527,7 +2532,7 @@
                             </b-form-input>
                           </b-form-group>
 
-                          <div style="display: none;">
+                          <div class="d-none">
                             <b-form-input type="text" 
                                           v-model="formPseudoinstruction.numfieldsAux" 
                                           title="Pseudoinstruction fields">
@@ -3085,44 +3090,51 @@
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Copy &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + c</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + c</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Cut&nbsp &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + x</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + x</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Paste &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + v</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + v</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Select all &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + a</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + a</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Undo &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + z</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + z</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Redo &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + y</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + y</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Block code comment &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + /</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + /</b-badge>
                   </b-list-group-item>
                 </b-list-group>
               </b-popover>
 
-              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code" style="display: none;"></textarea>
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y d-none" title="Asembly Code"></textarea>
             </div>
 
-            <div class="col-lg-0 col-sm-0" id="divTags" style="display:none;">
+            <div class="col-lg-0 col-sm-0 d-none" id="divTags">
               <span class="h5">Library tags:</span>
               <b-list-group>
                 <b-list-group-item v-for="item in update_binary.instructions_tag" 
@@ -3145,27 +3157,27 @@
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >...</b-col>
-                   <b-col class="px-0" cols="10">&nbsp;</b-col>
+                   <b-col class="pl-2" cols="10">&nbsp;</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >{{app.modalAssemblyError.line1}}</b-col>
-                   <b-col class="px-0" cols="10">{{app.modalAssemblyError.code1}}</b-col>
+                   <b-col class="pl-2" cols="10">{{app.modalAssemblyError.code1}}</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >*</b-col>
                    <b-col class="px-2"         >{{app.modalAssemblyError.line2}}</b-col>
-                   <b-col class="px-0" cols="10">{{app.modalAssemblyError.code2}}</b-col>
+                   <b-col class="pl-2" cols="10">{{app.modalAssemblyError.code2}}</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >{{app.modalAssemblyError.line3}}</b-col>
-                   <b-col class="px-0" cols="10">{{app.modalAssemblyError.code3}}</b-col>
+                   <b-col class="pl-2" cols="10">{{app.modalAssemblyError.code3}}</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >...</b-col>
-                   <b-col class="px-0" cols="10">&nbsp;</b-col>
+                   <b-col class="pl-2" cols="10">&nbsp;</b-col>
                    </b-row>
                    </b-container>
               </span>
@@ -3242,7 +3254,7 @@
                           Run
                         </b-button>
                       </div>
-                      <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
+                      <div class="col-lg-4 col-sm-4 buttons d-none" id="stopExecution">
                         <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" 
                                   @click="stopExecution" 
                                   id="stop">
@@ -4565,7 +4577,7 @@
             <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
               <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
                 <div class="col-lg-1 col-sm-1">
-                  <i class="fas fa-desktop fa-2x mb-2 consoleIcon"></i>
+                  <span class="fas fa-desktop fa-2x mb-2 consoleIcon"></span>
                 </div>
                 <div class="col-lg-11 col-sm-11 pr-0">
                   <b-form-textarea id="textarea_display" 
@@ -4583,7 +4595,7 @@
             <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
               <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
                 <div class="col-lg-1 col-sm-1">
-                  <i class="fa fa-keyboard fa-2x mb-2 consoleIcon"></i>
+                  <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>
                 </div>
                 <div class="col-lg-11 col-sm-11 pr-0">
                   <b-form-textarea id="textarea_keyboard" 
