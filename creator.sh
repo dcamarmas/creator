@@ -176,21 +176,7 @@
        }
        else show_success("[Loader] Architecture '" + argv.a + "' loaded successfully.") ;
 
-       // (b) compile
-       assembly = fs.readFileSync(argv.assembly, 'utf8') ;
-       ret = creator.assembly_compile(assembly) ;
-       if (ret.status !== "ok")
-       {
-                                 msg_error  = "\nError at line " + (ret.line+1) ;
-           if (ret.token !== '') msg_error += " (" + ret.token + ")" ;
-                                 msg_error += ":\n" + ret.msg ;
-           msg_error = msg_error.split("\n").join("\n[Compiler] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
-       }
-       else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
-
-       // (c) link
+       // (b) link
        if (argv.library !== '')
        {
            library = fs.readFileSync(argv.library, 'utf8') ;
@@ -204,6 +190,20 @@
            }
            else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
        }
+
+       // (c) compile
+       assembly = fs.readFileSync(argv.assembly, 'utf8') ;
+       ret = creator.assembly_compile(assembly) ;
+       if (ret.status !== "ok")
+       {
+                                 msg_error  = "\nError at line " + (ret.line+1) ;
+           if (ret.token !== '') msg_error += " (" + ret.token + ")" ;
+                                 msg_error += ":\n" + ret.msg ;
+           msg_error = msg_error.split("\n").join("\n[Compiler] ") ;
+           show_error(msg_error) ;
+           return process.exit(-1) ;
+       }
+       else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
 
        // (d) ejecutar
        ret = creator.execute_program(limit_n_ins) ;
