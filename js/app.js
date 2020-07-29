@@ -631,7 +631,6 @@ try
 
       /*Screen change*/
       change_UI_mode(e) {
-        console.log(textarea_assembly_editor);
         if(app._data.creator_mode != e){
 
           // Close codemirror
