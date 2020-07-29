@@ -631,7 +631,17 @@ try
 
       /*Screen change*/
       change_UI_mode(e) {
+        console.log(textarea_assembly_editor);
         if(app._data.creator_mode != e){
+
+          // Close codemirror
+          if(textarea_assembly_editor != null && e != "assembly"){
+            app._data.assembly_code = textarea_assembly_editor.getValue();
+            code_assembly = textarea_assembly_editor.getValue();
+            codemirrorHistory = textarea_assembly_editor.getHistory();
+            textarea_assembly_editor.toTextArea();
+          }
+
           app._data.register_popover = '';
         	// slow transition <any> => "architecture"
         	if (e == "architecture")
@@ -662,14 +672,6 @@ try
         	      $("#divTags").show();
         	    }
         	  },50);
-        	}
-        	else{
-        	  if(textarea_assembly_editor != null){
-        	    app._data.assembly_code = textarea_assembly_editor.getValue();
-              code_assembly = textarea_assembly_editor.getValue();
-              codemirrorHistory = textarea_assembly_editor.getHistory();
-        	    textarea_assembly_editor.toTextArea();
-        	  }
         	}
 
         	app.$forceUpdate();
