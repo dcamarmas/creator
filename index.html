@@ -87,9 +87,9 @@
 
         <!-- Loading spinner-->
         <div id="spinnerBack" class="spinnerBack loading" style="display:none" ref="spinnerBack"></div>
-        <div id="spinner" class="spinner loading" style="text-align: center; display:none">
-          <div style="display: inline-block; opacity: 1;">
-            <b-spinner variant="primary" style="width: 3rem; height: 3rem;"></b-spinner>
+        <div id="spinner" class="spinner loading" style="display:none">
+          <div class="spinnerBox">
+            <b-spinner variant="primary" class="spinnerIcon"></b-spinner>
           </div>
           <div>
             <span class="text-primary"><strong>Loading...</strong></span>
@@ -100,15 +100,15 @@
         <!-- Navbar  -->
         <header>
           <b-navbar toggleable="sm" class="header my-0 mx-1 py-0 px-2">
-            <b-navbar-brand class="p-0 m-0" style="color:#2196F3; margin:0px;" href=".">
+            <b-navbar-brand class="p-0 m-0" href=".">
                 <div class="container">
                   <div class="row">
-                    <div class="col-auto my-0 py-0 pr-1 text-uppercase">
+                    <div class="headerText col-auto my-0 py-0 pr-1 text-uppercase">
   							      <h1>Creator <b-badge pill variant="secondary">{{version}}</b-badge></h1>
   						      </div>
-                    <div class="col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
+                    <div class="headerText col-auto my-0 p-0 ml-2">{{architecture_name}}</div>
                     <div class="w-100"></div>
-                    <div class="col-auto my-0 py-0 font-weight-bold mx-1" style="color:#383d41; font-size:0.55em;">
+                    <div class="headerName col-auto my-0 py-0 font-weight-bold mx-1">
                       didaCtic and geneRic assEmbly progrAmming simulaTOR
                     </div>
                   </div>
@@ -120,14 +120,13 @@
             <b-collapse is-nav id="nav_collapse">
               <b-navbar-nav class="ml-auto">
                 <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.arcos.inf.uc3m.es/'>
-                	<img alt="ARCOS" class="nopadding" src="./images/arcos.svg" style="height:5vh">
+                	<img alt="ARCOS" class="nopadding headerLogo" src="./images/arcos.svg">
                 </b-nav-item>
 
                 <b-nav-item class="mb-0 pb-0 nopadding" target="_blank" href='https://www.inf.uc3m.es/'>
                 	<img alt="Computer Science and Engineering Departament" 
-                       class="nopadding" 
-                       src="./images/dptoinf.png" 
-                       style="height:5vh">
+                       class="nopadding headerLogo" 
+                       src="./images/dptoinf.png">
                 </b-nav-item>
               </b-navbar-nav>
             </b-collapse>
@@ -137,14 +136,17 @@
 
           <!-- Notification modal -->
           <b-modal id="notifications" title="Notifications" hide-footer scrollable>
-            <h6 v-if="notifications.length == 0">There's no notification at the moment</h6>
+            <span class="h6" 
+                  v-if="notifications.length == 0">
+              There's no notification at the moment
+            </span>
             <b-alert show :variant="item.color" v-for="item in notifications">
-              <h6>
+              <span class="h6">
                 <span class="fas fa-info-circle" v-if="item.color!='danger'"></span>
                 <span class="fas fa-exclamation-triangle" v-if="item.color=='danger'"></span> 
                 {{item.mess}}
-              </h6>
-              <h6>{{item.time}}   -   {{item.date}}</h6>
+              </span>
+              <span class="h6">{{item.time}}   -   {{item.date}}</span>
             </b-alert>
           </b-modal>
           
@@ -153,8 +155,8 @@
             <b-card-group>
               <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>
                 <b-card-text>
-                  <div style="height: 50px;">
-                    <h6>Félix García Carballeira</h6>
+                  <div class="authorName">
+                    <span class="h6">Félix García Carballeira</span>
                   </div>
                   <hr>
                   <a aria-label="linkedin Felix"><span class="fab fa-linkedin"></span> linkedin</a>
@@ -170,8 +172,8 @@
 
               <b-card img-src="./images/author_acaldero.png" img-alt="author_acaldero" img-top>
                 <b-card-text>
-                  <div style="height: 50px;">
-                    <h6>Alejandro Calderón Mateos</h6>
+                  <div class="authorName">
+                    <span class="h6">Alejandro Calderón Mateos</span>
                   </div>
                   <hr>
                   <a aria-label="linkedin Alejandro" href='https://www.linkedin.com/in/alejandro-calderon-mateos/' target="_blank">
@@ -193,8 +195,8 @@
 
               <b-card img-src="./images/author_dcamarmas.png" img-alt="author_dcamarmas" img-top>
                 <b-card-text>
-                  <div style="height: 50px;">
-                    <h6>Diego Camarmas Alonso</h6>
+                  <div class="authorName">
+                    <span class="h6">Diego Camarmas Alonso</span>
                   </div>
                   <hr>
                   <a aria-label="linkedin Diego" href='https://www.linkedin.com/in/dcamarmas' target="_blank">
@@ -326,9 +328,8 @@
                     </b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
-                              id="info_men" 
-                              style="background-color:#D4DB17;">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" 
+                              id="info_men">
                       <span class="fas fa-info-circle"></span> 
                       Info
                     </b-button>
@@ -374,12 +375,11 @@
               <div class="col-lg-10 col-sm-10">
                 <b-list-group>
                   <b-list-group-item>
-                    <b-card no-body class="overflow-hidden arch_card" 
+                    <b-card no-body class="overflow-hidden arch_card architectureCard" 
                             v-for="(item, index) in arch_available" 
                             @mouseover="change_background(item.name, 1)"
                             @mouseout="change_background(item.name, 0)" 
-                            :border-variant=back_card[index].background 
-                            style="cursor: pointer; margin-bottom: 3px;">
+                            :border-variant=back_card[index].background>
                       <b-row no-gutters>
                         <b-col md="3" @click="load_arch_select(item)">
                           <b-card-img :src=item.img :alt=item.alt thumbnail fluid class="rounded-0"></b-card-img>
@@ -387,7 +387,7 @@
 
                         <b-col md="7" @click="load_arch_select(item)">
                           <b-card-body :title=item.name title-tag="h2">
-                            <b-card-text style="text-align: justify;">
+                            <b-card-text class="justify">
                               {{item.description}}
                             </b-card-text>
                           </b-card-body>
@@ -397,8 +397,7 @@
                           <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" 
                                     @click.stop="modal_remove_cache_arch(index, item.name, $event.target)"
                                     v-if="default_arch(item.name) == true" 
-                                    :id="'delete_'+item.name" 
-                                    style="margin-top: 50%;">
+                                    :id="'delete_'+item.name">
                             <span class="far fa-trash-alt"></span>
                             Delete
                           </b-button>
@@ -412,47 +411,44 @@
                              ok-variant="danger" 
                              ok-title="Delete" 
                              @ok="remove_cache_arch(modalDeletArch.index)">
-                      <h6>Are you sure you want to delete the architecture?</h6>
+                      <span class="h6">Are you sure you want to delete the architecture?</span>
                     </b-modal >
 
 
 
                     <!-- Browser not supported modal -->
                     <b-modal id ="modalNavigator" title="Browser not supported" ref="navigator" hide-footer>
-                      <h6>You are using an unsupported browser, please use one of the following:</h6>
+                      <span class="h6">You are using an unsupported browser, please use one of the following:</span>
                       <br>
                       <b-list-group>
                         <b-list-group-item class="d-flex justify-content-between align-items-center">
                           Google Chrome 70+
-                          <b-badge pill style="background-color: transparent;">
+                          <b-badge pill class="browserBadge">
                           <b-img src="./images/chrome.png" 
-                                 class="shadow" 
+                                 class="shadow broserIcon" 
                                  rounded="circle" 
-                                 fluid alt="Responsive image" 
-                                 style="height: 50px;width: auto;">
+                                 fluid alt="Responsive image">
                           </b-img>
                           </b-badge>
                         </b-list-group-item>
                         <b-list-group-item class="d-flex justify-content-between align-items-center">
                           Mozilla Firefox 60+
-                          <b-badge pill style="background-color: transparent;">
+                          <b-badge pill class="browserBadge">
                             <b-img src="./images/firefox.png" 
-                                  class="shadow" 
+                                  class="shadow broserIcon" 
                                   rounded="circle" 
-                                  fluid alt="Responsive image" 
-                                  style="height: 50px;width: auto;">
+                                  fluid alt="Responsive image">
                                     
                             </b-img>
                           </b-badge>
                         </b-list-group-item>
                         <b-list-group-item class="d-flex justify-content-between align-items-center">
                           Apple Safari 12+
-                          <b-badge pill style="background-color: transparent;">
+                          <b-badge pill class="browserBadge">
                             <b-img src="./images/safari.png" 
-                                  class="shadow" 
+                                  class="shadow broserIcon" 
                                   rounded="circle" 
-                                  fluid alt="Responsive image" 
-                                  style="height: 50px;width: auto;">
+                                  fluid alt="Responsive image">
                             </b-img>
                           </b-badge>
                         </b-list-group-item>
@@ -461,19 +457,18 @@
 
 
 
-                    <b-card no-body class="overflow-hidden arch_card" style="cursor: pointer; margin-bottom: 3px;">
+                    <b-card no-body class="overflow-hidden arch_card architectureCard">
                       <b-row no-gutters @click="new_arch">
-                        <b-col md="3" style="text-align: center;">
+                        <b-col md="3" class="center">
                           <b-card-img src="./images/new_icon.png" 
                                       alt="new icon" 
-                                      class="rounded-0" 
-                                      style="width: 50%; height: auto;">
+                                      class="rounded-0 architectureImg">
                           </b-card-img>
                         </b-col>
 
                         <b-col md="9">
                           <b-card-body title="New Architecture" title-tag="h2" >
-                            <b-card-text style="text-align: justify;">
+                            <b-card-text class="justify">
                               Allows you to define an architecture from scratch.
                             </b-card-text>
                           </b-card-body>
@@ -481,20 +476,18 @@
                       </b-row>
                     </b-card>
 
-                    <b-card no-body class="overflow-hidden arch_card" 
-                            style="cursor: pointer; margin-bottom: 3px;" 
+                    <b-card no-body class="overflow-hidden arch_card architectureCard" 
                             v-b-modal.load_arch>
                       <b-row no-gutters>
-                         <b-col md="3" style="text-align: center;">
+                         <b-col md="3" class="center">
                           <b-card-img src="./images/load_icon.png" 
-                                      alt="load icon" class="rounded-0" 
-                                      style="width: 50%; height: auto;">
+                                      alt="load icon" class="rounded-0 architectureImg">
                           </b-card-img>
                         </b-col>
 
                         <b-col md="9">
                           <b-card-body title="Load Architecture" title-tag="h2">
-                            <b-card-text style="text-align: justify;">
+                            <b-card-text class="justify">
                               Allows to load the definition of an already created architecture.
                             </b-card-text>
                           </b-card-body>
@@ -539,16 +532,17 @@
 
             <!-- Backup modal -->
             <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
-              <h6>A backup is available</h6>
-              <h6>Date: {{date_copy}}</h6>
+              <span class="h6">A backup is available</span>
+              <br>
+              <span class="h6">Date: {{date_copy}}</span>
               <div class="col-lg-12 col-sm-12 row nomargin">
-                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
+                <div class="col-lg-6 col-sm-6 pb-1">
                   <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" 
                             @click="remove_copy">
                     Discard
                   </b-button>
                 </div>
-                <div class="col-lg-6 col-sm-6" style="padding-bottom: 1px;">
+                <div class="col-lg-6 col-sm-6 pb-1">
                   <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" 
                             @click="load_copy">
                     Load
@@ -633,9 +627,8 @@
                     </b-button>
               		</div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
-                              id="info_arch" 
-                              style="background-color:#D4DB17;">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" 
+                              id="info_arch">
                       <span class="fas fa-info-circle"></span> 
                       Info
                     </b-button>
@@ -675,15 +668,14 @@
 
             <!-- Save architecture form -->
             <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
-              <h6>Enter the name of the architecture to save:</h6>
+              <span class="h6">Enter the name of the architecture to save:</span>
               <br>
               <b-form-input v-on:input="debounce('name_arch_save', $event)" 
                             :value="name_arch_save" 
                             type="text" 
                             placeholder="Enter the name" 
-                            class="form-control form-control-sm" 
-                            title="Save Architecture" 
-                            style="background-color: white; color: black," 
+                            class="form-control form-control-sm fileForm" 
+                            title="Save Architecture"
                             :state="valid(name_arch_save)">
               </b-form-input>
             </b-modal>
@@ -699,9 +691,9 @@
                 <b-tab title="Memory Layout" active>
                   
                   <!-- Memory layout form -->
-                  <div class="col-lg-12 col-sm-12 row nomargin" style="margin-top: 3%; margin-bottom: 3%;">
+                  <div class="col-lg-12 col-sm-12 row memoryLayoutDiv">
                     <div class="col-lg-12 col-sm-12">
-                      <h6>Memory layout:</h6>
+                      <span class="h6">Memory layout:</span>
                       <div class="col-lg-12 col-sm-12 row">
                         <div class="compMenu">
                           <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" 
@@ -728,7 +720,7 @@
                                ok-variant="danger" 
                                ok-title="Reset" 
                                @ok="resetMemory(modalResetMem.element)">
-                        <h6>Are you sure you want to reset the mememory layout set?</h6>
+                        <span class="h6">Are you sure you want to reset the mememory layout set?</span>
                       </b-modal >
 
                       <!-- Change memory layout -->
@@ -736,58 +728,58 @@
                                title="Change memory layout" 
                                ok-title="Change" 
                                @ok="changeMemoryLayout">
-                        <h6>.text Start:</h6>
+                        <span class="h6">.text Start:</span>
                         <b-form-input type="text" 
                                       v-on:input="debounce('memory_layout[0]', $event)" 
                                       :value="memory_layout[0]" 
                                       required 
                                       size="sm" 
                                       title=".text start" 
-                                      style="margin-bottom: 2%;">
+                                      class="memoryLayoutForm">
                         </b-form-input>
-                        <h6>.text End:</h6>
+                        <span class="h6">.text End:</span>
                         <b-form-input type="text" 
                                       v-on:input="debounce('memory_layout[1]', $event)" 
                                       :value="memory_layout[1]" 
                                       required 
                                       size="sm" 
                                       title=".text end" 
-                                      style="margin-bottom: 2%;">
+                                      class="memoryLayoutForm">
                         </b-form-input>
-                        <h6>.data Start:</h6>
+                        <span class="h6">.data Start:</span>
                         <b-form-input type="text" 
                                       v-on:input="debounce('memory_layout[2]', $event)" 
                                       :value="memory_layout[2]" 
                                       required 
                                       size="sm" 
                                       title=".data tart" 
-                                      style="margin-bottom: 2%;">
+                                      class="memoryLayoutForm">
                         </b-form-input>
-                        <h6>.data End:</h6>
+                        <span class="h6">.data End:</span>
                         <b-form-input type="text" 
                                       v-on:input="debounce('memory_layout[3]', $event)" 
                                       :value="memory_layout[3]" 
                                       required 
                                       size="sm" 
                                       title=".data end" 
-                                      style="margin-bottom: 2%;">
+                                      class="memoryLayoutForm">
                         </b-form-input>
-                        <h6>.stack End:</h6>
+                        <span class="h6">.stack End:</span>
                         <b-form-input type="text" 
                                       v-on:input="debounce('memory_layout[4]', $event)" 
                                       :value="memory_layout[4]" 
                                       required 
                                       size="sm" 
                                       title=".stack start" 
-                                      style="margin-bottom: 2%;">
+                                      class="memoryLayoutForm">
                         </b-form-input>
-                        <h6>.stack Start:</h6>
+                        <span class="h6">.stack Start:</span>
                         <b-form-input type="text" 
                                       v-on:input="debounce('memory_layout[5]', $event)" 
                                       :value="memory_layout[5]"
                                       required size="sm" 
                                       title=".stack end" 
-                                      style="margin-bottom: 2%;">
+                                      class="memoryLayoutForm">
                         </b-form-input>
                       </b-modal >
                     </div>
@@ -805,27 +797,29 @@
                             .text
                             <br>
                           </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
-                            <h6 v-if="architecture.memory_layout.length > 0">
+                          <b-list-group-item class="memoryLayout noBorder left">
+                            <span class="h6" v-if="architecture.memory_layout.length > 0">
                               0x{{((architecture.memory_layout[0].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </h6>
+                            </span>
                             <br>
-                            <h6 v-if="architecture.memory_layout.length > 0">
+                            <br>
+                            <span class="h6" v-if="architecture.memory_layout.length > 0">
                               0x{{((architecture.memory_layout[1].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </h6>
+                            </span>
                           </b-list-group-item>
                         </b-list-group>
 
                         <b-list-group horizontal>
                           <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
-                            <h6 v-if="architecture.memory_layout.length > 0">
+                          <b-list-group-item class="memoryLayout noBorder left">
+                            <span class="h6" v-if="architecture.memory_layout.length > 0">
                               0x{{((architecture.memory_layout[2].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </h6>
+                            </span>
                             <br>
-                            <h6 v-if="architecture.memory_layout.length > 0">
+                            <br>
+                            <span class="h6" v-if="architecture.memory_layout.length > 0">
                               0x{{((architecture.memory_layout[3].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </h6>
+                            </span>
                           </b-list-group-item>
                         </b-list-group>
 
@@ -847,14 +841,15 @@
                             stack
                             <br>
                           </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder" style="text-align: left;">
-                            <h6 v-if="architecture.memory_layout.length > 0">
+                          <b-list-group-item class="memoryLayout noBorder left">
+                            <span class="h6" v-if="architecture.memory_layout.length > 0">
                               0x{{((architecture.memory_layout[4].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </h6>
+                            </span>
                             <br>
-                            <h6 v-if="architecture.memory_layout.length > 0">
+                            <br>
+                            <span class="h6" v-if="architecture.memory_layout.length > 0">
                               0x{{((architecture.memory_layout[5].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </h6>
+                            </span>
                           </b-list-group-item>
                         </b-list-group>
                       </b-list-group>
@@ -870,7 +865,7 @@
                 <!-- Components -->
                 <b-tab title="Components" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
-                  <h6>Components of the architecture:</h6>
+                  <span class="h6">Components of the architecture:</span>
 
                   <div class="col-lg-12 col-sm-12 row">
                     <div class="compMenu">
@@ -942,13 +937,13 @@
                            ok-variant="danger" 
                            ok-title="Reset" 
                            @ok="resetArchitecture(modalResetArch.element)">
-                    <h6>Are you sure you want to reset the architecture?</h6>
+                    <span class="h6">Are you sure you want to reset the architecture?</span>
                   </b-modal >
                   
                   <!-- Components table -->
                   <div class="col-lg-12 col-sm-12 nopadding">
                     <br>
-                    <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash" style="padding-left: 0px;">
+                    <div class="col-lg-12 col-sm-12 pl-0" v-for="item in architecture_hash">
 
                       <!-- For each component -->
                       <b-card no-body class="mb-1">
@@ -1062,7 +1057,7 @@
                              ok-variant="danger" 
                              ok-title="Delete" 
                              @ok="delComponent(modalDeletComp.element)">
-                      <h6>Are you sure you want to delete the component?</h6>
+                      <span class="h6">Are you sure you want to delete the component?</span>
                     </b-modal >
 
                     <!-- New element form -->
@@ -1215,7 +1210,7 @@
                              ok-variant="danger" 
                              ok-title="Delete" 
                              @ok="delElement(modalDeletElement.element)">
-                      <h6>Are you sure you want to delete the item?</h6>
+                      <span class="h6">Are you sure you want to delete the item?</span>
                     </b-modal >
                   </div>
                 </b-tab>
@@ -1223,8 +1218,8 @@
                 <!-- Instruction definition -->
                 <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
-                  <h6>Instruction set:</h6>
-
+                  <span class="h6">Instruction set:</span>
+                  <br>
                   <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
                             id="newInstructionBtn" 
                             v-b-modal.new_instruction> 
@@ -1311,22 +1306,22 @@
                             
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Name:</h6>
+                            <span class="h6">Name:</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Type</h6>
+                            <span class="h6">Type</span>
                           </div>
                           <div class="col-lg-1 col-1 fields">
-                            <h6>Break</h6>
+                            <span class="h6">Break</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Start Bit</h6>
+                            <span class="h6">Start Bit</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>End Bit</h6>
+                            <span class="h6">End Bit</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Value</h6>
+                            <span class="h6">Value</span>
                           </div>
                         </div>
 
@@ -1334,7 +1329,7 @@
                           <div v-for="i in parseInt(formInstruction.numfieldsAux)">
                             <div class="col-lg-14 col-sm-14 row">
                               <div class="col-lg-1 col-1 fields">
-                                <h6>Field {{i-1}}</h6>
+                                <span class="h6">Field {{i-1}}</span>
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
@@ -1569,11 +1564,11 @@
                            ok-variant="danger" 
                            ok-title="Reset" 
                            @ok="resetInstructions(modalResetInst.element)">
-                    <h6>Are you sure you want to reset the instructions?</h6>
+                    <span class="h6">Are you sure you want to reset the instructions?</span>
                   </b-modal >
 
                   <!-- Instruction set table -->
-                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                  <div class="col-lg-12 col-sm-12 mt-3">
                     <b-table small :items="architecture.instructions" 
                              :fields="instFields" 
                              class="instruction_table text-center" 
@@ -1636,22 +1631,22 @@
                               
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Name:</h6>
+                              <span class="h6">Name:</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Type</h6>
+                              <span class="h6">Type</span>
                             </div>
                               <div class="col-lg-1 col-1 fields">
-                                <h6>Break</h6>
+                                <span class="h6">Break</span>
                               </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Start Bit</h6>
+                              <span class="h6">Start Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>End Bit</h6>
+                              <span class="h6">End Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Value</h6>
+                              <span class="h6">Value</span>
                             </div>
                           </div>
 
@@ -1659,7 +1654,7 @@
                             <div v-for="i in parseInt(formInstruction.numfieldsAux)">
                               <div class="col-lg-14 col-sm-14 row">
                                 <div class="col-lg-1 col-1 fields">
-                                  <h6>Field {{i-1}}</h6>
+                                  <span class="h6">Field {{i-1}}</span>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
@@ -1852,19 +1847,19 @@
                               
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Name:</h6>
+                              <span class="h6">Name:</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Type</h6>
+                              <span class="h6">Type</span>
                             </div>
                             <div class="col-lg-1 col-1 fields">
-                              <h6>Break</h6>
+                              <span class="h6">Break</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Start Bit</h6>
+                              <span class="h6">Start Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>End Bit</h6>
+                              <span class="h6">End Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
 
@@ -1876,7 +1871,7 @@
                             <div v-for="i in parseInt(formInstruction.numfieldsAux)">
                               <div class="col-lg-14 col-sm-14 row">
                                 <div class="col-lg-1 col-1 fields">
-                                  <h6>Field {{i-1}}</h6>
+                                  <span class="h6">Field {{i-1}}</span>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
@@ -2105,7 +2100,7 @@
                              ok-variant="danger" 
                              ok-title="Delete" 
                              @ok="delInstruction(modalDeletInst.index)">
-                      <h6>Are you sure you want to delete the item?</h6>
+                      <span class="h6">Are you sure you want to delete the item?</span>
                     </b-modal >
                   </div> 
                 </b-tab>
@@ -2113,8 +2108,8 @@
                 <!-- Pseudoinstruction definition -->
                 <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
-                  <h6>Pseudoinstructions set:</h6>
-
+                  <span class="h6">Pseudoinstructions set:</span>
+                  <br>
                   <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
                             id="newPseudoinstructionsBtn" 
                             v-b-modal.new_pseudoinstruction> 
@@ -2195,16 +2190,16 @@
                             
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Name:</h6>
+                            <span class="h6">Name:</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Type</h6>
+                            <span class="h6">Type</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>Start Bit</h6>
+                            <span class="h6">Start Bit</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
-                            <h6>End Bit</h6>
+                            <span class="h6">End Bit</span>
                           </div>
                           <div class="col-lg-2 col-2 fields">
 
@@ -2215,7 +2210,7 @@
                           <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
                             <div class="col-lg-12 col-sm-12 row">
                               <div class="col-lg-2 col-2 fields">
-                                <h6>Field {{i-1}}</h6>
+                                <span class="h6">Field {{i-1}}</span>
                               </div>
                               <div class="col-lg-2 col-2 fields">
                                 <b-form-group>
@@ -2346,11 +2341,11 @@
                            ok-variant="danger" 
                            ok-title="Reset" 
                            @ok="resetPseudoinstructionsModal(modalResetPseudoinst.element)">
-                    <h6>Are you sure you want to reset the pseudoinstructions?</h6>
+                    <span class="h6">Are you sure you want to reset the pseudoinstructions?</span>
                   </b-modal >
 
                   <!-- Pseudoinstruction set table -->
-                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                  <div class="col-lg-12 col-sm-12 mt-3">
                     <b-table small 
                              :items="architecture.pseudoinstructions" 
                              :fields="pseudoinstFields"
@@ -2410,16 +2405,16 @@
                               
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Name:</h6>
+                              <span class="h6">Name:</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Type</h6>
+                              <span class="h6">Type</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Start Bit</h6>
+                              <span class="h6">Start Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>End Bit</h6>
+                              <span class="h6">End Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
 
@@ -2430,7 +2425,7 @@
                             <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
                               <div class="col-lg-12 col-sm-12 row">
                                 <div class="col-lg-2 col-2 fields">
-                                  <h6>Field {{i-1}}</h6>
+                                  <span class="h6">Field {{i-1}}</span>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
@@ -2547,16 +2542,16 @@
                               
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Name:</h6>
+                              <span class="h6">Name:</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Type</h6>
+                              <span class="h6">Type</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>Start Bit</h6>
+                              <span class="h6">Start Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
-                              <h6>End Bit</h6>
+                              <span class="h6">End Bit</span>
                             </div>
                             <div class="col-lg-2 col-2 fields">
 
@@ -2567,7 +2562,7 @@
                             <div v-for="i in parseInt(formPseudoinstruction.numfieldsAux)">
                               <div class="col-lg-12 col-sm-12 row">
                                 <div class="col-lg-2 col-2 fields">
-                                  <h6>Field {{i-1}}</h6>
+                                  <span class="h6">Field {{i-1}}</span>
                                 </div>
                                 <div class="col-lg-2 col-2 fields">
                                   <b-form-group>
@@ -2698,7 +2693,7 @@
                              ok-variant="danger" 
                              ok-title="Delete" 
                              @ok="delPseudoinstruction(modalDeletPseudoinst.index)">
-                      <h6>Are you sure you want to delete the item?</h6>
+                      <span class="h6">Are you sure you want to delete the item?</span>
                     </b-modal >
                   </div>
                 </b-tab>
@@ -2706,7 +2701,7 @@
                 <!-- Directives definition -->
                 <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
-                  <h6>Directives set:</h6>
+                  <span class="h6">Directives set:</span>
 
                   <div class="col-lg-12 col-sm-12 row">
                     <div class="compMenu">
@@ -2778,11 +2773,11 @@
                            ok-variant="danger" 
                            ok-title="Reset" 
                            @ok="resetDirectives(modalResetDir.element)">
-                    <h6>Are you sure you want to reset the directives set?</h6>
+                    <span class="h6">Are you sure you want to reset the directives set?</span>
                   </b-modal >
 
                   <!-- Directives set table -->
-                  <div class="col-lg-12 col-sm-12" style="margin-top: 3vh">
+                  <div class="col-lg-12 col-sm-12 mt-3">
                     <b-table small 
                              :items="architecture.directives" 
                              :fields="directivesFields" 
@@ -2853,7 +2848,7 @@
                              ok-variant="danger" 
                              ok-title="Delete" 
                              @ok="delDirective(modalDeletDir.element)">
-                      <h6>Are you sure you want to delete the item?</h6>
+                      <span class="h6">Are you sure you want to delete the item?</span>
                     </b-modal >
                   </div>
                 </b-tab>
@@ -2949,7 +2944,9 @@
 
             <!-- Examples modal -->
             <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
-              <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
+              <span class="h6" v-if="example_available.length == 0">
+                There's no examples at the moment
+              </span>
               <b-list-group>
                 <b-list-group-item button 
                                    v-for="item in example_available" 
@@ -3036,9 +3033,8 @@
                     </b-button>
                   </div>
                   <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"
-                              id="info_ass" 
-                              style="background-color:#D4DB17;">
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
+                              id="info_ass">
                       <span class="fas fa-info-circle"></span>
                       Info
                     </b-button>
@@ -3082,43 +3078,43 @@
           <div class="contenedor row">
             <div class="col-lg-12 col-sm-12" id="divAssembly">
               <!--<span style="font-size: 1.25rem;">Assembly: (To comment a block of code press ctrl + /)</span>-->
-              <span style="font-size: 1.25rem;" id="assemblyInfo" class="fas fa-info-circle"></span> <span style="font-size: 1.25rem;">Assembly:</span>
+              <span id="assemblyInfo" class="fas fa-info-circle"></span> <span class="h5">Assembly:</span>
 
               <b-popover target="assemblyInfo" title="Shortcuts" triggers="hover focus" placement="bottomright">
                 <b-list-group>
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Copy &nbsp&nbsp
-                    <b-badge variant="primary" pill> Ctrl + c</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + c</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Cut&nbsp &nbsp&nbsp
-                    <b-badge variant="primary" pill> Ctrl + x</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + x</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Paste &nbsp&nbsp
-                    <b-badge variant="primary" pill> Ctrl + v</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + v</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Select all &nbsp&nbsp
-                    <b-badge variant="primary" pill> Ctrl + a</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + a</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Undo &nbsp&nbsp
-                    <b-badge variant="primary" pill> Ctrl + z</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + z</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Redo &nbsp&nbsp
-                    <b-badge variant="primary" pill> Ctrl + y</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + y</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Block code comment &nbsp&nbsp
-                    <b-badge variant="primary" pill> Ctrl + /</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + /</b-badge>
                   </b-list-group-item>
                 </b-list-group>
               </b-popover>
@@ -3127,7 +3123,7 @@
             </div>
 
             <div class="col-lg-0 col-sm-0" id="divTags" style="display:none;">
-              <h5>Library tags:</h5>
+              <span class="h5">Library tags:</span>
               <b-list-group>
                 <b-list-group-item v-for="item in update_binary.instructions_tag" 
                                    v-if="item.globl==true">
@@ -3142,9 +3138,9 @@
           <!-- Compile error -->
           <b-modal  id="modalAssemblyError" title="Assembly Code Error" ref="errorAssembly" hide-footer size="lg">
 
-            <h7 class="font-weight-light">Code fragment:</h7>
-            <div style="padding: 3%; background: #EF9A9A;">
-              <h6 class="text-monospace" label="Code fragment:">
+            <span class="h6 font-weight-light">Code fragment:</span>
+            <div class="errorAssembly">
+              <span class="h6 text-monospace" label="Code fragment:">
                    <b-container>
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
@@ -3172,12 +3168,13 @@
                    <b-col class="px-0" cols="10">&nbsp;</b-col>
                    </b-row>
                    </b-container>
-              </h6>
+              </span>
             </div>
             <br>
 
-            <h7 class="font-weight-light">Error description:</h7>
-            <h6>{{modalAssemblyError.error}}</h6>
+            <span class="h6 font-weight-light">Error description:</span>
+            <br>
+            <span class="h6">{{modalAssemblyError.error}}</span>
             <br>
 
           </b-modal>
@@ -3291,9 +3288,8 @@
                   </div>
 
                   <div class="col-lg-5 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"
-                              id="info_sim" 
-                              style="background-color:#D4DB17;" >
+                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
+                              id="info_sim">
                       <span class="fas fa-info-circle"></span> 
                       Info
                     </b-button>
@@ -3328,7 +3324,7 @@
 
                   <!-- Examples modal -->
                   <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
-                    <h6 v-if="example_available.length == 0">There's no examples at the moment</h6>
+                    <span class="h6" v-if="example_available.length == 0">There's no examples at the moment</span>
                     <b-list-group>
                       <b-list-group-item button 
                                          v-for="item in example_available"
@@ -3341,7 +3337,7 @@
 
                   <!-- Calculator -->
                   <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
-                    <div class="col-lg-12 col-12 row nomargin" style="padding-bottom: 3%;">
+                    <div class="col-lg-12 col-12 row nomargin pb-3">
                       <div class="col-lg-3 col-3"></div>
                       <div class="col-lg-6 col-6">
                         <div class="col-lg-12 col-12 row nomargin nopadding">
@@ -3364,7 +3360,7 @@
                       <div class="col-lg-3 col-3"></div>
                     </div>
 
-                    <div class="col-lg-12 col-12 row nomargin" style="padding-top: 3%;">
+                    <div class="col-lg-12 col-12 row nomargin pt-3">
                       <div class="col-lg-2 col-2"></div>
                       <div class="col-lg-6 col-8">
                         <b-form-input class="form-control form-control-sm" 
@@ -3381,8 +3377,8 @@
 
                     <div class="col-lg-12 col-12 row nomargin nopadding">
                       <div class="col-lg-1 col-0"></div>
-                      <div class="col-lg-8 col-12" style="padding: 1%;">
-                        <b-img src="./images/calculator.png" fluid alt="calculator" style="width: 100%;"></b-img>
+                      <div class="col-lg-8 col-12 p-1">
+                        <b-img class="calculatorImg" src="./images/calculator.png" fluid alt="calculator"></b-img>
                       </div>
                       <div class="col-lg-3 col-0"></div>
                     </div>
@@ -3391,7 +3387,7 @@
                       <div class="col-lg-1 col-0"></div>
                       <div class="col-lg-8 col-12 nopadding">
                         <div class="col-lg-12 col-12 row nomargin nopadding">
-                          <div class="col-lg-2 col-2" style="padding: 1%;">
+                          <div class="col-lg-2 col-2 p-1">
                             <b-form-input class="form-control form-control-sm" 
                                           v-on:input="debounce('calculator.sign', $event)" 
                                           :value="calculator.sign" 
@@ -3401,7 +3397,7 @@
                                           title="Sign">
                             </b-form-input>
                           </div>
-                          <div class="col-lg-4 col-4" style="padding: 1%;">
+                          <div class="col-lg-4 col-4 p-1">
                             <b-form-input class="form-control form-control-sm" 
                                           v-on:input="debounce('calculator.exponent', $event)" 
                                           :value="calculator.exponent" 
@@ -3411,7 +3407,7 @@
                                           title="Exponent">
                             </b-form-input>
                           </div>
-                          <div class="col-lg-6 col-6" style="padding: 1%;">
+                          <div class="col-lg-6 col-6 p-1">
                             <b-form-input class="form-control form-control-sm" 
                                           v-on:input="debounce('calculator.mantissa', $event)" 
                                           :value="calculator.mantissa" 
@@ -3430,22 +3426,33 @@
                       <div class="col-lg-1"></div>
                       <div class="col-lg-8 col-12 nopadding">
                         <div class="col-lg-12 col-12 row nomargin nopadding">
-                          <div class="col-lg-2 col-2" style="padding: 1%; text-align: center;">
-                            <span class="fas fa-long-arrow-alt-down" style="padding: 1%;"></span>
-                            <h5>-1<sup>{{calculator.sign}}</sup>   * </h5>
+                          <div class="col-lg-2 col-2 center p-1">
+                            <span class="fas fa-long-arrow-alt-down p-1"></span>
+                            <br>
+                            <span class="h5">
+                              -1<sup>{{calculator.sign}}</sup>   * 
+                            </span>
                           </div>
-                          <div class="col-lg-4 col-4" style="padding: 1%; text-align: center;">
-                            <span class="fas fa-long-arrow-alt-down" style=" padding: 1%;"></span>
-                            <h5 v-if="calculator.bits == 32">2<sup>{{calculator.exponentDec}}-127</sup>   * </h5>
-                            <h5 v-if="calculator.bits == 64">2<sup>{{calculator.exponentDec}}-1023</sup>   * </h5>
+                          <div class="col-lg-4 col-4 center p-1">
+                            <span class="fas fa-long-arrow-alt-down p-1"></span>
+                            <br>
+                            <span class="h5" v-if="calculator.bits == 32">
+                              2<sup>{{calculator.exponentDec}}-127</sup>   * 
+                            </span>
+                            <span class="h5" v-if="calculator.bits == 64">
+                              2<sup>{{calculator.exponentDec}}-1023</sup>   * 
+                            </span>
                           </div>
-                          <div class="col-lg-6 col-6" style="padding: 1%; text-align: center;">
-                            <span class="fas fa-long-arrow-alt-down" style=" padding: 1%;"></span>
-                            <h5>{{calculator.mantissaDec}} = </h5>
+                          <div class="col-lg-6 col-6 center p-1">
+                            <span class="fas fa-long-arrow-alt-down p-1"></span>
+                            <br>
+                            <span class="h5">
+                            {{calculator.mantissaDec}} = 
+                          </span>
                           </div>
                         </div>
                       </div>
-                      <div class="col-lg-3" style="padding-top: 3%">
+                      <div class="col-lg-3 pt-3">
                         <b-form-input class="form-control form-control-sm" 
                                       v-on:input="debounce('calculator.decimal', $event)" 
                                       :value="calculator.decimal" 
@@ -3456,7 +3463,7 @@
                       </div>
                     </div>
 
-                    <div class="col-lg-12 col-12" style="margin-top: 2%;">
+                    <div class="col-lg-12 col-12 pt-2">
                       <b-button class="btn btn-sm btn-block" variant="primary">Convert</b-button>
                     </div>
                   </b-modal>
@@ -3498,16 +3505,15 @@
                     <br v-if="row.item.Break == null">
                     <b-img alt="Break" 
                            src="./images/stop_classic.gif" 
-                           class="shadow" 
+                           class="shadow breakPoint" 
                            rounded="circle" 
-                           style="width:auto !important;height:4vh;" 
                            v-if="row.item.Break == true">
                     </b-img>
                   </div>
                 </template>
 
                 <template v-slot:cell(Address)="row">
-                  <h6>{{row.item.Address}}</h6>
+                  <span class="h6">{{row.item.Address}}</span>
                 </template>
 
                 <template v-slot:cell(Label)="row">
@@ -3515,53 +3521,33 @@
                 </template>
 
                 <template v-slot:cell(userInstructions)="row">
-                  <h6 v-if="row.item.visible == true">{{row.item.user}}</h6>
-                  <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
+                  <span class="h6" v-if="row.item.visible == true">{{row.item.user}}</span>
+                  <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>
                 </template>
 
                 <template v-slot:cell(loadedInstructions)="row">
-                  <h6 v-if="row.item.visible == true">{{row.item.loaded}} 
-                  	<b-badge variant="info" 
-                             class="border border-info shadow" 
-                             style="position:relative;right:-12px; float:right; margin-left: -20vw;" 
-                             v-if="row.item._rowVariant=='info' && enter == false">
-                  		Current-Keyboard
-                  	</b-badge>
-                  	<b-badge variant="success" 
-                             class="border border-success shadow" 
-                             style="position:relative;right:-12px; float:right; margin-left: -20vw;" 
-                             v-if="row.item._rowVariant=='success'">
-                  			Next
-                  	</b-badge>
-                  	<b-badge variant="info" class="border border-info shadow" 
-                             style="position:relative;right:-12px; float:right; margin-left: -20vw;" 
-                             v-if="row.item._rowVariant=='info' && enter == null">
-                  		Current
-                  	</b-badge>
-                  </h6>
-                  <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt; 
-                  	<b-badge variant="info" class="border border-info shadow" 
-                             style="position:relative;right:-12px; float:right; margin-left: -20vw;" 
-                             v-if="row.item._rowVariant=='info' && enter == null">
-                  		Current
-                  	</b-badge>
-                  	<b-badge variant="success" 
-                             class="border border-success shadow" 
-                             style="position:relative;right:-12px; float:right; margin-left: -20vw;" 
-                             v-if="row.item._rowVariant=='success'">
-                  			Next
-                  	</b-badge>
-                  	<b-badge variant="info"
-                             class="border border-info shadow" 
-                             style="position:relative;right:-12px; float:right; margin-left: -20vw;" 
-                             v-if="row.item._rowVariant=='info' && enter == false">
-                  		Current-Keyboard
-                  	</b-badge>
-                  </h6>
+                  <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>
+                  <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>
+
+                  <b-badge variant="info" 
+                           class="border border-info shadow executionTag" 
+                           v-if="row.item._rowVariant=='info' && enter == false">
+                    Current-Keyboard
+                  </b-badge>
+                  <b-badge variant="success" 
+                           class="border border-success shadow executionTag" 
+                           v-if="row.item._rowVariant=='success'">
+                      Next
+                  </b-badge>
+                  <b-badge variant="info" class="border border-info shadow executionTag" 
+                           v-if="row.item._rowVariant=='info' && enter == null">
+                    Current
+                  </b-badge>
+
                 </template> 
                 <template slot-scope="row">
-                  <h6 v-if="row.item.visible == true">{{row.item.loaded}}</h6>
-                  <h6 v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</h6>
+                  <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>
+                  <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>
                 </template> 
               </b-table>
             </div>
@@ -3611,8 +3597,7 @@
                 <!-- Decimal view -->
                 <b-tab :title="nameTabReg" active>
                   <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
-                    <div class="col-lg-12 col-sm-12 buttons row" 
-                          style="margin-bottom: 2vh;" 
+                    <div class="col-lg-12 col-sm-12 buttons row mb-2" 
                           v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
                       
                       <!-- Control and integer registers -->
@@ -3623,14 +3608,12 @@
                                   :id="popoverId(item2.name + 'Int')" 
                                   @click="change_popover_register(popoverId(item2.name + 'Int'))">
                           <span class="text-truncate">{{item2.name}}</span> 
-                          <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" 
-                                    class="regValue" 
-                                    v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
+                          <b-badge class="regValue registerValue" 
+                                   v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
                             {{parseInt(item2.value.toString(10))-0x100000000}}
                           </b-badge>
 
-                           <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" 
-                                    class="regValue" 
+                           <b-badge class="regValue registerValue" 
                                     v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">
                             {{(item2.value).toString(10)}}
                           </b-badge>
@@ -3653,7 +3636,7 @@
                               <tr>
                                 <td>Hex.</td>
                                 <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
                                   </b-badge>
                                 </td>
@@ -3661,7 +3644,7 @@
                               <tr>
                                 <td>Binary</td>
                                 <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}
                                   </b-badge>
                                 </td>
@@ -3669,11 +3652,11 @@
                               <tr>
                                 <td>Signed</td>
                                 <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;" 
+                                  <b-badge class="registerPopover" 
                                            v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
                                     {{parseInt(item2.value.toString(10))-0x100000000}}
                                   </b-badge>
-                                  <b-badge style="background-color:#CEECF5; color:black;" 
+                                  <b-badge class="registerPopover"
                                            v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">
                                     {{(item2.value).toString(10)}}
                                   </b-badge>
@@ -3682,7 +3665,7 @@
                               <tr>
                                 <td>Unsig.</td>
                                 <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{(item2.value).toString(10) >>> 0}}
                                   </b-badge>
                                 </td>
@@ -3690,7 +3673,7 @@
                               <tr>
                                 <td>Char</td>
                                 <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
                                   </b-badge>
                                 </td>
@@ -3698,7 +3681,7 @@
                               <tr>
                                 <td>Float</td>
                                 <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
                                   </b-badge>
                                 </td>
@@ -3706,7 +3689,7 @@
                             </tbody>
                           </table>
 
-                          <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+                          <div class="col-lg-12 col-sm-12 row mx-0">
                             <div class="col-lg-6 col-sm-6 popoverFooter">
                               <b-form-input v-on:input="debounce('newValue', $event)" 
                                             :value="newValue" 
@@ -3736,7 +3719,7 @@
                                     :id="popoverId(item2.name + 'FP')" 
                                     @click="change_popover_register(popoverId(item2.name + 'FP'))">
                             <span class="text-truncate">{{item2.name}}</span>  
-                            <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;">
+                            <b-badge class="registerValue">
                               {{item2.value}}
                             </b-badge>
                           </b-button>
@@ -3758,7 +3741,7 @@
                                 <tr>
                                   <td>Hex.</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{"0x"+ bin2hex(float2bin(item2.value))}}
                                     </b-badge>
                                   </td>
@@ -3766,7 +3749,7 @@
                                 <tr>
                                   <td>Binary</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{float2bin(item2.value)}}
                                     </b-badge>
                                   </td>
@@ -3774,7 +3757,7 @@
                                 <tr>
                                   <td>Signed</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >> 0}}
                                     </b-badge>
                                   </td>
@@ -3782,7 +3765,7 @@
                                 <tr>
                                   <td>Unsig.</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >>> 0}}
                                     </b-badge>
                                   </td>
@@ -3790,7 +3773,7 @@
                                 <tr>
                                   <td>Float</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                     {{item2.value}}
                                   </b-badge>
                                 </td>
@@ -3798,7 +3781,7 @@
                               </tbody>
                             </table>
 
-                            <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+                            <div class="col-lg-12 col-sm-12 row mx-0">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-form-input v-on:input="debounce('newValue', $event)" 
                                               :value="newValue" 
@@ -3827,7 +3810,7 @@
                             <span class="text-truncate">
                               {{item2.name}}
                             </span>  
-                            <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" >
+                            <b-badge class="registerValue" >
                               {{item2.value}}
                             </b-badge>
                           </b-button>
@@ -3849,7 +3832,7 @@
                                 <tr>
                                   <td>Hex.</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{"0x"+ bin2hex(double2bin(item2.value))}}
                                     </b-badge>
                                   </td>
@@ -3857,7 +3840,7 @@
                                 <tr>
                                   <td>Binary</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{double2bin(item2.value)}}
                                     </b-badge>
                                   </td>
@@ -3865,7 +3848,7 @@
                                 <tr>
                                   <td>Signed</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >> 0}}
                                     </b-badge>
                                   </td>
@@ -3873,7 +3856,7 @@
                                 <tr>
                                   <td>Unsig.</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >>> 0}}
                                     </b-badge>
                                   </td>
@@ -3881,7 +3864,7 @@
                                 <tr>
                                   <td>Float</td>
                                   <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{item2.value}}
                                     </b-badge>
                                   </td>
@@ -3889,7 +3872,7 @@
                               </tbody>
                             </table>
 
-                            <div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+                            <div class="col-lg-12 col-sm-12 row mx-0">
                               <div class="col-lg-6 col-sm-6 popoverFooter">
                                 <b-form-input v-on:input="debounce('newValue', $event)" 
                                               :value="newValue" 
@@ -3916,8 +3899,7 @@
                 <!-- Hexadecimal view -->
                 <b-tab title="Hexadecimal">
                 	<div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
-                		<div class="col-lg-12 col-sm-12 buttons row" 
-                         style="margin-bottom: 2vh;" 
+                		<div class="col-lg-12 col-sm-12 buttons row mb-2" 
                          v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
 
                 	  <!-- Control and integer registers -->
@@ -3928,7 +3910,7 @@
                                   :id="popoverId(item2.name)" 
                                   @click="change_popover_register(popoverId(item2.name))">
   	                      <span class="text-truncate">{{item2.name}}</span>  
-                          <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" 
+                          <b-badge class="registerValue" 
                                     class="regValue">
                             {{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
                           </b-badge>
@@ -3952,7 +3934,7 @@
   												    <tr>
   												      <td>Hex.</td>
   												      <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
                                   </b-badge>
                                 </td>
@@ -3960,7 +3942,7 @@
   												    <tr>
   												      <td>Binary</td>
   												      <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}
                                   </b-badge>
                                 </td>
@@ -3968,11 +3950,11 @@
   												    <tr>
   												      <td>Signed</td>
   												      <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;" 
+                                  <b-badge class="registerPopover" 
                                            v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
                                     {{parseInt(item2.value.toString(10))-0x100000000}}
                                   </b-badge>
-                                  <b-badge style="background-color:#CEECF5; color:black;" 
+                                  <b-badge class="registerPopover" 
                                            v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">
                                     {{(item2.value).toString(10)}}
                                   </b-badge>
@@ -3981,7 +3963,7 @@
   												    <tr>
   												      <td>Unsig.</td>
   												      <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{(item2.value).toString(10) >>> 0}}
                                   </b-badge>
                                 </td>
@@ -3989,7 +3971,7 @@
   												    <tr>
   												      <td>Char</td>
   												      <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
                                   </b-badge>
                                 </td>
@@ -3997,7 +3979,7 @@
   												    <tr>
   												      <td>Float</td>
   												      <td>
-                                  <b-badge style="background-color:#CEECF5; color:black;">
+                                  <b-badge class="registerPopover">
                                     {{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
                                   </b-badge>
                                 </td>
@@ -4005,7 +3987,7 @@
   												  </tbody>
   												</table>
 
-  												<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+  												<div class="col-lg-12 col-sm-12 row mx-0">
   					            		<div class="col-lg-6 col-sm-6 popoverFooter">
   					            			<b-form-input v-on:input="debounce('newValue', $event)" 
                                             :value="newValue"
@@ -4038,7 +4020,7 @@
   	                      	<span class="text-truncate">
                               {{item2.name}}
                             </span> 
-                            <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;" >
+                            <b-badge class="registerValue" >
                               {{bin2hex(float2bin(item2.value))}}
                             </b-badge>
   		                    </b-button>
@@ -4060,7 +4042,7 @@
   													    <tr>
   													      <td>Hex.</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{"0x"+ bin2hex(float2bin(item2.value))}}
                                     </b-badge>
                                   </td>
@@ -4068,7 +4050,7 @@
   													    <tr>
   													      <td>Binary</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{float2bin(item2.value)}}
                                   </b-badge>
                                 </td>
@@ -4076,7 +4058,7 @@
   													    <tr>
   													      <td>Signed</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >> 0}}
                                     </b-badge>
                                   </td>
@@ -4084,7 +4066,7 @@
   													    <tr>
   													      <td>Unsig.</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >>> 0}}
                                     </b-badge>
                                   </td>
@@ -4092,7 +4074,7 @@
   													    <tr>
   													      <td>Float</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{item2.value}}
                                     </b-badge>
                                   </td>
@@ -4100,7 +4082,7 @@
   													  </tbody>
   													</table>
 
-  													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+  													<div class="col-lg-12 col-sm-12 row mx-0">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-form-input v-on:input="debounce('newValue', $event)" 
                                               :value="newValue" 
@@ -4127,7 +4109,7 @@
                                     :id="popoverId(item2.name)" 
                                     @click="change_popover_register(popoverId(item2.name))">
   		                      <span class="text-truncate">{{item2.name}}</span> 
-                            <b-badge style="background-color:#CEECF5; color:black; font-family:monospace; font-weight:normal;">
+                            <b-badge class="registerValue">
                               {{bin2hex(double2bin(item2.value))}}
                             </b-badge>
   		                    </b-button>
@@ -4149,7 +4131,7 @@
   													    <tr>
   													      <td>Hex.</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{"0x"+ bin2hex(double2bin(item2.value))}}
                                     </b-badge>
                                   </td>
@@ -4157,7 +4139,7 @@
   													    <tr>
   													      <td>Binary</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{double2bin(item2.value)}}
                                     </b-badge>
                                   </td>
@@ -4165,7 +4147,7 @@
   													    <tr>
   													      <td>Signed</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >> 0}}
                                     </b-badge>
                                   </td>
@@ -4173,7 +4155,7 @@
   													    <tr>
   													      <td>Unsig.</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >>> 0}}
                                     </b-badge>
                                   </td>
@@ -4181,7 +4163,7 @@
   													    <tr>
   													      <td>Float</td>
   													      <td>
-                                    <b-badge style="background-color:#CEECF5; color:black;">
+                                    <b-badge class="registerPopover">
                                     {{item2.value}}
                                   </b-badge>
                                 </td>
@@ -4189,7 +4171,7 @@
   													  </tbody>
   													</table>
 
-  													<div class="col-lg-12 col-sm-12 row" style="margin-right: 0px;margin-left: 0px;">
+  													<div class="col-lg-12 col-sm-12 row mx-0">
   						            		<div class="col-lg-6 col-sm-6 popoverFooter">
   						            			<b-form-input v-on:input="debounce('newValue', $event)" 
                                               :value="newValue" 
@@ -4232,14 +4214,14 @@
                              @row-clicked="select_space_type"
                              id="data_memory_table">
                       <template v-slot:cell(Address)="row">
-                        <h6 style="font-size: 0.85em;">
+                        <span class="h6Sm">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
-                        </h6>
+                        </span>
                       </template>
 
                       <template v-slot:cell(Binary)="row">
-                        <h6 style="font-size: 0.85em;">
-                          <span style="border:1px solid gray;" 
+                        <span class="h6Sm">
+                          <span class="memoryBorder" 
                                 v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
@@ -4253,7 +4235,7 @@
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
@@ -4266,7 +4248,7 @@
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[1].Tag == null">
@@ -4279,7 +4261,7 @@
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span>
                           <span v-if="row.item.Binary[0].Tag == null">
@@ -4291,16 +4273,15 @@
                                    v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
-                        </h6>
+                        </span>
                       </template>
                       <template v-slot:cell(value)="row">
-                        <h6 style="font-size: 0.85em;">
+                        <span class="h6Sm">
                           {{row.item.Value}} 
-                          <span class="fas fa-eye" 
-                                v-if="row.item.type == 'space' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)" 
-                                style="float: right; margin-right: 2%;">
+                          <span class="fas fa-eye memoryValue" 
+                                v-if="row.item.type == 'space' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)">
                           </span>
-                        </h6> 
+                        </span> 
                       </template>
                     </b-table>
 
@@ -4330,14 +4311,14 @@
                              :filter-function=filter 
                              filter=" ">
                       <template v-slot:cell(Address)="row">
-                        <h6 style="font-size: 0.85em;">
+                        <span class="h6Sm">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
-                        </h6>
+                        </span>
                       </template>
 
                       <template template v-slot:cell(Binary)="row">
-                        <h6 style="font-size: 0.85em;">
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">
+                        <span class="h6Sm">
+                          <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span>
                           <span v-if="row.item.Binary[3].Tag == null">
@@ -4350,7 +4331,7 @@
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
@@ -4363,7 +4344,7 @@
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[1].Tag == null">
@@ -4376,7 +4357,7 @@
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[0].Tag == null">
@@ -4388,10 +4369,10 @@
                                    v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
-                        </h6>
+                        </span>
                       </template>
                       <template v-slot:cell(value)="row">
-                        <h6 style="font-size: 0.85em;">{{row.item.Value}}</h6>
+                        <span class="h6Sm">{{row.item.Value}}</span>
                       </template>
                     </b-table>
                   </div>
@@ -4409,17 +4390,17 @@
                              class="memory_table" 
                              @row-clicked="select_stack_type">
                       <template v-slot:cell(Address)="row">
-                        <h6 style="font-size: 0.85em;" class="text-secondary" v-if="row.item.unallocated==true">
+                        <span class="h6Sm" class="text-secondary" v-if="row.item.unallocated==true">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
-                        </h6>
-                        <h6 style="font-size: 0.85em;" v-if="row.item.unallocated==false">
+                        </span>
+                        <span class="h6Sm" v-if="row.item.unallocated==false">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
-                        </h6>
+                        </span>
                       </template>
 
                       <template v-slot:cell(Binary)="row">
-                        <h6 style="font-size: 0.85em;" class="text-secondary" v-if="row.item.unallocated==true">
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">
+                        <span class="h6Sm" class="text-secondary" v-if="row.item.unallocated==true">
+                          <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[3].Tag == null">
@@ -4432,7 +4413,7 @@
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
@@ -4445,7 +4426,7 @@
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[1].Tag == null">
@@ -4458,7 +4439,7 @@
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[0].Tag == null">
@@ -4470,10 +4451,10 @@
                                    v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
-                        </h6>
+                        </span>
 
-                        <h6 style="font-size: 0.85em;" v-if="row.item.unallocated==false">
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[3].Tag != null">
+                        <span class="h6Sm" v-if="row.item.unallocated==false">
+                          <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[3].Tag == null">
@@ -4486,7 +4467,7 @@
                             {{row.item.Binary[3].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[2].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">
                             {{row.item.Binary[2].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[2].Tag == null">
@@ -4499,7 +4480,7 @@
                             {{row.item.Binary[2].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[1].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">
                             {{row.item.Binary[1].Bin.toUpperCase()}}
                           </span>
                           <span v-if="row.item.Binary[1].Tag == null">
@@ -4512,7 +4493,7 @@
                             {{row.item.Binary[1].Tag}}
                           </b-badge>
 
-                          <span style="border:1px solid gray;" v-if="row.item.Binary[0].Tag != null">
+                          <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Bin.toUpperCase()}}
                           </span> 
                           <span v-if="row.item.Binary[0].Tag == null">
@@ -4524,11 +4505,11 @@
                                    v-if="row.item.Binary[0].Tag != null">
                             {{row.item.Binary[0].Tag}}
                           </b-badge>
-                        </h6>
+                        </span>
                       </template>
                       <template v-slot:cell(Value)="row">
-                        <h6 style="font-size: 0.85em;" class="text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</h6>
-                        <h6 style="font-size: 0.85em;" v-if="row.item.unallocated==false">{{row.item.Value}}</h6>
+                        <span class="h6Sm" class="text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</span>
+                        <span class="h6Sm" v-if="row.item.unallocated==false">{{row.item.Value}}</span>
                       </template>
                     </b-table>
 
@@ -4580,11 +4561,11 @@
           </div>
 
           <!-- Monitor -->
-          <div class="col-rt-4 col-xl-12 col-lg-12 col-sm-12 row" style="padding-right: 0px">
+          <div class="col-rt-4 col-xl-12 col-lg-12 col-sm-12 row pr-0">
             <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
               <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
                 <div class="col-lg-1 col-sm-1">
-                  <i style="height:5vh; opacity:0.6;" class="fas fa-desktop fa-2x mb-2"></i>
+                  <i class="fas fa-desktop fa-2x mb-2 consoleIcon"></i>
                 </div>
                 <div class="col-lg-11 col-sm-11 pr-0">
                   <b-form-textarea id="textarea_display" 
@@ -4602,7 +4583,7 @@
             <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
               <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
                 <div class="col-lg-1 col-sm-1">
-                  <i style="height:5vh; opacity:0.6;" class="fa fa-keyboard fa-2x mb-2"></i>
+                  <i class="fa fa-keyboard fa-2x mb-2 consoleIcon"></i>
                 </div>
                 <div class="col-lg-11 col-sm-11 pr-0">
                   <b-form-textarea id="textarea_keyboard" 
@@ -4619,8 +4600,7 @@
                  
                 </div>
                 <div class="col-lg-4 col-sm-4">
-                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm" 
-                            style="margin-top: 5%; float:right;" 
+                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"
                             @click="consoleClear">
                     <span class="fas fa-broom"></span> 
                     Clear
@@ -4628,10 +4608,9 @@
                 </div>
                 <div class="col-lg-4 col-sm-4">
                   <b-button id="enter_keyboard" 
-                            class="btn btn-outline-secondary btn-block menuGroup btn-sm" 
-                            style="margin-top: 5%; float:right;" 
+                            class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"
                             @click="consoleEnter">
-                    <span class="fas fa-level-down-alt" style="transform: rotate(90deg);"></span> 
+                    <span class="fas fa-level-down-alt enterIcon"></span> 
                     Enter
                   </b-button>
                 </div>
