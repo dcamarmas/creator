@@ -667,8 +667,8 @@ try
         	  if(textarea_assembly_editor != null){
         	    app._data.assembly_code = textarea_assembly_editor.getValue();
               code_assembly = textarea_assembly_editor.getValue();
+              codemirrorHistory = textarea_assembly_editor.getHistory();
         	    textarea_assembly_editor.toTextArea();
-              codemirrorHistory = textarea_assembly_editor.getHistory()
         	  }
         	}
 
