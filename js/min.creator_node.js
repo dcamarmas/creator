@@ -4378,6 +4378,7 @@ function executeInstruction ( )
       if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
         type = architecture.instructions[i].type;
         signatureDef = architecture.instructions[i].signature_definition;
+
         signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
         re = new RegExp("[fF][0-9]+", "g");
@@ -5123,8 +5124,6 @@ function executeInstruction ( )
       }
     }
 
-    console_log(executionIndex);
-
     if (executionIndex >= instructions.length && mutexRead == true)
     {
       for (var i = 0; i < instructions.length; i++) {
@@ -5215,6 +5214,7 @@ function readRegister ( indexComp, indexElem )
 /*Write value in register*/
 function writeRegister ( value, indexComp, indexElem )
 {
+
 	  var draw = {
 	    space: [] ,
 	    info: [] ,
@@ -5250,16 +5250,19 @@ function writeRegister ( value, indexComp, indexElem )
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
 
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+            if (typeof window !== "undefined")
+            {
+              var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
+              var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-            $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-            $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+              $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+              $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
 
-            setTimeout(function() {
-              $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-              $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-            }, 500);
+              setTimeout(function() {
+                $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+                $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+              }, 500);
+            }
         }
 
         else if (architecture.components[indexComp].type =="floating point")
@@ -5275,16 +5278,19 @@ function writeRegister ( value, indexComp, indexElem )
 
             updateDouble(indexComp, indexElem);
 
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+            if (typeof window !== "undefined")
+            {
+              var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
+              var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-            $(buttonDec).attr("style", "background-color:#c2c2c2;");
-            $(buttonHex).attr("style", "background-color:#c2c2c2;");
+              $(buttonDec).attr("style", "background-color:#c2c2c2;");
+              $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-            setTimeout(function() {
-              $(buttonDec).attr("style", "background-color:#f5f5f5;");
-              $(buttonHex).attr("style", "background-color:#f5f5f5;");
-            }, 500);
+              setTimeout(function() {
+                $(buttonDec).attr("style", "background-color:#f5f5f5;");
+                $(buttonHex).attr("style", "background-color:#f5f5f5;");
+              }, 500);
+            }
           }
 
           else if (architecture.components[indexComp].double_precision == true)
@@ -5301,7 +5307,7 @@ function writeRegister ( value, indexComp, indexElem )
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
             updateSimple(indexComp, indexElem);
 
-            if (!window.document)
+            if (typeof window !== "undefined")
             {
                   var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
                   var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -5937,7 +5943,9 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
                  executionIndex = -1;
-                 app._data.keyboard = "";
+                 if (typeof app !== "undefined")
+                  app._data.keyboard = "";
+                 keyboard="";
                  return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
                }
 
@@ -6778,7 +6786,7 @@ function assembly_compile ( code )
              ret.msg = 'Unknow assembly compiler code :-/' ;
              break;
     }
-
+    
     return ret ;
 }
 
