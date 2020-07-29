@@ -86,8 +86,8 @@
 
 
         <!-- Loading spinner-->
-        <div id="spinnerBack" class="spinnerBack loading" style="display:none" ref="spinnerBack"></div>
-        <div id="spinner" class="spinner loading" style="display:none">
+        <div id="spinnerBack" class="spinnerBack loading d-none" ref="spinnerBack"></div>
+        <div id="spinner" class="spinner loading d-none">
           <div class="spinnerBox">
             <b-spinner variant="primary" class="spinnerIcon"></b-spinner>
           </div>
@@ -1296,7 +1296,7 @@
                                         title="Intruction fields">
                           </b-form-input>
                         </b-form-group>
-                        <div style="display: none">
+                        <div class="d-none">
                           <b-form-input type="text" 
                                         v-model="formInstruction.numfieldsAux" 
                                         title="Intruction fields">
@@ -1837,7 +1837,7 @@
                                           title="Instruction fields">
                             </b-form-input>
                           </b-form-group>
-                          <div style="display: none">
+                          <div class="d-none">
                             <b-form-input type="text" 
                                           v-model="formInstruction.numfieldsAux" 
                                           title="Instruction fields"></b-form-input>
@@ -2180,7 +2180,7 @@
                                         title="Pseudoinstruction fields">
                           </b-form-input>
                         </b-form-group>
-                        <div style="display: none;">
+                        <div class="d-none">
                           <b-form-input type="text" 
                                         v-model="formPseudoinstruction.numfieldsAux" 
                                         title="Pseudoinstruction fields">
@@ -2532,7 +2532,7 @@
                             </b-form-input>
                           </b-form-group>
 
-                          <div style="display: none;">
+                          <div class="d-none">
                             <b-form-input type="text" 
                                           v-model="formPseudoinstruction.numfieldsAux" 
                                           title="Pseudoinstruction fields">
@@ -3090,44 +3090,51 @@
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Copy &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + c</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + c</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Cut&nbsp &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + x</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + x</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Paste &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + v</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + v</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Select all &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + a</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + a</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Undo &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + z</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + z</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Redo &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + y</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + y</b-badge>
                   </b-list-group-item>
 
                   <b-list-group-item class="d-flex justify-content-between align-items-center">
                     Block code comment &nbsp&nbsp
                     <b-badge variant="primary" pill v-if="navigator != 'Mac'"> Ctrl + /</b-badge>
+                    <b-badge variant="primary" pill v-if="navigator == 'Mac'"> ⌘ + /</b-badge>
                   </b-list-group-item>
                 </b-list-group>
               </b-popover>
 
-              <textarea id="textarea_assembly" rows="14" class="code-scroll-y" title="Asembly Code" style="display: none;"></textarea>
+              <textarea id="textarea_assembly" rows="14" class="code-scroll-y d-none" title="Asembly Code"></textarea>
             </div>
 
-            <div class="col-lg-0 col-sm-0" id="divTags" style="display:none;">
+            <div class="col-lg-0 col-sm-0 d-none" id="divTags">
               <span class="h5">Library tags:</span>
               <b-list-group>
                 <b-list-group-item v-for="item in update_binary.instructions_tag" 
@@ -3150,27 +3157,27 @@
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >...</b-col>
-                   <b-col class="px-0" cols="10">&nbsp;</b-col>
+                   <b-col class="pl-2" cols="10">&nbsp;</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >{{app.modalAssemblyError.line1}}</b-col>
-                   <b-col class="px-0" cols="10">{{app.modalAssemblyError.code1}}</b-col>
+                   <b-col class="pl-2" cols="10">{{app.modalAssemblyError.code1}}</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >*</b-col>
                    <b-col class="px-2"         >{{app.modalAssemblyError.line2}}</b-col>
-                   <b-col class="px-0" cols="10">{{app.modalAssemblyError.code2}}</b-col>
+                   <b-col class="pl-2" cols="10">{{app.modalAssemblyError.code2}}</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >{{app.modalAssemblyError.line3}}</b-col>
-                   <b-col class="px-0" cols="10">{{app.modalAssemblyError.code3}}</b-col>
+                   <b-col class="pl-2" cols="10">{{app.modalAssemblyError.code3}}</b-col>
                    </b-row>
                    <b-row>
                    <b-col class="px-0"         >&nbsp;</b-col>
                    <b-col class="px-2"         >...</b-col>
-                   <b-col class="px-0" cols="10">&nbsp;</b-col>
+                   <b-col class="pl-2" cols="10">&nbsp;</b-col>
                    </b-row>
                    </b-container>
               </span>
@@ -3247,7 +3254,7 @@
                           Run
                         </b-button>
                       </div>
-                      <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display:none;">
+                      <div class="col-lg-4 col-sm-4 buttons d-none" id="stopExecution">
                         <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" 
                                   @click="stopExecution" 
                                   id="stop">
