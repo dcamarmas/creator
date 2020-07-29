@@ -222,12 +222,13 @@
     	  	<b-list-group>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Execution Speed:</label>
+            <label for="range-1">Execution Speed:</label>
     		    <b-input-group>
     	        <b-input-group-prepend>
     	          <b-btn variant="outline-secondary" @click="change_execution_speed(-5)">-</b-btn>
     	        </b-input-group-prepend>
-              <b-form-input v-model="instructionsPacked" 
+              <b-form-input id="range-1"
+                            v-model="instructionsPacked" 
                             @change="change_execution_speed(0)" 
                             type="range" 
                             min="1" 
@@ -243,7 +244,8 @@
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
             <label for="range-2">Execution Autoscroll:</label>
-            <b-form-checkbox v-model="autoscroll" 
+            <b-form-checkbox id="range-2"
+                             v-model="autoscroll" 
                              name="check-button" 
                              switch 
                              size="lg" 
@@ -252,12 +254,13 @@
     	    </b-list-group-item>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Notification Time:</label>
+            <label for="range-3">Notification Time:</label>
     		    <b-input-group>
               <b-input-group-prepend>
                 <b-btn variant="outline-secondary" @click="change_notification_time(-20)">-</b-btn>
               </b-input-group-prepend>
-              <b-form-input v-model="notificationTime" 
+              <b-form-input id="range-3"
+                            v-model="notificationTime" 
                             @change="change_notification_time(0)" 
                             type="range" 
                             min="1000" 
@@ -272,12 +275,13 @@
     	    </b-list-group-item>
 
           <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Font Size:</label>
+            <label for="range-4">Font Size:</label>
             <b-input-group>
               <b-input-group-prepend>
                 <b-btn variant="outline-secondary" @click="change_font_size(-1)">-</b-btn>
               </b-input-group-prepend>
-              <b-form-input v-model="fontSize" 
+              <b-form-input id="range-4"
+                            v-model="fontSize" 
                             @change="change_font_size(0)" 
                             type="range" 
                             min="8" 
@@ -292,8 +296,9 @@
           </b-list-group-item>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Dark Mode:</label>
-            <b-form-checkbox name="check-button"
+            <label for="range-5">Dark Mode:</label>
+            <b-form-checkbox id="range-5"
+                             name="check-button"
                              switch size="lg"
                              v-model="dark" 
                              @change="change_dark_mode">
@@ -301,8 +306,8 @@
     	    </b-list-group-item>
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
-            <label for="range-2">Debug:</label>
-            <b-form-checkbox v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
+            <label for="range-6">Debug:</label>
+            <b-form-checkbox id="range-6" v-model="c_debug" name="check-button" switch size="lg"></b-form-checkbox>
     	    </b-list-group-item>
 
     	  </b-list-group>
@@ -4565,7 +4570,7 @@
             <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
               <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
                 <div class="col-lg-1 col-sm-1">
-                  <i class="fas fa-desktop fa-2x mb-2 consoleIcon"></i>
+                  <span class="fas fa-desktop fa-2x mb-2 consoleIcon"></span>
                 </div>
                 <div class="col-lg-11 col-sm-11 pr-0">
                   <b-form-textarea id="textarea_display" 
@@ -4583,7 +4588,7 @@
             <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
               <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
                 <div class="col-lg-1 col-sm-1">
-                  <i class="fa fa-keyboard fa-2x mb-2 consoleIcon"></i>
+                  <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>
                 </div>
                 <div class="col-lg-11 col-sm-11 pr-0">
                   <b-form-textarea id="textarea_keyboard" 
