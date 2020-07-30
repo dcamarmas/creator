@@ -1,3 +1,25 @@
+/*
+ *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+// load components
 
 function load_architecture ( arch_str )
 {
@@ -21,6 +43,8 @@ function load_library ( lib_str )
 
     return ret ;
 }
+
+// compilation
 
 function assembly_compile ( code )
 {
@@ -52,10 +76,11 @@ function assembly_compile ( code )
              ret.msg = 'Unknow assembly compiler code :-/' ;
              break;
     }
-
+    
     return ret ;
 }
 
+// execution
 
 function execute_program ( limit_n_instructions )
 {
@@ -71,6 +96,8 @@ function execute_program ( limit_n_instructions )
     ret.status = "ok" ;
     return ret ;
 }
+
+// state management
 
 function get_state ( )
 {
@@ -99,26 +126,26 @@ function get_state ( )
             // get value
             e_name      = architecture.components[i].elements[j].name ;
             elto_value  = architecture.components[i].elements[j].value ;
-            
-            //get default value
-            if(architecture.components[i].double_precision == true){
-              var aux_value;
-              var aux_sim1;
-              var aux_sim2;
 
-              for (var a = 0; a < architecture_hash.length; a++) {
-                for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-                    aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
-                  }
-                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-                    aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+            //get default value
+            if (architecture.components[i].double_precision == true) {
+                var aux_value;
+                var aux_sim1;
+                var aux_sim2;
+
+                for (var a = 0; a < architecture_hash.length; a++) {
+                  for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+                      aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                    }
+                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+                      aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                    }
                   }
                 }
-              }
 
-              aux_value = aux_sim1 + aux_sim2;
-              elto_dvalue = hex2double("0x" + aux_value)
+                aux_value = aux_sim1 + aux_sim2;
+                elto_dvalue = hex2double("0x" + aux_value)
             }
             else{
               elto_dvalue = architecture.components[i].elements[j].default_value ;
@@ -134,14 +161,16 @@ function get_state ( )
 
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
-            if (architecture.components[i].type == "floating point") {
-              if(architecture.components[i].double_precision == false){
-                elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
-              }
-              if (architecture.components[i].double_precision == true) {
-                elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
-              }
+            if (architecture.components[i].type == "floating point") 
+            {
+                if(architecture.components[i].double_precision == false){
+                  elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
+                }
+                if (architecture.components[i].double_precision == true) {
+                  elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
+                }
             }
+
             ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
         }
     }
@@ -210,9 +239,9 @@ function compare_states ( ref_state, alt_state )
                              }) ;
 
     ret.msg = "Different: " ;
-    for (elto in m_ref) 
+    for (elto in m_ref)
     {
-         if (m_alt[elto] != m_ref[elto]) 
+         if (m_alt[elto] != m_ref[elto])
          {
              if (typeof m_alt[elto] === "undefined")
                   ret.msg += elto + "=" + m_ref[elto] + " is not available. " ;
@@ -230,6 +259,47 @@ function compare_states ( ref_state, alt_state )
     return ret ;
 }
 
+// help
+
+function help_instructions ( )
+{
+    var o = '' ;
+    var m = null ;
+
+    // describe instructions
+    o += 'name;\t\tsignature;\t\twords;\t\ttype\n' ;
+    for (var i=0; i<architecture.instructions.length; i++)
+    {
+         m = architecture.instructions[i] ;
+
+         o += m.name +         ';\t' + ((m.name.length         <  7) ? '\t' : '') ;
+         o += m.signatureRaw + ';\t' + ((m.signatureRaw.length < 15) ? '\t' : '') ;
+         o += m.nwords +       ';\t' + ((m.nwords.length       <  7) ? '\t' : '') ;
+         o += m.type + '\n' ;
+    }
+
+    return o ;
+}
+
+function help_pseudoins ( )
+{
+    var o = '' ;
+    var m = null ;
+
+    // describe pseudoinstructions
+    o += 'name;\t\tsignature;\t\twords\n' ;
+    for (var i=0; i<architecture.pseudoinstructions.length; i++)
+    {
+         m = architecture.pseudoinstructions[i] ;
+
+         o += m.name +         ';\t' + ((m.name.length         <  7) ? '\t' : '') ;
+         o += m.signatureRaw + ';\t' + ((m.signatureRaw.length < 15) ? '\t' : '') ;
+         o += m.nwords + '\n' ;
+    }
+
+    return o ;
+}
+
 
 //
 // Module interface
@@ -237,8 +307,13 @@ function compare_states ( ref_state, alt_state )
 
 module.exports.load_architecture = load_architecture ;
 module.exports.load_library      = load_library ;
+
 module.exports.assembly_compile  = assembly_compile ;
 module.exports.execute_program   = execute_program ;
+
 module.exports.get_state         = get_state ;
 module.exports.compare_states    = compare_states ;
+
+module.exports.help_instructions = help_instructions ;
+module.exports.help_pseudoins    = help_pseudoins ;
 

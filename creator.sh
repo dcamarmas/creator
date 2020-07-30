@@ -73,6 +73,12 @@
                   nargs:    1,
                   default:  ''
                })
+              .option('describe', {
+                  type:     'string',
+                  describe: 'Help on element',
+                  nargs:    1,
+                  default:  ''
+               })
               .option('maxins', {
                   type:     'string',
                   describe: 'Maximum number of instructions to be executed',
@@ -111,6 +117,33 @@
    var ret       = null ;
    var msg_error = '' ;
 
+   // help...
+   if ( (argv.a != "") && (argv.describe != "") )
+   {
+         // load architecture
+         architecture = fs.readFileSync(argv.architecture, 'utf8') ;
+         ret = creator.load_architecture(architecture) ;
+         if (ret.status !== "ok")
+         {
+             msg_error = "\n" + ret.errorcode ;
+             msg_error = msg_error.split("\n").join("\n[Loader] ") ;
+             show_error(msg_error) ;
+             return process.exit(-1) ;
+         }
+
+         // show description
+         var o = '' ;
+         if (argv.describe.toUpperCase().startsWith('INS')) {
+             o = creator.help_instructions() ;
+         }
+         if (argv.describe.toUpperCase().startsWith('PSEUDO')) {
+             o = creator.help_pseudoins() ;
+         }
+
+         console.log(welcome() + '\n' + o) ;
+         return process.exit(0) ;
+   }
+
    if ( (argv.a == "") || (argv.s == "") ) 
    {
          console.log(welcome() + '\n' + 
@@ -118,10 +151,12 @@
                      ' * To compile and execute an assembly file on an architecture:\n' + 
                      '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' + 
                      ' * To get more information:\n' + 
-                     '   ./creator.sh -h\n')
+                     '   ./creator.sh -h\n') ;
+
          return process.exit(0) ;
    }
 
+   // commands and switches...
    try
    {
        if (argv.color) {
@@ -141,21 +176,7 @@
        }
        else show_success("[Loader] Architecture '" + argv.a + "' loaded successfully.") ;
 
-       // (b) compile
-       assembly = fs.readFileSync(argv.assembly, 'utf8') ;
-       ret = creator.assembly_compile(assembly) ;
-       if (ret.status !== "ok")
-       {
-                                 msg_error  = "\nError at line " + (ret.line+1) ;
-           if (ret.token !== '') msg_error += " (" + ret.token + ")" ;
-                                 msg_error += ":\n" + ret.msg ;
-           msg_error = msg_error.split("\n").join("\n[Compiler] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
-       }
-       else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
-
-       // (c) link
+       // (b) link
        if (argv.library !== '')
        {
            library = fs.readFileSync(argv.library, 'utf8') ;
@@ -169,6 +190,20 @@
            }
            else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
        }
+
+       // (c) compile
+       assembly = fs.readFileSync(argv.assembly, 'utf8') ;
+       ret = creator.assembly_compile(assembly) ;
+       if (ret.status !== "ok")
+       {
+                                 msg_error  = "\nError at line " + (ret.line+1) ;
+           if (ret.token !== '') msg_error += " (" + ret.token + ")" ;
+                                 msg_error += ":\n" + ret.msg ;
+           msg_error = msg_error.split("\n").join("\n[Compiler] ") ;
+           show_error(msg_error) ;
+           return process.exit(-1) ;
+       }
+       else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
 
        // (d) ejecutar
        ret = creator.execute_program(limit_n_ins) ;
