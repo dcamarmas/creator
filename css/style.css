@@ -1,6 +1,21 @@
 body{
   background-color: #FFFFFF;
   overflow-x: hidden;
+  font-size: 15px
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.flexbox { display: flex; }
+.flexbox .stretch { flex: 1; }
+.flexbox .normal { flex: 0; margin: 0 0 0 1rem; }
+.flexbox div input { padding: .5em 1em; width: 100%; }
+.flexbox div button { padding: .5em 1em; white-space: nowrap; }
+
+.contenedor {
+  display: -webkit-flex;
+  display: flex;
+  width: 100%;
+  margin: 0px;
 }
 
 hr {
@@ -10,7 +25,7 @@ hr {
 
 h1 {
   display: block;
-  font-size: 1em;;
+  font-size: 1em;
 }
 
 h2 {
@@ -18,23 +33,29 @@ h2 {
   font-size: 1.5em;
 }
 
-.table td{
-  vertical-align: middle;
+.h5 {
+  font-size: 1.25rem;
+  margin-bottom: .5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  display: inline-block;
 }
 
-.contenedor {
-  display: -webkit-flex;
-  display: flex;
-  width: 100%;
-  margin: 0px;
+.h6 {
+  font-size: 1rem;
+  margin-bottom: .5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  display: inline-block;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-.flexbox { display: flex; }
-.flexbox .stretch { flex: 1; }
-.flexbox .normal { flex: 0; margin: 0 0 0 1rem; }
-.flexbox div input { padding: .5em 1em; width: 100%; }
-.flexbox div button { padding: .5em 1em; white-space: nowrap; }
+.h6Sm {
+  font-size: 0.85rem;
+  margin-bottom: .5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  display: inline-block;
+}
 
 .nopadding{
   padding: 0px;
@@ -49,6 +70,54 @@ h2 {
   border-bottom: 0px;
   border-right: 0px;
 }
+
+.disabled {
+  display:none;
+}
+
+.table td{
+  vertical-align: middle;
+}
+
+.justify {
+  text-align: justify;
+}
+
+.center {
+    text-align: center;
+}
+
+.left {
+  text-align: left;
+}
+
+.popover{
+  max-width: 100%;
+}
+
+
+.header {
+  width:100%;     
+  align-items: center;
+  background-color: #EAEAEA;
+  padding-top: 0pt; 
+  padding-bottom: 0pt;
+}
+
+.headerText {
+  color:#2196F3;
+  margin:0px;
+}
+
+.headerName {
+  color:#383d41;
+  font-size:0.55em;
+}
+
+.headerLogo{
+  height:5vh
+}
+
 
 .spinnerBack{
   background: black;
@@ -71,18 +140,40 @@ h2 {
   -webkit-border-radius:9px;
   padding: 10px;
   opacity: 1;
+  text-align: center;
 }
 
-.header {
-  width:100%;     
-  align-items: center;
-  background-color: #EAEAEA;
-  padding-top: 0pt; 
-  padding-bottom: 0pt;
+.spinnerBox {
+  display: inline-block;
+  opacity: 1;
 }
+
+.spinnerIcon {
+  width: 3rem;
+  height: 3rem;
+}
+
+
+.infoButton {
+  background-color:#D4DB17;
+}
+
+
+.authorName {
+  height: 6vh;
+}
+
 
 .buttonBackground{
   background-color: white;
+}
+
+.buttons{
+  width: 100%;
+  margin: 0px;
+  margin-top: 1px;
+  padding: 0px;
+  font-size: 1em;
 }
 
 .menu {
@@ -108,25 +199,136 @@ h2 {
   background-color: white;
 }
 
-.buttons{
-  width: 100%;
-  margin: 0px;
-  margin-top: 1px;
-  padding: 0px;
+
+
+
+
+
+
+
+
+.architectureCard {
+  cursor: pointer;
+  margin-bottom: 3px;
 }
+
+.architectureImg {
+  width: 50%;
+  height: auto;
+}
+
+.arch_delete {
+  margin-top: 50%;
+}
+
+.browserBadge {
+  background-color: transparent;
+}
+
+.broserIcon {
+  height: 50px;
+  width: auto;
+}
+
+
+
+
+
+
+
+
+
+.memoryLayout{
+  width: 100%;
+  text-align: center;
+}
+
+.memoryLayoutDiv {
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.memoryLayoutForm {
+  margin-bottom: 2%;
+}
+
+.fields{
+  padding: 1%;
+}
+
+.architecture-scroll-y {
+  display: block;
+  max-height: 60vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+
+
+
+
+
+
+
+
+.errorAssembly {
+  padding: 3%;
+  background: #EF9A9A;
+}
+
+.fileForm {
+  background-color: white;
+  color: black;
+}
+
+.CodeMirror {
+  border: 1px solid #eee;
+  height: auto;
+  font-size: 0.85em;
+}
+
+.code-scroll-y {
+  display: block;
+  max-height: 90vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+
+
+
+
+
+
+
+
+.calculatorImg {
+  width: 100%;
+}
+
 
 .registers{
   background-color: #f5f5f5;
-  font-size: 95%;
+  //font-size: 95%;
+  font-size: 1.03em;
 }
 
 .modRegister{
   background-color: #c2c2c2;
-  font-size: 95%;
+  //font-size: 95%;
+  font-size: 1.03em;
 }
 
-.popover{
-  max-width: 100%;
+.registerValue {
+  background-color:#CEECF5;
+  color:black;
+  font-family:monospace;
+  font-weight:normal;
+}
+
+.registerPopover {
+  background-color:#CEECF5;
+  color:black;
 }
 
 .popoverFooter {
@@ -134,11 +336,37 @@ h2 {
 }
 
 .popoverText {
-  font-size: 16px;
+  //font-size: 16px;
+  font-size: 1.2em;
 }
 
+
+.memory_table{
+  //font-size: 13px;
+  max-height:49vh;
+}
+
+.table-mem-wrapper-scroll-y {
+  display: block;
+  max-height: 75vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.memoryValue {
+  float: right;
+  margin-right: 2%;
+}
+
+.memoryBorder {
+  border:1px 
+  solid gray;
+}
+
+
 .instructions_table{
-  font-size: 15px;
+  //font-size: 15px;
+  font-size: 1em;
   padding-right: 1%;
   cursor:pointer; 
   max-height:61vh;
@@ -151,52 +379,40 @@ h2 {
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
-.memory_table{
-  font-size: 13px;
-  max-height:49vh;
+.instruction_table{
+  //font-size: 15px;
 }
+
+.breakPoint {
+  width:auto !important;
+  height:4vh;
+}
+
+.executionTag {
+  float:right;
+  position:relative;
+  right:-12px;
+  margin-left: -20vw;
+}
+
+
+.consoleIcon {
+  height:5vh;
+  opacity:0.6;
+}
+
+.keyboardButton {
+  margin-top: 5%;
+  float:right;
+}
+
+.enterIcon {
+  transform: rotate(90deg);
+}
+
 
 .stats{
-  font-size: 13px;
-}
-
-.table-mem-wrapper-scroll-y {
-  display: block;
-  max-height: 75vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.instruction_table{
-  font-size: 15px;
-}
-
-.memoryLayout{
-  width: 100%;
-  text-align: center;
-}
-
-.fields{
-  padding: 1%;
-}
-
-.code-scroll-y {
-  display: block;
-  max-height: 90vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
-}
-
-.CodeMirror {
-  border: 1px solid #eee;
-  height: auto;
-}
-
-.architecture-scroll-y {
-  display: block;
-  max-height: 60vh;
-  overflow-y: auto;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
+  font-size: 0.85em;
 }
 
 #chart {
@@ -213,15 +429,24 @@ h2 {
   font-weight: bold;
 }
 
-@media only screen and (min-width: 1920px){
+
+
+
+
+
+
+
+
+@media only screen and (min-width: 2560px){
   .instructions_table{
-    font-size: 15px;
+    //font-size: 15px;
     padding-right: 1%;
     cursor:pointer; 
     max-height:80vh;
   }
   .memory_table{
-    font-size: 13px;
+    //font-size: 13px;
+    font-size: 0.85em;
     max-height:70vh;
   }
 }
@@ -239,6 +464,7 @@ h2 {
     -webkit-border-radius:9px;
     padding: 10px;
     opacity: 1;
+    text-align: center;
   }
 }
 
@@ -255,5 +481,6 @@ h2 {
     -webkit-border-radius:9px;
     padding: 10px;
     opacity: 1;
+    text-align: center;
   }
 }

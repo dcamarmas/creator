@@ -52,6 +52,8 @@ try
       notificationTime: 1500,
       /*Auto Scroll*/
       autoscroll: true,
+      /*Auto Scroll*/
+      fontSize: 15,
       /*Debug*/
       c_debug: false,
       /*Dark Mode*/
@@ -595,6 +597,25 @@ try
       	 localStorage.setItem("notificationTime", this.notificationTime);
       },
 
+      /*change the font size*/
+      change_font_size(value){
+        if (value) {
+           this.fontSize= this.fontSize + value;
+           if (this.fontSize < 8){
+               this.fontSize = 8;
+           }
+           if (this.fontSize > 48) {
+               this.fontSize = 48;
+           }
+         }
+         else {
+            this.fontSize = parseInt(this.fontSize);
+         }
+
+         document.getElementsByTagName("body")[0].style.fontSize = this.fontSize + "px";
+         //localStorage.setItem("fontSize", this.fontSize);
+      },
+
       /*Dark  Mode*/
       change_dark_mode(){
         app._data.dark= !app._data.dark;
@@ -611,6 +632,15 @@ try
       /*Screen change*/
       change_UI_mode(e) {
         if(app._data.creator_mode != e){
+
+          // Close codemirror
+          if(textarea_assembly_editor != null && e != "assembly"){
+            app._data.assembly_code = textarea_assembly_editor.getValue();
+            code_assembly = textarea_assembly_editor.getValue();
+            codemirrorHistory = textarea_assembly_editor.getHistory();
+            textarea_assembly_editor.toTextArea();
+          }
+
           app._data.register_popover = '';
         	// slow transition <any> => "architecture"
         	if (e == "architecture")
@@ -630,6 +660,10 @@ try
         	if(e == "assembly"){
         	  setTimeout(function(){
         	    codemirrorStart();
+              if (codemirrorHistory != null ){
+                textarea_assembly_editor.setHistory(codemirrorHistory);
+                textarea_assembly_editor.undo();
+              }
               textarea_assembly_editor.setValue(code_assembly);
         	    if(app._data.update_binary != ""){
         	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
@@ -637,12 +671,6 @@ try
         	      $("#divTags").show();
         	    }
         	  },50);
-        	}
-        	else{
-        	  if(textarea_assembly_editor != null){
-        	    app._data.assembly_code = textarea_assembly_editor.getValue();
-        	    textarea_assembly_editor.toTextArea();
-        	  }
         	}
 
         	app.$forceUpdate();
@@ -2947,7 +2975,13 @@ try
       },
 
       assembly_update(){
-        textarea_assembly_editor.setValue(code_assembly);
+        if(code_assembly != ""){
+          textarea_assembly_editor.setValue(code_assembly);
+          show_notification(' The selected program has been loaded correctly', 'success') ;
+        }
+        else{
+          show_notification("Please select one program", 'danger');
+        }
       },
 
       /*Save assembly code in a local file*/
@@ -3119,12 +3153,18 @@ try
       },
 
       library_update(){
-        update_binary = JSON.parse(code_binary);
-        this.update_binary = update_binary;
-        $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-        $("#divTags").attr("class", "col-lg-2 col-sm-12");
-        $("#divTags").show();
-        this.load_binary = true;
+        if(code_binary.length != 0){
+          update_binary = JSON.parse(code_binary);
+          this.update_binary = update_binary;
+          $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+          $("#divTags").attr("class", "col-lg-2 col-sm-12");
+          $("#divTags").show();
+          this.load_binary = true;
+          show_notification("The selected library has been loaded correctly", 'success');
+        }
+        else{
+          show_notification("Please select one library", 'danger');
+        }
       },
 
       /*Remove a loaded binary*/
@@ -4116,7 +4156,7 @@ try
       textarea_assembly_editor = CodeMirror.fromTextArea(textarea_assembly_obj, editor_cfg);
       textarea_assembly_editor.setOption('keyMap', 'sublime') ; // vim -> 'vim', 'emacs', 'sublime', ...
       textarea_assembly_editor.setValue(app._data.assembly_code);
-      textarea_assembly_editor.setSize("auto", "550px");
+      textarea_assembly_editor.setSize("auto", "70vh");
 
       // add Ctrl-m
       /*var map = {

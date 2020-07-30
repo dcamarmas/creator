@@ -80,6 +80,7 @@ var actionTypes = [
 
 /*Codemirror*/
 var textarea_assembly_editor;
+var codemirrorHistory = null;
 /*Assembly code textarea*/
 var code_assembly = '';
 /*Compilation index*/
@@ -388,8 +389,9 @@ function get_token()
              index++;
         }
 
-        while ( (",()[]{}:#\t\n ".includes(assembly.charAt(index)) == false) && (index < assembly.length) ) {
-                index++;
+        while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
+        {
+             index++;
         }
         //if (assembly.charAt(index) == "\n") nEnters++ ;
 
@@ -435,7 +437,7 @@ function next_token()
 
         while ((",()[]{}:#\t\n \r".includes( assembly.charAt(index) ) == false) && (index < assembly.length))
         {
-           index++;
+             index++;
         }
         //if (assembly.charAt(index) == "\n") nEnters++ ;
 
@@ -4332,10 +4334,20 @@ function executeInstruction ( )
       var type;
       var auxIndex;
 
+      var coStartbit;
+      var coStopbit;
+
       var numCop = 0;
       var numCopCorrect = 0;
 
-      if(architecture.instructions[i].co == instructionExecParts[0].substring(0,6)){
+      for (var y = 0; y < architecture.instructions[i].fields.length; y++) {
+      	if(architecture.instructions[i].fields[y].type == "co"){
+					coStartbit = 31 - parseInt(architecture.instructions[i].fields[y].startbit);
+      		coStopbit = 32 - parseInt(architecture.instructions[i].fields[y].stopbit);
+      	}
+      }
+
+      if(architecture.instructions[i].co == instructionExecParts[0].substring(coStartbit,coStopbit)){
         if(architecture.instructions[i].cop != null && architecture.instructions[i].cop != ''){
           for (var j = 0; j < architecture.instructions[i].fields.length; j++){
             if (architecture.instructions[i].fields[j].type == "cop") {
@@ -4366,6 +4378,7 @@ function executeInstruction ( )
       if(architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
         type = architecture.instructions[i].type;
         signatureDef = architecture.instructions[i].signature_definition;
+
         signatureDef = signatureDef.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
         re = new RegExp("[fF][0-9]+", "g");
@@ -5111,8 +5124,6 @@ function executeInstruction ( )
       }
     }
 
-    console_log(executionIndex);
-
     if (executionIndex >= instructions.length && mutexRead == true)
     {
       for (var i = 0; i < instructions.length; i++) {
@@ -5203,6 +5214,7 @@ function readRegister ( indexComp, indexElem )
 /*Write value in register*/
 function writeRegister ( value, indexComp, indexElem )
 {
+
 	  var draw = {
 	    space: [] ,
 	    info: [] ,
@@ -5238,16 +5250,19 @@ function writeRegister ( value, indexComp, indexElem )
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
 
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+            if (typeof window !== "undefined")
+            {
+              var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
+              var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-            $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-            $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+              $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+              $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
 
-            setTimeout(function() {
-              $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-              $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-            }, 500);
+              setTimeout(function() {
+                $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+                $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+              }, 500);
+            }
         }
 
         else if (architecture.components[indexComp].type =="floating point")
@@ -5263,16 +5278,19 @@ function writeRegister ( value, indexComp, indexElem )
 
             updateDouble(indexComp, indexElem);
 
-            var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
-            var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
+            if (typeof window !== "undefined")
+            {
+              var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
+              var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
 
-            $(buttonDec).attr("style", "background-color:#c2c2c2;");
-            $(buttonHex).attr("style", "background-color:#c2c2c2;");
+              $(buttonDec).attr("style", "background-color:#c2c2c2;");
+              $(buttonHex).attr("style", "background-color:#c2c2c2;");
 
-            setTimeout(function() {
-              $(buttonDec).attr("style", "background-color:#f5f5f5;");
-              $(buttonHex).attr("style", "background-color:#f5f5f5;");
-            }, 500);
+              setTimeout(function() {
+                $(buttonDec).attr("style", "background-color:#f5f5f5;");
+                $(buttonHex).attr("style", "background-color:#f5f5f5;");
+              }, 500);
+            }
           }
 
           else if (architecture.components[indexComp].double_precision == true)
@@ -5289,7 +5307,7 @@ function writeRegister ( value, indexComp, indexElem )
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
             updateSimple(indexComp, indexElem);
 
-            if (!window.document)
+            if (typeof window !== "undefined")
             {
                   var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
                   var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
@@ -5925,7 +5943,9 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
                  executionIndex = -1;
-                 app._data.keyboard = "";
+                 if (typeof app !== "undefined")
+                  app._data.keyboard = "";
+                 keyboard="";
                  return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
                }
 
@@ -6688,6 +6708,28 @@ function updateSimple(comp, elem){
        return auxBigInt ;
   }
 
+/*
+ *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+// load components
 
 function load_architecture ( arch_str )
 {
@@ -6711,6 +6753,8 @@ function load_library ( lib_str )
 
     return ret ;
 }
+
+// compilation
 
 function assembly_compile ( code )
 {
@@ -6742,10 +6786,11 @@ function assembly_compile ( code )
              ret.msg = 'Unknow assembly compiler code :-/' ;
              break;
     }
-
+    
     return ret ;
 }
 
+// execution
 
 function execute_program ( limit_n_instructions )
 {
@@ -6761,6 +6806,8 @@ function execute_program ( limit_n_instructions )
     ret.status = "ok" ;
     return ret ;
 }
+
+// state management
 
 function get_state ( )
 {
@@ -6789,26 +6836,26 @@ function get_state ( )
             // get value
             e_name      = architecture.components[i].elements[j].name ;
             elto_value  = architecture.components[i].elements[j].value ;
-            
-            //get default value
-            if(architecture.components[i].double_precision == true){
-              var aux_value;
-              var aux_sim1;
-              var aux_sim2;
 
-              for (var a = 0; a < architecture_hash.length; a++) {
-                for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
-                    aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
-                  }
-                  if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
-                    aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+            //get default value
+            if (architecture.components[i].double_precision == true) {
+                var aux_value;
+                var aux_sim1;
+                var aux_sim2;
+
+                for (var a = 0; a < architecture_hash.length; a++) {
+                  for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+                      aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                    }
+                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+                      aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                    }
                   }
                 }
-              }
 
-              aux_value = aux_sim1 + aux_sim2;
-              elto_dvalue = hex2double("0x" + aux_value)
+                aux_value = aux_sim1 + aux_sim2;
+                elto_dvalue = hex2double("0x" + aux_value)
             }
             else{
               elto_dvalue = architecture.components[i].elements[j].default_value ;
@@ -6824,14 +6871,16 @@ function get_state ( )
 
             // value != default value => dumpt it
             elto_string = "0x" + elto_value.toString(16) ;
-            if (architecture.components[i].type == "floating point") {
-              if(architecture.components[i].double_precision == false){
-                elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
-              }
-              if (architecture.components[i].double_precision == true) {
-                elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
-              }
+            if (architecture.components[i].type == "floating point") 
+            {
+                if(architecture.components[i].double_precision == false){
+                  elto_string = "0x" + bin2hex(float2bin(elto_value)) ;
+                }
+                if (architecture.components[i].double_precision == true) {
+                  elto_string = "0x" + bin2hex(double2bin(elto_value)) ;
+                }
             }
+
             ret.msg = ret.msg + c_name + "[" + e_name + "]:" + elto_string + "; ";
         }
     }
@@ -6900,9 +6949,9 @@ function compare_states ( ref_state, alt_state )
                              }) ;
 
     ret.msg = "Different: " ;
-    for (elto in m_ref) 
+    for (elto in m_ref)
     {
-         if (m_alt[elto] != m_ref[elto]) 
+         if (m_alt[elto] != m_ref[elto])
          {
              if (typeof m_alt[elto] === "undefined")
                   ret.msg += elto + "=" + m_ref[elto] + " is not available. " ;
@@ -6920,6 +6969,47 @@ function compare_states ( ref_state, alt_state )
     return ret ;
 }
 
+// help
+
+function help_instructions ( )
+{
+    var o = '' ;
+    var m = null ;
+
+    // describe instructions
+    o += 'name;\t\tsignature;\t\twords;\t\ttype\n' ;
+    for (var i=0; i<architecture.instructions.length; i++)
+    {
+         m = architecture.instructions[i] ;
+
+         o += m.name +         ';\t' + ((m.name.length         <  7) ? '\t' : '') ;
+         o += m.signatureRaw + ';\t' + ((m.signatureRaw.length < 15) ? '\t' : '') ;
+         o += m.nwords +       ';\t' + ((m.nwords.length       <  7) ? '\t' : '') ;
+         o += m.type + '\n' ;
+    }
+
+    return o ;
+}
+
+function help_pseudoins ( )
+{
+    var o = '' ;
+    var m = null ;
+
+    // describe pseudoinstructions
+    o += 'name;\t\tsignature;\t\twords\n' ;
+    for (var i=0; i<architecture.pseudoinstructions.length; i++)
+    {
+         m = architecture.pseudoinstructions[i] ;
+
+         o += m.name +         ';\t' + ((m.name.length         <  7) ? '\t' : '') ;
+         o += m.signatureRaw + ';\t' + ((m.signatureRaw.length < 15) ? '\t' : '') ;
+         o += m.nwords + '\n' ;
+    }
+
+    return o ;
+}
+
 
 //
 // Module interface
@@ -6927,8 +7017,13 @@ function compare_states ( ref_state, alt_state )
 
 module.exports.load_architecture = load_architecture ;
 module.exports.load_library      = load_library ;
+
 module.exports.assembly_compile  = assembly_compile ;
 module.exports.execute_program   = execute_program ;
+
 module.exports.get_state         = get_state ;
 module.exports.compare_states    = compare_states ;
+
+module.exports.help_instructions = help_instructions ;
+module.exports.help_pseudoins    = help_pseudoins ;
 
