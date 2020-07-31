@@ -872,13 +872,13 @@ try
         }
 
         $.getJSON('architecture/'+e.name+'.json', function(cfg) {
-             app.load_arch_select_aux(e.name, cfg, true, e) ;
-	     hide_loading();
-	     show_notification('The selected architecture has been loaded correctly', 'success') ;
-        }).fail(function() {
-             hide_loading();
-             show_notification('The selected architecture is not currently available', 'info') ;
-        });
+          app.load_arch_select_aux(e.name, cfg, true, e) ;
+		      hide_loading();
+		      show_notification('The selected architecture has been loaded correctly', 'success') ;
+	        }).fail(function() {
+	          hide_loading();
+	          show_notification('The selected architecture is not currently available', 'info') ;
+	        });
 
       },
 
@@ -4167,10 +4167,10 @@ try
       textarea_assembly_editor.setSize("auto", "70vh");
 
       // add Ctrl-m
-      /*var map = {
-        'Ctrl-m': function(cm) { cm.execCommand('toggleComment'); }
+      var map = {
+        'Ctrl-M': function(cm) { cm.execCommand('toggleComment'); }
       } ;
-      textarea_assembly_editor.addKeyMap(map);*/
+      textarea_assembly_editor.addKeyMap(map);
     }
   }
 
