@@ -19,7 +19,6 @@
 ### :mag_right:	 Checks:
 
 [![Build Status](https://travis-ci.org/dcamarmas/creator.svg?branch=master)](https://travis-ci.org/dcamarmas/creator)
-
 [![Generic badge](https://img.shields.io/badge/achecker-WCAG%202.0%20(Level%20AAA)-green.svg)](https://shields.io/)
 
 ### :microscope:	 Nightly build:
