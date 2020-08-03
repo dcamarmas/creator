@@ -1,0 +1,8 @@
+[97m[39m
+[97m[Compiler] Error at line 10 (.bytes):[39m
+[97m[Compiler] Invalid directive: .bytes[39m
+[97m[Compiler] [39m
+[97m[Compiler]   9         str: .asciiz "Good string"[39m
+[97m[Compiler] ->10 	max: .bytes a[39m
+[97m[Compiler]   11 [39m
+[97m[Compiler] [39m
