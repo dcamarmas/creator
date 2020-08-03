@@ -1,8 +1,0 @@
-[97m[39m
-[97m[Compiler] Error at line 11 (max):[39m
-[97m[Compiler] Repeated tag: max[39m
-[97m[Compiler] [39m
-[97m[Compiler]   10 	max: .byte 10[39m
-[97m[Compiler] ->11 	max: .byte 10[39m
-[97m[Compiler]   12 [39m
-[97m[Compiler] [39m
