@@ -1,8 +1,0 @@
-[97m[39m
-[97m[Compiler] Error at line 9:[39m
-[97m[Compiler] The string of characters must end with "[39m
-[97m[Compiler] [39m
-[97m[Compiler]   8 .data[39m
-[97m[Compiler] ->9         str: .asciiz "Bad string[39m
-[97m[Compiler]   10 	max: .byte 10[39m
-[97m[Compiler] [39m
