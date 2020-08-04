@@ -98,66 +98,74 @@
    // Main
    //
 
-   // welcome
-   if (argv.output.toUpperCase() == "NORMAL") {
-       var msg = welcome() ;
-       console.log(msg.success) ;
-   }
-
-   // * help and usage
-   if ( (argv.a != "") && (argv.describe != "") )
-   {
-         var o = help_describe(argv) ;
-         console.log(welcome() + '\n' + o) ;
-         return process.exit(0) ;
-   }
-
-   if ( (argv.a == "") || (argv.s == "") )
-   {
-         var o = help_usage() ;
-         console.log(welcome() + '\n' + o) ;
-         return process.exit(0) ;
-   }
-
-   // * commands and switches
    try
    {
        if (argv.color) {
            colors.setTheme(color_theme) ;
        }
+       var limit_n_ins   = parseInt(argv.maxins) ;
+       var output_format = argv.output.toUpperCase() ;
 
-       // work with one file
-       var limit_n_ins = parseInt(argv.maxins) ;
-       var ret = one_file(argv.architecture, argv.library, argv.assembly, limit_n_ins, argv.result) ;
-
-       // info: show possible errors
-       var stages = [ 'architecture', 'library', 'compile', 'execute' ] ;
-       for (var i=0; i<stages.length; i++)
-       {
-            var stage = stages[i] ;
-            if (ret[stage].status !== "ok") {
-                console.log(ret[stage].msg.error) ;
-                return process.exit(-1) ;
-            }
-
-            if (argv.output.toUpperCase() == "NORMAL") {
-                console.log(ret[stage].msg.success) ;
-            }
+       // work: welcome
+       if (output_format == "NORMAL") {
+           var msg = welcome() ;
+           console.log(msg.success) ;
        }
 
-       // info: "check differences" or "print finalmachine state"
-       if (argv.result !== '')
+       // work: a) help and usage
+       if ( (argv.a != "") && (argv.describe != "") )
        {
-           if (argv.output.toUpperCase() == "NORMAL")
-                console.log("\n[State] ".success + ret.laststate.msg + "\n") ;
-           else console.log(ret.laststate.msg) ;
-           return process.exit(0) ;
+             var o = help_describe(argv) ;
+             console.log(welcome() + '\n' + o) ;
+             return process.exit(0) ;
        }
 
-       ret = creator.get_state() ;
-       if (argv.output.toUpperCase() == "NORMAL")
-            console.log("\n[Final state] ".success + ret.msg + "\n") ;
-       else console.log(ret.msg + "\n") ;
+       if ( (argv.a == "") || (argv.s == "") )
+       {
+             var o = help_usage() ;
+             console.log(welcome() + '\n' + o) ;
+             return process.exit(0) ;
+       }
+
+       // work: b) commands and switches
+       var file_names = [] ;
+       if (argv.assembly !== '') {
+           file_names.push(argv.assembly) ;
+       }
+
+       var ret = null ;
+       for (var i=0; i<file_names.length; i++)
+       {
+           ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
+    
+           // info: show possible errors
+           for (var j=0; j<ret.stages.length; j++)
+           {
+                var stage = ret.stages[j] ;
+                if (ret[stage].status !== "ok") {
+                    console.log(ret[stage].msg.error) ;
+                    return process.exit(-1) ;
+                }
+    
+                if (output_format == "NORMAL") {
+                    console.log(ret[stage].msg.success) ;
+                }
+           }
+    
+           // info: "check differences" or "print finalmachine state"
+           if (argv.result !== '')
+           {
+               if (output_format == "NORMAL")
+                    console.log("\n[State] ".success + ret.laststate.msg + "\n") ;
+               else console.log(ret.laststate.msg) ;
+               return process.exit(0) ;
+           }
+    
+           ret = creator.get_state() ;
+           if (output_format == "NORMAL")
+                console.log("\n[Final state] ".success + ret.msg + "\n") ;
+           else console.log(ret.msg + "\n") ;
+       }
    }
    catch (e)
    {
@@ -169,15 +177,6 @@
    //
    // Functions
    //
-
-   function prepend_stage ( stage, status, msg )
-   {
-       var ret = {} ;
-       ret.status = status ;
-       ret.msg    = msg.split("\n").join("\n" + stage) ;
-
-       return ret ;
-   }
 
    function welcome ( )
    {
@@ -207,6 +206,15 @@
               ' * To get more information:\n' +
               '   ./creator.sh -h\n' ;
    }
+
+	   function prepend_stage ( stage, status, msg )
+	   {
+	       var ret = {} ;
+	       ret.status = status ;
+	       ret.msg    = msg.split("\n").join("\n" + stage) ;
+
+	       return ret ;
+	   }
 
    function help_describe ( argv )
    {
@@ -246,19 +254,27 @@
                      'library':      { 'status': 'ko', 'msg':  'Not linked' },
                      'compile':      { 'status': 'ko', 'msg':  'Not compiled' },
                      'execute':      { 'status': 'ko', 'msg':  'Not executed' },
-                     'laststate':    { 'status': 'ko', 'msg':  'Not equals states' }
+                     'laststate':    { 'status': 'ko', 'msg':  'Not equals states' },
+                     'stages':       [ 'architecture', 'library', 'compile', 'execute' ]
                   } ;
 
        // (a) load architecture
-       var architecture = fs.readFileSync(argv_architecture, 'utf8') ;
-       ret = creator.load_architecture(architecture) ;
-       if (ret.status !== "ok")
+       try
        {
-           ret1['architecture'] = prepend_stage("[Loader] ", 'ko', '\n' + ret.errorcode) ;
+           var architecture = fs.readFileSync(argv_architecture, 'utf8') ;
+           ret = creator.load_architecture(architecture) ;
+           if (ret.status !== "ok") {
+               throw ret.errorcode ;
+           }
+
+           msg1 = "Architecture '" + argv.a + "' loaded successfully." ;
+           ret1['architecture'] = prepend_stage("[Loader] ", 'ok', '\n' + msg1) ;
+       }
+       catch (e)
+       {
+           ret1['architecture'] = prepend_stage("[Loader] ", 'ko', '\n' + e) ;
            return ret1 ;
        }
-       ret1['architecture'] = prepend_stage("[Loader] ", 'ok',
-                                            "\nArchitecture '" + argv.a + "' loaded successfully.") ;
 
        // (b) link
        if (argv_library !== '')
@@ -278,28 +294,46 @@
        }
 
        // (c) compile
-       var assembly = fs.readFileSync(argv_assembly, 'utf8') ;
-       ret = creator.assembly_compile(assembly) ;
-       if (ret.status !== "ok")
+       try
        {
-                                 msg1  = "\nError at line " + (ret.line+1) ;
-           if (ret.token !== '') msg1 += " (" + ret.token + ")" ;
-                                 msg1 += ":\n" + ret.msg ;
-           ret1['compile'] = prepend_stage("[Compiler] ", 'ko', '\n' + msg1) ;
+           var architecture = fs.readFileSync(argv_architecture, 'utf8') ;
+           var assembly = fs.readFileSync(argv_assembly, 'utf8') ;
+           ret = creator.assembly_compile(assembly) ;
+           if (ret.status !== "ok") {
+                                     msg1  = "\nError at line " + (ret.line+1) ;
+               if (ret.token !== '') msg1 += " (" + ret.token + ")" ;
+                                     msg1 += ":\n" + ret.msg ;
+               throw msg1 ;
+           }
+
+           msg1 = "Code '" + argv.s + "' compiled successfully." ;
+           ret1['compile'] = prepend_stage("[Compiler] ", 'ok', '\n' + msg1) ;
+       }
+       catch (e)
+       {
+           ret1['compile'] = prepend_stage("[Compiler] ", 'ko', '\n' + e) ;
            return ret1 ;
        }
-       ret1['compile'] = prepend_stage("[Compiler] ", 'ok', "\nCode '" + argv.s + "' compiled successfully.") ;
 
        // (d) ejecutar
-       ret = creator.execute_program(limit_n_ins) ;
-       if (ret.status !== "ok")
+       try
        {
-           msg1 = "\n Error found." +
-                  "\n " + ret.msg ;
-           ret1['execute'] = prepend_stage("[Executor] ", 'ko', '\n' + msg1) ;
+           ret = creator.execute_program(limit_n_ins) ;
+           if (ret.status !== "ok")
+           {
+               msg1 = "\n Error found." +
+                      "\n " + ret.msg ;
+               throw msg1 ;
+           }
+
+           msg1 = "Executed successfully." ;
+           ret1['execute'] = prepend_stage("[Executor] ", 'ok', '\n' + msg1) ;
+       }
+       catch (e)
+       {
+           ret1['execute'] = prepend_stage("[Executor] ", 'ko', '\n' + e) ;
            return ret1 ;
        }
-       ret1['execute'] = prepend_stage("[Executor] ", 'ok', "\nExecuted successfully.") ;
 
        // (e) compare results
        if (argv_result !== '')
