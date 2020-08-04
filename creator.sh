@@ -221,6 +221,37 @@
               '   ./creator.sh -h\n' ;
    }
 
+   function help_describe ( argv )
+   {
+         // load architecture
+         try
+         {
+             var architecture = fs.readFileSync(argv.architecture, 'utf8') ;
+             ret = creator.load_architecture(architecture) ;
+             if (ret.status !== "ok") {
+                 throw ret.errorcode ;
+             }
+         }
+         catch (e)
+         {
+             var msg = '\n' + e.toString() ;
+	         msg = msg.split("\n").join("\n[Architecture] ") ;
+             console.log(msg) ;
+             process.exit(-1) ;
+         }
+
+         // show description
+         var o = '' ;
+         if (argv.describe.toUpperCase().startsWith('INS')) {
+             o = creator.help_instructions() ;
+         }
+         if (argv.describe.toUpperCase().startsWith('PSEUDO')) {
+             o = creator.help_pseudoins() ;
+         }
+
+         return o ;
+   }
+
    function show_result ( output_format, stage, msg, show_in_min )
    {
        switch (output_format)
@@ -241,46 +272,6 @@
 	        console.log(msg + ';\t') ;
 	        break;
        }
-   }
-
-	   function prepend_stage ( stage, status, msg )
-	   {
-	       var ret = {} ;
-	       ret.status = status ;
-	       ret.msg    = msg.split("\n").join("\n" + stage) ;
-
-	       return ret ;
-	   }
-
-   function help_describe ( argv )
-   {
-         // load architecture
-         try
-         {
-             var architecture = fs.readFileSync(argv.architecture, 'utf8') ;
-             ret = creator.load_architecture(architecture) ;
-             if (ret.status !== "ok") {
-                 throw ret.errorcode ;
-             }
-         }
-         catch (e)
-         {
-//TODO
-             var ret = prepend_stage("[Loader] ", 'ko', '\n' + e) ;
-             console.log(ret.msg) ;
-             process.exit(-1) ;
-         }
-
-         // show description
-         var o = '' ;
-         if (argv.describe.toUpperCase().startsWith('INS')) {
-             o = creator.help_instructions() ;
-         }
-         if (argv.describe.toUpperCase().startsWith('PSEUDO')) {
-             o = creator.help_pseudoins() ;
-         }
-
-         return o ;
    }
 
    function one_file ( argv_architecture, argv_library, argv_assembly, limit_n_ins, argv_result )
