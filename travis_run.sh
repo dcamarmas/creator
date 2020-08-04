@@ -13,7 +13,7 @@ do
    echo -n " * ./travis/MIPS/correct/example$I: "
    ./creator.sh -a ./architecture/MIPS-32-like.json \
                 -s ./travis/MIPS/correct/example$I.txt \
-                -r ./travis/MIPS/correct/example$I.output --quiet
+                -r ./travis/MIPS/correct/example$I.output --quiet | tail -1
 done
 
 echo ""

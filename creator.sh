@@ -9,6 +9,7 @@
 
    // creator
    var creator = require('./js/min.creator_node.js') ;
+   var creator_version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version ;
 
    // color
    var color_theme = {
@@ -29,14 +30,6 @@
    colors.setTheme(gray_theme) ;
 
    // arguments
-
-   var creator_version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version ;
-   var welcome = function() { return '\n' +
-                                     'CREATOR\n'.help +
-                                     '-------\n'.help +
-                                     'version: '.help + creator_version.help + '\n'.help +
-                                     'website: https://creatorsim.github.io/\n'.help; } ;
-
    var argv = require('yargs')
               .usage(welcome() + '\n' +
                      'Usage: $0 -a <file name> -s <file name>\n' +
@@ -105,29 +98,114 @@
    // Main
    //
 
-   var show_success = function ( msg ) { if (false == argv.quiet) console.log(msg.success) ; }
-   var show_error   = function ( msg ) {                          console.log(msg.error) ; }
-
-   var limit_n_ins   = parseInt(argv.maxins) ;
-   var architecture  = '' ;
-   var assembly      = '' ;
-   var library       = '' ;
-   var result        = '' ;
-
-   var ret       = null ;
-   var msg_error = '' ;
-
    // help...
    if ( (argv.a != "") && (argv.describe != "") )
    {
+         var o = help_describe(argv) ;
+         console.log(welcome() + '\n' + o) ;
+         return process.exit(0) ;
+   }
+
+   if ( (argv.a == "") || (argv.s == "") )
+   {
+         var o = help_usage() ;
+         console.log(welcome() + '\n' + o) ;
+         return process.exit(0) ;
+   }
+
+   // commands and switches...
+   try
+   {
+       if (argv.color) {
+           colors.setTheme(color_theme) ;
+       }
+
+       // welcome
+       if (false == argv.quiet) {
+           var msg = welcome() ;
+           console.log(msg.success) ;
+       }
+
+       // work with one file
+       var limit_n_ins = parseInt(argv.maxins) ;
+       var ret = one_file(argv.architecture, argv.library, argv.assembly, limit_n_ins, argv.result) ;
+
+       // info: show possible errors
+       var stages = [ 'architecture', 'library', 'compile', 'execute' ] ;
+       for (var i=0; i<stages.length; i++)
+       {
+            var stage = stages[i] ;
+            if (ret[stage].status !== "ok") {
+                console.log(ret[stage].msg.error) ;
+                return process.exit(-1) ;
+            }
+
+            if (false == argv.quiet) {
+                console.log(ret[stage].msg.success) ;
+            }
+       }
+
+       // info: "check differences" or "print finalmachine state"
+       if (argv.result !== '')
+       {
+           if (false == argv.quiet)
+                console.log("\n[State] ".success + ret.laststate.msg + "\n") ;
+           else console.log(ret.laststate.msg) ;
+           return process.exit(0) ;
+       }
+
+       ret = creator.get_state() ;
+       if (false == argv.quiet)
+            console.log("\n[Final state] ".success + ret.msg + "\n") ;
+       else console.log(ret.msg + "\n") ;
+   }
+   catch (e)
+   {
+       console.log(e.stack) ;
+       return process.exit(-1) ;
+   }
+
+
+   //
+   // Functions
+   //
+
+   function prepend_stage ( stage, status, msg )
+   {
+       var ret = {} ;
+       ret.status = status ;
+       ret.msg    = msg.split("\n").join("\n" + stage) ;
+
+       return ret ;
+   }
+
+   function welcome ( )
+   {
+       return '\n' +
+              'CREATOR\n'.help +
+              '-------\n'.help +
+              'version: '.help + creator_version.help + '\n'.help +
+              'website: https://creatorsim.github.io/\n'.help;
+   }
+
+   function help_usage ( )
+   {
+       return 'Usage:\n' +
+              ' * To compile and execute an assembly file on an architecture:\n' +
+              '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' +
+              ' * To get more information:\n' +
+              '   ./creator.sh -h\n' ;
+   }
+
+   function help_describe ( argv )
+   {
          // load architecture
-         architecture = fs.readFileSync(argv.architecture, 'utf8') ;
+         var architecture = fs.readFileSync(argv.architecture, 'utf8') ;
          ret = creator.load_architecture(architecture) ;
          if (ret.status !== "ok")
          {
-             msg_error = "\n" + ret.errorcode ;
-             msg_error = msg_error.split("\n").join("\n[Loader] ") ;
-             show_error(msg_error) ;
+             var ret = prepend_stage("[Loader] ", 'ko', '\n' + ret.errorcode) ;
+             console.log(ret.msg) ;
              return process.exit(-1) ;
          }
 
@@ -140,104 +218,87 @@
              o = creator.help_pseudoins() ;
          }
 
-         console.log(welcome() + '\n' + o) ;
-         return process.exit(0) ;
+         return o ;
    }
 
-   if ( (argv.a == "") || (argv.s == "") ) 
+   function one_file ( argv_architecture, argv_library, argv_assembly, limit_n_ins, argv_result )
    {
-         console.log(welcome() + '\n' + 
-                     'Usage:\n' + 
-                     ' * To compile and execute an assembly file on an architecture:\n' + 
-                     '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' + 
-                     ' * To get more information:\n' + 
-                     '   ./creator.sh -h\n') ;
-
-         return process.exit(0) ;
-   }
-
-   // commands and switches...
-   try
-   {
-       if (argv.color) {
-           colors.setTheme(color_theme) ;
-       }
-       show_success(welcome()) ;
+       var msg1 = '' ;
+       var ret1 = {
+                     'architecture': { 'status': 'ko', 'msg':  'Not loaded' },
+                     'library':      { 'status': 'ko', 'msg':  'Not linked' },
+                     'compile':      { 'status': 'ko', 'msg':  'Not compiled' },
+                     'execute':      { 'status': 'ko', 'msg':  'Not executed' },
+                     'laststate':    { 'status': 'ko', 'msg':  'Not equals states' }
+                  } ;
 
        // (a) load architecture
-       architecture = fs.readFileSync(argv.architecture, 'utf8') ;
+       var architecture = fs.readFileSync(argv_architecture, 'utf8') ;
        ret = creator.load_architecture(architecture) ;
        if (ret.status !== "ok")
        {
-           msg_error = "\n" + ret.errorcode ;
-           msg_error = msg_error.split("\n").join("\n[Loader] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
+           ret1['architecture'] = prepend_stage("[Loader] ", 'ko', '\n' + ret.errorcode) ;
+           return ret1 ;
        }
-       else show_success("[Loader] Architecture '" + argv.a + "' loaded successfully.") ;
+       ret1['architecture'] = prepend_stage("[Loader] ", 'ok',
+                                            "\nArchitecture '" + argv.a + "' loaded successfully.") ;
 
        // (b) link
-       if (argv.library !== '')
+       if (argv_library !== '')
        {
-           library = fs.readFileSync(argv.library, 'utf8') ;
+           var library = fs.readFileSync(argv_library, 'utf8') ;
            ret = creator.load_library(library) ;
            if (ret.status !== "ok")
            {
-               msg_error = "\n" + ret.msg ;
-               msg_error = msg_error.split("\n").join("\n[Linker] ") ;
-               show_error(msg_error) ;
-               return process.exit(-1) ;
+               ret1['library'] = prepend_stage("[Linker] ", 'ko', '\n' + ret.msg) ;
+               return ret1 ;
            }
-           else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
+           ret1['library'] = prepend_stage("[Linker] ", 'ok', "\nCode '" + argv.l + "' linked successfully.") ;
+       }
+       else
+       {
+           ret1['library'] = prepend_stage("[Linker] ", 'ok', "\nWithout library.") ;
        }
 
        // (c) compile
-       assembly = fs.readFileSync(argv.assembly, 'utf8') ;
+       var assembly = fs.readFileSync(argv_assembly, 'utf8') ;
        ret = creator.assembly_compile(assembly) ;
        if (ret.status !== "ok")
        {
-                                 msg_error  = "\nError at line " + (ret.line+1) ;
-           if (ret.token !== '') msg_error += " (" + ret.token + ")" ;
-                                 msg_error += ":\n" + ret.msg ;
-           msg_error = msg_error.split("\n").join("\n[Compiler] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
+                                 msg1  = "\nError at line " + (ret.line+1) ;
+           if (ret.token !== '') msg1 += " (" + ret.token + ")" ;
+                                 msg1 += ":\n" + ret.msg ;
+           ret1['compile'] = prepend_stage("[Compiler] ", 'ko', '\n' + msg1) ;
+           return ret1 ;
        }
-       else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
+       ret1['compile'] = prepend_stage("[Compiler] ", 'ok', "\nCode '" + argv.s + "' compiled successfully.") ;
 
        // (d) ejecutar
        ret = creator.execute_program(limit_n_ins) ;
        if (ret.status !== "ok")
        {
-           msg_error = "\n[Executor] Error found." +
-                       "\n[Executor] " + ret.msg ;
-           msg_error = msg_error.split("\n").join("\n[Executor] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
+           msg1 = "\n Error found." +
+                  "\n " + ret.msg ;
+           ret1['execute'] = prepend_stage("[Executor] ", 'ko', '\n' + msg1) ;
+           return ret1 ;
        }
-       else show_success("[Executor] Executed successfully.") ;
+       ret1['execute'] = prepend_stage("[Executor] ", 'ok', "\nExecuted successfully.") ;
 
        // (e) compare results
-       if (argv.result !== '')
+       if (argv_result !== '')
        {
-           result = fs.readFileSync(argv.result, 'utf8') ;
+           var result = fs.readFileSync(argv_result, 'utf8') ;
            ret = creator.get_state() ;
            ret = creator.compare_states(result, ret.msg) ;
-           if (false == argv.quiet)
-                console.log("[state] ".success + ret.msg + "\n") ;
-           else console.log(ret.msg) ;
-           return process.exit(0) ;
+
+           if (ret.msg !== '')
+                ret1['laststate'] = prepend_stage("",         'ko', ret.msg) ;
+           else ret1['laststate'] = prepend_stage("[State] ", 'ok', "Equals") ;
+
+           return ret1 ;
        }
 
-       // (f) print finalmachine state
-       ret = creator.get_state() ;
-       if (false == argv.quiet)
-            console.log("[Final state] ".success + ret.msg + "\n") ;
-       else console.log(ret.msg + "\n") ;
-   }
-   catch (e)
-   {
-       console.log(e.stack) ;
-       return process.exit(-1) ;
+       // the end
+       return ret1 ;
    }
 
