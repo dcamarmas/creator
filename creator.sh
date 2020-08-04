@@ -78,10 +78,12 @@
                   nargs:    1,
                   default:  '1000000'
                })
-              .option('quiet', {
-                  type:     'boolean',
-                  describe: 'Minimum output',
-                  default:  false
+              .option('output', {
+                  alias:    'o',
+                  type:     'string',
+                  describe: 'Define output format',
+                  nargs:    1,
+                  default:  'normal'
                })
               .option('color', {
                   type:     'boolean',
@@ -121,7 +123,7 @@
        }
 
        // welcome
-       if (false == argv.quiet) {
+       if (argv.output.toUpperCase() == "NORMAL") {
            var msg = welcome() ;
            console.log(msg.success) ;
        }
@@ -140,7 +142,7 @@
                 return process.exit(-1) ;
             }
 
-            if (false == argv.quiet) {
+            if (argv.output.toUpperCase() == "NORMAL") {
                 console.log(ret[stage].msg.success) ;
             }
        }
@@ -148,14 +150,14 @@
        // info: "check differences" or "print finalmachine state"
        if (argv.result !== '')
        {
-           if (false == argv.quiet)
+           if (argv.output.toUpperCase() == "NORMAL")
                 console.log("\n[State] ".success + ret.laststate.msg + "\n") ;
            else console.log(ret.laststate.msg) ;
            return process.exit(0) ;
        }
 
        ret = creator.get_state() ;
-       if (false == argv.quiet)
+       if (argv.output.toUpperCase() == "NORMAL")
             console.log("\n[Final state] ".success + ret.msg + "\n") ;
        else console.log(ret.msg + "\n") ;
    }
