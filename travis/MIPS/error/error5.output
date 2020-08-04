@@ -1,9 +1,10 @@
 [97m[39m
-[97m[Compiler] [39m
-[97m[Compiler] Error at line 13 (la $rd addr):[39m
-[97m[Compiler] Incorrect instruction syntax for 'la $rd addr'[39m
-[97m[Compiler] [39m
-[97m[Compiler]   12 .text[39m
-[97m[Compiler] ->13 	main: 		la t2 max[39m
-[97m[Compiler]   14 			li $t1 0[39m
-[97m[Compiler] [39m
+[97mError at line 13 (la $rd addr):[39m
+[97mIncorrect instruction syntax for 'la $rd addr'[39m
+
+[97m  12 .text[39m
+[97m->13 	main: 		la t2 max[39m
+[97m  14 			li $t1 0[39m
+[97m[39m
+[97mNot executed[39m
+keyboard[0x0]:''; display[0x0]:''; 

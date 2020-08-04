@@ -1,9 +1,10 @@
 [97m[39m
-[97m[Compiler] [39m
-[97m[Compiler] Error at line 10 (hello):[39m
-[97m[Compiler] Invalid value 'hello' as number.[39m
-[97m[Compiler] [39m
-[97m[Compiler]   9         str: .asciiz "Good string"[39m
-[97m[Compiler] ->10 	max: .word hello[39m
-[97m[Compiler]   11 [39m
-[97m[Compiler] [39m
+[97mError at line 10 (hello):[39m
+[97mInvalid value 'hello' as number.[39m
+
+[97m  9         str: .asciiz "Good string"[39m
+[97m->10 	max: .word hello[39m
+[97m  11 [39m
+[97m[39m
+[97mNot executed[39m
+keyboard[0x0]:''; display[0x0]:''; 

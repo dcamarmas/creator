@@ -5,7 +5,8 @@
    //
 
    // filesystem
-   var fs = require('fs') ;
+   var fs   = require('fs') ;
+   var path = require('path') ;
 
    // creator
    var creator = require('./js/min.creator_node.js') ;
@@ -47,6 +48,13 @@
                   alias:    's',
                   type:     'string',
                   describe: 'Assembly file',
+                  nargs:    1,
+                  default:  ''
+               })
+              .option('directory', {
+                  alias:    'd',
+                  type:     'string',
+                  describe: 'Assemblies directory',
                   nargs:    1,
                   default:  ''
                })
@@ -120,57 +128,63 @@
              return process.exit(0) ;
        }
 
-       if ( (argv.a == "") || (argv.s == "") )
+       if ( (argv.a == "") || ((argv.s == "") && (argv.d == "")) )
        {
              var o = help_usage() ;
              console.log(welcome() + '\n' + o) ;
              return process.exit(0) ;
        }
 
-       // work: b) commands and switches
+       // work: b) list assembly files
        var file_names = [] ;
        if (argv.assembly !== '') {
            file_names.push(argv.assembly) ;
        }
 
+       if (argv.directory !== '')
+       {
+           files = fs.readdirSync(argv.directory) ;
+	   files.forEach(function (file) {
+	       file_names.push(argv.directory + '/' + file) ;
+	   });
+       }
+
+       // work: b) commands and switches
        var ret = null ;
        for (var i=0; i<file_names.length; i++)
        {
            ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
-    
+
            // info: show possible errors
            for (var j=0; j<ret.stages.length; j++)
            {
                 var stage = ret.stages[j] ;
-                if (ret[stage].status !== "ok") {
-                    console.log(ret[stage].msg.error) ;
-                    return process.exit(-1) ;
+                if (ret[stage].status !== "ok")
+                {
+	            show_result(output_format, stage, ret[stage].msg.error, true) ;
+                    continue ;
                 }
-    
-                if (output_format == "NORMAL") {
-                    console.log(ret[stage].msg.success) ;
-                }
+
+	        show_result(output_format, stage, ret[stage].msg.success, false) ;
            }
-    
+
            // info: "check differences" or "print finalmachine state"
            if (argv.result !== '')
            {
-               if (output_format == "NORMAL")
-                    console.log("\n[State] ".success + ret.laststate.msg + "\n") ;
-               else console.log(ret.laststate.msg) ;
-               return process.exit(0) ;
+	       show_result(output_format, 'State', ret['LastState'].msg, true) ;
+               continue ;
            }
-    
+
            ret = creator.get_state() ;
-           if (output_format == "NORMAL")
-                console.log("\n[Final state] ".success + ret.msg + "\n") ;
-           else console.log(ret.msg + "\n") ;
+	   show_result(output_format, 'FinalState', ret.msg, true) ;
        }
+
+       process.exit(0) ;
    }
    catch (e)
    {
        console.log(e.stack) ;
-       return process.exit(-1) ;
+       process.exit(-1) ;
    }
 
 
@@ -207,6 +221,28 @@
               '   ./creator.sh -h\n' ;
    }
 
+   function show_result ( output_format, stage, msg, show_in_min )
+   {
+       switch (output_format)
+       {
+	   case "NORMAL":
+                msg = "[" + stage + "] " + msg ;
+	        msg = msg.split("\n").join("\n[" + stage + "] ") ;
+                console.log(msg.success) ;
+	        break;
+
+	   case "MIN":
+                if (show_in_min) {
+	            console.log(msg) ;
+	        }
+	        break;
+
+	   default:
+	        console.log(msg + ';\t') ;
+	        break;
+       }
+   }
+
 	   function prepend_stage ( stage, status, msg )
 	   {
 	       var ret = {} ;
@@ -229,6 +265,7 @@
          }
          catch (e)
          {
+//TODO
              var ret = prepend_stage("[Loader] ", 'ko', '\n' + e) ;
              console.log(ret.msg) ;
              process.exit(-1) ;
@@ -250,12 +287,12 @@
    {
        var msg1 = '' ;
        var ret1 = {
-                     'architecture': { 'status': 'ko', 'msg':  '\n[Loader] Not loaded' },
-                     'library':      { 'status': 'ok', 'msg':  '\n[Linker] Without library' },
-                     'compile':      { 'status': 'ko', 'msg':  '\n[Compiler] Not compiled' },
-                     'execute':      { 'status': 'ko', 'msg':  '\n[Executor] Not executed' },
-                     'laststate':    { 'status': 'ko', 'msg':  '\n[State] Not equals states' },
-                     'stages':       [ 'architecture', 'library', 'compile', 'execute' ]
+                     'Architecture': { 'status': 'ko', 'msg':  'Not loaded' },
+                     'Library':      { 'status': 'ok', 'msg':  'Without library' },
+                     'Compile':      { 'status': 'ko', 'msg':  'Not compiled' },
+                     'Execute':      { 'status': 'ko', 'msg':  'Not executed' },
+                     'LastState':    { 'status': 'ko', 'msg':  'Not equals states' },
+                     'stages':       [ 'Architecture', 'Library', 'Compile', 'Execute' ]
                   } ;
 
        // (a) load architecture
@@ -267,12 +304,11 @@
                throw ret.errorcode ;
            }
 
-           msg1 = "Architecture '" + argv.a + "' loaded successfully." ;
-           ret1['architecture'] = prepend_stage("[Loader] ", 'ok', '\n' + msg1) ;
+           ret1.Architecture = { 'status': 'ok', 'msg': "Architecture '" + argv.a + "' loaded successfully." } ;
        }
        catch (e)
        {
-           ret1['architecture'] = prepend_stage("[Loader] ", 'ko', '\n' + e) ;
+           ret1.Architecture = { 'status': 'ko', 'msg': e.toString() } ;
            return ret1 ;
        }
 
@@ -287,12 +323,11 @@
                    throw ret.msg ;
                }
 
-               msg1 = "Code '" + argv.l + "' linked successfully." ;
-               ret1['library'] = prepend_stage("[Linker] ", 'ok', '\n' + msg1) ;
+               ret1.Library = { 'status': 'ok', 'msg': "Code '" + argv.l + "' linked successfully." } ;
            }
            catch (e)
            {
-               ret1['library'] = prepend_stage("[Linker] ", 'ko', '\n' + e) ;
+               ret1.Library = { 'status': 'ko', 'msg': e.toString() } ;
                return ret1 ;
            }
        }
@@ -310,12 +345,11 @@
                throw msg1 ;
            }
 
-           msg1 = "Code '" + argv.s + "' compiled successfully." ;
-           ret1['compile'] = prepend_stage("[Compiler] ", 'ok', '\n' + msg1) ;
+           ret1.Compile = { 'status': 'ok', 'msg': "Code '" + argv.s + "' compiled successfully." } ;
        }
        catch (e)
        {
-           ret1['compile'] = prepend_stage("[Compiler] ", 'ko', '\n' + e) ;
+           ret1.Compile = { 'status': 'ko', 'msg': e.toString() } ;
            return ret1 ;
        }
 
@@ -330,12 +364,11 @@
                throw msg1 ;
            }
 
-           msg1 = "Executed successfully." ;
-           ret1['execute'] = prepend_stage("[Executor] ", 'ok', '\n' + msg1) ;
+           ret1.Execute = { 'status': 'ok', 'msg': "Executed successfully." } ;
        }
        catch (e)
        {
-           ret1['execute'] = prepend_stage("[Executor] ", 'ko', '\n' + e) ;
+           ret1.Execute = { 'status': 'ko', 'msg': e.toString() } ;
            return ret1 ;
        }
 
@@ -347,8 +380,8 @@
            ret = creator.compare_states(result, ret.msg) ;
 
            if (ret.msg !== '')
-                ret1['laststate'] = prepend_stage("",         'ko', ret.msg) ;
-           else ret1['laststate'] = prepend_stage("[State] ", 'ok', "Equals") ;
+                ret1.LastState = { 'status': 'ko', 'msg': ret.msg } ;
+           else ret1.LastState = { 'status': 'ok', 'msg': 'Equals' } ;
 
            return ret1 ;
        }
