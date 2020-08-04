@@ -34,10 +34,8 @@
               .usage(welcome() + '\n' +
                      'Usage: $0 -a <file name> -s <file name>\n' +
                      'Usage: $0 -h')
-              .example([['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt',
-                         'To compile and execute example5.txt'],
-                        ['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt --maxins 10',
-                         'To compile and execute example5.txt, executing 10 instruction at max.']])
+              .example([ ['./$0',
+                         'To show examples.'] ])
               .option('architecture', {
                   alias:    'a',
                   type:     'string',
@@ -100,7 +98,13 @@
    // Main
    //
 
-   // help...
+   // welcome
+   if (argv.output.toUpperCase() == "NORMAL") {
+       var msg = welcome() ;
+       console.log(msg.success) ;
+   }
+
+   // * help and usage
    if ( (argv.a != "") && (argv.describe != "") )
    {
          var o = help_describe(argv) ;
@@ -115,17 +119,11 @@
          return process.exit(0) ;
    }
 
-   // commands and switches...
+   // * commands and switches
    try
    {
        if (argv.color) {
            colors.setTheme(color_theme) ;
-       }
-
-       // welcome
-       if (argv.output.toUpperCase() == "NORMAL") {
-           var msg = welcome() ;
-           console.log(msg.success) ;
        }
 
        // work with one file
@@ -195,6 +193,17 @@
        return 'Usage:\n' +
               ' * To compile and execute an assembly file on an architecture:\n' +
               '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' +
+              ' * Same as before but execute only 10 instructions:\n' +
+              '   ./creator.sh -a <architecture file name> -s <assembly file name> --maxins 10\n' +
+              '\n' +
+              ' * Same as before and save the final state in a result file:\n' +
+              '   ./creator.sh -a <architecture file name> -s <ok assembly file name> -o min > <result file>\n' +
+              ' * To compile and execute an assembly file, and check the final state with a result file:\n' +
+              '   ./creator.sh -a <architecture file name> -s <assembly file name> -o min -r <result file>\n' +
+              '\n' +
+              ' * To get a summary of the instructions/pseudoinstructions:\n' +
+              '   ./creator.sh -a ./architecture/MIPS-32-like.json --describe <instructions|pseudo>\n' +
+              '\n' +
               ' * To get more information:\n' +
               '   ./creator.sh -h\n' ;
    }
@@ -202,13 +211,19 @@
    function help_describe ( argv )
    {
          // load architecture
-         var architecture = fs.readFileSync(argv.architecture, 'utf8') ;
-         ret = creator.load_architecture(architecture) ;
-         if (ret.status !== "ok")
+         try
          {
-             var ret = prepend_stage("[Loader] ", 'ko', '\n' + ret.errorcode) ;
+             var architecture = fs.readFileSync(argv.architecture, 'utf8') ;
+             ret = creator.load_architecture(architecture) ;
+             if (ret.status !== "ok") {
+                 throw ret.errorcode ;
+             }
+         }
+         catch (e)
+         {
+             var ret = prepend_stage("[Loader] ", 'ko', '\n' + e) ;
              console.log(ret.msg) ;
-             return process.exit(-1) ;
+             process.exit(-1) ;
          }
 
          // show description
