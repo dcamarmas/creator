@@ -201,7 +201,7 @@
               '   ./creator.sh -a <architecture file name> -s <assembly file name> -o min -r <result file>\n' +
               '\n' +
               ' * To get a summary of the instructions/pseudoinstructions:\n' +
-              '   ./creator.sh -a ./architecture/MIPS-32-like.json --describe <instructions|pseudo>\n' +
+              '   ./creator.sh -a <architecture file name> --describe <instructions|pseudo>\n' +
               '\n' +
               ' * To get more information:\n' +
               '   ./creator.sh -h\n' ;
@@ -250,11 +250,11 @@
    {
        var msg1 = '' ;
        var ret1 = {
-                     'architecture': { 'status': 'ko', 'msg':  'Not loaded' },
-                     'library':      { 'status': 'ko', 'msg':  'Not linked' },
-                     'compile':      { 'status': 'ko', 'msg':  'Not compiled' },
-                     'execute':      { 'status': 'ko', 'msg':  'Not executed' },
-                     'laststate':    { 'status': 'ko', 'msg':  'Not equals states' },
+                     'architecture': { 'status': 'ko', 'msg':  '\n[Loader] Not loaded' },
+                     'library':      { 'status': 'ok', 'msg':  '\n[Linker] Without library' },
+                     'compile':      { 'status': 'ko', 'msg':  '\n[Compiler] Not compiled' },
+                     'execute':      { 'status': 'ko', 'msg':  '\n[Executor] Not executed' },
+                     'laststate':    { 'status': 'ko', 'msg':  '\n[State] Not equals states' },
                      'stages':       [ 'architecture', 'library', 'compile', 'execute' ]
                   } ;
 
@@ -279,18 +279,22 @@
        // (b) link
        if (argv_library !== '')
        {
-           var library = fs.readFileSync(argv_library, 'utf8') ;
-           ret = creator.load_library(library) ;
-           if (ret.status !== "ok")
+           try
            {
-               ret1['library'] = prepend_stage("[Linker] ", 'ko', '\n' + ret.msg) ;
+               var library = fs.readFileSync(argv_library, 'utf8') ;
+               ret = creator.load_library(library) ;
+               if (ret.status !== "ok") {
+                   throw ret.msg ;
+               }
+
+               msg1 = "Code '" + argv.l + "' linked successfully." ;
+               ret1['library'] = prepend_stage("[Linker] ", 'ok', '\n' + msg1) ;
+           }
+           catch (e)
+           {
+               ret1['library'] = prepend_stage("[Linker] ", 'ko', '\n' + e) ;
                return ret1 ;
            }
-           ret1['library'] = prepend_stage("[Linker] ", 'ok', "\nCode '" + argv.l + "' linked successfully.") ;
-       }
-       else
-       {
-           ret1['library'] = prepend_stage("[Linker] ", 'ok', "\nWithout library.") ;
        }
 
        // (c) compile
