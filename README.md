@@ -67,9 +67,9 @@
      * Example: creator compiles and executes the example2.txt, showing the final state:
        * ./creator.sh -a architecture/MIPS-32-like.json -s examples/MIPS/example2.txt
      * Example: save final state into 'salida.txt' file:
-       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt --quiet > salida.txt
+       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt -o min > salida.txt
      * Example: compare final state and the state saved on 'salida.txt' file:
-       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt --quiet -r salida.txt
+       * ./creator.sh -a ./architecture/MIPS-32-like.json -s ./examples/MIPS/example2.txt -o min -r salida.txt
 - [x] Creator now accepts three GET values:
      * Preload the MIPS architecture:
        * https://creatorsim.github.io/creator/?architecture=MIPS-32-like
