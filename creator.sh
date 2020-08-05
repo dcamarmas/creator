@@ -150,35 +150,41 @@
        }
 
        // work: b) commands and switches
-       var ret = null ;
+       var hdr   = 'FileName' ;
+       var stage = '' ;
+       var ret   = null ;
        for (var i=0; i<file_names.length; i++)
        {
            ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
+	   show_result(output_format, '', file_names[i], '', true) ;
 
            // info: show possible errors
            for (var j=0; j<ret.stages.length; j++)
            {
-                var stage = ret.stages[j] ;
-                if (ret[stage].status !== "ok")
-                {
-	            show_result(output_format, stage, ret[stage].msg.error, true) ;
-                    continue ;
-                }
+                stage = ret.stages[j] ;
+                hdr   = hdr + ',\t' + stage ;
 
-	        show_result(output_format, stage, ret[stage].msg.success, false) ;
+                if (ret[stage].status !== "ok")
+	             show_result(output_format, stage, 'ko', ret[stage].msg.error, true) ;
+	        else show_result(output_format, stage, 'ok', ret[stage].msg.success, false) ;
            }
 
            // info: "check differences" or "print finalmachine state"
            if (argv.result !== '')
            {
-	       show_result(output_format, 'State', ret['LastState'].msg, true) ;
+               hdr = hdr + ',\tState' ;
+	       show_result(output_format, 'State', 'ko', ret['LastState'].msg.error, true) ;
                continue ;
            }
 
+           hdr = hdr + ',\tFinalState\n' ;
            ret = creator.get_state() ;
-	   show_result(output_format, 'FinalState', ret.msg, true) ;
+	   show_result(output_format, 'FinalState', 'is', ret.msg, true) ;
        }
 
+       if (output_format == "TAB") {
+           console.log('\n' + hdr + '\n') ;
+       }
        process.exit(0) ;
    }
    catch (e)
@@ -252,7 +258,7 @@
          return o ;
    }
 
-   function show_result ( output_format, stage, msg, show_in_min )
+   function show_result ( output_format, stage, status, msg, show_in_min )
    {
        switch (output_format)
        {
@@ -268,8 +274,12 @@
 	        }
 	        break;
 
+	   case "TAB":
+                process.stdout.write(status + ',\t\t') ;
+	        break;
+
 	   default:
-	        console.log(msg + ';\t') ;
+	        console.log('[' + stage + '] ' + msg + '\n') ;
 	        break;
        }
    }
