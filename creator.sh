@@ -155,8 +155,8 @@
        var ret   = null ;
        for (var i=0; i<file_names.length; i++)
        {
+	   show_result(output_format, file_names[i], file_names[i], '', true) ;
            ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
-	   show_result(output_format, '', file_names[i], '', true) ;
 
            // info: show possible errors
            for (var j=0; j<ret.stages.length; j++)
