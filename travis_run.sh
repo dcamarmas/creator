@@ -46,6 +46,6 @@ do
   echo -n " * ./travis/riscv/correct/example$I: "
   ./creator.sh -a ./architecture/RISC-V-like.json \
                -s ./travis/riscv/correct/example$I.txt \
-               -r ./travis/riscv/correct/example$I.output -o min
+               -r ./travis/riscv/correct/example$I.output -o min | tail -1
 done
 
