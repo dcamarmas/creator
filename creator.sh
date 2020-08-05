@@ -290,6 +290,7 @@
    function one_file ( argv_architecture, argv_library, argv_assembly, limit_n_ins, argv_result )
    {
        var msg1 = '' ;
+       var ret  = null ;
        var ret1 = {
                      'Architecture': { 'status': 'ko', 'msg':  'Not loaded' },
                      'Library':      { 'status': 'ok', 'msg':  'Without library' },
