@@ -150,12 +150,14 @@
        }
 
        // work: b) commands and switches
-       var hdr   = 'FileName' ;
+       var hdr   = '' ;
        var stage = '' ;
        var ret   = null ;
        for (var i=0; i<file_names.length; i++)
        {
+           hdr = 'FileName' ;
 	   show_result(output_format, file_names[i], file_names[i], '', true) ;
+
            ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
 
            // info: show possible errors
@@ -180,10 +182,11 @@
            hdr = hdr + ',\tFinalState\n' ;
            ret = creator.get_state() ;
 	   show_result(output_format, 'FinalState', 'is', ret.msg, true) ;
+           console.log('');
        }
 
        if (output_format == "TAB") {
-           console.log('\n' + hdr + '\n') ;
+           console.log(hdr) ;
        }
        process.exit(0) ;
    }
