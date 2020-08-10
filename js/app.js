@@ -831,28 +831,29 @@ try
       /*Auxiliar to Load the selected architecture*/
       load_arch_select_aux(ename, cfg, load_associated_examples, e)
       {
-	  var auxArchitecture = cfg;
-	  architecture = bigInt_deserialize(auxArchitecture);
-	  app._data.architecture = architecture;
+			  var auxArchitecture = cfg;
+			  architecture = bigInt_deserialize(auxArchitecture);
+			  app._data.architecture = architecture;
 
-	  architecture_hash = [];
-	  for (i = 0; i < architecture.components.length; i++){
-	       architecture_hash.push({name: architecture.components[i].name, index: i});
-	       app._data.architecture_hash = architecture_hash;
-	  }
+			  architecture_hash = [];
+			  for (i = 0; i < architecture.components.length; i++){
+			       architecture_hash.push({name: architecture.components[i].name, index: i});
+			       app._data.architecture_hash = architecture_hash;
+			  }
 
-	  backup_stack_address = architecture.memory_layout[4].value;
-	  backup_data_address  = architecture.memory_layout[3].value;
+			  backup_stack_address = architecture.memory_layout[4].value;
+			  backup_data_address  = architecture.memory_layout[3].value;
 
-	  app._data.architecture_name = ename;
+			  app._data.architecture_name = ename;
 
-	  //$("#architecture_menu").hide();
-	  app.change_UI_mode('simulator');
-	  app.change_data_view('registers', 'int');
-	  app.$forceUpdate();
+			  //$("#architecture_menu").hide();
+			  app.change_UI_mode('simulator');
+			  app.change_data_view('registers', 'int');
+			  app.$forceUpdate();
 
-          if (load_associated_examples)
-	      app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+	      if (load_associated_examples && typeof e.examples !== "undefined"){
+		      app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+	      }
       },
 
       load_arch_select(e)
@@ -871,13 +872,13 @@ try
         }
 
         $.getJSON('architecture/'+e.name+'.json', function(cfg) {
-             app.load_arch_select_aux(e.name, cfg, true, e) ;
-	     hide_loading();
-	     show_notification('The selected architecture has been loaded correctly', 'success') ;
-        }).fail(function() {
-             hide_loading();
-             show_notification('The selected architecture is not currently available', 'info') ;
-        });
+          app.load_arch_select_aux(e.name, cfg, true, e) ;
+		      hide_loading();
+		      show_notification('The selected architecture has been loaded correctly', 'success') ;
+	        }).fail(function() {
+	          hide_loading();
+	          show_notification('The selected architecture is not currently available', 'info') ;
+	        });
 
       },
 
@@ -4166,10 +4167,10 @@ try
       textarea_assembly_editor.setSize("auto", "70vh");
 
       // add Ctrl-m
-      /*var map = {
-        'Ctrl-m': function(cm) { cm.execCommand('toggleComment'); }
+      var map = {
+        'Ctrl-M': function(cm) { cm.execCommand('toggleComment'); }
       } ;
-      textarea_assembly_editor.addKeyMap(map);*/
+      textarea_assembly_editor.addKeyMap(map);
     }
   }
 

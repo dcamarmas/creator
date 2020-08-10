@@ -1,8 +1,12 @@
+
 [97m[39m
-[97m[Compiler] Error at line 13 (max1):[39m
-[97m[Compiler] Tag 'max1' is not valid[39m
-[97m[Compiler] [39m
-[97m[Compiler]   12 .text[39m
-[97m[Compiler] ->13 	main: 		la $t2 max1[39m
-[97m[Compiler]   14 			li $t1 0[39m
-[97m[Compiler] [39m
+[97mError at line 13 (max1):[39m
+[97mTag 'max1' is not valid[39m
+
+[97m  12 .text[39m
+[97m->13 	main: 		la $t2 max1[39m
+[97m  14 			li $t1 0[39m
+[97m[39m
+[97mNot executed[39m
+keyboard[0x0]:''; display[0x0]:''; 
+
