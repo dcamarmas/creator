@@ -5,10 +5,12 @@
    //
 
    // filesystem
-   var fs = require('fs') ;
+   var fs   = require('fs') ;
+   var path = require('path') ;
 
    // creator
    var creator = require('./js/min.creator_node.js') ;
+   var creator_version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version ;
 
    // color
    var color_theme = {
@@ -29,22 +31,12 @@
    colors.setTheme(gray_theme) ;
 
    // arguments
-
-   var creator_version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version ;
-   var welcome = function() { return '\n' +
-                                     'CREATOR\n'.help +
-                                     '-------\n'.help +
-                                     'version: '.help + creator_version.help + '\n'.help +
-                                     'website: https://creatorsim.github.io/\n'.help; } ;
-
    var argv = require('yargs')
               .usage(welcome() + '\n' +
                      'Usage: $0 -a <file name> -s <file name>\n' +
                      'Usage: $0 -h')
-              .example([['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt',
-                         'To compile and execute example5.txt'],
-                        ['$0 -a architecture/MIPS-32-like.json -s examples/MIPS/example5.txt --maxins 10',
-                         'To compile and execute example5.txt, executing 10 instruction at max.']])
+              .example([ ['./$0',
+                         'To show examples.'] ])
               .option('architecture', {
                   alias:    'a',
                   type:     'string',
@@ -56,6 +48,13 @@
                   alias:    's',
                   type:     'string',
                   describe: 'Assembly file',
+                  nargs:    1,
+                  default:  ''
+               })
+              .option('directory', {
+                  alias:    'd',
+                  type:     'string',
+                  describe: 'Assemblies directory',
                   nargs:    1,
                   default:  ''
                })
@@ -85,10 +84,12 @@
                   nargs:    1,
                   default:  '1000000'
                })
-              .option('quiet', {
-                  type:     'boolean',
-                  describe: 'Minimum output',
-                  default:  false
+              .option('output', {
+                  alias:    'o',
+                  type:     'string',
+                  describe: 'Define output format',
+                  nargs:    1,
+                  default:  'normal'
                })
               .option('color', {
                   type:     'boolean',
@@ -105,30 +106,147 @@
    // Main
    //
 
-   var show_success = function ( msg ) { if (false == argv.quiet) console.log(msg.success) ; }
-   var show_error   = function ( msg ) {                          console.log(msg.error) ; }
+   try
+   {
+       if (argv.color) {
+           colors.setTheme(color_theme) ;
+       }
+       var limit_n_ins   = parseInt(argv.maxins) ;
+       var output_format = argv.output.toUpperCase() ;
 
-   var limit_n_ins   = parseInt(argv.maxins) ;
-   var architecture  = '' ;
-   var assembly      = '' ;
-   var library       = '' ;
-   var result        = '' ;
+       // work: welcome
+       if (output_format == "NORMAL") {
+           var msg = welcome() ;
+           console.log(msg.success) ;
+       }
 
-   var ret       = null ;
-   var msg_error = '' ;
+       // work: a) help and usage
+       if ( (argv.a != "") && (argv.describe != "") )
+       {
+             var o = help_describe(argv) ;
+             console.log(welcome() + '\n' + o) ;
+             return process.exit(0) ;
+       }
 
-   // help...
-   if ( (argv.a != "") && (argv.describe != "") )
+       if ( (argv.a == "") || ((argv.s == "") && (argv.d == "")) )
+       {
+             var o = help_usage() ;
+             console.log(welcome() + '\n' + o) ;
+             return process.exit(0) ;
+       }
+
+       // work: b) list assembly files
+       var file_names = [] ;
+       if (argv.assembly !== '') {
+           file_names.push(argv.assembly) ;
+       }
+
+       if (argv.directory !== '')
+       {
+           files = fs.readdirSync(argv.directory) ;
+	   files.forEach(function (file) {
+	       file_names.push(argv.directory + '/' + file) ;
+	   });
+       }
+
+       // work: b) commands and switches
+       var hdr   = '' ;
+       var stage = '' ;
+       var ret   = null ;
+       for (var i=0; i<file_names.length; i++)
+       {
+           hdr = 'FileName' ;
+	   show_result(output_format, file_names[i], file_names[i], '', true) ;
+
+           ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
+
+           // info: show possible errors
+           for (var j=0; j<ret.stages.length; j++)
+           {
+                stage = ret.stages[j] ;
+                hdr   = hdr + ',\t' + stage ;
+
+                if (ret[stage].status !== "ok")
+	             show_result(output_format, stage, 'ko', ret[stage].msg.error, true) ;
+	        else show_result(output_format, stage, 'ok', ret[stage].msg.success, false) ;
+           }
+
+           // info: "check differences" or "print finalmachine state"
+           if (argv.result !== '')
+           {
+               hdr = hdr + ',\tState' ;
+	       show_result(output_format, 'State', 'ko', ret['LastState'].msg.error, true) ;
+               continue ;
+           }
+
+           hdr = hdr + ',\tFinalState\n' ;
+           ret = creator.get_state() ;
+	   show_result(output_format, 'FinalState', 'is', ret.msg, true) ;
+           console.log('');
+       }
+
+       if (output_format == "TAB") {
+           console.log(hdr) ;
+       }
+       process.exit(0) ;
+   }
+   catch (e)
+   {
+       console.log(e.stack) ;
+       process.exit(-1) ;
+   }
+
+
+   //
+   // Functions
+   //
+
+   function welcome ( )
+   {
+       return '\n' +
+              'CREATOR\n'.help +
+              '-------\n'.help +
+              'version: '.help + creator_version.help + '\n'.help +
+              'website: https://creatorsim.github.io/\n'.help;
+   }
+
+   function help_usage ( )
+   {
+       return 'Usage:\n' +
+              ' * To compile and execute an assembly file on an architecture:\n' +
+              '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' +
+              ' * Same as before but execute only 10 instructions:\n' +
+              '   ./creator.sh -a <architecture file name> -s <assembly file name> --maxins 10\n' +
+              '\n' +
+              ' * Same as before and save the final state in a result file:\n' +
+              '   ./creator.sh -a <architecture file name> -s <ok assembly file name> -o min > <result file>\n' +
+              ' * To compile and execute an assembly file, and check the final state with a result file:\n' +
+              '   ./creator.sh -a <architecture file name> -s <assembly file name> -o min -r <result file>\n' +
+              '\n' +
+              ' * To get a summary of the instructions/pseudoinstructions:\n' +
+              '   ./creator.sh -a <architecture file name> --describe <instructions|pseudo>\n' +
+              '\n' +
+              ' * To get more information:\n' +
+              '   ./creator.sh -h\n' ;
+   }
+
+   function help_describe ( argv )
    {
          // load architecture
-         architecture = fs.readFileSync(argv.architecture, 'utf8') ;
-         ret = creator.load_architecture(architecture) ;
-         if (ret.status !== "ok")
+         try
          {
-             msg_error = "\n" + ret.errorcode ;
-             msg_error = msg_error.split("\n").join("\n[Loader] ") ;
-             show_error(msg_error) ;
-             return process.exit(-1) ;
+             var architecture = fs.readFileSync(argv.architecture, 'utf8') ;
+             ret = creator.load_architecture(architecture) ;
+             if (ret.status !== "ok") {
+                 throw ret.errorcode ;
+             }
+         }
+         catch (e)
+         {
+             var msg = '\n' + e.toString() ;
+	         msg = msg.split("\n").join("\n[Architecture] ") ;
+             console.log(msg) ;
+             process.exit(-1) ;
          }
 
          // show description
@@ -140,104 +258,140 @@
              o = creator.help_pseudoins() ;
          }
 
-         console.log(welcome() + '\n' + o) ;
-         return process.exit(0) ;
+         return o ;
    }
 
-   if ( (argv.a == "") || (argv.s == "") ) 
+   function show_result ( output_format, stage, status, msg, show_in_min )
    {
-         console.log(welcome() + '\n' + 
-                     'Usage:\n' + 
-                     ' * To compile and execute an assembly file on an architecture:\n' + 
-                     '   ./creator.sh -a <architecture file name> -s <assembly file name>\n' + 
-                     ' * To get more information:\n' + 
-                     '   ./creator.sh -h\n') ;
+       switch (output_format)
+       {
+	   case "NORMAL":
+                msg = "[" + stage + "] " + msg ;
+	        msg = msg.split("\n").join("\n[" + stage + "] ") ;
+                console.log(msg.success) ;
+	        break;
 
-         return process.exit(0) ;
-   }
+	   case "MIN":
+                if (show_in_min) {
+	            console.log(msg) ;
+	        }
+	        break;
 
-   // commands and switches...
-   try
-   {
-       if (argv.color) {
-           colors.setTheme(color_theme) ;
+	   case "TAB":
+                process.stdout.write(status + ',\t\t') ;
+	        break;
+
+	   default:
+	        console.log('[' + stage + '] ' + msg + '\n') ;
+	        break;
        }
-       show_success(welcome()) ;
+   }
+
+   function one_file ( argv_architecture, argv_library, argv_assembly, limit_n_ins, argv_result )
+   {
+       var msg1 = '' ;
+       var ret  = null ;
+       var ret1 = {
+                     'Architecture': { 'status': 'ko', 'msg':  'Not loaded' },
+                     'Library':      { 'status': 'ok', 'msg':  'Without library' },
+                     'Compile':      { 'status': 'ko', 'msg':  'Not compiled' },
+                     'Execute':      { 'status': 'ko', 'msg':  'Not executed' },
+                     'LastState':    { 'status': 'ko', 'msg':  'Not equals states' },
+                     'stages':       [ 'Architecture', 'Library', 'Compile', 'Execute' ]
+                  } ;
 
        // (a) load architecture
-       architecture = fs.readFileSync(argv.architecture, 'utf8') ;
-       ret = creator.load_architecture(architecture) ;
-       if (ret.status !== "ok")
+       try
        {
-           msg_error = "\n" + ret.errorcode ;
-           msg_error = msg_error.split("\n").join("\n[Loader] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
+           var architecture = fs.readFileSync(argv_architecture, 'utf8') ;
+           ret = creator.load_architecture(architecture) ;
+           if (ret.status !== "ok") {
+               throw ret.errorcode ;
+           }
+
+           ret1.Architecture = { 'status': 'ok', 'msg': "Architecture '" + argv.a + "' loaded successfully." } ;
        }
-       else show_success("[Loader] Architecture '" + argv.a + "' loaded successfully.") ;
+       catch (e)
+       {
+           ret1.Architecture = { 'status': 'ko', 'msg': e.toString() } ;
+           return ret1 ;
+       }
 
        // (b) link
-       if (argv.library !== '')
+       if (argv_library !== '')
        {
-           library = fs.readFileSync(argv.library, 'utf8') ;
-           ret = creator.load_library(library) ;
-           if (ret.status !== "ok")
+           try
            {
-               msg_error = "\n" + ret.msg ;
-               msg_error = msg_error.split("\n").join("\n[Linker] ") ;
-               show_error(msg_error) ;
-               return process.exit(-1) ;
+               var library = fs.readFileSync(argv_library, 'utf8') ;
+               ret = creator.load_library(library) ;
+               if (ret.status !== "ok") {
+                   throw ret.msg ;
+               }
+
+               ret1.Library = { 'status': 'ok', 'msg': "Code '" + argv.l + "' linked successfully." } ;
            }
-           else show_success("[Linker] Code '" + argv.l + "' linked successfully.") ;
+           catch (e)
+           {
+               ret1.Library = { 'status': 'ko', 'msg': e.toString() } ;
+               return ret1 ;
+           }
        }
 
        // (c) compile
-       assembly = fs.readFileSync(argv.assembly, 'utf8') ;
-       ret = creator.assembly_compile(assembly) ;
-       if (ret.status !== "ok")
+       try
        {
-                                 msg_error  = "\nError at line " + (ret.line+1) ;
-           if (ret.token !== '') msg_error += " (" + ret.token + ")" ;
-                                 msg_error += ":\n" + ret.msg ;
-           msg_error = msg_error.split("\n").join("\n[Compiler] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
+           var architecture = fs.readFileSync(argv_architecture, 'utf8') ;
+           var assembly = fs.readFileSync(argv_assembly, 'utf8') ;
+           ret = creator.assembly_compile(assembly) ;
+           if (ret.status !== "ok") {
+                                     msg1  = "\nError at line " + (ret.line+1) ;
+               if (ret.token !== '') msg1 += " (" + ret.token + ")" ;
+                                     msg1 += ":\n" + ret.msg ;
+               throw msg1 ;
+           }
+
+           ret1.Compile = { 'status': 'ok', 'msg': "Code '" + argv.s + "' compiled successfully." } ;
        }
-       else show_success("[Compiler] Code '" + argv.s + "' compiled successfully.") ;
+       catch (e)
+       {
+           ret1.Compile = { 'status': 'ko', 'msg': e.toString() } ;
+           return ret1 ;
+       }
 
        // (d) ejecutar
-       ret = creator.execute_program(limit_n_ins) ;
-       if (ret.status !== "ok")
+       try
        {
-           msg_error = "\n[Executor] Error found." +
-                       "\n[Executor] " + ret.msg ;
-           msg_error = msg_error.split("\n").join("\n[Executor] ") ;
-           show_error(msg_error) ;
-           return process.exit(-1) ;
+           ret = creator.execute_program(limit_n_ins) ;
+           if (ret.status !== "ok")
+           {
+               msg1 = "\n Error found." +
+                      "\n " + ret.msg ;
+               throw msg1 ;
+           }
+
+           ret1.Execute = { 'status': 'ok', 'msg': "Executed successfully." } ;
        }
-       else show_success("[Executor] Executed successfully.") ;
+       catch (e)
+       {
+           ret1.Execute = { 'status': 'ko', 'msg': e.toString() } ;
+           return ret1 ;
+       }
 
        // (e) compare results
-       if (argv.result !== '')
+       if (argv_result !== '')
        {
-           result = fs.readFileSync(argv.result, 'utf8') ;
+           var result = fs.readFileSync(argv_result, 'utf8') ;
            ret = creator.get_state() ;
            ret = creator.compare_states(result, ret.msg) ;
-           if (false == argv.quiet)
-                console.log("[state] ".success + ret.msg + "\n") ;
-           else console.log(ret.msg) ;
-           return process.exit(0) ;
+
+           if (ret.msg !== '')
+                ret1.LastState = { 'status': 'ko', 'msg': ret.msg } ;
+           else ret1.LastState = { 'status': 'ok', 'msg': 'Equals' } ;
+
+           return ret1 ;
        }
 
-       // (f) print finalmachine state
-       ret = creator.get_state() ;
-       if (false == argv.quiet)
-            console.log("[Final state] ".success + ret.msg + "\n") ;
-       else console.log(ret.msg + "\n") ;
-   }
-   catch (e)
-   {
-       console.log(e.stack) ;
-       return process.exit(-1) ;
+       // the end
+       return ret1 ;
    }
 
