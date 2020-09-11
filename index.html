@@ -274,7 +274,7 @@
     		    </b-input-group>
     	    </b-list-group-item>
 
-          <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
+          <!--<b-list-group-item class="d-flex justify-content-between align-items-center m-1">
             <label for="range-4">Font Size:</label>
             <b-input-group>
               <b-input-group-prepend>
@@ -293,7 +293,7 @@
                 <b-btn variant="outline-secondary" @click="change_font_size(1)">+</b-btn>
               </b-input-group-append>
             </b-input-group>
-          </b-list-group-item>
+          </b-list-group-item>-->
 
     	    <b-list-group-item class="d-flex justify-content-between align-items-center m-1">
             <label for="range-5">Dark Mode:</label>
@@ -600,16 +600,14 @@
                       Save
                     </b-button>
                   </div>
-                  <div class="col-lg-8 col-sm-4 buttons">
+                  <div class="col-lg-8 col-sm-4 buttons" @click="change_mode">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"
                               id="advanced_mode1" 
-                              @click="change_mode" 
                               v-if="advanced_mode == true">
                       Advanced Mode: deactivated
                     </b-button>
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  
                               id="advanced_mode2" 
-                              click="change_mode" 
                               v-if="advanced_mode == false">
                       Advanced Mode: activate
                     </b-button>
