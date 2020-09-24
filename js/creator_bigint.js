@@ -23,8 +23,12 @@
   {
        var auxBigInt = null ;
 
-       if (typeof bigInt !== "undefined")
+       if (typeof bigInt !== "undefined" && int_base == 16)
+            auxBigInt = bigInt(int_value, int_base).value ;
+
+       else if (typeof bigInt !== "undefined")
             auxBigInt = bigInt(parseInt(int_value) >>> 0, int_base).value ;
+
        else auxBigInt = BigInt(parseInt(int_value) >>> 0, int_base) ;
 
        return auxBigInt ;
