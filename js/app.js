@@ -633,6 +633,10 @@ try
       change_UI_mode(e) {
         if(app._data.creator_mode != e){
 
+          if(app._data.creator_mode == "architecture"){
+            app._data.advanced_mode = true;
+          }
+
           // Close codemirror
           if(textarea_assembly_editor != null && e != "assembly"){
             app._data.assembly_code = textarea_assembly_editor.getValue();
