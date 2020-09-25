@@ -58,7 +58,7 @@
     
 ## ChangeLog
 
-### :atom: 2.0.x:
+### :atom: 2.1.x:
 - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
 - [x] CREATOR **accessibility improved** up to WCAG 2.0 (Level AAA)
 - [X] **Command line version** of CREATOR: 
