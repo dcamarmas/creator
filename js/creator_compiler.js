@@ -2099,7 +2099,7 @@ function data_segment_compiler()
                 case "align":
                 case "balign":
                   console_log("[b]align");
-                  let pow_mode = token == "align";
+                  let pow_mode = token == ".align";
 
                   next_token();
                   token = get_token();
