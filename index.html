@@ -4400,7 +4400,7 @@
                              class="memory_table" 
                              @row-clicked="select_stack_type">
                       <template v-slot:cell(Address)="row">
-                        <span class="h6Sm" class="text-secondary" v-if="row.item.unallocated==true">
+                        <span class="h6Sm text-secondary" v-if="row.item.unallocated==true">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
                         </span>
                         <span class="h6Sm" v-if="row.item.unallocated==false">
@@ -4409,7 +4409,7 @@
                       </template>
 
                       <template v-slot:cell(Binary)="row">
-                        <span class="h6Sm" class="text-secondary" v-if="row.item.unallocated==true">
+                        <span class="h6Sm text-secondary" v-if="row.item.unallocated==true">
                           <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">
                             {{row.item.Binary[3].Bin.toUpperCase()}}
                           </span> 
@@ -4518,7 +4518,7 @@
                         </span>
                       </template>
                       <template v-slot:cell(Value)="row">
-                        <span class="h6Sm" class="text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</span>
+                        <span class="h6Sm text-secondary" v-if="row.item.unallocated==true">{{row.item.Value}}</span>
                         <span class="h6Sm" v-if="row.item.unallocated==false">{{row.item.Value}}</span>
                       </template>
                     </b-table>
