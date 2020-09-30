@@ -127,7 +127,7 @@ var compileError = {
 	'm22': function(ret) { return "The number should be positive '"            + ret.token + "'" },
 	'm23': function(ret) { return "Empty directive"                            + ret.token + "" },
 	'm24': function(ret) { return "After the comma you should go a blank --> " + ret.token + "" },
-	'm25': function(ret) { return "Incorrect syntax "                          + ret.token + "" },
+	//'m25': function(ret) { return "Incorrect syntax "                          + ret.token + "" },
 	'm26': function(ret) { return "Syntax error near line: "                   + ret.token + "" }
 } ;
 /*Promise*/
@@ -2444,9 +2444,9 @@ function code_segment_compiler()
                     extern = [];
                     memory[memory_hash[2]] = [];
                     data = [];
-                 // ret = packCompileError('m25', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 
+                 // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 
                  //                        'error', "danger") ;
-                    ret = packCompileError('m25', nEnters+1, 'error', "danger") ;
+                    ret = packCompileError('m26', nEnters+1, 'error', "danger") ;
 
                     return ret;
                   }
