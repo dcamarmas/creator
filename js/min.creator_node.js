@@ -5973,7 +5973,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                       display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
 
-                      if (memory[index][i].Binary[k].Bin == 0) {
+                      if (memory[index][i].Binary[k].Bin == "00") {
                           return packExecute(false, 'printed', 'info', null);
                       }
                       if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
