@@ -5971,11 +5971,12 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                            app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
 
-                      display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
-
                       if (memory[index][i].Binary[k].Bin == "00") {
                           return packExecute(false, 'printed', 'info', null);
                       }
+
+                      display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+
                       if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
                           return packExecute(false, 'printed', 'info', null);
                       }
