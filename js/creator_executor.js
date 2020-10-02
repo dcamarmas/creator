@@ -1749,15 +1749,16 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       console_log(parseInt(memory[index][i].Binary[k].Bin, 16));
                       console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
 
+                      if (memory[index][i].Binary[k].Bin == "00") {
+                          return packExecute(false, 'printed', 'info', null);
+                      }
+
                       if (typeof app !== "undefined")
                            app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
                       else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
 
                       display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
 
-                      if (memory[index][i].Binary[k].Bin == 0) {
-                          return packExecute(false, 'printed', 'info', null);
-                      }
                       if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
                           return packExecute(false, 'printed', 'info', null);
                       }
