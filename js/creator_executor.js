@@ -636,15 +636,31 @@ function executeInstruction ( )
       re = /sbrk\((.*?)\)/
       if (auxDef.search(re) != -1){
         match = re.exec(auxDef);
+        re = new RegExp(" ", "g");
+        match[1] = match[1].replace(re, "");
+
+
+        var auxMatch = match[1].split(',');
+
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(auxMatch[0] == architecture.components[i].elements[j].name){
               compIndex = i;
               elemIndex = j;
             }
           }
         }
-        auxDef = auxDef.replace(re, "syscall('sbrk',"+compIndex+" , "+elemIndex+", null, null, true)");
+
+        for (var i = 0; i < architecture.components.length; i++){
+          for (var j = 0; j < architecture.components[i].elements.length; j++){
+            if(auxMatch[1] == architecture.components[i].elements[j].name){
+              compIndex2 = i;
+              elemIndex2 = j;
+            }
+          }
+        }
+        re = /sbrk\((.*?)\)/
+        auxDef = auxDef.replace(re, "syscall('sbrk',"+compIndex+" , "+elemIndex+","+compIndex2+" , "+elemIndex2+", true)");
       }
 
       re = /exit\((.*?)\)/;
@@ -2082,6 +2098,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
     
                 for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
                   memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
+
+                  if(i==0){
+                    architecture.components[indexComp2].elements[indexElem2].value = aux_addr;
+                  }
+
                   for (var z = 0; z < 4; z++){
                     (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
                     aux_addr++;
