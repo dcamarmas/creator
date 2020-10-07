@@ -5508,11 +5508,11 @@ function writeMemory ( value, addr, type )
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
             index = memory_hash[0];
           }
 
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
             index = memory_hash[2];
           }
 
@@ -6307,7 +6307,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
           case "sbrk":
 
-                var aux_addr = architecture.memory_layout[3].value;
+                var aux_addr = architecture.memory_layout[3].value + 1;
     
                 if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
                     executionIndex = -1;
