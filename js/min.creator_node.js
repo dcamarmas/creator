@@ -5961,7 +5961,6 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                  executionIndex = -1;
                  if (typeof app !== "undefined")
                   app._data.keyboard = "";
-                 keyboard="";
                  return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
                }
 
@@ -6014,6 +6013,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                   var readlineSync = require('readline-sync') ;
                   var keystroke    = readlineSync.question(' $> ') ;
                   var value        = parseInt(keystroke) ;
+
+                  keyboard = keyboard + " " + value;
 
                   writeRegister(value, indexComp, indexElem);
                   return packExecute(false, 'The data has been uploaded', 'danger', null);
@@ -6077,9 +6078,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 // CL
                 if (typeof app === "undefined") 
                 {
-		    var readlineSync = require('readline-sync') ;
-		    var keystroke    = readlineSync.question(' $> ') ;
+								    var readlineSync = require('readline-sync') ;
+								    var keystroke    = readlineSync.question(' $> ') ;
                     var value        = parseFloat(keystroke) ;
+
+                    keyboard = keyboard + " " + value;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
@@ -6141,9 +6144,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 // CL
                 if (typeof app === "undefined") 
                 {
-		    var readlineSync = require('readline-sync') ;
-		    var keystroke    = readlineSync.question(' $>  ') ;
-                    var value        = parseFloat(keystroke) ;
+								    var readlineSync = require('readline-sync') ;
+								    var keystroke    = readlineSync.question(' $>  ') ;
+						        var value        = parseFloat(keystroke) ;
+
+						        keyboard = keyboard + " " + value;
 
                     writeRegister(value, indexComp, indexElem);
                     return packExecute(false, 'The data has been uploaded', 'danger', null);
@@ -6207,13 +6212,15 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                // CL
               if (typeof app === "undefined") 
               {
-		    var readlineSync = require('readline-sync') ;
-		    keystroke        = readlineSync.question(' $> ') ;
+							    var readlineSync = require('readline-sync') ;
+							    keystroke        = readlineSync.question(' $> ') ;
+									var value = "";
 
-                  var value = "";
                   for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
                        value = value + keystroke.charAt(i);
                   }
+
+                  keyboard = keyboard + " " + value;
 
                   var addr = architecture.components[indexComp].elements[indexElem].value;
                   var valueIndex = 0;
@@ -6360,9 +6367,11 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                // CL
                if (typeof app === "undefined") 
                {
-	 	   var readlineSync = require('readline-sync') ;
-	 	   var keystroke    = readlineSync.question(' read char> ') ;
+							 	   var readlineSync = require('readline-sync') ;
+							 	   var keystroke    = readlineSync.question(' read char> ') ;
                    var value        = keystroke.charCodeAt(0);
+
+                   keyboard = keyboard + " " + value;
 
                    writeRegister(value, indexComp, indexElem);
                    return packExecute(false, 'The data has been uploaded', 'danger', null);
