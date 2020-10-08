@@ -1284,17 +1284,17 @@ function writeMemory ( value, addr, type )
         var index;
 
         if (type == "w"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-	    draw.danger.push(executionIndex);
+          if((addr > architecture.memory_layout[0].value && addr < architecture.memory_layout[1].value) ||  addr == architecture.memory_layout[0].value || addr == architecture.memory_layout[1].value){
+	    			draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
-          if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
             index = memory_hash[0];
           }
 
-          if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          if((addr > architecture.memory_layout[4].value && addr < architecture.memory_layout[5].value) ||  addr == architecture.memory_layout[4].value || addr == architecture.memory_layout[5].value){
             index = memory_hash[2];
           }
 
@@ -1332,8 +1332,8 @@ function writeMemory ( value, addr, type )
           }
 
           for (var i = 0; i < memory[index].length; i++){
-            if(memory[index][i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            if(memory[index][i].Address > addr){
+              var aux_addr = addr - (addr%4);
               memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
@@ -1345,7 +1345,7 @@ function writeMemory ( value, addr, type )
               return;
             }
             else if(i == memory[index].length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              var aux_addr = addr - (addr%4);
               memory[index].push({Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
@@ -1359,7 +1359,7 @@ function writeMemory ( value, addr, type )
           }
 
           if(memory[index].length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            var aux_addr = addr - (addr%4);
             memory[index].push({Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
@@ -1373,17 +1373,17 @@ function writeMemory ( value, addr, type )
         }
 
         if (type == "h"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          if((addr > architecture.memory_layout[0].value && addr < architecture.memory_layout[1].value) ||  addr == architecture.memory_layout[0].value || addr == architecture.memory_layout[1].value){
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
             index = memory_hash[0];
           }
 
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          if((addr > architecture.memory_layout[4].value && addr < architecture.memory_layout[5].value) ||  addr == architecture.memory_layout[4].value || addr == architecture.memory_layout[5].value){
             index = memory_hash[2];
           }
 
@@ -1421,8 +1421,8 @@ function writeMemory ( value, addr, type )
           }
 
           for (var i = 0; i < memory[index].length; i++){
-            if(memory[index][i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            if(memory[index][i].Address > addr){
+              var aux_addr = addr - (addr%4);
               memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
@@ -1458,7 +1458,7 @@ function writeMemory ( value, addr, type )
               return;
             }
             else if(i == memory[index].length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              var aux_addr = addr - (addr%4);
               memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
@@ -1496,7 +1496,7 @@ function writeMemory ( value, addr, type )
           }
 
           if(memory[index].length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            var aux_addr = addr - (addr%4);
             memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
@@ -1534,17 +1534,17 @@ function writeMemory ( value, addr, type )
         }
 
         if (type == "b"){
-          if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+          if((addr > architecture.memory_layout[0].value && addr < architecture.memory_layout[1].value) ||  addr == architecture.memory_layout[0].value || addr == architecture.memory_layout[1].value){
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
-          if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+          if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
             index = memory_hash[0];
           }
 
-          if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+          if((addr > architecture.memory_layout[4].value && addr < architecture.memory_layout[5].value) ||  addr == architecture.memory_layout[4].value || addr == architecture.memory_layout[5].value){
             index = memory_hash[2];
           }
 
@@ -1564,8 +1564,8 @@ function writeMemory ( value, addr, type )
           }
 
           for (var i = 0; i < memory[index].length; i++){
-            if(memory[index][i].Address > parseInt(addr, 16)){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            if(memory[index][i].Address > addr){
+              var aux_addr = addr - (addr%4);
               memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
@@ -1585,7 +1585,7 @@ function writeMemory ( value, addr, type )
               return;
             }
             else if(i == memory[index].length-1){
-              var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+              var aux_addr = addr - (addr%4);
               memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
               var charIndex = memValue.length-1;
               for (var z = 0; z < 4; z++){
@@ -1607,7 +1607,7 @@ function writeMemory ( value, addr, type )
           }
 
           if(memory[index].length == 0){
-            var aux_addr = parseInt(addr, 16) - (parseInt(addr, 16)%4);
+            var aux_addr = addr - (addr%4);
             memory[index].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: false});
             var charIndex = memValue.length-1;
             for (var z = 0; z < 4; z++){
