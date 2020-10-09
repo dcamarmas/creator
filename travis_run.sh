@@ -7,7 +7,7 @@
 
 echo ""
 echo " MIPS: examples"
-MIPS_TEST="2 3 4 5 6 7 8 11"
+MIPS_TEST="2 3 4 5 6 7 8 11 12 13"
 for I in $MIPS_TEST;
 do
    echo -n " * ./travis/MIPS/correct/example$I: "
