@@ -1658,7 +1658,7 @@ function writeStackLimit ( stackLimit )
 
               for (var i = 0; i < (diff/4); i++){
                 if(unallocated_memory.length > 0){
-                  memory[memory_hash[2]].splice(i, 0, unallocated_memory[unallocated_memory.length-1]);
+                  memory[memory_hash[2]].splice(0, 0, unallocated_memory[unallocated_memory.length-1]);
                   memory[memory_hash[2]][0].unallocated = false;
                   unallocated_memory.splice(unallocated_memory.length-1, 1);
                 }
