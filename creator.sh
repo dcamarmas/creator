@@ -156,7 +156,7 @@
        for (var i=0; i<file_names.length; i++)
        {
            hdr = 'FileName' ;
-	   show_result(output_format, file_names[i], file_names[i], '', true) ;
+	         show_result(output_format, file_names[i], file_names[i], '', true) ;
 
            ret = one_file(argv.architecture, argv.library, file_names[i], limit_n_ins, argv.result) ;
 
@@ -167,15 +167,15 @@
                 hdr   = hdr + ',\t' + stage ;
 
                 if (ret[stage].status !== "ok")
-	             show_result(output_format, stage, 'ko', ret[stage].msg.error, true) ;
-	        else show_result(output_format, stage, 'ok', ret[stage].msg.success, false) ;
+	                 show_result(output_format, stage, 'ko', ret[stage].msg.error, true) ;
+	              else show_result(output_format, stage, 'ok', ret[stage].msg.success, false) ;
            }
 
            // info: "check differences" or "print finalmachine state"
            if (argv.result !== '')
            {
                hdr = hdr + ',\tState' ;
-	       show_result(output_format, 'State', 'ko', ret['LastState'].msg.error, true) ;
+	             show_result(output_format, 'State', 'ko', ret['LastState'].msg.error, true) ;
                //continue ;
                if(ret.LastState.status != "ok"){
                 process.exit(-1) ;
@@ -184,8 +184,10 @@
 
            hdr = hdr + ',\tFinalState\n' ;
            ret = creator.get_state() ;
-	   show_result(output_format, 'FinalState', 'is', ret.msg, true) ;
-           console.log('');
+           if(argv.result === ''){
+  	         show_result(output_format, 'FinalState', 'is', ret.msg, true) ;
+             console.log('');
+           }
        }
 
        if (output_format == "TAB") {
@@ -387,7 +389,7 @@
            ret = creator.get_state() ;
            ret = creator.compare_states(result, ret.msg) ;
 
-           if (ret.msg !== 'Equals')
+           if (ret.msg !== '')
                 ret1.LastState = { 'status': 'ko', 'msg': ret.msg } ;
            else ret1.LastState = { 'status': 'ok', 'msg': 'Equals' } ;
 
