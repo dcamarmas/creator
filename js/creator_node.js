@@ -209,12 +209,23 @@ function compare_states ( ref_state, alt_state )
                 'msg':    ''
               } ;
 
-    // 1) check equals
-    ref_state = ref_state.trim() ;
-    alt_state = alt_state.trim() ;
+    // 0) clean data
+    //ref_state = ref_state.trim() ;
+    //alt_state = alt_state.trim() ;
 
+    ref_state_arr = ref_state.split('\n')
+      .map(function(s) { return s.replace(/^\s*|\s*$/g, ""); })
+      .filter(function(x) { return x; });
+    ref_state = ref_state_arr[ref_state_arr.length-1];
+
+    alt_state_arr = alt_state.split('\n')
+      .map(function(s) { return s.replace(/^\s*|\s*$/g, ""); })
+      .filter(function(x) { return x; });
+    alt_state = alt_state_arr[alt_state_arr.length-1];
+
+    // 1) check equals
     if (ref_state == alt_state) {
-        ret.msg = "Equals" ;
+        //ret.msg = "Equals" ;
         return ret ;
     }
 
