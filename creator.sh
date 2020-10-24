@@ -176,7 +176,10 @@
            {
                hdr = hdr + ',\tState' ;
 	       show_result(output_format, 'State', 'ko', ret['LastState'].msg.error, true) ;
-               continue ;
+               //continue ;
+               if(ret.LastState.status != "ok"){
+                process.exit(-1) ;
+               }
            }
 
            hdr = hdr + ',\tFinalState\n' ;
@@ -384,7 +387,7 @@
            ret = creator.get_state() ;
            ret = creator.compare_states(result, ret.msg) ;
 
-           if (ret.msg !== '')
+           if (ret.msg !== 'Equals')
                 ret1.LastState = { 'status': 'ko', 'msg': ret.msg } ;
            else ret1.LastState = { 'status': 'ok', 'msg': 'Equals' } ;
 
