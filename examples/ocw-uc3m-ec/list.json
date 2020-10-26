@@ -2,13 +2,13 @@
   {
     "id":          "t1",
     "name":        "Tutoría 1, uso de vector de enteros con MIPS",
-    "url":         "examples/ocw-uc3m-ec/asm_tutoria1_vector",
+    "url":         "examples/ocw-uc3m-ec/asm_tutoria1_vector.txt",
     "description": "Representación de un vector y acceso a elementos del mismo"
   },
   {
     "id":          "t2",
     "name":        "Tutoría 1, uso de matriz de enteros con MIPS",
-    "url":         "examples/ocw-uc3m-ec/asm_tutoria1_matrices",
+    "url":         "examples/ocw-uc3m-ec/asm_tutoria1_matrices.txt",
     "description": "Representación de una matriz y subrutina que rellena con ceros"
   },
   {
