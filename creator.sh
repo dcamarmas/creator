@@ -10,7 +10,7 @@
 
    // creator
    var creator = require('./js/min.creator_node.js') ;
-   var creator_version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version ;
+   var creator_version = JSON.parse(fs.readFileSync(__dirname + '/package.json', 'utf8')).version ;
 
    // color
    var color_theme = {
