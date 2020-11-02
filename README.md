@@ -73,8 +73,8 @@
 - [x] Creator now accepts three GET values:
      * Preload the MIPS architecture:
        * https://creatorsim.github.io/creator/?architecture=MIPS-32-like
-     * Preload example 'e3' from example set 'snips':
-       * https://creatorsim.github.io/creator/?example_set=snips&example=e3
+     * Preload example 'e3' from example set 'uc3m-ec':
+       * https://creatorsim.github.io/creator/?example_set=uc3m-ec&example=e3
 - [x] Bootstrap-vue upgraded up to v2.15.0
 
 
