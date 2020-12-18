@@ -11,7 +11,7 @@
            .word 0x10, 0x11, 0x12
 
    matriz2: .space    2500 # "25x25x4"
-   matriz3: .space 1000000 # "500x500x4"
+#  matriz3: .space 1000000 # "500x500x4"
 
 
 .text
