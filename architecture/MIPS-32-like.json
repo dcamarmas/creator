@@ -6,7 +6,19 @@
       "double_precision": false,
       "elements": [
         {
-          "name": "PC",
+          "name": ["PC"],
+          "nbits": "32",
+          "value": "0",
+          "default_value": "0",
+          "properties": [
+            "read",
+            "write",
+            "pointer",
+            "pc"
+          ]
+        },
+        {
+          "name": ["EPC"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -16,7 +28,7 @@
           ]
         },
         {
-          "name": "EPC",
+          "name": ["CAUSE"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -26,7 +38,7 @@
           ]
         },
         {
-          "name": "CAUSE",
+          "name": ["BADVADDR"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -36,7 +48,7 @@
           ]
         },
         {
-          "name": "BADVADDR",
+          "name": ["STATUS"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -46,7 +58,7 @@
           ]
         },
         {
-          "name": "STATUS",
+          "name": ["HI"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -56,7 +68,7 @@
           ]
         },
         {
-          "name": "HI",
+          "name": ["LO"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -66,7 +78,7 @@
           ]
         },
         {
-          "name": "LO",
+          "name": ["FIR"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -76,7 +88,7 @@
           ]
         },
         {
-          "name": "FIR",
+          "name": ["FCSR"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -86,7 +98,7 @@
           ]
         },
         {
-          "name": "FCSR",
+          "name": ["FCCR"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -96,17 +108,7 @@
           ]
         },
         {
-          "name": "FCCR",
-          "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "FEXR",
+          "name": ["FEXR"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -123,7 +125,16 @@
       "double_precision": false,
       "elements": [
         {
-          "name": "zero",
+          "name": ["zero","0"],
+          "nbits": "32",
+          "value": "0",
+          "default_value": "0",
+          "properties": [
+            "read"
+          ]
+        },
+        {
+          "name": ["at","1"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -133,7 +144,7 @@
           ]
         },
         {
-          "name": "at",
+          "name": ["v0","2"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -143,7 +154,7 @@
           ]
         },
         {
-          "name": "v0",
+          "name": ["v1","3"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -153,7 +164,7 @@
           ]
         },
         {
-          "name": "v1",
+          "name": ["a0","4"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -163,7 +174,7 @@
           ]
         },
         {
-          "name": "a0",
+          "name": ["a1","5"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -173,7 +184,7 @@
           ]
         },
         {
-          "name": "a1",
+          "name": ["a2","6"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -183,7 +194,7 @@
           ]
         },
         {
-          "name": "a2",
+          "name": ["a3","7"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -193,7 +204,7 @@
           ]
         },
         {
-          "name": "a3",
+          "name": ["t0","8"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -203,7 +214,7 @@
           ]
         },
         {
-          "name": "t0",
+          "name": ["t1","9"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -213,7 +224,7 @@
           ]
         },
         {
-          "name": "t1",
+          "name": ["t2","10"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -223,7 +234,7 @@
           ]
         },
         {
-          "name": "t2",
+          "name": ["t3","11"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -233,7 +244,7 @@
           ]
         },
         {
-          "name": "t3",
+          "name": ["t4","12"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -243,7 +254,7 @@
           ]
         },
         {
-          "name": "t4",
+          "name": ["t5","13"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -253,7 +264,7 @@
           ]
         },
         {
-          "name": "t5",
+          "name": ["t6","14"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -263,7 +274,7 @@
           ]
         },
         {
-          "name": "t6",
+          "name": ["t7","15"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -273,7 +284,7 @@
           ]
         },
         {
-          "name": "t7",
+          "name": ["s0","16"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -283,7 +294,7 @@
           ]
         },
         {
-          "name": "s0",
+          "name": ["s1","17"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -293,7 +304,7 @@
           ]
         },
         {
-          "name": "s1",
+          "name": ["s2","18"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -303,7 +314,7 @@
           ]
         },
         {
-          "name": "s2",
+          "name": ["s3","19"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -313,7 +324,7 @@
           ]
         },
         {
-          "name": "s3",
+          "name": ["s4","20"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -323,7 +334,7 @@
           ]
         },
         {
-          "name": "s4",
+          "name": ["s5","21"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -333,7 +344,7 @@
           ]
         },
         {
-          "name": "s5",
+          "name": ["s6","22"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -343,7 +354,7 @@
           ]
         },
         {
-          "name": "s6",
+          "name": ["s7","23"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -353,7 +364,7 @@
           ]
         },
         {
-          "name": "s7",
+          "name": ["t8","24"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -363,7 +374,7 @@
           ]
         },
         {
-          "name": "t8",
+          "name": ["t9","25"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -373,7 +384,7 @@
           ]
         },
         {
-          "name": "t9",
+          "name": ["k0","26"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -383,7 +394,7 @@
           ]
         },
         {
-          "name": "k0",
+          "name": ["k1","27"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -393,47 +404,42 @@
           ]
         },
         {
-          "name": "k1",
+          "name": ["gp","28"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "pointer"
           ]
         },
         {
-          "name": "gp",
+          "name": ["sp","29"],
+          "nbits": "32",
+          "value": "0",
+          "default_value": "0x0FFFFFFC",
+          "properties": [
+            "read",
+            "write",
+            "pointer",
+            "stack"
+          ]
+        },
+        {
+          "name": ["fp","30"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "pointer",
+            "frame"
           ]
         },
         {
-          "name": "sp",
-          "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "fp",
-          "nbits": "32",
-          "value": "0",
-          "default_value": "0",
-          "properties": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "ra",
+          "name": ["ra","31"],
           "nbits": "32",
           "value": "0xFFFFFFFF",
           "default_value": "0xFFFFFFFF",
@@ -450,7 +456,7 @@
       "double_precision": false,
       "elements": [
         {
-          "name": "f0",
+          "name": ["f0"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -460,7 +466,7 @@
           ]
         },
         {
-          "name": "f1",
+          "name": ["f1"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -470,7 +476,7 @@
           ]
         },
         {
-          "name": "f2",
+          "name": ["f2"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -480,7 +486,7 @@
           ]
         },
         {
-          "name": "f3",
+          "name": ["f3"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -490,7 +496,7 @@
           ]
         },
         {
-          "name": "f4",
+          "name": ["f4"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -500,7 +506,7 @@
           ]
         },
         {
-          "name": "f5",
+          "name": ["f5"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -510,7 +516,7 @@
           ]
         },
         {
-          "name": "f6",
+          "name": ["f6"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -520,7 +526,7 @@
           ]
         },
         {
-          "name": "f7",
+          "name": ["f7"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -530,7 +536,7 @@
           ]
         },
         {
-          "name": "f8",
+          "name": ["f8"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -540,7 +546,7 @@
           ]
         },
         {
-          "name": "f9",
+          "name": ["f9"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -550,7 +556,7 @@
           ]
         },
         {
-          "name": "f10",
+          "name": ["f10"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -560,7 +566,7 @@
           ]
         },
         {
-          "name": "f11",
+          "name": ["f11"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -570,7 +576,7 @@
           ]
         },
         {
-          "name": "f12",
+          "name": ["f12"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -580,7 +586,7 @@
           ]
         },
         {
-          "name": "f13",
+          "name": ["f13"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -590,7 +596,7 @@
           ]
         },
         {
-          "name": "f14",
+          "name": ["f14"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -600,7 +606,7 @@
           ]
         },
         {
-          "name": "f15",
+          "name": ["f15"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -610,7 +616,7 @@
           ]
         },
         {
-          "name": "f16",
+          "name": ["f16"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -620,7 +626,7 @@
           ]
         },
         {
-          "name": "f17",
+          "name": ["f17"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -630,7 +636,7 @@
           ]
         },
         {
-          "name": "f18",
+          "name": ["f18"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -640,7 +646,7 @@
           ]
         },
         {
-          "name": "f19",
+          "name": ["f19"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -650,7 +656,7 @@
           ]
         },
         {
-          "name": "f20",
+          "name": ["f20"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -660,7 +666,7 @@
           ]
         },
         {
-          "name": "f21",
+          "name": ["f21"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -670,7 +676,7 @@
           ]
         },
         {
-          "name": "f22",
+          "name": ["f22"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -680,7 +686,7 @@
           ]
         },
         {
-          "name": "f23",
+          "name": ["f23"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -690,7 +696,7 @@
           ]
         },
         {
-          "name": "f24",
+          "name": ["f24"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -700,7 +706,7 @@
           ]
         },
         {
-          "name": "f25",
+          "name": ["f25"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -710,7 +716,7 @@
           ]
         },
         {
-          "name": "f26",
+          "name": ["f26"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -720,7 +726,7 @@
           ]
         },
         {
-          "name": "f27",
+          "name": ["f27"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -730,7 +736,7 @@
           ]
         },
         {
-          "name": "f28",
+          "name": ["f28"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -740,7 +746,7 @@
           ]
         },
         {
-          "name": "f29",
+          "name": ["f29"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -750,7 +756,7 @@
           ]
         },
         {
-          "name": "f30",
+          "name": ["f30"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -760,7 +766,7 @@
           ]
         },
         {
-          "name": "f31",
+          "name": ["f31"],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -777,7 +783,7 @@
       "double_precision": true,
       "elements": [
         {
-          "name": "FP0",
+          "name": ["FP0"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -790,7 +796,7 @@
           ]
         },
         {
-          "name": "FP2",
+          "name": ["FP2"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -803,7 +809,7 @@
           ]
         },
         {
-          "name": "FP4",
+          "name": ["FP4"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -816,7 +822,7 @@
           ]
         },
         {
-          "name": "FP6",
+          "name": ["FP6"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -829,7 +835,7 @@
           ]
         },
         {
-          "name": "FP8",
+          "name": ["FP8"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -842,7 +848,7 @@
           ]
         },
         {
-          "name": "FP10",
+          "name": ["FP10"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -855,7 +861,7 @@
           ]
         },
         {
-          "name": "FP12",
+          "name": ["FP12"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -868,7 +874,7 @@
           ]
         },
         {
-          "name": "FP14",
+          "name": ["FP14"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -881,7 +887,7 @@
           ]
         },
         {
-          "name": "FP16",
+          "name": ["FP16"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -894,7 +900,7 @@
           ]
         },
         {
-          "name": "FP18",
+          "name": ["FP18"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -907,7 +913,7 @@
           ]
         },
         {
-          "name": "FP20",
+          "name": ["FP20"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -920,7 +926,7 @@
           ]
         },
         {
-          "name": "FP22",
+          "name": ["FP22"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -933,7 +939,7 @@
           ]
         },
         {
-          "name": "FP24",
+          "name": ["FP24"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -946,7 +952,7 @@
           ]
         },
         {
-          "name": "FP26",
+          "name": ["FP26"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -959,7 +965,7 @@
           ]
         },
         {
-          "name": "FP28",
+          "name": ["FP28"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -972,7 +978,7 @@
           ]
         },
         {
-          "name": "FP30",
+          "name": ["FP30"],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -996,6 +1002,8 @@
       "signatureRaw": "abs.s $fd $fs",
       "co": "010001",
       "cop": "00000000101",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1041,6 +1049,8 @@
       "signatureRaw": "abs.d $fd $fs",
       "co": "010001",
       "cop": "00001000101",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1083,6 +1093,8 @@
       "type": "Arithmetic integer",
       "co": "000000",
       "cop": "100000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F3 $F2 $F1",
       "signature": "add,$INT-Reg,$INT-Reg,$INT-Reg",
@@ -1130,6 +1142,8 @@
       "signatureRaw": "add.s $fd $fs $ft",
       "co": "010001",
       "cop": "00000000000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1181,6 +1195,8 @@
       "signatureRaw": "add.d $fd $fs $ft",
       "co": "010001",
       "cop": "00001000000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1229,6 +1245,8 @@
       "type": "Arithmetic integer",
       "co": "001000",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F2 $F1 F3",
       "signature": "addi,$INT-Reg,$INT-Reg,inm-signed",
@@ -1269,6 +1287,8 @@
       "signatureRaw": "addiu $reg2 $reg1 val",
       "co": "001001",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1306,6 +1326,8 @@
       "signatureRaw": "addu $reg3 $reg1 $reg2",
       "co": "000000",
       "cop": "100001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1347,6 +1369,8 @@
       "type": "Logic",
       "co": "000000",
       "cop": "100100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F3 $F2 $F1",
       "signature": "and,$INT-Reg,$INT-Reg,$INT-Reg",
@@ -1391,6 +1415,8 @@
       "type": "Logic",
       "co": "001100",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F2 $F1 F3",
       "signature": "andi,$INT-Reg,$INT-Reg,inm-signed",
@@ -1431,6 +1457,8 @@
       "signatureRaw": "bc off",
       "co": "110010",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1456,6 +1484,8 @@
       "signatureRaw": "bc1eqz $ft off",
       "co": "010001",
       "cop": "01001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1494,6 +1524,8 @@
       "signatureRaw": "bc1nez $ft off",
       "co": "010001",
       "cop": "01101",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1529,6 +1561,8 @@
       "type": "Conditional bifurcation",
       "co": "000100",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "beq,$INT-Reg,$INT-Reg,offset_words",
@@ -1566,6 +1600,8 @@
       "type": "Conditional bifurcation",
       "co": "000100",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 F2",
       "signature": "beqz,$INT-Reg,offset_words",
@@ -1600,6 +1636,8 @@
       "signatureRaw": "bgez $rs off",
       "co": "000001",
       "cop": "00001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1638,6 +1676,10 @@
       "signatureRaw": "bgezal $rs off",
       "co": "000001",
       "cop": "10001",
+      "help": "",
+      "properties": [
+        "enter_subrutine"
+      ],
       "nwords": 1,
       "fields": [
         {
@@ -1676,6 +1718,8 @@
       "signatureRaw": "bgtz $rs off",
       "co": "000111",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1707,6 +1751,8 @@
       "signatureRaw": "blez $rs off",
       "co": "000110",
       "cop": null,
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1738,6 +1784,8 @@
       "signatureRaw": "bltz $rs off",
       "co": "000001",
       "cop": "00000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1773,6 +1821,8 @@
       "type": "Conditional bifurcation",
       "co": "000101",
       "cop": null,
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "bne,$INT-Reg,$INT-Reg,offset_words",
@@ -1810,6 +1860,8 @@
       "type": "Conditional bifurcation",
       "co": "000101",
       "cop": null,
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 F2",
       "signature": "bnez,$INT-Reg,offset_words",
@@ -1844,6 +1896,8 @@
       "signatureRaw": "cvt.d.s $fd $fs",
       "co": "010001",
       "cop": "00000100001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1889,6 +1943,8 @@
       "signatureRaw": "cvt.d.w $fd $fs",
       "co": "010001",
       "cop": "00001100001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1934,6 +1990,8 @@
       "signatureRaw": "cvt.s.d $fs $fd",
       "co": "010001",
       "cop": "00001100000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -1979,6 +2037,8 @@
       "signatureRaw": "cvt.s.w $fd $fs",
       "co": "010001",
       "cop": "00010100000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2026,6 +2086,8 @@
       "signatureRaw": "cvt.w.s $fd $fs",
       "co": "010001",
       "cop": "00000100100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2071,6 +2133,8 @@
       "signatureRaw": "cvt.w.d $fd $fs",
       "co": "010001",
       "cop": "00001100100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2119,6 +2183,8 @@
       "signatureRaw": "div $rd $rs $rt",
       "co": "000000",
       "cop": "00010011010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2167,6 +2233,8 @@
       "type": "Arithmetic integer",
       "co": "000000",
       "cop": "011010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2",
       "signature": "div,$INT-Reg,$INT-Reg",
@@ -2208,6 +2276,8 @@
       "signatureRaw": "div.s $fd $fs $ft",
       "co": "010001",
       "cop": "00000000011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2260,6 +2330,8 @@
       "signatureRaw": "div.d $fd $fs $ft",
       "co": "010001",
       "cop": "00001000011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2312,6 +2384,8 @@
       "signatureRaw": "j addr",
       "co": "000010",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2337,6 +2411,10 @@
       "signatureRaw": "jal addr",
       "co": "000011",
       "cop": "",
+      "help": "",
+      "properties": [
+        "enter_subrutine"
+      ],
       "nwords": 1,
       "fields": [
         {
@@ -2362,6 +2440,10 @@
       "signatureRaw": "jalr $rd $rs",
       "co": "000000",
       "cop": "001001",
+      "help": "",
+      "properties": [
+        "enter_subrutine"
+      ],
       "nwords": 1,
       "fields": [
         {
@@ -2400,6 +2482,10 @@
       "signatureRaw": "jr $rs",
       "co": "000000",
       "cop": "001000",
+      "help": "",
+      "properties": [
+        "exit_subrutine"
+      ],
       "nwords": 1,
       "fields": [
         {
@@ -2429,6 +2515,8 @@
       "type": "Memory access",
       "co": "100000",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lb,$INT-Reg,inm-signed,($INT-Reg)",
@@ -2469,6 +2557,8 @@
       "signatureRaw": "lbu $rt off ($base)",
       "co": "100100",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2503,6 +2593,8 @@
       "type": "Memory access",
       "co": "100001",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lh,$INT-Reg,inm-signed,($INT-Reg)",
@@ -2543,6 +2635,8 @@
       "signatureRaw": "lhu $rt off ($base)",
       "co": "100101",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2577,6 +2671,8 @@
       "type": "Other",
       "co": "001111",
       "cop": null,
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 F2",
       "signature": "lui,$INT-Reg,inm-signed",
@@ -2608,6 +2704,8 @@
       "type": "Memory access",
       "co": "100011",
       "cop": null,
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "lw,$INT-Reg,inm-signed,($INT-Reg)",
@@ -2648,6 +2746,8 @@
       "signatureRaw": "lwc1 $ft off ($base)",
       "co": "110001",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2685,6 +2785,8 @@
       "signatureRaw": "mfc1 $rt $fs",
       "co": "010001",
       "cop": "11111",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2723,6 +2825,8 @@
       "signatureRaw": "mfhi $rd",
       "co": "000000",
       "cop": "010000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2755,6 +2859,8 @@
       "signatureRaw": "mflo $rd",
       "co": "000000",
       "cop": "010010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2787,6 +2893,8 @@
       "signatureRaw": "mod $rd $rs $rt",
       "co": "000000",
       "cop": "00011011010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2831,6 +2939,8 @@
       "signatureRaw": "modu $rd $rs $rt",
       "co": "000000",
       "cop": "00011011011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2875,6 +2985,8 @@
       "signatureRaw": "mov.s $fd $fs",
       "co": "010001",
       "cop": "00000000110",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2920,6 +3032,8 @@
       "signatureRaw": "mov.d $fd $fs",
       "co": "010001",
       "cop": "00001000110",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -2965,6 +3079,8 @@
       "signatureRaw": "mtc1 $rt $fs",
       "co": "010001",
       "cop": "00100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3003,6 +3119,8 @@
       "signatureRaw": "mthi $rs",
       "co": "000000",
       "cop": "010001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3035,6 +3153,8 @@
       "signatureRaw": "mtlo $rs",
       "co": "000000",
       "cop": "010011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3064,6 +3184,8 @@
       "type": "Arithmetic integer",
       "co": "011100",
       "cop": "000010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "mul,$INT-Reg,$INT-Reg,$INT-Reg",
@@ -3111,6 +3233,8 @@
       "signatureRaw": "mul.s $fd $fs $ft",
       "co": "010001",
       "cop": "00000000010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3162,6 +3286,8 @@
       "signatureRaw": "mul.d $fd $fs $ft",
       "co": "010001",
       "cop": "00001000010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3213,6 +3339,8 @@
       "signatureRaw": "mult $rt $rs",
       "co": "000000",
       "cop": "011000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3251,6 +3379,8 @@
       "signatureRaw": "multu $rt $rs",
       "co": "000000",
       "cop": "011001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3286,6 +3416,8 @@
       "type": "Logic",
       "co": "000000",
       "cop": "000000",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0",
       "signature": "nop",
@@ -3315,6 +3447,8 @@
       "signatureRaw": "nor $rd $rs $rt",
       "co": "000000",
       "cop": "101111",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3356,6 +3490,8 @@
       "type": "Logic",
       "co": "000000",
       "cop": "100101",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "or,$INT-Reg,$INT-Reg,$INT-Reg",
@@ -3400,6 +3536,8 @@
       "type": "Logic",
       "co": "001101",
       "cop": null,
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "ori,$INT-Reg,$INT-Reg,inm-signed",
@@ -3440,6 +3578,8 @@
       "signatureRaw": "rotr $rd $rt sa",
       "co": "000000",
       "cop": "1000010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3491,6 +3631,8 @@
       "signatureRaw": "rsqrt.s $fd $fs",
       "co": "010001",
       "cop": "00000010110",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3536,6 +3678,8 @@
       "signatureRaw": "rsqrt.d $fd $fs",
       "co": "010001",
       "cop": "00001010110",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3581,6 +3725,8 @@
       "signatureRaw": "sb $rt off ($base)",
       "co": "101000",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3618,6 +3764,8 @@
       "signatureRaw": "sh $rt off ($base)",
       "co": "101001",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3655,6 +3803,8 @@
       "signatureRaw": "sll $rd $rt sa",
       "co": "000000",
       "cop": "111111",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3699,6 +3849,8 @@
       "signatureRaw": "slt $rd $rs $rt",
       "co": "000000",
       "cop": "101010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3743,6 +3895,8 @@
       "signatureRaw": "sltu $rd $rs $rt",
       "co": "000000",
       "cop": "101011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3787,6 +3941,8 @@
       "signatureRaw": "slti $rs $rt inm",
       "co": "001010",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3824,6 +3980,8 @@
       "signatureRaw": "sltiu $rs $rt inm",
       "co": "001011",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3861,6 +4019,8 @@
       "signatureRaw": "sqrt.s $fd $fs",
       "co": "010001",
       "cop": "00000000100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3906,6 +4066,8 @@
       "signatureRaw": "sqrt.d $fd $fs",
       "co": "010001",
       "cop": "00001000100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3951,6 +4113,8 @@
       "signatureRaw": "sra $rd $rt sa",
       "co": "000000",
       "cop": "000011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -3995,6 +4159,8 @@
       "signatureRaw": "srl $rd $rt sa",
       "co": "000000",
       "cop": "0000010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4043,6 +4209,8 @@
       "type": "Arithmetic integer",
       "co": "000000",
       "cop": "100010",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "sub,$INT-Reg,$INT-Reg,$INT-Reg",
@@ -4090,6 +4258,8 @@
       "signatureRaw": "sub.s $fd $fs $ft",
       "co": "010001",
       "cop": "00000000001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4141,6 +4311,8 @@
       "signatureRaw": "sub.d $fd $fs $ft",
       "co": "010001",
       "cop": "00001000001",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4192,6 +4364,8 @@
       "signatureRaw": "subu $rd $rs $rt",
       "co": "000000",
       "cop": "100011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4233,6 +4407,8 @@
       "type": "Memory access",
       "co": "101011",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 F2 ($F3)",
       "signature": "sw,$INT-Reg,inm-signed,($INT-Reg)",
@@ -4273,6 +4449,8 @@
       "signatureRaw": "swc1 $ft off ($base)",
       "co": "111001",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4310,6 +4488,8 @@
       "signatureRaw": "sdc1 $ft off ($base)",
       "co": "111101",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4344,6 +4524,8 @@
       "type": "Logic",
       "co": "000000",
       "cop": "100110",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 $F3",
       "signature": "xor,$INT-Reg,$INT-Reg,$INT-Reg",
@@ -4388,6 +4570,8 @@
       "type": "Logic",
       "co": "001110",
       "cop": null,
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0 $F1 $F2 F3",
       "signature": "xori,$INT-Reg,$INT-Reg,inm-signed",
@@ -4425,6 +4609,8 @@
       "type": "Syscall",
       "co": "000000",
       "cop": "001100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "F0",
       "signature": "syscall",
@@ -4454,6 +4640,8 @@
       "signatureRaw": "divu $rd $rs $rt",
       "co": "000000",
       "cop": "00010011011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4505,6 +4693,8 @@
       "signatureRaw": "divu $rs $rt",
       "co": "000000",
       "cop": "011011",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4543,6 +4733,8 @@
       "signatureRaw": "ldc1 $ft off ($base)",
       "co": "110101",
       "cop": "",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4580,7 +4772,9 @@
     "signatureRaw": "bc1f cc off",
     "co": "010001",
     "cop": "0100000",
-    "nwords": 1,
+    "help": "",
+      "properties": [],
+      "nwords": 1,
     "fields": [
       {
         "name": "bc1f",
@@ -4625,7 +4819,9 @@
     "signatureRaw": "bc1t cc off",
     "co": "010001",
     "cop": "0100001",
-    "nwords": 1,
+    "help": "",
+      "properties": [],
+      "nwords": 1,
     "fields": [
       {
         "name": "bc1t",
@@ -4663,15 +4859,17 @@
     "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {\n    PC=PC+((off << 16) >> 14)\n}"
   },
   {
-			"name": "c.eq.s",
-			"type": "Logic",
-			"signature_definition": "F0 F4 $F3 $F2",
-			"signature": "c.eq.s,inm-unsigned,$SFP-Reg,$SFP-Reg",
-			"signatureRaw": "c.eq.s cc $fs $ft",
-			"co": "010001",
-			"cop": "000000010",
-			"nwords": 1,
-			"fields": [
+      "name": "c.eq.s",
+      "type": "Logic",
+      "signature_definition": "F0 F4 $F3 $F2",
+      "signature": "c.eq.s,inm-unsigned,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.eq.s cc $fs $ft",
+      "co": "010001",
+      "cop": "000000010",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
         {
           "name": "c.eq.s",
           "type": "co",
@@ -4714,15 +4912,17 @@
       "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
-			"name": "c.eq.d",
-			"type": "Logic",
-			"signature_definition": "F0 F4 $F3 $F2",
-			"signature": "c.eq.d,inm-unsigned,$DFP-Reg,$DFP-Reg",
-			"signatureRaw": "c.eq.d cc $fs $ft",
-			"co": "010001",
-			"cop": "000010010",
-			"nwords": 1,
-			"fields": [
+      "name": "c.eq.d",
+      "type": "Logic",
+      "signature_definition": "F0 F4 $F3 $F2",
+      "signature": "c.eq.d,inm-unsigned,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.eq.d cc $fs $ft",
+      "co": "010001",
+      "cop": "000010010",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
         {
           "name": "c.eq.d",
           "type": "co",
@@ -4772,6 +4972,8 @@
       "signatureRaw": "c.olt.s cc $fs $ft",
       "co": "010001",
       "cop": "000000100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4823,6 +5025,8 @@
       "signatureRaw": "c.olt.d cc $fs $ft",
       "co": "010001",
       "cop": "000010100",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4874,6 +5078,8 @@
       "signatureRaw": "c.ole.s cc $fs $ft",
       "co": "010001",
       "cop": "000000110",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4925,6 +5131,8 @@
       "signatureRaw": "c.ole.d cc $fs $ft",
       "co": "010001",
       "cop": "000010110",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -4972,6 +5180,8 @@
   "pseudoinstructions": [
     {
       "name": "move",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "move $F0 $F1",
       "signature": "move,$INT-Reg,$INT-Reg",
@@ -4997,6 +5207,8 @@
       "signature_definition": "b F0",
       "signature": "b,inm-unsigned",
       "signatureRaw": "b inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5010,6 +5222,8 @@
     },
     {
       "name": "addi",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "addi $F0 $F1 F2",
       "signature": "addi,$INT-Reg,$INT-Reg,inm-signed",
@@ -5038,6 +5252,8 @@
     },
     {
       "name": "addiu",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "signature_definition": "addiu $F0 $F1 F2",
       "signature": "addiu,$INT-Reg,$INT-Reg,inm-signed",
@@ -5069,6 +5285,8 @@
       "signature_definition": "jalr $F0",
       "signature": "jalr,$INT-Reg",
       "signatureRaw": "jalr $rs",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5085,6 +5303,8 @@
       "signature_definition": "li $F0 F1",
       "signature": "li,$INT-Reg,inm-signed",
       "signatureRaw": "li $rd val",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5107,6 +5327,8 @@
       "signature_definition": "la $F0 F1",
       "signature": "la,$INT-Reg,inm-signed",
       "signatureRaw": "la $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5130,6 +5352,8 @@
       "signature_definition": "lw $F0 ($F1)",
       "signature": "lw,$INT-Reg,($INT-Reg)",
       "signatureRaw": "lw $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5152,6 +5376,8 @@
       "signature_definition": "lw $F0 F1",
       "signature": "lw,$INT-Reg,inm-signed",
       "signatureRaw": "lw $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5174,6 +5400,8 @@
       "signature_definition": "lh $F0 ($F1)",
       "signature": "lh,$INT-Reg,($INT-Reg)",
       "signatureRaw": "lh $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5196,6 +5424,8 @@
       "signature_definition": "lh $F0 F1",
       "signature": "lh,$INT-Reg,inm-signed",
       "signatureRaw": "lh $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5218,6 +5448,8 @@
       "signature_definition": "lhu $F0 ($F1)",
       "signature": "lhu,$INT-Reg,($INT-Reg)",
       "signatureRaw": "lhu $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5240,6 +5472,8 @@
       "signature_definition": "lhu $F0 F1",
       "signature": "lhu,$INT-Reg,inm-signed",
       "signatureRaw": "lhu $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5262,6 +5496,8 @@
       "signature_definition": "lb $F0 ($F1)",
       "signature": "lb,$INT-Reg,($INT-Reg)",
       "signatureRaw": "lb $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5284,6 +5520,8 @@
       "signature_definition": "lb $F0 F1",
       "signature": "lb,$INT-Reg,inm-signed",
       "signatureRaw": "lb $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5306,6 +5544,8 @@
       "signature_definition": "lbu $F0 ($F1)",
       "signature": "lbu,$INT-Reg,($INT-Reg)",
       "signatureRaw": "lbu $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5328,6 +5568,8 @@
       "signature_definition": "lbu $F0 F1",
       "signature": "lbu,$INT-Reg,inm-signed",
       "signatureRaw": "lbu $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5351,6 +5593,8 @@
       "signature_definition": "l.d $F0 ($F1)",
       "signature": "l.d,$DFP-Reg,($INT-Reg)",
       "signatureRaw": "l.d $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5373,6 +5617,8 @@
       "signature_definition": "l.d $F0 F1 ($F2)",
       "signature": "l.d,$DFP-Reg,inm-signed,($INT-Reg)",
       "signatureRaw": "l.d $reg1 inm ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5401,6 +5647,8 @@
       "signature_definition": "sw $F0 ($F1)",
       "signature": "sw,$INT-Reg,($INT-Reg)",
       "signatureRaw": "sw $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5423,6 +5671,8 @@
       "signature_definition": "sw $F0 F1",
       "signature": "sw,$INT-Reg,inm-signed",
       "signatureRaw": "sw $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5445,6 +5695,8 @@
       "signature_definition": "sh $F0 ($F1)",
       "signature": "sh,$INT-Reg,($INT-Reg)",
       "signatureRaw": "sh $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5467,6 +5719,8 @@
       "signature_definition": "sh $F0 F1",
       "signature": "sh,$INT-Reg,inm-signed",
       "signatureRaw": "sh $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5489,6 +5743,8 @@
       "signature_definition": "sb $F0 ($F1)",
       "signature": "sb,$INT-Reg,($INT-Reg)",
       "signatureRaw": "sb $reg1 ($reg2)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5511,6 +5767,8 @@
       "signature_definition": "sb $F0 F1",
       "signature": "sb,$INT-Reg,inm-signed",
       "signatureRaw": "sb $rd addr",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5533,6 +5791,8 @@
       "signature_definition": "add $F0 $F1 F2",
       "signature": "add,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "add $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5561,6 +5821,8 @@
       "signature_definition": "addu $F0 $F1 F2",
       "signature": "addu,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "addu $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5589,6 +5851,8 @@
       "signature_definition": "and $F0 $F1 F2",
       "signature": "and,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "and $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5617,6 +5881,8 @@
       "signature_definition": "andi $F0 $F1 F2",
       "signature": "andi,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "andi $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5645,6 +5911,8 @@
       "signature_definition": "ori $F0 $F1 F2",
       "signature": "ori,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "ori $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5673,6 +5941,8 @@
       "signature_definition": "mul $F0 $F1 F2",
       "signature": "mul,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "mul $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5701,6 +5971,8 @@
       "signature_definition": "nor $F0 $F1 F2",
       "signature": "nor,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "nor $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5729,6 +6001,8 @@
       "signature_definition": "or $F0 $F1 F2",
       "signature": "or,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "or $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5757,6 +6031,8 @@
       "signature_definition": "xori $F0 $F1 F2",
       "signature": "xori,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "xori $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5785,6 +6061,8 @@
       "signature_definition": "sub $F0 $F1 F2",
       "signature": "sub,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "sub $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5813,6 +6091,8 @@
       "signature_definition": "subu $F0 $F1 F2",
       "signature": "subu,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "subu $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5841,6 +6121,8 @@
       "signature_definition": "rem $F0 $F1 $F2",
       "signature": "rem,$INT-Reg,$INT-Reg,$INT-Reg",
       "signatureRaw": "rem $reg1 $reg2 $reg3",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5869,6 +6151,8 @@
       "signature_definition": "xor $F0 $F1 F2",
       "signature": "xor,$INT-Reg,$INT-Reg,inm-signed",
       "signatureRaw": "xor $rs $rt inm",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5897,6 +6181,8 @@
       "signature_definition": "l.s $F0 ($F1)",
       "signature": "l.s,$SFP-Reg,$INT-Reg",
       "signatureRaw": "l.s $rs ($rt)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5919,6 +6205,8 @@
       "signature_definition": "l.s $F0 F2 ($F1)",
       "signature": "l.s,$SFP-Reg,inm-signed,$INT-Reg",
       "signatureRaw": "l.s $rs off ($rt)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5947,6 +6235,8 @@
       "signature_definition": "s.s $F0 ($F1)",
       "signature": "s.s,$SFP-Reg,$INT-Reg",
       "signatureRaw": "s.s $rs ($rt)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5969,6 +6259,8 @@
       "signature_definition": "s.s $F0 F2 ($F1)",
       "signature": "s.s,$SFP-Reg,inm-signed,$INT-Reg",
       "signatureRaw": "s.s $rs off ($rt)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -5997,6 +6289,8 @@
       "signature_definition": "s.d $F0 ($F1)",
       "signature": "s.d,$DFP-Reg,$INT-Reg",
       "signatureRaw": "s.d $rs ($rt)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -6019,6 +6313,8 @@
       "signature_definition": "s.d $F0 F2 ($F1)",
       "signature": "s.d,$DFP-Reg,inm-signed,$INT-Reg",
       "signatureRaw": "s.d $rs off ($rt)",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -6047,6 +6343,8 @@
       "signature_definition": "beq $F0 F1 F2",
       "signature": "beq,$INT-Reg,inm-unsigned,offset_words",
       "signatureRaw": "beq $reg1 inm off",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -6070,11 +6368,13 @@
       ],
       "definition": "ori $at $zero inm; beq $reg1 $at off;"
     },
-  	{
+    {
       "name": "bge",
       "signature_definition": "bge $F0 $F1 F2",
       "signature": "bge,$INT-Reg,$INT-Reg,offset_words",
       "signatureRaw": "bge $reg1 $reg2 off",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -6103,6 +6403,8 @@
       "signature_definition": "bge $F0 F1 F2",
       "signature": "bge,$INT-Reg,inm-unsigned,offset_words",
       "signatureRaw": "bge $reg1 inm off",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -6132,6 +6434,8 @@
       "signature_definition": "bgt $F0 $F1 F2",
       "signature": "bgt,$INT-Reg,$INT-Reg,offset_words",
       "signatureRaw": "bgt $reg1 $reg2 off",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -6160,6 +6464,8 @@
       "signature_definition": "bgt $F0 F1 F2",
       "signature": "bgt,$INT-Reg,inm-unsigned,offset_words",
       "signatureRaw": "bgt $reg1 inm off",
+      "help": "",
+      "properties": [],
       "nwords": 1,
       "fields": [
         {
@@ -6183,12 +6489,14 @@
       ],
       "definition": "addi $at $zero inm; addi $at $at 1; slt $at $reg1 $at; beq $at $zero off;"
     },
-  	{
+    {
         "name": "ble",
         "signature_definition": "ble $F0 $F1 F2",
         "signature": "ble,$INT-Reg,$INT-Reg,offset_words",
         "signatureRaw": "ble $reg1 $reg2 off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6217,7 +6525,9 @@
         "signature_definition": "ble $F0 F1 F2",
         "signature": "ble,$INT-Reg,inm-unsigned,offset_words",
         "signatureRaw": "ble $reg1 inm off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6248,7 +6558,9 @@
         "signature_definition": "blt $F0 $F1 F2",
         "signature": "blt,$INT-Reg,$INT-Reg,offset_words",
         "signatureRaw": "blt $reg1 $reg2 off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6276,7 +6588,9 @@
         "signature_definition": "blt $F0 F1 F2",
         "signature": "blt,$INT-Reg,inm-unsigned,offset_words",
         "signatureRaw": "blt $reg1 inm off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6305,7 +6619,9 @@
         "signature_definition": "bne $F0 F1 F2",
         "signature": "bne,$INT-Reg,inm-unsigned,offset_words",
         "signatureRaw": "bne $reg1 inm off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6335,7 +6651,9 @@
         "signature_definition": "bgtu $F0 $F1 F2",
         "signature": "bgtu,$INT-Reg,$INT-Reg,offset_words",
         "signatureRaw": "bgtu $reg1 $reg2 off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6363,7 +6681,9 @@
         "signature_definition": "bgtu $F0 F1 F2",
         "signature": "bgtu,$INT-Reg,inm-unsigned,offset_words",
         "signatureRaw": "bgtu $reg1 inm off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6393,7 +6713,9 @@
         "signature_definition": "bgeu $F0 $F1 F2",
         "signature": "bgeu,$INT-Reg,$INT-Reg,offset_words",
         "signatureRaw": "bgeu $reg1 $reg2 off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6421,7 +6743,9 @@
         "signature_definition": "bgeu $F0 F1 F2",
         "signature": "bgeu,$INT-Reg,inm-unsigned,offset_words",
         "signatureRaw": "bgeu $reg1 inm off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6451,7 +6775,9 @@
         "signature_definition": "bleu $F0 $F1 F2",
         "signature": "bleu,$INT-Reg,$INT-Reg,offset_words",
         "signatureRaw": "bleu $reg1 $reg2 off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6479,7 +6805,9 @@
         "signature_definition": "bleu $F0 F1 F2",
         "signature": "bleu,$INT-Reg,inm-unsigned,offset_words",
         "signatureRaw": "bleu $reg1 inm off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6509,7 +6837,9 @@
         "signature_definition": "bltu $F0 $F1 F2",
         "signature": "bltu,$INT-Reg,$INT-Reg,offset_words",
         "signatureRaw": "bltu $reg1 $reg2 off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6537,7 +6867,9 @@
         "signature_definition": "bltu $F0 F1 F2",
         "signature": "bltu,$INT-Reg,inm-unsigned,offset_words",
         "signatureRaw": "bltu $reg1 inm off",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "reg1",
@@ -6567,7 +6899,9 @@
         "signature_definition": "li.s $F0 F1",
         "signature": "li.s,$SFP-Reg,inm-signed",
         "signatureRaw": "li.s $rd val",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "rd",
@@ -6589,7 +6923,9 @@
         "signature_definition": "li.d $F0 F1",
         "signature": "li.d,$DFP-Reg,inm-signed",
         "signatureRaw": "li.d $rd val",
-        "nwords": 1,
+        "help": "",
+      "properties": [],
+      "nwords": 1,
         "fields": [
           {
             "name": "rd",
@@ -6609,209 +6945,219 @@
 
 
       {
-	      "name": "c.eq.s",
-	      "signature_definition": "c.eq.s $F1 $F0",
-	      "signature": "c.eq.s,$SFP-Reg,$SFP-Reg",
-	      "signatureRaw": "c.eq.s $fs $ft",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "ft",
-	          "type": "SFP-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "fs",
-	          "type": "SFP-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        }
-	      ],
-	      "definition": "c.eq.s 0 $fs $ft;"
-	    },
-	    {
-	      "name": "c.eq.d",
-	      "signature_definition": "c.eq.d $F1 $F0",
-	      "signature": "c.eq.d,$DFP-Reg,$DFP-Reg",
-	      "signatureRaw": "c.eq.d $fs $ft",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "ft",
-	          "type": "DFP-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "fs",
-	          "type": "DFP-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        }
-	      ],
-	      "definition": "c.eq.d 0 $fs $ft;"
-	    },
-	    {
-	      "name": "c.olt.s",
-	      "signature_definition": "c.olt.s $F1 $F0",
-	      "signature": "c.olt.s,$SFP-Reg,$SFP-Reg",
-	      "signatureRaw": "c.olt.s $fs $ft",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "ft",
-	          "type": "SFP-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "fs",
-	          "type": "SFP-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        }
-	      ],
-	      "definition": "c.olt.s 0 $fs $ft;"
-	    },
-	    {
-	      "name": "c.olt.d",
-	      "signature_definition": "c.olt.d $F1 $F0",
-	      "signature": "c.olt.d,$DFP-Reg,$DFP-Reg",
-	      "signatureRaw": "c.olt.d $fs $ft",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "ft",
-	          "type": "DFP-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "fs",
-	          "type": "DFP-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        }
-	      ],
-	      "definition": "c.olt.d 0 $fs $ft;"
-	    },
-	    {
-	      "name": "c.ole.s",
-	      "signature_definition": "c.ole.s $F1 $F0",
-	      "signature": "c.ole.s,$SFP-Reg,$SFP-Reg",
-	      "signatureRaw": "c.ole.s $fs $ft",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "ft",
-	          "type": "SFP-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "fs",
-	          "type": "SFP-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        }
-	      ],
-	      "definition": "c.ole.s 0 $fs $ft;"
-	    },
-	    {
-	      "name": "c.ole.d",
-	      "signature_definition": "c.ole.d $F1 $F0",
-	      "signature": "c.ole.d,$DFP-Reg,$DFP-Reg",
-	      "signatureRaw": "c.ole.d $fs $ft",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "ft",
-	          "type": "DFP-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "fs",
-	          "type": "DFP-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        }
-	      ],
-	      "definition": "c.ole.d 0 $fs $ft;"
-	    },
-	    {
-	      "name": "bc1t",
-	      "signature_definition": "bc1t F0",
-	      "signature": "bc1t, offset_words",
-	      "signatureRaw": "bc1t off",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "off",
-	          "type": "offset_words",
-	          "startbit": "25",
-	          "stopbit": "0"
-	        }
-	      ],
-	      "definition": "bc1t 0 off;"
-	    },
-	    {
-	      "name": "ror",
-	      "signature_definition": "ror $F1 $F0 F2",
-	      "signature": "ror,$INT-Reg,$INT-Reg,inm-unsigned",
-	      "signatureRaw": "ror $reg1 $reg2 val",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "reg2",
-	          "type": "INT-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "reg1",
-	          "type": "INT-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        },
-	        {
-	          "name": "val",
-	          "type": "inm-unsigned",
-	          "startbit": "15",
-	          "stopbit": "0"
-	        }
-	      ],
-	      "definition": "sll $at $reg2 op(32-(val));srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
-	    },
-	    {
-	      "name": "rol",
-	      "signature_definition": "rol $F1 $F0 F2",
-	      "signature": "rol,$INT-Reg,$INT-Reg,inm-unsigned",
-	      "signatureRaw": "rol $reg1 $reg2 val",
-	      "nwords": 1,
-	      "fields": [
-	        {
-	          "name": "reg2",
-	          "type": "INT-Reg",
-	          "startbit": "25",
-	          "stopbit": "21"
-	        },
-	        {
-	          "name": "reg1",
-	          "type": "INT-Reg",
-	          "startbit": "20",
-	          "stopbit": "16"
-	        },
-	        {
-	          "name": "val",
-	          "type": "inm-unsigned",
-	          "startbit": "15",
-	          "stopbit": "0"
-	        }
-	      ],
-	      "definition": "srl $at $reg2 op(32-(val));sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
-	    }
+        "name": "c.eq.s",
+        "signature_definition": "c.eq.s $F1 $F0",
+        "signature": "c.eq.s,$SFP-Reg,$SFP-Reg",
+        "signatureRaw": "c.eq.s $fs $ft",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "ft",
+            "type": "SFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "fs",
+            "type": "SFP-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          }
+        ],
+        "definition": "c.eq.s 0 $fs $ft;"
+      },
+      {
+        "name": "c.eq.d",
+        "signature_definition": "c.eq.d $F1 $F0",
+        "signature": "c.eq.d,$DFP-Reg,$DFP-Reg",
+        "signatureRaw": "c.eq.d $fs $ft",
+        "help": "",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "ft",
+            "type": "DFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "fs",
+            "type": "DFP-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          }
+        ],
+        "definition": "c.eq.d 0 $fs $ft;"
+      },
+      {
+        "name": "c.olt.s",
+        "signature_definition": "c.olt.s $F1 $F0",
+        "signature": "c.olt.s,$SFP-Reg,$SFP-Reg",
+        "signatureRaw": "c.olt.s $fs $ft",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "ft",
+            "type": "SFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "fs",
+            "type": "SFP-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          }
+        ],
+        "definition": "c.olt.s 0 $fs $ft;"
+      },
+      {
+        "name": "c.olt.d",
+        "signature_definition": "c.olt.d $F1 $F0",
+        "signature": "c.olt.d,$DFP-Reg,$DFP-Reg",
+        "signatureRaw": "c.olt.d $fs $ft",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "ft",
+            "type": "DFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "fs",
+            "type": "DFP-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          }
+        ],
+        "definition": "c.olt.d 0 $fs $ft;"
+      },
+      {
+        "name": "c.ole.s",
+        "signature_definition": "c.ole.s $F1 $F0",
+        "signature": "c.ole.s,$SFP-Reg,$SFP-Reg",
+        "signatureRaw": "c.ole.s $fs $ft",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "ft",
+            "type": "SFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "fs",
+            "type": "SFP-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          }
+        ],
+        "definition": "c.ole.s 0 $fs $ft;"
+      },
+      {
+        "name": "c.ole.d",
+        "signature_definition": "c.ole.d $F1 $F0",
+        "signature": "c.ole.d,$DFP-Reg,$DFP-Reg",
+        "signatureRaw": "c.ole.d $fs $ft",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "ft",
+            "type": "DFP-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "fs",
+            "type": "DFP-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          }
+        ],
+        "definition": "c.ole.d 0 $fs $ft;"
+      },
+      {
+        "name": "bc1t",
+        "signature_definition": "bc1t F0",
+        "signature": "bc1t, offset_words",
+        "signatureRaw": "bc1t off",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": "25",
+            "stopbit": "0"
+          }
+        ],
+        "definition": "bc1t 0 off;"
+      },
+      {
+        "name": "ror",
+        "signature_definition": "ror $F1 $F0 F2",
+        "signature": "ror,$INT-Reg,$INT-Reg,inm-unsigned",
+        "signatureRaw": "ror $reg1 $reg2 val",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          },
+          {
+            "name": "val",
+            "type": "inm-unsigned",
+            "startbit": "15",
+            "stopbit": "0"
+          }
+        ],
+        "definition": "sll $at $reg2 op(32-(val));srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      },
+      {
+        "name": "rol",
+        "signature_definition": "rol $F1 $F0 F2",
+        "signature": "rol,$INT-Reg,$INT-Reg,inm-unsigned",
+        "signatureRaw": "rol $reg1 $reg2 val",
+        "help": "",
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg2",
+            "type": "INT-Reg",
+            "startbit": "25",
+            "stopbit": "21"
+          },
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": "20",
+            "stopbit": "16"
+          },
+          {
+            "name": "val",
+            "type": "inm-unsigned",
+            "startbit": "15",
+            "stopbit": "0"
+          }
+        ],
+        "definition": "srl $at $reg2 op(32-(val));sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      }
   ],
   "directives": [
     {
