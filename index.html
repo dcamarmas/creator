@@ -981,21 +981,7 @@
                               </template>
 
                               <template v-slot:cell(properties)="row">
-                                <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'read' || architecture.components[item.index].elements[row.index].properties[1] == 'read'"> 
-                                  Read 
-                                </b-form-checkbox>
-
-                                <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'read' && architecture.components[item.index].elements[row.index].properties[1] != 'read'"> 
-                                  Read
-                                </b-form-checkbox>
-
-                                <b-form-checkbox disabled checked="true" v-if="architecture.components[item.index].elements[row.index].properties[0] == 'write' || architecture.components[item.index].elements[row.index].properties[1] == 'write'">
-                                  Write
-                                </b-form-checkbox>
-
-                                <b-form-checkbox disabled checked="false" v-if="architecture.components[item.index].elements[row.index].properties[0] != 'write' && architecture.components[item.index].elements[row.index].properties[1] != 'write'">
-                                  Write
-                                </b-form-checkbox>
+                                <b-badge class="m-1" v-for="propertie in architecture.components[item.index].elements[row.index].properties" pill variant="primary">{{propertie}}</b-badge>
                               </template>
 
                               <template v-slot:cell(actions)="row">
@@ -1077,15 +1063,18 @@
                              @hidden="emptyFormArch">
                       <b-form >
                         <b-form-group label="Name:">
-                          <b-form-input type="text" 
-                                        :state="valid(formArchitecture.name)" 
-                                        v-on:input="debounce('formArchitecture.name', $event)" 
-                                        :value="formArchitecture.name" 
-                                        required 
-                                        placeholder="Enter name" 
-                                        size="sm" 
-                                        title="Element name">
-                          </b-form-input>
+                          <b-form-tags
+                            v-model="formArchitecture.name"
+                            v-on:input="debounce('formArchitecture.name', $event)" 
+                            separator=" ,;"
+                            placeholder="Enter new register name"
+                            no-add-on-enter
+                            required 
+                            size="lg"
+                            tag-variant="primary"
+                            tag-pills 
+                            title="Element name"
+                          ></b-form-tags>
                         </b-form-group>
                         <b-form-group label="ID:">
                           <b-form-input type="text" 
@@ -1113,6 +1102,10 @@
                           <b-form-checkbox-group v-model="formArchitecture.properties">
                             <b-form-checkbox value="read">Read</b-form-checkbox>
                             <b-form-checkbox value="write">Write</b-form-checkbox>
+                            <b-form-checkbox value="pointer">Pointer</b-form-checkbox>
+                            <b-form-checkbox value="pc">PC</b-form-checkbox>
+                            <b-form-checkbox value="stack">Stack</b-form-checkbox>
+                            <b-form-checkbox value="frame">Frame</b-form-checkbox>
                           </b-form-checkbox-group>
                         </b-form-group>
                         <b-form-group label="Simple Floating Points asociate:" v-if="modalNewElement.double_precision == true">
@@ -1150,7 +1143,6 @@
                       <b-form>
                         <b-form-group label="Name:">
                           <b-form-tags
-                            input-id="tags-separators"
                             v-model="formArchitecture.name"
                             v-on:input="debounce('formArchitecture.name', $event)" 
                             separator=" ,;"
@@ -1602,6 +1594,10 @@
 
                       <template v-slot:head(signatureRaw)="row">
                         Instruction syntax
+                      </template>
+
+                      <template v-slot:cell(properties)="row">
+                        <b-badge class="m-1" v-for="propertie in row.item.properties" pill variant="primary">{{propertie}}</b-badge>
                       </template>
 
                       <!-- For each instruction -->

@@ -158,7 +158,7 @@ try
         precision: '',
       },
       /*Instructions table fields*/
-      instFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+      instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Instructions types*/
       instructionsTypes: instructionsTypes,
       /*Instructions fields*/
