@@ -354,7 +354,7 @@
             </template>
 
             <div class="col-lg-12 col-sm-12">
-              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
+              <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                         href='https://creatorsim.github.io/' 
                         target="_blank">
                 <span class="fas fa-question-circle" ></span> 
@@ -650,7 +650,7 @@
               </template>
 
               <div class="col-lg-12 col-sm-12">
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
+                <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                           href='https://creatorsim.github.io/' 
                           target="_blank">
                   <span class="fas fa-question-circle" ></span> 
@@ -1098,7 +1098,7 @@
                                         title="Default value">
                           </b-form-input>
                         </b-form-group>
-                        <b-form-group v-if="modalNewElement.type != 'control'">
+                        <b-form-group v-if="modalNewElement.type != 'control'" label="Properties:">
                           <b-form-checkbox-group v-model="formArchitecture.properties">
                             <b-form-checkbox value="read">Read</b-form-checkbox>
                             <b-form-checkbox value="write">Write</b-form-checkbox>
@@ -1178,7 +1178,7 @@
                                         title="Default value">
                           </b-form-input>
                         </b-form-group>
-                        <b-form-group>
+                        <b-form-group label="Properties:">
                           <b-form-checkbox-group v-model="formArchitecture.properties" v-if="modalEditElement.type != 'control'">
                             <b-form-checkbox value="read">Read</b-form-checkbox>
                             <b-form-checkbox value="write">Write</b-form-checkbox>
@@ -1299,6 +1299,12 @@
                                         @change="changeNumfield(0)" 
                                         title="Intruction fields">
                           </b-form-input>
+                        </b-form-group>
+                        <b-form-group label="Properties:">
+                          <b-form-checkbox-group v-model="formInstruction.properties">
+                            <b-form-checkbox value="enter_subrutine">Enter Subrutine</b-form-checkbox>
+                            <b-form-checkbox value="exit_subrutine">Exit Subrutine</b-form-checkbox>
+                          </b-form-checkbox-group>
                         </b-form-group>
                         <div class="d-none">
                           <b-form-input type="text" 
@@ -1555,12 +1561,24 @@
                           </b-form-textarea>
                         </b-form-group>
                       </div>
+
+                      <!-- Page 5 -->
+                      <div id="newInstForm5" v-if="instructionFormPage == 5">
+                        <b-form-group label="Assembly help:">
+                          <b-form-textarea v-on:input="debounce('formInstruction.help', $event)" 
+                                           :value="formInstruction.help" 
+                                           placeholder="Example: reg1=reg2+reg3" 
+                                           :rows="4" 
+                                           title="Instruction help">
+                          </b-form-textarea>
+                        </b-form-group>
+                      </div>
                     </b-form>
                     <hr>
                     <b-pagination-nav size="sm" 
                                       align="center" 
                                       base-url="#" 
-                                      :number-of-pages="4" 
+                                      :number-of-pages="5" 
                                       v-model="instructionFormPage" 
                                       :link-gen="linkGen" 
                                       :page-gen="pageGen">
@@ -1588,19 +1606,26 @@
                         Extended CO
                       </template>
 
-                      <template v-slot:head(signature)="row">
+                      <!--<template v-slot:head(signature)="row">
                         Detailed Syntax
-                      </template>
+                      </template>-->
 
                       <template v-slot:head(signatureRaw)="row">
                         Instruction syntax
                       </template>
 
+                      <!-- For each instruction -->
+
                       <template v-slot:cell(properties)="row">
                         <b-badge class="m-1" v-for="propertie in row.item.properties" pill variant="primary">{{propertie}}</b-badge>
                       </template>
 
-                      <!-- For each instruction -->
+                      <template v-slot:cell(signatureRaw)="row">
+                          {{row.item.signatureRaw}}
+                          <br>
+                          {{row.item.signature}}
+                      </template>
+
                       <template v-slot:cell(fields)="row">
                         <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" 
                                   class="btn btn-outline-secondary btn-sm buttonBackground h-100">
@@ -1612,7 +1637,8 @@
                         <b-form-textarea v-model="row.item.definition" 
                                          disabled 
                                          no-resize 
-                                         rows="4" 
+                                         rows="1" 
+                                         max-rows="4"
                                          title="Instruction Definition">
                         </b-form-textarea>
                       </template>
@@ -1844,6 +1870,12 @@
                                           @change="changeNumfield(0)" 
                                           title="Instruction fields">
                             </b-form-input>
+                          </b-form-group>
+                          <b-form-group label="Properties:">
+                            <b-form-checkbox-group v-model="formInstruction.properties">
+                              <b-form-checkbox value="enter_subrutine">Enter Subrutine</b-form-checkbox>
+                              <b-form-checkbox value="exit_subrutine">Exit Subrutine</b-form-checkbox>
+                            </b-form-checkbox-group>
                           </b-form-group>
                           <div class="d-none">
                             <b-form-input type="text" 
@@ -2095,12 +2127,24 @@
                             </b-form-textarea>
                           </b-form-group>
                         </div>
+
+                        <!-- Page 5 -->
+                        <div id="editInstForm5" v-if="instructionFormPage == 5">
+                          <b-form-group label="Assembly help:">
+                            <b-form-textarea v-on:input="debounce('formInstruction.help', $event)" 
+                                             :value="formInstruction.help" 
+                                             placeholder="Example: reg1=reg2+reg3" 
+                                             :rows="4" 
+                                             title="Instruction help">
+                            </b-form-textarea>
+                          </b-form-group>
+                        </div>
                       </b-form>
                       <hr>
                       <b-pagination-nav size="sm" 
                                         align="center" 
                                         base-url="#" 
-                                        :number-of-pages="4" 
+                                        :number-of-pages="5" 
                                         v-model="instructionFormPage" 
                                         :link-gen="linkGen" 
                                         :page-gen="pageGen">
@@ -2336,12 +2380,26 @@
                           </b-form-textarea>
                         </b-form-group>
                       </div>
+
+                      <!-- Page 5 -->
+                      <div id="newPseudoinstForm5" v-if="instructionFormPage == 5">
+                        <b-form-group label="Pseudoinstruction help:">
+                          <b-form-textarea v-on:input="debounce('formPseudoinstruction.help', $event)" 
+                                           :value="formPseudoinstruction.help" 
+                                           placeholder="Example: r3 = r1 + r2" 
+                                           :state="valid(formPseudoinstruction.help)" 
+                                           :rows="4" 
+                                           title="Pseudoinstruction help">
+                          </b-form-textarea>
+                        </b-form-group>
+                      </div>
+
                     </b-form>
                     <hr>
                     <b-pagination-nav size="sm" 
                                       align="center" 
                                       base-url="#" 
-                                      :number-of-pages="4" 
+                                      :number-of-pages="5" 
                                       v-model="instructionFormPage" 
                                       :link-gen="linkGen" 
                                       :page-gen="pageGen">
@@ -2366,15 +2424,22 @@
                              sticky-header="60vh">
 
                       <!-- Change the title of each column -->
-                      <template v-slot:head(signature)="row">
+                      <!--<template v-slot:head(signature)="row">
                         Detailed Syntax
-                      </template>
+                      </template>-->
 
                       <template v-slot:head(signatureRaw)="row">
                         Instruction syntax
                       </template>
 
                       <!-- For each pseudoinstruction -->
+
+                      <template v-slot:cell(signatureRaw)="row">
+                        {{row.item.signatureRaw}}
+                        <br>
+                        {{row.item.signature}}
+                      </template>
+
                       <template v-slot:cell(fields)="row">
                         <b-button @click.stop="viewFielsPseudo(row.item.name, row.index, $event.target)" 
                                   class="btn btn-outline-secondary btn-sm buttonBackground h-100">
@@ -2385,8 +2450,9 @@
                       <template v-slot:cell(definition)="row">
                         <b-form-textarea v-model="row.item.definition" 
                                          disabled 
-                                         no-resize 
-                                         rows="4" 
+                                         no-resize
+                                         rows="1" 
+                                         max-rows="4"
                                          title="Pseudoinstruction Definition">
                         </b-form-textarea>
                       </template>
@@ -2688,12 +2754,24 @@
                             </b-form-textarea>
                           </b-form-group>
                         </div>
+
+                        <!-- Page 5 -->
+                        <div id="editPseudoinstForm5" v-if="instructionFormPage == 5">
+                          <b-form-group label="Pseudoinstruction Help:">
+                            <b-form-textarea v-on:input="debounce('formPseudoinstruction.help', $event)" 
+                                             :value="formPseudoinstruction.help" 
+                                             placeholder="Example: r3 = r1 + r2" 
+                                             :rows="4" 
+                                             title="Pseudoinstruction help">
+                            </b-form-textarea>
+                          </b-form-group>
+                        </div>
                       </b-form>
                       <hr>
                       <b-pagination-nav size="sm" 
                                         align="center" 
                                         base-url="#" 
-                                        :number-of-pages="4" 
+                                        :number-of-pages="5" 
                                         v-model="instructionFormPage" 
                                         :link-gen="linkGen" 
                                         :page-gen="pageGen">
@@ -3068,11 +3146,16 @@
             </template>
 
             <div class="col-lg-12 col-sm-12">
-              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
+              <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                         href='https://creatorsim.github.io/' 
                         target="_blank">
                 <span class="fas fa-question-circle" ></span>
                 Help
+              </b-button>
+              <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
+                        id="inst_ass" v-b-toggle.sidebar_help>
+                <span class="fas fa-book"></span>
+                Instruction Help
               </b-button>
               <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
                         v-b-modal.notifications>
@@ -3198,6 +3281,39 @@
             <br>
 
           </b-modal>
+
+          <!-- Instruction set -->
+          <b-sidebar id="sidebar_help" title="Instruction Help" right shadow width="33vw">
+            <div class="px-3 py-2">
+
+              <b-form-input
+                id="filter-input"
+                v-model="instHelpFilter"
+                type="search"
+                placeholder="Search instruction"
+                size=sm
+              ></b-form-input>
+
+              <br>
+
+              <b-table small :items="architecture.instructions" 
+                             :fields="insHelpFields" 
+                             class="instruction_table text-left"
+                             :filter="instHelpFilter"
+                             thead-class="d-none">
+
+                <template v-slot:cell(name)="row">
+                  <h4>{{row.item.name}}</h4>
+                  <em>{{row.item.signatureRaw}}</em>
+                  <br>
+                  {{row.item.help}}
+                </template>
+
+              </b-table>
+
+            </div>
+          </b-sidebar>
+
         </div>
 
 
@@ -3324,7 +3440,7 @@
                       <br>
                     </template>
                     <div class="col-lg-12 col-sm-12">
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
+                      <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                                 href='https://creatorsim.github.io/' target="_blank">
                         <span class="fas fa-question-circle" ></span>
                         Help
