@@ -125,7 +125,7 @@
       "double_precision": false,
       "elements": [
         {
-          "name": ["zero","0"],
+          "name": ["zero"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -134,7 +134,7 @@
           ]
         },
         {
-          "name": ["at","1"],
+          "name": ["at"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -144,7 +144,7 @@
           ]
         },
         {
-          "name": ["v0","2"],
+          "name": ["v0"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -154,7 +154,7 @@
           ]
         },
         {
-          "name": ["v1","3"],
+          "name": ["v1"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -164,7 +164,7 @@
           ]
         },
         {
-          "name": ["a0","4"],
+          "name": ["a0"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -174,7 +174,7 @@
           ]
         },
         {
-          "name": ["a1","5"],
+          "name": ["a1"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -184,7 +184,7 @@
           ]
         },
         {
-          "name": ["a2","6"],
+          "name": ["a2"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -194,7 +194,7 @@
           ]
         },
         {
-          "name": ["a3","7"],
+          "name": ["a3"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -204,7 +204,7 @@
           ]
         },
         {
-          "name": ["t0","8"],
+          "name": ["t0"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -214,7 +214,7 @@
           ]
         },
         {
-          "name": ["t1","9"],
+          "name": ["t1"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -224,7 +224,7 @@
           ]
         },
         {
-          "name": ["t2","10"],
+          "name": ["t2"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -234,7 +234,7 @@
           ]
         },
         {
-          "name": ["t3","11"],
+          "name": ["t3"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -244,7 +244,7 @@
           ]
         },
         {
-          "name": ["t4","12"],
+          "name": ["t4"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -254,7 +254,7 @@
           ]
         },
         {
-          "name": ["t5","13"],
+          "name": ["t5"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -264,7 +264,7 @@
           ]
         },
         {
-          "name": ["t6","14"],
+          "name": ["t6"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -274,7 +274,7 @@
           ]
         },
         {
-          "name": ["t7","15"],
+          "name": ["t7"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -284,7 +284,7 @@
           ]
         },
         {
-          "name": ["s0","16"],
+          "name": ["s0"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -294,7 +294,7 @@
           ]
         },
         {
-          "name": ["s1","17"],
+          "name": ["s1"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -304,7 +304,7 @@
           ]
         },
         {
-          "name": ["s2","18"],
+          "name": ["s2"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -314,7 +314,7 @@
           ]
         },
         {
-          "name": ["s3","19"],
+          "name": ["s3"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -324,7 +324,7 @@
           ]
         },
         {
-          "name": ["s4","20"],
+          "name": ["s4"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -334,7 +334,7 @@
           ]
         },
         {
-          "name": ["s5","21"],
+          "name": ["s5"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -344,7 +344,7 @@
           ]
         },
         {
-          "name": ["s6","22"],
+          "name": ["s6"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -354,7 +354,7 @@
           ]
         },
         {
-          "name": ["s7","23"],
+          "name": ["s7"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -364,7 +364,7 @@
           ]
         },
         {
-          "name": ["t8","24"],
+          "name": ["t8"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -374,7 +374,7 @@
           ]
         },
         {
-          "name": ["t9","25"],
+          "name": ["t9"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -384,7 +384,7 @@
           ]
         },
         {
-          "name": ["k0","26"],
+          "name": ["k0"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -394,7 +394,7 @@
           ]
         },
         {
-          "name": ["k1","27"],
+          "name": ["k1"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -404,7 +404,7 @@
           ]
         },
         {
-          "name": ["gp","28"],
+          "name": ["gp"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -415,7 +415,7 @@
           ]
         },
         {
-          "name": ["sp","29"],
+          "name": ["sp"],
           "nbits": "32",
           "value": "0",
           "default_value": "0x0FFFFFFC",
@@ -427,7 +427,7 @@
           ]
         },
         {
-          "name": ["fp","30"],
+          "name": ["fp"],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -439,7 +439,7 @@
           ]
         },
         {
-          "name": ["ra","31"],
+          "name": ["ra"],
           "nbits": "32",
           "value": "0xFFFFFFFF",
           "default_value": "0xFFFFFFFF",

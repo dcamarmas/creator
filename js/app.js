@@ -58,6 +58,10 @@ try
       c_debug: false,
       /*Dark Mode*/
       dark: false,
+      /*Help table*/
+      insHelpFields: ['name'],
+      /*Help Filter*/
+      instHelpFilter: null,
 
       /*Architecture editor*/
 
@@ -158,7 +162,7 @@ try
         precision: '',
       },
       /*Instructions table fields*/
-      instFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+      instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Instructions types*/
       instructionsTypes: instructionsTypes,
       /*Instructions fields*/
@@ -178,7 +182,7 @@ try
       showEditInstruction: false,
       /*Modal pagination*/
       instructionFormPage: 1,
-      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition'],
+      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'],
       /*Edit instruction modal*/
       modalEditInst:{
         title: '',
@@ -199,6 +203,8 @@ try
         co: '',
         cop: '',
         nwords: 1,
+        help: '',
+        properties: [],
         numfields: "1",
         numfieldsAux: "1",
         nameField: [],
@@ -214,7 +220,7 @@ try
         definition: '',
       },
       /*Pseudoinstructions table fields*/
-      pseudoinstFields: ['name', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+      pseudoinstFields: ['name', 'nwords', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Pseudoinstructions reset*/
       modalResetPseudoinst:{
         title: '',
@@ -249,6 +255,7 @@ try
         signatureRaw: '',
         signature_definition: '',
         definition: '',
+        help: '',
       },
       /*Directives table fields*/
       directivesFields: ['name', 'action', 'size', 'actions'],
@@ -1739,7 +1746,9 @@ try
           signature: signature, signatureRaw: signatureRaw,
           co: this.formInstruction.co,
           cop: this.formInstruction.cop,
-          nwords: this.formInstruction.nwords ,
+          nwords: this.formInstruction.nwords,
+          properties: this.formInstruction.properties,
+          help: this.formInstruction.help,
           fields: [],
           definition: this.formInstruction.definition,
           separated:[]
@@ -1773,7 +1782,9 @@ try
             this.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
             this.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
             this.formInstruction.definition = architecture.instructions[i].definition;
+            this.formInstruction.help = architecture.instructions[i].help;
             this.formInstruction.separated = [];
+            this.formInstruction.properties = architecture.instructions[i].properties;
 
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
               this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
@@ -1916,8 +1927,10 @@ try
             architecture.instructions[i].co = this.formInstruction.co;
             architecture.instructions[i].cop = this.formInstruction.cop;
             architecture.instructions[i].nwords = this.formInstruction.nwords;
+            architecture.instructions[i].help = this.formInstruction.help;
             architecture.instructions[i].signature_definition = this.formInstruction.signature_definition;
             architecture.instructions[i].definition = this.formInstruction.definition;
+            architecture.instructions[i].properties = this.formInstruction.properties;
             if (!architecture.instructions[i].separated)
                 architecture.instructions[i].separated =Array(this.formInstruction.numfields).fill(false);
 
@@ -2029,6 +2042,7 @@ try
         this.formInstruction.numfields = "1";
         this.formInstruction.numfieldsAux = "1";
         this.formInstruction.nameField = [];
+        this.formInstruction.properties = [];
         this.formInstruction.typeField = [];
         this.formInstruction.startBitField = [];
         this.formInstruction.stopBitField = [];
@@ -2040,6 +2054,7 @@ try
         this.formInstruction.signature_definition = '';
         this.formInstruction.definition = '';
         this.instructionFormPage = 1;
+        this.formInstruction.help = '';
       },
 
       /*Show pseudoinstruction fields modal*/
@@ -2144,7 +2159,7 @@ try
         var signature = this.formPseudoinstruction.signature;
         var signatureRaw = this.formPseudoinstruction.signatureRaw;
 
-        var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
+        var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition, help: this.formPseudoinstruction.help};
         architecture.pseudoinstructions.push(newPseudoinstruction);
 
         for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
@@ -2165,6 +2180,7 @@ try
         this.formPseudoinstruction.numfieldsAux = architecture.pseudoinstructions[index].fields.length;
         this.formPseudoinstruction.signature_definition = architecture.pseudoinstructions[index].signature_definition;
         this.formPseudoinstruction.definition = architecture.pseudoinstructions[index].definition;
+        this.formPseudoinstruction.help = architecture.pseudoinstructions[index].help;
 
         for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
           this.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
@@ -2222,6 +2238,7 @@ try
         architecture.pseudoinstructions[index].nwords = this.formPseudoinstruction.nwords;
         architecture.pseudoinstructions[index].definition = this.formPseudoinstruction.definition;
         architecture.pseudoinstructions[index].signature_definition = this.formPseudoinstruction.signature_definition;
+        architecture.pseudoinstructions[index].help = this.formPseudoinstruction.help;
 
         for (var j = 0; j < this.formPseudoinstruction.numfields; j++){
           if(j < architecture.pseudoinstructions[index].fields.length){
@@ -2708,6 +2725,7 @@ try
         this.formPseudoinstruction.signatureRaw = '';
         this.formPseudoinstruction.signature_definition = '';
         this.formPseudoinstruction.definition = '';
+        this.formPseudoinstruction.help = '';
         this.instructionFormPage = 1;
       },
 
