@@ -3,10 +3,7 @@
   "description": "Check CREATOR",
   "author": "dcamarma@inf.uc3m.es",
   "version": "3.0",
-  "devDependencies": {
-    "jshint": "^2.12.0",
-    "terser": "^4.8.0"
-  },
+  "devDependencies": {},
   "scripts": {
     "test-creator-node": "./travis_run.sh",
     "build-creator-web": "./mk_min.sh",
@@ -14,7 +11,9 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
+    "jshint": "^2.12.0",
     "readline-sync": "^1.4.10",
-    "yargs": "^15.4.1"
+    "terser": "^5.5.1",
+    "yargs": "^16.2.0"
   }
 }

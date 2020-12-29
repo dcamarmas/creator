@@ -2429,7 +2429,8 @@ function code_segment_compiler()
             if(resultPseudo == -3){
               for (var i = 0; i < architecture.components.length; i++){
                 for (var j = 0; j < architecture.components[i].elements.length; j++){
-                  var re = new RegExp(architecture.components[i].elements[j].name);
+                  var re = new RegExp(architecture.components[i].elements[j].name.join('|')); //TODO: check
+
                   if(token.search(re) != -1){
                     existsInstruction = false;
                     //tokenIndex = 0;
@@ -2756,7 +2757,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "integer"){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "integer"){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -2820,7 +2821,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -2864,7 +2865,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -2906,7 +2907,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "control"){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "control"){ //TODO: check
                       validReg = true;
                       regNum++;
 
@@ -3700,7 +3701,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
           for(var b = 0; b < architecture.components[3].elements.length; b++){
             console_log(architecture.components[3].elements[b].name);
-            if(architecture.components[3].elements[b].name == args[0]){
+            if(architecture.components[3].elements[b].name.includes(args[0]) != false){
               aux = architecture.components[3].elements[b].simple_reg[args[1]];
               console_log(aux);
               break;
