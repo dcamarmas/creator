@@ -2429,7 +2429,8 @@ function code_segment_compiler()
             if(resultPseudo == -3){
               for (var i = 0; i < architecture.components.length; i++){
                 for (var j = 0; j < architecture.components[i].elements.length; j++){
-                  var re = new RegExp(architecture.components[i].elements[j].name);
+                  var re = new RegExp(architecture.components[i].elements[j].name.join('|')); //TODO: check
+
                   if(token.search(re) != -1){
                     existsInstruction = false;
                     //tokenIndex = 0;
@@ -2756,7 +2757,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "integer"){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "integer"){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -2820,7 +2821,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == false){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -2864,7 +2865,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "floating point" && architecture.components[z].double_precision == true){ //TODO:check
                       validReg = true;
                       regNum++;
 
@@ -2906,7 +2907,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
                 for(var z = 0; z < architecture_hash.length; z++){
                   for(var w = 0; w < architecture.components[z].elements.length; w++){
-                    if(token == architecture.components[z].elements[w].name && architecture.components[z].type == "control"){
+                    if(architecture.components[z].elements[w].name.includes(token) != false && architecture.components[z].type == "control"){ //TODO: check
                       validReg = true;
                       regNum++;
 
@@ -3700,7 +3701,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
           for(var b = 0; b < architecture.components[3].elements.length; b++){
             console_log(architecture.components[3].elements[b].name);
-            if(architecture.components[3].elements[b].name == args[0]){
+            if(architecture.components[3].elements[b].name.includes(args[0]) != false){
               aux = architecture.components[3].elements[b].simple_reg[args[1]];
               console_log(aux);
               break;
@@ -4567,7 +4568,7 @@ function executeInstruction ( )
                   console_log((w.toString(2)).padStart(auxLength, "0"));
                   if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
                     var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
+                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name[0]);
                   }
                 }
               }
@@ -4578,7 +4579,7 @@ function executeInstruction ( )
                   console_log((w.toString(2)).padStart(auxLength, "0"));
                   if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
                     var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
+                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name[0]);
                   }
                 }
               }
@@ -4589,7 +4590,7 @@ function executeInstruction ( )
                   console_log((w.toString(2)).padStart(auxLength, "0"));
                   if((w.toString(2)).padStart(auxLength, "0") == instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))){
                     var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name);
+                    auxDef = auxDef.replace(re, architecture.components[z].elements[w].name[0]);
                   }
                 }
               }
@@ -4727,7 +4728,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4741,7 +4742,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4756,7 +4757,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4770,7 +4771,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4784,7 +4785,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4798,7 +4799,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4812,7 +4813,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4832,7 +4833,7 @@ function executeInstruction ( )
 
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(auxMatch[0] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(auxMatch[0]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4841,7 +4842,7 @@ function executeInstruction ( )
 
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(auxMatch[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(auxMatch[1]) != false){
               compIndex2 = i;
               elemIndex2 = j;
             }
@@ -4862,7 +4863,7 @@ function executeInstruction ( )
 
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(auxMatch[0] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(auxMatch[0]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4871,7 +4872,7 @@ function executeInstruction ( )
 
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(auxMatch[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(auxMatch[1]) != false){
               compIndex2 = i;
               elemIndex2 = j;
             }
@@ -4889,7 +4890,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4903,7 +4904,7 @@ function executeInstruction ( )
         match = re.exec(auxDef);
         for (var i = 0; i < architecture.components.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if(match[1] == architecture.components[i].elements[j].name){
+            if(architecture.components[i].elements[j].name.includes(match[1]) != false){
               compIndex = i;
               elemIndex = j;
             }
@@ -4940,7 +4941,7 @@ function executeInstruction ( )
 
            /*TODO: Conflicto RISC-V*/
 
-          re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name+") *=)[^=])", "g");
+          re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name.join('|')+") *=)[^=])", "g");
           while ((myMatch = re.exec(auxDef)) != null) {
               auxDef = auxDef.replace(myMatch[2], "reg"+regIndex + "=")
               auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
@@ -4973,10 +4974,12 @@ function executeInstruction ( )
           }
 
           /*Read in the register*/
-          re = new RegExp("([^a-zA-Z0-9])" + architecture.components[i].elements[j].name + "(?!\.name)");
+          re = new RegExp("([^a-zA-Z0-9])(?:" + architecture.components[i].elements[j].name.join('|') + ")(?!\.name)");
           while(auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-            auxDef = auxDef.replace(re, match[1] + "readRegister("+i+" ,"+j+")");
+            console.log(match)
+            auxDef = auxDef.replace(re, match[1] + "readRegister("+i+" ,"+j+")");  //TODO: Antes estaba esto
+            //auxDef = auxDef.replace(re, "readRegister("+i+" ,"+j+")");
           }
 
           if(architecture.components[i].type == "integer"){
@@ -5211,7 +5214,7 @@ function readRegister ( indexComp, indexElem )
 
             executionIndex = -1;
 
-            throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be read', 'danger', draw);    
+            throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', draw);    
         }
 
         if ((architecture.components[indexComp].type == "control") || 
@@ -5261,7 +5264,7 @@ function writeRegister ( value, indexComp, indexElem )
 	        draw.danger.push(executionIndex);
 
 	        executionIndex = -1;
-	        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', draw);
+	        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', draw);
             }
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
@@ -5287,7 +5290,7 @@ function writeRegister ( value, indexComp, indexElem )
           {
             if (architecture.components[indexComp].elements[indexElem].properties[0] != "write" && architecture.components[indexComp].elements[indexElem].properties[1] != "write")
             {
-                throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
+                throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
@@ -5317,7 +5320,7 @@ function writeRegister ( value, indexComp, indexElem )
               	        show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
                               return;
               */
-              throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger', null);
+              throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
@@ -6480,10 +6483,10 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                 for (var a = 0; a < architecture_hash.length; a++) {
                   for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[0]){
+                    if(architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
                       aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
                     }
-                    if(architecture.components[a].elements[b].name == architecture.components[i].elements[j].simple_reg[1]){
+                    if(architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
                       aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
                     }
                   }
@@ -6673,14 +6676,14 @@ show_notification('The data has been uploaded', 'info') ;
 function updateDouble(comp, elem){
   for (var j = 0; j < architecture.components.length; j++) {
     for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
-      if(architecture.components[j].elements[z].simple_reg[0] == architecture.components[comp].elements[elem].name){
+      if(architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
         var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
         var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
         var newDouble = simple + double;
 
         architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
       }
-      if(architecture.components[j].elements[z].simple_reg[1] == architecture.components[comp].elements[elem].name){
+      if(architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
         var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
         var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
         var newDouble = double + simple;
@@ -6698,10 +6701,10 @@ function updateSimple(comp, elem){
 
   for (var j = 0; j < architecture.components.length; j++) {
     for (var z = 0; z < architecture.components[j].elements.length; z++) {
-      if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[0]){
+      if(architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false){
         architecture.components[j].elements[z].value = hex2float("0x"+part1);
       }
-      if(architecture.components[j].elements[z].name == architecture.components[comp].elements[elem].simple_reg[1]){
+      if(architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false){
         architecture.components[j].elements[z].value = hex2float("0x"+part2);
       }
     }
