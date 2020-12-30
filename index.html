@@ -1103,9 +1103,9 @@
                             <b-form-checkbox value="read">Read</b-form-checkbox>
                             <b-form-checkbox value="write">Write</b-form-checkbox>
                             <b-form-checkbox value="pointer">Pointer</b-form-checkbox>
-                            <b-form-checkbox value="pc">PC</b-form-checkbox>
+                            <b-form-checkbox value="data">Data</b-form-checkbox>
+                            <b-form-checkbox value="code">Code</b-form-checkbox>
                             <b-form-checkbox value="stack">Stack</b-form-checkbox>
-                            <b-form-checkbox value="frame">Frame</b-form-checkbox>
                           </b-form-checkbox-group>
                         </b-form-group>
                         <b-form-group label="Simple Floating Points asociate:" v-if="modalNewElement.double_precision == true">
@@ -1183,9 +1183,9 @@
                             <b-form-checkbox value="read">Read</b-form-checkbox>
                             <b-form-checkbox value="write">Write</b-form-checkbox>
                             <b-form-checkbox value="pointer">Pointer</b-form-checkbox>
-                            <b-form-checkbox value="pc">PC</b-form-checkbox>
+                            <b-form-checkbox value="data">Data</b-form-checkbox>
+                            <b-form-checkbox value="code">Code</b-form-checkbox>
                             <b-form-checkbox value="stack">Stack</b-form-checkbox>
-                            <b-form-checkbox value="frame">Frame</b-form-checkbox>
                           </b-form-checkbox-group>
                         </b-form-group>
                         <b-form-group label="Simple Floating Points asociate:" v-if="modalEditElement.double_precision == true">
@@ -3283,7 +3283,7 @@
           </b-modal>
 
           <!-- Instruction set -->
-          <b-sidebar id="sidebar_help" title="Instruction Help" right shadow width="33vw">
+          <b-sidebar id="sidebar_help" sidebar-class="border-left border-info" title="Instruction Help" right shadow width="33vw">
             <div class="px-3 py-2">
 
               <b-form-input
@@ -4349,6 +4349,24 @@
                              class="memory_table" 
                              @row-clicked="select_space_type"
                              id="data_memory_table">
+
+
+                      <template v-slot:head(Tag)="row">
+                        &nbsp;
+                      </template>
+
+                      <template v-slot:cell(Tag)="row">
+                        <div v-for="item in architecture_hash">
+                          <div v-for="item2 in architecture.components[item.index].elements">
+                            <b-badge variant="info" 
+                             class="border border-info shadow" 
+                             v-if="item2.properties.includes('pointer') && item2.properties.includes('data') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                              {{item2.name[0]}}
+                            </b-badge>
+                          </div>
+                        </div>
+                      </template>
+
                       <template v-slot:cell(Address)="row">
                         <span class="h6Sm">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
@@ -4446,6 +4464,24 @@
                              class="memory_table" 
                              :filter-function=filter 
                              filter=" ">
+
+                      <template v-slot:head(Tag)="row">
+                        &nbsp;
+                      </template>
+
+                      <template v-slot:cell(Tag)="row">
+                        <div v-for="item in architecture_hash">
+                          <div v-for="item2 in architecture.components[item.index].elements">
+                            <b-badge variant="success" 
+                             class="border border-success shadow" 
+                             v-if="item2.properties.includes('pointer') && item2.properties.includes('code') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                              {{item2.name[0]}}
+                            </b-badge>
+                          </div>
+                        </div>
+                      </template>
+
+
                       <template v-slot:cell(Address)="row">
                         <span class="h6Sm">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
@@ -4525,6 +4561,23 @@
                              :fields="memFields" 
                              class="memory_table" 
                              @row-clicked="select_stack_type">
+
+                      <template v-slot:head(Tag)="row">
+                        &nbsp;
+                      </template>
+
+                      <template v-slot:cell(Tag)="row">
+                        <div v-for="item in architecture_hash">
+                          <div v-for="item2 in architecture.components[item.index].elements">
+                            <b-badge variant="info" 
+                             class="border border-info shadow" 
+                             v-if="item2.properties.includes('pointer') && item2.properties.includes('stack') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                              {{item2.name[0]}}
+                            </b-badge>
+                          </div>
+                        </div>
+                      </template>
+
                       <template v-slot:cell(Address)="row">
                         <span class="h6Sm text-secondary" v-if="row.item.unallocated==true">
                           0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}
