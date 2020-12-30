@@ -14,7 +14,7 @@
             "read",
             "write",
             "pointer",
-            "pc"
+            "code"
           ]
         },
         {
@@ -411,7 +411,8 @@
           "properties": [
             "read",
             "write",
-            "pointer"
+            "pointer",
+            "data"
           ]
         },
         {
@@ -435,7 +436,7 @@
             "read",
             "write",
             "pointer",
-            "frame"
+            "stack"
           ]
         },
         {
