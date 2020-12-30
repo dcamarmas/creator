@@ -351,7 +351,7 @@ try
       /*Reset button*/
       resetBut: false,
       /*Instrutions table fields*/
-      archInstructions: ['Break', 'Address', 'Label', 'userInstructions', 'loadedInstructions'],
+      archInstructions: ['Break', 'Address', 'Label', 'userInstructions', 'loadedInstructions', 'tag'],
       /*Instructions memory*/
       instructions: instructions,
       /*Register type displayed*/
@@ -1317,8 +1317,7 @@ try
 
       /*Verify all field of new element*/
       newElementVerify(evt, comp){
-        evt.preventDefault();
-        if (!this.formArchitecture.name){
+        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name){
              show_notification('Please complete all fields', 'danger') ;
         }
         else{
@@ -1339,10 +1338,12 @@ try
       newElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if (this.formArchitecture.name == architecture.components[i].elements[j].name){
-                show_notification('The element already exists', 'danger') ;
-                return;
-            }
+            for (var z = 0; z < this.formArchitecture.name.length; z++){
+	            if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
+	                show_notification('The element already exists', 'danger') ;
+	                return;
+	            }
+	          }
           }
         }
 
@@ -1437,7 +1438,7 @@ try
       /*Check all field of modified element*/
       editElementVerify(evt, comp){
         evt.preventDefault();
-        if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
+        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name || !this.formArchitecture.defValue) {
           show_notification('Please complete all fields', 'danger') ;
         }
         else if(isNaN(this.formArchitecture.defValue)){
@@ -1452,10 +1453,12 @@ try
       editElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if ((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
-                show_notification('The element already exists', 'danger') ;
-                return;
-            }
+          	for (var z = 0; z < this.formArchitecture.name.length; z++){
+	            if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
+	                show_notification('The element already exists', 'danger') ;
+	                return;
+	            }
+	          }
           }
         }
 
