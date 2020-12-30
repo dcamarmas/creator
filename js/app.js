@@ -366,7 +366,7 @@ try
       /*Register form*/
       newValue: '',
       /*Memory table fields*/
-      memFields: ['Address', 'Binary', 'Value'],
+      memFields: ['Tag', 'Address', 'Binary', 'Value'],
       row_index: null,
       selected_space_view: null,
       selected_stack_view: null,
