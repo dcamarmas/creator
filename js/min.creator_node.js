@@ -112,7 +112,7 @@ var compileError = {
 	 'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
 	 'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
 	 'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
-      //'m10': function(ret) { return "This field '"                       + ret.token + "' must start with '('" },
+  'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
       //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
 	'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
 	'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
@@ -2029,6 +2029,10 @@ function data_segment_compiler()
                     return packCompileError('m22', token, 'error', "danger") ;
                   }
 
+                  if(parseInt(token) > 50*1024*1024){
+                    return packCompileError('m10', token, 'error', "danger") ;
+                  }
+
                   var auxToken = parseInt(token) * architecture.directives[j].size;
 
                   for(var i = 0; i < auxToken; i++){
@@ -2089,6 +2093,35 @@ function data_segment_compiler()
                       (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
                     }
                   }
+
+
+                  /*############################## NEW ##################################################*/
+
+                  /* //var old_length = memory[memory_hash[0]].length;
+                  var to_add = ((auxToken+auxToken-1)/4); //Redondeo por exceso auxToken+auxToken-1
+
+                  //memory[memory_hash[0]].length = old_length + to_add; 
+
+                  //var new_length = memory[memory_hash[0]].length;
+
+
+                  //Array.from({length:10}, function(v, i){ return {'hello': i}; })
+
+                  var space_values = Array.from({length:to_add}, function(v, i){ var new_addr = data_address + i*4;
+                                                                                 var type_str = null
+                                                                                 if (i == 0) {type_str = label}
+                                                                                 return {Address: data_address = new_addr, Binary: [  {Addr: (new_addr), DefBin: "00", Bin: "00", Tag: type_str},
+                                                                                                                                      {Addr: (new_addr+1), DefBin: "00", Bin: "00", Tag: null},
+                                                                                                                                      {Addr: (new_addr+2), DefBin: "00", Bin: "00", Tag: null},
+                                                                                                                                      {Addr: (new_addr+3), DefBin: "00", Bin: "00", Tag: null}
+                                                                                                                                    ], Value: null, DefValue: null, reset: false, type: "space"};
+                                                                  });
+
+                  memory[memory_hash[0]] = memory[memory_hash[0]].concat(space_values);
+
+                  data_address = data_address + auxToken;*/
+
+                  /*#######################################################################################*/
 
                   next_token();
                   token = get_token();
@@ -4977,7 +5010,6 @@ function executeInstruction ( )
           re = new RegExp("([^a-zA-Z0-9])(?:" + architecture.components[i].elements[j].name.join('|') + ")(?!\.name)");
           while(auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-            console.log(match)
             auxDef = auxDef.replace(re, match[1] + "readRegister("+i+" ,"+j+")");  //TODO: Antes estaba esto
             //auxDef = auxDef.replace(re, "readRegister("+i+" ,"+j+")");
           }

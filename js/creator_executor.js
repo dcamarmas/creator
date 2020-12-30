@@ -758,7 +758,6 @@ function executeInstruction ( )
           re = new RegExp("([^a-zA-Z0-9])(?:" + architecture.components[i].elements[j].name.join('|') + ")(?!\.name)");
           while(auxDef.search(re) != -1){
             var match = re.exec(auxDef);
-            console.log(match)
             auxDef = auxDef.replace(re, match[1] + "readRegister("+i+" ,"+j+")");  //TODO: Antes estaba esto
             //auxDef = auxDef.replace(re, "readRegister("+i+" ,"+j+")");
           }
