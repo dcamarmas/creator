@@ -19,12 +19,5 @@
     "architecture":"MIPS-32-like",
     "url":"examples/ocw-uc3m-ec/list.json",
     "description": "MIPS examples from UC3M course"
-  },
-  {
-    "name": "MIPS from UC3M-SlideShare",
-    "id": "slideshare-ec",
-    "architecture":"MIPS-32-like",
-    "url":"examples/slideshare-ec/list.json",
-    "description": "MIPS examples"
   }
 ]
