@@ -12,7 +12,9 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "pointer",
+            "code"
           ]
         }
       ]
@@ -49,7 +51,9 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "pointer",
+            "stack"
           ]
         },
         {
@@ -59,7 +63,9 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "pointer",
+            "data"
           ]
         },
         {
