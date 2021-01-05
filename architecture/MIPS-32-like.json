@@ -1597,39 +1597,6 @@
       "definition": "if(reg1 == reg2){PC=PC+((off << 16) >> 14)}"
     },
     {
-      "name": "beqz",
-      "type": "Conditional bifurcation",
-      "co": "000100",
-      "cop": "",
-      "help": "Conditional branch if the Rsrc register is equal to 0.",
-      "properties": [],
-      "nwords": 1,
-      "signature_definition": "F0 $F1 F2",
-      "signature": "beqz,$INT-Reg,offset_words",
-      "signatureRaw": "beqz $reg1 off",
-      "fields": [
-        {
-          "name": "beqz",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "if(reg1 == 0){PC=PC+((off << 16) >> 14)}"
-    },
-    {
       "name": "bgez",
       "type": "Conditional bifurcation",
       "signature_definition": "F0 $F1 F3",
@@ -1855,39 +1822,6 @@
         }
       ],
       "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)}"
-    },
-    {
-      "name": "bnez",
-      "type": "Conditional bifurcation",
-      "co": "000101",
-      "cop": null,
-      "help": "Conditional branch if Rsrc is not equal to 0.",
-      "properties": [],
-      "nwords": 1,
-      "signature_definition": "F0 $F1 F2",
-      "signature": "bnez,$INT-Reg,offset_words",
-      "signatureRaw": "bnez $reg1 off",
-      "fields": [
-        {
-          "name": "bnez",
-          "type": "co",
-          "startbit": 31,
-          "stopbit": 26
-        },
-        {
-          "name": "reg1",
-          "type": "INT-Reg",
-          "startbit": 25,
-          "stopbit": 21
-        },
-        {
-          "name": "off",
-          "type": "offset_words",
-          "startbit": 15,
-          "stopbit": 0
-        }
-      ],
-      "definition": "if(reg1 != 0){PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "cvt.d.s",
@@ -6645,7 +6579,55 @@
         ],
         "definition": "ori $at $zero inm; bne $reg1 $at off;"
       },
+      {
+        "name": "beqz",
+        "signature_definition": "beqz $F0 F1",
+        "signature": "beqz,$INT-Reg,offset_words",
+        "signatureRaw": "beqz $reg1 off",
+        "help": "Conditional branch if the Rsrc register is equal to 0.",
+        "properties": [],
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "beq $reg1 $zero off;"
+      },
 
+      {
+        "name": "bnez",
+        "signature_definition": "bnez $F0 F1",
+        "signature": "bnez,$INT-Reg,offset_words",
+        "signatureRaw": "bnez $reg1 off",
+        "help": "Conditional branch if Rsrc is not equal to 0.",
+        "properties": [],
+        "nwords": 1,
+        "fields": [
+          {
+            "name": "reg1",
+            "type": "INT-Reg",
+            "startbit": 25,
+            "stopbit": 21
+          },
+          {
+            "name": "off",
+            "type": "offset_words",
+            "startbit": 15,
+            "stopbit": 0
+          }
+        ],
+        "definition": "bne $reg1 $zero off;"
+      },
 
       {
         "name": "bgtu",
