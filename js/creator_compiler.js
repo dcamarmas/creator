@@ -2753,8 +2753,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
           }
       }
       else {
-        // TODO: 'm3' precisa auxSignature como segundo par'ametro en otros usos, ¿vale con ""?
-        return packCompileError('m3', "", 'error', "danger") ;
+        return packCompileError('m3', auxSignature, 'error', "danger") ;
       }
 
       console_log(instructionParts);
