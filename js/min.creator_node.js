@@ -789,18 +789,18 @@ function assembly_compiler()
                 }
 
                 if(signatureParts[j] == "offset_words"){
+                  console.log("dgfh")
                   for (var z = 0; z < instructions.length && exit == 0; z++){
                     if(instructions[z].Label == instructionParts[j]){
                       var addr = instructions[z].Address;
-                      //var bin = parseInt(addr, 16).toString(2);
                       var startbit = pending_instructions[i].startBit;
                       var stopbit = pending_instructions[i].stopBit;
 
                       addr = ((addr - pending_instructions[i].address)/4)-1;
                       console_log(instructionParts);
                       console_log(addr);
-                      var bin = parseInt(addr).toString(2);
-                      console_log(bin);
+                      var bin = bi_intToBigInt(addr,10).toString(2);
+                      bin = bin.substring((startbit-stopbit)+1,bin.length)
 
                       instructionParts[j] = addr;
                       var newInstruction = "";
@@ -858,11 +858,12 @@ function assembly_compiler()
                   for (var z = 0; z < instructions.length && exit == 0; z++){
                     if(instructions[z].Label == instructionParts[j]){
                       var addr = instructions[z].Address;
-                      var bin = parseInt(addr, 16).toString(2);
                       var startbit = pending_instructions[i].startBit;
                       var stopbit = pending_instructions[i].stopBit;
 
                       addr = ((addr - pending_instructions[i].address))-1;
+                      var bin = bi_intToBigInt(addr,10).toString(2);
+                      bin = bin.substring((startbit-stopbit)+1,bin.length)
 
                       instructionParts[j] = addr;
                       var newInstruction = "";
@@ -999,6 +1000,7 @@ function assembly_compiler()
 
               for (var a = 0; a < hex.length/2; a++) {
                 if (auxAddr % 4 == 0) {
+
                   memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, DefValue: instructions[i + binNum].loaded, hide: false});
                   if(label == ""){
                     label=null;
@@ -2751,8 +2753,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
           }
       }
       else {
-        // TODO: 'm3' precisa auxSignature como segundo par'ametro en otros usos, ¿vale con ""?
-        return packCompileError('m3', "", 'error', "danger") ;
+        return packCompileError('m3', auxSignature, 'error', "danger") ;
       }
 
       console_log(instructionParts);
@@ -2978,16 +2979,16 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-//aqui
-fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
-/*
-                if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
-                  fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-                else
-                  fieldsLength = architecture.instructions[i].fields[a].startbit
-                    .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
-                    .reduce((old, newV) => old+newV);
-*/
+
+                fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                /*
+                                if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
+                                  fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
+                                else
+                                  fieldsLength = architecture.instructions[i].fields[a].startbit
+                                    .map((b, iii) => b - architecture.instructions[i].fields[a].stopbit[iii]+1)
+                                    .reduce((old, newV) => old+newV);
+                */
 
                 var inm;
 
@@ -3079,8 +3080,8 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                       return packCompileError('m12', token, 'error', "danger") ;
                   }
 
-binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
-/*
+                  binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+                  /*
                   if (!architecture.instructions[i].separated || !architecture.instructions[i].separated[a])
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                   else {
@@ -3102,7 +3103,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                           }
                       }
                   }
-*/
+                */
                 }
 
                 //re = RegExp("[fF][0-9]+");
@@ -3131,7 +3132,7 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
                 }
 
                 //fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
-fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
 
                 var inm;
 
@@ -3220,8 +3221,8 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
 
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
 
-binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
-/*
+                  binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+                  /*
                   if (!architecture.instructions[i].separated[a])
                       binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
                   else {
@@ -3262,8 +3263,8 @@ binary = generateBinary(architecture.instructions[i].separated, architecture.ins
 
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-//aqui
-fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                //aqui
+                fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
 
                 if(token.match(/^0x/)){
                   var value = token.split("x");
@@ -3278,7 +3279,7 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
 
                   addr = (parseInt(token, 16)).toString(2);
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + addr.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+                  binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                   //re = RegExp("[fF][0-9]+");
                   re = RegExp("Field[0-9]+");
                   instruction = instruction.replace(re, token);
@@ -3474,9 +3475,8 @@ fieldsLength = getFieldLength(architecture.instructions[i].separated, architectu
                   if(inm.length > (architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1)){
                       return packCompileError('m12', token, 'error', "danger") ;
                   }
-
                   //binary = binary.substring(0, binary.length - (architecture.instructions[i].fields[a].startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (architecture.instructions[i].fields[a].stopbit ), binary.length);
-binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
+                  binary = generateBinary(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit,architecture.instructions[i].fields[a].stopbit,binary, inm,fieldsLength, a);
                 }
 
                 //re = RegExp("[fF][0-9]+");
@@ -3552,7 +3552,7 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
         console_log(binary);
         console_log(bin2hex(binary));
 
-      pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: nEnters});
+        pending_instructions.push({address: address, instruction: instruction, signature: signatureParts, signatureRaw: signatureRawParts, Label: label, binary: binary, startBit: startBit, stopBit: stopBit, visible: true, line: nEnters});
 
         if(pending == false){
           instructions.push({ Break: null, Address: "0x" + address.toString(16), Label: label , loaded: instruction, user: userInstruction, _rowVariant: '', visible: true, hide: false});
@@ -3962,10 +3962,36 @@ function field(field, action, type)
     else if (field.match(/^(\d)+\.(\d)+/)){
       return float2bin(parseFloat(field)).length;
     }
-    else {
+    else if (field.match(/^(\d)+/)){
       var numAux = parseInt(field, 10);
       return (numAux.toString(2)).length;
     }
+
+    else{
+      var exit = 0;
+      //Search tag in data segment
+      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
+        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
+          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
+            exit = 1;
+            var numAux = parseInt(memory[memory_hash[0]][z].Address, 10);
+            return (numAux.toString(2)).length;
+          }
+        }
+      }
+
+      //Search tag in text segment
+      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
+        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
+          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
+            exit = 1;
+            var numAux = parseInt(memory[memory_hash[1]][z].Address, 10);
+            return (numAux.toString(2)).length;
+          }
+        }
+      }
+    }
+    
   }
 
   re = /\((.*?)\)/;
@@ -3989,7 +4015,31 @@ function field(field, action, type)
       var hexNum = "0x" + bin2hex(binNum);
       return hexNum;
     }
-    else if(type == "int"){
+
+    if(Number.isInteger(field) == false){
+      var exit = 0;
+      //Search tag in data segment
+      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
+        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
+          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
+            exit = 1;
+            field = parseInt(memory[memory_hash[0]][z].Address, 10);
+          }
+        }
+      }
+
+      //Search tag in text segment
+      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
+        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
+          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
+            exit = 1;
+            field = parseInt(memory[memory_hash[0]][z].Address, 10);
+          }
+        }
+      }
+    }
+
+    if(type == "int"){
       var binNum = (parseInt(field, 10) >>> 0).toString(2);
       binNum = binNum.padStart(32, '0');
       binNum = binNum.substring(31-startBit, 32-endBit);
@@ -5895,12 +5945,12 @@ function writeStackLimit ( stackLimit )
 
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-	    draw.danger.push(executionIndex);
+	          draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-	    draw.danger.push(executionIndex);
+	          draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
@@ -5908,6 +5958,7 @@ function writeStackLimit ( stackLimit )
             if(stackLimit < architecture.memory_layout[4].value){
               var diff = architecture.memory_layout[4].value - stackLimit;
               var auxStackLimit = stackLimit;
+              var newRow = 0;
 
               for (var i = 0; i < (diff/4); i++){
                 if(unallocated_memory.length > 0){
@@ -5916,11 +5967,12 @@ function writeStackLimit ( stackLimit )
                   unallocated_memory.splice(unallocated_memory.length-1, 1);
                 }
                 else{
-                  memory[memory_hash[2]].splice(i, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
+                  memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
                   for (var z = 0; z < 4; z++){
-                    (memory[memory_hash[2]][i].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+                    (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
                     auxStackLimit++;
                   }
+                  newRow++;
                 }
               }
             }

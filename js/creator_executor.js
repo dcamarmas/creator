@@ -1643,12 +1643,12 @@ function writeStackLimit ( stackLimit )
 
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-	    draw.danger.push(executionIndex);
+	          draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-	    draw.danger.push(executionIndex);
+	          draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
@@ -1656,6 +1656,7 @@ function writeStackLimit ( stackLimit )
             if(stackLimit < architecture.memory_layout[4].value){
               var diff = architecture.memory_layout[4].value - stackLimit;
               var auxStackLimit = stackLimit;
+              var newRow = 0;
 
               for (var i = 0; i < (diff/4); i++){
                 if(unallocated_memory.length > 0){
@@ -1664,11 +1665,12 @@ function writeStackLimit ( stackLimit )
                   unallocated_memory.splice(unallocated_memory.length-1, 1);
                 }
                 else{
-                  memory[memory_hash[2]].splice(i, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
+                  memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
                   for (var z = 0; z < 4; z++){
-                    (memory[memory_hash[2]][i].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+                    (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
                     auxStackLimit++;
                   }
+                  newRow++;
                 }
               }
             }
