@@ -17,19 +17,21 @@ fi
 # skeleton
 echo "  Packing:"
 echo "  * min.creator_web.js..."
-cat js/creator_compiler.js \
-    js/creator_executor.js \
-    js/creator_bigint.js \
-    js/creator_ui.js \
+cat js/creator_bigint.js \
+    js/creator_ga.js \
     js/creator_preload.js \
+    js/creator_ui.js \
+    js/creator_compiler.js \
+    js/creator_executor.js \
     js/app.js > js/creator_web.js
 terser -o js/min.creator_web.js js/creator_web.js
 rm -fr js/creator_web.js
 
 echo "  * min.creator_node.js..."
-cat js/creator_compiler.js \
+cat js/creator_bigint.js \
+    js/creator_ga.js \
+    js/creator_compiler.js \
     js/creator_executor.js \
-    js/creator_bigint.js \
     js/creator_node.js > js/min.creator_node.js
 
 
