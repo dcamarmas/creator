@@ -3,7 +3,6 @@
   "description": "Check CREATOR",
   "author": "dcamarma@inf.uc3m.es",
   "version": "3.0",
-  "devDependencies": {},
   "scripts": {
     "test-creator-node": "./travis_run.sh",
     "build-creator-web": "./mk_min.sh",

@@ -19,10 +19,10 @@ done
 #
 
 echo " RISC-V:"
-RV_TEST="1"
+RV_TEST="1 2 3 4 5 6"
 for I in $RV_TEST;
 do
   echo " * ./examples/riscv/example$I... "
-  ./creator.sh -a ./architecture/RISC-V-like.json -s ./examples/riscv/example$I.txt
+  ./creator.sh -a ./architecture/RISC-V-like.json -s ./examples/RISCV/example$I.txt
   echo ""
 done
