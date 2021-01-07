@@ -956,6 +956,11 @@ function executeProgramOneShot ( limit_n_instructions )
 {
     var ret = null;
 
+    /*Google Analytics*/
+    ga('create', 'UA-186823627-2', 'auto');
+    ga('set', 'transport', 'beacon');
+    ga('send', 'event', 'execute', 'execute.run');
+
     // execute program
     for (var i=0; i<limit_n_instructions; i++)
     {
@@ -1698,523 +1703,528 @@ function writeStackLimit ( stackLimit )
 function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_time)
 {
 	  var draw = {
-	    space: [] ,
-	    info: [] ,
-	    success: [] ,
-	    danger: [],
-	    flash: []
-	  } ;
+          	    space: [] ,
+          	    info: [] ,
+          	    success: [] ,
+          	    danger: [],
+          	    flash: []
+          	  } ;
 
-        switch(action)
-        {
-          case "print_int":
-               var value   = architecture.components[indexComp].elements[indexElem].value;
-               var val_int = parseInt(value.toString()) >> 0 ;
+              /*Google Analytics*/
+              ga('create', 'UA-186823627-2', 'auto');
+              ga('set', 'transport', 'beacon');
+              ga('send', 'event', 'execute', 'execute.syscall', 'execute.syscall.' + action);
 
-               if (typeof app !== "undefined")
-                    app._data.display += val_int ;
-               else process.stdout.write(val_int + '\n') ;
+              switch(action)
+              {
+                case "print_int":
+                     var value   = architecture.components[indexComp].elements[indexElem].value;
+                     var val_int = parseInt(value.toString()) >> 0 ;
 
-               display += val_int ;
-               break;
+                     if (typeof app !== "undefined")
+                          app._data.display += val_int ;
+                     else process.stdout.write(val_int + '\n') ;
 
-          case "print_float":
-               var value = architecture.components[indexComp].elements[indexElem].value;
+                     display += val_int ;
+                     break;
 
-               if (typeof app !== "undefined")
-                    app._data.display += value;
-               else process.stdout.write(value + '\n') ;
+                case "print_float":
+                     var value = architecture.components[indexComp].elements[indexElem].value;
 
-               display += value ;
-               break;
+                     if (typeof app !== "undefined")
+                          app._data.display += value;
+                     else process.stdout.write(value + '\n') ;
 
-          case "print_double":
-               var value = architecture.components[indexComp].elements[indexElem].value;
+                     display += value ;
+                     break;
 
-               if (typeof app !== "undefined")
-                    app._data.display += value;
-               else process.stdout.write(value + '\n') ;
+                case "print_double":
+                     var value = architecture.components[indexComp].elements[indexElem].value;
 
-               display += value ;
-               break;
+                     if (typeof app !== "undefined")
+                          app._data.display += value;
+                     else process.stdout.write(value + '\n') ;
 
-          case "print_string":
-               var addr = architecture.components[indexComp].elements[indexElem].value;
-               var index;
+                     display += value ;
+                     break;
 
-               if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-                 executionIndex = -1;
-                 if (typeof app !== "undefined")
-                  app._data.keyboard = "";
-                 return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
-               }
+                case "print_string":
+                     var addr = architecture.components[indexComp].elements[indexElem].value;
+                     var index;
 
-               if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-                 index = memory_hash[0];
-               }
+                     if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+                       executionIndex = -1;
+                       if (typeof app !== "undefined")
+                        app._data.keyboard = "";
+                       return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
+                     }
 
-               if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-                 index = memory_hash[2];
-               }
+                     if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+                       index = memory_hash[0];
+                     }
 
-            for (var i = 0; i < memory[index].length; i++){
-              for (var j = 0; j < memory[index][i].Binary.length; j++){
-                var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-                if(aux == addr){
-                  for (var i; i < memory[index].length; i++){
-                    for (var k = j; k < memory[index][i].Binary.length; k++)
-                    {
-                      console_log(parseInt(memory[index][i].Binary[k].Bin, 16));
-                      console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
+                     if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+                       index = memory_hash[2];
+                     }
 
-                      if (memory[index][i].Binary[k].Bin == "00") {
-                          return packExecute(false, 'printed', 'info', null);
+                  for (var i = 0; i < memory[index].length; i++){
+                    for (var j = 0; j < memory[index][i].Binary.length; j++){
+                      var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+                      if(aux == addr){
+                        for (var i; i < memory[index].length; i++){
+                          for (var k = j; k < memory[index][i].Binary.length; k++)
+                          {
+                            console_log(parseInt(memory[index][i].Binary[k].Bin, 16));
+                            console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
+
+                            if (memory[index][i].Binary[k].Bin == "00") {
+                                return packExecute(false, 'printed', 'info', null);
+                            }
+
+                            if (typeof app !== "undefined")
+                                 app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+                            else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
+
+                            display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+
+                            if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
+                                return packExecute(false, 'printed', 'info', null);
+                            }
+
+                            j=0;
+                          }
+                        }
                       }
+                    }
+                  }
+
+                     break;
+
+                case "read_int":
+
+                      // CL
+                      if (typeof app === "undefined") 
+                      {
+                        var readlineSync = require('readline-sync') ;
+                        var keystroke    = readlineSync.question(' $> ') ;
+                        var value        = parseInt(keystroke) ;
+
+                        keyboard = keyboard + " " + value;
+
+                        writeRegister(value, indexComp, indexElem);
+                        return packExecute(false, 'The data has been uploaded', 'danger', null);
+                      }
+
+                      if (first_time == true) {
+      	            document.getElementById('enter_keyboard').scrollIntoView();
+      	        }
+
+                      // UI
+                      mutexRead = true;
+                      app._data.enter = false;
+          
+                      console_log(mutexRead);
+                      if (newExecution == true) {
+                          app._data.keyboard = "";
+                          consoleMutex  = false;
+                          mutexRead     = false;
+                          app._data.enter = null;
+          
+          	            	show_notification('The data has been uploaded', 'info') ;
+          
+                          if (runProgram == false) {
+                              app.executeProgram();
+                          }
+          
+                          return packExecute(false, 'The data has been uploaded', 'danger', null);
+                      }
+          
+                      if (consoleMutex == false) {
+                          setTimeout(syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2, false);
+                      }
+                      else {
+                        var value = parseInt(app._data.keyboard);
+                        console_log(value);
+                        writeRegister(value, indexComp, indexElem);
+                        app._data.keyboard = "";
+                        consoleMutex = false;
+                        mutexRead = false;
+                        app._data.enter = null;
+          
+          		  				show_notification('The data has been uploaded', 'info') ;
+          
+                        if (executionIndex >= instructions.length)
+                        {
+                           for (var i = 0; i < instructions.length; i++) {
+                                draw.space.push(i) ;
+                           }
+                           executionIndex = -2;
+                           return packExecute(true, 'The execution of the program has finished', 'success', null);
+                        }
+                        else if (runProgram == false) {
+                                 app.executeProgram();
+                        }
+                      }
+          
+                      break;
+
+                case "read_float":
+
+                      // CL
+                      if (typeof app === "undefined") 
+                      {
+      								    var readlineSync = require('readline-sync') ;
+      								    var keystroke    = readlineSync.question(' $> ') ;
+                          var value        = parseFloat(keystroke) ;
+
+                          keyboard = keyboard + " " + value;
+
+                          writeRegister(value, indexComp, indexElem);
+                          return packExecute(false, 'The data has been uploaded', 'danger', null);
+                      }
+
+                      if(first_time == true){
+      	                document.getElementById('enter_keyboard').scrollIntoView();
+      	              }
+
+                      mutexRead = true;
+                      app._data.enter = false;
+                      console_log(mutexRead);
+                      if(newExecution == true){
+                        app._data.keyboard = "";
+                        consoleMutex = false;
+                        mutexRead = false;
+                        app._data.enter = null;
+          
+          		  				show_notification('The data has been uploaded', 'info') ;
+          
+                        if (runProgram == false){
+                            app.executeProgram();
+                        }
+          
+                        return;
+                      }
+          
+                      if (consoleMutex == false) {
+                          setTimeout(syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2, false);
+                      }
+                      else{
+                        var value = parseFloat(app._data.keyboard, 10);
+                        console_log(value);
+                        writeRegister(value, indexComp, indexElem);
+                        app._data.keyboard = "";
+                        consoleMutex = false;
+                        mutexRead = false;
+                        app._data.enter = null;
+          
+          		  				show_notification('The data has been uploaded', 'info') ;
+          
+                        if(executionIndex >= instructions.length){
+                          for (var i = 0; i < instructions.length; i++) {
+                               draw.space.push(i) ;
+                          }
+          
+                          executionIndex = -2;
+                          return packExecute(true, 'The execution of the program has finished', 'success', null);
+                        }
+                        else if (runProgram == false){
+                                 app.executeProgram();
+                        }
+                      }
+          
+                      break;
+
+                case "read_double":
+
+                      // CL
+                      if (typeof app === "undefined") 
+                      {
+      								    var readlineSync = require('readline-sync') ;
+      								    var keystroke    = readlineSync.question(' $>  ') ;
+      						        var value        = parseFloat(keystroke) ;
+
+      						        keyboard = keyboard + " " + value;
+
+                          writeRegister(value, indexComp, indexElem);
+                          return packExecute(false, 'The data has been uploaded', 'danger', null);
+                      }
+
+                      if(first_time == true){
+      	                document.getElementById('enter_keyboard').scrollIntoView();
+      	              }
+
+                      mutexRead = true;
+                      app._data.enter = false;
+                      console_log(mutexRead);
+                      if(newExecution == true){
+                        app._data.keyboard = "";
+                        consoleMutex = false;
+                        mutexRead = false;
+                        app._data.enter = null;
+          
+          		  				show_notification('The data has been uploaded', 'info') ;
+          
+                        if (runProgram == false){
+                            app.executeProgram();
+                        }
+          
+                        return;
+                      }
+          
+                      if (consoleMutex == false) {
+                          setTimeout(syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2, false);
+                      }
+                      else{
+                        var value = parseFloat(app._data.keyboard, 10);
+                        console_log(value);
+                        writeRegister(value, indexComp, indexElem);
+                        app._data.keyboard = "";
+                        consoleMutex = false;
+                        mutexRead = false;
+                        app._data.enter = null;
+          
+          		  				show_notification('The data has been uploaded', 'info') ;
+          
+                        if(executionIndex >= instructions.length){
+                          for (var i = 0; i < instructions.length; i++) {
+                               draw.space.push(i) ;
+                          }
+          
+                          executionIndex = -2;
+                          return packExecute(true, 'The execution of the program has finished', 'success', null);
+                        }
+                        else if (runProgram == false){
+                                 app.executeProgram();
+                        }
+          
+                        break;
+                      }
+          
+                      break;
+
+                case "read_string":
+
+                     // CL
+                    if (typeof app === "undefined") 
+                    {
+      							    var readlineSync = require('readline-sync') ;
+      							    keystroke        = readlineSync.question(' $> ') ;
+      									var value = "";
+
+                        for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
+                             value = value + keystroke.charAt(i);
+                        }
+
+                        keyboard = keyboard + " " + value;
+
+                        var addr = architecture.components[indexComp].elements[indexElem].value;
+                        var valueIndex = 0;
+                        var auxAddr = data_address;
+                        var index;
+
+                        var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
+                        if (ret.status != 'ok') {
+                          return ret ;
+                      	}
+
+                        return packExecute(false, 'The data has been uploaded', 'danger', null);
+                    }
+
+                    if(first_time == true){
+                      document.getElementById('enter_keyboard').scrollIntoView();
+                    }
+
+                     mutexRead = true;
+
+                     app._data.enter = false;
+                     console_log(mutexRead);
+                     if (newExecution == true)
+                     {
+                         app._data.keyboard = "";
+                         consoleMutex = false;
+                         mutexRead = false;
+                         if (typeof app !== "undefined")
+                             app._data.enter = null;
+          
+                         if (window.document)
+          	 	   					show_notification('The data has been uploaded', 'info') ;
+          
+                         if (runProgram == false){
+                             if (typeof app !== "undefined")
+                                 app.executeProgram();
+                         }
+          
+                         return;
+                      }
+          
+                      if (consoleMutex == false){
+                          setTimeout(syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2, false);
+                      }
+                      else {
+                        var keystroke = '' ;
+                        keystroke = app.keyboard ;
+                        
+
+                        var value = "";
+                        for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
+                             value = value + keystroke.charAt(i);
+                        }
+                        console_log(value);
+          
+                        var addr = architecture.components[indexComp].elements[indexElem].value;
+                        var valueIndex = 0;
+                        var auxAddr = data_address;
+                        var index;
+
+                        var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
+                        if (ret.status != 'ok') {
+                            return ret ;
+                     	  }
+
+                        app._data.memory[index] = memory[index];
+                        app.keyboard = "";
+                        app._data.enter = null;
+                        
+
+                        consoleMutex = false;
+                        mutexRead = false;
+          
+
+          		      		show_notification('The data has been uploaded', 'info') ;
+          
+                        if (executionIndex >= instructions.length)
+                        {
+                            for (var i = 0; i < instructions.length; i++) {
+                                 draw.space.push(i) ;
+                            }
+                            executionIndex = -2;
+                            return packExecute(true, 'The execution of the program has finished', 'success', null);
+                        }
+                        else if (runProgram == false){
+                          app.executeProgram();
+                        }
+                      }
+          
+                      break;
+
+                case "sbrk":
+
+                      var aux_addr = architecture.memory_layout[3].value + 1;
+          
+                      if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
+                          executionIndex = -1;
+                          return packExecute(true, 'Not enough memory for data segment', 'danger', null);
+                      }
+          
+                      for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
+                        memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
+
+                        if(i==0){
+                          architecture.components[indexComp2].elements[indexElem2].value = aux_addr;
+                        }
+
+                        for (var z = 0; z < 4; z++){
+                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
+                          aux_addr++;
+                        }
+                      }
+          
+                      if (typeof app !== "undefined")
+                          app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+
+                      architecture.memory_layout[3].value = aux_addr-1;
 
                       if (typeof app !== "undefined")
-                           app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
-                      else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
+                          app.architecture.memory_layout[3].value = aux_addr-1;
+                      break;
 
-                      display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+                case "exit":
+                      executionIndex = instructions.length + 1;
+                      break;
 
-                      if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
-                          return packExecute(false, 'printed', 'info', null);
-                      }
+                case "print_char":
+                      var aux    = architecture.components[indexComp].elements[indexElem].value;
+                      var aux2   = aux.toString(16);
+                      var length = aux2.length;
+          
+                      var value = aux2.substring(length-2, length) ;
+                          value = String.fromCharCode(parseInt(value, 16)) ;
 
-                      j=0;
-                    }
-                  }
-                }
-              }
-            }
+                      if (typeof app !== "undefined")
+                           app._data.display += value ;
+                      else process.stdout.write(value) ;
 
-               break;
+                      display += value ;
+                      break;
 
-          case "read_int":
+                case "read_char":
 
-                // CL
-                if (typeof app === "undefined") 
-                {
-                  var readlineSync = require('readline-sync') ;
-                  var keystroke    = readlineSync.question(' $> ') ;
-                  var value        = parseInt(keystroke) ;
+                     // CL
+                     if (typeof app === "undefined") 
+                     {
+      							 	   var readlineSync = require('readline-sync') ;
+      							 	   var keystroke    = readlineSync.question(' read char> ') ;
+                         var value        = keystroke.charCodeAt(0);
 
-                  keyboard = keyboard + " " + value;
+                         keyboard = keyboard + " " + value;
 
-                  writeRegister(value, indexComp, indexElem);
-                  return packExecute(false, 'The data has been uploaded', 'danger', null);
-                }
-
-                if (first_time == true) {
-	            document.getElementById('enter_keyboard').scrollIntoView();
-	        }
-
-                // UI
-                mutexRead = true;
-                app._data.enter = false;
-    
-                console_log(mutexRead);
-                if (newExecution == true) {
-                    app._data.keyboard = "";
-                    consoleMutex  = false;
-                    mutexRead     = false;
-                    app._data.enter = null;
-    
-    	            	show_notification('The data has been uploaded', 'info') ;
-    
-                    if (runProgram == false) {
-                        app.executeProgram();
-                    }
-    
-                    return packExecute(false, 'The data has been uploaded', 'danger', null);
-                }
-    
-                if (consoleMutex == false) {
-                    setTimeout(syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2, false);
-                }
-                else {
-                  var value = parseInt(app._data.keyboard);
-                  console_log(value);
-                  writeRegister(value, indexComp, indexElem);
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
-    
-    		  				show_notification('The data has been uploaded', 'info') ;
-    
-                  if (executionIndex >= instructions.length)
-                  {
-                     for (var i = 0; i < instructions.length; i++) {
-                          draw.space.push(i) ;
+                         writeRegister(value, indexComp, indexElem);
+                         return packExecute(false, 'The data has been uploaded', 'danger', null);
                      }
-                     executionIndex = -2;
-                     return packExecute(true, 'The execution of the program has finished', 'success', null);
-                  }
-                  else if (runProgram == false) {
-                           app.executeProgram();
-                  }
-                }
-    
-                break;
 
-          case "read_float":
+                     if (first_time == true) {
+                         document.getElementById('enter_keyboard').scrollIntoView();
+                     }
 
-                // CL
-                if (typeof app === "undefined") 
-                {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $> ') ;
-                    var value        = parseFloat(keystroke) ;
+                     mutexRead = true;
+                     app._data.enter = false;
+                     console_log(mutexRead);
 
-                    keyboard = keyboard + " " + value;
-
-                    writeRegister(value, indexComp, indexElem);
-                    return packExecute(false, 'The data has been uploaded', 'danger', null);
-                }
-
-                if(first_time == true){
-	                document.getElementById('enter_keyboard').scrollIntoView();
-	              }
-
-                mutexRead = true;
-                app._data.enter = false;
-                console_log(mutexRead);
-                if(newExecution == true){
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
-    
-    		  				show_notification('The data has been uploaded', 'info') ;
-    
-                  if (runProgram == false){
-                      app.executeProgram();
-                  }
-    
-                  return;
-                }
-    
-                if (consoleMutex == false) {
-                    setTimeout(syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2, false);
-                }
-                else{
-                  var value = parseFloat(app._data.keyboard, 10);
-                  console_log(value);
-                  writeRegister(value, indexComp, indexElem);
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
-    
-    		  				show_notification('The data has been uploaded', 'info') ;
-    
-                  if(executionIndex >= instructions.length){
-                    for (var i = 0; i < instructions.length; i++) {
-                         draw.space.push(i) ;
-                    }
-    
-                    executionIndex = -2;
-                    return packExecute(true, 'The execution of the program has finished', 'success', null);
-                  }
-                  else if (runProgram == false){
-                           app.executeProgram();
-                  }
-                }
-    
-                break;
-
-          case "read_double":
-
-                // CL
-                if (typeof app === "undefined") 
-                {
-								    var readlineSync = require('readline-sync') ;
-								    var keystroke    = readlineSync.question(' $>  ') ;
-						        var value        = parseFloat(keystroke) ;
-
-						        keyboard = keyboard + " " + value;
-
-                    writeRegister(value, indexComp, indexElem);
-                    return packExecute(false, 'The data has been uploaded', 'danger', null);
-                }
-
-                if(first_time == true){
-	                document.getElementById('enter_keyboard').scrollIntoView();
-	              }
-
-                mutexRead = true;
-                app._data.enter = false;
-                console_log(mutexRead);
-                if(newExecution == true){
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
-    
-    		  				show_notification('The data has been uploaded', 'info') ;
-    
-                  if (runProgram == false){
-                      app.executeProgram();
-                  }
-    
-                  return;
-                }
-    
-                if (consoleMutex == false) {
-                    setTimeout(syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2, false);
-                }
-                else{
-                  var value = parseFloat(app._data.keyboard, 10);
-                  console_log(value);
-                  writeRegister(value, indexComp, indexElem);
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
-    
-    		  				show_notification('The data has been uploaded', 'info') ;
-    
-                  if(executionIndex >= instructions.length){
-                    for (var i = 0; i < instructions.length; i++) {
-                         draw.space.push(i) ;
-                    }
-    
-                    executionIndex = -2;
-                    return packExecute(true, 'The execution of the program has finished', 'success', null);
-                  }
-                  else if (runProgram == false){
-                           app.executeProgram();
-                  }
-    
-                  break;
-                }
-    
-                break;
-
-          case "read_string":
-
-               // CL
-              if (typeof app === "undefined") 
-              {
-							    var readlineSync = require('readline-sync') ;
-							    keystroke        = readlineSync.question(' $> ') ;
-									var value = "";
-
-                  for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
-                       value = value + keystroke.charAt(i);
-                  }
-
-                  keyboard = keyboard + " " + value;
-
-                  var addr = architecture.components[indexComp].elements[indexElem].value;
-                  var valueIndex = 0;
-                  var auxAddr = data_address;
-                  var index;
-
-                  var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
-                  if (ret.status != 'ok') {
-                    return ret ;
-                	}
-
-                  return packExecute(false, 'The data has been uploaded', 'danger', null);
-              }
-
-              if(first_time == true){
-                document.getElementById('enter_keyboard').scrollIntoView();
-              }
-
-               mutexRead = true;
-
-               app._data.enter = false;
-               console_log(mutexRead);
-               if (newExecution == true)
-               {
-                   app._data.keyboard = "";
-                   consoleMutex = false;
-                   mutexRead = false;
-                   if (typeof app !== "undefined")
-                       app._data.enter = null;
-    
-                   if (window.document)
-    	 	   					show_notification('The data has been uploaded', 'info') ;
-    
-                   if (runProgram == false){
-                       if (typeof app !== "undefined")
-                           app.executeProgram();
-                   }
-    
-                   return;
-                }
-    
-                if (consoleMutex == false){
-                    setTimeout(syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2, false);
-                }
-                else {
-                  var keystroke = '' ;
-                  keystroke = app.keyboard ;
-                  
-
-                  var value = "";
-                  for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
-                       value = value + keystroke.charAt(i);
-                  }
-                  console_log(value);
-    
-                  var addr = architecture.components[indexComp].elements[indexElem].value;
-                  var valueIndex = 0;
-                  var auxAddr = data_address;
-                  var index;
-
-                  var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
-                  if (ret.status != 'ok') {
-                      return ret ;
-               	  }
-
-                  app._data.memory[index] = memory[index];
-                  app.keyboard = "";
-                  app._data.enter = null;
-                  
-
-                  consoleMutex = false;
-                  mutexRead = false;
-    
-
-    		      		show_notification('The data has been uploaded', 'info') ;
-    
-                  if (executionIndex >= instructions.length)
-                  {
-                      for (var i = 0; i < instructions.length; i++) {
-                           draw.space.push(i) ;
+                     if (newExecution == true) {
+                         app._data.keyboard = "";
+                         consoleMutex = false;
+                         mutexRead = false;
+                         app._data.enter = null;
+          
+          		   show_notification('The data has been uploaded', 'info') ;
+          
+                         if (runProgram == false){
+                             app.executeProgram();
+                         }
+          
+                         return;
                       }
-                      executionIndex = -2;
-                      return packExecute(true, 'The execution of the program has finished', 'success', null);
-                  }
-                  else if (runProgram == false){
-                    app.executeProgram();
-                  }
-                }
-    
-                break;
 
-          case "sbrk":
+                      if(consoleMutex == false){
+                        setTimeout(syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2, false);
+                      }
+                      else{
+                        var value = (app._data.keyboard).charCodeAt(0);
+                        writeRegister(value, indexComp, indexElem);
+                        app._data.keyboard = "";
+                        consoleMutex = false;
+                        mutexRead = false;
+                        app._data.enter = null;
+          
+         		  show_notification('The data has been uploaded', 'info') ;
+          
+                        console_log(mutexRead);
+          
+                        if(executionIndex >= instructions.length){
+                          for (var i = 0; i < instructions.length; i++){
+                               draw.space.push(i) ;
+                          }
+          
+                          executionIndex = -2;
+                          return packExecute(true, 'The execution of the program has finished', 'success', null);
+                        }
+                        else if (runProgram == false) {
+                                 app.executeProgram();
+                        }
+                      }
 
-                var aux_addr = architecture.memory_layout[3].value + 1;
-    
-                if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
-                    executionIndex = -1;
-                    return packExecute(true, 'Not enough memory for data segment', 'danger', null);
-                }
-    
-                for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
-                  memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
-
-                  if(i==0){
-                    architecture.components[indexComp2].elements[indexElem2].value = aux_addr;
-                  }
-
-                  for (var z = 0; z < 4; z++){
-                    (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
-                    aux_addr++;
-                  }
-                }
-    
-                if (typeof app !== "undefined")
-                    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-
-                architecture.memory_layout[3].value = aux_addr-1;
-
-                if (typeof app !== "undefined")
-                    app.architecture.memory_layout[3].value = aux_addr-1;
-                break;
-
-          case "exit":
-                executionIndex = instructions.length + 1;
-                break;
-
-          case "print_char":
-                var aux    = architecture.components[indexComp].elements[indexElem].value;
-                var aux2   = aux.toString(16);
-                var length = aux2.length;
-    
-                var value = aux2.substring(length-2, length) ;
-                    value = String.fromCharCode(parseInt(value, 16)) ;
-
-                if (typeof app !== "undefined")
-                     app._data.display += value ;
-                else process.stdout.write(value) ;
-
-                display += value ;
-                break;
-
-          case "read_char":
-
-               // CL
-               if (typeof app === "undefined") 
-               {
-							 	   var readlineSync = require('readline-sync') ;
-							 	   var keystroke    = readlineSync.question(' read char> ') ;
-                   var value        = keystroke.charCodeAt(0);
-
-                   keyboard = keyboard + " " + value;
-
-                   writeRegister(value, indexComp, indexElem);
-                   return packExecute(false, 'The data has been uploaded', 'danger', null);
-               }
-
-               if (first_time == true) {
-                   document.getElementById('enter_keyboard').scrollIntoView();
-               }
-
-               mutexRead = true;
-               app._data.enter = false;
-               console_log(mutexRead);
-
-               if (newExecution == true) {
-                   app._data.keyboard = "";
-                   consoleMutex = false;
-                   mutexRead = false;
-                   app._data.enter = null;
-    
-    		   show_notification('The data has been uploaded', 'info') ;
-    
-                   if (runProgram == false){
-                       app.executeProgram();
-                   }
-    
-                   return;
-                }
-
-                if(consoleMutex == false){
-                  setTimeout(syscall, 1000, "read_char", indexComp, indexElem, indexComp2, indexElem2, false);
-                }
-                else{
-                  var value = (app._data.keyboard).charCodeAt(0);
-                  writeRegister(value, indexComp, indexElem);
-                  app._data.keyboard = "";
-                  consoleMutex = false;
-                  mutexRead = false;
-                  app._data.enter = null;
-    
-   		  show_notification('The data has been uploaded', 'info') ;
-    
-                  console_log(mutexRead);
-    
-                  if(executionIndex >= instructions.length){
-                    for (var i = 0; i < instructions.length; i++){
-                         draw.space.push(i) ;
-                    }
-    
-                    executionIndex = -2;
-                    return packExecute(true, 'The execution of the program has finished', 'success', null);
-                  }
-                  else if (runProgram == false) {
-                           app.executeProgram();
-                  }
-                }
-
-                break;
-        }
+                      break;
+              }
 			}
 
 			/*Divides a double into two parts*/
