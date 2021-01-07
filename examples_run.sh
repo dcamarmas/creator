@@ -19,7 +19,7 @@ done
 #
 
 echo " RISC-V:"
-RV_TEST="1 2 3 4 5 6"
+RV_TEST="2 5 6"
 for I in $RV_TEST;
 do
   echo " * ./examples/riscv/example$I... "
