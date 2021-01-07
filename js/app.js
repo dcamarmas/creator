@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -582,21 +582,19 @@ try
       	
       	 localStorage.setItem("instructionsPacked", this.instructionsPacked);
 
-      	 /*Google Analytics*/
-				 ga('create', 'UA-186823627-2', 'auto');
-				 ga('set', 'transport', 'beacon');
-				 ga('send', 'event', 'configuration', 'configuration.execution_speed', 'configuration.execution_speed.less_speed_' + (prevInstructionPacked > this.instructionsPacked).toString());
+      	 /* Google Analytics */
+	 creator_ga('send', 'event', 'configuration', 'configuration.execution_speed',
+                    'configuration.execution_speed.less_speed_' + (prevInstructionPacked > this.instructionsPacked).toString()) ;
       },
 
       /*Change autoscroll mode*/
-      change_autoscroll() {
+      change_autoscroll()
+      {
         app._data.autoscroll= !app._data.autoscroll;
         localStorage.setItem("autoscroll", app._data.autoscroll);
 
-        /*Google Analytics*/
-				ga('create', 'UA-186823627-2', 'auto');
-				ga('set', 'transport', 'beacon');
-				ga('send', 'event', 'configuration', 'configuration.autoscroll', 'configuration.autoscroll.' + app._data.autoscroll);
+        /* Google Analytics */
+	creator_ga('send', 'event', 'configuration', 'configuration.autoscroll', 'configuration.autoscroll.' + app._data.autoscroll);
       },
 
       /*change the time a notification is displayed*/
@@ -619,10 +617,8 @@ try
 
       	 localStorage.setItem("notificationTime", this.notificationTime);
 
-      	 /*Google Analytics*/
-				 ga('create', 'UA-186823627-2', 'auto');
-				 ga('set', 'transport', 'beacon');
-				 ga('send', 'event', 'configuration', 'configuration.notification_time', 'configuration.notification_time.less_time_' + (prevNotificationTime > this.notificationTime).toString());
+      	 /* Google Analytics */
+	 creator_ga('send', 'event', 'configuration', 'configuration.notification_time', 'configuration.notification_time.less_time_' + (prevNotificationTime > this.notificationTime).toString());
       },
 
       /*change the font size*/
@@ -656,10 +652,8 @@ try
             localStorage.setItem("dark_mode", "");
         }
 
-        /*Google Analytics*/
-				ga('create', 'UA-186823627-2', 'auto');
-				ga('set', 'transport', 'beacon');
-				ga('send', 'event', 'configuration', 'configuration.dark_mode', 'configuration.dark_mode.' + app._data.dark);
+        /* Google Analytics */
+	creator_ga('send', 'event', 'configuration', 'configuration.dark_mode', 'configuration.dark_mode.' + app._data.dark);
       },
 
       /*Screen change*/
@@ -905,10 +899,8 @@ try
 				         hide_loading();
 				         show_notification('The selected architecture has been loaded correctly', 'success') ;
 
-				         /*Google Analytics*/
-				         ga('create', 'UA-186823627-2', 'auto');
-								 ga('set', 'transport', 'beacon');
-								 ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
+				         /* Google Analytics */
+					 creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
 
                  return;
              }
@@ -919,10 +911,8 @@ try
 		      hide_loading();
 		      show_notification('The selected architecture has been loaded correctly', 'success') ;
 
-		      /*Google Analytics*/
-	        ga('create', 'UA-186823627-2', 'auto');
-					ga('set', 'transport', 'beacon');
-					ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised');
+		      /* Google Analytics */
+		      creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised');
 
 	        }).fail(function() {
 	          hide_loading();
@@ -3044,10 +3034,8 @@ try
         }
         hide_loading();
 
-        /*Google Analytics*/
-			  ga('create', 'UA-186823627-2', 'auto');
-			  ga('set', 'transport', 'beacon');
-			  ga('send', 'event', 'assembly', 'assebly.load', 'assebly.load');
+        /* Google Analytics */
+	creator_ga('send', 'event', 'assembly', 'assebly.load', 'assebly.load');
       },
 
       assembly_update(){
@@ -3086,10 +3074,8 @@ try
 
         downloadLink.click();
 
-        /*Google Analytics*/
-			  ga('create', 'UA-186823627-2', 'auto');
-			  ga('set', 'transport', 'beacon');
-			  ga('send', 'event', 'assembly', 'assebly.save', 'assebly.save');
+        /* Google Analytics */
+	creator_ga('send', 'event', 'assembly', 'assebly.save', 'assebly.save');
       },
 
       /*Load the available examples*/
@@ -3149,11 +3135,8 @@ try
             textarea_assembly_editor.setValue(code_assembly) ;
 		        show_notification(' The selected example has been loaded correctly', 'success') ;
 
-		        /*Google Analytics*/
-					  ga('create', 'UA-186823627-2', 'auto');
-					  ga('set', 'transport', 'beacon');
-					  ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
-
+		        /* Google Analytics */
+			creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
 		    });
       },
 
@@ -3167,10 +3150,8 @@ try
 		        app.assembly_compiler(code_assembly) ;
 		        show_notification(' The selected example has been loaded correctly', 'success') ;
 
-		        /*Google Analytics*/
-					  ga('create', 'UA-186823627-2', 'auto');
-					  ga('set', 'transport', 'beacon');
-					  ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
+		        /* Google Analytics */
+		        creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
 	 	    });
       },
 
@@ -3395,11 +3376,9 @@ try
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
 
-              /*Google Analytics*/
-						  ga('create', 'UA-186823627-2', 'auto');
-						  ga('set', 'transport', 'beacon');
-						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.hex');
-						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.0x' + hex);
+              /* Google Analytics */
+	      creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.hex');
+	      creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.0x' + hex);
             }
             if(this.calculator.bits == 64){
               var re = /[0-9A-Fa-f]{16}/g;
@@ -3432,11 +3411,9 @@ try
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
 
-              /*Google Analytics*/
-						  ga('create', 'UA-186823627-2', 'auto');
-						  ga('set', 'transport', 'beacon');
-						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.hex');
-						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.0x' + hex);
+              /* Google Analytics */
+	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.hex');
+	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.0x' + hex);
             }
 
             break;
@@ -3475,10 +3452,8 @@ try
               }
 
               /*Google Analytics*/
-						  ga('create', 'UA-186823627-2', 'auto');
-						  ga('set', 'transport', 'beacon');
-						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.bin');
-						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + binary);
+		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.bin');
+		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + binary);
             }
             if(this.calculator.bits == 64){
               this.calculator.sign = this.calculator.sign.padStart(1, "0");
@@ -3511,10 +3486,8 @@ try
               this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
 
               /*Google Analytics*/
-						  ga('create', 'UA-186823627-2', 'auto');
-						  ga('set', 'transport', 'beacon');
-						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.bin');
-						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + binary);
+		  creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.bin');
+		  creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + binary);
             }
 
             break;
@@ -3543,10 +3516,8 @@ try
               }
 
               /*Google Analytics*/
-						  ga('create', 'UA-186823627-2', 'auto');
-						  ga('set', 'transport', 'beacon');
-						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.dec');
-						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + this.calculator.decimal);
+		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.dec');
+		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + this.calculator.decimal);
             }
 
             if(this.calculator.bits == 64){
@@ -3566,11 +3537,9 @@ try
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
 
-              /*Google Analytics*/
-						  ga('create', 'UA-186823627-2', 'auto');
-						  ga('set', 'transport', 'beacon');
-						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.dec');
-						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + this.calculator.decimal);
+              /* Google Analytics */
+	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.dec');
+	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + this.calculator.decimal);
             }
             break;
         }
@@ -3628,21 +3597,17 @@ try
         }
         this.newValue = '';
 
-        /*Google Analytics*/
-			  ga('create', 'UA-186823627-2', 'auto');
-			  ga('set', 'transport', 'beacon');
-			  ga('send', 'event', 'data', 'data.change', 'data.change.register_value');
-			  ga('send', 'event', 'data', 'data.change', 'data.change.register_value_' + elem);
+        /* Google Analytics */
+	  creator_ga('send', 'event', 'data', 'data.change', 'data.change.register_value');
+	  creator_ga('send', 'event', 'data', 'data.change', 'data.change.register_value_' + elem);
       },
 
       /*Execute one instruction*/
       executeInstruction ( )
       {
 
-      	 /*Google Analytics*/
-			   ga('create', 'UA-186823627-2', 'auto');
-			   ga('set', 'transport', 'beacon');
-			   ga('send', 'event', 'execute', 'execute.instruction', 'execute.instruction');
+      	 /* Google Analytics */
+	 creator_ga('send', 'event', 'execute', 'execute.instruction', 'execute.instruction');
 
          var ret = executeInstruction();
          // console.log(JSON.stringify(ret,2,null));
@@ -3695,28 +3660,27 @@ try
       /*Execute all program*/
       executeProgram ( but )
       {
-        
-        /*Google Analytics*/
-			  ga('create', 'UA-186823627-2', 'auto');
-			  ga('set', 'transport', 'beacon');
-			  ga('send', 'event', 'execute', 'execute.run', 'execute.run');
-
+        /* Google Analytics */
+	creator_ga('send', 'event', 'execute', 'execute.run', 'execute.run');
 
         app._data.runExecution = true;
         app._data.runExecution = false;
         runProgram=true;
 
-        if (instructions.length == 0){
+        if (instructions.length == 0)
+        {
             show_notification('No instructions in memory', 'danger') ;
             runProgram=false;
             return;
         }
-        if (executionIndex < -1){
+        if (executionIndex < -1)
+        {
             show_notification('The program has finished', 'danger') ;
             runProgram=false;
             return;
         }
-        if (executionIndex == -1){
+        if (executionIndex == -1)
+        {
             show_notification('The program has finished with errors', 'danger') ;
             runProgram=false;
             return;
@@ -3726,7 +3690,6 @@ try
         $("#playExecution").hide();
 
         this.programExecutionInst(but);
-
       },
 
       programExecutionInst(but)
@@ -3787,26 +3750,23 @@ try
       },
 
       /*Exception Notification*/
-      exception(error){
-        show_notification("There is been an exception. Error description: '" + error, 'danger') ;
-        instructions[executionIndex]._rowVariant = 'danger';
-        executionIndex = -1;
+      exception(error)
+      {
+         show_notification("There is been an exception. Error description: '" + error, 'danger') ;
+         instructions[executionIndex]._rowVariant = 'danger';
+         executionIndex = -1;
 
-        /*Google Analytics*/
-			  ga('create', 'UA-186823627-2', 'auto');
-			  ga('set', 'transport', 'beacon');
-			  ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.' + error);
+         /* Google Analytics */
+	 creator_ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.' + error);
 
-        return;
+         return;
       },
 
-      /*Reset execution*/
-      reset(reset_graphic){
-
-      	/*Google Analytics*/
-			  ga('create', 'UA-186823627-2', 'auto');
-			  ga('set', 'transport', 'beacon');
-			  ga('send', 'event', 'execute', 'execute.reset', 'execute.reset');
+      /* Reset execution */
+      reset ( reset_graphic )
+      {
+      	/* Google Analytics */
+        creator_ga('send', 'event', 'execute', 'execute.reset', 'execute.reset');
 
         show_loading();
         setTimeout(function() {
@@ -3870,10 +3830,8 @@ try
           instructions[index].Break = true;
           app._data.instructions[index].Break = true;
 
-          /*Google Analytics*/
-				  ga('create', 'UA-186823627-2', 'auto');
-				  ga('set', 'transport', 'beacon');
-				  ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
+          /* Google Analytics */
+	  creator_ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
 
         }
         else if(instructions[index].Break == true){
@@ -4099,10 +4057,8 @@ try
 
         app.$forceUpdate();
 
-        /*Google Analytics*/
-			  ga('create', 'UA-186823627-2', 'auto');
-			  ga('set', 'transport', 'beacon');
-			  ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
+          /* Google Analytics */
+	  creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
       select_space_type(record, index){
