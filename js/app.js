@@ -563,6 +563,9 @@ try
 
       /*Change the execution speed*/
       change_execution_speed(value) {
+
+      	 var prevInstructionPacked = this.instructionsPacked;
+
       	 if (value)
          {
       	     this.instructionsPacked= this.instructionsPacked + value;
@@ -578,18 +581,31 @@ try
       	 }
       	
       	 localStorage.setItem("instructionsPacked", this.instructionsPacked);
+
+      	 /*Google Analytics*/
+				 ga('create', 'UA-186823627-2', 'auto');
+				 ga('set', 'transport', 'beacon');
+				 ga('send', 'event', 'configuration', 'configuration.execution_speed', 'configuration.execution_speed.less_speed_' + (prevInstructionPacked > this.instructionsPacked).toString());
       },
 
       /*Change autoscroll mode*/
       change_autoscroll() {
         app._data.autoscroll= !app._data.autoscroll;
         localStorage.setItem("autoscroll", app._data.autoscroll);
+
+        /*Google Analytics*/
+				ga('create', 'UA-186823627-2', 'auto');
+				ga('set', 'transport', 'beacon');
+				ga('send', 'event', 'configuration', 'configuration.autoscroll', 'configuration.autoscroll.' + app._data.autoscroll);
       },
 
       /*change the time a notification is displayed*/
       change_notification_time(value){
+
+      	var prevNotificationTime = this.notificationTime;
+
       	if (value) {
-      	     this.notificationTime= this.notificationTime + value;
+      	     this.notificationTime = this.notificationTime + value;
       	     if (this.notificationTime < 1000){
       	      	 this.notificationTime = 1000;
       	     }
@@ -602,6 +618,11 @@ try
       	 }
 
       	 localStorage.setItem("notificationTime", this.notificationTime);
+
+      	 /*Google Analytics*/
+				 ga('create', 'UA-186823627-2', 'auto');
+				 ga('set', 'transport', 'beacon');
+				 ga('send', 'event', 'configuration', 'configuration.notification_time', 'configuration.notification_time.less_time_' + (prevNotificationTime > this.notificationTime).toString());
       },
 
       /*change the font size*/
@@ -634,6 +655,11 @@ try
             document.getElementsByTagName("body")[0].style = "";
             localStorage.setItem("dark_mode", "");
         }
+
+        /*Google Analytics*/
+				ga('create', 'UA-186823627-2', 'auto');
+				ga('set', 'transport', 'beacon');
+				ga('send', 'event', 'configuration', 'configuration.dark_mode', 'configuration.dark_mode.' + app._data.dark);
       },
 
       /*Screen change*/
@@ -876,8 +902,14 @@ try
              if (e.name == load_architectures[i].id) {
                  var auxArchitecture = JSON.parse(load_architectures[i].architecture);
                  app.load_arch_select_aux(e.name, auxArchitecture, true, e) ;
-	         hide_loading();
-	         show_notification('The selected architecture has been loaded correctly', 'success') ;
+				         hide_loading();
+				         show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+				         /*Google Analytics*/
+				         ga('create', 'UA-186823627-2', 'auto');
+								 ga('set', 'transport', 'beacon');
+								 ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
+
                  return;
              }
         }
@@ -886,6 +918,12 @@ try
           app.load_arch_select_aux(e.name, cfg, true, e) ;
 		      hide_loading();
 		      show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+		      /*Google Analytics*/
+	        ga('create', 'UA-186823627-2', 'auto');
+					ga('set', 'transport', 'beacon');
+					ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised');
+
 	        }).fail(function() {
 	          hide_loading();
 	          show_notification('The selected architecture is not currently available', 'info') ;
@@ -3005,6 +3043,11 @@ try
           code_assembly = event.currentTarget.result;
         }
         hide_loading();
+
+        /*Google Analytics*/
+			  ga('create', 'UA-186823627-2', 'auto');
+			  ga('set', 'transport', 'beacon');
+			  ga('send', 'event', 'assembly', 'assebly.load', 'assebly.load');
       },
 
       assembly_update(){
@@ -3042,48 +3085,53 @@ try
         document.body.appendChild(downloadLink);
 
         downloadLink.click();
+
+        /*Google Analytics*/
+			  ga('create', 'UA-186823627-2', 'auto');
+			  ga('set', 'transport', 'beacon');
+			  ga('send', 'event', 'assembly', 'assebly.save', 'assebly.save');
       },
 
       /*Load the available examples*/
       load_examples_available( set_name ) {
-	this._data.example_loaded = new Promise(function(resolve, reject) {
+					this._data.example_loaded = new Promise(function(resolve, reject) {
 
 		      $.getJSON('examples/example_set.json', function(set) {
 
-                          // current architecture in upperCase
-                          var current_architecture = app._data.architecture_name.toUpperCase() ;
+          // current architecture in upperCase
+          var current_architecture = app._data.architecture_name.toUpperCase() ;
 
-                          // search for set_name in the example set 'set'
-			  for (var i=0; i<set.length; i++)
-                          {
-                                // if set_name in set[i]...
-				if (set[i].id.toUpperCase() == set_name.toUpperCase())
-				{
-                                        // if current_architecture active but not the associated with set, skip
-				        if ( (current_architecture != '') &&
-      					     (set[i].architecture.toUpperCase() != current_architecture) )
-				        {
-				             continue ;
-				        }
+          // search for set_name in the example set 'set'
+				  for (var i=0; i<set.length; i++)
+	                          {
+	                                // if set_name in set[i]...
+					if (set[i].id.toUpperCase() == set_name.toUpperCase())
+					{
+            // if current_architecture active but not the associated with set, skip
+		        if ( (current_architecture != '') &&
+  					     (set[i].architecture.toUpperCase() != current_architecture) )
+		        {
+		             continue ;
+		        }
 
-                                        // if no current_architecture loaded then load the associated
-				        if (current_architecture == '') {
+                                    // if no current_architecture loaded then load the associated
+		        if (current_architecture == '') {
 					    $.getJSON('architecture/'+ set[i].architecture +'.json',
 						       function(cfg) {
 						          app.load_arch_select_aux(set[i].architecture,
 										   cfg, false, null);
 					               }) ;
-				        }
+				    }
 
                                         // load the associate example list
-					$.getJSON(set[i].url, function(cfg){
-					    example_available = cfg ;
-					    app._data.example_available = example_available ;
-					    resolve('Example list loaded.') ;
-					});
+						$.getJSON(set[i].url, function(cfg){
+						    example_available = cfg ;
+						    app._data.example_available = example_available ;
+						    resolve('Example list loaded.') ;
+						});
 
-                                        return ;
-				}
+	                                        return ;
+					}
 			  }
 
 			  reject('Unavailable example list.') ;
@@ -3098,8 +3146,14 @@ try
 
          $.get(url, function(data) {
 		        code_assembly = data ;
-                        textarea_assembly_editor.setValue(code_assembly) ;
+            textarea_assembly_editor.setValue(code_assembly) ;
 		        show_notification(' The selected example has been loaded correctly', 'success') ;
+
+		        /*Google Analytics*/
+					  ga('create', 'UA-186823627-2', 'auto');
+					  ga('set', 'transport', 'beacon');
+					  ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
+
 		    });
       },
 
@@ -3112,6 +3166,11 @@ try
 	 	        code_assembly = data ;
 		        app.assembly_compiler(code_assembly) ;
 		        show_notification(' The selected example has been loaded correctly', 'success') ;
+
+		        /*Google Analytics*/
+					  ga('create', 'UA-186823627-2', 'auto');
+					  ga('set', 'transport', 'beacon');
+					  ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
 	 	    });
       },
 
@@ -3335,6 +3394,12 @@ try
                 j--;
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
+
+              /*Google Analytics*/
+						  ga('create', 'UA-186823627-2', 'auto');
+						  ga('set', 'transport', 'beacon');
+						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.hex');
+						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.0x' + hex);
             }
             if(this.calculator.bits == 64){
               var re = /[0-9A-Fa-f]{16}/g;
@@ -3366,6 +3431,12 @@ try
                 j--;
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
+
+              /*Google Analytics*/
+						  ga('create', 'UA-186823627-2', 'auto');
+						  ga('set', 'transport', 'beacon');
+						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.hex');
+						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.0x' + hex);
             }
 
             break;
@@ -3402,6 +3473,12 @@ try
                 j--;
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
+
+              /*Google Analytics*/
+						  ga('create', 'UA-186823627-2', 'auto');
+						  ga('set', 'transport', 'beacon');
+						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.bin');
+						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + binary);
             }
             if(this.calculator.bits == 64){
               this.calculator.sign = this.calculator.sign.padStart(1, "0");
@@ -3432,6 +3509,12 @@ try
 
               this.calculator.decimal = double;
               this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
+
+              /*Google Analytics*/
+						  ga('create', 'UA-186823627-2', 'auto');
+						  ga('set', 'transport', 'beacon');
+						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.bin');
+						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + binary);
             }
 
             break;
@@ -3458,6 +3541,12 @@ try
                 j--;
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
+
+              /*Google Analytics*/
+						  ga('create', 'UA-186823627-2', 'auto');
+						  ga('set', 'transport', 'beacon');
+						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.dec');
+						  ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + this.calculator.decimal);
             }
 
             if(this.calculator.bits == 64){
@@ -3476,6 +3565,12 @@ try
                 j--;
                 this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
               }
+
+              /*Google Analytics*/
+						  ga('create', 'UA-186823627-2', 'auto');
+						  ga('set', 'transport', 'beacon');
+						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.dec');
+						  ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + this.calculator.decimal);
             }
             break;
         }
@@ -3532,11 +3627,23 @@ try
           }
         }
         this.newValue = '';
+
+        /*Google Analytics*/
+			  ga('create', 'UA-186823627-2', 'auto');
+			  ga('set', 'transport', 'beacon');
+			  ga('send', 'event', 'data', 'data.change', 'data.change.register_value');
+			  ga('send', 'event', 'data', 'data.change', 'data.change.register_value_' + elem);
       },
 
       /*Execute one instruction*/
       executeInstruction ( )
       {
+
+      	 /*Google Analytics*/
+			   ga('create', 'UA-186823627-2', 'auto');
+			   ga('set', 'transport', 'beacon');
+			   ga('send', 'event', 'execute', 'execute.instruction', 'execute.instruction');
+
          var ret = executeInstruction();
          // console.log(JSON.stringify(ret,2,null));
 
@@ -3588,6 +3695,13 @@ try
       /*Execute all program*/
       executeProgram ( but )
       {
+        
+        /*Google Analytics*/
+			  ga('create', 'UA-186823627-2', 'auto');
+			  ga('set', 'transport', 'beacon');
+			  ga('send', 'event', 'execute', 'execute.run', 'execute.run');
+
+
         app._data.runExecution = true;
         app._data.runExecution = false;
         runProgram=true;
@@ -3612,6 +3726,7 @@ try
         $("#playExecution").hide();
 
         this.programExecutionInst(but);
+
       },
 
       programExecutionInst(but)
@@ -3676,11 +3791,22 @@ try
         show_notification("There is been an exception. Error description: '" + error, 'danger') ;
         instructions[executionIndex]._rowVariant = 'danger';
         executionIndex = -1;
+
+        /*Google Analytics*/
+			  ga('create', 'UA-186823627-2', 'auto');
+			  ga('set', 'transport', 'beacon');
+			  ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.' + error);
+
         return;
       },
 
       /*Reset execution*/
       reset(reset_graphic){
+
+      	/*Google Analytics*/
+			  ga('create', 'UA-186823627-2', 'auto');
+			  ga('set', 'transport', 'beacon');
+			  ga('send', 'event', 'execute', 'execute.reset', 'execute.reset');
 
         show_loading();
         setTimeout(function() {
@@ -3743,6 +3869,12 @@ try
         if(instructions[index].Break == null){
           instructions[index].Break = true;
           app._data.instructions[index].Break = true;
+
+          /*Google Analytics*/
+				  ga('create', 'UA-186823627-2', 'auto');
+				  ga('set', 'transport', 'beacon');
+				  ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
+
         }
         else if(instructions[index].Break == true){
           instructions[index].Break = null;
@@ -3966,6 +4098,11 @@ try
         }
 
         app.$forceUpdate();
+
+        /*Google Analytics*/
+			  ga('create', 'UA-186823627-2', 'auto');
+			  ga('set', 'transport', 'beacon');
+			  ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
       select_space_type(record, index){

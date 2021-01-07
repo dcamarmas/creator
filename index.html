@@ -4,6 +4,16 @@
   <!-- Head -->
   <head>
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-186823627-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-186823627-2');
+    </script>
+
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -215,6 +225,38 @@
             </b-card-group>
           </b-modal>
 
+          <!-- Instruction Help sidebar -->
+          <b-sidebar id="sidebar_help" sidebar-class="border-left border-info" title="Instruction Help" right shadow width="33vw">
+            <div class="px-3 py-2">
+
+              <b-form-input
+                id="filter-input"
+                v-model="instHelpFilter"
+                type="search"
+                placeholder="Search instruction"
+                size=sm
+              ></b-form-input>
+
+              <br>
+
+              <b-table small :items="architecture.instructions" 
+                             :fields="insHelpFields" 
+                             class="text-left help-scroll-y"
+                             :filter="instHelpFilter"
+                             thead-class="d-none">
+
+                <template v-slot:cell(name)="row">
+                  <h4>{{row.item.name}}</h4>
+                  <em>{{row.item.signatureRaw}}</em>
+                  <br>
+                  {{row.item.help}}
+                </template>
+
+              </b-table>
+
+            </div>
+          </b-sidebar>
+
         </header>
 
 
@@ -356,7 +398,8 @@
             <div class="col-lg-12 col-sm-12">
               <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                         href='https://creatorsim.github.io/' 
-                        target="_blank">
+                        target="_blank" 
+                        onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
                 <span class="fas fa-question-circle" ></span> 
                 Help
               </b-button>
@@ -370,10 +413,10 @@
             </div>
           </b-popover>
 
-
           <!-- Architecture menu -->
           <div class="col-lg-12 col-sm-12" id="load_menu_arch">
             <div class="col-lg-12 col-sm-12 row nopadding nomargin">
+
               <div class="col-lg-1 col-sm-1">
                 
               </div>
@@ -651,10 +694,17 @@
 
               <div class="col-lg-12 col-sm-12">
                 <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
-                          href='https://creatorsim.github.io/' 
-                          target="_blank">
+                        href='https://creatorsim.github.io/' 
+                        target="_blank" 
+                        onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
                   <span class="fas fa-question-circle" ></span> 
                   Help
+                </b-button>
+                <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
+                          id="inst_ass" v-b-toggle.sidebar_help
+                          onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
+                    <span class="fas fa-book"></span>
+                    Instruction Help
                 </b-button>
                 <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" 
                           v-b-modal.notifications>
@@ -684,6 +734,7 @@
             </b-modal>
           </div>
 
+          <!-- Instruction set -->
         	<div class="contenedor menu row">
 
             <!-- Architecture components -->
@@ -3279,38 +3330,6 @@
 
           </b-modal>
 
-          <!-- Instruction set -->
-          <b-sidebar id="sidebar_help" sidebar-class="border-left border-info" title="Instruction Help" right shadow width="33vw">
-            <div class="px-3 py-2">
-
-              <b-form-input
-                id="filter-input"
-                v-model="instHelpFilter"
-                type="search"
-                placeholder="Search instruction"
-                size=sm
-              ></b-form-input>
-
-              <br>
-
-              <b-table small :items="architecture.instructions" 
-                             :fields="insHelpFields" 
-                             class="text-left help-scroll-y"
-                             :filter="instHelpFilter"
-                             thead-class="d-none">
-
-                <template v-slot:cell(name)="row">
-                  <h4>{{row.item.name}}</h4>
-                  <em>{{row.item.signatureRaw}}</em>
-                  <br>
-                  {{row.item.help}}
-                </template>
-
-              </b-table>
-
-            </div>
-          </b-sidebar>
-
         </div>
 
 
@@ -3438,9 +3457,17 @@
                     </template>
                     <div class="col-lg-12 col-sm-12">
                       <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
-                                href='https://creatorsim.github.io/' target="_blank">
-                        <span class="fas fa-question-circle" ></span>
+                                href='https://creatorsim.github.io/' 
+                                target="_blank" 
+                                onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
+                        <span class="fas fa-question-circle" ></span> 
                         Help
+                      </b-button>
+                      <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
+                                id="inst_ass" v-b-toggle.sidebar_help
+                                onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
+                        <span class="fas fa-book"></span>
+                        Instruction Help
                       </b-button>
                       <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
                                 v-b-modal.notifications>
@@ -3746,7 +3773,8 @@
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                   :id="popoverId(item2.name + 'Int')" 
-                                  @click="change_popover_register(popoverId(item2.name + 'Int'))">
+                                  @click="change_popover_register(popoverId(item2.name + 'Int'))"
+                                  onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                           <span class="text-truncate">{{item2.name[0]}}</span> 
                           <b-badge class="regValue registerValue" 
                                    v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
@@ -3857,7 +3885,8 @@
                              v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name + 'FP')" 
-                                    @click="change_popover_register(popoverId(item2.name + 'FP'))">
+                                    @click="change_popover_register(popoverId(item2.name + 'FP'))"
+                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">{{item2.name[0]}}</span>  
                             <b-badge class="registerValue">
                               {{item2.value}}
@@ -3946,7 +3975,8 @@
                              v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name + 'DFP')" 
-                                    @click="change_popover_register(popoverId(item2.name + 'DFP'))">
+                                    @click="change_popover_register(popoverId(item2.name + 'DFP'))"
+                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">
                               {{item2.name[0]}}
                             </span>  
@@ -4048,7 +4078,8 @@
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                   :id="popoverId(item2.name)" 
-                                  @click="change_popover_register(popoverId(item2.name))">
+                                  @click="change_popover_register(popoverId(item2.name))"
+                                  onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
   	                      <span class="text-truncate">{{item2.name[0]}}</span>  
                           <b-badge class="registerValue" 
                                     class="regValue">
@@ -4156,7 +4187,8 @@
                              v-if="architecture.components[item.index].double_precision == false">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
-                                    @click="change_popover_register(popoverId(item2.name))">
+                                    @click="change_popover_register(popoverId(item2.name))"
+                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
   	                      	<span class="text-truncate">
                               {{item2.name[0]}}
                             </span> 
@@ -4247,7 +4279,8 @@
                              v-if="architecture.components[item.index].double_precision == true">
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
-                                    @click="change_popover_register(popoverId(item2.name))">
+                                    @click="change_popover_register(popoverId(item2.name))"
+                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
   		                      <span class="text-truncate">{{item2.name[0]}}</span> 
                             <b-badge class="registerValue">
                               {{bin2hex(double2bin(item2.value))}}
@@ -4363,10 +4396,14 @@
                         <div v-for="item in architecture_hash">
                           <div v-for="item2 in architecture.components[item.index].elements">
                             <b-badge variant="info" 
-                             class="border border-info shadow memoryTag" 
-                             v-if="item2.properties.includes('pointer') && item2.properties.includes('data') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                                     class="border border-info shadow memoryTag" 
+                                     v-if="item2.properties.includes('pointer') && item2.properties.includes('data') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                               {{item2.name[0]}}
                             </b-badge>
+                            <span class="fas fa-long-arrow-alt-left" 
+                                  v-if="item2.properties.includes('pointer') && item2.properties.includes('data') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                            </span>
+
                           </div>
                         </div>
                       </template>
@@ -4473,10 +4510,13 @@
                         <div v-for="item in architecture_hash">
                           <div v-for="item2 in architecture.components[item.index].elements">
                             <b-badge variant="success" 
-                             class="border border-success shadow memoryTag" 
-                             v-if="item2.properties.includes('pointer') && item2.properties.includes('code') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                                     class="border border-success shadow memoryTag" 
+                                     v-if="item2.properties.includes('pointer') && item2.properties.includes('code') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                               {{item2.name[0]}}
                             </b-badge>
+                            <span class="fas fa-long-arrow-alt-left" 
+                                  v-if="item2.properties.includes('pointer') && item2.properties.includes('code') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                            </span>
                           </div>
                         </div>
                       </template>
@@ -4566,10 +4606,14 @@
                         <div v-for="item in architecture_hash">
                           <div v-for="item2 in architecture.components[item.index].elements">
                             <b-badge variant="info" 
-                             class="border border-info shadow memoryTag" 
-                             v-if="item2.properties.includes('pointer') && item2.properties.includes('stack') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                                     class="border border-info shadow memoryTag" 
+                                     v-if="item2.properties.includes('pointer') && item2.properties.includes('stack') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                               {{item2.name[0]}}
                             </b-badge>
+                            <span class="fas fa-long-arrow-alt-left" 
+                                  v-if="item2.properties.includes('pointer') && item2.properties.includes('stack') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
+                            </span>
+
                           </div>
                         </div>
                       </template>
