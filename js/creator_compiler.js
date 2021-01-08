@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -310,10 +310,8 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor )
   ret.msg = compileError[err_code](ret) ;
 
   /*Google Analytics*/
-  ga('create', 'UA-186823627-2', 'auto');
-  ga('set', 'transport', 'beacon');
-  ga('send', 'event', 'compile', 'compile.error', 'compile.error.' + ret.msg);
-  ga('send', 'event', 'compile', 'compile.type_error', 'compile.type_error.' + err_code);
+  creator_ga('send', 'event', 'compile', 'compile.error', 'compile.error.' + ret.msg);
+  creator_ga('send', 'event', 'compile', 'compile.type_error', 'compile.type_error.' + err_code);
 
   return ret ;
 }
@@ -330,7 +328,7 @@ function first_token()
         }
 
         // skip till first token:
-        while ( (":\t\n \r#".includes(assembly.charAt(index))) && (index < assembly.length) ) 
+        while ( (":\t\n \r#".includes(assembly.charAt(index))) && (index < assembly.length) )
         {
               // skip <spaces>
               while ( (":\t\n \r".includes(assembly.charAt(index))) && (index < assembly.length) ) {
@@ -488,10 +486,8 @@ function assembly_compiler()
           status: "ok"
         } ;
 
-        /*Google Analytics*/
-        ga('create', 'UA-186823627-2', 'auto');
-        ga('set', 'transport', 'beacon');
-        ga('send', 'event', 'compile', 'compile.assembly');
+        /* Google Analytics */
+        creator_ga('send', 'event', 'compile', 'compile.assembly');
       	
         instructions = [];
         instructions_tag = [];
@@ -799,10 +795,12 @@ function assembly_compiler()
               }
             }
 
-            if(signatureParts[j] == "offset_words"){
-              console.log("dgfh")
-              for (var z = 0; z < instructions.length && exit == 0; z++){
-                if(instructions[z].Label == instructionParts[j]){
+            if (signatureParts[j] == "offset_words")
+            {
+              for (var z = 0; z < instructions.length && exit == 0; z++)
+              {
+                if(instructions[z].Label == instructionParts[j])
+                {
                   var addr = instructions[z].Address;
                   var startbit = pending_instructions[i].startBit;
                   var stopbit = pending_instructions[i].stopBit;
@@ -2113,7 +2111,7 @@ function data_segment_compiler()
                   /* //var old_length = memory[memory_hash[0]].length;
                   var to_add = ((auxToken+auxToken-1)/4); //Redondeo por exceso auxToken+auxToken-1
 
-                  //memory[memory_hash[0]].length = old_length + to_add; 
+                  //memory[memory_hash[0]].length = old_length + to_add;
 
                   //var new_length = memory[memory_hash[0]].length;
 
@@ -2491,7 +2489,7 @@ function code_segment_compiler()
                     extern = [];
                     memory[memory_hash[2]] = [];
                     data = [];
-                 // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 
+                 // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1,
                  //                        'error', "danger") ;
                     ret = packCompileError('m26', nEnters+1, 'error', "danger") ;
 
@@ -3149,7 +3147,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
                 if(token.match(/^0x/)){
                   var value = token.split("x");
-                  if (value[1].length*4 > fieldsLength) 
+                  if (value[1].length*4 > fieldsLength)
                   {
                       resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
 
@@ -3328,7 +3326,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                           return resultPseudo ;
                       }
                    }
- 
+
                    if (isNaN(parseInt(token, 16)) == true) {
                        return packCompileError('m6', token, 'error', "danger") ;
                    }
@@ -4002,7 +4000,7 @@ function field(field, action, type)
         }
       }
     }
-    
+
   }
 
   re = /\((.*?)\)/;
