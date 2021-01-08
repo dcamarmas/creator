@@ -1,5 +1,84 @@
 /*
- *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+  function bi_intToBigInt ( int_value, int_base )
+  {
+       var auxBigInt = null ;
+
+       if (typeof bigInt !== "undefined" && int_base == 16)
+            auxBigInt = bigInt(int_value, int_base).value ;
+
+       else if (typeof bigInt !== "undefined")
+            auxBigInt = bigInt(parseInt(int_value) >>> 0, int_base).value ;
+
+       else auxBigInt = BigInt(parseInt(int_value) >>> 0, int_base) ;
+
+       return auxBigInt ;
+  }
+
+/*
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+  /* 
+   * Google Analytics
+   */
+
+  var is_ga_initialize = false ;
+
+  function creator_ga ( category, action, label )
+  {
+      if (typeof ga === "undefined") {
+          return ;
+      }
+
+      if (is_ga_initialize == false)
+      {
+          ga('create', 'UA-186823627-2', 'auto') ;
+          ga('set', 'transport', 'beacon') ;
+          is_ga_initialize = true ;
+      }
+
+      ga('send', 'event', category, action, label) ;
+  }
+
+/*
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -310,10 +389,8 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor )
   ret.msg = compileError[err_code](ret) ;
 
   /*Google Analytics*/
-  ga('create', 'UA-186823627-2', 'auto');
-  ga('set', 'transport', 'beacon');
-  ga('send', 'event', 'compile', 'compile.error', 'compile.error.' + ret.msg);
-  ga('send', 'event', 'compile', 'compile.type_error', 'compile.type_error.' + err_code);
+  creator_ga('send', 'event', 'compile', 'compile.error', 'compile.error.' + ret.msg);
+  creator_ga('send', 'event', 'compile', 'compile.type_error', 'compile.type_error.' + err_code);
 
   return ret ;
 }
@@ -330,7 +407,7 @@ function first_token()
         }
 
         // skip till first token:
-        while ( (":\t\n \r#".includes(assembly.charAt(index))) && (index < assembly.length) ) 
+        while ( (":\t\n \r#".includes(assembly.charAt(index))) && (index < assembly.length) )
         {
               // skip <spaces>
               while ( (":\t\n \r".includes(assembly.charAt(index))) && (index < assembly.length) ) {
@@ -488,10 +565,8 @@ function assembly_compiler()
           status: "ok"
         } ;
 
-        /*Google Analytics*/
-        ga('create', 'UA-186823627-2', 'auto');
-        ga('set', 'transport', 'beacon');
-        ga('send', 'event', 'compile', 'compile.assembly');
+        /* Google Analytics */
+        creator_ga('send', 'event', 'compile', 'compile.assembly');
       	
         instructions = [];
         instructions_tag = [];
@@ -799,10 +874,12 @@ function assembly_compiler()
               }
             }
 
-            if(signatureParts[j] == "offset_words"){
-              console.log("dgfh")
-              for (var z = 0; z < instructions.length && exit == 0; z++){
-                if(instructions[z].Label == instructionParts[j]){
+            if (signatureParts[j] == "offset_words")
+            {
+              for (var z = 0; z < instructions.length && exit == 0; z++)
+              {
+                if(instructions[z].Label == instructionParts[j])
+                {
                   var addr = instructions[z].Address;
                   var startbit = pending_instructions[i].startBit;
                   var stopbit = pending_instructions[i].stopBit;
@@ -2113,7 +2190,7 @@ function data_segment_compiler()
                   /* //var old_length = memory[memory_hash[0]].length;
                   var to_add = ((auxToken+auxToken-1)/4); //Redondeo por exceso auxToken+auxToken-1
 
-                  //memory[memory_hash[0]].length = old_length + to_add; 
+                  //memory[memory_hash[0]].length = old_length + to_add;
 
                   //var new_length = memory[memory_hash[0]].length;
 
@@ -2491,7 +2568,7 @@ function code_segment_compiler()
                     extern = [];
                     memory[memory_hash[2]] = [];
                     data = [];
-                 // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1, 
+                 // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1,
                  //                        'error', "danger") ;
                     ret = packCompileError('m26', nEnters+1, 'error', "danger") ;
 
@@ -3149,7 +3226,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
                 if(token.match(/^0x/)){
                   var value = token.split("x");
-                  if (value[1].length*4 > fieldsLength) 
+                  if (value[1].length*4 > fieldsLength)
                   {
                       resultPseudo = pseudoinstruction_compiler(oriInstruction, label, line);
 
@@ -3328,7 +3405,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                           return resultPseudo ;
                       }
                    }
- 
+
                    if (isNaN(parseInt(token, 16)) == true) {
                        return packCompileError('m6', token, 'error', "danger") ;
                    }
@@ -4002,7 +4079,7 @@ function field(field, action, type)
         }
       }
     }
-    
+
   }
 
   re = /\((.*?)\)/;
@@ -4312,7 +4389,7 @@ function binaryStringToInt( b ) {
 }
 
 /*
- *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -4374,7 +4451,7 @@ function executeInstruction ( )
          }
 
     /*Search a main tag*/
-    if (executionInit == 1) 
+    if (executionInit == 1)
     {
         for (var i = 0; i < instructions.length; i++) {
           if (instructions[i].Label == "main") {
@@ -5041,7 +5118,7 @@ function executeInstruction ( )
               auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
               myMatch.index=0;
               isMatch = true;
-          }  
+          }
     if (isMatch) regIndex++;
 
 		/*    re = new RegExp(architecture.components[i].elements[j].name+" *=[^=]");
@@ -5167,14 +5244,14 @@ function executeInstruction ( )
       console_log(auxDef);
 
       // preload instruction
-			eval("instructions[" + executionIndex + "].preload = function(elto) { " + 
+			eval("instructions[" + executionIndex + "].preload = function(elto) { " +
 	        "try {\n" +
 	           auxDef.replace(/this./g,"elto.") + "\n" +
 	        "}\n" +
 	        "catch(e){\n" +
 	        "  return e;\n" +
         	"}\n" +
-	        " }; ") ;        
+	        " }; ") ;
     }
 
 
@@ -5186,7 +5263,7 @@ function executeInstruction ( )
     }
     catch(e)
     {
-        if (e instanceof SyntaxError) 
+        if (e instanceof SyntaxError)
         {
             console_log("Error");
             error = 1;
@@ -5269,10 +5346,8 @@ function executeProgramOneShot ( limit_n_instructions )
 {
     var ret = null;
 
-    /*Google Analytics*/
-    ga('create', 'UA-186823627-2', 'auto');
-    ga('set', 'transport', 'beacon');
-    ga('send', 'event', 'execute', 'execute.run');
+    /* Google Analytics */
+    creator_ga('send', 'event', 'execute', 'execute.run');
 
     // execute program
     for (var i=0; i<limit_n_instructions; i++)
@@ -5301,7 +5376,7 @@ function readRegister ( indexComp, indexElem )
 		  flash: []
 		} ;
 
-      if ((architecture.components[indexComp].elements[indexElem].properties[0] != "read") && 
+      if ((architecture.components[indexComp].elements[indexElem].properties[0] != "read") &&
           (architecture.components[indexComp].elements[indexElem].properties[1] != "read"))
       {
 	    for (var i = 0; i < instructions.length; i++) {
@@ -5312,10 +5387,10 @@ function readRegister ( indexComp, indexElem )
 
             executionIndex = -1;
 
-            throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', draw);    
+            throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', draw);
         }
 
-        if ((architecture.components[indexComp].type == "control") || 
+        if ((architecture.components[indexComp].type == "control") ||
             (architecture.components[indexComp].type == "integer"))
         {
             console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
@@ -6023,10 +6098,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           	    flash: []
           	  } ;
 
-              /*Google Analytics*/
-              ga('create', 'UA-186823627-2', 'auto');
-              ga('set', 'transport', 'beacon');
-              ga('send', 'event', 'execute', 'execute.syscall', 'execute.syscall.' + action);
+              /* Google Analytics */
+              creator_ga('send', 'event', 'execute', 'execute.syscall', 'execute.syscall.' + action);
 
               switch(action)
               {
@@ -6116,7 +6189,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 case "read_int":
 
                       // CL
-                      if (typeof app === "undefined") 
+                      if (typeof app === "undefined")
                       {
                         var readlineSync = require('readline-sync') ;
                         var keystroke    = readlineSync.question(' $> ') ;
@@ -6135,23 +6208,23 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       // UI
                       mutexRead = true;
                       app._data.enter = false;
-          
+
                       console_log(mutexRead);
                       if (newExecution == true) {
                           app._data.keyboard = "";
                           consoleMutex  = false;
                           mutexRead     = false;
                           app._data.enter = null;
-          
+
           	            	show_notification('The data has been uploaded', 'info') ;
-          
+
                           if (runProgram == false) {
                               app.executeProgram();
                           }
-          
+
                           return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
-          
+
                       if (consoleMutex == false) {
                           setTimeout(syscall, 1000, "read_int", indexComp, indexElem, indexComp2, indexElem2, false);
                       }
@@ -6163,9 +6236,9 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                         consoleMutex = false;
                         mutexRead = false;
                         app._data.enter = null;
-          
+
           		  				show_notification('The data has been uploaded', 'info') ;
-          
+
                         if (executionIndex >= instructions.length)
                         {
                            for (var i = 0; i < instructions.length; i++) {
@@ -6178,13 +6251,13 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                                  app.executeProgram();
                         }
                       }
-          
+
                       break;
 
                 case "read_float":
 
                       // CL
-                      if (typeof app === "undefined") 
+                      if (typeof app === "undefined")
                       {
       								    var readlineSync = require('readline-sync') ;
       								    var keystroke    = readlineSync.question(' $> ') ;
@@ -6208,16 +6281,16 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                         consoleMutex = false;
                         mutexRead = false;
                         app._data.enter = null;
-          
+
           		  				show_notification('The data has been uploaded', 'info') ;
-          
+
                         if (runProgram == false){
                             app.executeProgram();
                         }
-          
+
                         return;
                       }
-          
+
                       if (consoleMutex == false) {
                           setTimeout(syscall, 1000, "read_float", indexComp, indexElem, indexComp2, indexElem2, false);
                       }
@@ -6229,14 +6302,14 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                         consoleMutex = false;
                         mutexRead = false;
                         app._data.enter = null;
-          
+
           		  				show_notification('The data has been uploaded', 'info') ;
-          
+
                         if(executionIndex >= instructions.length){
                           for (var i = 0; i < instructions.length; i++) {
                                draw.space.push(i) ;
                           }
-          
+
                           executionIndex = -2;
                           return packExecute(true, 'The execution of the program has finished', 'success', null);
                         }
@@ -6244,13 +6317,13 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                                  app.executeProgram();
                         }
                       }
-          
+
                       break;
 
                 case "read_double":
 
                       // CL
-                      if (typeof app === "undefined") 
+                      if (typeof app === "undefined")
                       {
       								    var readlineSync = require('readline-sync') ;
       								    var keystroke    = readlineSync.question(' $>  ') ;
@@ -6274,16 +6347,16 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                         consoleMutex = false;
                         mutexRead = false;
                         app._data.enter = null;
-          
+
           		  				show_notification('The data has been uploaded', 'info') ;
-          
+
                         if (runProgram == false){
                             app.executeProgram();
                         }
-          
+
                         return;
                       }
-          
+
                       if (consoleMutex == false) {
                           setTimeout(syscall, 1000, "read_double", indexComp, indexElem, indexComp2, indexElem2, false);
                       }
@@ -6295,30 +6368,30 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                         consoleMutex = false;
                         mutexRead = false;
                         app._data.enter = null;
-          
+
           		  				show_notification('The data has been uploaded', 'info') ;
-          
+
                         if(executionIndex >= instructions.length){
                           for (var i = 0; i < instructions.length; i++) {
                                draw.space.push(i) ;
                           }
-          
+
                           executionIndex = -2;
                           return packExecute(true, 'The execution of the program has finished', 'success', null);
                         }
                         else if (runProgram == false){
                                  app.executeProgram();
                         }
-          
+
                         break;
                       }
-          
+
                       break;
 
                 case "read_string":
 
                      // CL
-                    if (typeof app === "undefined") 
+                    if (typeof app === "undefined")
                     {
       							    var readlineSync = require('readline-sync') ;
       							    keystroke        = readlineSync.question(' $> ') ;
@@ -6358,32 +6431,32 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                          mutexRead = false;
                          if (typeof app !== "undefined")
                              app._data.enter = null;
-          
+
                          if (window.document)
           	 	   					show_notification('The data has been uploaded', 'info') ;
-          
+
                          if (runProgram == false){
                              if (typeof app !== "undefined")
                                  app.executeProgram();
                          }
-          
+
                          return;
                       }
-          
+
                       if (consoleMutex == false){
                           setTimeout(syscall, 1000, "read_string", indexComp, indexElem, indexComp2, indexElem2, false);
                       }
                       else {
                         var keystroke = '' ;
                         keystroke = app.keyboard ;
-                        
+
 
                         var value = "";
                         for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
                              value = value + keystroke.charAt(i);
                         }
                         console_log(value);
-          
+
                         var addr = architecture.components[indexComp].elements[indexElem].value;
                         var valueIndex = 0;
                         var auxAddr = data_address;
@@ -6397,14 +6470,14 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                         app._data.memory[index] = memory[index];
                         app.keyboard = "";
                         app._data.enter = null;
-                        
+
 
                         consoleMutex = false;
                         mutexRead = false;
-          
+
 
           		      		show_notification('The data has been uploaded', 'info') ;
-          
+
                         if (executionIndex >= instructions.length)
                         {
                             for (var i = 0; i < instructions.length; i++) {
@@ -6417,18 +6490,18 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                           app.executeProgram();
                         }
                       }
-          
+
                       break;
 
                 case "sbrk":
 
                       var aux_addr = architecture.memory_layout[3].value + 1;
-          
+
                       if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
                           executionIndex = -1;
                           return packExecute(true, 'Not enough memory for data segment', 'danger', null);
                       }
-          
+
                       for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
                         memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
 
@@ -6441,7 +6514,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                           aux_addr++;
                         }
                       }
-          
+
                       if (typeof app !== "undefined")
                           app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
 
@@ -6459,7 +6532,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       var aux    = architecture.components[indexComp].elements[indexElem].value;
                       var aux2   = aux.toString(16);
                       var length = aux2.length;
-          
+
                       var value = aux2.substring(length-2, length) ;
                           value = String.fromCharCode(parseInt(value, 16)) ;
 
@@ -6473,7 +6546,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                 case "read_char":
 
                      // CL
-                     if (typeof app === "undefined") 
+                     if (typeof app === "undefined")
                      {
       							 	   var readlineSync = require('readline-sync') ;
       							 	   var keystroke    = readlineSync.question(' read char> ') ;
@@ -6498,13 +6571,13 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                          consoleMutex = false;
                          mutexRead = false;
                          app._data.enter = null;
-          
+
           		   show_notification('The data has been uploaded', 'info') ;
-          
+
                          if (runProgram == false){
                              app.executeProgram();
                          }
-          
+
                          return;
                       }
 
@@ -6518,16 +6591,16 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                         consoleMutex = false;
                         mutexRead = false;
                         app._data.enter = null;
-          
+
          		  show_notification('The data has been uploaded', 'info') ;
-          
+
                         console_log(mutexRead);
-          
+
                         if(executionIndex >= instructions.length){
                           for (var i = 0; i < instructions.length; i++){
                                draw.space.push(i) ;
                           }
-          
+
                           executionIndex = -2;
                           return packExecute(true, 'The execution of the program has finished', 'success', null);
                         }
@@ -6652,7 +6725,7 @@ function read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, in
           update: "",
           status: "ok"
         } ;
-    
+
   if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
     executionIndex = -1;
     if (typeof app !== "undefined")
@@ -6816,43 +6889,7 @@ function updateSimple(comp, elem){
   }
 }
 /*
- *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
- *
- *  This file is part of CREATOR.
- *
- *  CREATOR is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  CREATOR is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Lesser General Public License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
- *
- */
-
-
-  function bi_intToBigInt ( int_value, int_base )
-  {
-       var auxBigInt = null ;
-
-       if (typeof bigInt !== "undefined" && int_base == 16)
-            auxBigInt = bigInt(int_value, int_base).value ;
-
-       else if (typeof bigInt !== "undefined")
-            auxBigInt = bigInt(parseInt(int_value) >>> 0, int_base).value ;
-
-       else auxBigInt = BigInt(parseInt(int_value) >>> 0, int_base) ;
-
-       return auxBigInt ;
-  }
-
-/*
- *  Copyright 2018-2020 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *

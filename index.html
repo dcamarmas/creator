@@ -399,7 +399,7 @@
               <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                         href='https://creatorsim.github.io/' 
                         target="_blank" 
-                        onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
+                        onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
                 <span class="fas fa-question-circle" ></span> 
                 Help
               </b-button>
@@ -696,13 +696,13 @@
                 <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                         href='https://creatorsim.github.io/' 
                         target="_blank" 
-                        onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
+                        onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
                   <span class="fas fa-question-circle" ></span> 
                   Help
                 </b-button>
                 <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
                           id="inst_ass" v-b-toggle.sidebar_help
-                          onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
+                          onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
                     <span class="fas fa-book"></span>
                     Instruction Help
                 </b-button>
@@ -3459,13 +3459,13 @@
                       <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
                                 href='https://creatorsim.github.io/' 
                                 target="_blank" 
-                                onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
+                                onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
                         <span class="fas fa-question-circle" ></span> 
                         Help
                       </b-button>
                       <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
                                 id="inst_ass" v-b-toggle.sidebar_help
-                                onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
+                                onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
                         <span class="fas fa-book"></span>
                         Instruction Help
                       </b-button>
@@ -3774,7 +3774,7 @@
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                   :id="popoverId(item2.name + 'Int')" 
                                   @click="change_popover_register(popoverId(item2.name + 'Int'))"
-                                  onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
+                                  onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                           <span class="text-truncate">{{item2.name[0]}}</span> 
                           <b-badge class="regValue registerValue" 
                                    v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
@@ -3886,7 +3886,7 @@
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name + 'FP')" 
                                     @click="change_popover_register(popoverId(item2.name + 'FP'))"
-                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
+                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">{{item2.name[0]}}</span>  
                             <b-badge class="registerValue">
                               {{item2.value}}
@@ -3976,7 +3976,7 @@
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name + 'DFP')" 
                                     @click="change_popover_register(popoverId(item2.name + 'DFP'))"
-                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
+                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">
                               {{item2.name[0]}}
                             </span>  
@@ -4079,7 +4079,7 @@
   	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                   :id="popoverId(item2.name)" 
                                   @click="change_popover_register(popoverId(item2.name))"
-                                  onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
+                                  onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
   	                      <span class="text-truncate">{{item2.name[0]}}</span>  
                           <b-badge class="registerValue" 
                                     class="regValue">
@@ -4188,7 +4188,7 @@
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
                                     @click="change_popover_register(popoverId(item2.name))"
-                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
+                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
   	                      	<span class="text-truncate">
                               {{item2.name[0]}}
                             </span> 
@@ -4280,7 +4280,7 @@
   	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
                                     @click="change_popover_register(popoverId(item2.name))"
-                                    onclick="ga('create', 'UA-186823627-2', 'auto'); ga('set', 'transport', 'beacon'); ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
+                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
   		                      <span class="text-truncate">{{item2.name[0]}}</span> 
                             <b-badge class="registerValue">
                               {{bin2hex(double2bin(item2.value))}}
@@ -4400,7 +4400,7 @@
                                      v-if="item2.properties.includes('pointer') && item2.properties.includes('data') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                               {{item2.name[0]}}
                             </b-badge>
-                            <span class="fas fa-long-arrow-alt-left" 
+                            <span class="fas fa-long-arrow-alt-right" 
                                   v-if="item2.properties.includes('pointer') && item2.properties.includes('data') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                             </span>
 
@@ -4514,7 +4514,7 @@
                                      v-if="item2.properties.includes('pointer') && item2.properties.includes('code') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                               {{item2.name[0]}}
                             </b-badge>
-                            <span class="fas fa-long-arrow-alt-left" 
+                            <span class="fas fa-long-arrow-alt-right" 
                                   v-if="item2.properties.includes('pointer') && item2.properties.includes('code') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                             </span>
                           </div>
@@ -4610,7 +4610,7 @@
                                      v-if="item2.properties.includes('pointer') && item2.properties.includes('stack') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                               {{item2.name[0]}}
                             </b-badge>
-                            <span class="fas fa-long-arrow-alt-left" 
+                            <span class="fas fa-long-arrow-alt-right" 
                                   v-if="item2.properties.includes('pointer') && item2.properties.includes('stack') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">
                             </span>
 
