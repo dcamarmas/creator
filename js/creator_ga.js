@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -19,18 +19,25 @@
  */
 
 
-  function bi_intToBigInt ( int_value, int_base )
+  /* 
+   * Google Analytics
+   */
+
+  var is_ga_initialize = false ;
+
+  function creator_ga ( category, action, label )
   {
-       var auxBigInt = null ;
+      if (typeof ga === "undefined") {
+          return ;
+      }
 
-       if (typeof bigInt !== "undefined" && int_base == 16)
-            auxBigInt = bigInt(int_value, int_base).value ;
+      if (is_ga_initialize == false)
+      {
+          ga('create', 'UA-186823627-2', 'auto') ;
+          ga('set', 'transport', 'beacon') ;
+          is_ga_initialize = true ;
+      }
 
-       else if (typeof bigInt !== "undefined")
-            auxBigInt = bigInt(parseInt(int_value) >>> 0, int_base).value ;
-
-       else auxBigInt = BigInt(parseInt(int_value) >>> 0, int_base) ;
-
-       return auxBigInt ;
+      ga('send', 'event', category, action, label) ;
   }
 

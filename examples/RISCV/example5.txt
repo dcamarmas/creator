@@ -56,7 +56,7 @@ f1:
 
 main: 
        # counting (matrix, 2, 6)
-       la  a0 matrix
+       lui a0 matrix
        lui a1 2
        lui a2 6
        jal ra counting
