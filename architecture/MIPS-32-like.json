@@ -290,7 +290,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -300,7 +301,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -310,7 +312,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -320,7 +323,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -330,7 +334,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -340,7 +345,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -350,7 +356,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -360,7 +367,8 @@
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "saved"
           ]
         },
         {
@@ -1676,7 +1684,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC; if(rs >> 0 >=0){PC=PC+((off << 16) >> 14)}"
+      "definition": "ra=PC; if(rs >> 0 >=0){PC=PC+((off << 16) >> 14)}; \ncheck_protection_jal()"
     },
     {
       "name": "bgtz",
@@ -2365,7 +2373,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC\nPC=addr"
+      "definition": "ra=PC\nPC=addr; \ncheck_protection_jal()"
     },
     {
       "name": "jalr",
@@ -2407,7 +2415,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd=PC\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd); \ncheck_protection_jal()"
     },
     {
       "name": "jr",
@@ -2443,7 +2451,7 @@
           "valueField": "001000"
         }
       ],
-      "definition": "PC=rs"
+      "definition": "PC=rs; \ncheck_protection_jrra()"
     },
     {
       "name": "lb",
