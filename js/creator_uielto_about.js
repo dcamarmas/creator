@@ -37,7 +37,7 @@
                   this.update_internal_attributes() ;
 
 		  // set the HTML code
-	      o = '<b-card-group>' +
+	  var o = '<b-card-group>' +
                   '' +
 		  '    <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>' +
 		  '	<b-card-text>' +
