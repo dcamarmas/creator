@@ -20,22 +20,30 @@ echo "  * min.creator_web.js..."
 cat js/creator_bigint.js \
     js/creator_ga.js \
     js/creator_preload.js \
-    js/creator_ui.js \
+    \
     js/creator_protection_register.js \
     js/creator_definition_api.js \
+    \
     js/creator_compiler.js \
     js/creator_executor.js \
+    \
+    js/creator_uielto_about.js \
+    js/creator_ui.js \
     js/app.js > js/creator_web.js
 terser -o js/min.creator_web.js js/creator_web.js
 rm -fr js/creator_web.js
 
+
 echo "  * min.creator_node.js..."
 cat js/creator_bigint.js \
     js/creator_ga.js \
-    js/creator_definition_api.js \
+    \
     js/creator_protection_register.js \
+    js/creator_definition_api.js \
+    \
     js/creator_compiler.js \
     js/creator_executor.js \
+    \
     js/creator_node.js > js/min.creator_node.js
 
 
