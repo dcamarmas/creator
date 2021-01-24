@@ -95,7 +95,5 @@
 			  '</b-card-group>'
         }
 
-        Vue.component('uielto-about', {
-            template: uielto_about 
-        })
+        Vue.component('uielto-about', uielto_about)
 
