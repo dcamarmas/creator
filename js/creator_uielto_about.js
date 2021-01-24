@@ -24,6 +24,36 @@
         var uielto_about = {
               template:   '<b-card-group>' +
                           '' +
+                          '<uielto-author ' +
+                          '  author_img="/creator/images/author_fgarcia.png" ' +
+                          '  author_alt="author_fgarcia" ' +
+                          '  author_full_name="Félix García Carballeira" ' +
+                          '  author_href_linked="" ' +
+                          '  author_href_rgate="https://www.researchgate.net/profile/Felix_Garcia-Carballeira" ' +
+                          '  author_href_github="" ' +
+                          '></uielto-author>' +
+                          '' +
+                          '<uielto-author ' +
+                          '  author_img="/creator/images/author_acaldero.png" ' +
+                          '  author_alt="author_acaldero" ' +
+                          '  author_full_name="Alejandro Calderón Mateos" ' +
+                          '  author_href_linked="https://www.linkedin.com/in/alejandro-calderon-mateos/" ' +
+                          '  author_href_rgate="https://www.researchgate.net/profile/Alejandro_Calderon2" ' +
+                          '  author_href_github="https://github.com/acaldero/wepsim" ' +
+                          '></uielto-author>' +
+                          '' +
+                          '<uielto-author ' +
+                          '  author_img="/creator/images/author_dcamarmas.png" ' +
+                          '  author_alt="author_dcamarmas" ' +
+                          '  author_full_name="Diego Camarmas Alonso" ' +
+                          '  author_href_linked="" ' +
+                          '  author_href_rgate="" ' +
+                          '  author_href_github="https://github.com/dcamarmas" ' +
+                          '></uielto-author>' +
+                          '' +
+			  '</b-card-group>'
+
+/*
 			  '  <b-card img-src="/creator/images/author_fgarcia.png" ' +
 	                  '          img-alt="author_fgarcia" img-top>' +
 			  '  <b-card-text>' +
@@ -93,6 +123,7 @@
 			  '   </b-card>' +
 	                  '' +
 			  '</b-card-group>'
+*/
         }
 
         Vue.component('uielto-about', uielto_about)
