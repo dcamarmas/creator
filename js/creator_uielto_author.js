@@ -33,7 +33,7 @@
               template:   '  <b-card :img-src="author_img" ' +
 	                  '          :img-alt="author_alt" img-top>' +
 			  '  <b-card-text>' +
-			  '	  <div class="authorName"><span class="h6">{{ author_name }}</span></div>' +
+			  '	  <div class="authorName"><span class="h6">{{ author_full_name }}</span></div>' +
 			  '	  <hr>' +
 			  '	  <a aria-label="linkedin" target="_blank" :href="author_href_linked">' +
 			  '	  <span class="fab fa-linkedin"></span>' + ' linkedin' +
@@ -50,5 +50,5 @@
 			  '  </b-card>'
         }
 
-        Vue.component('uielto-author', uielto_author)
+        Vue.component('card-author', uielto_author)
 
