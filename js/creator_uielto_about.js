@@ -39,8 +39,9 @@
 		  // set the HTML code
 	  var o = '<b-card-group>' +
                   '' +
-		  '    <b-card img-src="./images/author_fgarcia.png" img-alt="author_fgarcia" img-top>' +
-		  '	<b-card-text>' +
+		  '  <b-card img-src="/creator/images/author_fgarcia.png" ' +
+                  '          img-alt="author_fgarcia" img-top>' +
+		  '  <b-card-text>' +
 		  '	  <div class="authorName">' +
 		  '	    <span class="h6">Félix García Carballeira</span>' +
 		  '	  </div>' +
@@ -54,11 +55,12 @@
 		  '	  </a>' +
 		  '	  <hr>' +
 		  '	  <a aria-label="GitHub Felix"><span class="fab fa-github"></span> github</a>' +
-		  '	</b-card-text>' +
-		  '    </b-card>' +
+		  '  </b-card-text>' +
+		  '  </b-card>' +
                   '' +
-		  '    <b-card img-src="./images/author_acaldero.png" img-alt="author_acaldero" img-top>' +
-		  '	<b-card-text>' +
+		  '  <b-card img-src="/creator/images/author_acaldero.png" ' +
+                  '          img-alt="author_acaldero" img-top>' +
+		  '  <b-card-text>' +
 		  '	  <div class="authorName">' +
 		  '	    <span class="h6">Alejandro Calderón Mateos</span>' +
 		  '	  </div>' +
@@ -80,11 +82,12 @@
 		  '	  <span class="fab fa-github"></span> ' +
 		  '	    github' +
 		  '	  </a>' +
-		  '	</b-card-text>' +
+		  '   </b-card-text>' +
 		  '   </b-card>' +
                   '' +
-		  '   <b-card img-src="./images/author_dcamarmas.png" img-alt="author_dcamarmas" img-top>' +
-		  '	<b-card-text>' +
+		  '   <b-card img-src="/creator/images/author_dcamarmas.png" ' +
+                  '           img-alt="author_dcamarmas" img-top>' +
+		  '   <b-card-text>' +
 		  '	  <div class="authorName">' +
 		  '	    <span class="h6">Diego Camarmas Alonso</span>' +
 		  '	  </div>' +
@@ -101,7 +104,7 @@
 		  '	    <span class="fab fa-github"></span>' +
 		  '	      github' +
 		  '	  </a>' +
-		  '	</b-card-text>' +
+		  '   </b-card-text>' +
 		  '   </b-card>' +
                   '' +
 		  '</b-card-group>' ;
