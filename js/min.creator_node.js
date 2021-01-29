@@ -240,8 +240,8 @@ function creator_callstack_leave()
 
                 if (
                     (true  == last_elto.registers_modified[i][j]) && // modified but
-                    (false == last_elto.registers_saved[i][j]) &&    // not saved...
-                    (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
+                    (false == last_elto.registers_saved[i][j]) &&
+                                    (architecture.components[i].elements[j].properties.icludes("saved")) // ...but should be saved
                 ) 
                 {
                     ret.ok = false;
