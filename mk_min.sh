@@ -27,6 +27,7 @@ cat js/creator_bigint.js \
     js/creator_compiler.js \
     js/creator_executor.js \
     \
+    js/creator_uielto_configuration.js \
     js/creator_uielto_author.js \
     js/creator_uielto_about.js \
     js/creator_ui.js \
