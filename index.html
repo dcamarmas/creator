@@ -154,16 +154,7 @@
           </b-modal>
 
           <!-- Instruction Help sidebar -->
-          <b-sidebar id="sidebar_help" 
-                     sidebar-class="border-left border-info" 
-                     title="Instruction Help" 
-                     right 
-                     shadow 
-                     width="33vw">
-
-            <sidebar-instruction-help :architecture="architecture"></sidebar-instruction-help>
-
-          </b-sidebar>
+          <sidebar-instruction-help id="sidebar_help" :architecture="architecture"></sidebar-instruction-help>
 
         </header>
 
@@ -220,32 +211,7 @@
             </div>
           </div>
 
-          <!-- Information popover -->
-          <b-popover target="info_men" triggers="click blur">
-            <template v-slot:title>
-              <b-button @click="closePopover" class="close" aria-label="Close">
-                <span class="d-inline-block" aria-hidden="true">&times;</span>
-              </b-button>
-              <br>
-            </template>
-
-            <div class="col-lg-12 col-sm-12">
-              <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
-                        href='https://creatorsim.github.io/' 
-                        target="_blank" 
-                        onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
-                <span class="fas fa-question-circle" ></span> 
-                Help
-              </b-button>
-              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" 
-                        v-b-modal.notifications><span class="fas fa-bell"></span> Show Notifications</b-button>
-              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" 
-                        v-b-modal.about>
-                <span class="fas fa-address-card"></span> 
-                About us
-              </b-button>
-            </div>
-          </b-popover>
+          <popover-info target="info_men" show_instruction_help="false"></popover-info>
 
           <!-- Architecture menu -->
           <div class="col-lg-12 col-sm-12" id="load_menu_arch">
@@ -480,41 +446,35 @@
               </div>
             </div>
 
-            <!-- Information popover -->
-            <b-popover target="info_arch" triggers="click blur">
-              <template v-slot:title>
-                <b-button @click="closePopover" class="close" aria-label="Close">
-                  <span class="d-inline-block" aria-hidden="true">&times;</span>
-                </b-button>
-                <br>
-              </template>
 
-              <div class="col-lg-12 col-sm-12">
-                <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
-                        href='https://creatorsim.github.io/' 
-                        target="_blank" 
-                        onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
-                  <span class="fas fa-question-circle" ></span> 
-                  Help
-                </b-button>
-                <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
-                          id="inst_ass" v-b-toggle.sidebar_help
-                          onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
-                    <span class="fas fa-book"></span>
-                    Instruction Help
-                </b-button>
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" 
-                          v-b-modal.notifications>
-                  <span class="fas fa-bell"></span> 
-                  Show Notifications
-                </b-button>
-                <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"
-                          v-b-modal.about>
-                  <span class="fas fa-address-card"></span> 
-                    About us
-                </b-button>
-              </div>
-            </b-popover>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            <!-- Information popover -->
+            <popover-info target="info_arch" show_instruction_help="true"></popover-info>
+
+
+
+
+
 
             <!-- Save architecture form -->
             <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
@@ -2796,7 +2756,6 @@
           </div>
         </div>
 
-
         <!-- Assembly view -->
         <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
@@ -2983,91 +2942,14 @@
             </div>
           </div>
 
-          <b-popover target="info_ass" triggers="click blur">
-            <template v-slot:title>
-              <b-button @click="closePopover" class="close" aria-label="Close">
-                <span class="d-inline-block" aria-hidden="true">
-                  &times;
-                </span>
-              </b-button>
-              <br>
-            </template>
-
-            <div class="col-lg-12 col-sm-12">
-              <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
-                        href='https://creatorsim.github.io/' 
-                        target="_blank">
-                <span class="fas fa-question-circle" ></span>
-                Help
-              </b-button>
-              <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
-                        id="inst_ass" v-b-toggle.sidebar_help>
-                <span class="fas fa-book"></span>
-                Instruction Help
-              </b-button>
-              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
-                        v-b-modal.notifications>
-                <span class="fas fa-bell"></span>
-                Show Notifications
-              </b-button>
-              <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
-                        v-b-modal.about>
-                <span class="fas fa-address-card"></span>
-                About us
-              </b-button>
-            </div>
-          </b-popover>
+          <popover-info target="info_ass" show_instruction_help="true"></popover-info>
 
           <!-- Assembly textarea and library tags-->
           <div class="contenedor row">
             <div class="col-lg-12 col-sm-12" id="divAssembly">
               <span id="assemblyInfo" class="fas fa-info-circle"></span> <span class="h5">Assembly:</span>
 
-              <b-popover target="assemblyInfo" title="Shortcuts" triggers="hover focus" placement="bottomright">
-                <b-list-group>
-                  <b-list-group-item class="d-flex justify-content-between align-items-center">
-                    Copy &nbsp&nbsp
-                    <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + c</b-badge>
-                    <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + c</b-badge>
-                  </b-list-group-item>
-
-                  <b-list-group-item class="d-flex justify-content-between align-items-center">
-                    Cut&nbsp &nbsp&nbsp
-                    <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + x</b-badge>
-                    <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + x</b-badge>
-                  </b-list-group-item>
-
-                  <b-list-group-item class="d-flex justify-content-between align-items-center">
-                    Paste &nbsp&nbsp
-                    <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + v</b-badge>
-                    <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + v</b-badge>
-                  </b-list-group-item>
-
-                  <b-list-group-item class="d-flex justify-content-between align-items-center">
-                    Select all &nbsp&nbsp
-                    <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + a</b-badge>
-                    <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + a</b-badge>
-                  </b-list-group-item>
-
-                  <b-list-group-item class="d-flex justify-content-between align-items-center">
-                    Undo &nbsp&nbsp
-                    <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + z</b-badge>
-                    <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + z</b-badge>
-                  </b-list-group-item>
-
-                  <b-list-group-item class="d-flex justify-content-between align-items-center">
-                    Redo &nbsp&nbsp
-                    <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + y</b-badge>
-                    <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + y</b-badge>
-                  </b-list-group-item>
-
-                  <b-list-group-item class="d-flex justify-content-between align-items-center">
-                    Block code comment &nbsp&nbsp
-                    <b-badge variant="primary" pill v-if="browser != 'Mac'"> Ctrl + m</b-badge>
-                    <b-badge variant="primary" pill v-if="browser == 'Mac'"> ⌘ + m</b-badge>
-                  </b-list-group-item>
-                </b-list-group>
-              </b-popover>
+              <popover-shortcuts target="assemblyInfo" :browser="browser"></popover-shortcuts>
 
               <textarea id="textarea_assembly" rows="14" class="code-scroll-y d-none" title="Asembly Code"></textarea>
             </div>
@@ -3247,39 +3129,7 @@
                   </div>
 
                   <!-- Information popover -->
-                  <b-popover target="info_sim" triggers="click blur">
-                    <template v-slot:title>
-                      <b-button @click="closePopover" class="close" aria-label="Close">
-                        <span class="d-inline-block" aria-hidden="true">&times;</span>
-                      </b-button>
-                      <br>
-                    </template>
-                    <div class="col-lg-12 col-sm-12">
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" 
-                                href='https://creatorsim.github.io/' 
-                                target="_blank" 
-                                onclick="creator_ga('send', 'event', 'help', 'help.general_help', 'help.general_help');">
-                        <span class="fas fa-question-circle" ></span> 
-                        Help
-                      </b-button>
-                      <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
-                                id="inst_ass" v-b-toggle.sidebar_help
-                                onclick="creator_ga('send', 'event', 'help', 'help.instruction_help', 'help.instruction_help');">
-                        <span class="fas fa-book"></span>
-                        Instruction Help
-                      </b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground" 
-                                v-b-modal.notifications>
-                        <span class="fas fa-bell"></span>
-                        Show Notifications
-                      </b-button>
-                      <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground"
-                                v-b-modal.about>
-                        <span class="fas fa-address-card"></span>
-                        About us
-                      </b-button>
-                    </div>
-                  </b-popover>
+                  <popover-info target="info_sim" show_instruction_help="true"></popover-info>
 
                   <!-- Examples modal -->
                   <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">

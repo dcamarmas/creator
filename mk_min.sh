@@ -32,10 +32,13 @@ cat js/creator_bigint.js \
     \
     components/general/creator_uielto_navbar.js \
     components/general/creator_uielto_configuration.js \
+    components/general/creator_uielto_info.js \
     components/general/creator_uielto_about.js \
     components/general/creator_uielto_author.js \
     components/general/creator_uielto_notifications.js \
     components/general/creator_uielto_instruction_help.js \
+    \
+    components/assembly/creator_uielto_shortcuts.js \
     \
     js/creator_ui.js \
     js/app.js > js/creator_web.js

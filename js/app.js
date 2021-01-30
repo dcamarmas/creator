@@ -3912,7 +3912,7 @@ try
         return 'popoverValueContent' + i;
       },
 
-      closePopover(){
+      closePopover(){ //TODO: remove when all components are created
         this.$root.$emit('bv::hide::popover')
       },
 
