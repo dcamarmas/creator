@@ -58,10 +58,6 @@ try
       c_debug: false,
       /*Dark Mode*/
       dark: false,
-      /*Help table*/
-      insHelpFields: ['name'],
-      /*Help Filter*/
-      instHelpFilter: null,
 
       /*Architecture editor*/
 
@@ -326,7 +322,7 @@ try
       /*Displayed notifications*/
       notifications: notifications,
       /*Accesskey*/
-      navigator: "",
+      browser: "",
       /*Calculator*/
       calculator: {
         bits: 32,
@@ -468,13 +464,13 @@ try
     created(){
       this.load_num_version();
       this.load_arch_available();
-      this.detectNavigator();
+      this.detectBrowser();
     },
 
     /*Mounted vue instance*/
     mounted(){
       this.backupCopyModal();
-      this.verifyNavigator();
+      this.verifyBrowser();
       this.get_configuration();
 
       // pre-load following URL params
@@ -497,15 +493,15 @@ try
         });
       },
 
-      verifyNavigator() {
+      verifyBrowser() {
         if (navigator.userAgent.indexOf("OPR") > -1) {
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
         else if (navigator.userAgent.indexOf("MIE") > -1) {
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
         else if (navigator.userAgent.indexOf("Edge") > -1) {
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
         else if(navigator.userAgent.indexOf("Chrome") > -1) {
           return;
@@ -517,7 +513,7 @@ try
           return
         }
         else{
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
       },
 
@@ -3197,20 +3193,20 @@ try
       /*Simulator*/
 
       /*Detects the browser being used*/
-      detectNavigator(){
+      detectBrowser(){
         if(navigator.appVersion.indexOf("Mac")!=-1) {
-          this.navigator = "Mac";
+          this.browser = "Mac";
           return;
         }
 
         if (navigator.userAgent.search("Chrome") >= 0) {
-          this.navigator = "Chrome";
+          this.browser = "Chrome";
         }
         else if (navigator.userAgent.search("Firefox") >= 0) {
-          this.navigator = "Firefox";
+          this.browser = "Firefox";
         }
         else if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
-          this.navigator = "Chrome";
+          this.browser = "Chrome";
         }
       },
 

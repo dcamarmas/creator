@@ -46,12 +46,12 @@
                           '  author_img="/creator/images/author_dcamarmas.png" ' +
                           '  author_alt="author_dcamarmas" ' +
                           '  author_full_name="Diego Camarmas Alonso" ' +
-                          '  author_href_linked="" ' +
+                          '  author_href_linked="https://www.linkedin.com/in/dcamarmas" ' +
                           '  author_href_rgate="" ' +
                           '  author_href_github="https://github.com/dcamarmas" ' +
                           '></card-author>' +
                           '' +
-			  '</b-card-group>'
+			                   '</b-card-group>'
         }
 
         Vue.component('uielto-about', uielto_about)

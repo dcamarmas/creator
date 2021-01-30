@@ -27,9 +27,16 @@ cat js/creator_bigint.js \
     js/creator_compiler.js \
     js/creator_executor.js \
     \
-    js/creator_uielto_configuration.js \
-    js/creator_uielto_author.js \
-    js/creator_uielto_about.js \
+    components/general/creator_uielto_loading.js \
+    components/general/creator_uielto_supported_browser.js \
+    \
+    components/general/creator_uielto_navbar.js \
+    components/general/creator_uielto_configuration.js \
+    components/general/creator_uielto_about.js \
+    components/general/creator_uielto_author.js \
+    components/general/creator_uielto_notifications.js \
+    components/general/creator_uielto_instruction_help.js \
+    \
     js/creator_ui.js \
     js/app.js > js/creator_web.js
 terser -o js/min.creator_web.js js/creator_web.js

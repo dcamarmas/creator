@@ -30,25 +30,26 @@
                              author_href_rgate:  { type: String, required: false },
                              author_href_github: { type: String, required: false }
                           },
+
               template:   '  <b-card :img-src="author_img" ' +
-	                  '          :img-alt="author_alt" img-top>' +
-			  '  <b-card-text>' +
-			  '	  <div class="authorName"><span class="h6">{{ author_full_name }}</span></div>' +
-			  '	  <hr>' +
-			  '	  <a aria-label="linkedin" target="_blank" :href="author_href_linked">' +
-			  '	  <span class="fab fa-linkedin"></span>' + ' linkedin' +
-			  '	  </a>' +
-			  '	  <hr>' +
-			  '	  <a aria-label="r-gate" target="_blank" :href="author_href_rgate">' +
-			  '	  <span class="fab fa-researchgate"></span>' + ' r-gate' +
-			  '	  </a>' +
-			  '	  <hr>' +
-			  '	  <a aria-label="github" target="_blank" :href="author_href_github">' +
-			  '	  <span class="fab fa-github"></span>' + ' github' +
-			  '	  </a>' +
-			  '  </b-card-text>' +
-			  '  </b-card>'
-        }
+				                  '          :img-alt="author_alt" img-top>' +
+												  '  <b-card-text>' +
+												  '	  <div class="authorName"><span class="h6">{{ author_full_name }}</span></div>' +
+												  '	  <hr>' +
+												  '	  <a aria-label="linkedin" target="_blank" :href="author_href_linked">' +
+												  '	  <span class="fab fa-linkedin"></span>' + ' linkedin' +
+												  '	  </a>' +
+												  '	  <hr>' +
+												  '	  <a aria-label="r-gate" target="_blank" :href="author_href_rgate">' +
+												  '	  <span class="fab fa-researchgate"></span>' + ' r-gate' +
+												  '	  </a>' +
+												  '	  <hr>' +
+												  '	  <a aria-label="github" target="_blank" :href="author_href_github">' +
+												  '	  <span class="fab fa-github"></span>' + ' github' +
+												  '	  </a>' +
+												  '  </b-card-text>' +
+												  '  </b-card>'
+       	}
 
         Vue.component('card-author', uielto_author)
 
