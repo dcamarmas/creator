@@ -50,7 +50,7 @@
 
      // after half second show the loading spinner
      toHandler = setTimeout(function(){
- 			       $(".loading").show() ;
+ 			       $("#loading").show() ;
 			       toHandler = null ;
 			    }, 500) ;
   }
@@ -64,6 +64,6 @@
       }
 
       // disable loading spinner
-      $(".loading").hide();
+      $("#loading").hide();
   }
 
