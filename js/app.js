@@ -337,14 +337,31 @@ try
       data_mode: 'registers',
       /*Register form*/
       newValue: '',
-      /*Memory table fields*/
-      memFields: ['Tag', 'Address', 'Binary', 'Value'],
-      row_index: null,
-      selected_space_view: null,
-      selected_stack_view: null,
+
+
+
+
+
+
+
+
+      row_index: null, //TODO: try to include in a component
+      selected_space_view: null, //TODO: try to include in a component
+      selected_stack_view: null, //TODO: try to include in a component
       /*Memory*/
       memory: memory,
       unallocated_memory: unallocated_memory,
+
+
+
+
+
+
+
+
+
+
+
       /*Stats*/
       totalStats: totalStats,
       stats: stats,
@@ -3379,15 +3396,17 @@ try
 
       },
 
-      /*Filter table instructions*/
-      filter(row, filter){
-        if(row.hide == true){
-          return false;
-        }
-        else{
-          return true;
-        }
-      },
+
+
+
+
+
+
+
+
+
+
+
 
       /*Console mutex*/
       consoleEnter(){
@@ -3395,12 +3414,30 @@ try
           consoleMutex = true;
         }
       },
-
       /*Empty keyboard and display*/
       consoleClear(){
         this.keyboard = "";
         this.display = "";
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Convert hexadecimal number to floating point number*/
       hex2float ( hexvalue ){
@@ -3568,7 +3605,6 @@ try
       },*/
 
       change_data_view(e, type){
-        console.log(e);
         app._data.data_mode = e;
 
         if(e == "registers"){
@@ -3597,16 +3633,23 @@ try
         app.$forceUpdate();
 
           /* Google Analytics */
-	  creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
+	        creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
-      select_space_type(record, index){
-        if(record.type == "space" && (memory[memory_hash[0]][index].Binary[0].Tag != null) || memory[memory_hash[0]][index].Binary[1].Tag != null || memory[memory_hash[0]][index].Binary[2].Tag != null || memory[memory_hash[0]][index].Binary[3].Tag != null){
-        	app._data.row_index = index;
-        	this.$refs['space_modal'].show();
-        }
-      },
 
+
+
+
+
+
+
+
+
+
+
+
+
+      //TODO: try to include in a component
       change_space_view(){
       	if(app._data.selected_space_view == "sig_int"){
     			var hex = "";
@@ -3672,15 +3715,17 @@ try
       	}
       },
 
+      //TODO: try to include in a component
       hide_space_modal(){
         app._data.selected_space_view = null;
       },
 
-      select_stack_type(record, index){
-        app._data.row_index = index;
-        this.$refs['stack_modal'].show();
+      //TODO: try to include in a component
+      hide_space_modal(){
+        app._data.selected_space_view = null;
       },
 
+      //TODO: try to include in a component
       change_stack_view(){
         if(app._data.selected_stack_view == "sig_int"){
           var hex = "";
@@ -3712,13 +3757,23 @@ try
         }
       },
 
+      //TODO: try to include in a component
       hide_stack_modal(){
         app._data.selected_stack_view = null;
       },
 
-      hide_space_modal(){
-      	app._data.selected_space_view = null;
-      },
+
+
+
+
+
+
+
+
+
+
+
+      
 
       change_popover_register(e){
         this.$root.$emit('bv::hide::popover');
