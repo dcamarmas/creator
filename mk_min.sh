@@ -27,6 +27,8 @@ cat js/creator_bigint.js \
     js/creator_compiler.js \
     js/creator_executor.js \
     \
+    components/creator_uielto_mem_stack.js \
+    \
     components/general/creator_uielto_loading.js \
     components/general/creator_uielto_supported_browser.js \
     \
