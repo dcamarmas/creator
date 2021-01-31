@@ -39,6 +39,11 @@ cat js/creator_bigint.js \
     components/general/creator_uielto_instruction_help.js \
     \
     components/assembly/creator_uielto_shortcuts.js \
+    components/assembly/creator_uielto_error.js \
+    \
+    components/simulator/creator_uielto_calculator.js \
+    components/simulator/creator_uielto_table_execution.js \
+    components/simulator/creator_uielto_stats.js \
     \
     js/creator_ui.js \
     js/app.js > js/creator_web.js
