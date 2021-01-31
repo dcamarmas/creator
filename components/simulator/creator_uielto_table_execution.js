@@ -25,7 +25,7 @@
 
 			  props:      {
 											instructions:   { type: Array, required: true },
-											enter: 					{ type: String, required: true },
+											enter: 					{ type: String, required: true }
 										},
 
 				data: 			function () {
