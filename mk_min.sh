@@ -46,7 +46,14 @@ cat js/creator_bigint.js \
     \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
+    components/simulator/creator_uielto_memory_data.js \
+    components/simulator/creator_uielto_memory_text.js \
+    components/simulator/creator_uielto_memory_stack.js \
     components/simulator/creator_uielto_stats.js \
+    components/simulator/creator_uielto_stats_plot.js \
+    components/simulator/creator_uielto_stats_table.js \
+    components/simulator/creator_uielto_monitor.js \
+    components/simulator/creator_uielto_keyboard.js \
     \
     js/creator_ui.js \
     js/app.js > js/creator_web.js
