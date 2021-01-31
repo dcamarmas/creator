@@ -35,11 +35,6 @@ try
     /*DOM ID*/
     el: "#app",
 
-    /*Import Graph component*/
-    components: {
-      apexchart: VueApexCharts,
-    },
-
     /*Vue data*/
     data: {
 
@@ -323,31 +318,12 @@ try
       notifications: notifications,
       /*Accesskey*/
       browser: "",
-      /*Calculator*/
-      calculator: {
-        bits: 32,
-        hexadecimal: "",
-        sign: "",
-        exponent: "",
-        mantissa: "",
-        mantisaDec: 0,
-        exponentDec: "",
-        decimal: "",
-        variant32: "primary",
-        variant64: "outline-primary",
-        lengthHexadecimal: 8,
-        lengthSign: 1,
-        lengthExponent: 8,
-        lengthMantissa: 23,
-      },
       /*Run instructions*/
       instructionsPacked: 20,
       /*Run button*/
       runExecution: false,
       /*Reset button*/
       resetBut: false,
-      /*Instrutions table fields*/
-      archInstructions: ['Break', 'Address', 'Label', 'userInstructions', 'loadedInstructions', 'tag'],
       /*Instructions memory*/
       instructions: instructions,
       /*Register type displayed*/
@@ -369,90 +345,11 @@ try
       /*Memory*/
       memory: memory,
       unallocated_memory: unallocated_memory,
-      /*Stats table fields*/
-      statsFields: {
-        type: {
-          label: 'Type',
-          sortable: true
-        },
-        number_instructions: {
-          label: 'Number of instructions',
-          sortable: true
-        },
-        percentage: {
-          label: 'Percentage',
-          sortable: true
-        }
-      },
       /*Stats*/
       totalStats: totalStats,
       stats: stats,
-
       /*Stats Graph values*/
       stats_value: stats_value,
-
-      /*Stats Graph configure*/
-      chartOptions: {
-        colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
-        chart: {
-          id: 'graphic',
-          type: 'donut',
-        },
-        labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
-        dataLabels: {
-          enabled: true
-        },
-        donut: {
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              showAlways: true,
-              label: "Total",
-            },
-          },
-        },
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shade: 'dark',
-            type: "horizontal",
-            shadeIntensity: 0.5,
-            gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
-            inverseColors: true,
-            opacityFrom: 1,
-            opacityTo: 1,
-            stops: [0, 50, 100],
-            colorStops: []
-          },
-          colors: ['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
-        },
-        legend: {
-          formatter: function(val, opts) {
-            return val + " - " + opts.w.globals.series[opts.seriesIndex]
-          }
-        },
-        plotOptions: {
-          pie: {
-            donut: {
-              labels: {
-                show: true,
-                total: {
-                  show: true,
-                  showAlways: true,
-                  color: 'black',
-                  formatter: function (w) {
-                    return w.globals.seriesTotals.reduce((a, b) => {
-                      return a + b
-                    }, 0)
-                  }
-                }
-              }
-            }
-          }
-        },
-      },
-
       /*Display*/
       display: '',
       /*Keyboard*/
@@ -3210,246 +3107,6 @@ try
         }
       },
 
-      /*Change bits of calculator*/
-      changeBitsCalculator(index){
-        if(index == 0){
-          this.calculator.bits = 32;
-          this.calculator.variant32 = "primary";
-          this.calculator.variant64 = "outline-primary";
-          this.calculator.lengthHexadecimal = 8;
-          this.calculator.lengthSign = 1;
-          this.calculator.lengthExponent = 8;
-          this.calculator.lengthMantissa = 23;
-        }
-        if(index == 1){
-          this.calculator.bits = 64;
-          this.calculator.variant64 = "primary";
-          this.calculator.variant32 = "outline-primary";
-          this.calculator.lengthHexadecimal = 16;
-          this.calculator.lengthSign = 1;
-          this.calculator.lengthExponent = 11;
-          this.calculator.lengthMantissa = 52;
-        }
-        this.calculator.hexadecimal = "";
-        this.calculator.sign = "";
-        this.calculator.exponent = "";
-        this.calculator.mantissa = "";
-        this.calculator.decimal = "";
-        this.calculator.sign = "";
-        this.calculator.exponentDec = "";
-        this.calculator.mantissaDec = "";
-      },
-
-      /*Calculator functionality*/
-      calculatorFunct(index){
-        switch(index){
-          case 0:
-            console_log(this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0"));
-            var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
-            var float;
-            var binary;
-
-            if(this.calculator.bits == 32){
-              var re = /[0-9A-Fa-f]{8}/g;
-              if(!re.test(hex)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.sign = "";
-                this.calculator.exponent = "";
-                this.calculator.mantissa = "";
-                this.calculator.exponentDec = "";
-                this.calculator.mantissaDec = 0;
-                this.calculator.decimal = "";
-
-                return;
-              }
-
-              float = this.hex2float("0x" + hex);
-              console_log(this.hex2float("0x" + hex));
-              binary = this.float2bin(float).padStart(this.calculator.bits, "0");
-
-              this.calculator.decimal = float;
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 9);
-              this.calculator.mantissa = binary.substring(9, 32);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-
-              /* Google Analytics */
-	      creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.hex');
-	      creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.0x' + hex);
-            }
-            if(this.calculator.bits == 64){
-              var re = /[0-9A-Fa-f]{16}/g;
-              if(!re.test(hex)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.sign = "";
-                this.calculator.exponent = "";
-                this.calculator.mantissa = "";
-                this.calculator.exponentDec = "";
-                this.calculator.mantissaDec = 0;
-                this.calculator.decimal = "";
-
-                return;
-              }
-
-              float = this.hex2double("0x"+hex);
-              binary = this.double2bin(float);
-
-              this.calculator.decimal = float;
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 12);
-              this.calculator.mantissa = binary.substring(12, 64);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-
-              /* Google Analytics */
-	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.hex');
-	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.0x' + hex);
-            }
-
-            break;
-          case 1:
-            if(this.calculator.bits == 32){
-              this.calculator.sign = this.calculator.sign.padStart(1, "0");
-              this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
-              this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
-
-              var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-              console_log(binary);
-
-              var re = /[0-1]{32}/g;
-              if(!re.test(binary)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.hexadecimal = "";
-                this.calculator.decimal = "";
-                this.calculator.exponentDec = "";
-                this.calculator.mantissaDec = 0;
-                return;
-              }
-
-              float = this.hex2float("0x" + this.bin2hex(binary));
-              hexadecimal = this.bin2hex(binary);
-
-              this.calculator.decimal = float;
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-
-              /*Google Analytics*/
-		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.bin');
-		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + binary);
-            }
-            if(this.calculator.bits == 64){
-              this.calculator.sign = this.calculator.sign.padStart(1, "0");
-              this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
-              this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
-
-              var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-
-              var re = /[0-1]{64}/g;
-              if(!re.test(binary)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.hexadecimal = "";
-                this.calculator.decimal = "";
-                this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-                this.calculator.mantissaDec = 0;
-
-                var j = 0;
-                for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                  j--;
-                  this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-                }
-                return;
-              }
-
-              double = this.hex2double("0x" + this.bin2hex(binary));
-              hexadecimal = this.bin2hex(binary);
-
-              this.calculator.decimal = double;
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-
-              /*Google Analytics*/
-		  creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.bin');
-		  creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + binary);
-            }
-
-            break;
-          case 2:
-            var float = parseFloat(this.calculator.decimal, 10);
-            var binary;
-            var hexadecimal;
-
-            if(this.calculator.bits == 32){
-              hexadecimal = this.bin2hex(this.float2bin(float));
-              binary = this.float2bin(float);
-
-              console_log(hexadecimal);
-
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 9);
-              this.calculator.mantissa = binary.substring(9, 32);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-
-              /*Google Analytics*/
-		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.dec');
-		  creator_ga('send', 'event', 'calculator', 'calculator.32', 'calculator.32.' + this.calculator.decimal);
-            }
-
-            if(this.calculator.bits == 64){
-              hexadecimal = this.bin2hex(this.double2bin(float));
-              binary = this.double2bin(float);
-
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 12);
-              this.calculator.mantissa = binary.substring(12, 64);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-
-              /* Google Analytics */
-	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.dec');
-	      creator_ga('send', 'event', 'calculator', 'calculator.64', 'calculator.64.' + this.calculator.decimal);
-            }
-            break;
-        }
-      },
-
       /*Update a new register value*/
       updateReg(comp, elem, type, precision){
         for (var i = 0; i < architecture.components[comp].elements.length; i++) {
@@ -3722,26 +3379,13 @@ try
 
       },
 
-      /*Enter a breakpoint*/
-      breakPoint(record, index){
-        for (var i = 0; i < instructions.length; i++) {
-          if(instructions[i].Address == record.Address){
-            index = i;
-            break;
-          }
+      /*Filter table instructions*/
+      filter(row, filter){
+        if(row.hide == true){
+          return false;
         }
-
-        if(instructions[index].Break == null){
-          instructions[index].Break = true;
-          app._data.instructions[index].Break = true;
-
-          /* Google Analytics */
-	  creator_ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
-
-        }
-        else if(instructions[index].Break == true){
-          instructions[index].Break = null;
-          app._data.instructions[index].Break = null;
+        else{
+          return true;
         }
       },
 
@@ -3896,17 +3540,6 @@ try
         return ret;
       },
 
-
-      /*Filter table instructions*/
-      filter(row, filter){
-        if(row.hide == true){
-          return false;
-        }
-        else{
-          return true;
-        }
-      },
-
       /*Popover functions*/
       popoverId(i){
         return 'popoverValueContent' + i;
@@ -3935,6 +3568,7 @@ try
       },*/
 
       change_data_view(e, type){
+        console.log(e);
         app._data.data_mode = e;
 
         if(e == "registers"){
@@ -4206,10 +3840,13 @@ try
 }
 catch(e)
 {
-   show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + e, 'danger') ;
+  show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + e, 'danger') ;
 
-   setTimeout(function(){
-     location.reload(true)
-   }, 3000);
+  /* Google Analytics */
+  creator_ga('send', 'event', 'creator', 'creator.exception', 'creator.exception.' + e);
+
+  setTimeout(function(){
+    location.reload(true)
+  }, 3000);
 }
 
