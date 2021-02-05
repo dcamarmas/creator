@@ -108,6 +108,10 @@
       [
         {
            function_name: "",
+           begin_caller: 0,
+           end_caller: 0,
+           begin_callee: 0,
+           end_callee: 0,
            registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
            registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
            registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
@@ -176,9 +180,20 @@ function creator_callstack_enter(function_name)
         }
     }
 
+    if (typeof window !== "undefined"){
+      app._data.begin_caller = architecture.memory_layout[4].value;
+      app._data.end_caller = architecture.memory_layout[4].value;
+      app._data.begin_callee = architecture.memory_layout[4].value;
+      app._data.end_callee = architecture.memory_layout[4].value;
+    }
+
     // initialize elto
     var new_elto = {
         function_name:          function_name,
+        begin_caller:           creator_callstack_getTop().begin_callee, // llamante: FFFFFFFC, FFFFFFF0
+        end_caller:             architecture.memory_layout[4].value,     // llamante: FFFFFFF0, FFFFFF00
+        begin_callee:           architecture.memory_layout[4].value,     // llamado:  FFFFFFF0, FFFFFF00
+        end_callee:             architecture.memory_layout[4].value,     // llamado:  FFFFFFF0, FFFFFF00
         registers_saved:        arr_saved,
         registers_modified:     arr_modified,
         registers_value:        arr_value,
@@ -221,11 +236,15 @@ function creator_callstack_leave()
                 )
                 {
                     ret.ok  = false;
-           //       ret.msg = "The value of one or more protected registers is not kept between calls";
-                    ret.msg = "The value of one or more registers was modified in the subrutine call";
+                    ret.msg = "Possible failure in the parameter passing convention";
                     break;
                 }
             }
+        }
+
+        if(creator_callstack_getTop().val.end_caller != architecture.memory_layout[4].value){
+          ret.ok = false;
+          ret.msg = "Possible failure in the parameter passing convention";
         }
     }
                   
@@ -278,6 +297,14 @@ function creator_callstack_leave()
     */
 
     stack_call_registers.pop();
+
+    if (typeof window !== "undefined"){
+      app._data.begin_caller  = creator_callstack_getTop().val.begin_caller; // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
+      app._data.end_caller    = creator_callstack_getTop().val.end_caller;   // llamante: FFFFFFF0, FFFFFF00, FFFFF000
+      app._data.begin_callee  = creator_callstack_getTop().val.begin_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+      app._data.end_callee    = creator_callstack_getTop().val.end_callee;   // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+    }
+
     return ret;
 }
 
@@ -335,7 +362,41 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
     return ret;
 }
 
-/*
+function creator_callstack_setsp(value)
+{
+
+    if (typeof window !== "undefined"){
+      app._data.end_callee = value;   // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+    }
+
+    // check params
+    if (0 == stack_call_registers.length) {
+        return;
+    }
+
+    // return the last element in the array
+    var elto = stack_call_registers[stack_call_registers.length - 1];
+    elto.end_callee = value;
+
+}
+
+function creator_callstack_reset()
+{
+    var ret = {
+        ok: true,
+        msg: ""
+    };
+
+    // initialize stack_call
+    stack_call_registers = [];
+
+    if (typeof window !== "undefined"){
+      app._data.begin_caller  = architecture.memory_layout[4].value;
+      app._data.end_caller    = architecture.memory_layout[4].value;
+      app._data.begin_callee  = architecture.memory_layout[4].value;
+      app._data.end_callee    = architecture.memory_layout[4].value;   
+    }
+}/*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
@@ -359,6 +420,9 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
 /*
  *  Description API 
  */
+
+var caller_stack = [];
+
 
 function check_protection_jal () // TODO: update the name to a proper one :-)
 {
@@ -6360,28 +6424,28 @@ function writeStackLimit ( stackLimit )
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else{
-            if(stackLimit < architecture.memory_layout[4].value){
+            //if(stackLimit < architecture.memory_layout[4].value){
               var diff = architecture.memory_layout[4].value - stackLimit;
               var auxStackLimit = stackLimit;
               var newRow = 0;
 
               for (var i = 0; i < (diff/4); i++){
-                if(unallocated_memory.length > 0){
+                /*if(unallocated_memory.length > 0){
                   memory[memory_hash[2]].splice(0, 0, unallocated_memory[unallocated_memory.length-1]);
                   memory[memory_hash[2]][0].unallocated = false;
                   unallocated_memory.splice(unallocated_memory.length-1, 1);
                 }
-                else{
+                else{*/
                   memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
                   for (var z = 0; z < 4; z++){
                     (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
                     auxStackLimit++;
                   }
                   newRow++;
-                }
+                //}
               }
-            }
-            else if(stackLimit > architecture.memory_layout[4].value){
+            //}
+            /*else if(stackLimit > architecture.memory_layout[4].value){
               var diff = stackLimit - architecture.memory_layout[4].value;
               for (var i = 0; i < (diff/4); i++){
                 unallocated_memory.push(memory[memory_hash[2]][0]);
@@ -6393,7 +6457,9 @@ function writeStackLimit ( stackLimit )
                   unallocated_memory.splice(0, 15);
                 }
               }
-            }
+            }*/
+
+            creator_callstack_setsp(stackLimit);
 
             architecture.memory_layout[4].value = stackLimit;
 
@@ -7024,6 +7090,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           unallocated_memory = [];
           if (typeof app !== "undefined")
               app._data.unallocated_memory = unallocated_memory;
+
+          creator_callstack_reset();
 
           return true ;
 }

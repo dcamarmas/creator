@@ -23,6 +23,9 @@
  *  Description API 
  */
 
+var caller_stack = [];
+
+
 function check_protection_jal () // TODO: update the name to a proper one :-)
 {
     var function_name = "main";  // TODO: get current subrutine name

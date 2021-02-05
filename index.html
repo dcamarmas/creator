@@ -3883,7 +3883,7 @@
                 <!-- Stack memory -->
                 <b-tab title="Stack">
 
-                  <table-mem-stack :unallocated_memory="unallocated_memory" :memory="memory"></table-mem-stack>
+                  <table-mem-stack :memory="memory[memory_hash[2]]"></table-mem-stack>
 
                   <!--TODO: try to include in a component this modal-->
                   <b-modal ref="stack_modal" 
