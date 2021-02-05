@@ -58,6 +58,10 @@
     
 ## ChangeLog
 
+### :atom: 3.0.x:
+- [x] Support for stack convey checks
+- [x] Initial interface based on Vue components
+
 ### :atom: 2.1.x:
 - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
 - [x] CREATOR **accessibility improved** up to WCAG 2.0 (Level AAA)
