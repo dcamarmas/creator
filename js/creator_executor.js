@@ -1656,28 +1656,28 @@ function writeStackLimit ( stackLimit )
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else{
-            if(stackLimit < architecture.memory_layout[4].value){
+            //if(stackLimit < architecture.memory_layout[4].value){
               var diff = architecture.memory_layout[4].value - stackLimit;
               var auxStackLimit = stackLimit;
               var newRow = 0;
 
               for (var i = 0; i < (diff/4); i++){
-                if(unallocated_memory.length > 0){
+                /*if(unallocated_memory.length > 0){
                   memory[memory_hash[2]].splice(0, 0, unallocated_memory[unallocated_memory.length-1]);
                   memory[memory_hash[2]][0].unallocated = false;
                   unallocated_memory.splice(unallocated_memory.length-1, 1);
                 }
-                else{
+                else{*/
                   memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
                   for (var z = 0; z < 4; z++){
                     (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
                     auxStackLimit++;
                   }
                   newRow++;
-                }
+                //}
               }
-            }
-            else if(stackLimit > architecture.memory_layout[4].value){
+            //}
+            /*else if(stackLimit > architecture.memory_layout[4].value){
               var diff = stackLimit - architecture.memory_layout[4].value;
               for (var i = 0; i < (diff/4); i++){
                 unallocated_memory.push(memory[memory_hash[2]][0]);
@@ -1689,7 +1689,9 @@ function writeStackLimit ( stackLimit )
                   unallocated_memory.splice(0, 15);
                 }
               }
-            }
+            }*/
+
+            creator_callstack_setsp(stackLimit);
 
             architecture.memory_layout[4].value = stackLimit;
 
@@ -2320,6 +2322,8 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
           unallocated_memory = [];
           if (typeof app !== "undefined")
               app._data.unallocated_memory = unallocated_memory;
+
+          creator_callstack_reset();
 
           return true ;
 }
