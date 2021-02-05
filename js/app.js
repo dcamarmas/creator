@@ -349,11 +349,16 @@ try
       selected_space_view: null, //TODO: try to include in a component
       selected_stack_view: null, //TODO: try to include in a component
       /*Memory*/
+      memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
       memory: memory,
-      unallocated_memory: unallocated_memory,
 
+      unallocated_memory: unallocated_memory, //TODO: delete
 
-
+      stack_pointer: 0,
+      begin_caller: 0,
+      end_caller: 0,
+      begin_callee: 0,
+      end_callee: 0,
 
 
 
