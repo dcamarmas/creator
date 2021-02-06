@@ -4508,12 +4508,12 @@ function field(field, action, type)
       var value = field.split("x");
       return value[1].length*4;
     }
-    else if (field.match(/^(\d)+\.(\d)+/)){
+    else if (field.match(/^([\-\d])+\.(\d)+/)){
       return float2bin(parseFloat(field)).length;
     }
-    else if (field.match(/^(\d)+/)){
+    else if (field.match(/^([\-\d])+/)){
       var numAux = parseInt(field, 10);
-      return (numAux.toString(2)).length;
+      return (bi_intToBigInt(numAux,10).toString(2)).length;
     }
 
     else{
@@ -6508,7 +6508,8 @@ function writeStackLimit ( stackLimit )
           }
           else{
             //if(stackLimit < architecture.memory_layout[4].value){
-              var diff = architecture.memory_layout[4].value - stackLimit;
+              //var diff = architecture.memory_layout[4].value - stackLimit;
+              var diff = memory[memory_hash[2]][0].Address - stackLimit;
               var auxStackLimit = stackLimit;
               var newRow = 0;
 
