@@ -153,7 +153,6 @@ var newExecution = true;
 /*Memory*/
 var memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
 var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
-var unallocated_memory = [];
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
@@ -1080,7 +1079,7 @@ function assembly_compiler()
             app._data.instructions = instructions;
 
         /*Initialize stack*/
-        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false, unallocated: false});
+        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
 
         for(var i = 0; i<4; i++){
           (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);

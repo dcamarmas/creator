@@ -326,12 +326,11 @@ try
       resetBut: false,
       /*Instructions memory*/
       instructions: instructions,
-      /*Register type displayed*/
+      /*Registers*/
       register_type: 'integer',
-      /*Register select*/
-      nameTabReg: 'Decimal',
-      nameReg: 'INT Registers',
-      regType: 'int',
+      name_tab_Reg: 'Decimal',
+      name_reg: 'INT Registers',
+      reg_type: 'int',
       register_popover: '',
       /*Data mode*/
       data_mode: 'registers',
@@ -351,8 +350,6 @@ try
       /*Memory*/
       memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
       memory: memory,
-
-      unallocated_memory: unallocated_memory, //TODO: delete
 
       stack_pointer: 0,
       begin_caller: 0,
@@ -627,60 +624,6 @@ try
             this.$refs.copyRef.show();
           }
         }
-      },
-
-      /*Load backup*/
-      load_copy(){
-        this.architecture_name = localStorage.getItem("arch_name");
-
-        var auxArchitecture = JSON.parse(localStorage.getItem("architecture_copy"));
-        architecture = register_value_deserialize(auxArchitecture);
-
-        app._data.architecture = architecture;
-        code_assembly = localStorage.getItem("assembly_copy");
-        //textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
-
-        for (var i = 0; i < app._data.arch_available.length; i++) {
-        	if(this.arch_available[i].name === this.architecture_name){
-        		app.load_examples_available(this.arch_available[i].examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-        	}
-        }
-
-        architecture_hash = [];
-        for (var i = 0; i < architecture.components.length; i++){
-          architecture_hash.push({name: architecture.components[i].name, index: i});
-          app._data.architecture_hash = architecture_hash;
-        }
-
-        backup_stack_address = architecture.memory_layout[4].value;
-        backup_data_address = architecture.memory_layout[3].value;
-
-        this.reset(false);
-
-        //$("#architecture_menu").hide();
-        app.change_UI_mode('simulator');
-        app.change_data_view('registers' , 'int');
-        app.$forceUpdate();
-        /*$("#save_btn_arch").show();
-        $("#advanced_mode").show();
-        $("#assembly_btn_arch").show();
-        $("#load_arch_btn_arch").hide();
-        $("#sim_btn_arch").show();
-        $("#load_arch").hide();
-        $("#load_menu_arch").hide();
-        $("#view_components").show();*/
-
-        this.$refs.copyRef.hide();
-
-        show_notification('The backup has been loaded correctly', 'success') ;
-      },
-
-      /*Delete backup*/
-      remove_copy(){
-        localStorage.removeItem("architecture_copy");
-        localStorage.removeItem("assembly_copy");
-        localStorage.removeItem("date_copy");
-        this.$refs.copyRef.hide();
       },
 
       /*Auxiliar to Load the selected architecture*/
@@ -2949,36 +2892,6 @@ try
                }) ;
       },
 
-      /*Load a selected example*/
-      load_example(url)
-      {
-         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
-
-         $.get(url, function(data) {
-		        code_assembly = data ;
-            textarea_assembly_editor.setValue(code_assembly) ;
-		        show_notification(' The selected example has been loaded correctly', 'success') ;
-
-		        /* Google Analytics */
-			creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
-		    });
-      },
-
-       /*Load a selected example and compile*/
-      load_example_init(url)
-      {
-         this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
-
-         $.get(url, function(data) {
-	 	        code_assembly = data ;
-		        app.assembly_compiler(code_assembly) ;
-		        show_notification(' The selected example has been loaded correctly', 'success') ;
-
-		        /* Google Analytics */
-		        creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
-	 	    });
-      },
-
       /*Save a binary in a local file*/
       library_save(){
         if(assembly_compiler() == -1){
@@ -3375,8 +3288,6 @@ try
                }
           }
 
-          app._data.unallocated_memory = unallocated_memory ;
-
           /*Auto-scroll*/
           if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
             var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
@@ -3591,48 +3502,28 @@ try
         this.$root.$emit('bv::hide::popover')
       },
 
-      /*Show integer registers*/
-      /*showIntReg(){
-        app._data.register_type = 'integer';
-        app._data.nameTabReg = "Decimal";
-        app._data.nameReg = 'INT Registers';
-        app._data.data_mode = "registers";
-        app.$forceUpdate();
-      },*/
 
-      /*Show floating point registers*/
-      /*showFpReg(){
-        app._data.register_type = 'floating point';
-        app._data.nameTabReg = "Real";
-        app._data.nameReg = 'FP Registers';
-        app._data.data_mode = "registers";
-        app.$forceUpdate();
-      },*/
 
+      //TODO: delete when all dependences are remove
       change_data_view(e, type){
         app._data.data_mode = e;
 
         if(e == "registers"){
           if(type == "int"){
             app._data.register_type = 'integer';
-            app._data.nameTabReg = "Decimal";
-            app._data.nameReg = 'INT Registers';
-            app._data.regType = 'int';
+            app._data.name_tab_Reg = "Decimal";
+            app._data.name_reg = 'INT Registers';
+            app._data.reg_type = 'int';
           }
           else if(type == "fp"){
             app._data.register_type = 'floating point';
-            app._data.nameTabReg = "Real";
-            app._data.nameReg = 'FP Registers';
-            app._data.regType = 'fp';
+            app._data.name_tab_Reg = "Real";
+            app._data.name_reg = 'FP Registers';
+            app._data.reg_type = 'fp';
           }
         }
         if(e == "memory"){
         	app._data.data_mode = e;
-          /*app._data.data_mode = "stats";
-          setTimeout(function(){
-            app.$forceUpdate();
-            app._data.data_mode = e;
-          }, 10);*/
         }
 
         app.$forceUpdate();
