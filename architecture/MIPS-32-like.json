@@ -6,10 +6,12 @@
       "double_precision": false,
       "elements": [
         {
-          "name": ["PC"],
+          "name": [
+            "PC"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -18,100 +20,120 @@
           ]
         },
         {
-          "name": ["EPC"],
+          "name": [
+            "EPC"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["CAUSE"],
+          "name": [
+            "CAUSE"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["BADVADDR"],
+          "name": [
+            "BADVADDR"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["STATUS"],
+          "name": [
+            "STATUS"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["HI"],
+          "name": [
+            "HI"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["LO"],
+          "name": [
+            "LO"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["FIR"],
+          "name": [
+            "FIR"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["FCSR"],
+          "name": [
+            "FCSR"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["FCCR"],
+          "name": [
+            "FCCR"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["FEXR"],
+          "name": [
+            "FEXR"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
@@ -125,169 +147,203 @@
       "double_precision": false,
       "elements": [
         {
-          "name": ["zero"],
+          "name": [
+            "zero"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read"
           ]
         },
         {
-          "name": ["at"],
+          "name": [
+            "at"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["v0"],
+          "name": [
+            "v0"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["v1"],
+          "name": [
+            "v1"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["a0"],
+          "name": [
+            "a0"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["a1"],
+          "name": [
+            "a1"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["a2"],
+          "name": [
+            "a2"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["a3"],
+          "name": [
+            "a3"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t0"],
+          "name": [
+            "t0"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t1"],
+          "name": [
+            "t1"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t2"],
+          "name": [
+            "t2"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t3"],
+          "name": [
+            "t3"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t4"],
+          "name": [
+            "t4"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t5"],
+          "name": [
+            "t5"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t6"],
+          "name": [
+            "t6"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t7"],
+          "name": [
+            "t7"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["s0"],
+          "name": [
+            "s0"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -295,10 +351,12 @@
           ]
         },
         {
-          "name": ["s1"],
+          "name": [
+            "s1"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -306,10 +364,12 @@
           ]
         },
         {
-          "name": ["s2"],
+          "name": [
+            "s2"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -317,10 +377,12 @@
           ]
         },
         {
-          "name": ["s3"],
+          "name": [
+            "s3"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -328,10 +390,12 @@
           ]
         },
         {
-          "name": ["s4"],
+          "name": [
+            "s4"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -339,10 +403,12 @@
           ]
         },
         {
-          "name": ["s5"],
+          "name": [
+            "s5"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -350,10 +416,12 @@
           ]
         },
         {
-          "name": ["s6"],
+          "name": [
+            "s6"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -361,10 +429,12 @@
           ]
         },
         {
-          "name": ["s7"],
+          "name": [
+            "s7"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -372,50 +442,60 @@
           ]
         },
         {
-          "name": ["t8"],
+          "name": [
+            "t8"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["t9"],
+          "name": [
+            "t9"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["k0"],
+          "name": [
+            "k0"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["k1"],
+          "name": [
+            "k1"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["gp"],
+          "name": [
+            "gp"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -424,10 +504,12 @@
           ]
         },
         {
-          "name": ["sp"],
+          "name": [
+            "sp"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0x0FFFFFFC",
+          "value": 268435452,
+          "default_value": 268435452,
           "properties": [
             "read",
             "write",
@@ -436,10 +518,12 @@
           ]
         },
         {
-          "name": ["fp"],
+          "name": [
+            "fp"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": 0,
+          "default_value": 0,
           "properties": [
             "read",
             "write",
@@ -448,10 +532,12 @@
           ]
         },
         {
-          "name": ["ra"],
+          "name": [
+            "ra"
+          ],
           "nbits": "32",
-          "value": "0xFFFFFFFF",
-          "default_value": "0xFFFFFFFF",
+          "value": 4294967295,
+          "default_value": 4294967295,
           "properties": [
             "read",
             "write"
@@ -465,7 +551,9 @@
       "double_precision": false,
       "elements": [
         {
-          "name": ["f0"],
+          "name": [
+            "f0"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -475,7 +563,9 @@
           ]
         },
         {
-          "name": ["f1"],
+          "name": [
+            "f1"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -485,7 +575,9 @@
           ]
         },
         {
-          "name": ["f2"],
+          "name": [
+            "f2"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -495,7 +587,9 @@
           ]
         },
         {
-          "name": ["f3"],
+          "name": [
+            "f3"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -505,7 +599,9 @@
           ]
         },
         {
-          "name": ["f4"],
+          "name": [
+            "f4"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -515,7 +611,9 @@
           ]
         },
         {
-          "name": ["f5"],
+          "name": [
+            "f5"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -525,7 +623,9 @@
           ]
         },
         {
-          "name": ["f6"],
+          "name": [
+            "f6"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -535,7 +635,9 @@
           ]
         },
         {
-          "name": ["f7"],
+          "name": [
+            "f7"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -545,7 +647,9 @@
           ]
         },
         {
-          "name": ["f8"],
+          "name": [
+            "f8"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -555,7 +659,9 @@
           ]
         },
         {
-          "name": ["f9"],
+          "name": [
+            "f9"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -565,7 +671,9 @@
           ]
         },
         {
-          "name": ["f10"],
+          "name": [
+            "f10"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -575,7 +683,9 @@
           ]
         },
         {
-          "name": ["f11"],
+          "name": [
+            "f11"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -585,7 +695,9 @@
           ]
         },
         {
-          "name": ["f12"],
+          "name": [
+            "f12"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -595,7 +707,9 @@
           ]
         },
         {
-          "name": ["f13"],
+          "name": [
+            "f13"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -605,7 +719,9 @@
           ]
         },
         {
-          "name": ["f14"],
+          "name": [
+            "f14"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -615,7 +731,9 @@
           ]
         },
         {
-          "name": ["f15"],
+          "name": [
+            "f15"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -625,7 +743,9 @@
           ]
         },
         {
-          "name": ["f16"],
+          "name": [
+            "f16"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -635,7 +755,9 @@
           ]
         },
         {
-          "name": ["f17"],
+          "name": [
+            "f17"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -645,7 +767,9 @@
           ]
         },
         {
-          "name": ["f18"],
+          "name": [
+            "f18"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -655,7 +779,9 @@
           ]
         },
         {
-          "name": ["f19"],
+          "name": [
+            "f19"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -665,7 +791,9 @@
           ]
         },
         {
-          "name": ["f20"],
+          "name": [
+            "f20"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -675,7 +803,9 @@
           ]
         },
         {
-          "name": ["f21"],
+          "name": [
+            "f21"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -685,7 +815,9 @@
           ]
         },
         {
-          "name": ["f22"],
+          "name": [
+            "f22"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -695,7 +827,9 @@
           ]
         },
         {
-          "name": ["f23"],
+          "name": [
+            "f23"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -705,7 +839,9 @@
           ]
         },
         {
-          "name": ["f24"],
+          "name": [
+            "f24"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -715,7 +851,9 @@
           ]
         },
         {
-          "name": ["f25"],
+          "name": [
+            "f25"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -725,7 +863,9 @@
           ]
         },
         {
-          "name": ["f26"],
+          "name": [
+            "f26"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -735,7 +875,9 @@
           ]
         },
         {
-          "name": ["f27"],
+          "name": [
+            "f27"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -745,7 +887,9 @@
           ]
         },
         {
-          "name": ["f28"],
+          "name": [
+            "f28"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -755,7 +899,9 @@
           ]
         },
         {
-          "name": ["f29"],
+          "name": [
+            "f29"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -765,7 +911,9 @@
           ]
         },
         {
-          "name": ["f30"],
+          "name": [
+            "f30"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -775,7 +923,9 @@
           ]
         },
         {
-          "name": ["f31"],
+          "name": [
+            "f31"
+          ],
           "nbits": "32",
           "value": 0,
           "default_value": 0,
@@ -792,7 +942,9 @@
       "double_precision": true,
       "elements": [
         {
-          "name": ["FP0"],
+          "name": [
+            "FP0"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -805,7 +957,9 @@
           ]
         },
         {
-          "name": ["FP2"],
+          "name": [
+            "FP2"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -818,7 +972,9 @@
           ]
         },
         {
-          "name": ["FP4"],
+          "name": [
+            "FP4"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -831,7 +987,9 @@
           ]
         },
         {
-          "name": ["FP6"],
+          "name": [
+            "FP6"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -844,7 +1002,9 @@
           ]
         },
         {
-          "name": ["FP8"],
+          "name": [
+            "FP8"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -857,7 +1017,9 @@
           ]
         },
         {
-          "name": ["FP10"],
+          "name": [
+            "FP10"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -870,7 +1032,9 @@
           ]
         },
         {
-          "name": ["FP12"],
+          "name": [
+            "FP12"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -883,7 +1047,9 @@
           ]
         },
         {
-          "name": ["FP14"],
+          "name": [
+            "FP14"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -896,7 +1062,9 @@
           ]
         },
         {
-          "name": ["FP16"],
+          "name": [
+            "FP16"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -909,7 +1077,9 @@
           ]
         },
         {
-          "name": ["FP18"],
+          "name": [
+            "FP18"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -922,7 +1092,9 @@
           ]
         },
         {
-          "name": ["FP20"],
+          "name": [
+            "FP20"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -935,7 +1107,9 @@
           ]
         },
         {
-          "name": ["FP22"],
+          "name": [
+            "FP22"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -948,7 +1122,9 @@
           ]
         },
         {
-          "name": ["FP24"],
+          "name": [
+            "FP24"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -961,7 +1137,9 @@
           ]
         },
         {
-          "name": ["FP26"],
+          "name": [
+            "FP26"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -974,7 +1152,9 @@
           ]
         },
         {
-          "name": ["FP28"],
+          "name": [
+            "FP28"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -987,7 +1167,9 @@
           ]
         },
         {
-          "name": ["FP30"],
+          "name": [
+            "FP30"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -2019,8 +2201,6 @@
       ],
       "definition": "fd = parseFloat(fs)"
     },
-
-
     {
       "name": "cvt.w.s",
       "type": "Arithmetic floating point",
@@ -2115,9 +2295,6 @@
       ],
       "definition": "fd = parseInt(fs)"
     },
-
-
-
     {
       "name": "div",
       "type": "Arithmetic integer",
@@ -2427,7 +2604,7 @@
       "cop": "001000",
       "help": "Unconditional jump.",
       "properties": [
-         "exit_subrutine"
+        "exit_subrutine"
       ],
       "nwords": 1,
       "fields": [
@@ -4706,102 +4883,102 @@
         }
       ],
       "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];"
-   },
-  {
-    "name": "bc1f",
-    "type": "Conditional bifurcation",
-    "signature_definition": "F0 F2 F3",
-    "signature": "bc1f,inm-unsigned,offset_words",
-    "signatureRaw": "bc1f cc off",
-    "co": "010001",
-    "cop": "0100000",
-    "help": "",
+    },
+    {
+      "name": "bc1f",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 F2 F3",
+      "signature": "bc1f,inm-unsigned,offset_words",
+      "signatureRaw": "bc1f cc off",
+      "co": "010001",
+      "cop": "0100000",
+      "help": "",
       "properties": [],
       "nwords": 1,
-    "fields": [
-      {
-        "name": "bc1f",
-        "type": "co",
-        "startbit": 31,
-        "stopbit": 26
-      },
-      {
-        "name": "cop",
-        "type": "cop",
-        "startbit": 25,
-        "stopbit": 21,
-        "valueField": "01000"
-      },
-      {
-        "name": "cc",
-        "type": "inm-unsigned",
-        "startbit": 20,
-        "stopbit": 18
-      },
-      {
-        "name": "off",
-        "type": "offset_words",
-        "startbit": 15,
-        "stopbit": 0
-      },
-      {
-        "name": "cop",
-        "type": "cop",
-        "startbit": 17,
-        "stopbit": 16,
-        "valueField": "00"
-      }
-    ],
-    "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {\n    PC=PC+((off << 16) >> 14)\n}"
-  },
-  {
-    "name": "bc1t",
-    "type": "Conditional bifurcation",
-    "signature_definition": "F0 F2 F4",
-    "signature": "bc1t,inm-unsigned,offset_words",
-    "signatureRaw": "bc1t cc off",
-    "co": "010001",
-    "cop": "0100001",
-    "help": "",
+      "fields": [
+        {
+          "name": "bc1f",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "01000"
+        },
+        {
+          "name": "cc",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 18
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 17,
+          "stopbit": 16,
+          "valueField": "00"
+        }
+      ],
+      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) == 0) {\n    PC=PC+((off << 16) >> 14)\n}"
+    },
+    {
+      "name": "bc1t",
+      "type": "Conditional bifurcation",
+      "signature_definition": "F0 F2 F4",
+      "signature": "bc1t,inm-unsigned,offset_words",
+      "signatureRaw": "bc1t cc off",
+      "co": "010001",
+      "cop": "0100001",
+      "help": "",
       "properties": [],
       "nwords": 1,
-    "fields": [
-      {
-        "name": "bc1t",
-        "type": "co",
-        "startbit": 31,
-        "stopbit": 26
-      },
-      {
-        "name": "cop",
-        "type": "cop",
-        "startbit": 25,
-        "stopbit": 21,
-        "valueField": "01000"
-      },
-      {
-        "name": "cc",
-        "type": "inm-unsigned",
-        "startbit": 20,
-        "stopbit": 18
-      },
-      {
-        "name": "ndtf",
-        "type": "cop",
-        "startbit": 17,
-        "stopbit": 16,
-        "valueField": "01"
-      },
-      {
-        "name": "off",
-        "type": "offset_words",
-        "startbit": 15,
-        "stopbit": 0
-      }
-    ],
-    "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {\n    PC=PC+((off << 16) >> 14)\n}"
-  },
-  {
+      "fields": [
+        {
+          "name": "bc1t",
+          "type": "co",
+          "startbit": 31,
+          "stopbit": 26
+        },
+        {
+          "name": "cop",
+          "type": "cop",
+          "startbit": 25,
+          "stopbit": 21,
+          "valueField": "01000"
+        },
+        {
+          "name": "cc",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 18
+        },
+        {
+          "name": "ndtf",
+          "type": "cop",
+          "startbit": 17,
+          "stopbit": 16,
+          "valueField": "01"
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "if ((FCSR & (1 << ((cc == 0 ? 0 : cc+1) + 23))) != 0) {\n    PC=PC+((off << 16) >> 14)\n}"
+    },
+    {
       "name": "c.eq.s",
       "type": "Logic",
       "signature_definition": "F0 F4 $F3 $F2",
@@ -5289,7 +5466,6 @@
       ],
       "definition": "if(Field.2.SIZE<=16){addi $rd $zero addr;}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nadd $rd $rd $at;}"
     },
-
     {
       "name": "lw",
       "signature_definition": "lw $F0 ($F1)",
@@ -5530,7 +5706,6 @@
       ],
       "definition": "if(Field.2.SIZE<=16){lbu $rd addr ($zero);}\nelse{lui $at Field.2.(31,16).int;\nori $at $at Field.2.(15,0).int;\nlbu $rd 0 ($at);}"
     },
-
     {
       "name": "l.d",
       "signature_definition": "l.d $F0 ($F1)",
@@ -6371,7 +6546,6 @@
       ],
       "definition": "slti $at $reg1 inm; beq $at $zero off;"
     },
-
     {
       "name": "bgt",
       "signature_definition": "bgt $F0 $F1 F2",
@@ -6433,722 +6607,704 @@
       "definition": "addi $at $zero inm; addi $at $at 1; slt $at $reg1 $at; beq $at $zero off;"
     },
     {
-        "name": "ble",
-        "signature_definition": "ble $F0 $F1 F2",
-        "signature": "ble,$INT-Reg,$INT-Reg,offset_words",
-        "signatureRaw": "ble $reg1 $reg2 off",
-        "help": "Conditional branch if Rsrc1 is less than or equal to Src2 (signed).",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "slt $at $reg2 $reg1; beq $at $zero off;"
-      },
-
-      {
-        "name": "ble",
-        "signature_definition": "ble $F0 F1 F2",
-        "signature": "ble,$INT-Reg,inm-unsigned,offset_words",
-        "signatureRaw": "ble $reg1 inm off",
-        "help": "",
+      "name": "ble",
+      "signature_definition": "ble $F0 $F1 F2",
+      "signature": "ble,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "ble $reg1 $reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal to Src2 (signed).",
       "properties": [],
       "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "inm",
-            "type": "inm-unsigned",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "addi $at $zero inm; addi $at $at 1; slti $at $reg1 inm; bne $at $zero off;"
-      },
-      
-
-
-      {
-        "name": "blt",
-        "signature_definition": "blt $F0 $F1 F2",
-        "signature": "blt,$INT-Reg,$INT-Reg,offset_words",
-        "signatureRaw": "blt $reg1 $reg2 off",
-        "help": "Conditional branch if Rsrc1 is less than Src2 (signed).",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
-      },
-      {
-        "name": "blt",
-        "signature_definition": "blt $F0 F1 F2",
-        "signature": "blt,$INT-Reg,inm-unsigned,offset_words",
-        "signatureRaw": "blt $reg1 inm off",
-        "help": "",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "slt $at $reg2 $reg1; beq $at $zero off;"
+    },
+    {
+      "name": "ble",
+      "signature_definition": "ble $F0 F1 F2",
+      "signature": "ble,$INT-Reg,inm-unsigned,offset_words",
+      "signatureRaw": "ble $reg1 inm off",
+      "help": "",
       "properties": [],
       "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "inm",
-            "type": "inm-unsigned",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "slti $at $reg1 inm; bne $at $zero off;"
-      },
-      
-      {
-        "name": "bne",
-        "signature_definition": "bne $F0 F1 F2",
-        "signature": "bne,$INT-Reg,inm-unsigned,offset_words",
-        "signatureRaw": "bne $reg1 inm off",
-        "help": "Conditional branch if Rsrc1 is not equal to Src2.",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "inm",
-            "type": "inm-unsigned",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "ori $at $zero inm; bne $reg1 $at off;"
-      },
-      {
-        "name": "beqz",
-        "signature_definition": "beqz $F0 F1",
-        "signature": "beqz,$INT-Reg,offset_words",
-        "signatureRaw": "beqz $reg1 off",
-        "help": "Conditional branch if the Rsrc register is equal to 0.",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "beq $reg1 $zero off;"
-      },
-
-      {
-        "name": "bnez",
-        "signature_definition": "bnez $F0 F1",
-        "signature": "bnez,$INT-Reg,offset_words",
-        "signatureRaw": "bnez $reg1 off",
-        "help": "Conditional branch if Rsrc is not equal to 0.",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "bne $reg1 $zero off;"
-      },
-
-      {
-        "name": "bgtu",
-        "signature_definition": "bgtu $F0 $F1 F2",
-        "signature": "bgtu,$INT-Reg,$INT-Reg,offset_words",
-        "signatureRaw": "bgtu $reg1 $reg2 off",
-        "help": "Conditional branch if the Rsrc1 register is greater than Src2 (unsigned).",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "sltu $at $reg2 $reg1; bne $at $zero off;"
-      },
-      {
-        "name": "bgtu",
-        "signature_definition": "bgtu $F0 F1 F2",
-        "signature": "bgtu,$INT-Reg,inm-unsigned,offset_words",
-        "signatureRaw": "bgtu $reg1 inm off",
-        "help": "",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "addi $at $zero inm; addi $at $at 1; slti $at $reg1 inm; bne $at $zero off;"
+    },
+    {
+      "name": "blt",
+      "signature_definition": "blt $F0 $F1 F2",
+      "signature": "blt,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "blt $reg1 $reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than Src2 (signed).",
       "properties": [],
       "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "inm",
-            "type": "inm-unsigned",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;"
-      },
-
-
-      {
-        "name": "bgeu",
-        "signature_definition": "bgeu $F0 $F1 F2",
-        "signature": "bgeu,$INT-Reg,$INT-Reg,offset_words",
-        "signatureRaw": "bgeu $reg1 $reg2 off",
-        "help": "Conditional branch if the Rsrc1 register is greater than or equal to Src2 (unsigned).",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "sltu $at $reg1 $reg2; beq $at $zero off;"
-      },
-      {
-        "name": "bgeu",
-        "signature_definition": "bgeu $F0 F1 F2",
-        "signature": "bgeu,$INT-Reg,inm-unsigned,offset_words",
-        "signatureRaw": "bgeu $reg1 inm off",
-        "help": "",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "slt $at $reg1 $reg2; bne $at $zero off;"
+    },
+    {
+      "name": "blt",
+      "signature_definition": "blt $F0 F1 F2",
+      "signature": "blt,$INT-Reg,inm-unsigned,offset_words",
+      "signatureRaw": "blt $reg1 inm off",
+      "help": "",
       "properties": [],
       "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "inm",
-            "type": "inm-unsigned",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "sltiu $at $reg1 inm; beq $at $zero off;"
-      },
-
-
-      {
-        "name": "bleu",
-        "signature_definition": "bleu $F0 $F1 F2",
-        "signature": "bleu,$INT-Reg,$INT-Reg,offset_words",
-        "signatureRaw": "bleu $reg1 $reg2 off",
-        "help": "Conditional branch if Rsrc1 is less than or equal to Src2 (unsigned).",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "sltu $at $reg2 $reg1; beq $at $zero off;"
-      },
-      {
-        "name": "bleu",
-        "signature_definition": "bleu $F0 F1 F2",
-        "signature": "bleu,$INT-Reg,inm-unsigned,offset_words",
-        "signatureRaw": "bleu $reg1 inm off",
-        "help": "",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "slti $at $reg1 inm; bne $at $zero off;"
+    },
+    {
+      "name": "bne",
+      "signature_definition": "bne $F0 F1 F2",
+      "signature": "bne,$INT-Reg,inm-unsigned,offset_words",
+      "signatureRaw": "bne $reg1 inm off",
+      "help": "Conditional branch if Rsrc1 is not equal to Src2.",
       "properties": [],
       "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "inm",
-            "type": "inm-unsigned",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; bne $at $zero off;"
-      },
-
-
-      {
-        "name": "bltu",
-        "signature_definition": "bltu $F0 $F1 F2",
-        "signature": "bltu,$INT-Reg,$INT-Reg,offset_words",
-        "signatureRaw": "bltu $reg1 $reg2 off",
-        "help": "Conditional branch if Rsrc1 is less than Src2 (unsigned).",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "sltu $at $reg1 $reg2; bne $at $zero off;"
-      },
-      {
-        "name": "bltu",
-        "signature_definition": "bltu $F0 F1 F2",
-        "signature": "bltu,$INT-Reg,inm-unsigned,offset_words",
-        "signatureRaw": "bltu $reg1 inm off",
-        "help": "",
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "ori $at $zero inm; bne $reg1 $at off;"
+    },
+    {
+      "name": "beqz",
+      "signature_definition": "beqz $F0 F1",
+      "signature": "beqz,$INT-Reg,offset_words",
+      "signatureRaw": "beqz $reg1 off",
+      "help": "Conditional branch if the Rsrc register is equal to 0.",
       "properties": [],
       "nwords": 1,
-        "fields": [
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": 25,
-            "stopbit": 21
-          },
-          {
-            "name": "inm",
-            "type": "inm-unsigned",
-            "startbit": 20,
-            "stopbit": 16
-          },
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": 15,
-            "stopbit": 0
-          }
-        ],
-        "definition": "sltiu $at $reg1 off; bne $at $zero off;"
-      },
-
-
-      {
-        "name": "li.s",
-        "signature_definition": "li.s $F0 F1",
-        "signature": "li.s,$SFP-Reg,inm-signed",
-        "signatureRaw": "li.s $rd val",
-        "help": "Load the value (float) into the fs register of the mathematical coprocessor",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "rd",
-            "type": "SFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "val",
-            "type": "inm-signed",
-            "startbit": "15",
-            "stopbit": "0"
-          }
-        ],
-        "definition": "lui $at Field.2.(31,16).float;\nori $at $at Field.2.(15,0).float;\nmtc1 $at $rd;"
-      },
-      {
-        "name": "li.d",
-        "signature_definition": "li.d $F0 F1",
-        "signature": "li.d,$DFP-Reg,inm-signed",
-        "signatureRaw": "li.d $rd val",
-        "help": "Load the value (double) into the fd register of the mathematical coprocessor",
-        "properties": [],
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "rd",
-            "type": "DFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "val",
-            "type": "inm-signed",
-            "startbit": "15",
-            "stopbit": "0"
-          }
-        ],
-        "definition": "lui $at Field.2.(31,16).double;\nori $at $at Field.2.(15,0).double;\nmtc1 $at $aliasDouble(rd;1);\nlui $at Field.2.(63,48).double;\nori $at $at Field.2.(47,32).double;\nmtc1 $at $aliasDouble(rd;0);"
-      },
-
-
-      {
-        "name": "c.eq.s",
-        "signature_definition": "c.eq.s $F1 $F0",
-        "signature": "c.eq.s,$SFP-Reg,$SFP-Reg",
-        "signatureRaw": "c.eq.s $fs $ft",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "ft",
-            "type": "SFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "fs",
-            "type": "SFP-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          }
-        ],
-        "definition": "c.eq.s 0 $fs $ft;"
-      },
-      {
-        "name": "c.eq.d",
-        "signature_definition": "c.eq.d $F1 $F0",
-        "signature": "c.eq.d,$DFP-Reg,$DFP-Reg",
-        "signatureRaw": "c.eq.d $fs $ft",
-        "help": "",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "ft",
-            "type": "DFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "fs",
-            "type": "DFP-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          }
-        ],
-        "definition": "c.eq.d 0 $fs $ft;"
-      },
-      {
-        "name": "c.olt.s",
-        "signature_definition": "c.olt.s $F1 $F0",
-        "signature": "c.olt.s,$SFP-Reg,$SFP-Reg",
-        "signatureRaw": "c.olt.s $fs $ft",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "ft",
-            "type": "SFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "fs",
-            "type": "SFP-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          }
-        ],
-        "definition": "c.olt.s 0 $fs $ft;"
-      },
-      {
-        "name": "c.olt.d",
-        "signature_definition": "c.olt.d $F1 $F0",
-        "signature": "c.olt.d,$DFP-Reg,$DFP-Reg",
-        "signatureRaw": "c.olt.d $fs $ft",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "ft",
-            "type": "DFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "fs",
-            "type": "DFP-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          }
-        ],
-        "definition": "c.olt.d 0 $fs $ft;"
-      },
-      {
-        "name": "c.ole.s",
-        "signature_definition": "c.ole.s $F1 $F0",
-        "signature": "c.ole.s,$SFP-Reg,$SFP-Reg",
-        "signatureRaw": "c.ole.s $fs $ft",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "ft",
-            "type": "SFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "fs",
-            "type": "SFP-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          }
-        ],
-        "definition": "c.ole.s 0 $fs $ft;"
-      },
-      {
-        "name": "c.ole.d",
-        "signature_definition": "c.ole.d $F1 $F0",
-        "signature": "c.ole.d,$DFP-Reg,$DFP-Reg",
-        "signatureRaw": "c.ole.d $fs $ft",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "ft",
-            "type": "DFP-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "fs",
-            "type": "DFP-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          }
-        ],
-        "definition": "c.ole.d 0 $fs $ft;"
-      },
-      {
-        "name": "bc1t",
-        "signature_definition": "bc1t F0",
-        "signature": "bc1t, offset_words",
-        "signatureRaw": "bc1t off",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "off",
-            "type": "offset_words",
-            "startbit": "25",
-            "stopbit": "0"
-          }
-        ],
-        "definition": "bc1t 0 off;"
-      },
-      {
-        "name": "ror",
-        "signature_definition": "ror $F1 $F0 F2",
-        "signature": "ror,$INT-Reg,$INT-Reg,inm-unsigned",
-        "signatureRaw": "ror $reg1 $reg2 val",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          },
-          {
-            "name": "val",
-            "type": "inm-unsigned",
-            "startbit": "15",
-            "stopbit": "0"
-          }
-        ],
-        "definition": "sll $at $reg2 op(32-(val));srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
-      },
-      {
-        "name": "rol",
-        "signature_definition": "rol $F1 $F0 F2",
-        "signature": "rol,$INT-Reg,$INT-Reg,inm-unsigned",
-        "signatureRaw": "rol $reg1 $reg2 val",
-        "help": "",
-        "nwords": 1,
-        "fields": [
-          {
-            "name": "reg2",
-            "type": "INT-Reg",
-            "startbit": "25",
-            "stopbit": "21"
-          },
-          {
-            "name": "reg1",
-            "type": "INT-Reg",
-            "startbit": "20",
-            "stopbit": "16"
-          },
-          {
-            "name": "val",
-            "type": "inm-unsigned",
-            "startbit": "15",
-            "stopbit": "0"
-          }
-        ],
-        "definition": "srl $at $reg2 op(32-(val));sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
-      }
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "beq $reg1 $zero off;"
+    },
+    {
+      "name": "bnez",
+      "signature_definition": "bnez $F0 F1",
+      "signature": "bnez,$INT-Reg,offset_words",
+      "signatureRaw": "bnez $reg1 off",
+      "help": "Conditional branch if Rsrc is not equal to 0.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bne $reg1 $zero off;"
+    },
+    {
+      "name": "bgtu",
+      "signature_definition": "bgtu $F0 $F1 F2",
+      "signature": "bgtu,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "bgtu $reg1 $reg2 off",
+      "help": "Conditional branch if the Rsrc1 register is greater than Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "sltu $at $reg2 $reg1; bne $at $zero off;"
+    },
+    {
+      "name": "bgtu",
+      "signature_definition": "bgtu $F0 F1 F2",
+      "signature": "bgtu,$INT-Reg,inm-unsigned,offset_words",
+      "signatureRaw": "bgtu $reg1 inm off",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at;"
+    },
+    {
+      "name": "bgeu",
+      "signature_definition": "bgeu $F0 $F1 F2",
+      "signature": "bgeu,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "bgeu $reg1 $reg2 off",
+      "help": "Conditional branch if the Rsrc1 register is greater than or equal to Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "sltu $at $reg1 $reg2; beq $at $zero off;"
+    },
+    {
+      "name": "bgeu",
+      "signature_definition": "bgeu $F0 F1 F2",
+      "signature": "bgeu,$INT-Reg,inm-unsigned,offset_words",
+      "signatureRaw": "bgeu $reg1 inm off",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "sltiu $at $reg1 inm; beq $at $zero off;"
+    },
+    {
+      "name": "bleu",
+      "signature_definition": "bleu $F0 $F1 F2",
+      "signature": "bleu,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "bleu $reg1 $reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal to Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "sltu $at $reg2 $reg1; beq $at $zero off;"
+    },
+    {
+      "name": "bleu",
+      "signature_definition": "bleu $F0 F1 F2",
+      "signature": "bleu,$INT-Reg,inm-unsigned,offset_words",
+      "signatureRaw": "bleu $reg1 inm off",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "ori $at $zero inm; beq $at $reg1 off; sltu $at $reg1 $at; bne $at $zero off;"
+    },
+    {
+      "name": "bltu",
+      "signature_definition": "bltu $F0 $F1 F2",
+      "signature": "bltu,$INT-Reg,$INT-Reg,offset_words",
+      "signatureRaw": "bltu $reg1 $reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "sltu $at $reg1 $reg2; bne $at $zero off;"
+    },
+    {
+      "name": "bltu",
+      "signature_definition": "bltu $F0 F1 F2",
+      "signature": "bltu,$INT-Reg,inm-unsigned,offset_words",
+      "signatureRaw": "bltu $reg1 inm off",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "inm",
+          "type": "inm-unsigned",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "sltiu $at $reg1 off; bne $at $zero off;"
+    },
+    {
+      "name": "li.s",
+      "signature_definition": "li.s $F0 F1",
+      "signature": "li.s,$SFP-Reg,inm-signed",
+      "signatureRaw": "li.s $rd val",
+      "help": "Load the value (float) into the fs register of the mathematical coprocessor",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "val",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "lui $at Field.2.(31,16).float;\nori $at $at Field.2.(15,0).float;\nmtc1 $at $rd;"
+    },
+    {
+      "name": "li.d",
+      "signature_definition": "li.d $F0 F1",
+      "signature": "li.d,$DFP-Reg,inm-signed",
+      "signatureRaw": "li.d $rd val",
+      "help": "Load the value (double) into the fd register of the mathematical coprocessor",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "val",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "lui $at Field.2.(31,16).double;\nori $at $at Field.2.(15,0).double;\nmtc1 $at $aliasDouble(rd;1);\nlui $at Field.2.(63,48).double;\nori $at $at Field.2.(47,32).double;\nmtc1 $at $aliasDouble(rd;0);"
+    },
+    {
+      "name": "c.eq.s",
+      "signature_definition": "c.eq.s $F1 $F0",
+      "signature": "c.eq.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.eq.s $fs $ft",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.eq.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.eq.d",
+      "signature_definition": "c.eq.d $F1 $F0",
+      "signature": "c.eq.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.eq.d $fs $ft",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.eq.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.olt.s",
+      "signature_definition": "c.olt.s $F1 $F0",
+      "signature": "c.olt.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.olt.s $fs $ft",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.olt.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.olt.d",
+      "signature_definition": "c.olt.d $F1 $F0",
+      "signature": "c.olt.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.olt.d $fs $ft",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.olt.d 0 $fs $ft;"
+    },
+    {
+      "name": "c.ole.s",
+      "signature_definition": "c.ole.s $F1 $F0",
+      "signature": "c.ole.s,$SFP-Reg,$SFP-Reg",
+      "signatureRaw": "c.ole.s $fs $ft",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "SFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ole.s 0 $fs $ft;"
+    },
+    {
+      "name": "c.ole.d",
+      "signature_definition": "c.ole.d $F1 $F0",
+      "signature": "c.ole.d,$DFP-Reg,$DFP-Reg",
+      "signatureRaw": "c.ole.d $fs $ft",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "fs",
+          "type": "DFP-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "c.ole.d 0 $fs $ft;"
+    },
+    {
+      "name": "bc1t",
+      "signature_definition": "bc1t F0",
+      "signature": "bc1t, offset_words",
+      "signatureRaw": "bc1t off",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": "25",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "bc1t 0 off;"
+    },
+    {
+      "name": "ror",
+      "signature_definition": "ror $F1 $F0 F2",
+      "signature": "ror,$INT-Reg,$INT-Reg,inm-unsigned",
+      "signatureRaw": "ror $reg1 $reg2 val",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "val",
+          "type": "inm-unsigned",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "sll $at $reg2 op(32-(val));srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
+    },
+    {
+      "name": "rol",
+      "signature_definition": "rol $F1 $F0 F2",
+      "signature": "rol,$INT-Reg,$INT-Reg,inm-unsigned",
+      "signatureRaw": "rol $reg1 $reg2 val",
+      "help": "",
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "val",
+          "type": "inm-unsigned",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "srl $at $reg2 op(32-(val));sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
+    }
   ],
   "directives": [
     {
