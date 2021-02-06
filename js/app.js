@@ -344,7 +344,7 @@ try
 
 
 
-
+      current_subrutine: "main", //TODO: change to current subrutine
       row_index: null, //TODO: try to include in a component
       selected_space_view: null, //TODO: try to include in a component
       selected_stack_view: null, //TODO: try to include in a component
@@ -634,7 +634,7 @@ try
         this.architecture_name = localStorage.getItem("arch_name");
 
         var auxArchitecture = JSON.parse(localStorage.getItem("architecture_copy"));
-        architecture = bigInt_deserialize(auxArchitecture);
+        architecture = register_value_deserialize(auxArchitecture);
 
         app._data.architecture = architecture;
         code_assembly = localStorage.getItem("assembly_copy");
@@ -687,7 +687,7 @@ try
       load_arch_select_aux(ename, cfg, load_associated_examples, e)
       {
 			  var auxArchitecture = cfg;
-			  architecture = bigInt_deserialize(auxArchitecture);
+			  architecture = register_value_deserialize(auxArchitecture);
 			  app._data.architecture = architecture;
 
 			  architecture_hash = [];
@@ -849,14 +849,14 @@ try
       /*Save the current architecture in a JSON file*/
       arch_save(){
         var auxObject = jQuery.extend(true, {}, architecture);
-        var auxArchitecture = bigInt_serialize(auxObject);
+        var auxArchitecture = register_value_serialize(auxObject);
 
-	auxArchitecture.components.forEach((c, i) => {
-		c.elements.forEach((e, j) => {
-			if (e.default_value) e.value = e.default_value;
-			else e.value = 0;
-		});
-	});
+      	auxArchitecture.components.forEach((c, i) => {
+      		c.elements.forEach((e, j) => {
+      			if (e.default_value) e.value = e.default_value;
+      			else e.value = "0";
+      		});
+      	});
 
         var textToWrite = JSON.stringify(auxArchitecture, null, 2);
         var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
@@ -909,7 +909,7 @@ try
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.memory_layout = auxArchitecture.memory_layout;
             app._data.architecture = architecture;
@@ -924,7 +924,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.memory_layout = auxArchitecture2.memory_layout;
           app._data.architecture = architecture;
 
@@ -1011,7 +1011,7 @@ try
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.components = auxArchitecture.components;
             app._data.architecture = architecture;
@@ -1032,7 +1032,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.components = auxArchitecture2.components;
 
           app._data.architecture = architecture;
@@ -1400,7 +1400,7 @@ try
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.instructions = auxArchitecture.instructions;
             app._data.architecture = architecture;
@@ -1415,7 +1415,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.instructions = auxArchitecture2.instructions;
 
           app._data.architecture = architecture;
@@ -1945,7 +1945,7 @@ try
         for (var i = 0; i < load_architectures.length; i++) {
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.pseudoinstructions = auxArchitecture.pseudoinstructions;
             app._data.architecture = architecture;
@@ -1960,7 +1960,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.pseudoinstructions = auxArchitecture2.pseudoinstructions;
 
           app._data.architecture = architecture;
@@ -2607,7 +2607,7 @@ try
         for (var i = 0; i < load_architectures.length; i++) {
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.directives = auxArchitecture.directives;
             app._data.architecture = architecture;
@@ -2621,7 +2621,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.directives = auxArchitecture2.directives;
 
           app._data.architecture = architecture;
@@ -2796,7 +2796,7 @@ try
             if (typeof(Storage) !== "undefined")
             {
               var auxObject = jQuery.extend(true, {}, architecture);
-              var auxArchitecture = bigInt_serialize(auxObject);
+              var auxArchitecture = register_value_serialize(auxObject);
               var auxArch = JSON.stringify(auxArchitecture, null, 2);
 
               var date = new Date();

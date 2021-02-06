@@ -192,60 +192,6 @@ var display = '' ;
 // Load architecture
 //
 
-/*String to Bigint number*/
-function bigInt_deserialize(object)
-{
-    var auxObject = object;
-
-    for (var i=0; i<auxObject.components.length; i++)
-    {
-        var aux = null ;
-        var auxBigInt = null ;
-
-        if (auxObject.components[i].type != "floating point")
-        {
-            for (var j = 0; j < auxObject.components[i].elements.length; j++)
-	    {
-                 aux = auxObject.components[i].elements[j].value;
-                 auxObject.components[i].elements[j].value = bi_intToBigInt(aux,10) ;
-
-                 if (auxObject.components[i].double_precision != true)
-	         {
-                     aux = auxObject.components[i].elements[j].default_value;
-                     auxObject.components[i].elements[j].default_value = bi_intToBigInt(aux,10) ;
-                 }
-            }
-        }
-    }
-
-    return auxObject;
-}
-
-/*Bigint number to string*/
-function bigInt_serialize(object)
-{
-    var auxObject = jQuery.extend(true, {}, object);
-
-    for (var i=0; i<architecture.components.length; i++)
-    {
-        if (architecture.components[i].type != "floating point")
-  	   {
-               for (var j = 0; j < architecture.components[i].elements.length; j++)
-	       {
-                    var aux = architecture.components[i].elements[j].value;
-                    auxObject.components[i].elements[j].value = aux.toString();
-
-                    if (architecture.components[i].double_precision != true)
-		    {
-                        var aux = architecture.components[i].elements[j].default_value;
-                        auxObject.components[i].elements[j].default_value = aux.toString();
-                    }
-               }
-           }
-    }
-
-    return auxObject;
-}
 
 // Load architecture
 
@@ -260,7 +206,7 @@ function load_arch_select ( cfg )
                       } ;
 
 	    var auxArchitecture = cfg;
-	    architecture = bigInt_deserialize(auxArchitecture);
+	    architecture = register_value_deserialize(auxArchitecture);
 
 	    architecture_hash = [];
 	    for (var i = 0; i < architecture.components.length; i++) {
@@ -3968,12 +3914,12 @@ function field(field, action, type)
       var value = field.split("x");
       return value[1].length*4;
     }
-    else if (field.match(/^(\d)+\.(\d)+/)){
+    else if (field.match(/^([\-\d])+\.(\d)+/)){
       return float2bin(parseFloat(field)).length;
     }
-    else if (field.match(/^(\d)+/)){
+    else if (field.match(/^([\-\d])+/)){
       var numAux = parseInt(field, 10);
-      return (numAux.toString(2)).length;
+      return (bi_intToBigInt(numAux,10).toString(2)).length;
     }
 
     else{
