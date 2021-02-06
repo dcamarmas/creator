@@ -344,7 +344,7 @@ try
 
 
 
-
+      current_subrutine: "main", //TODO: change to current subrutine
       row_index: null, //TODO: try to include in a component
       selected_space_view: null, //TODO: try to include in a component
       selected_stack_view: null, //TODO: try to include in a component
@@ -849,14 +849,14 @@ try
       /*Save the current architecture in a JSON file*/
       arch_save(){
         var auxObject = jQuery.extend(true, {}, architecture);
-        var auxArchitecture = bigInt_serialize(auxObject);
+        var auxArchitecture = register_value_serialize(auxObject);
 
-	auxArchitecture.components.forEach((c, i) => {
-		c.elements.forEach((e, j) => {
-			if (e.default_value) e.value = e.default_value;
-			else e.value = 0;
-		});
-	});
+      	auxArchitecture.components.forEach((c, i) => {
+      		c.elements.forEach((e, j) => {
+      			if (e.default_value) e.value = e.default_value;
+      			else e.value = "0";
+      		});
+      	});
 
         var textToWrite = JSON.stringify(auxArchitecture, null, 2);
         var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
@@ -2796,7 +2796,7 @@ try
             if (typeof(Storage) !== "undefined")
             {
               var auxObject = jQuery.extend(true, {}, architecture);
-              var auxArchitecture = bigInt_serialize(auxObject);
+              var auxArchitecture = register_value_serialize(auxObject);
               var auxArch = JSON.stringify(auxArchitecture, null, 2);
 
               var date = new Date();
