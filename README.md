@@ -59,7 +59,10 @@
 ## ChangeLog
 
 ### :atom: 3.0.x:
-- [x] Support for stack convey checks
+- [x] Support for checking Stack Calling Conventions
+     * Colored stack
+     * SP and FP pointers are shown on the memory stack detail panel
+     * Checking saved registers on stack are restored
 - [x] Initial interface based on Vue components
 
 ### :atom: 2.1.x:
