@@ -35,8 +35,8 @@ function bi_intToBigInt ( int_value, int_base )
 }
 
 
-/*String to Bigint number*/
-function bigInt_deserialize(object)
+/*String to number/bigint*/
+function register_value_deserialize(object)
 {
 	var auxObject = object;
 
@@ -45,45 +45,46 @@ function bigInt_deserialize(object)
 		var aux = null ;
 		var auxBigInt = null ;
 
-		if (auxObject.components[i].type != "floating point")
+		for (var j = 0; j < auxObject.components[i].elements.length; j++)
 		{
-			for (var j = 0; j < auxObject.components[i].elements.length; j++)
-			{
-				aux = auxObject.components[i].elements[j].value;
+			aux = auxObject.components[i].elements[j].value;
+			if (auxObject.components[i].type != "floating point")
 				auxObject.components[i].elements[j].value = bi_intToBigInt(aux,10) ;
+			else
+				auxObject.components[i].elements[j].value = parseFloat(aux) ;
 
-				if (auxObject.components[i].double_precision != true)
-				{
-					aux = auxObject.components[i].elements[j].default_value;
+			if (auxObject.components[i].double_precision != true)
+			{
+				aux = auxObject.components[i].elements[j].default_value;
+				if (auxObject.components[i].type != "floating point")
 					auxObject.components[i].elements[j].default_value = bi_intToBigInt(aux,10) ;
-				}
+				else
+					auxObject.components[i].elements[j].value = parseFloat(aux) ;
 			}
 		}
+
 	}
 
 	return auxObject;
 }
 
-/*Bigint number to string*/
-function bigInt_serialize(object)
+/*Number/Bigint to string*/
+function register_value_serialize(object)
 {
 	var auxObject = jQuery.extend(true, {}, object);
 
 	for (var i=0; i<architecture.components.length; i++)
 	{
-		if (architecture.components[i].type != "floating point")
-	   	{
-		   for (var j = 0; j < architecture.components[i].elements.length; j++)
-			{
-				var aux = architecture.components[i].elements[j].value;
-				auxObject.components[i].elements[j].value = Number(aux);
+		for (var j = 0; j < architecture.components[i].elements.length; j++)
+		{
+			var aux = architecture.components[i].elements[j].value;
+			auxObject.components[i].elements[j].value = aux.toString();
 
-				if (architecture.components[i].double_precision != true)
-				{
-					var aux = architecture.components[i].elements[j].default_value;
-					auxObject.components[i].elements[j].default_value = Number(aux);
-				}
-		   }
+			if (architecture.components[i].double_precision != true)
+			{
+				var aux = architecture.components[i].elements[j].default_value;
+				auxObject.components[i].elements[j].default_value = aux.toString();
+			}
 		}
 	}
 

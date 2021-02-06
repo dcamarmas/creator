@@ -206,7 +206,7 @@ function load_arch_select ( cfg )
                       } ;
 
 	    var auxArchitecture = cfg;
-	    architecture = bigInt_deserialize(auxArchitecture);
+	    architecture = register_value_deserialize(auxArchitecture);
 
 	    architecture_hash = [];
 	    for (var i = 0; i < architecture.components.length; i++) {
