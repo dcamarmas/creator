@@ -6,7 +6,9 @@
       "double_precision": false,
       "elements": [
         {
-          "name": ["PC"],
+          "name": [
+            "PC"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -25,7 +27,10 @@
       "double_precision": false,
       "elements": [
         {
-          "name": ["zero", "x0"],
+          "name": [
+            "zero",
+            "x0"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -35,17 +40,23 @@
           ]
         },
         {
-          "name": ["ra", "x1"],
+          "name": [
+            "ra",
+            "x1"
+          ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": "4294967295",
+          "default_value": "4294967295",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["sp", "x2"],
+          "name": [
+            "sp",
+            "x2"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -57,7 +68,10 @@
           ]
         },
         {
-          "name": ["gp", "x3"],
+          "name": [
+            "gp",
+            "x3"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -69,7 +83,10 @@
           ]
         },
         {
-          "name": ["tp", "x4"],
+          "name": [
+            "tp",
+            "x4"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -79,7 +96,10 @@
           ]
         },
         {
-          "name": ["t0", "x5"],
+          "name": [
+            "t0",
+            "x5"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -89,7 +109,10 @@
           ]
         },
         {
-          "name": ["t1", "x6"],
+          "name": [
+            "t1",
+            "x6"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -99,7 +122,10 @@
           ]
         },
         {
-          "name": ["t2", "x7"],
+          "name": [
+            "t2",
+            "x7"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -109,7 +135,10 @@
           ]
         },
         {
-          "name": ["s0", "x8"],
+          "name": [
+            "s0",
+            "x8"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -119,7 +148,10 @@
           ]
         },
         {
-          "name": ["s1", "x9"],
+          "name": [
+            "s1",
+            "x9"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -129,7 +161,10 @@
           ]
         },
         {
-          "name": ["a0", "x10"],
+          "name": [
+            "a0",
+            "x10"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -139,7 +174,10 @@
           ]
         },
         {
-          "name": ["a1", "x11"],
+          "name": [
+            "a1",
+            "x11"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -149,7 +187,10 @@
           ]
         },
         {
-          "name": ["a2", "x12"],
+          "name": [
+            "a2",
+            "x12"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -159,7 +200,10 @@
           ]
         },
         {
-          "name": ["a3", "x13"],
+          "name": [
+            "a3",
+            "x13"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -169,7 +213,10 @@
           ]
         },
         {
-          "name": ["a4", "x14"],
+          "name": [
+            "a4",
+            "x14"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -179,7 +226,10 @@
           ]
         },
         {
-          "name": ["a5", "x15"],
+          "name": [
+            "a5",
+            "x15"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -189,7 +239,10 @@
           ]
         },
         {
-          "name": ["a6", "x16"],
+          "name": [
+            "a6",
+            "x16"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -199,7 +252,10 @@
           ]
         },
         {
-          "name": ["a7", "x17"],
+          "name": [
+            "a7",
+            "x17"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -209,7 +265,10 @@
           ]
         },
         {
-          "name": ["s2", "x18"],
+          "name": [
+            "s2",
+            "x18"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -219,7 +278,10 @@
           ]
         },
         {
-          "name": ["s3", "x19"],
+          "name": [
+            "s3",
+            "x19"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -229,7 +291,10 @@
           ]
         },
         {
-          "name": ["s4", "x20"],
+          "name": [
+            "s4",
+            "x20"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -239,7 +304,10 @@
           ]
         },
         {
-          "name": ["s5", "x21"],
+          "name": [
+            "s5",
+            "x21"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -249,7 +317,10 @@
           ]
         },
         {
-          "name": ["s6", "x22"],
+          "name": [
+            "s6",
+            "x22"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -259,7 +330,10 @@
           ]
         },
         {
-          "name": ["s7", "x23"],
+          "name": [
+            "s7",
+            "x23"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -269,7 +343,10 @@
           ]
         },
         {
-          "name": ["s8", "x24"],
+          "name": [
+            "s8",
+            "x24"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -279,7 +356,10 @@
           ]
         },
         {
-          "name": ["s9", "x25"],
+          "name": [
+            "s9",
+            "x25"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -289,7 +369,10 @@
           ]
         },
         {
-          "name": ["s10", "x26"],
+          "name": [
+            "s10",
+            "x26"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -299,7 +382,10 @@
           ]
         },
         {
-          "name": ["s11", "x27"],
+          "name": [
+            "s11",
+            "x27"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -309,7 +395,10 @@
           ]
         },
         {
-          "name": ["t3", "x28"],
+          "name": [
+            "t3",
+            "x28"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -319,7 +408,10 @@
           ]
         },
         {
-          "name": ["t4", "x29"],
+          "name": [
+            "t4",
+            "x29"
+          ],
           "nbits": "32",
           "value": "268435452",
           "default_value": "268435452",
@@ -329,7 +421,10 @@
           ]
         },
         {
-          "name": ["t5", "x30"],
+          "name": [
+            "t5",
+            "x30"
+          ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
@@ -339,7 +434,10 @@
           ]
         },
         {
-          "name": ["t6", "x31"],
+          "name": [
+            "t6",
+            "x31"
+          ],
           "nbits": "32",
           "value": "4294967295",
           "default_value": "4294967295",
@@ -356,320 +454,416 @@
       "double_precision": false,
       "elements": [
         {
-          "name": ["ft0", "f0"],
+          "name": [
+            "ft0",
+            "f0"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft1", "f1"],
+          "name": [
+            "ft1",
+            "f1"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft2", "f2"],
+          "name": [
+            "ft2",
+            "f2"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft3", "f3"],
+          "name": [
+            "ft3",
+            "f3"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft4", "f4"],
+          "name": [
+            "ft4",
+            "f4"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft5", "f5"],
+          "name": [
+            "ft5",
+            "f5"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft6", "f6"],
+          "name": [
+            "ft6",
+            "f6"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft7", "f7"],
+          "name": [
+            "ft7",
+            "f7"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs0", "f8"],
+          "name": [
+            "fs0",
+            "f8"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs1", "f9"],
+          "name": [
+            "fs1",
+            "f9"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa0", "f10"],
+          "name": [
+            "fa0",
+            "f10"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa1", "f11"],
+          "name": [
+            "fa1",
+            "f11"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa2", "f12"],
+          "name": [
+            "fa2",
+            "f12"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa3", "f13"],
+          "name": [
+            "fa3",
+            "f13"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa4", "f14"],
+          "name": [
+            "fa4",
+            "f14"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa5", "f15"],
+          "name": [
+            "fa5",
+            "f15"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa6", "f16"],
+          "name": [
+            "fa6",
+            "f16"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fa7", "f17"],
+          "name": [
+            "fa7",
+            "f17"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs2", "f18"],
+          "name": [
+            "fs2",
+            "f18"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs3", "f19"],
+          "name": [
+            "fs3",
+            "f19"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs4", "f20"],
+          "name": [
+            "fs4",
+            "f20"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs5", "f21"],
+          "name": [
+            "fs5",
+            "f21"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs6", "f22"],
+          "name": [
+            "fs6",
+            "f22"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs7", "f23"],
+          "name": [
+            "fs7",
+            "f23"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs0", "f24"],
+          "name": [
+            "fs0",
+            "f24"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs1", "f25"],
+          "name": [
+            "fs1",
+            "f25"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs10", "f26"],
+          "name": [
+            "fs10",
+            "f26"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["fs11", "f27"],
+          "name": [
+            "fs11",
+            "f27"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft8", "f28"],
+          "name": [
+            "ft8",
+            "f28"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft9", "f29"],
+          "name": [
+            "ft9",
+            "f29"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft10", "f30"],
+          "name": [
+            "ft10",
+            "f30"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
           ]
         },
         {
-          "name": ["ft11", "f31"],
+          "name": [
+            "ft11",
+            "f31"
+          ],
           "nbits": "32",
-          "value": 0,
-          "default_value": 0,
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
@@ -683,7 +877,9 @@
       "double_precision": true,
       "elements": [
         {
-          "name": ["FP0"],
+          "name": [
+            "FP0"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -696,7 +892,9 @@
           ]
         },
         {
-          "name": ["FP2"],
+          "name": [
+            "FP2"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -709,7 +907,9 @@
           ]
         },
         {
-          "name": ["FP4"],
+          "name": [
+            "FP4"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -722,7 +922,9 @@
           ]
         },
         {
-          "name": ["FP6"],
+          "name": [
+            "FP6"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -735,7 +937,9 @@
           ]
         },
         {
-          "name": ["FP8"],
+          "name": [
+            "FP8"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -748,7 +952,9 @@
           ]
         },
         {
-          "name": ["FP10"],
+          "name": [
+            "FP10"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -761,7 +967,9 @@
           ]
         },
         {
-          "name": ["FP12"],
+          "name": [
+            "FP12"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -774,7 +982,9 @@
           ]
         },
         {
-          "name": ["FP14"],
+          "name": [
+            "FP14"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -787,7 +997,9 @@
           ]
         },
         {
-          "name": ["FP16"],
+          "name": [
+            "FP16"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -800,7 +1012,9 @@
           ]
         },
         {
-          "name": ["FP18"],
+          "name": [
+            "FP18"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -813,7 +1027,9 @@
           ]
         },
         {
-          "name": ["FP20"],
+          "name": [
+            "FP20"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -826,7 +1042,9 @@
           ]
         },
         {
-          "name": ["FP22"],
+          "name": [
+            "FP22"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -839,7 +1057,9 @@
           ]
         },
         {
-          "name": ["FP24"],
+          "name": [
+            "FP24"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -852,7 +1072,9 @@
           ]
         },
         {
-          "name": ["FP26"],
+          "name": [
+            "FP26"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -865,7 +1087,9 @@
           ]
         },
         {
-          "name": ["FP28"],
+          "name": [
+            "FP28"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
@@ -878,7 +1102,9 @@
           ]
         },
         {
-          "name": ["FP30"],
+          "name": [
+            "FP30"
+          ],
           "nbits": "64",
           "value": 0,
           "simple_reg": [
