@@ -88,5 +88,7 @@ function register_value_serialize(object)
 		}
 	}
 
+	console.log(auxObject);
+
 	return auxObject;
 }
