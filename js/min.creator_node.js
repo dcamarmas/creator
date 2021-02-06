@@ -747,7 +747,6 @@ var newExecution = true;
 /*Memory*/
 var memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
 var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
-var unallocated_memory = [];
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
@@ -1674,7 +1673,7 @@ function assembly_compiler()
             app._data.instructions = instructions;
 
         /*Initialize stack*/
-        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false, unallocated: false});
+        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
 
         for(var i = 0; i<4; i++){
           (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
@@ -6507,41 +6506,18 @@ function writeStackLimit ( stackLimit )
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
           else{
-            //if(stackLimit < architecture.memory_layout[4].value){
-              //var diff = architecture.memory_layout[4].value - stackLimit;
-              var diff = memory[memory_hash[2]][0].Address - stackLimit;
-              var auxStackLimit = stackLimit;
-              var newRow = 0;
+            var diff = memory[memory_hash[2]][0].Address - stackLimit;
+            var auxStackLimit = stackLimit;
+            var newRow = 0;
 
-              for (var i = 0; i < (diff/4); i++){
-                /*if(unallocated_memory.length > 0){
-                  memory[memory_hash[2]].splice(0, 0, unallocated_memory[unallocated_memory.length-1]);
-                  memory[memory_hash[2]][0].unallocated = false;
-                  unallocated_memory.splice(unallocated_memory.length-1, 1);
-                }
-                else{*/
-                  memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true, unallocated: false});
-                  for (var z = 0; z < 4; z++){
-                    (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
-                    auxStackLimit++;
-                  }
-                  newRow++;
-                //}
+            for (var i = 0; i < (diff/4); i++){
+              memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
+              for (var z = 0; z < 4; z++){
+                (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+                auxStackLimit++;
               }
-            //}
-            /*else if(stackLimit > architecture.memory_layout[4].value){
-              var diff = stackLimit - architecture.memory_layout[4].value;
-              for (var i = 0; i < (diff/4); i++){
-                unallocated_memory.push(memory[memory_hash[2]][0]);
-                unallocated_memory[unallocated_memory.length-1].unallocated = true;
-                if (typeof app !== "undefined")
-                    app._data.unallocated_memory = unallocated_memory;
-                memory[memory_hash[2]].splice(0, 1);
-                if(unallocated_memory.length > 20){
-                  unallocated_memory.splice(0, 15);
-                }
-              }
-            }*/
+              newRow++;
+            }
 
             creator_callstack_setsp(stackLimit);
 
@@ -7170,11 +7146,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
             }
           }
 
-          // reset unallocate_memory
-          unallocated_memory = [];
-          if (typeof app !== "undefined")
-              app._data.unallocated_memory = unallocated_memory;
-
+          //Stack Reset
           creator_callstack_reset();
 
           return true ;

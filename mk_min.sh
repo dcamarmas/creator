@@ -39,11 +39,17 @@ cat js/creator_bigint.js \
     components/general/creator_uielto_notifications.js \
     components/general/creator_uielto_instruction_help.js \
     \
+    components/architecture/creator_uielto_backup.js \
+    \
+    components/assembly/creator_uielto_examples.js \
+    components/assembly/creator_uielto_textarea_assembly.js \
+    components/assembly/creator_uielto_library_tags.js \
     components/assembly/creator_uielto_shortcuts.js \
     components/assembly/creator_uielto_error.js \
     \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
+    components/simulator/creator_uielto_data_view_selector.js \
     components/simulator/creator_uielto_memory_data.js \
     components/simulator/creator_uielto_memory_text.js \
     components/simulator/creator_uielto_memory_stack.js \

@@ -262,12 +262,6 @@
                       <span class="h6">Are you sure you want to delete the architecture?</span>
                     </b-modal >
 
-
-
-                    
-
-
-
                     <b-card no-body class="overflow-hidden arch_card architectureCard">
                       <b-row no-gutters @click="new_arch">
                         <b-col md="3" class="center">
@@ -341,25 +335,18 @@
             </div>
             <br>
 
+
+
+
+
+
+
+
             <!-- Backup modal -->
             <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
-              <span class="h6">A backup is available</span>
-              <br>
-              <span class="h6">Date: {{date_copy}}</span>
-              <div class="col-lg-12 col-sm-12 row nomargin">
-                <div class="col-lg-6 col-sm-6 pb-1">
-                  <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" 
-                            @click="remove_copy">
-                    Discard
-                  </b-button>
-                </div>
-                <div class="col-lg-6 col-sm-6 pb-1">
-                  <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" 
-                            @click="load_copy">
-                    Load
-                  </b-button>
-                </div>
-              </div>
+
+              <uielto-backup :date_copy="date_copy"></uielto-backup>
+
             </b-modal>
           </div>
 
@@ -367,10 +354,17 @@
 
 
 
+
+
+
+
+
+
+
         <!-- Architecture editor view -->
         <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
 
-      		<!-- Navbar -->
+          <!-- Navbar -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
@@ -396,7 +390,7 @@
             </div>
 
             <div class="col-lg-4 col-sm-12 nopadding">
-							<div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
                     <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
@@ -425,16 +419,16 @@
             <div class="col-lg-2 col-sm-12 nopadding"></div>
 
             <div class="col-lg-3 col-sm-12 nopadding">
-            	<div class="col-lg-12 col-sm-12">
+              <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
-              		<div class="col-lg-6 col-sm-6 buttons">
-                		<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
+                  <div class="col-lg-6 col-sm-6 buttons">
+                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
                               id="conf_btn_arch" 
                               v-b-modal.configuration>
                       <span class="fa fa-cogs"></span> 
                       Configuration
                     </b-button>
-              		</div>
+                  </div>
                   <div class="col-lg-6 col-sm-6 buttons">
                     <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" 
                               id="info_arch">
@@ -442,7 +436,7 @@
                       Info
                     </b-button>
                   </div>
-            		</div>
+                </div>
               </div>
             </div>
 
@@ -454,22 +448,10 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             <!-- Information popover -->
             <popover-info target="info_arch" show_instruction_help="true"></popover-info>
+
+
 
 
 
@@ -492,7 +474,7 @@
           </div>
 
           <!-- Instruction set -->
-        	<div class="contenedor menu row">
+          <div class="contenedor menu row">
 
             <!-- Architecture components -->
             <div class="col-lg-12 col-sm-12" id="view_components">
@@ -2859,21 +2841,21 @@
               </b-form-input>
             </b-modal>
 
+
+
+
+
+
             <!-- Examples modal -->
             <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
-              <span class="h6" v-if="example_available.length == 0">
-                There's no examples at the moment
-              </span>
-              <b-list-group>
-                <b-list-group-item button 
-                                   v-for="item in example_available" 
-                                   @click="load_example(item.url)" 
-                                   ref="closeExample">
-                  {{item.name}}:
-                  <span v-html="item.description"></span>
-                </b-list-group-item>
-              </b-list-group>
+              <examples :example_available="example_available" compile="false" modal="examples"></examples>
             </b-modal>
+
+
+
+
+
+
 
             <div class="col-lg-2 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
@@ -2965,25 +2947,8 @@
 
           <!-- Assembly textarea and library tags-->
           <div class="contenedor row">
-            <div class="col-lg-12 col-sm-12" id="divAssembly">
-              <span id="assemblyInfo" class="fas fa-info-circle"></span> <span class="h5">Assembly:</span>
-
-              <popover-shortcuts target="assemblyInfo" :browser="browser"></popover-shortcuts>
-
-              <textarea id="textarea_assembly" rows="14" class="code-scroll-y d-none" title="Asembly Code"></textarea>
-            </div>
-
-            <div class="col-lg-0 col-sm-0 d-none" id="divTags">
-              <span class="h5">Library tags:</span>
-              <b-list-group>
-                <b-list-group-item v-for="item in update_binary.instructions_tag" 
-                                   v-if="item.globl==true">
-                  <b-badge pill variant="primary">
-                    {{item.tag}}
-                  </b-badge>
-                </b-list-group-item>
-              </b-list-group>
-            </div>
+            <textarea-assembly :browser="browser"></textarea-assembly>
+            <list-libray-tags :instructions_tag="update_binary.instructions_tag"></list-libray-tags>
           </div>
 
           <!-- Compile error -->
@@ -3013,7 +2978,7 @@
         <!-- Simulator view -->
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
-       	  <!-- Navbar -->
+          <!-- Navbar -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12 py-0 px-1">
@@ -3127,29 +3092,34 @@
                   <!-- Information popover -->
                   <popover-info target="info_sim" show_instruction_help="true"></popover-info>
 
-                  <!-- Examples modal -->
-                  <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
-                    <span class="h6" v-if="example_available.length == 0">There's no examples at the moment</span>
-                    <b-list-group>
-                      <b-list-group-item button 
-                                         v-for="item in example_available"
-                                         @click="load_example_init(item.url)" 
-                                         ref="closeExample">{{item.name}}: 
-                        <span v-html="item.description"></span>
-                      </b-list-group-item>
-                    </b-list-group>
-                  </b-modal>
-
-                  <!-- Calculator -->
-                  <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
-                    <calculator></calculator>
-                  </b-modal>
-
                 </div>
-	            </div>
+              </div>
             </div>
 
           </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          <!-- Examples modal -->
+          <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
+            <examples :example_available="example_available" compile="true" modal="examples2"></examples>
+          </b-modal>
+
+          <!-- Calculator -->
+          <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
+            <calculator></calculator>
+          </b-modal>
 
           <!-- Execution instruction -->
           <table-execution :instructions="instructions" :enter="enter"></table-execution>
@@ -3158,45 +3128,27 @@
           <div class="col-rt-4 col-xl-5 col-lg-6 col-sm-12">
 
             <!-- View selector -->
-            <div class="col-lg-12 col-sm-12 mb-3 px-0">
-              <div class="col-lg-12 col-sm-12 buttons row">
-                <div class="col-lg-4 col-sm-4 buttons">
-                  <b-dropdown split 
-                              right 
-                              :text="nameReg" 
-                              size="sm" 
-                              class="btn btn-block btn-sm nopadding h-100" 
-                              variant="outline-secondary" 
-                              @click="change_data_view('registers', regType)">
-                    <b-dropdown-item @click="change_data_view('registers', 'int')">CPU-INT Registers</b-dropdown-item>
-                    <b-dropdown-item @click="change_data_view('registers', 'fp')">CPU-FP Registers</b-dropdown-item>
-                  </b-dropdown>
-                </div>
-                <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" 
-                            id="memory_btn" 
-                            @click="change_data_view('memory')">
-                    <span class="fas fa-memory"></span>
-                    Memory 
-                  </b-button>
-                </div>
-                <div class="col-lg-4 col-sm-4 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm h-100" 
-                            id="stats_btn" 
-                            @click="change_data_view('stats')">
-                    <span class=" fas fa-chart-bar"></span>
-                    Stats
-                  </b-button>
-                </div>
-              </div>
-            </div>
+            <data-view-selector :name_reg="name_reg" :reg_type="reg_type"></data-view-selector>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
             <!-- Registers view -->
             <div class="col-lg-12 col-sm-12 px-0" id="registers" v-if="data_mode == 'registers'">
               <b-tabs content-class="mt-3">
 
                 <!-- Decimal view -->
-                <b-tab :title="nameTabReg" active>
+                <b-tab :title="name_tab_Reg" active>
                   <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
                     <div class="col-lg-12 col-sm-12 buttons row mb-2" 
                           v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
@@ -3502,27 +3454,27 @@
 
                 <!-- Hexadecimal view -->
                 <b-tab title="Hexadecimal">
-                	<div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
-                		<div class="col-lg-12 col-sm-12 buttons row mb-2" 
+                  <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
+                    <div class="col-lg-12 col-sm-12 buttons row mb-2" 
                          v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
 
-                	  <!-- Control and integer registers -->
-  	                  <div class="col-lg-3 col-sm-4 buttons" 
+                    <!-- Control and integer registers -->
+                      <div class="col-lg-3 col-sm-4 buttons" 
                            v-for="item2 in architecture.components[item.index].elements" 
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-  	                    <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
+                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                   :id="popoverId(item2.name)" 
                                   @click="change_popover_register(popoverId(item2.name))"
                                   onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-  	                      <span class="text-truncate">{{item2.name[0]}}</span>  
+                          <span class="text-truncate">{{item2.name[0]}}</span>  
                           <b-badge class="registerValue" 
                                     class="regValue">
                             {{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
                           </b-badge>
-  	                    </b-button>
+                        </b-button>
 
                         <!-- Register popover -->
-  	                    <b-popover show 
+                        <b-popover show 
                                    :target="popoverId(item2.name)" 
                                    triggers="click blur" 
                                    class="popover" 
@@ -3535,26 +3487,26 @@
                           </template>
 
                           <table class="table table-bordered table-sm popoverText">
-  												  <tbody>
-  												    <tr>
-  												      <td>Hex.</td>
-  												      <td>
+                            <tbody>
+                              <tr>
+                                <td>Hex.</td>
+                                <td>
                                   <b-badge class="registerPopover">
                                     {{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
                                   </b-badge>
                                 </td>
-  												    </tr>
-  												    <tr>
-  												      <td>Binary</td>
-  												      <td>
+                              </tr>
+                              <tr>
+                                <td>Binary</td>
+                                <td>
                                   <b-badge class="registerPopover">
                                     {{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}
                                   </b-badge>
                                 </td>
-  												    </tr>
-  												    <tr>
-  												      <td>Signed</td>
-  												      <td>
+                              </tr>
+                              <tr>
+                                <td>Signed</td>
+                                <td>
                                   <b-badge class="registerPopover" 
                                            v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
                                     {{parseInt(item2.value.toString(10))-0x100000000}}
@@ -3564,75 +3516,75 @@
                                     {{(item2.value).toString(10)}}
                                   </b-badge>
                                 </td>
-  												    </tr>
-  												    <tr>
-  												      <td>Unsig.</td>
-  												      <td>
+                              </tr>
+                              <tr>
+                                <td>Unsig.</td>
+                                <td>
                                   <b-badge class="registerPopover">
                                     {{(item2.value).toString(10) >>> 0}}
                                   </b-badge>
                                 </td>
-  												    </tr>
-  												    <tr>
-  												      <td>Char</td>
-  												      <td>
+                              </tr>
+                              <tr>
+                                <td>Char</td>
+                                <td>
                                   <b-badge class="registerPopover">
                                     {{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
                                   </b-badge>
                                 </td>
-  												    </tr>
-  												    <tr>
-  												      <td>Float</td>
-  												      <td>
+                              </tr>
+                              <tr>
+                                <td>Float</td>
+                                <td>
                                   <b-badge class="registerPopover">
                                     {{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
                                   </b-badge>
                                 </td>
-  												    </tr>
-  												  </tbody>
-  												</table>
+                              </tr>
+                            </tbody>
+                          </table>
 
-  												<div class="col-lg-12 col-sm-12 row mx-0">
-  					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  					            			<b-form-input v-on:input="debounce('newValue', $event)" 
+                          <div class="col-lg-12 col-sm-12 row mx-0">
+                            <div class="col-lg-6 col-sm-6 popoverFooter">
+                              <b-form-input v-on:input="debounce('newValue', $event)" 
                                             :value="newValue"
                                             type="text" 
                                             size="sm" 
                                             title="New Register Value" 
                                             placeholder="Enter new value">
                               </b-form-input>
-  					            		</div>
-  					            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  					            			<b-button class="btn btn-primary btn-block btn-sm" 
+                            </div>
+                            <div class="col-lg-6 col-sm-6 popoverFooter">
+                              <b-button class="btn btn-primary btn-block btn-sm" 
                                         @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">
                                 Update
                               </b-button>
-  					            		</div>
-  				            		</div>
-  								      </b-popover>
-  	                  </div>
+                            </div>
+                          </div>
+                        </b-popover>
+                      </div>
 
-  	                  <div class="col-lg-3 col-sm-4 buttons" 
+                      <div class="col-lg-3 col-sm-4 buttons" 
                            v-for="item2 in architecture.components[item.index].elements" 
                            v-if="architecture.components[item.index].type == 'floating point'">
 
-  	                  	<!-- Simple floating point registers -->
-  	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" 
+                        <!-- Simple floating point registers -->
+                        <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == false">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
                                     @click="change_popover_register(popoverId(item2.name))"
                                     onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-  	                      	<span class="text-truncate">
+                            <span class="text-truncate">
                               {{item2.name[0]}}
                             </span> 
                             <b-badge class="registerValue" >
                               {{bin2hex(float2bin(item2.value))}}
                             </b-badge>
-  		                    </b-button>
+                          </b-button>
 
                           <!-- Register popover -->
-  		                    <b-popover show 
+                          <b-popover show 
                                      :target="popoverId(item2.name)" 
                                      triggers="click blur" 
                                      v-if="register_popover == popoverId(item2.name)">
@@ -3643,86 +3595,86 @@
                               {{item2.name.join(' | ')}}
                             </template>
 
-  													<table class="table table-bordered table-sm popoverText">
-  													  <tbody>
-  													    <tr>
-  													      <td>Hex.</td>
-  													      <td>
+                            <table class="table table-bordered table-sm popoverText">
+                              <tbody>
+                                <tr>
+                                  <td>Hex.</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{"0x"+ bin2hex(float2bin(item2.value))}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Binary</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Binary</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{float2bin(item2.value)}}
                                   </b-badge>
                                 </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Signed</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Signed</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >> 0}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Unsig.</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Unsig.</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >>> 0}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Float</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Float</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{item2.value}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													  </tbody>
-  													</table>
+                                </tr>
+                              </tbody>
+                            </table>
 
-  													<div class="col-lg-12 col-sm-12 row mx-0">
-  						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" 
+                            <div class="col-lg-12 col-sm-12 row mx-0">
+                              <div class="col-lg-6 col-sm-6 popoverFooter">
+                                <b-form-input v-on:input="debounce('newValue', $event)" 
                                               :value="newValue" 
                                               type="text" 
                                               size="sm" 
                                               title="New Register Value" 
                                               placeholder="Enter new value">
                                 </b-form-input>
-  						            		</div>
-  						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-button class="btn btn-primary btn-block btn-sm" 
+                              </div>
+                              <div class="col-lg-6 col-sm-6 popoverFooter">
+                                <b-button class="btn btn-primary btn-block btn-sm" 
                                           @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">
                                   Update
                                 </b-button>
-  						            		</div>
-  					            		</div>
-  									      </b-popover>
-  	                  	</div>
+                              </div>
+                            </div>
+                          </b-popover>
+                        </div>
 
-  	                  	<!-- Double floating point registers -->
-  	                  	<div class="col-lg-12 col-sm-12 nopadding h-100" 
+                        <!-- Double floating point registers -->
+                        <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == true">
-  	                  		<b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
+                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
                                     @click="change_popover_register(popoverId(item2.name))"
                                     onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-  		                      <span class="text-truncate">{{item2.name[0]}}</span> 
+                            <span class="text-truncate">{{item2.name[0]}}</span> 
                             <b-badge class="registerValue">
                               {{bin2hex(double2bin(item2.value))}}
                             </b-badge>
-  		                    </b-button>
+                          </b-button>
 
                           <!-- Register popover -->
-  		                    <b-popover show 
+                          <b-popover show 
                                      :target="popoverId(item2.name)" 
                                      triggers="click blur"
                                      v-if="register_popover == popoverId(item2.name)">
@@ -3733,72 +3685,72 @@
                               {{item2.name.join(' | ')}}
                             </template>
 
-  													<table class="table table-bordered table-sm popoverText">
-  													  <tbody>
-  													    <tr>
-  													      <td>Hex.</td>
-  													      <td>
+                            <table class="table table-bordered table-sm popoverText">
+                              <tbody>
+                                <tr>
+                                  <td>Hex.</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{"0x"+ bin2hex(double2bin(item2.value))}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Binary</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Binary</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{double2bin(item2.value)}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Signed</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Signed</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >> 0}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Unsig.</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Unsig.</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                       {{parseInt(item2.value.toString(), 10) >>> 0}}
                                     </b-badge>
                                   </td>
-  													    </tr>
-  													    <tr>
-  													      <td>Float</td>
-  													      <td>
+                                </tr>
+                                <tr>
+                                  <td>Float</td>
+                                  <td>
                                     <b-badge class="registerPopover">
                                     {{item2.value}}
                                   </b-badge>
                                 </td>
-  													    </tr>
-  													  </tbody>
-  													</table>
+                                </tr>
+                              </tbody>
+                            </table>
 
-  													<div class="col-lg-12 col-sm-12 row mx-0">
-  						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-form-input v-on:input="debounce('newValue', $event)" 
+                            <div class="col-lg-12 col-sm-12 row mx-0">
+                              <div class="col-lg-6 col-sm-6 popoverFooter">
+                                <b-form-input v-on:input="debounce('newValue', $event)" 
                                               :value="newValue" 
                                               type="text" 
                                               size="sm" 
                                               title="New Register Value" 
                                               placeholder="Enter new value">
                                 </b-form-input>
-  						            		</div>
-  						            		<div class="col-lg-6 col-sm-6 popoverFooter">
-  						            			<b-button class="btn btn-primary btn-block btn-sm" 
+                              </div>
+                              <div class="col-lg-6 col-sm-6 popoverFooter">
+                                <b-button class="btn btn-primary btn-block btn-sm" 
                                           @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">
                                   Update
                                 </b-button>
-  						            		</div>
-  					            		</div>
-  									      </b-popover>
-  	                  	</div> 
-  	                  </div>
-  	                </div>
+                              </div>
+                            </div>
+                          </b-popover>
+                        </div> 
+                      </div>
+                    </div>
                   </div>
                 </b-tab>
               </b-tabs>
@@ -3913,7 +3865,7 @@
             <!-- Monitor -->
             <monitor :display="display"></monitor>
 
-            <!-- Keyboard -->
+            <!-- Keyboard --> <!--TODO: change to component-->
             <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
               <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
                 <div class="col-lg-1 col-sm-1">
