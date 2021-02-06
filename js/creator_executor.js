@@ -1657,7 +1657,8 @@ function writeStackLimit ( stackLimit )
           }
           else{
             //if(stackLimit < architecture.memory_layout[4].value){
-              var diff = architecture.memory_layout[4].value - stackLimit;
+              //var diff = architecture.memory_layout[4].value - stackLimit;
+              var diff = memory[memory_hash[2]][0].Address - stackLimit;
               var auxStackLimit = stackLimit;
               var newRow = 0;
 
