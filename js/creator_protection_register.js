@@ -170,8 +170,7 @@ function creator_callstack_leave()
     }
                   
     /*
-        
-                                if (ret.ok)
+    if (ret.ok)
     {
         for (var i = 0; i < architecture.components.length; i++)
         {
@@ -193,7 +192,7 @@ function creator_callstack_leave()
         }
     }
 
-        // check values (check currrent state)
+    // check values (check currrent state)
     if (ret.ok)
     {
         for (var i = 0; i < architecture.components.length; i++)
@@ -219,11 +218,13 @@ function creator_callstack_leave()
 
     stack_call_registers.pop();
 
-    if (typeof window !== "undefined"){
-      app._data.begin_caller  = creator_callstack_getTop().val.begin_caller; // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
-      app._data.end_caller    = creator_callstack_getTop().val.end_caller;   // llamante: FFFFFFF0, FFFFFF00, FFFFF000
-      app._data.begin_callee  = creator_callstack_getTop().val.begin_callee; // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
-      app._data.end_callee    = creator_callstack_getTop().val.end_callee;   // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+    var elto_top = creator_callstack_getTop() ;
+    if ( (typeof window !== "undefined") && (elto_top.val != null) )
+    {
+        app._data.begin_caller  = elto_top.val.begin_caller;  // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
+        app._data.end_caller    = elto_top.val.end_caller;    // llamante: FFFFFFF0, FFFFFF00, FFFFF000
+        app._data.begin_callee  = elto_top.val.begin_callee;  // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+        app._data.end_callee    = elto_top.val.end_callee;    // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
     }
 
     return ret;

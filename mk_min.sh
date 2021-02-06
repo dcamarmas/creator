@@ -20,6 +20,7 @@ echo "  * min.creator_web.js..."
 cat js/creator_bigint.js \
     js/creator_ga.js \
     js/creator_preload.js \
+    js/creator_util.js \
     \
     js/creator_protection_register.js \
     js/creator_definition_api.js \
@@ -61,6 +62,7 @@ rm -fr js/creator_web.js
 echo "  * min.creator_node.js..."
 cat js/creator_bigint.js \
     js/creator_ga.js \
+    js/creator_util.js \
     \
     js/creator_protection_register.js \
     js/creator_definition_api.js \
