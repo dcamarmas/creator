@@ -23,140 +23,140 @@
 
         var uielto_execution = {
 
-			  props:      {
-											instructions:   { type: Array, required: true },
-											enter: 					{ type: String, required: true }
-										},
+        props:      {
+                      instructions:   { type: Array, required: true },
+                      enter:          { type: String, required: true }
+                    },
 
-				data: 			function () {
-											return {
-          							/*Instrutions table fields*/
-      									archInstructions: ['Break', 'Address', 'Label', 'userInstructions', 'loadedInstructions', 'tag'],
-  										}
-        						},
+        data:       function () {
+                      return {
+                        /*Instrutions table fields*/
+                        archInstructions: ['Break', 'Address', 'Label', 'userInstructions', 'loadedInstructions', 'tag'],
+                      }
+                    },
 
-			  methods: 		{
-			  							/*Filter table instructions*/
-								      filter(row, filter){
-								        if(row.hide == true){
-								          return false;
-								        }
-								        else{
-								          return true;
-								        }
-								      },
+        methods:    {
+                      /*Filter table instructions*/
+                      filter(row, filter){
+                        if(row.hide == true){
+                          return false;
+                        }
+                        else{
+                          return true;
+                        }
+                      },
 
-								      /*Enter a breakpoint*/
-								      breakPoint(record, index){
-								        for (var i = 0; i < instructions.length; i++) {
-								          if(instructions[i].Address == record.Address){
-								            index = i;
-								            break;
-								          }
-								        }
+                      /*Enter a breakpoint*/
+                      breakPoint(record, index){
+                        for (var i = 0; i < instructions.length; i++) {
+                          if(instructions[i].Address == record.Address){
+                            index = i;
+                            break;
+                          }
+                        }
 
-								        if(instructions[index].Break == null){
-								          instructions[index].Break = true;
-								          app._data.instructions[index].Break = true; //TODO: vue bidirectional updates
+                        if(instructions[index].Break == null){
+                          instructions[index].Break = true;
+                          app._data.instructions[index].Break = true; //TODO: vue bidirectional updates
 
-								          /* Google Analytics */
-									  			creator_ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
+                          /* Google Analytics */
+                          creator_ga('send', 'event', 'execute', 'execute.breakpoint', 'execute.breakpoint');
 
-								        }
-								        else if(instructions[index].Break == true){
-								          instructions[index].Break = null;
-								          app._data.instructions[index].Break = null; //TODO: vue bidirectional updates
-								        }
-								      },
-											
-			  						},
+                        }
+                        else if(instructions[index].Break == true){
+                          instructions[index].Break = null;
+                          app._data.instructions[index].Break = null; //TODO: vue bidirectional updates
+                        }
+                      },
+                      
+                    },
 
-      	template:   '	<div class="col-rt-4 col-xl-7 col-lg-6 col-sm-12 px-0">' +
-										'	  <div class="col-lg-12 col-sm-12 px-2">' +
-										'	' +
-										'	    <b-table id="inst_table" ' +
-										'	             sticky-header ' +
-										'	             striped ' +
-										'	             small ' +
-										'	             hover ' +
-										'	             :items="instructions" ' +
-										'	             :fields="archInstructions" ' +
-										'	             class="instructions_table responsive" ' +
-										'	             @row-clicked="breakPoint" ' +
-										'	             :filter-function=filter ' +
-										'	             filter=" " ' +
-										'	             primary-key="Address">' +
-										'	' +
-										'	      <!-- Change the title of each column -->' +
-										'	      <template v-slot:head(userInstructions)="row">' +
-										'	        User Instruction' +
-										'	      </template>' +
-										'	' +
-										'	      <template v-slot:head(loadedInstructions)="row">' +
-										'	        Loaded Instructions' +
-										'	      </template>' +
-										'	' +
-										'	      <template v-slot:head(tag)="row">' +
-										'	        &nbsp;' +
-										'	      </template>' +
-										'	' +
-										'	      <!-- For each instruction -->' +
-										'	      <template v-slot:cell(Break)="row">' +
-										'	        <div class="break" :id="row.index">' +
-										'	          <br v-if="row.item.Break == null">' +
-										'	          <b-img alt="Break" ' +
-										'	                 src="./images/stop_classic.gif" ' +
-										'	                 class="shadow breakPoint" ' +
-										'	                 rounded="circle" ' +
-										'	                 v-if="row.item.Break == true">' +
-										'	          </b-img>' +
-										'	        </div>' +
-										'	      </template>' +
-										'	' +
-										'	      <template v-slot:cell(Address)="row">' +
-										'	        <span class="h6">{{row.item.Address}}</span>' +
-										'	      </template>' +
-										'	' +
-										'	      <template v-slot:cell(Label)="row">' +
-										'	        <b-badge pill variant="info">{{row.item.Label}}</b-badge>' +
-										'	      </template>' +
-										'	' +
-										'	      <template v-slot:cell(userInstructions)="row">' +
-										'	        <span class="h6" v-if="row.item.visible == true">{{row.item.user}}</span>' +
-										'	        <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
-										'	      </template>' +
-										'	' +
-										'	      <template v-slot:cell(loadedInstructions)="row">' +
-										'	        <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
-										'	        <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
-										'	      </template> ' +
-										'	' +
-										'	      <template v-slot:cell(tag)="row">' +
-										'	        <b-badge variant="info" ' +
-										'	                 class="border border-info shadow executionTag" ' +
-										'	                 v-if="row.item._rowVariant==\'info\' && enter == false">' +
-										'	          Current-Keyboard' +
-										'	        </b-badge>' +
-										'	        <b-badge variant="success" ' +
-										'	                 class="border border-success shadow executionTag" ' +
-										'	                 v-if="row.item._rowVariant==\'success\'">' +
-										'	            Next' +
-										'	        </b-badge>' +
-										'	        <b-badge variant="info" class="border border-info shadow executionTag" ' +
-										'	                 v-if="row.item._rowVariant==\'info\' && enter == null">' +
-										'	          Current' +
-										'	        </b-badge>' +
-										'	' +
-										'	      </template> ' +
-										'	' +
-										'	      <template slot-scope="row">' +
-										'	        <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
-										'	        <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
-										'	      </template> ' +
-										'	    </b-table>' +
-										'	  </div>' +
-										'	</div>'
-		  
-				}
+        template:   ' <div class="col-rt-4 col-xl-7 col-lg-6 col-sm-12 px-0">' +
+                    '   <div class="col-lg-12 col-sm-12 px-2">' +
+                    ' ' +
+                    '     <b-table id="inst_table" ' +
+                    '              sticky-header ' +
+                    '              striped ' +
+                    '              small ' +
+                    '              hover ' +
+                    '              :items="instructions" ' +
+                    '              :fields="archInstructions" ' +
+                    '              class="instructions_table responsive" ' +
+                    '              @row-clicked="breakPoint" ' +
+                    '              :filter-function=filter ' +
+                    '              filter=" " ' +
+                    '              primary-key="Address">' +
+                    ' ' +
+                    '       <!-- Change the title of each column -->' +
+                    '       <template v-slot:head(userInstructions)="row">' +
+                    '         User Instruction' +
+                    '       </template>' +
+                    ' ' +
+                    '       <template v-slot:head(loadedInstructions)="row">' +
+                    '         Loaded Instructions' +
+                    '       </template>' +
+                    ' ' +
+                    '       <template v-slot:head(tag)="row">' +
+                    '         &nbsp;' +
+                    '       </template>' +
+                    ' ' +
+                    '       <!-- For each instruction -->' +
+                    '       <template v-slot:cell(Break)="row">' +
+                    '         <div class="break" :id="row.index">' +
+                    '           <br v-if="row.item.Break == null">' +
+                    '           <b-img alt="Break" ' +
+                    '                  src="./images/stop_classic.gif" ' +
+                    '                  class="shadow breakPoint" ' +
+                    '                  rounded="circle" ' +
+                    '                  v-if="row.item.Break == true">' +
+                    '           </b-img>' +
+                    '         </div>' +
+                    '       </template>' +
+                    ' ' +
+                    '       <template v-slot:cell(Address)="row">' +
+                    '         <span class="h6">{{row.item.Address}}</span>' +
+                    '       </template>' +
+                    ' ' +
+                    '       <template v-slot:cell(Label)="row">' +
+                    '         <b-badge pill variant="info">{{row.item.Label}}</b-badge>' +
+                    '       </template>' +
+                    ' ' +
+                    '       <template v-slot:cell(userInstructions)="row">' +
+                    '         <span class="h6" v-if="row.item.visible == true">{{row.item.user}}</span>' +
+                    '         <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
+                    '       </template>' +
+                    ' ' +
+                    '       <template v-slot:cell(loadedInstructions)="row">' +
+                    '         <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
+                    '         <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
+                    '       </template> ' +
+                    ' ' +
+                    '       <template v-slot:cell(tag)="row">' +
+                    '         <b-badge variant="info" ' +
+                    '                  class="border border-info shadow executionTag" ' +
+                    '                  v-if="row.item._rowVariant==\'info\' && enter == false">' +
+                    '           Current-Keyboard' +
+                    '         </b-badge>' +
+                    '         <b-badge variant="success" ' +
+                    '                  class="border border-success shadow executionTag" ' +
+                    '                  v-if="row.item._rowVariant==\'success\'">' +
+                    '             Next' +
+                    '         </b-badge>' +
+                    '         <b-badge variant="info" class="border border-info shadow executionTag" ' +
+                    '                  v-if="row.item._rowVariant==\'info\' && enter == null">' +
+                    '           Current' +
+                    '         </b-badge>' +
+                    ' ' +
+                    '       </template> ' +
+                    ' ' +
+                    '       <template slot-scope="row">' +
+                    '         <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
+                    '         <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
+                    '       </template> ' +
+                    '     </b-table>' +
+                    '   </div>' +
+                    ' </div>'
+      
+        }
 
         Vue.component('table-execution', uielto_execution)
