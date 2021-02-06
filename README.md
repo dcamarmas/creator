@@ -6,8 +6,10 @@
 </html>
 
 ## Authors
-* :technologist: Diego Camarmas Alonso
-* :technologist: Lucas Elvira Martín (RISC-V)
+* :technologist: Diego Camarmas Alonso (Main Coordinator)
+* :technologist: Lucas Elvira Martín (RISC-V and several improvements)
+* :technologist: Félix García Carballeira 
+* :technologist: Alejandro Calderón Mateos
 
 
 ## CREATOR project
@@ -54,8 +56,9 @@
 | I/O Syscalls               | https://creatorsim.github.io/creator/?example_set=default&example=e9  |
 | I/O Syscalls + Strings     | https://creatorsim.github.io/creator/?example_set=default&example=e10 |
 | Subrutines                 | https://creatorsim.github.io/creator/?example_set=default&example=e11 |
- 
-    
+| Factorial                  | https://dcamarmas.github.io/creator/?example_set=uc3m-ec&example=e14 |
+
+
 ## ChangeLog
 
 ### :atom: 3.0.x:
