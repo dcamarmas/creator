@@ -881,7 +881,7 @@
             "FP0"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f0",
             "f1"
@@ -896,7 +896,7 @@
             "FP2"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f2",
             "f3"
@@ -911,7 +911,7 @@
             "FP4"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f4",
             "f5"
@@ -926,7 +926,7 @@
             "FP6"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f6",
             "f7"
@@ -941,7 +941,7 @@
             "FP8"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f8",
             "f9"
@@ -956,7 +956,7 @@
             "FP10"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f10",
             "f11"
@@ -971,7 +971,7 @@
             "FP12"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f12",
             "f13"
@@ -986,7 +986,7 @@
             "FP14"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f14",
             "f15"
@@ -1001,7 +1001,7 @@
             "FP16"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f16",
             "f17"
@@ -1016,7 +1016,7 @@
             "FP18"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f18",
             "f19"
@@ -1031,7 +1031,7 @@
             "FP20"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f20",
             "f21"
@@ -1046,7 +1046,7 @@
             "FP22"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f22",
             "f23"
@@ -1061,7 +1061,7 @@
             "FP24"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f24",
             "f25"
@@ -1076,7 +1076,7 @@
             "FP26"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f26",
             "f27"
@@ -1091,7 +1091,7 @@
             "FP28"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f28",
             "f29"
@@ -1106,7 +1106,7 @@
             "FP30"
           ],
           "nbits": "64",
-          "value": 0,
+          "value": "0",
           "simple_reg": [
             "f30",
             "f31"
