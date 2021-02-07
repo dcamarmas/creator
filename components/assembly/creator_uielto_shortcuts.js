@@ -75,5 +75,5 @@
 													'	</b-popover>'
        	}
 
-        Vue.component('popover-shortcuts', uielto_shortcuts)
+        Vue.component('popover-shortcuts', uielto_shortcuts) ;
 
