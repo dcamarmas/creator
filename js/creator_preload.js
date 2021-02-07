@@ -78,7 +78,12 @@
     				         {
 					    if (example_available[i].id === hash.example) 
                                             {
-					        load_example_init(example_available[i].url) ;
+					        var url = example_available[i].url ;
+					        $.get(url, function(data) {
+							       code_assembly = data ;
+							       app.assembly_compiler(code_assembly) ;
+							       show_notification(' The selected example has been loaded correctly', 'success') ;
+						           });
 					        resolve('Example loaded.') ;
 					    }
 					 }
