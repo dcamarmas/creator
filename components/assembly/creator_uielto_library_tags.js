@@ -41,4 +41,5 @@
       
         }
 
-        Vue.component('list-libray-tags', uielto_library_tags)
+        Vue.component('list-libray-tags', uielto_library_tags) ;
+

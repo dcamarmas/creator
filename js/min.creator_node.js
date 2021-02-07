@@ -233,29 +233,29 @@ function register_value_serialize(object)
  */
 
 
- /* 
+ /*
   * Data Structure
   */
 
- var stack_call_registers = [];
+ /* 
+  * [ "x", "y" ] ;
+  */
+ var stack_call_names = [];
+
  /*
-  stack_call_registers = 
-      [
-        {
-           function_name: "",
-           begin_caller: 0,
-           end_caller: 0,
-           begin_callee: 0,
-           end_callee: 0,
-           registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
-           registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
-           registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
-           register_address_write: [ indexComp: [ 0x0, ... ], ... ; // once per register: in which position is stored
-           register_address_read:  [ indexComp: [ 0x0, ... ], ... ; // once per register: from which position is restored
-        },
-        ...
-      ] ;
- */
+  * [
+  *   {
+  *     function_name: "",
+  *     registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
+  *     registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
+  *     registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
+  *     register_address_write: [ indexComp: [ 0x0, ... ], ... ; // once per register: in which position is stored
+  *     register_address_read:  [ indexComp: [ 0x0, ... ], ... ; // once per register: from which position is restored
+  *   },
+  *   ...
+  * ] ;
+  */
+ var stack_call_registers = [];
 
 
 /*
@@ -274,6 +274,7 @@ function creator_callstack_create()
     };
 
     // initialize stack_call
+    stack_call_names     = [];
     stack_call_registers = [];
 
     return ret;
@@ -290,13 +291,16 @@ function creator_callstack_enter(function_name)
         msg: ""
     };
 
-    // initialize fields
+    // 1.- caller name
+    stack_call_names.push(function_name) ;
+
+    // 2.- caller element
     var arr_saved = [];
     var arr_modified = [];
     var arr_write = []
     var arr_read = []
     var arr_value = []
-    
+
     for (var i = 0; i < architecture.components.length; i++)
     {
            arr_saved.push([]);
@@ -315,28 +319,18 @@ function creator_callstack_enter(function_name)
         }
     }
 
-    if (typeof window !== "undefined"){
-      app._data.begin_caller = architecture.memory_layout[4].value;
-      app._data.end_caller = architecture.memory_layout[4].value;
-      app._data.begin_callee = architecture.memory_layout[4].value;
-      app._data.end_callee = architecture.memory_layout[4].value;
-    }
-
-    // initialize elto
     var new_elto = {
         function_name:          function_name,
-        begin_caller:           creator_callstack_getTop().begin_callee, // llamante: FFFFFFFC, FFFFFFF0
-        end_caller:             architecture.memory_layout[4].value,     // llamante: FFFFFFF0, FFFFFF00
-        begin_callee:           architecture.memory_layout[4].value,     // llamado:  FFFFFFF0, FFFFFF00
-        end_callee:             architecture.memory_layout[4].value,     // llamado:  FFFFFFF0, FFFFFF00
         registers_saved:        arr_saved,
         registers_modified:     arr_modified,
         registers_value:        arr_value,
         register_address_write: arr_write,
         register_address_read:  arr_read
     };
-    
+
     stack_call_registers.push(new_elto);
+
+    // return ok
     return ret;
 }
 
@@ -351,19 +345,20 @@ function creator_callstack_leave()
         msg: ""
     };
 
-        // check params
+    // check params
     if (0 == stack_call_registers.length) {
         ret.msg = "creator_callstack_Leave: empty stack_call_registers !!.\n";
         return ret;
     }
 
+    // get stack top element
     var last_elto = stack_call_registers[stack_call_registers.length - 1];
 
-        // check values (check currrent state)
+    // check values (check currrent state)
     if (ret.ok)
-        {
-        for (var i = 0; i < architecture.components.length; i++)
-        {
+       {
+         for (var i = 0; i < architecture.components.length; i++)
+         {
             for (var j = 0; j < architecture.components[i].elements.length; j++)
             {
                 if ((last_elto.registers_value[i][j] != architecture.components[i].elements[j].value) &&
@@ -375,30 +370,23 @@ function creator_callstack_leave()
                     break;
                 }
             }
-        }
-
-        if(creator_callstack_getTop().val.end_caller != architecture.memory_layout[4].value){
-          ret.ok = false;
-          ret.msg = "Possible failure in the parameter passing convention";
-        }
+         }
     }
-                  
-    /*
+
+    /*****************************
     if (ret.ok)
     {
         for (var i = 0; i < architecture.components.length; i++)
         {
             for (var j = 0; j < architecture.components[i].elements.length; j++)
             {
-
                 if (
                     (true  == last_elto.registers_modified[i][j]) && // modified but
                     (false == last_elto.registers_saved[i][j]) &&
-                                    (architecture.components[i].elements[j].properties.icludes("saved")) // ...but should be saved
-                ) 
+                    (architecture.components[i].elements[j].properties.icludes("saved")) // ...but should be saved
+                )
                 {
                     ret.ok = false;
-           //       ret.msg = "The value of one or more protected registers is not kept between calls";
                     ret.msg = "The value of one or more protected registers is not kept between calls";
                     break;
                 }
@@ -412,11 +400,11 @@ function creator_callstack_leave()
         for (var i = 0; i < architecture.components.length; i++)
         {
             for (var j = 0; j < architecture.components[i].elements.length; j++)
-            {   
+            {
                 if (
-                    (true  == last_elto.registers_modified[i][j]) && // modified but
-                    (last_elto.register_address_read[i][j] != last_elto.register_address_write[i][j]) && // not read the same address...
-                    (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
+                     (true  == last_elto.registers_modified[i][j]) && // modified but
+                     (last_elto.register_address_read[i][j] != last_elto.register_address_write[i][j]) && // not read the same address...
+                     (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
                 )
                 {
                     ret.ok  = false;
@@ -428,19 +416,15 @@ function creator_callstack_leave()
             }
         }
     }
-    */
+    **********************************/
 
+    // pop stack
     stack_call_registers.pop();
-
-    var elto_top = creator_callstack_getTop() ;
-    if ( (typeof window !== "undefined") && (elto_top.val != null) )
-    {
-        app._data.begin_caller  = elto_top.val.begin_caller;  // llamante: FFFFFFFC, FFFFFFF0, FFFFFF00
-        app._data.end_caller    = elto_top.val.end_caller;    // llamante: FFFFFFF0, FFFFFF00, FFFFF000
-        app._data.begin_callee  = elto_top.val.begin_callee;  // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
-        app._data.end_callee    = elto_top.val.end_callee;    // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
+    if (stack_call_names.length > 0) {
+        stack_call_names.pop() ;
     }
 
+    // return ok
     return ret;
 }
 
@@ -457,7 +441,8 @@ function creator_callstack_getTop()
     };
 
     // check params
-    if (0 == stack_call_registers.length) {
+    if (0 == stack_call_registers.length)
+    {
         ret.ok = false;
         ret.msg = "creator_callstack_getTop: empty stack_call_registers !!.\n";
         return ret;
@@ -480,7 +465,8 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
     };
 
     // check params
-    if (0 == stack_call_registers.length) {
+    if (0 == stack_call_registers.length)
+    {
         ret.ok = false;
         ret.msg = "creator_callstack_getTop: empty stack_call_registers !!.\n";
         return ret;
@@ -498,24 +484,10 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
     return ret;
 }
 
-function creator_callstack_setsp(value)
-{
-
-    if (typeof window !== "undefined"){
-      app._data.end_callee = value;   // llamado:  FFFFFFF0, FFFFFF00, FFFFF000
-    }
-
-    // check params
-    if (0 == stack_call_registers.length) {
-        return;
-    }
-
-    // return the last element in the array
-    var elto = stack_call_registers[stack_call_registers.length - 1];
-    elto.end_callee = value;
-
-}
-
+//
+// Reset
+// Example: creator_callstack_reset() ;
+//
 function creator_callstack_reset()
 {
     var ret = {
@@ -524,15 +496,13 @@ function creator_callstack_reset()
     };
 
     // initialize stack_call
+    stack_call_names     = [];
     stack_call_registers = [];
 
-    if (typeof window !== "undefined"){
-      app._data.begin_caller  = architecture.memory_layout[4].value;
-      app._data.end_caller    = architecture.memory_layout[4].value;
-      app._data.begin_callee  = architecture.memory_layout[4].value;
-      app._data.end_callee    = architecture.memory_layout[4].value;   
-    }
+    // return ok
+    return ret ;
 }
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -558,29 +528,40 @@ function creator_callstack_reset()
  *  Description API 
  */
 
-var caller_stack = [];
+//
+// check stack
+//
 
-
-function check_protection_jal () // TODO: update the name to a proper one :-)
+function check_protection_jal ()
 {
-    var function_name = "main";  // TODO: get current subrutine name
+    var function_name = "" ;
 
+    // 1.- default function name is "PC = 0x..."
+    if (typeof architecture.components[0] != "undefined") {
+        function_name = "PC=" + architecture.components[0].elements[0].value ;
+    }
+
+    // TODO: get current subrutine name and save into function_name
+
+    // 2.- callstack_enter
     creator_callstack_enter(function_name) ;
 }
 
-function check_protection_jrra () // TODO: update the name to a proper one :-)
+function check_protection_jrra ()
 {
+    // 1.- callstack_leave
     var ret = creator_callstack_leave();
 
-    // If everything is ok, just return 
+    // 2) If everything is ok, just return 
     if (ret.ok) {
         return;
     }
 
-    // Othewise...
-    /* Google Analytics */
+    // 3) Othewise report some warning...
+    // Google Analytics
     creator_ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
+    // User notification
     if (typeof window !== "undefined")
     {
         /* Show Web notification */
@@ -589,6 +570,37 @@ function check_protection_jrra () // TODO: update the name to a proper one :-)
     else
     {
        console.log(ret.msg);
+    }
+}
+
+
+//
+// draw stack
+//
+
+function draw_stack_jal ()
+{
+    var function_name = "" ;
+
+    // 1.- default function name is "PC = 0x..."
+    if (typeof architecture.components[0] != "undefined") {
+        function_name = "PC=" + architecture.components[0].elements[0].value ;
+    }
+
+    // TODO: get current subrutine name and save into function_name
+
+    // 2.- callstack_enter
+    track_stack_enter(function_name) ;
+}
+
+function draw_stack_jrra ()
+{
+    // track leave
+    var ret = track_stack_leave() ;
+
+    // check if any problem
+    if (ret.ok != true) {
+        console.log("WARNING: " + ret.msg) ;
     }
 }
 
@@ -6519,7 +6531,7 @@ function writeStackLimit ( stackLimit )
               newRow++;
             }
 
-            creator_callstack_setsp(stackLimit);
+            track_stack_setsp(stackLimit);
 
             architecture.memory_layout[4].value = stackLimit;
 

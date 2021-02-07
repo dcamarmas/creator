@@ -96,4 +96,5 @@
       
         }
 
-        Vue.component('form-new-architecture', uielto_new_architecture)
+        Vue.component('form-new-architecture', uielto_new_architecture) ;
+

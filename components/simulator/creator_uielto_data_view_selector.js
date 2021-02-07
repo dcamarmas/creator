@@ -98,4 +98,5 @@
       
         }
 
-        Vue.component('data-view-selector', uielto_data_view_selector)
+        Vue.component('data-view-selector', uielto_data_view_selector) ;
+
