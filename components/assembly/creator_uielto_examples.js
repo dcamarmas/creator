@@ -70,18 +70,3 @@
 
         Vue.component('examples', uielto_examples) ;
 
-
-        /*
-         *
-         */
-        load_example_init(url)
-        {
-           this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
-
-           $.get(url, function(data) {
-                          code_assembly = data ;
-                          app.assembly_compiler(code_assembly) ;
-                          show_notification(' The selected example has been loaded correctly', 'success') ;
-                      });
-        }
-
