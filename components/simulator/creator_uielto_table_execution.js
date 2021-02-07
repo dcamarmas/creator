@@ -159,4 +159,5 @@
       
         }
 
-        Vue.component('table-execution', uielto_execution)
+        Vue.component('table-execution', uielto_execution) ;
+

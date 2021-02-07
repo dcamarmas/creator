@@ -51,5 +51,6 @@
 												  '  </b-card>'
        	}
 
-        Vue.component('card-author', uielto_author)
+        Vue.component('card-author', uielto_author) ;
+
 

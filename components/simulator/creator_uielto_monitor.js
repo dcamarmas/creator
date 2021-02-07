@@ -46,5 +46,6 @@
 		  
 				}
 
-        Vue.component('monitor', uielto_monitor)
+        Vue.component('monitor', uielto_monitor) ;
+
 

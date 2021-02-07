@@ -62,5 +62,6 @@
 													'	</div>'
        	}
 
-        Vue.component('supported-browser', uielto_browser)
+        Vue.component('supported-browser', uielto_browser) ;
+
 

@@ -70,5 +70,6 @@
 													'	</b-popover>'
        	}
 
-        Vue.component('popover-info', uielto_info)
+        Vue.component('popover-info', uielto_info) ;
+
 
