@@ -78,7 +78,7 @@
     				         {
 					    if (example_available[i].id === hash.example) 
                                             {
-					        app.load_example_init(example_available[i].url) ;
+					        load_example_init(example_available[i].url) ;
 					        resolve('Example loaded.') ;
 					    }
 					 }
