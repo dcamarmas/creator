@@ -68,4 +68,5 @@
       
         }
 
-        Vue.component('examples', uielto_examples)
+        Vue.component('examples', uielto_examples) ;
+

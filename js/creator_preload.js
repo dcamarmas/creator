@@ -20,6 +20,23 @@
 
 
     //
+    // Auxiliar functions
+    //
+
+    function preload_load_example ( data )
+    {
+        code_assembly = data ;
+        app.assembly_compiler(code_assembly) ;
+
+        // show notification
+        show_notification(' The selected example has been loaded.', 'success') ;
+
+        // Google Analytics
+        creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
+    }
+
+
+    //
     // Preload tasks
     //
 
@@ -78,7 +95,9 @@
     				         {
 					    if (example_available[i].id === hash.example) 
                                             {
-					        app.load_example_init(example_available[i].url) ;
+					        $.get(example_available[i].url,
+                                                      preload_load_example(data)) ;
+
 					        resolve('Example loaded.') ;
 					    }
 					 }
@@ -150,3 +169,4 @@
 	// return ok
 	return o ;
     }
+
