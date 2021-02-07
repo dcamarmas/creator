@@ -528,6 +528,10 @@ function creator_callstack_reset()
  *  Description API 
  */
 
+//
+// check stack
+//
+
 function check_protection_jal ()
 {
     var function_name = "" ;
@@ -540,15 +544,13 @@ function check_protection_jal ()
     // TODO: get current subrutine name and save into function_name
 
     // 2.- callstack_enter
-    track_stack_enter(function_name) ;
     creator_callstack_enter(function_name) ;
 }
 
 function check_protection_jrra ()
 {
     // 1.- callstack_leave
-    var ret = track_stack_leave() ;
-        ret = creator_callstack_leave();
+    var ret = creator_callstack_leave();
 
     // 2) If everything is ok, just return 
     if (ret.ok) {
@@ -568,6 +570,37 @@ function check_protection_jrra ()
     else
     {
        console.log(ret.msg);
+    }
+}
+
+
+//
+// draw stack
+//
+
+function draw_stack_jal ()
+{
+    var function_name = "" ;
+
+    // 1.- default function name is "PC = 0x..."
+    if (typeof architecture.components[0] != "undefined") {
+        function_name = "PC=" + architecture.components[0].elements[0].value ;
+    }
+
+    // TODO: get current subrutine name and save into function_name
+
+    // 2.- callstack_enter
+    track_stack_enter(function_name) ;
+}
+
+function draw_stack_jrra ()
+{
+    // track leave
+    var ret = track_stack_leave() ;
+
+    // check if any problem
+    if (ret.ok != true) {
+        console.log("WARNING: " + ret.msg) ;
     }
 }
 
