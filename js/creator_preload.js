@@ -96,7 +96,9 @@
 					    if (example_available[i].id === hash.example) 
                                             {
 					        $.get(example_available[i].url,
-                                                      preload_load_example(data)) ;
+                                                      function(data) {
+                                                         preload_load_example(data);
+                                                      }) ;
 
 					        resolve('Example loaded.') ;
 					    }
