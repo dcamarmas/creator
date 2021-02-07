@@ -69,5 +69,5 @@
                           ' </div>'
         }
 
-        Vue.component('assembly-error', uielto_assembly_error)
+        Vue.component('assembly-error', uielto_assembly_error) ;
 

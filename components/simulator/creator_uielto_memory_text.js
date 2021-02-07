@@ -142,4 +142,5 @@
 												  
 				}
 
-        Vue.component('table-mem-text', uielto_memory_text)
+        Vue.component('table-mem-text', uielto_memory_text) ;
+

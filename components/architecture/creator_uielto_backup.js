@@ -93,4 +93,5 @@
       
         }
 
-        Vue.component('uielto-backup', uielto_backup)
+        Vue.component('uielto-backup', uielto_backup) ;
+
