@@ -43,5 +43,6 @@
                           ' </div>'
         }
 
-        Vue.component('uielto-notifications', uielto_notifications)
+        Vue.component('uielto-notifications', uielto_notifications) ;
+
 

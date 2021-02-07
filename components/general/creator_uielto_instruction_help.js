@@ -68,5 +68,6 @@
 													'</b-sidebar'
        	}
 
-        Vue.component('sidebar-instruction-help', uielto_instruction_help)
+        Vue.component('sidebar-instruction-help', uielto_instruction_help) ;
+
 

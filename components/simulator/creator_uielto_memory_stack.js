@@ -252,4 +252,5 @@
 		  
 				}
 
-        Vue.component('table-mem-stack', uielto_memory_stack)
+        Vue.component('table-mem-stack', uielto_memory_stack) ;
+
