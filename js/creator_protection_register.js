@@ -157,13 +157,6 @@ function creator_callstack_leave()
                 }
             }
          }
-
-         var elto_top = track_stack_getTop() ;
-         if ( (elto_top.val != null) && (elto_top.val.end_caller != architecture.memory_layout[4].value) )
-         {
-             ret.ok  = false;
-             ret.msg = "Possible failure in the parameter passing convention";
-         }
     }
 
     /*****************************
