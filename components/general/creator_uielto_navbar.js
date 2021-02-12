@@ -61,5 +61,6 @@
 													'	</b-navbar>'
        	}
 
-        Vue.component('navbar-creator', uielto_navbar)
+        Vue.component('navbar-creator', uielto_navbar) ;
+
 

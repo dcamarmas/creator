@@ -35,5 +35,6 @@
 													'	</div>'
        	}
 
-        Vue.component('spinner-loading', uielto_loading)
+        Vue.component('spinner-loading', uielto_loading) ;
+
 

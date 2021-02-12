@@ -54,5 +54,6 @@
 			                   '</b-card-group>'
         }
 
-        Vue.component('uielto-about', uielto_about)
+        Vue.component('uielto-about', uielto_about) ;
+
 

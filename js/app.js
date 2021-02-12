@@ -2847,49 +2847,49 @@ try
 
       /*Load the available examples*/
       load_examples_available( set_name ) {
-					this._data.example_loaded = new Promise(function(resolve, reject) {
+	     this._data.example_loaded = new Promise(function(resolve, reject) {
 
-		      $.getJSON('examples/example_set.json', function(set) {
+		$.getJSON('examples/example_set.json', function(set) {
 
-          // current architecture in upperCase
-          var current_architecture = app._data.architecture_name.toUpperCase() ;
+                  // current architecture in upperCase
+		  var current_architecture = app._data.architecture_name.toUpperCase() ;
 
-          // search for set_name in the example set 'set'
-				  for (var i=0; i<set.length; i++)
-	                          {
-	                                // if set_name in set[i]...
-					if (set[i].id.toUpperCase() == set_name.toUpperCase())
-					{
-            // if current_architecture active but not the associated with set, skip
-		        if ( (current_architecture != '') &&
-  					     (set[i].architecture.toUpperCase() != current_architecture) )
-		        {
-		             continue ;
-		        }
+                  // search for set_name in the example set 'set'
+		  for (var i=0; i<set.length; i++)
+		  {
+			// if set_name in set[i]...
+			if (set[i].id.toUpperCase() == set_name.toUpperCase())
+			{
+			    // if current_architecture active but not the associated with set, skip
+			    if ( (current_architecture != '') &&
+  				 (set[i].architecture.toUpperCase() != current_architecture) )
+		            {
+		                 continue ;
+		            }
 
-                                    // if no current_architecture loaded then load the associated
-		        if (current_architecture == '') {
-					    $.getJSON('architecture/'+ set[i].architecture +'.json',
-						       function(cfg) {
-						          app.load_arch_select_aux(set[i].architecture,
-										   cfg, false, null);
-					               }) ;
-				    }
+			    // if no current_architecture loaded then load the associated
+		            if (current_architecture == '') {
+				    $.getJSON('architecture/'+ set[i].architecture +'.json',
+					       function(cfg) {
+						  app.load_arch_select_aux(set[i].architecture,
+									   cfg, false, null);
+					       }) ;
+			    }
 
-                                        // load the associate example list
-						$.getJSON(set[i].url, function(cfg){
-						    example_available = cfg ;
-						    app._data.example_available = example_available ;
-						    resolve('Example list loaded.') ;
-						});
+			    // load the associate example list
+			    $.getJSON(set[i].url, function(cfg){
+				    example_available = cfg ;
+				    app._data.example_available = example_available ;
+				    resolve('Example list loaded.') ;
+			    });
 
-	                                        return ;
-					}
-			  }
+	                    return ;
+			}
+		  }
 
-			  reject('Unavailable example list.') ;
-		      });
-               }) ;
+		  reject('Unavailable example list.') ;
+		});
+             }) ;
       },
 
       /*Save a binary in a local file*/

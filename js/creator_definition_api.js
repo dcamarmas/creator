@@ -23,29 +23,40 @@
  *  Description API 
  */
 
-var caller_stack = [];
+//
+// check stack
+//
 
-
-function check_protection_jal () // TODO: update the name to a proper one :-)
+function check_protection_jal ()
 {
-    var function_name = "main";  // TODO: get current subrutine name
+    var function_name = "" ;
 
+    // 1.- default function name is "PC = 0x..."
+    if (typeof architecture.components[0] != "undefined") {
+        function_name = "PC=" + architecture.components[0].elements[0].value ;
+    }
+
+    // TODO: get current subrutine name and save into function_name
+
+    // 2.- callstack_enter
     creator_callstack_enter(function_name) ;
 }
 
-function check_protection_jrra () // TODO: update the name to a proper one :-)
+function check_protection_jrra ()
 {
+    // 1.- callstack_leave
     var ret = creator_callstack_leave();
 
-    // If everything is ok, just return 
+    // 2) If everything is ok, just return 
     if (ret.ok) {
         return;
     }
 
-    // Othewise...
-    /* Google Analytics */
+    // 3) Othewise report some warning...
+    // Google Analytics
     creator_ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
+    // User notification
     if (typeof window !== "undefined")
     {
         /* Show Web notification */
@@ -54,6 +65,37 @@ function check_protection_jrra () // TODO: update the name to a proper one :-)
     else
     {
        console.log(ret.msg);
+    }
+}
+
+
+//
+// draw stack
+//
+
+function draw_stack_jal ()
+{
+    var function_name = "" ;
+
+    // 1.- default function name is "PC = 0x..."
+    if (typeof architecture.components[0] != "undefined") {
+        function_name = "PC=" + architecture.components[0].elements[0].value ;
+    }
+
+    // TODO: get current subrutine name and save into function_name
+
+    // 2.- callstack_enter
+    track_stack_enter(function_name) ;
+}
+
+function draw_stack_jrra ()
+{
+    // track leave
+    var ret = track_stack_leave() ;
+
+    // check if any problem
+    if (ret.ok != true) {
+        console.log("WARNING: " + ret.msg) ;
     }
 }
 

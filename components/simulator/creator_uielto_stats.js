@@ -46,4 +46,5 @@
 		  
 				}
 
-        Vue.component('stats', uielto_stats)
+        Vue.component('stats', uielto_stats) ;
+
