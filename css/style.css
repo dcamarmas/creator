@@ -414,6 +414,9 @@ h2 {
   transform: rotate(90deg);
 }
 
+.text-blue-funny {
+  color: #00BCFE;
+}
 
 .stats{
   font-size: 0.85em;
