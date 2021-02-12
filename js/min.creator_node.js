@@ -246,6 +246,7 @@ function register_value_serialize(object)
   * [
   *   {
   *     function_name: "",
+  *     enter_stack_pointer: 0x0,
   *     registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
   *     registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
   *     registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
@@ -276,6 +277,7 @@ function creator_callstack_create()
     // initialize stack_call
     stack_call_names     = [];
     stack_call_registers = [];
+    creator_callstack_enter("main");
 
     return ret;
 }
@@ -321,6 +323,7 @@ function creator_callstack_enter(function_name)
 
     var new_elto = {
         function_name:          function_name,
+        enter_stack_pointer:    architecture.memory_layout[4].value,
         registers_saved:        arr_saved,
         registers_modified:     arr_modified,
         registers_value:        arr_value,
@@ -371,6 +374,18 @@ function creator_callstack_leave()
                 }
             }
          }
+    }
+
+    //check sp that points to corresponding address
+    if (ret.ok)
+    {
+        if (architecture.memory_layout[4].value != last_elto.enter_stack_pointer)
+        {
+            ret.ok  = false;
+            ret.msg = "Stack memory has not been released successfully";
+        }
+
+
     }
 
     /*****************************
@@ -498,6 +513,7 @@ function creator_callstack_reset()
     // initialize stack_call
     stack_call_names     = [];
     stack_call_registers = [];
+    creator_callstack_enter("main");
 
     // return ok
     return ret ;
@@ -7160,6 +7176,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
           //Stack Reset
           creator_callstack_reset();
+          track_stack_reset();
 
           return true ;
 }

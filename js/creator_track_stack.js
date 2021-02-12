@@ -61,6 +61,7 @@ function track_stack_create()
     // initialize array
     track_stack_names  = [];
     track_stack_limits = [];
+    track_stack_enter("main");
 
     return ret;
 }
@@ -229,6 +230,7 @@ function track_stack_reset()
     // initialize stack_call
     track_stack_names  = [];
     track_stack_limits = [];
+    track_stack_enter("main");
 
     // draw new limits
     if (typeof window !== "undefined")

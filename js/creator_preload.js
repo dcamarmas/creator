@@ -23,7 +23,7 @@
     // Auxiliar functions
     //
 
-    function preload_load_example ( data )
+    function preload_load_example ( data , url )
     {
         code_assembly = data ;
         app.assembly_compiler(code_assembly) ;
@@ -95,9 +95,10 @@
     				         {
 					    if (example_available[i].id === hash.example) 
                                             {
-					        $.get(example_available[i].url,
+                  var url = example_available[i].url;
+					        $.get(url,
                                                       function(data) {
-                                                         preload_load_example(data);
+                                                         preload_load_example(data, url);
                                                       }) ;
 
 					        resolve('Example loaded.') ;
