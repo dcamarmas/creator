@@ -111,4 +111,5 @@
 		  
 				}
 
-        Vue.component('plot-stats', uielto_stats_plot)
+        Vue.component('plot-stats', uielto_stats_plot) ;
+

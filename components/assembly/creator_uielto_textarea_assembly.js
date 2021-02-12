@@ -37,4 +37,5 @@
       
         }
 
-        Vue.component('textarea-assembly', uielto_textarea_assembly)
+        Vue.component('textarea-assembly', uielto_textarea_assembly) ;
+

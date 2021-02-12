@@ -1669,7 +1669,7 @@ function writeStackLimit ( stackLimit )
               newRow++;
             }
 
-            creator_callstack_setsp(stackLimit);
+            track_stack_setsp(stackLimit);
 
             architecture.memory_layout[4].value = stackLimit;
 

@@ -229,5 +229,6 @@
 		  
 				}
 
-        Vue.component('form-configuration', uielto_configuration)
+        Vue.component('form-configuration', uielto_configuration) ;
+
 
