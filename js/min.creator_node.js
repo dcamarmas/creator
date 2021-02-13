@@ -598,12 +598,22 @@ function draw_stack_jal ()
 {
     var function_name = "" ;
 
-    // 1.- default function name is "PC = 0x..."
+    // 1.- get function name
     if (typeof architecture.components[0] != "undefined") {
-        function_name = "PC=" + architecture.components[0].elements[0].value ;
-    }
 
-    // TODO: get current subrutine name and save into function_name
+        var pc = "0x" + architecture.components[0].elements[0].value.toString();
+
+        //default function name is "PC = 0x..."
+        function_name = "PC=" + pc ;
+
+        //get current subrutine name and save into function_name
+        for (var i = 0; i < instructions.length; i++) {
+            if (instructions[i].Address == pc && instructions[i].Label != ""){
+                function_name = instructions[i].Label;
+                break;
+            }
+        }
+    }
 
     // 2.- callstack_enter
     track_stack_enter(function_name) ;
