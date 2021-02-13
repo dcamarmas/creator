@@ -632,18 +632,18 @@ function _get_subrutine_name ()
     // try to get current subrutine name and save into function_name
     for (var i = 0; i < instructions.length; i++)
     {
+/*
             // components/simulator/creator_uielto_table_execution.js draw [Next] in the callee address :-)
             if (instructions[i]._rowVariant == 'success') {
                 function_name = instructions[i].Label;
                 break;
             }
+*/
 
-/*
             if (instructions[i].Address == pc_hex && instructions[i].Label != ""){
                 function_name = instructions[i].Label;
                 break;
             }
-*/
     }
 
     return function_name ;
