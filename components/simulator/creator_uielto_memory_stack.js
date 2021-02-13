@@ -310,17 +310,17 @@
 										'	    </div>' +
 										'	' +
 										'	    <div class="col-lg-1 col-sm-12"></div>' +
-										'	    <div class="col-lg-2 col-sm-12">' +
+										'	    <div class="col-auto">' +
 										'	    	<b-badge variant="secondary">Free Stack</b-badge>' +
 										'	    </div>' +
-										'	    <div class="col-lg-3 col-sm-12">' +
-										'	      <h3><b-badge variant="success">Callee Subrutine: {{callee_subrutine}}</b-badge></h3>' +
+										'	    <div class="col-auto">' +
+										'	      <h5><b-badge variant="success">Callee Subrutine: {{callee_subrutine}}</b-badge></h5>' +
 										'	    </div>' +
-										'	    <div class="col-lg-3 col-sm-12">' +
-										'	      <h3><b-badge class="variant-blue-funny">Caller Subrutine: {{caller_subrutine}}</b-badge></h3>' +
+										'	    <div class="col-auto">' +
+										'	      <h5><b-badge class="variant-blue-funny">Caller Subrutine: {{caller_subrutine}}</b-badge></h5>' +
 										'	    </div>' +
-										'	    <div class="col-lg-2 col-sm-12">' +
-										'	      <h3><b-badge variant="dark">Protected stack</b-badge></h3>' +
+										'	    <div class="col-auto">' +
+										'	      <h5><b-badge variant="dark">Protected stack</b-badge></h5>' +
 										'	    </div>' +
 										'	    	<div class="col-lg-1 col-sm-12"></div>' +
 										'	    </div>' +
