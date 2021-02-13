@@ -311,7 +311,7 @@
 										'	' +
 										'	    <div class="col-lg-1 col-sm-12"></div>' +
 										'	    <div class="col-auto">' +
-										'	    	<b-badge variant="secondary">Free Stack</b-badge>' +
+										'	    	<h5><b-badge variant="secondary">Free Stack</b-badge></h5>' +
 										'	    </div>' +
 										'	    <div class="col-auto">' +
 										'	      <h5><b-badge variant="success">Callee Subrutine: {{callee_subrutine}}</b-badge></h5>' +
