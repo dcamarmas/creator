@@ -29,14 +29,8 @@
 
 function check_protection_jal ()
 {
-    var function_name = "" ;
-
-    // 1.- default function name is "PC = 0x..."
-    if (typeof architecture.components[0] != "undefined") {
-        function_name = "PC=" + architecture.components[0].elements[0].value ;
-    }
-
-    // TODO: get current subrutine name and save into function_name
+    // 1.- get function name
+    var function_name = _get_subrutine_name() ;
 
     // 2.- callstack_enter
     creator_callstack_enter(function_name) ;
@@ -75,24 +69,8 @@ function check_protection_jrra ()
 
 function draw_stack_jal ()
 {
-    var function_name = "" ;
-
     // 1.- get function name
-    if (typeof architecture.components[0] != "undefined") {
-
-        var pc = "0x" + architecture.components[0].elements[0].value.toString();
-
-        //default function name is "PC = 0x..."
-        function_name = "PC=" + pc ;
-
-        //get current subrutine name and save into function_name
-        for (var i = 0; i < instructions.length; i++) {
-            if (instructions[i].Address == pc && instructions[i].Label != ""){
-                function_name = instructions[i].Label;
-                break;
-            }
-        }
-    }
+    var function_name = _get_subrutine_name() ;
 
     // 2.- callstack_enter
     track_stack_enter(function_name) ;
@@ -107,5 +85,38 @@ function draw_stack_jrra ()
     if (ret.ok != true) {
         console.log("WARNING: " + ret.msg) ;
     }
+}
+
+
+//
+// Auxiliar and internal function
+//
+
+function _get_subrutine_name ()
+{
+    var function_name = "" ;
+
+    // if architecture not loaded then return ""
+    if (typeof architecture.components[0] == "undefined") {
+        return function_name ;
+    }
+
+    // PC points to the next instruction... substract 4
+    var pc_function = architecture.components[0].elements[0].value - 4 ;
+    var pc_hex = "0x" + pc_function.toString() ;
+
+    // set current subrutine name as "PC=0x..."
+    function_name = "PC=" + pc_hex ;
+
+    // try to get current subrutine name and save into function_name
+    for (var i = 0; i < instructions.length; i++)
+    {
+            if (instructions[i].Address == pc_hex && instructions[i].Label != ""){
+                function_name = instructions[i].Label;
+                break;
+            }
+    }
+
+    return function_name ;
 }
 
