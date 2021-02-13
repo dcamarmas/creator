@@ -24,7 +24,9 @@
         var uielto_memory_stack = {
 
 			  props:      {
-											memory:   { type: Array, required: true }
+											memory:   					{ type: Array,  required: true },
+											callee_subrutine:   { type: String, required: true },
+											caller_subrutine:   { type: String, required: true }
 										},
 
 				data: 			function () {
@@ -302,6 +304,26 @@
 										'	      <span class="h6Sm"                 v-if="(row.item.Address >= app._data.begin_caller)">{{row.item.Value}}</span>' +
 										'	    </template>' +
 										'	  </b-table>' +
+										'	  <div class="col-lg-12 col-sm-12 row">' +
+										'	  	<div class="col-lg-12 col-sm-12">' +
+										'	    	<span>Stack memory key:</span>' +
+										'	    </div>' +
+										'	' +
+										'	    <div class="col-lg-1 col-sm-12"></div>' +
+										'	    <div class="col-lg-2 col-sm-12">' +
+										'	    	<b-badge variant="secondary">Free Stack</b-badge>' +
+										'	    </div>' +
+										'	    <div class="col-lg-3 col-sm-12">' +
+										'	      <b-badge variant="success">Callee Subrutine: {{callee_subrutine}}</b-badge>' +
+										'	    </div>' +
+										'	    <div class="col-lg-3 col-sm-12">' +
+										'	      <b-badge class="variant-blue-funny">Caller Subrutine: {{caller_subrutine}}</b-badge>' +
+										'	    </div>' +
+										'	    <div class="col-lg-2 col-sm-12">' +
+										'	      <b-badge variant="dark">Protected stack</b-badge>' +
+										'	    </div>' +
+										'	    	<div class="col-lg-1 col-sm-12"></div>' +
+										'	    </div>' +
 										'	</div>'
 		  
 				}
