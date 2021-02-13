@@ -624,7 +624,7 @@ function _get_subrutine_name ()
 
     // PC points to the next instruction... substract 4
     var pc_function = Number(architecture.components[0].elements[0].value) - 4 ;
-    var pc_hex = "0x" + pc_function.toString() ;
+    var pc_hex = "0x" + pc_function.toString(16) ;
 
     // set current subrutine name as "PC=0x..."
     function_name = "PC=" + pc_hex ;
