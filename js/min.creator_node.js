@@ -246,6 +246,7 @@ function register_value_serialize(object)
   * [
   *   {
   *     function_name: "",
+  *     enter_stack_pointer: 0x0,
   *     registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
   *     registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
   *     registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
@@ -276,6 +277,7 @@ function creator_callstack_create()
     // initialize stack_call
     stack_call_names     = [];
     stack_call_registers = [];
+    creator_callstack_enter("main");
 
     return ret;
 }
@@ -321,6 +323,7 @@ function creator_callstack_enter(function_name)
 
     var new_elto = {
         function_name:          function_name,
+        enter_stack_pointer:    architecture.memory_layout[4].value,
         registers_saved:        arr_saved,
         registers_modified:     arr_modified,
         registers_value:        arr_value,
@@ -371,6 +374,18 @@ function creator_callstack_leave()
                 }
             }
          }
+    }
+
+    //check sp that points to corresponding address
+    if (ret.ok)
+    {
+        if (architecture.memory_layout[4].value != last_elto.enter_stack_pointer)
+        {
+            ret.ok  = false;
+            ret.msg = "Stack memory has not been released successfully";
+        }
+
+
     }
 
     /*****************************
@@ -498,6 +513,7 @@ function creator_callstack_reset()
     // initialize stack_call
     stack_call_names     = [];
     stack_call_registers = [];
+    creator_callstack_enter("main");
 
     // return ok
     return ret ;
@@ -534,14 +550,8 @@ function creator_callstack_reset()
 
 function check_protection_jal ()
 {
-    var function_name = "" ;
-
-    // 1.- default function name is "PC = 0x..."
-    if (typeof architecture.components[0] != "undefined") {
-        function_name = "PC=" + architecture.components[0].elements[0].value ;
-    }
-
-    // TODO: get current subrutine name and save into function_name
+    // 1.- get function name
+    var function_name = _get_subrutine_name() ;
 
     // 2.- callstack_enter
     creator_callstack_enter(function_name) ;
@@ -580,14 +590,8 @@ function check_protection_jrra ()
 
 function draw_stack_jal ()
 {
-    var function_name = "" ;
-
-    // 1.- default function name is "PC = 0x..."
-    if (typeof architecture.components[0] != "undefined") {
-        function_name = "PC=" + architecture.components[0].elements[0].value ;
-    }
-
-    // TODO: get current subrutine name and save into function_name
+    // 1.- get function name
+    var function_name = _get_subrutine_name() ;
 
     // 2.- callstack_enter
     track_stack_enter(function_name) ;
@@ -602,6 +606,47 @@ function draw_stack_jrra ()
     if (ret.ok != true) {
         console.log("WARNING: " + ret.msg) ;
     }
+}
+
+
+//
+// Auxiliar and internal function
+//
+
+function _get_subrutine_name ()
+{
+    var function_name = "" ;
+
+    // if architecture not loaded then return ""
+    if (typeof architecture.components[0] == "undefined") {
+        return function_name ;
+    }
+
+    // PC points to the next instruction... substract 4
+    var pc_function = Number(architecture.components[0].elements[0].value) - 4 ;
+    var pc_hex = "0x" + pc_function.toString(16) ;
+
+    // set current subrutine name as "PC=0x..."
+    function_name = "PC=" + pc_hex ;
+
+    // try to get current subrutine name and save into function_name
+    for (var i = 0; i < instructions.length; i++)
+    {
+/* ************
+            // components/simulator/creator_uielto_table_execution.js draw [Next] in the callee address :-)
+            if (instructions[i]._rowVariant == 'success') {
+                function_name = instructions[i].Label;
+                break;
+            }
+************* */
+
+            if (instructions[i].Address == pc_hex && instructions[i].Label != ""){
+                function_name = instructions[i].Label;
+                break;
+            }
+    }
+
+    return function_name ;
 }
 
 /*
@@ -7160,6 +7205,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
           //Stack Reset
           creator_callstack_reset();
+          track_stack_reset();
 
           return true ;
 }

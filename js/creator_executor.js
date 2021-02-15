@@ -2298,6 +2298,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
           //Stack Reset
           creator_callstack_reset();
+          track_stack_reset();
 
           return true ;
 }
