@@ -49,7 +49,12 @@
 								      }				
 			  						},
 
-      	template:   '	<div class="col-lg-12 col-sm-12 px-0">' +
+      	template:   '	<div class="col-lg-12 col-sm-12 px-0 h-100">' +
+                    '' +
+                    '<b-container class="h-100">' +
+                    '  <b-row align-v="start" class="h-75">' +
+                    '  <b-col>' +
+                    '' +
 										'	  <b-table sticky-header ' +
 										'	           striped ' +
 										'	           small ' +
@@ -305,8 +310,14 @@
 										'	      <span class="h6Sm"                 v-if="(row.item.Address >= app._data.begin_caller)">{{row.item.Value}}</span>' +
 										'	    </template>' +
 										'	  </b-table>' +
-										'' +
-										'  <div class="col-lg-12 col-sm-12 row mx-0 px-2 border mt-3">' +
+                    '' +
+                    '  </b-col>' +
+                    '  </b-row>' +
+                    '' +
+                    '  <b-row align-v="end" class="h-25">' +
+                    '  <b-col>' +
+                    '' +
+										'  <div class="col-lg-12 col-sm-12 row mx-0 px-2 border">' +
 										'  	<span class="col-lg-12 col-sm-12 my-1">' +
 										'       <span>Stack memory keys:</span>' +
 										'  	</span>' +
@@ -314,10 +325,14 @@
 										'  	<span class="badge badge-white border border-secondary text-secondary mx-1 col">Free <br>stack</span>' +
 										'  	<span class="badge badge-white border border-secondary text-success mx-1">Callee: <br>{{callee_subrutine}}</span>' +
 										'  	<span class="badge badge-white border border-secondary text-info mx-1" v-if="track_stack_names.length > 1">Caller: <br>{{caller_subrutine}}</span>' +
-										'  	<span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2">&dot;&dot;&dot;</span>' +
+										'  	<span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center"><b>&bull;&bull;&bull;</b></span>' +
 										'  	<span class="badge badge-white border border-secondary text-dark mx-1">System <br>stack</span>' +
 										'  </div>' +
-
+                    '' +
+                    '  </b-col>' +
+                    '  </b-row>' +
+                    '</b-container>' +
+                    '' +
 										' </div>'
 				}
 

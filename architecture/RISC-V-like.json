@@ -1222,7 +1222,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC;\nPC=inm;",
+      "definition": "rd=PC;\n PC=inm;\n draw_stack_jal(inm);",
       "separated": [
         false,
         false,
@@ -1271,7 +1271,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd= PC;\nPC = (rs1+inm)&~1;",
+      "definition": "rd=PC;\n PC=(rs1+inm)&~1; draw_stack_jal((rs1+inm)&~1);",
       "separated": [
         false,
         false,
