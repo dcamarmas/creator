@@ -3835,7 +3835,10 @@
                 <!-- Stack memory -->
                 <b-tab title="Stack">
 
-                  <table-mem-stack :memory="memory[memory_hash[2]]" :track_stack_names="track_stack_names" :callee_subrutine="callee_subrutine" :caller_subrutine="caller_subrutine"></table-mem-stack>
+                  <table-mem-stack :memory="memory[memory_hash[2]]" 
+				   :track_stack_names="track_stack_names" 
+				   :callee_subrutine="callee_subrutine" 
+				   :caller_subrutine="caller_subrutine"></table-mem-stack>
 
                   <!--TODO: try to include in a component this modal-->
                   <b-modal ref="stack_modal" 
