@@ -25,6 +25,7 @@
 
 			  props:      {
 											memory:   					{ type: Array,  required: true },
+											track_stack_names:  { type: Array,  required: true },
 											callee_subrutine:   { type: String, required: true },
 											caller_subrutine:   { type: String, required: true }
 										},
@@ -57,7 +58,7 @@
 										'	           :fields="memFields" ' +
 										'	           :filter-function=filter ' +
 										'	           filter=" " ' +
-										'	           class="memory_table" ' +
+										'	           class="memory_table align-items-start" ' +
 										'	           @row-clicked="select_stack_type">' +
 										'	' +
 										'	    <template v-slot:head(Tag)="row">' +
@@ -306,15 +307,18 @@
 										'	  </b-table>' +
 										'' +
 										'  <div class="col-lg-12 col-sm-12 row mx-0 px-2 border mt-3">' +
-										'  <span class="col-lg-12 col-sm-12 my-1">' +
+										'  	<span class="col-lg-12 col-sm-12 my-1">' +
 										'       <span>Stack memory keys:</span>' +
-										'  </span>' +
+										'  	</span>' +
 										'' +
-										'  <span class="badge badge-white border border-secondary text-secondary mx-1 col">Free <br>stack</span>' +
-										'  <span class="badge badge-white border border-secondary text-success mx-1">Callee: <br>{{callee_subrutine}}</span>' +
-										'  <span class="badge badge-white border border-secondary text-info mx-1">Caller: <br>{{caller_subrutine}}</span>' +
-										'  <span class="badge badge-white border border-secondary text-dark mx-1">Protected <br>stack</span>' +
-										'  </div>'
+										'  	<span class="badge badge-white border border-secondary text-secondary mx-1 col">Free <br>stack</span>' +
+										'  	<span class="badge badge-white border border-secondary text-success mx-1">Callee: <br>{{callee_subrutine}}</span>' +
+										'  	<span class="badge badge-white border border-secondary text-info mx-1" v-if="track_stack_names.length > 1">Caller: <br>{{caller_subrutine}}</span>' +
+										'  	<span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2">&dot;&dot;&dot;</span>' +
+										'  	<span class="badge badge-white border border-secondary text-dark mx-1">System <br>stack</span>' +
+										'  </div>' +
+
+										' </div>'
 				}
 
         Vue.component('table-mem-stack', uielto_memory_stack) ;

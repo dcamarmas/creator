@@ -1866,7 +1866,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC; if(rs >> 0 >=0){PC=PC+((off << 16) >> 14)}; \ncheck_protection_jal(); draw_stack_jal();"
+      "definition": "ra=PC; if(rs >> 0 >=0){PC=PC+((off << 16) >> 14)\ncheck_protection_jal(); draw_stack_jal(reg0);};"
     },
     {
       "name": "bgtz",
@@ -2550,7 +2550,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC\nPC=addr; \ncheck_protection_jal(); draw_stack_jal();"
+      "definition": "ra=PC\nPC=addr; \ncheck_protection_jal(); draw_stack_jal(addr);"
     },
     {
       "name": "jalr",
@@ -2592,7 +2592,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd); \ncheck_protection_jal(); draw_stack_jal();"
+      "definition": "rd=PC\nPC=rs\ncheck_stack_limit(rd.name; sp.name; rd); \ncheck_protection_jal(); draw_stack_jal(rs);"
     },
     {
       "name": "jr",
