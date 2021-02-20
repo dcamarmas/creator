@@ -588,10 +588,10 @@ function check_protection_jrra ()
 // draw stack
 //
 
-function draw_stack_jal ()
+function draw_stack_jal (addr)
 {
     // 1.- get function name
-    var function_name = _get_subrutine_name() ;
+    var function_name = _get_subrutine_name(addr) ;
 
     // 2.- callstack_enter
     track_stack_enter(function_name) ;
@@ -613,7 +613,7 @@ function draw_stack_jrra ()
 // Auxiliar and internal function
 //
 
-function _get_subrutine_name ()
+function _get_subrutine_name (addr)
 {
     var function_name = "" ;
 
@@ -622,28 +622,9 @@ function _get_subrutine_name ()
         return function_name ;
     }
 
-    // PC points to the next instruction... substract 4
-    var pc_function = Number(architecture.components[0].elements[0].value) - 4 ;
-    var pc_hex = "0x" + pc_function.toString(16) ;
-
-    // set current subrutine name as "PC=0x..."
-    function_name = "PC=" + pc_hex ;
-
-    // try to get current subrutine name and save into function_name
-    for (var i = 0; i < instructions.length; i++)
-    {
-/* ************
-            // components/simulator/creator_uielto_table_execution.js draw [Next] in the callee address :-)
-            if (instructions[i]._rowVariant == 'success') {
-                function_name = instructions[i].Label;
-                break;
-            }
-************* */
-
-            if (instructions[i].Address == pc_hex && instructions[i].Label != ""){
-                function_name = instructions[i].Label;
-                break;
-            }
+    function_name = "0x" + parseInt(addr).toString(16);
+    if (typeof tag_instructions[addr] != "undefined"){
+        function_name = tag_instructions[addr];
     }
 
     return function_name ;
@@ -807,6 +788,7 @@ var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
+var tag_instructions = {};
 var instructions_binary = [];
 /*Data memory*/
 var data = [];
@@ -1087,6 +1069,7 @@ function assembly_compiler()
       	
         instructions = [];
         instructions_tag = [];
+        tag_instructions = {};
         pending_instructions = [];
         pending_tags = [];
         memory[memory_hash[0]] = [];
@@ -2909,6 +2892,7 @@ function code_segment_compiler()
               for(var i = 0; i < instructions.length; i++){
                 if(instructions[i].Label != ""){
                   instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
+                  tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
                 }
               }
 
@@ -3171,6 +3155,7 @@ function code_segment_compiler()
         for(var i = 0; i < instructions.length; i++){
           if(instructions[i].Label != ""){
             instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
+            tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
           }
         }
 
