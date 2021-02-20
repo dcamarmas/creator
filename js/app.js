@@ -351,6 +351,7 @@ try
       selected_space_view: null, //TODO: try to include in a component
       selected_stack_view: null, //TODO: try to include in a component
       
+      track_stack_names: track_stack_names,
       callee_subrutine: "",
       caller_subrutine: "",
       stack_pointer: 0,
