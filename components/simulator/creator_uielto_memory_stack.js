@@ -49,11 +49,11 @@
 								      }				
 			  						},
 
-      	template:   '	<div class="col-lg-12 col-sm-12 px-0 h-100">' +
+      	template:   '	<div class="col-lg-12 col-sm-12 px-0">' +
                     '' +
-                    '<b-container class="h-100">' +
-                    '  <b-row align-v="start" class="h-75">' +
-                    '  <b-col>' +
+                    '<span class="container">' +
+                    '  <b-row align-v="start">' +
+                    '  <b-col style="min-height:35vh !important;">' +
                     '' +
 										'	  <b-table sticky-header ' +
 										'	           striped ' +
@@ -314,7 +314,7 @@
                     '  </b-col>' +
                     '  </b-row>' +
                     '' +
-                    '  <b-row align-v="end" class="h-25">' +
+                    '  <b-row align-v="end">' +
                     '  <b-col>' +
                     '' +
 										'  <div class="col-lg-12 col-sm-12 row mx-0 px-2 border">' +
@@ -331,7 +331,7 @@
                     '' +
                     '  </b-col>' +
                     '  </b-row>' +
-                    '</b-container>' +
+                    '</span>' +
                     '' +
 										' </div>'
 				}
