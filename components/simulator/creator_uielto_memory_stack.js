@@ -49,11 +49,11 @@
 								      }				
 			  						},
 
-      	template:   '	<div class="col-lg-12 col-sm-12 px-0 h-100">' +
+      	template:   '	<div class="col-lg-12 col-sm-12 px-0">' +
                     '' +
-                    '<b-container class="h-100">' +
-                    '  <b-row align-v="start" class="h-75">' +
-                    '  <b-col>' +
+                    '<span class="container">' +
+                    '  <b-row align-v="start">' +
+                    '  <b-col style="min-height:35vh !important;">' +
                     '' +
 										'	  <b-table sticky-header ' +
 										'	           striped ' +
@@ -314,7 +314,7 @@
                     '  </b-col>' +
                     '  </b-row>' +
                     '' +
-                    '  <b-row align-v="end" class="h-25">' +
+                    '  <b-row align-v="end">' +
                     '  <b-col>' +
                     '' +
 										'  <div class="col-lg-12 col-sm-12 row mx-0 px-2 border">' +
@@ -325,13 +325,13 @@
 										'  	<span class="badge badge-white border border-secondary text-secondary mx-1 col">Free <br>stack</span>' +
 										'  	<span class="badge badge-white border border-secondary text-success mx-1">Callee: <br>{{callee_subrutine}}</span>' +
 										'  	<span class="badge badge-white border border-secondary text-info mx-1" v-if="track_stack_names.length > 1">Caller: <br>{{caller_subrutine}}</span>' +
-										'  	<span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center"><b>&bull;&bull;&bull;</b></span>' +
+										'  	<span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center"><b>&bull;&bull;&bull;<br>{{track_stack_names.length - 2}}</b></span>' +
 										'  	<span class="badge badge-white border border-secondary text-dark mx-1">System <br>stack</span>' +
 										'  </div>' +
                     '' +
                     '  </b-col>' +
                     '  </b-row>' +
-                    '</b-container>' +
+                    '</span>' +
                     '' +
 										' </div>'
 				}
