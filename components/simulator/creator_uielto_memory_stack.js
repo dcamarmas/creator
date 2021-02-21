@@ -325,7 +325,7 @@
 										'  	<span class="badge badge-white border border-secondary text-secondary mx-1 col">Free <br>stack</span>' +
 										'  	<span class="badge badge-white border border-secondary text-success mx-1">Callee: <br>{{callee_subrutine}}</span>' +
 										'  	<span class="badge badge-white border border-secondary text-info mx-1" v-if="track_stack_names.length > 1">Caller: <br>{{caller_subrutine}}</span>' +
-										'  	<span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center"><b>&bull;&bull;&bull;</b></span>' +
+										'  	<span class="badge badge-white border border-secondary text-dark mx-1" v-if="track_stack_names.length > 2" align-v="center"><b>&bull;&bull;&bull;<br>{{track_stack_names.length - 2}}</b></span>' +
 										'  	<span class="badge badge-white border border-secondary text-dark mx-1">System <br>stack</span>' +
 										'  </div>' +
                     '' +
