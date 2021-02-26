@@ -1866,7 +1866,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC; if(rs >> 0 >=0) { PC=PC+((off << 16) >> 14)\n check_protection_jal(reg0); draw_stack_jal(reg0); }"
+      "definition": "ra=PC; if(rs >> 0 >=0) { PC=PC+((off << 16) >> 14)\n passing_convention_begin(reg0); draw_stack_begin(reg0); }"
     },
     {
       "name": "bgtz",
@@ -2550,7 +2550,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC\nPC=addr;\n check_protection_jal(addr); draw_stack_jal(addr);"
+      "definition": "ra=PC\nPC=addr;\n passing_convention_begin(addr); draw_stack_begin(addr);"
     },
     {
       "name": "jalr",
@@ -2592,7 +2592,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC;\n PC=rs;\n check_stack_limit(rd.name; sp.name; rd);\n check_protection_jal(rs); draw_stack_jal(rs);"
+      "definition": "rd=PC;\n PC=rs;\n check_stack_limit(rd.name; sp.name; rd);\n passing_convention_begin(rs); draw_stack_begin(rs);"
     },
     {
       "name": "jr",
@@ -2628,7 +2628,7 @@
           "valueField": "001000"
         }
       ],
-      "definition": "PC=rs; \ncheck_protection_jrra(); draw_stack_jrra();"
+      "definition": "PC=rs; \npassing_convention_end(); draw_stack_end();"
     },
     {
       "name": "lb",
