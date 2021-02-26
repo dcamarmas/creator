@@ -3914,6 +3914,10 @@
     </div>
 
     <!-- Required scripts -->
-    <script src="js/min.creator_web.js?id=20210220"></script>
+    <!--<script src="js/min.creator_web.js?id=20210220"></script>-->
+
+    <script>
+		  document.write("<script src=\"js/min.creator_web.js?id=" + new Date().getTime() + "\"><\/script>");
+		</script>
   </body>
 </html>

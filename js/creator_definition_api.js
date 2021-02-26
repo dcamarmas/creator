@@ -27,7 +27,7 @@
 // check stack
 //
 
-function check_protection_jal ( addr )
+function passing_convention_begin ( addr )
 {
     var function_name = "" ;
 
@@ -43,7 +43,7 @@ function check_protection_jal ( addr )
     creator_callstack_enter(function_name) ;
 }
 
-function check_protection_jrra ()
+function passing_convention_end ()
 {
     // 1.- callstack_leave
     var ret = creator_callstack_leave();
@@ -68,7 +68,7 @@ function check_protection_jrra ()
 // draw stack
 //
 
-function draw_stack_jal ( addr )
+function draw_stack_begin ( addr )
 {
     var function_name = "" ;
 
@@ -84,7 +84,7 @@ function draw_stack_jal ( addr )
     track_stack_enter(function_name) ;
 }
 
-function draw_stack_jrra ()
+function draw_stack_end ()
 {
     // track leave
     var ret = track_stack_leave() ;
