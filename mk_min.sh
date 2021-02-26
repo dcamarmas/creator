@@ -23,7 +23,7 @@ cat js/creator_bigint.js \
     js/creator_util.js \
     \
     js/creator_track_stack.js \
-    js/creator_protection_register.js \
+    js/creator_sentinel.js \
     js/creator_definition_api.js \
     \
     js/creator_compiler.js \
@@ -71,7 +71,7 @@ cat js/creator_bigint.js \
     js/creator_ga.js \
     js/creator_util.js \
     \
-    js/creator_protection_register.js \
+    js/creator_sentinel.js \
     js/creator_definition_api.js \
     \
     js/creator_compiler.js \
