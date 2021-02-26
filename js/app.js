@@ -573,7 +573,7 @@ try
 
       /*Load the available architectures and check if exists backup*/
       load_arch_available() {
-        $.getJSON('architecture/available_arch.json', function(cfg){
+        $.getJSON('architecture/available_arch.json' + "?v=" + new Date().getTime(), function(cfg){
           architecture_available = cfg;
 
           if (typeof(Storage) !== "undefined"){
@@ -670,13 +670,13 @@ try
 				         show_notification('The selected architecture has been loaded correctly', 'success') ;
 
 				         /* Google Analytics */
-					 creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
+					       creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
 
                  return;
              }
         }
 
-        $.getJSON('architecture/'+e.name+'.json', function(cfg) {
+        $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg) {
           app.load_arch_select_aux(e.name, cfg, true, e) ;
 		      hide_loading();
 		      show_notification('The selected architecture has been loaded correctly', 'success') ;
@@ -2852,7 +2852,7 @@ try
       load_examples_available( set_name ) {
 	     this._data.example_loaded = new Promise(function(resolve, reject) {
 
-		$.getJSON('examples/example_set.json', function(set) {
+		$.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
 
                   // current architecture in upperCase
 		  var current_architecture = app._data.architecture_name.toUpperCase() ;
