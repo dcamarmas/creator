@@ -247,15 +247,24 @@ function register_value_serialize(object)
   *   {
   *     function_name: "",
   *     enter_stack_pointer: 0x0,
-  *     registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
-  *     registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
+  *     registers_sm:           [ indexComp: [ 0, ... ]... ; // once per register: state
   *     registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
-  *     register_address_write: [ indexComp: [ 0x0, ... ], ... ; // once per register: in which position is stored
-  *     register_address_read:  [ indexComp: [ 0x0, ... ], ... ; // once per register: from which position is restored
+  *     register_address_write: [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: in which position is stored
+  *     register_address_read:  [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: from which position is restored
   *   },
   *   ...
   * ] ;
   */
+
+ /*
+  * States:
+  *  0 -> Init
+  *  1 -> Saved in memory/stack
+  *  2 -> Restored from memory/stack
+  *  3 -> Error
+  *  4 -> Save/.../Restore/Save
+  */
+
  var stack_call_registers = [];
 
 
@@ -297,26 +306,23 @@ function creator_callstack_enter(function_name)
     stack_call_names.push(function_name) ;
 
     // 2.- caller element
-    var arr_saved = [];
-    var arr_modified = [];
+    var arr_sm = [];
     var arr_write = []
     var arr_read = []
     var arr_value = []
 
     for (var i = 0; i < architecture.components.length; i++)
     {
-           arr_saved.push([]);
-        arr_modified.push([]);
+        arr_sm.push([]);
         arr_write.push([]);
          arr_read.push([]);
         arr_value.push([]);
 
         for (var j = 0; j < architecture.components[i].elements.length; j++)
         {
-               arr_saved[i].push(false);
-            arr_modified[i].push(false);
-            arr_write[i].push(0x0);
-             arr_read[i].push(0x0);
+            arr_sm[i].push(0);
+            arr_write[i].push([]);
+             arr_read[i].push([]);
              arr_value[i].push(architecture.components[i].elements[j].value);
         }
     }
@@ -324,8 +330,7 @@ function creator_callstack_enter(function_name)
     var new_elto = {
         function_name:          function_name,
         enter_stack_pointer:    architecture.memory_layout[4].value,
-        registers_saved:        arr_saved,
-        registers_modified:     arr_modified,
+        registers_sm:           arr_sm,
         registers_value:        arr_value,
         register_address_write: arr_write,
         register_address_read:  arr_read
@@ -500,6 +505,78 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
 }
 
 //
+// Let programmers to modify register state
+// Example: creator_callstack_setState(1, 2, 1) ;
+//
+function creator_callstack_setState (indexComponent, indexElement, newState)
+{
+  var elto = creator_callstack_getTop();
+  elto.registers_sm[indexComponent][indexElement] = newState;
+}
+
+
+function creator_callstack_getState (indexComponent, indexElement)
+{
+  var elto = creator_callstack_getTop();
+  return elto.registers_sm[indexComponent][indexElement];
+}
+
+//
+// Let programmers add a new write
+// Example: creator_callstack_newWrite(1, 2, 0x12345) ;
+//
+function creator_callstack_newWrite (indexComponent, indexElement, address)
+{
+  var elto = creator_callstack_getTop();
+  elto.register_address_write[indexComponent][indexElement].push(address);
+
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 0 || state == 1 || state == 2){
+    creator_callstack_setState(indexComponent, indexElement, 1);
+    return;
+  }
+  if(state == 2){
+    creator_callstack_setState(indexComponent, indexElement, 4);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
+// Let programmers add a new read
+// Example: creator_callstack_newRead(1, 2, 0x12345) ;
+//
+function creator_callstack_newRead (indexComponent, indexElement, address)
+{
+  var elto = creator_callstack_getTop();
+  elto.register_address_read[indexComponent][indexElement].push(address);
+
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 1 || state == 2 || state == 4){
+    creator_callstack_setState(indexComponent, indexElement, 2);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
+// Let programmers add a new read
+// Example: creator_callstack_newRead(1, 2, 0x12345) ;
+//
+function creator_callstack_writeRegister (indexComponent, indexElement)
+{
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 1 || state == 4){
+    creator_callstack_setState(indexComponent, indexElement, 1);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
 // Reset
 // Example: creator_callstack_reset() ;
 //
@@ -548,7 +625,7 @@ function creator_callstack_reset()
 // check stack
 //
 
-function check_protection_jal ( addr )
+function passing_convention_begin ( addr )
 {
     var function_name = "" ;
 
@@ -564,7 +641,7 @@ function check_protection_jal ( addr )
     creator_callstack_enter(function_name) ;
 }
 
-function check_protection_jrra ()
+function passing_convention_end ()
 {
     // 1.- callstack_leave
     var ret = creator_callstack_leave();
@@ -589,7 +666,7 @@ function check_protection_jrra ()
 // draw stack
 //
 
-function draw_stack_jal ( addr )
+function draw_stack_begin ( addr )
 {
     var function_name = "" ;
 
@@ -605,7 +682,7 @@ function draw_stack_jal ( addr )
     track_stack_enter(function_name) ;
 }
 
-function draw_stack_jrra ()
+function draw_stack_end ()
 {
     // track leave
     var ret = track_stack_leave() ;
@@ -5702,7 +5779,11 @@ function executeInstruction ( )
         re = /MP.[whbd].\[(.*?)\] *=/;
         auxDef = auxDef.replace(re, "dir=");
         auxDef = "var dir=null\n" + auxDef;
-        auxDef = auxDef + "\n writeMemory(dir"+","+match[2]+",'"+match[1]+"');"
+
+        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
+        var xx = "[]";
+
+        auxDef = auxDef + "\n writeMemory(dir"+","+match[2]+",'"+match[1]+"'," + xx + ");"
         re = /MP.([whb]).\[(.*?)\] *=/;
       }
 
@@ -5712,7 +5793,11 @@ function executeInstruction ( )
         re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
         auxDef = auxDef.replace(re, "dir=");
         auxDef = "var dir=null\n" + auxDef;
-        auxDef = auxDef + "\n writeMemory(dir,"+match[2]+",'"+match[1]+"');"
+
+        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
+        var xx = "[]";
+
+        auxDef = auxDef + "\n writeMemory(dir,"+match[2]+",'"+match[1]+"'," + xx + ");"
         re = new RegExp("MP.([whbd]).(.*?) *=");
       }
 
@@ -5934,6 +6019,7 @@ function writeRegister ( value, indexComp, indexElem )
             }
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
+            creator_callstack_writeRegister(indexComp, indexElem);
 
             if (typeof window !== "undefined")
             {
@@ -5960,6 +6046,7 @@ function writeRegister ( value, indexComp, indexElem )
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+            creator_callstack_writeRegister(indexComp, indexElem);
 
             updateDouble(indexComp, indexElem);
 
@@ -5991,6 +6078,7 @@ function writeRegister ( value, indexComp, indexElem )
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
             updateSimple(indexComp, indexElem);
+            creator_callstack_writeRegister(indexComp, indexElem);
 
             if (typeof window !== "undefined")
             {
@@ -6153,7 +6241,7 @@ function readMemory ( addr, type )
 }
 
 /*Write value in memory*/
-function writeMemory ( value, addr, type )
+function writeMemory ( value, addr, type, originRegister)
 {
 	  var draw = {
 	    space: [] ,
@@ -6175,6 +6263,10 @@ function writeMemory ( value, addr, type )
 	    			draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+          }
+
+          if(originRegister.length > 0){
+            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -6264,6 +6356,10 @@ function writeMemory ( value, addr, type )
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+          }
+
+          if(originRegister.length > 0){
+            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -6425,6 +6521,10 @@ function writeMemory ( value, addr, type )
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+          }
+
+          if(originRegister.length > 0){
+            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
