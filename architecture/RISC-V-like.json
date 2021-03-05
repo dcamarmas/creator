@@ -1186,7 +1186,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var n = (inm<<12).toString(2).padStart(32, \"0\");\nrd=inm+parseInt(n.substring(0,20), 2);",
+      "definition": "rd=PC+(inm<<12)-4;",
       "separated": [
         false,
         false,
@@ -7325,7 +7325,535 @@
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
     }
   ],
-  "pseudoinstructions": [],
+  "pseudoinstructions": [
+    {
+      "name": "nop",
+      "signature_definition": "nop",
+      "signature": "nop",
+      "signatureRaw": "nop",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [],
+      "definition": "addi x0, x0, 0;"
+    },
+    {
+      "name": "mv",
+      "signature_definition": "mv F0 F1",
+      "signature": "mv,INT-Reg,INT-Reg",
+      "signatureRaw": "mv reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "addi reg1 reg2 0;"
+    },
+    {
+      "name": "not",
+      "signature_definition": "not F0 F1",
+      "signature": "not,INT-Reg,INT-Reg",
+      "signatureRaw": "not reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "xori reg1 reg2 -1;"
+    },
+    {
+      "name": "neg",
+      "signature_definition": "neg F0 F1",
+      "signature": "neg,INT-Reg,INT-Reg",
+      "signatureRaw": "neg reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sub reg1 x0 reg2;"
+    },
+    {
+      "name": "negw",
+      "signature_definition": "negw F0 F1",
+      "signature": "negw,INT-Reg,INT-Reg",
+      "signatureRaw": "negw reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "subw reg1 x0 reg2;"
+     },
+     {
+      "name": "beqz",
+      "signature_definition": "beqz F0 F1",
+      "signature": "beqz,INT-Reg,offset_words",
+      "signatureRaw": "beqz reg1 off",
+      "help": "Conditional branch if the Rsrc register is equal to 0.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "beq reg1 x0 off;"
+    },
+    {
+      "name": "bnez",
+      "signature_definition": "bnez F0 F1",
+      "signature": "bnez,INT-Reg,offset_words",
+      "signatureRaw": "bnez reg1 off",
+      "help": "Conditional branch if Rsrc is not equal to 0.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bne reg1 x0 off;"
+    },
+    {
+      "name": "bgtu",
+      "signature_definition": "bgtu F0 F1 F2",
+      "signature": "bgtu,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "bgtu reg1 reg2 off",
+      "help": "Conditional branch if the Rsrc1 register is greater than Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bltu reg2 reg1 off"
+    },
+    {
+      "name": "bleu",
+      "signature_definition": "bleu F0 F1 F2",
+      "signature": "bleu,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "bleu reg1 reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal to Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bgeu reg2 reg1 off"
+    },
+    {
+      "name": "blez",
+      "signature_definition": "blez F0 F1",
+      "signature": "blez,INT-Reg,offset_words",
+      "signatureRaw": "blez reg1 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bge x0 reg1 off"
+    },
+    {
+      "name": "bgez",
+      "signature_definition": "bgez F0 F1",
+      "signature": "bgez,INT-Reg,offset_words",
+      "signatureRaw": "bgez reg1 off",
+      "help": "Conditional branch if Rsrc1 is greater than or equal zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bge reg1 x0 off"
+    },
+    {
+      "name": "bltz",
+      "signature_definition": "bltz F0 F1",
+      "signature": "bltz,INT-Reg,offset_words",
+      "signatureRaw": "bltz reg1 off",
+      "help": "Conditional branch if Rsrc1 is less than zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "blt reg1 x0 off"
+    },
+    {
+      "name": "bgtz",
+      "signature_definition": "bgtz F0 F1",
+      "signature": "bgtz,INT-Reg,offset_words",
+      "signatureRaw": "bgtz reg1 off",
+      "help": "Conditional branch if Rsrc1 is greater than zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "blt x0 reg1 off"
+    },
+    {
+      "name": "bgt",
+      "signature_definition": "bgt F0 F1 F2",
+      "signature": "bgt,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "bgt reg1 reg2 off",
+      "help": "Conditional branch if Rsrc1 is greater than Src2.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "blt reg2 reg1 off"
+    },
+    {
+      "name": "ble",
+      "signature_definition": "ble F0 F1 F2",
+      "signature": "ble,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "ble reg1 reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal to Src2.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bge reg2 reg1 off"
+    },
+    {
+      "name": "jalr",
+      "signature_definition": "jalr F0",
+      "signature": "jalr,INT-Reg",
+      "signatureRaw": "jalr rs",
+      "help": "Unconditional jump, stores the current address at ra (x1).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "jalr x1 rs 0;"
+    },
+    {
+      "name": "jr",
+      "signature_definition": "jr F0",
+      "signature": "jr,INT-Reg",
+      "signatureRaw": "jr rs",
+      "help": "Unconditional jump.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "jalr x0 rs 0;"
+    },
+    {
+      "name": "jal",
+      "signature_definition": "jal F0",
+      "signature": "jal,offset_words",
+      "signatureRaw": "jal off",
+      "help": "Unconditional jump, stores the current address at ra (x1).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "jal x1 off;"
+    },
+    {
+      "name": "j",
+      "signature_definition": "j F0",
+      "signature": "j,offset_words",
+      "signatureRaw": "j off",
+      "help": "Unconditional jump.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "jal x0 off;"
+    },
+    {
+      "name": "ret",
+      "signature_definition": "ret",
+      "signature": "ret",
+      "signatureRaw": "ret",
+      "help": "Return from subrutine.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [],
+      "definition": "jalr x0 x1 0;"
+    },
+    {
+      "name": "la",
+      "signature_definition": "la F0 F1",
+      "signature": "la,INT-Reg,inm-signed",
+      "signatureRaw": "la rd addr",
+      "help": "Load address in Rdest (the address value, not the content)",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "20",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rd Field.2.(31,12).int;\naddi rd rd Field.2.(11,0).int;"
+    },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {
+      "name": "li",
+      "signature_definition": "li F0 F1",
+      "signature": "li,INT-Reg,inm-signed",
+      "signatureRaw": "li rd val",
+      "help": "Load immediate value",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "val",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.2.SIZE<=12){addi rd x0 val;}\nelse{lui rd 0;\nlui rd Field.2.(31,12).int;\naddi rd rd Field.2.(31,12).int - Field.2.(31,12).int;}"
+    }
+
+
+
+
+
+
+
+
+
+  ],
   "directives": [
     {
       "name": ".data",
