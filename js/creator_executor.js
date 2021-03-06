@@ -1667,6 +1667,8 @@ function writeStackLimit ( stackLimit )
 	    flash: []
 	  } ;
 
+    console.log("degtlmgh");
+    
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
 	          draw.danger.push(executionIndex);
