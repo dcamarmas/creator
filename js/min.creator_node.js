@@ -511,14 +511,14 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
 function creator_callstack_setState (indexComponent, indexElement, newState)
 {
   var elto = creator_callstack_getTop();
-  elto.registers_sm[indexComponent][indexElement] = newState;
+  elto.val.registers_sm[indexComponent][indexElement] = newState;
 }
 
 
 function creator_callstack_getState (indexComponent, indexElement)
 {
   var elto = creator_callstack_getTop();
-  return elto.registers_sm[indexComponent][indexElement];
+  return elto.val.registers_sm[indexComponent][indexElement];
 }
 
 //
@@ -528,7 +528,7 @@ function creator_callstack_getState (indexComponent, indexElement)
 function creator_callstack_newWrite (indexComponent, indexElement, address)
 {
   var elto = creator_callstack_getTop();
-  elto.register_address_write[indexComponent][indexElement].push(address);
+  elto.val.register_address_write[indexComponent][indexElement].push(address);
 
   //Move state finite machine
   var state = creator_callstack_getState(indexComponent, indexElement);
@@ -550,7 +550,7 @@ function creator_callstack_newWrite (indexComponent, indexElement, address)
 function creator_callstack_newRead (indexComponent, indexElement, address)
 {
   var elto = creator_callstack_getTop();
-  elto.register_address_read[indexComponent][indexElement].push(address);
+  elto.val.register_address_read[indexComponent][indexElement].push(address);
 
   //Move state finite machine
   var state = creator_callstack_getState(indexComponent, indexElement);
@@ -6627,6 +6627,8 @@ function writeStackLimit ( stackLimit )
 	    flash: []
 	  } ;
 
+    console.log("degtlmgh");
+    
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
 	          draw.danger.push(executionIndex);
