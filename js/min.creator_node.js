@@ -5770,34 +5770,37 @@ function executeInstruction ( )
       console_log(auxDef);
 
       /*Write in memory*/
+      var index = 0;
       re = /MP.([whbd]).\[(.*?)\] *=/;
       while (auxDef.search(re) != -1){
+        index++;
         var match = re.exec(auxDef);
         var auxDir;
         //eval("auxDir="+match[2]);
 
         re = /MP.[whbd].\[(.*?)\] *=/;
-        auxDef = auxDef.replace(re, "dir=");
-        auxDef = "var dir=null\n" + auxDef;
+        auxDef = auxDef.replace(re, "dir" + index + "=");
+        auxDef = "var dir" + index + " =null\n" + auxDef;
 
         /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
         var xx = "[]";
 
-        auxDef = auxDef + "\n writeMemory(dir"+","+match[2]+",'"+match[1]+"'," + xx + ");"
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
         re = /MP.([whb]).\[(.*?)\] *=/;
       }
 
       re = new RegExp("MP.([whbd]).(.*?) *=");
       while (auxDef.search(re) != -1){
+        index++;
         var match = re.exec(auxDef);
         re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
-        auxDef = auxDef.replace(re, "dir=");
-        auxDef = "var dir=null\n" + auxDef;
+        auxDef = auxDef.replace(re, "dir" + index + " =");
+        auxDef = "var dir" + index + " =null\n" + auxDef;
 
         /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
         var xx = "[]";
 
-        auxDef = auxDef + "\n writeMemory(dir,"+match[2]+",'"+match[1]+"'," + xx + ");"
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
         re = new RegExp("MP.([whbd]).(.*?) *=");
       }
 
@@ -7194,10 +7197,10 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 			  var value = bin2hex(double2bin(reg));
 			  console_log(value);
 			  if(index == 0){
-			    return "0x" + value.substring(0,8);
+			    return value.substring(0,8);
 			  }
 			  if(index == 1) {
-			    return "0x" + value.substring(8,16);
+			    return value.substring(8,16);
 			  }
 			}
 
