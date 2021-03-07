@@ -1160,7 +1160,7 @@
       "name": "auipc",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "auipc,INT-Reg,inm-signed",
+      "signature": "auipc,INT-Reg,offset_words",
       "signatureRaw": "auipc rd inm",
       "co": "0010111",
       "cop": "",
@@ -1174,7 +1174,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "offset_words",
           "startbit": 31,
           "stopbit": 12
         },
@@ -1185,7 +1185,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC+(inm<<12)-4;",
+      "definition": "rd=PC+(inm<<12);",
       "separated": [
         false,
         false,
@@ -8043,6 +8043,298 @@
         }
       ],
       "definition": "auipc rt Field.2.(31,12).int;\nfsd rd Field.2.(11,0).int (rt);\n"
+    },
+
+
+
+    {
+      "name": "fmv.s",
+      "signature_definition": "fmv.s F0 F1",
+      "signature": "fmv.s,SFP-Reg,SFP-Reg",
+      "signatureRaw": "fmv.s reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "SFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnj.s reg1 reg2 reg2;"
+    },
+    {
+      "name": "fabs.s",
+      "signature_definition": "fabs.s F0 F1",
+      "signature": "fabs.s,SFP-Reg,SFP-Reg",
+      "signatureRaw": "fabs.s reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "SFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjx.s reg1 reg2 reg2;"
+    },
+    {
+      "name": "fneg.s",
+      "signature_definition": "fneg.s F0 F1",
+      "signature": "fneg.s,SFP-Reg,SFP-Reg",
+      "signatureRaw": "fneg.s reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "SFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjn.s reg1 reg2 reg2;"
+    },
+    {
+      "name": "fmv.d",
+      "signature_definition": "fmv.d F0 F1",
+      "signature": "fmv.d,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fmv.d reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnj.d reg1 reg2 reg2;"
+    },
+
+    {
+      "name": "fabs.d",
+      "signature_definition": "fabs.d F0 F1",
+      "signature": "fabs.d,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fabs.d reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjx.d reg1 reg2 reg2;"
+    },
+    {
+      "name": "fneg.d",
+      "signature_definition": "fneg.d F0 F1",
+      "signature": "fneg.d,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fneg.d reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjn.d reg1 reg2 reg2;"
+    },
+    {
+      "name": "sext.w",
+      "signature_definition": "sext.w F0 F1",
+      "signature": "sext.w,INT-Reg,INT-Reg",
+      "signatureRaw": "sext.w reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "addiw reg1 reg2 0;"
+    },
+    {
+      "name": "zext.b",
+      "signature_definition": "zext.b F0 F1",
+      "signature": "zext.b,INT-Reg,INT-Reg",
+      "signatureRaw": "zext.b reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "andi reg1 reg2 255;"
+    },
+    {
+      "name": "seqz",
+      "signature_definition": "seqz F0 F1",
+      "signature": "seqz,INT-Reg,INT-Reg",
+      "signatureRaw": "seqz reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sltiu reg1 reg2 1;"
+    },
+    {
+      "name": "snez",
+      "signature_definition": "snez F0 F1",
+      "signature": "snez,INT-Reg,INT-Reg",
+      "signatureRaw": "snez reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sltu reg1 x0 reg2;"
+    },
+    {
+      "name": "sltz",
+      "signature_definition": "sltz F0 F1",
+      "signature": "sltz,INT-Reg,INT-Reg",
+      "signatureRaw": "sltz reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "slt reg1 reg2 x0;"
+    },
+    {
+      "name": "sgtz",
+      "signature_definition": "sgtz F0 F1",
+      "signature": "sgtz,INT-Reg,INT-Reg",
+      "signatureRaw": "sgtz reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "slt reg1 x0 reg2;"
     },
     {
       "name": "la",
