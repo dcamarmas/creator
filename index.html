@@ -3804,7 +3804,7 @@
 
             <!-- Memory view-->
             <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
-              <b-tabs content-class="mt-3">
+              <b-tabs content-class="mt-3" fill>
 
                 <!-- Data memory -->
                 <b-tab title="Data" active>
@@ -3835,7 +3835,10 @@
                 <!-- Stack memory -->
                 <b-tab title="Stack">
 
-                  <table-mem-stack :memory="memory[memory_hash[2]]" :callee_subrutine="callee_subrutine" :caller_subrutine="caller_subrutine"></table-mem-stack>
+                  <table-mem-stack :memory="memory[memory_hash[2]]" 
+				   :track_stack_names="track_stack_names" 
+				   :callee_subrutine="callee_subrutine" 
+				   :caller_subrutine="caller_subrutine"></table-mem-stack>
 
                   <!--TODO: try to include in a component this modal-->
                   <b-modal ref="stack_modal" 
@@ -3911,6 +3914,10 @@
     </div>
 
     <!-- Required scripts -->
-    <script src="js/min.creator_web.js"></script>
+    <!--<script src="js/min.creator_web.js?id=20210220"></script>-->
+
+    <script>
+		  document.write("<script src=\"js/min.creator_web.js?id=" + new Date().getTime() + "\"><\/script>");
+		</script>
   </body>
 </html>

@@ -35,8 +35,7 @@
           "value": "0",
           "default_value": "0",
           "properties": [
-            "read",
-            "write"
+            "read"
           ]
         },
         {
@@ -58,8 +57,8 @@
             "x2"
           ],
           "nbits": "32",
-          "value": "0",
-          "default_value": "0",
+          "value": "268435452",
+          "default_value": "268435452",
           "properties": [
             "read",
             "write",
@@ -413,8 +412,8 @@
             "x29"
           ],
           "nbits": "32",
-          "value": "268435452",
-          "default_value": "268435452",
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
@@ -439,8 +438,8 @@
             "x31"
           ],
           "nbits": "32",
-          "value": "4294967295",
-          "default_value": "4294967295",
+          "value": "0",
+          "default_value": "0",
           "properties": [
             "read",
             "write"
@@ -1161,7 +1160,7 @@
       "name": "auipc",
       "type": "Arithmetic integer",
       "signature_definition": "F0 F2 F1",
-      "signature": "auipc,INT-Reg,inm-signed",
+      "signature": "auipc,INT-Reg,offset_words",
       "signatureRaw": "auipc rd inm",
       "co": "0010111",
       "cop": "",
@@ -1175,7 +1174,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "offset_words",
           "startbit": 31,
           "stopbit": 12
         },
@@ -1186,7 +1185,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var n = (inm<<12).toString(2).padStart(32, \"0\");\nrd=inm+parseInt(n.substring(0,20), 2);",
+      "definition": "rd=PC+(inm<<12);",
       "separated": [
         false,
         false,
@@ -1222,7 +1221,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC;\nPC=inm;",
+      "definition": "rd=PC;\n PC=inm;\n draw_stack_jal(inm);",
       "separated": [
         false,
         false,
@@ -1271,7 +1270,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd= PC;\nPC = (rs1+inm)&~1;",
+      "definition": "rd=PC;\n PC=(rs1+inm)&~1; draw_stack_jal((rs1+inm)&~1);",
       "separated": [
         false,
         false,
@@ -3219,9 +3218,9 @@
     {
       "name": "fsd",
       "type": "Memory access",
-      "signature_definition": "F0 F2 F1 (F3)",
+      "signature_definition": "F0 F2 F3 (F1)",
       "signature": "fsd,DFP-Reg,inm-signed,(INT-Reg)",
-      "signatureRaw": "fsd rs2 inm (rs1)",
+      "signatureRaw": "fsd ft off (base)",
       "co": "0100111",
       "cop": "011",
       "nwords": 1,
@@ -3229,43 +3228,29 @@
         {
           "name": "fsd",
           "type": "co",
-          "startbit": 6,
-          "stopbit": 0
+          "startbit": 31,
+          "stopbit": 26
         },
         {
-          "name": "inm",
-          "type": "inm-signed",
-          "startbit": [
-            31,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
-        },
-        {
-          "name": "rs2",
-          "type": "DFP-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
+          "name": "base",
           "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15,
-          "valueField": "011"
+          "startbit": 25,
+          "stopbit": 21
         },
         {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "011"
+          "name": "ft",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "inm-signed",
+          "startbit": 15,
+          "stopbit": 0
         }
       ],
-      "definition": "MP.w.[inm+rs2] = splitDouble(rs1; 1); MP.w.[inm+rs2+4] = splitDouble(rs1; 0);",
+      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);",
       "separated": [
         false,
         true,
@@ -5899,63 +5884,6 @@
       ]
     },
     {
-      "name": "fsd",
-      "type": "Memory access",
-      "signature_definition": "F0 F3 F2(F1)",
-      "signature": "fsd,INT-Reg,DFP-Reg(inm-signed)",
-      "signatureRaw": "fsd rs1 rs2(inm)",
-      "co": "0100111",
-      "cop": "011",
-      "nwords": 1,
-      "fields": [
-        {
-          "name": "fsd",
-          "type": "co",
-          "startbit": 6,
-          "stopbit": 0
-        },
-        {
-          "name": "inm",
-          "type": "inm-signed",
-          "startbit": [
-            0,
-            11
-          ],
-          "stopbit": [
-            25,
-            7
-          ]
-        },
-        {
-          "name": "rs2",
-          "type": "DFP-Reg",
-          "startbit": 24,
-          "stopbit": 20
-        },
-        {
-          "name": "rs1",
-          "type": "INT-Reg",
-          "startbit": 19,
-          "stopbit": 15
-        },
-        {
-          "name": "cop",
-          "type": "cop",
-          "startbit": 14,
-          "stopbit": 12,
-          "valueField": "011"
-        }
-      ],
-      "definition": "MP.d[rs1+inm] = rs2;",
-      "separated": [
-        false,
-        true,
-        false,
-        false,
-        false
-      ]
-    },
-    {
       "name": "fmadd.d",
       "type": "Arithmetic floating point",
       "signature_definition": "F0 F5 F4 F3 F1",
@@ -7325,7 +7253,1147 @@
       "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
     }
   ],
-  "pseudoinstructions": [],
+  "pseudoinstructions": [
+    {
+      "name": "nop",
+      "signature_definition": "nop",
+      "signature": "nop",
+      "signatureRaw": "nop",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [],
+      "definition": "addi x0, x0, 0;"
+    },
+    {
+      "name": "mv",
+      "signature_definition": "mv F0 F1",
+      "signature": "mv,INT-Reg,INT-Reg",
+      "signatureRaw": "mv reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "addi reg1 reg2 0;"
+    },
+    {
+      "name": "not",
+      "signature_definition": "not F0 F1",
+      "signature": "not,INT-Reg,INT-Reg",
+      "signatureRaw": "not reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "xori reg1 reg2 -1;"
+    },
+    {
+      "name": "neg",
+      "signature_definition": "neg F0 F1",
+      "signature": "neg,INT-Reg,INT-Reg",
+      "signatureRaw": "neg reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sub reg1 x0 reg2;"
+    },
+    {
+      "name": "negw",
+      "signature_definition": "negw F0 F1",
+      "signature": "negw,INT-Reg,INT-Reg",
+      "signatureRaw": "negw reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "subw reg1 x0 reg2;"
+     },
+     {
+      "name": "beqz",
+      "signature_definition": "beqz F0 F1",
+      "signature": "beqz,INT-Reg,offset_words",
+      "signatureRaw": "beqz reg1 off",
+      "help": "Conditional branch if the Rsrc register is equal to 0.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "beq reg1 x0 off;"
+    },
+    {
+      "name": "bnez",
+      "signature_definition": "bnez F0 F1",
+      "signature": "bnez,INT-Reg,offset_words",
+      "signatureRaw": "bnez reg1 off",
+      "help": "Conditional branch if Rsrc is not equal to 0.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bne reg1 x0 off;"
+    },
+    {
+      "name": "bgtu",
+      "signature_definition": "bgtu F0 F1 F2",
+      "signature": "bgtu,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "bgtu reg1 reg2 off",
+      "help": "Conditional branch if the Rsrc1 register is greater than Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bltu reg2 reg1 off"
+    },
+    {
+      "name": "bleu",
+      "signature_definition": "bleu F0 F1 F2",
+      "signature": "bleu,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "bleu reg1 reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal to Src2 (unsigned).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bgeu reg2 reg1 off"
+    },
+    {
+      "name": "blez",
+      "signature_definition": "blez F0 F1",
+      "signature": "blez,INT-Reg,offset_words",
+      "signatureRaw": "blez reg1 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bge x0 reg1 off"
+    },
+    {
+      "name": "bgez",
+      "signature_definition": "bgez F0 F1",
+      "signature": "bgez,INT-Reg,offset_words",
+      "signatureRaw": "bgez reg1 off",
+      "help": "Conditional branch if Rsrc1 is greater than or equal zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bge reg1 x0 off"
+    },
+    {
+      "name": "bltz",
+      "signature_definition": "bltz F0 F1",
+      "signature": "bltz,INT-Reg,offset_words",
+      "signatureRaw": "bltz reg1 off",
+      "help": "Conditional branch if Rsrc1 is less than zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "blt reg1 x0 off"
+    },
+    {
+      "name": "bgtz",
+      "signature_definition": "bgtz F0 F1",
+      "signature": "bgtz,INT-Reg,offset_words",
+      "signatureRaw": "bgtz reg1 off",
+      "help": "Conditional branch if Rsrc1 is greater than zero.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "blt x0 reg1 off"
+    },
+    {
+      "name": "bgt",
+      "signature_definition": "bgt F0 F1 F2",
+      "signature": "bgt,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "bgt reg1 reg2 off",
+      "help": "Conditional branch if Rsrc1 is greater than Src2.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "blt reg2 reg1 off"
+    },
+    {
+      "name": "ble",
+      "signature_definition": "ble F0 F1 F2",
+      "signature": "ble,INT-Reg,INT-Reg,offset_words",
+      "signatureRaw": "ble reg1 reg2 off",
+      "help": "Conditional branch if Rsrc1 is less than or equal to Src2.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        },
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "bge reg2 reg1 off"
+    },
+    {
+      "name": "jalr",
+      "signature_definition": "jalr F0",
+      "signature": "jalr,INT-Reg",
+      "signatureRaw": "jalr rs",
+      "help": "Unconditional jump, stores the current address at ra (x1).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "jalr x1 rs 0;"
+    },
+    {
+      "name": "jr",
+      "signature_definition": "jr F0",
+      "signature": "jr,INT-Reg",
+      "signatureRaw": "jr rs",
+      "help": "Unconditional jump.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rs",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "16"
+        }
+      ],
+      "definition": "jalr x0 rs 0;"
+    },
+    {
+      "name": "jal",
+      "signature_definition": "jal F0",
+      "signature": "jal,offset_words",
+      "signatureRaw": "jal off",
+      "help": "Unconditional jump, stores the current address at ra (x1).",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "jal x1 off;"
+    },
+    {
+      "name": "j",
+      "signature_definition": "j F0",
+      "signature": "j,offset_words",
+      "signatureRaw": "j off",
+      "help": "Unconditional jump.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "off",
+          "type": "offset_words",
+          "startbit": 15,
+          "stopbit": 0
+        }
+      ],
+      "definition": "jal x0 off;"
+    },
+    {
+      "name": "ret",
+      "signature_definition": "ret",
+      "signature": "ret",
+      "signatureRaw": "ret",
+      "help": "Return from subrutine.",
+      "properties": [],
+      "nwords": 1,
+      "fields": [],
+      "definition": "jalr x0 x1 0;"
+    },
+    {
+      "name": "lb",
+      "signature_definition": "lb F0 F1",
+      "signature": "lb,INT-Reg,inm-signed",
+      "signatureRaw": "lb rd addr",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rd Field.2.(31,12).int;\nlb rd Field.2.(11,0).int (rd);\n"
+    },
+    {
+      "name": "lh",
+      "signature_definition": "lh F0 F1",
+      "signature": "lh,INT-Reg,inm-signed",
+      "signatureRaw": "lh rd addr",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rd Field.2.(31,12).int;\nlh rd Field.2.(11,0).int (rd);\n"
+    },
+    {
+      "name": "lw",
+      "signature_definition": "lw F0 F1",
+      "signature": "lw,INT-Reg,inm-signed",
+      "signatureRaw": "lw rd addr",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rd Field.2.(31,12).int;\nlw rd Field.2.(11,0).int (rd);\n"
+    },
+    {
+      "name": "ld",
+      "signature_definition": "ld F0 F1",
+      "signature": "ld,INT-Reg,inm-signed",
+      "signatureRaw": "ld rd addr",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rd Field.2.(31,12).int;\nld rd Field.2.(11,0).int (rd);\n"
+    },
+    {
+      "name": "sb",
+      "signature_definition": "sb F0 F2 F1",
+      "signature": "sb,INT-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "sb rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nsb rd Field.2.(11,0).int (rt);\n"
+    },
+    {
+      "name": "sh",
+      "signature_definition": "sh F0 F2 F1",
+      "signature": "sh,INT-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "sh rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nsh rd Field.2.(11,0).int (rt);\n"
+    },
+    {
+      "name": "sw",
+      "signature_definition": "sw F0 F2 F1",
+      "signature": "sw,INT-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "sw rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nsw rd Field.2.(11,0).int (rt);\n"
+    },
+    {
+      "name": "sd",
+      "signature_definition": "sd F0 F2 F1",
+      "signature": "sd,INT-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "sd rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nsd rd Field.2.(11,0).int (rt);\n"
+    },
+    {
+      "name": "flw",
+      "signature_definition": "flw F0 F2 F1",
+      "signature": "flw,SFP-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "flw rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nflw rd Field.2.(11,0).int (rt);\n"
+    },
+    {
+      "name": "fld",
+      "signature_definition": "fld F0 F2 F1",
+      "signature": "fld,DFP-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "fld rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nfld rd Field.2.(11,0).int (rt);\n"
+    },
+    {
+      "name": "fsw",
+      "signature_definition": "fsw F0 F2 F1",
+      "signature": "fsw,SFP-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "fsw rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "SFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nfsw rd Field.2.(11,0).int (rt);\n"
+    },
+    {
+      "name": "fsd",
+      "signature_definition": "fsd F0 F2 F1",
+      "signature": "fsd,DFP-Reg,inm-signed,INT-Reg",
+      "signatureRaw": "fsd rd addr rt",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "DFP-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "rt",
+          "type": "INT-Reg",
+          "startbit": "20",
+          "stopbit": "16"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rt Field.2.(31,12).int;\nfsd rd Field.2.(11,0).int (rt);\n"
+    },
+
+
+
+    {
+      "name": "fmv.s",
+      "signature_definition": "fmv.s F0 F1",
+      "signature": "fmv.s,SFP-Reg,SFP-Reg",
+      "signatureRaw": "fmv.s reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "SFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnj.s reg1 reg2 reg2;"
+    },
+    {
+      "name": "fabs.s",
+      "signature_definition": "fabs.s F0 F1",
+      "signature": "fabs.s,SFP-Reg,SFP-Reg",
+      "signatureRaw": "fabs.s reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "SFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjx.s reg1 reg2 reg2;"
+    },
+    {
+      "name": "fneg.s",
+      "signature_definition": "fneg.s F0 F1",
+      "signature": "fneg.s,SFP-Reg,SFP-Reg",
+      "signatureRaw": "fneg.s reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "SFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "SFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjn.s reg1 reg2 reg2;"
+    },
+    {
+      "name": "fmv.d",
+      "signature_definition": "fmv.d F0 F1",
+      "signature": "fmv.d,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fmv.d reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnj.d reg1 reg2 reg2;"
+    },
+
+    {
+      "name": "fabs.d",
+      "signature_definition": "fabs.d F0 F1",
+      "signature": "fabs.d,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fabs.d reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjx.d reg1 reg2 reg2;"
+    },
+    {
+      "name": "fneg.d",
+      "signature_definition": "fneg.d F0 F1",
+      "signature": "fneg.d,DFP-Reg,DFP-Reg",
+      "signatureRaw": "fneg.d reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "DFP-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "DFP-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "fsgnjn.d reg1 reg2 reg2;"
+    },
+    {
+      "name": "sext.w",
+      "signature_definition": "sext.w F0 F1",
+      "signature": "sext.w,INT-Reg,INT-Reg",
+      "signatureRaw": "sext.w reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "addiw reg1 reg2 0;"
+    },
+    {
+      "name": "zext.b",
+      "signature_definition": "zext.b F0 F1",
+      "signature": "zext.b,INT-Reg,INT-Reg",
+      "signatureRaw": "zext.b reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "andi reg1 reg2 255;"
+    },
+    {
+      "name": "seqz",
+      "signature_definition": "seqz F0 F1",
+      "signature": "seqz,INT-Reg,INT-Reg",
+      "signatureRaw": "seqz reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sltiu reg1 reg2 1;"
+    },
+    {
+      "name": "snez",
+      "signature_definition": "snez F0 F1",
+      "signature": "snez,INT-Reg,INT-Reg",
+      "signatureRaw": "snez reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "sltu reg1 x0 reg2;"
+    },
+    {
+      "name": "sltz",
+      "signature_definition": "sltz F0 F1",
+      "signature": "sltz,INT-Reg,INT-Reg",
+      "signatureRaw": "sltz reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "slt reg1 reg2 x0;"
+    },
+    {
+      "name": "sgtz",
+      "signature_definition": "sgtz F0 F1",
+      "signature": "sgtz,INT-Reg,INT-Reg",
+      "signatureRaw": "sgtz reg1 reg2",
+      "help": "",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "reg1",
+          "type": "INT-Reg",
+          "startbit": 25,
+          "stopbit": 21
+        },
+        {
+          "name": "reg2",
+          "type": "INT-Reg",
+          "startbit": 20,
+          "stopbit": 16
+        }
+      ],
+      "definition": "slt reg1 x0 reg2;"
+    },
+    {
+      "name": "la",
+      "signature_definition": "la F0 F1",
+      "signature": "la,INT-Reg,inm-signed",
+      "signatureRaw": "la rd addr",
+      "help": "Load address in Rdest (the address value, not the content)",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "addr",
+          "type": "inm-signed",
+          "startbit": "20",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "auipc rd Field.2.(31,12).int;\naddi rd rd Field.2.(11,0).int;"
+    },
+    {
+      "name": "li",
+      "signature_definition": "li F0 F1",
+      "signature": "li,INT-Reg,inm-signed",
+      "signatureRaw": "li rd val",
+      "help": "Load immediate value",
+      "properties": [],
+      "nwords": 1,
+      "fields": [
+        {
+          "name": "rd",
+          "type": "INT-Reg",
+          "startbit": "25",
+          "stopbit": "21"
+        },
+        {
+          "name": "val",
+          "type": "inm-signed",
+          "startbit": "15",
+          "stopbit": "0"
+        }
+      ],
+      "definition": "if(Field.2.SIZE<=12){addi rd x0 val;}\nelse{lui rd 0;\nlui rd Field.2.(31,12).int;\naddi rd rd Field.2.(31,12).int - Field.2.(31,12).int;}"
+    }
+
+
+
+
+
+
+
+
+
+  ],
   "directives": [
     {
       "name": ".data",

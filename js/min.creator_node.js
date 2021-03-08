@@ -247,15 +247,24 @@ function register_value_serialize(object)
   *   {
   *     function_name: "",
   *     enter_stack_pointer: 0x0,
-  *     registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
-  *     registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
+  *     registers_sm:           [ indexComp: [ 0, ... ]... ; // once per register: state
   *     registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
-  *     register_address_write: [ indexComp: [ 0x0, ... ], ... ; // once per register: in which position is stored
-  *     register_address_read:  [ indexComp: [ 0x0, ... ], ... ; // once per register: from which position is restored
+  *     register_address_write: [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: in which position is stored
+  *     register_address_read:  [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: from which position is restored
   *   },
   *   ...
   * ] ;
   */
+
+ /*
+  * States:
+  *  0 -> Init
+  *  1 -> Saved in memory/stack
+  *  2 -> Restored from memory/stack
+  *  3 -> Error
+  *  4 -> Save/.../Restore/Save
+  */
+
  var stack_call_registers = [];
 
 
@@ -297,26 +306,23 @@ function creator_callstack_enter(function_name)
     stack_call_names.push(function_name) ;
 
     // 2.- caller element
-    var arr_saved = [];
-    var arr_modified = [];
+    var arr_sm = [];
     var arr_write = []
     var arr_read = []
     var arr_value = []
 
     for (var i = 0; i < architecture.components.length; i++)
     {
-           arr_saved.push([]);
-        arr_modified.push([]);
+        arr_sm.push([]);
         arr_write.push([]);
          arr_read.push([]);
         arr_value.push([]);
 
         for (var j = 0; j < architecture.components[i].elements.length; j++)
         {
-               arr_saved[i].push(false);
-            arr_modified[i].push(false);
-            arr_write[i].push(0x0);
-             arr_read[i].push(0x0);
+            arr_sm[i].push(0);
+            arr_write[i].push([]);
+             arr_read[i].push([]);
              arr_value[i].push(architecture.components[i].elements[j].value);
         }
     }
@@ -324,8 +330,7 @@ function creator_callstack_enter(function_name)
     var new_elto = {
         function_name:          function_name,
         enter_stack_pointer:    architecture.memory_layout[4].value,
-        registers_saved:        arr_saved,
-        registers_modified:     arr_modified,
+        registers_sm:           arr_sm,
         registers_value:        arr_value,
         register_address_write: arr_write,
         register_address_read:  arr_read
@@ -500,6 +505,78 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
 }
 
 //
+// Let programmers to modify register state
+// Example: creator_callstack_setState(1, 2, 1) ;
+//
+function creator_callstack_setState (indexComponent, indexElement, newState)
+{
+  var elto = creator_callstack_getTop();
+  elto.val.registers_sm[indexComponent][indexElement] = newState;
+}
+
+
+function creator_callstack_getState (indexComponent, indexElement)
+{
+  var elto = creator_callstack_getTop();
+  return elto.val.registers_sm[indexComponent][indexElement];
+}
+
+//
+// Let programmers add a new write
+// Example: creator_callstack_newWrite(1, 2, 0x12345) ;
+//
+function creator_callstack_newWrite (indexComponent, indexElement, address)
+{
+  var elto = creator_callstack_getTop();
+  elto.val.register_address_write[indexComponent][indexElement].push(address);
+
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 0 || state == 1 || state == 2){
+    creator_callstack_setState(indexComponent, indexElement, 1);
+    return;
+  }
+  if(state == 2){
+    creator_callstack_setState(indexComponent, indexElement, 4);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
+// Let programmers add a new read
+// Example: creator_callstack_newRead(1, 2, 0x12345) ;
+//
+function creator_callstack_newRead (indexComponent, indexElement, address)
+{
+  var elto = creator_callstack_getTop();
+  elto.val.register_address_read[indexComponent][indexElement].push(address);
+
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 1 || state == 2 || state == 4){
+    creator_callstack_setState(indexComponent, indexElement, 2);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
+// Let programmers add a new read
+// Example: creator_callstack_newRead(1, 2, 0x12345) ;
+//
+function creator_callstack_writeRegister (indexComponent, indexElement)
+{
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 1 || state == 4){
+    creator_callstack_setState(indexComponent, indexElement, 1);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
 // Reset
 // Example: creator_callstack_reset() ;
 //
@@ -548,16 +625,23 @@ function creator_callstack_reset()
 // check stack
 //
 
-function check_protection_jal ()
+function passing_convention_begin ( addr )
 {
+    var function_name = "" ;
+
     // 1.- get function name
-    var function_name = _get_subrutine_name() ;
+    if (typeof architecture.components[0] !== "undefined")
+    {
+        if (typeof tag_instructions[addr] == "undefined")
+             function_name = "0x" + parseInt(addr).toString(16) ;
+        else function_name = tag_instructions[addr] ;
+    }
 
     // 2.- callstack_enter
     creator_callstack_enter(function_name) ;
 }
 
-function check_protection_jrra ()
+function passing_convention_end ()
 {
     // 1.- callstack_leave
     var ret = creator_callstack_leave();
@@ -573,14 +657,8 @@ function check_protection_jrra ()
 
     // User notification
     if (typeof window !== "undefined")
-    {
-        /* Show Web notification */
-        show_notification(ret.msg, 'warning');
-    }
-    else
-    {
-       console.log(ret.msg);
-    }
+         show_notification(ret.msg, 'warning');
+    else console.log(ret.msg);
 }
 
 
@@ -588,65 +666,36 @@ function check_protection_jrra ()
 // draw stack
 //
 
-function draw_stack_jal ()
+function draw_stack_begin ( addr )
 {
+    var function_name = "" ;
+
     // 1.- get function name
-    var function_name = _get_subrutine_name() ;
+    if (typeof architecture.components[0] !== "undefined")
+    {
+        if (typeof tag_instructions[addr] == "undefined")
+             function_name = "0x" + parseInt(addr).toString(16) ;
+        else function_name = tag_instructions[addr] ;
+    }
 
     // 2.- callstack_enter
     track_stack_enter(function_name) ;
 }
 
-function draw_stack_jrra ()
+function draw_stack_end ()
 {
     // track leave
     var ret = track_stack_leave() ;
 
-    // check if any problem
-    if (ret.ok != true) {
-        console.log("WARNING: " + ret.msg) ;
-    }
-}
-
-
-//
-// Auxiliar and internal function
-//
-
-function _get_subrutine_name ()
-{
-    var function_name = "" ;
-
-    // if architecture not loaded then return ""
-    if (typeof architecture.components[0] == "undefined") {
-        return function_name ;
+    // 2) If everything is ok, just return 
+    if (ret.ok) {
+        return;
     }
 
-    // PC points to the next instruction... substract 4
-    var pc_function = Number(architecture.components[0].elements[0].value) - 4 ;
-    var pc_hex = "0x" + pc_function.toString(16) ;
-
-    // set current subrutine name as "PC=0x..."
-    function_name = "PC=" + pc_hex ;
-
-    // try to get current subrutine name and save into function_name
-    for (var i = 0; i < instructions.length; i++)
-    {
-/* ************
-            // components/simulator/creator_uielto_table_execution.js draw [Next] in the callee address :-)
-            if (instructions[i]._rowVariant == 'success') {
-                function_name = instructions[i].Label;
-                break;
-            }
-************* */
-
-            if (instructions[i].Address == pc_hex && instructions[i].Label != ""){
-                function_name = instructions[i].Label;
-                break;
-            }
-    }
-
-    return function_name ;
+    // User notification
+    if (typeof window !== "undefined")
+         show_notification(ret.msg, 'warning');
+    else console.log("WARNING: " + ret.msg) ;
 }
 
 /*
@@ -807,6 +856,7 @@ var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
+var tag_instructions = {};
 var instructions_binary = [];
 /*Data memory*/
 var data = [];
@@ -1087,6 +1137,7 @@ function assembly_compiler()
       	
         instructions = [];
         instructions_tag = [];
+        tag_instructions = {};
         pending_instructions = [];
         pending_tags = [];
         memory[memory_hash[0]] = [];
@@ -2909,6 +2960,7 @@ function code_segment_compiler()
               for(var i = 0; i < instructions.length; i++){
                 if(instructions[i].Label != ""){
                   instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
+                  tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
                 }
               }
 
@@ -3171,6 +3223,7 @@ function code_segment_compiler()
         for(var i = 0; i < instructions.length; i++){
           if(instructions[i].Label != ""){
             instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
+            tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
           }
         }
 
@@ -4005,7 +4058,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
 
                 var inm;
 
@@ -5717,26 +5770,37 @@ function executeInstruction ( )
       console_log(auxDef);
 
       /*Write in memory*/
+      var index = 0;
       re = /MP.([whbd]).\[(.*?)\] *=/;
       while (auxDef.search(re) != -1){
+        index++;
         var match = re.exec(auxDef);
         var auxDir;
         //eval("auxDir="+match[2]);
 
         re = /MP.[whbd].\[(.*?)\] *=/;
-        auxDef = auxDef.replace(re, "dir=");
-        auxDef = "var dir=null\n" + auxDef;
-        auxDef = auxDef + "\n writeMemory(dir"+","+match[2]+",'"+match[1]+"');"
+        auxDef = auxDef.replace(re, "dir" + index + "=");
+        auxDef = "var dir" + index + " =null\n" + auxDef;
+
+        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
+        var xx = "[]";
+
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
         re = /MP.([whb]).\[(.*?)\] *=/;
       }
 
       re = new RegExp("MP.([whbd]).(.*?) *=");
       while (auxDef.search(re) != -1){
+        index++;
         var match = re.exec(auxDef);
         re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
-        auxDef = auxDef.replace(re, "dir=");
-        auxDef = "var dir=null\n" + auxDef;
-        auxDef = auxDef + "\n writeMemory(dir,"+match[2]+",'"+match[1]+"');"
+        auxDef = auxDef.replace(re, "dir" + index + " =");
+        auxDef = "var dir" + index + " =null\n" + auxDef;
+
+        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
+        var xx = "[]";
+
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
         re = new RegExp("MP.([whbd]).(.*?) *=");
       }
 
@@ -5958,6 +6022,7 @@ function writeRegister ( value, indexComp, indexElem )
             }
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
+            creator_callstack_writeRegister(indexComp, indexElem);
 
             if (typeof window !== "undefined")
             {
@@ -5984,6 +6049,7 @@ function writeRegister ( value, indexComp, indexElem )
             }
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+            creator_callstack_writeRegister(indexComp, indexElem);
 
             updateDouble(indexComp, indexElem);
 
@@ -6015,6 +6081,7 @@ function writeRegister ( value, indexComp, indexElem )
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
             updateSimple(indexComp, indexElem);
+            creator_callstack_writeRegister(indexComp, indexElem);
 
             if (typeof window !== "undefined")
             {
@@ -6177,7 +6244,7 @@ function readMemory ( addr, type )
 }
 
 /*Write value in memory*/
-function writeMemory ( value, addr, type )
+function writeMemory ( value, addr, type, originRegister)
 {
 	  var draw = {
 	    space: [] ,
@@ -6199,6 +6266,10 @@ function writeMemory ( value, addr, type )
 	    			draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+          }
+
+          if(originRegister.length > 0){
+            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -6288,6 +6359,10 @@ function writeMemory ( value, addr, type )
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+          }
+
+          if(originRegister.length > 0){
+            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -6451,6 +6526,10 @@ function writeMemory ( value, addr, type )
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
+          if(originRegister.length > 0){
+            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
+          }
+
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
             index = memory_hash[0];
           }
@@ -6551,6 +6630,8 @@ function writeStackLimit ( stackLimit )
 	    flash: []
 	  } ;
 
+    console.log("degtlmgh");
+    
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
 	          draw.danger.push(executionIndex);
@@ -7116,10 +7197,10 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 			  var value = bin2hex(double2bin(reg));
 			  console_log(value);
 			  if(index == 0){
-			    return "0x" + value.substring(0,8);
+			    return value.substring(0,8);
 			  }
 			  if(index == 1) {
-			    return "0x" + value.substring(8,16);
+			    return value.substring(8,16);
 			  }
 			}
 

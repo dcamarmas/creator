@@ -33,15 +33,24 @@
   *   {
   *     function_name: "",
   *     enter_stack_pointer: 0x0,
-  *     registers_modified:     [ indexComp: [ false, ... ]... ; // once per register: not modified
-  *     registers_saved:        [ indexComp: [ false, ... ]... ; // once per register: saved on stack
+  *     registers_sm:           [ indexComp: [ 0, ... ]... ; // once per register: state
   *     registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
-  *     register_address_write: [ indexComp: [ 0x0, ... ], ... ; // once per register: in which position is stored
-  *     register_address_read:  [ indexComp: [ 0x0, ... ], ... ; // once per register: from which position is restored
+  *     register_address_write: [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: in which position is stored
+  *     register_address_read:  [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: from which position is restored
   *   },
   *   ...
   * ] ;
   */
+
+ /*
+  * States:
+  *  0 -> Init
+  *  1 -> Saved in memory/stack
+  *  2 -> Restored from memory/stack
+  *  3 -> Error
+  *  4 -> Save/.../Restore/Save
+  */
+
  var stack_call_registers = [];
 
 
@@ -83,26 +92,23 @@ function creator_callstack_enter(function_name)
     stack_call_names.push(function_name) ;
 
     // 2.- caller element
-    var arr_saved = [];
-    var arr_modified = [];
+    var arr_sm = [];
     var arr_write = []
     var arr_read = []
     var arr_value = []
 
     for (var i = 0; i < architecture.components.length; i++)
     {
-           arr_saved.push([]);
-        arr_modified.push([]);
+        arr_sm.push([]);
         arr_write.push([]);
          arr_read.push([]);
         arr_value.push([]);
 
         for (var j = 0; j < architecture.components[i].elements.length; j++)
         {
-               arr_saved[i].push(false);
-            arr_modified[i].push(false);
-            arr_write[i].push(0x0);
-             arr_read[i].push(0x0);
+            arr_sm[i].push(0);
+            arr_write[i].push([]);
+             arr_read[i].push([]);
              arr_value[i].push(architecture.components[i].elements[j].value);
         }
     }
@@ -110,8 +116,7 @@ function creator_callstack_enter(function_name)
     var new_elto = {
         function_name:          function_name,
         enter_stack_pointer:    architecture.memory_layout[4].value,
-        registers_saved:        arr_saved,
-        registers_modified:     arr_modified,
+        registers_sm:           arr_sm,
         registers_value:        arr_value,
         register_address_write: arr_write,
         register_address_read:  arr_read
@@ -283,6 +288,78 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
 
     elto[field] = value;
     return ret;
+}
+
+//
+// Let programmers to modify register state
+// Example: creator_callstack_setState(1, 2, 1) ;
+//
+function creator_callstack_setState (indexComponent, indexElement, newState)
+{
+  var elto = creator_callstack_getTop();
+  elto.val.registers_sm[indexComponent][indexElement] = newState;
+}
+
+
+function creator_callstack_getState (indexComponent, indexElement)
+{
+  var elto = creator_callstack_getTop();
+  return elto.val.registers_sm[indexComponent][indexElement];
+}
+
+//
+// Let programmers add a new write
+// Example: creator_callstack_newWrite(1, 2, 0x12345) ;
+//
+function creator_callstack_newWrite (indexComponent, indexElement, address)
+{
+  var elto = creator_callstack_getTop();
+  elto.val.register_address_write[indexComponent][indexElement].push(address);
+
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 0 || state == 1 || state == 2){
+    creator_callstack_setState(indexComponent, indexElement, 1);
+    return;
+  }
+  if(state == 2){
+    creator_callstack_setState(indexComponent, indexElement, 4);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
+// Let programmers add a new read
+// Example: creator_callstack_newRead(1, 2, 0x12345) ;
+//
+function creator_callstack_newRead (indexComponent, indexElement, address)
+{
+  var elto = creator_callstack_getTop();
+  elto.val.register_address_read[indexComponent][indexElement].push(address);
+
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 1 || state == 2 || state == 4){
+    creator_callstack_setState(indexComponent, indexElement, 2);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
+}
+
+//
+// Let programmers add a new read
+// Example: creator_callstack_newRead(1, 2, 0x12345) ;
+//
+function creator_callstack_writeRegister (indexComponent, indexElement)
+{
+  //Move state finite machine
+  var state = creator_callstack_getState(indexComponent, indexElement);
+  if(state == 1 || state == 4){
+    creator_callstack_setState(indexComponent, indexElement, 1);
+    return;
+  }
+  creator_callstack_setState(indexComponent, indexElement, 3);
 }
 
 //

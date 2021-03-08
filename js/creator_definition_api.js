@@ -27,16 +27,23 @@
 // check stack
 //
 
-function check_protection_jal ()
+function passing_convention_begin ( addr )
 {
+    var function_name = "" ;
+
     // 1.- get function name
-    var function_name = _get_subrutine_name() ;
+    if (typeof architecture.components[0] !== "undefined")
+    {
+        if (typeof tag_instructions[addr] == "undefined")
+             function_name = "0x" + parseInt(addr).toString(16) ;
+        else function_name = tag_instructions[addr] ;
+    }
 
     // 2.- callstack_enter
     creator_callstack_enter(function_name) ;
 }
 
-function check_protection_jrra ()
+function passing_convention_end ()
 {
     // 1.- callstack_leave
     var ret = creator_callstack_leave();
@@ -52,14 +59,8 @@ function check_protection_jrra ()
 
     // User notification
     if (typeof window !== "undefined")
-    {
-        /* Show Web notification */
-        show_notification(ret.msg, 'warning');
-    }
-    else
-    {
-       console.log(ret.msg);
-    }
+         show_notification(ret.msg, 'warning');
+    else console.log(ret.msg);
 }
 
 
@@ -67,64 +68,35 @@ function check_protection_jrra ()
 // draw stack
 //
 
-function draw_stack_jal ()
+function draw_stack_begin ( addr )
 {
+    var function_name = "" ;
+
     // 1.- get function name
-    var function_name = _get_subrutine_name() ;
+    if (typeof architecture.components[0] !== "undefined")
+    {
+        if (typeof tag_instructions[addr] == "undefined")
+             function_name = "0x" + parseInt(addr).toString(16) ;
+        else function_name = tag_instructions[addr] ;
+    }
 
     // 2.- callstack_enter
     track_stack_enter(function_name) ;
 }
 
-function draw_stack_jrra ()
+function draw_stack_end ()
 {
     // track leave
     var ret = track_stack_leave() ;
 
-    // check if any problem
-    if (ret.ok != true) {
-        console.log("WARNING: " + ret.msg) ;
-    }
-}
-
-
-//
-// Auxiliar and internal function
-//
-
-function _get_subrutine_name ()
-{
-    var function_name = "" ;
-
-    // if architecture not loaded then return ""
-    if (typeof architecture.components[0] == "undefined") {
-        return function_name ;
+    // 2) If everything is ok, just return 
+    if (ret.ok) {
+        return;
     }
 
-    // PC points to the next instruction... substract 4
-    var pc_function = Number(architecture.components[0].elements[0].value) - 4 ;
-    var pc_hex = "0x" + pc_function.toString(16) ;
-
-    // set current subrutine name as "PC=0x..."
-    function_name = "PC=" + pc_hex ;
-
-    // try to get current subrutine name and save into function_name
-    for (var i = 0; i < instructions.length; i++)
-    {
-/* ************
-            // components/simulator/creator_uielto_table_execution.js draw [Next] in the callee address :-)
-            if (instructions[i]._rowVariant == 'success') {
-                function_name = instructions[i].Label;
-                break;
-            }
-************* */
-
-            if (instructions[i].Address == pc_hex && instructions[i].Label != ""){
-                function_name = instructions[i].Label;
-                break;
-            }
-    }
-
-    return function_name ;
+    // User notification
+    if (typeof window !== "undefined")
+         show_notification(ret.msg, 'warning');
+    else console.log("WARNING: " + ret.msg) ;
 }
 
