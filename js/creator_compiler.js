@@ -156,6 +156,7 @@ var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
+var tag_instructions = {};
 var instructions_binary = [];
 /*Data memory*/
 var data = [];
@@ -436,6 +437,7 @@ function assembly_compiler()
       	
         instructions = [];
         instructions_tag = [];
+        tag_instructions = {};
         pending_instructions = [];
         pending_tags = [];
         memory[memory_hash[0]] = [];
@@ -2258,6 +2260,7 @@ function code_segment_compiler()
               for(var i = 0; i < instructions.length; i++){
                 if(instructions[i].Label != ""){
                   instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
+                  tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
                 }
               }
 
@@ -2520,6 +2523,7 @@ function code_segment_compiler()
         for(var i = 0; i < instructions.length; i++){
           if(instructions[i].Label != ""){
             instructions_tag.push({tag: instructions[i].Label, addr: parseInt(instructions[i].Address, 16)});
+            tag_instructions[parseInt(instructions[i].Address, 16)] = instructions[i].Label;
           }
         }
 
@@ -3354,7 +3358,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
 
                 var inm;
 

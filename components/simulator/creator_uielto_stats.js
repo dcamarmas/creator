@@ -33,7 +33,7 @@
 										'	  <div class="col-lg-12 col-sm-12">' +
 										'	' +
 										'	    <b-tabs content-class="mt-3">' +
-										'	      <b-tab title="Ghaphic" active>' +
+										'	      <b-tab title="Graphic" active>' +
 										'	        <plot-stats :stats_value="stats_value"></plot-stats> ' +
 										'	      </b-tab>' +
 										'	' +
