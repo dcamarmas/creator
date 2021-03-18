@@ -108,9 +108,13 @@
 
    try
    {
-       if (argv.color) {
+       colors.disable() ;
+       if (argv.color)
+       {
+           colors.enable() ;
            colors.setTheme(color_theme) ;
        }
+
        var limit_n_ins   = parseInt(argv.maxins) ;
        var output_format = argv.output.toUpperCase() ;
 
@@ -177,16 +181,16 @@
                hdr = hdr + ',\tState' ;
 	             show_result(output_format, 'State', 'ko', ret['LastState'].msg.error, true) ;
                //continue ;
-               if(ret.LastState.status != "ok"){
-                process.exit(-1) ;
+               if (ret.LastState.status != "ok") {
+                   process.exit(-1) ;
                }
            }
 
            hdr = hdr + ',\tFinalState\n' ;
            ret = creator.get_state() ;
-           if(argv.result === ''){
-  	         show_result(output_format, 'FinalState', 'is', ret.msg, true) ;
-             console.log('');
+           if (argv.result === '') {
+  	       show_result(output_format, 'FinalState', 'is', ret.msg, true) ;
+               console.log('') ;
            }
        }
 
