@@ -1,7 +1,7 @@
 
 [97m[39m
 [97mError at line 13 (max1):[39m
-[97mTag 'max1' is not valid[39m
+[97mImmediate number 'max1' is too big[39m
 
 [97m  12 .text[39m
 [97m->13 	main: 		la $t2 max1[39m
