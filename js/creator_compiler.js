@@ -3358,7 +3358,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
             for(var a = 0; a < architecture.instructions[i].fields.length; a++){
               if(architecture.instructions[i].fields[a].name == signatureRawParts[j]){
-fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
+                fieldsLength = getFieldLength(architecture.instructions[i].separated, architecture.instructions[i].fields[a].startbit, architecture.instructions[i].fields[a].stopbit, a);
 
                 var inm;
 
@@ -3805,7 +3805,27 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
         console_log(definition);
 
-        re = /op\((.*)\)/;
+        re = /reg\.pc/
+        console_log(re);
+        while (definition.search(re) != -1){
+          definition = definition.replace(re, "getReg('PC')");
+          console_log(definition);
+        }
+
+        re = /no_ret_op\{([^}]*)\};/;
+        console_log(re);
+        while (definition.search(re) != -1){
+          var match = re.exec(definition);
+
+          console_log(match[1]);
+
+          eval(match[1]);
+
+          definition = definition.replace(re, '');
+          console.log(definition);
+        }
+
+        re = /op\{([^}]*)\}/;
         console_log(re);
         while (definition.search(re) != -1){
           var match = re.exec(definition);
@@ -3816,7 +3836,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           eval("result=" + match[1]);
 
           definition = definition.replace(re, result);
-          console_log(definition);
+          console.log(definition);
         }
 
         while(definition.match(/\'(.*?)\'/)){
@@ -4023,6 +4043,19 @@ function field(field, action, type)
 
   }
   return -1;
+}
+
+function getReg(name){
+  for (var i = 0; i < architecture.components.length; i++)
+   {
+      for (var j = 0; j < architecture.components[i].elements.length; j++)
+      {
+          if (architecture.components[i].elements[j].name == name)
+          {
+              return parseInt(architecture.components[i].elements[j].value);
+          }
+      }
+   }
 }
 
 
