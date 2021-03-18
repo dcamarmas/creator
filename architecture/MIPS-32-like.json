@@ -7274,7 +7274,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "sll $at $reg2 op(32-(val));srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      "definition": "sll $at $reg2 op{32-(val)};srl $reg1 $reg2 val;or $reg1 $reg1 $at;"
     },
     {
       "name": "rol",
@@ -7303,7 +7303,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "srl $at $reg2 op(32-(val));sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
+      "definition": "srl $at $reg2 op{32-(val)};sll $reg1 $reg2 val;or $reg1 $reg1 $at;"
     }
   ],
   "directives": [
