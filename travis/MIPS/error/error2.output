@@ -1,12 +1,12 @@
 
-[97m[39m
-[97mError at line 9:[39m
-[97mThe string of characters must end with "[39m
 
-[97m  8 .data[39m
-[97m->9         str: .asciiz "Bad string[39m
-[97m  10 	max: .byte 10[39m
-[97m[39m
-[97mNot executed[39m
+Error at line 9:
+The string of characters must end with "
+
+  8 .data
+->9         str: .asciiz "Bad string
+  10 	max: .byte 10
+
+Not executed
 keyboard[0x0]:''; display[0x0]:''; 
 

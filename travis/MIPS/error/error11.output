@@ -1,11 +1,11 @@
 
-[97m[39m
-[97mError at line 10:[39m
-[97mEmpty directive[39m
 
-[97m  9         str: .asciiz "Good string"[39m
-[97m->10 	max: .byte [39m
-[97m[39m
-[97mNot executed[39m
+Error at line 10:
+Empty directive
+
+  9         str: .asciiz "Good string"
+->10 	max: .byte 
+
+Not executed
 keyboard[0x0]:''; display[0x0]:''; 
 

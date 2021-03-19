@@ -1,12 +1,12 @@
 
-[97m[39m
-[97mError at line 13 (t20):[39m
-[97mRegister 't20' not found[39m
 
-[97m  12 .text[39m
-[97m->13 	main: 		la $t20 max[39m
-[97m  14 			li $t1 0[39m
-[97m[39m
-[97mNot executed[39m
+Error at line 13 (t20):
+Register 't20' not found
+
+  12 .text
+->13 	main: 		la $t20 max
+  14 			li $t1 0
+
+Not executed
 keyboard[0x0]:''; display[0x0]:''; 
 
