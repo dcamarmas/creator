@@ -63,6 +63,28 @@ function passing_convention_end ()
     else console.log(ret.msg);
 }
 
+function passing_convention_writeMem (addr, reg, length)
+{   
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg) {
+                creator_callstack_newWrite(i, j, addr, length);
+            }
+        }
+    }
+}
+
+function passing_convention_readMem (addr, reg, length)
+{   
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg) {
+                creator_callstack_newRead(i, j, addr, length);
+            }
+        }
+    }
+}
+
 
 //
 // draw stack
