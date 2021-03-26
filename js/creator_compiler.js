@@ -3822,7 +3822,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           eval(match[1]);
 
           definition = definition.replace(re, '');
-          console.log(definition);
+          console_log(definition);
         }
 
         re = /op\{([^}]*)\}/;
@@ -3836,7 +3836,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           eval("result=" + match[1]);
 
           definition = definition.replace(re, result);
-          console.log(definition);
+          console_log(definition);
         }
 
         while(definition.match(/\'(.*?)\'/)){
