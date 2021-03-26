@@ -249,6 +249,8 @@ function register_value_serialize(object)
   *     enter_stack_pointer: 0x0,
   *     registers_sm:           [ indexComp: [ 0, ... ]... ; // once per register: state
   *     registers_value:        [ indexComp: [ 0x0, ... ], ... ; // once per register: initial value (before save)
+  *     registers_size_write:   [ indexComp: [ 0x0, ... ], ... ; // once per register: size value
+  *     registers_size_read:    [ indexComp: [ 0x0, ... ], ... ; // once per register: size value
   *     register_address_write: [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: in which position is stored
   *     register_address_read:  [ indexComp: [ [0x0, 0x4, ...], ... ], ... ; // once per register: from which position is restored
   *   },
@@ -307,23 +309,29 @@ function creator_callstack_enter(function_name)
 
     // 2.- caller element
     var arr_sm = [];
-    var arr_write = []
-    var arr_read = []
-    var arr_value = []
+    var arr_write = [];
+    var arr_read = [];
+    var arr_value = [];
+    var arr_size_write = [];
+    var arr_size_read = [];
 
     for (var i = 0; i < architecture.components.length; i++)
     {
-        arr_sm.push([]);
-        arr_write.push([]);
-         arr_read.push([]);
-        arr_value.push([]);
+                arr_sm.push([]);
+             arr_write.push([]);
+              arr_read.push([]);
+             arr_value.push([]);
+        arr_size_write.push([]);
+         arr_size_read.push([]);
 
         for (var j = 0; j < architecture.components[i].elements.length; j++)
         {
-            arr_sm[i].push(0);
-            arr_write[i].push([]);
-             arr_read[i].push([]);
-             arr_value[i].push(architecture.components[i].elements[j].value);
+                    arr_sm[i].push(0);
+                 arr_write[i].push([]);
+                  arr_read[i].push([]);
+            arr_size_write[i].push([]);
+             arr_size_read[i].push([]);
+                 arr_value[i].push(architecture.components[i].elements[j].value);
         }
     }
 
@@ -332,6 +340,8 @@ function creator_callstack_enter(function_name)
         enter_stack_pointer:    architecture.memory_layout[4].value,
         registers_sm:           arr_sm,
         registers_value:        arr_value,
+        registers_size_write:   arr_size_write,
+        registers_size_read:    arr_size_read,
         register_address_write: arr_write,
         register_address_read:  arr_read
     };
@@ -393,26 +403,74 @@ function creator_callstack_leave()
 
     }
 
-    /*****************************
+    //Check state
     if (ret.ok)
     {
         for (var i = 0; i < architecture.components.length; i++)
         {
             for (var j = 0; j < architecture.components[i].elements.length; j++)
             {
-                if (
-                    (true  == last_elto.registers_modified[i][j]) && // modified but
-                    (false == last_elto.registers_saved[i][j]) &&
-                    (architecture.components[i].elements[j].properties.icludes("saved")) // ...but should be saved
+                if ( (last_elto.registers_sm[i][j] != 0 && last_elto.registers_sm[i][j] != 2) &&
+                     (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
                 )
                 {
-                    ret.ok = false;
-                    ret.msg = "The value of one or more protected registers is not kept between calls";
+                    ret.ok  = false;
+                    ret.msg = "Possible failure in the parameter passing convention";
                     break;
                 }
             }
         }
     }
+
+    //Check address
+    if (ret.ok)
+    {
+        for (var i = 0; i < architecture.components.length; i++)
+        {
+            for (var j = 0; j < architecture.components[i].elements.length; j++)
+            {
+                last_index_write = last_elto.register_address_write[i][j].length -1;
+                last_index_read = last_elto.register_address_read[i][j].length -1;
+
+                if ( (last_elto.register_address_write[i][j][last_index_write] != last_elto.register_address_read[i][j][last_index_read]) &&
+                     (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
+                )
+                {
+                    ret.ok  = false;
+                    ret.msg = "Possible failure in the parameter passing convention";
+                    break;
+                }
+            }
+        }
+    }
+
+    //Check size
+    if (ret.ok)
+    {
+        for (var i = 0; i < architecture.components.length; i++)
+        {
+            for (var j = 0; j < architecture.components[i].elements.length; j++)
+            {
+                last_index_write = last_elto.registers_size_write[i][j].length -1;
+                last_index_read = last_elto.register_size_read[i][j].length -1;
+                
+                if ( (last_elto.register_size_write[i][j][last_index_write] != last_elto.register_size_read[i][j][last_index_read]) &&
+                     (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
+                )
+                {
+                    ret.ok  = false;
+                    ret.msg = "Possible failure in the parameter passing convention";
+                    break;
+                }
+            }
+        }
+    }
+
+
+
+
+    /*****************************
+
 
     // check values (check currrent state)
     if (ret.ok)
@@ -525,14 +583,15 @@ function creator_callstack_getState (indexComponent, indexElement)
 // Let programmers add a new write
 // Example: creator_callstack_newWrite(1, 2, 0x12345) ;
 //
-function creator_callstack_newWrite (indexComponent, indexElement, address)
+function creator_callstack_newWrite (indexComponent, indexElement, address, length)
 {
   var elto = creator_callstack_getTop();
   elto.val.register_address_write[indexComponent][indexElement].push(address);
+  elto.val.registers_size_write[indexComponent][indexElement].push(length);
 
   //Move state finite machine
   var state = creator_callstack_getState(indexComponent, indexElement);
-  if(state == 0 || state == 1 || state == 2){
+  if(state == 0 || state == 1){
     creator_callstack_setState(indexComponent, indexElement, 1);
     return;
   }
@@ -547,10 +606,11 @@ function creator_callstack_newWrite (indexComponent, indexElement, address)
 // Let programmers add a new read
 // Example: creator_callstack_newRead(1, 2, 0x12345) ;
 //
-function creator_callstack_newRead (indexComponent, indexElement, address)
+function creator_callstack_newRead (indexComponent, indexElement, address, length)
 {
   var elto = creator_callstack_getTop();
   elto.val.register_address_read[indexComponent][indexElement].push(address);
+  elto.val.registers_size_read[indexComponent][indexElement].push(length);
 
   //Move state finite machine
   var state = creator_callstack_getState(indexComponent, indexElement);
@@ -659,6 +719,28 @@ function passing_convention_end ()
     if (typeof window !== "undefined")
          show_notification(ret.msg, 'warning');
     else console.log(ret.msg);
+}
+
+function passing_convention_writeMem (addr, reg, length)
+{   
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg) {
+                creator_callstack_newWrite(i, j, addr, length);
+            }
+        }
+    }
+}
+
+function passing_convention_readMem (addr, reg, length)
+{   
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg) {
+                creator_callstack_newRead(i, j, addr, length);
+            }
+        }
+    }
 }
 
 
@@ -4522,7 +4604,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           eval(match[1]);
 
           definition = definition.replace(re, '');
-          console.log(definition);
+          console_log(definition);
         }
 
         re = /op\{([^}]*)\}/;
@@ -4536,7 +4618,7 @@ function pseudoinstruction_compiler ( instruction, label, line )
           eval("result=" + match[1]);
 
           definition = definition.replace(re, result);
-          console.log(definition);
+          console_log(definition);
         }
 
         while(definition.match(/\'(.*?)\'/)){
@@ -5718,7 +5800,7 @@ function executeInstruction ( )
           re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name.join('|')+") *=)[^=])", "g");
           while ((myMatch = re.exec(auxDef)) != null) {
               auxDef = auxDef.replace(myMatch[2], "reg"+regIndex + "=")
-              auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
+              auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+", false);";
               myMatch.index=0;
               isMatch = true;
           }
@@ -5742,7 +5824,7 @@ function executeInstruction ( )
               re = new RegExp("R"+regNum+" *=","g");
               auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
               auxDef = "var reg" + regIndex + "=null\n" + auxDef;
-              auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+");"
+              auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+", false);"
               regIndex++;
             }
           }
@@ -5815,10 +5897,7 @@ function executeInstruction ( )
         auxDef = auxDef.replace(re, "dir" + index + "=");
         auxDef = "var dir" + index + " =null\n" + auxDef;
 
-        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
-        var xx = "[]";
-
-        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');"
         re = /MP.([whb]).\[(.*?)\] *=/;
       }
 
@@ -5830,10 +5909,7 @@ function executeInstruction ( )
         auxDef = auxDef.replace(re, "dir" + index + " =");
         auxDef = "var dir" + index + " =null\n" + auxDef;
 
-        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
-        var xx = "[]";
-
-        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');"
         re = new RegExp("MP.([whbd]).(.*?) *=");
       }
 
@@ -6018,7 +6094,7 @@ function readRegister ( indexComp, indexElem )
 }
 
 /*Write value in register*/
-function writeRegister ( value, indexComp, indexElem )
+function writeRegister ( value, indexComp, indexElem, memory )
 {
 
 	  var draw = {
@@ -6055,7 +6131,10 @@ function writeRegister ( value, indexComp, indexElem )
             }
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
-            creator_callstack_writeRegister(indexComp, indexElem);
+
+            if (memory == false) {
+              creator_callstack_writeRegister(indexComp, indexElem);
+            }
 
             if (typeof window !== "undefined")
             {
@@ -6277,7 +6356,7 @@ function readMemory ( addr, type )
 }
 
 /*Write value in memory*/
-function writeMemory ( value, addr, type, originRegister)
+function writeMemory ( value, addr, type)
 {
 	  var draw = {
 	    space: [] ,
@@ -6299,10 +6378,6 @@ function writeMemory ( value, addr, type, originRegister)
 	    			draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-          }
-
-          if(originRegister.length > 0){
-            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -6392,10 +6467,6 @@ function writeMemory ( value, addr, type, originRegister)
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-          }
-
-          if(originRegister.length > 0){
-            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -6559,10 +6630,6 @@ function writeMemory ( value, addr, type, originRegister)
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
-          if(originRegister.length > 0){
-            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
-          }
-
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
             index = memory_hash[0];
           }
@@ -6662,8 +6729,6 @@ function writeStackLimit ( stackLimit )
 	    danger: [],
 	    flash: []
 	  } ;
-
-    console.log("degtlmgh");
     
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
@@ -6808,7 +6873,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                         keyboard = keyboard + " " + value;
 
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -6842,7 +6907,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else {
                         var value = parseInt(app._data.keyboard);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -6876,7 +6941,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                           keyboard = keyboard + " " + value;
 
-                          writeRegister(value, indexComp, indexElem);
+                          writeRegister(value, indexComp, indexElem, false);
                           return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -6908,7 +6973,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else{
                         var value = parseFloat(app._data.keyboard, 10);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -6942,7 +7007,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
       						        keyboard = keyboard + " " + value;
 
-                          writeRegister(value, indexComp, indexElem);
+                          writeRegister(value, indexComp, indexElem, false);
                           return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -6974,7 +7039,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else{
                         var value = parseFloat(app._data.keyboard, 10);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -7165,7 +7230,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                          keyboard = keyboard + " " + value;
 
-                         writeRegister(value, indexComp, indexElem);
+                         writeRegister(value, indexComp, indexElem, false);
                          return packExecute(false, 'The data has been uploaded', 'danger', null);
                      }
 
@@ -7197,7 +7262,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       }
                       else{
                         var value = (app._data.keyboard).charCodeAt(0);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
