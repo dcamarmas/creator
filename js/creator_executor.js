@@ -725,7 +725,7 @@ function executeInstruction ( )
           re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name.join('|')+") *=)[^=])", "g");
           while ((myMatch = re.exec(auxDef)) != null) {
               auxDef = auxDef.replace(myMatch[2], "reg"+regIndex + "=")
-              auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
+              auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+", false);";
               myMatch.index=0;
               isMatch = true;
           }
@@ -749,7 +749,7 @@ function executeInstruction ( )
               re = new RegExp("R"+regNum+" *=","g");
               auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
               auxDef = "var reg" + regIndex + "=null\n" + auxDef;
-              auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+");"
+              auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+", false);"
               regIndex++;
             }
           }
@@ -822,10 +822,7 @@ function executeInstruction ( )
         auxDef = auxDef.replace(re, "dir" + index + "=");
         auxDef = "var dir" + index + " =null\n" + auxDef;
 
-        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
-        var xx = "[]";
-
-        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');"
         re = /MP.([whb]).\[(.*?)\] *=/;
       }
 
@@ -837,10 +834,7 @@ function executeInstruction ( )
         auxDef = auxDef.replace(re, "dir" + index + " =");
         auxDef = "var dir" + index + " =null\n" + auxDef;
 
-        /*TODO: ver que a la derecha de dir= hay un readRegister con RegEx y si se cumple XX = [comp, elem]*/
-        var xx = "[]";
-
-        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"'," + xx + ");"
+        auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');"
         re = new RegExp("MP.([whbd]).(.*?) *=");
       }
 
@@ -1025,7 +1019,7 @@ function readRegister ( indexComp, indexElem )
 }
 
 /*Write value in register*/
-function writeRegister ( value, indexComp, indexElem )
+function writeRegister ( value, indexComp, indexElem, memory )
 {
 
 	  var draw = {
@@ -1062,7 +1056,10 @@ function writeRegister ( value, indexComp, indexElem )
             }
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
-            creator_callstack_writeRegister(indexComp, indexElem);
+
+            if (memory == false) {
+              creator_callstack_writeRegister(indexComp, indexElem);
+            }
 
             if (typeof window !== "undefined")
             {
@@ -1284,7 +1281,7 @@ function readMemory ( addr, type )
 }
 
 /*Write value in memory*/
-function writeMemory ( value, addr, type, originRegister)
+function writeMemory ( value, addr, type)
 {
 	  var draw = {
 	    space: [] ,
@@ -1306,10 +1303,6 @@ function writeMemory ( value, addr, type, originRegister)
 	    			draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-          }
-
-          if(originRegister.length > 0){
-            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -1399,10 +1392,6 @@ function writeMemory ( value, addr, type, originRegister)
 	    draw.danger.push(executionIndex);
             executionIndex = -1;
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-          }
-
-          if(originRegister.length > 0){
-            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
           }
 
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
@@ -1566,10 +1555,6 @@ function writeMemory ( value, addr, type, originRegister)
             throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
           }
 
-          if(originRegister.length > 0){
-            creator_callstack_newWrite(originRegister[0], originRegister[1], addr);
-          }
-
           if((addr > architecture.memory_layout[2].value && addr < architecture.memory_layout[3].value) ||  addr == architecture.memory_layout[2].value || addr == architecture.memory_layout[3].value){
             index = memory_hash[0];
           }
@@ -1669,8 +1654,6 @@ function writeStackLimit ( stackLimit )
 	    danger: [],
 	    flash: []
 	  } ;
-
-    console.log("degtlmgh");
     
         if(stackLimit != null){
           if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
@@ -1815,7 +1798,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                         keyboard = keyboard + " " + value;
 
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -1849,7 +1832,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else {
                         var value = parseInt(app._data.keyboard);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -1883,7 +1866,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                           keyboard = keyboard + " " + value;
 
-                          writeRegister(value, indexComp, indexElem);
+                          writeRegister(value, indexComp, indexElem, false);
                           return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -1915,7 +1898,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else{
                         var value = parseFloat(app._data.keyboard, 10);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -1949,7 +1932,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
       						        keyboard = keyboard + " " + value;
 
-                          writeRegister(value, indexComp, indexElem);
+                          writeRegister(value, indexComp, indexElem, false);
                           return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -1981,7 +1964,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else{
                         var value = parseFloat(app._data.keyboard, 10);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -2172,7 +2155,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                          keyboard = keyboard + " " + value;
 
-                         writeRegister(value, indexComp, indexElem);
+                         writeRegister(value, indexComp, indexElem, false);
                          return packExecute(false, 'The data has been uploaded', 'danger', null);
                      }
 
@@ -2204,7 +2187,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       }
                       else{
                         var value = (app._data.keyboard).charCodeAt(0);
-                        writeRegister(value, indexComp, indexElem);
+                        writeRegister(value, indexComp, indexElem, false);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
