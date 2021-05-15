@@ -36,15 +36,25 @@
 
 #### :point_right:	 RISC-V
 
-| Description                | Link                                                                   |
-|----------------------------|------------------------------------------------------------------------| 
-| ALU operations             | https://creatorsim.github.io/creator/?example_set=default_rv&example=e1 |
-| Subrutine                  | https://creatorsim.github.io/creator/?example_set=default_rv&example=e2 |
+| Description                | Link                                                                     |
+|----------------------------|--------------------------------------------------------------------------| 
+| Data Storage               | https://creatorsim.github.io/creator/?example_set=default_rv&example=e1  |
+| ALU operations             | https://creatorsim.github.io/creator/?example_set=default_rv&example=e2  |
+| Store/Load Data in Memory  | https://creatorsim.github.io/creator/?example_set=default_rv&example=e3  |
+| FPU operations             | https://creatorsim.github.io/creator/?example_set=default_rv&example=e4  |
+| Loop                       | https://creatorsim.github.io/creator/?example_set=default_rv&example=e5  |
+| Branch                     | https://creatorsim.github.io/creator/?example_set=default_rv&example=e6  |
+| Loop + Memory              | https://creatorsim.github.io/creator/?example_set=default_rv&example=e7  |
+| Copy of matrices           | https://creatorsim.github.io/creator/?example_set=default_rv&example=e8  |
+| I/O Syscalls               | https://creatorsim.github.io/creator/?example_set=default_rv&example=e9  |
+| I/O Syscalls + Strings     | https://creatorsim.github.io/creator/?example_set=default_rv&example=e10 |
+| Subrutines                 | https://creatorsim.github.io/creator/?example_set=default_rv&example=e11 |
+| Factorial                  | https://dcamarmas.github.io/creator/?example_set=uc3m-ec&example=e14     |
 
 #### :point_right:	 MIPS
 
-| Description                | Link                                                                 |
-|----------------------------|----------------------------------------------------------------------|
+| Description                | Link                                                                  |
+|----------------------------|-----------------------------------------------------------------------|
 | Data Storage               | https://creatorsim.github.io/creator/?example_set=default&example=e1  |
 | ALU operations             | https://creatorsim.github.io/creator/?example_set=default&example=e2  |
 | Store/Load Data in Memory  | https://creatorsim.github.io/creator/?example_set=default&example=e3  |
@@ -56,7 +66,7 @@
 | I/O Syscalls               | https://creatorsim.github.io/creator/?example_set=default&example=e9  |
 | I/O Syscalls + Strings     | https://creatorsim.github.io/creator/?example_set=default&example=e10 |
 | Subrutines                 | https://creatorsim.github.io/creator/?example_set=default&example=e11 |
-| Factorial                  | https://dcamarmas.github.io/creator/?example_set=uc3m-ec&example=e14 |
+| Factorial                  | https://dcamarmas.github.io/creator/?example_set=uc3m-ec&example=e14  |
 
 
 ## ChangeLog
