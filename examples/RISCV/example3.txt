@@ -1,25 +1,34 @@
 
 #
-# WepSIM (https://wepsim.github.io/wepsim/)
+# Creator (https://creatorsim.github.io/creator/)
 #
 
 .data
-  result1: .word 0x12345678
+    .align 2
+    w1:		.word 14
+    b1:		.byte 120
+    h1:		.half 22
+    w2:		.word 4
+    b2:		.byte 1
+    h2:		.half 2
 
 .text
-  main: 
-        # shift
-        lui     a0, result1
-        lb      a1, 0(a0)
-        lh      a2, 0(a0)
-        lw      a3, 0(a0)
-
-        lui     a1, 0x1
-        sb      a1, 0(a0)
-        lui     a2, 0x2
-        sh      a2, 0(a0)
-        lui     a3, 0x3
-        sw      a3, 0(a0)
-
-        jalr x0, 0(ra)
+main:
+	
+    la x0 w1		#w1 address -> $t0
+    la x1 b1		#b1 address -> $t1
+    la x2 h1		#h1 address -> $t2
+    
+    lw x3 (x0)	    	#Memory[$t0] -> $t3
+    lw x4 w1		#Memory[w1]  -> $t4
+    
+    lb x5 (x1)	    	#Memory[$t1] -> $t5
+    lb x6 b1		#Memory[b1]  -> $t6
+    
+    lh x7 (x2)	    	#Memory[$t2] -> $t7
+    lh x8 h1		#Memory[h1]  -> $t8
+    
+    sw x3 w2		#$t3 -> Memory[w2]
+    #sb x5 b2		#$t5 -> Memory[b2]
+    #sh x7 h2		#$t7 -> Memory[h2]
 
