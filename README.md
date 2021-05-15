@@ -49,7 +49,7 @@
 | I/O Syscalls               | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e9  |
 | I/O Syscalls + Strings     | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e10 |
 | Subrutines                 | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e11 |
-| Factorial                  | https://dcamarmas.github.io/creator/?example_set=uc3m-ec&example=e14     |
+| Factorial                  | https://dcamarmas.github.io/creator/?example_set=default_rv&example=e14 |
 
 #### :point_right:	 MIPS
 
@@ -66,7 +66,7 @@
 | I/O Syscalls               | https://creatorsim.github.io/creator/?example_set=default&example=e9  |
 | I/O Syscalls + Strings     | https://creatorsim.github.io/creator/?example_set=default&example=e10 |
 | Subrutines                 | https://creatorsim.github.io/creator/?example_set=default&example=e11 |
-| Factorial                  | https://dcamarmas.github.io/creator/?example_set=uc3m-ec&example=e14  |
+| Factorial                  |  https://dcamarmas.github.io/creator/?example_set=default&example=e14 |
 
 
 ## ChangeLog
