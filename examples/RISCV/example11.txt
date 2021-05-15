@@ -1,0 +1,32 @@
+
+#
+# Creator (https://creatorsim.github.io/creator/)
+#
+
+.text
+
+sum:
+    add  t1 a0 a1
+    add  t2 a2 a2
+    add  a7 t1 zero
+    add  s1 t2 zero
+    jr   ra  
+
+sub:
+    sub a7 a0 a1
+    jr ra
+ 
+main:
+    li   a0 23
+    li   a1 -77
+    li   a2 45
+    jal  x0 sum
+    add  a0 a7 zero
+    add  a1 s1 zero
+    jal  x0 sub
+    add  a0 a7 zero
+    li   a7 1
+    syscall
+    li   a7 10
+    syscall
+ 
