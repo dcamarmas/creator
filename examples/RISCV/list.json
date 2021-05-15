@@ -64,5 +64,11 @@
     "id": "e11",
     "url":"examples/RISCV/example11.txt",
     "description": "Subrutines"
+  },
+  {
+    "name": "Example 12",
+    "id": "e12",
+    "url":"examples/RISCV/example12.txt",
+    "description": "Factorial"
   }
 ]
