@@ -8,12 +8,12 @@
 .text
 
      main: 
-           # v1 = factorial(5)
+           # t1 = factorial(5)
            li  a7 5
            jal x0 factorial
 
-           # print_int(v1)
-           add a0 v0 zero
+           # print_int(t1)
+           add a0 t1 zero
            li  a7 1
            syscall
 
@@ -32,21 +32,21 @@ factorial:
            # if ($a < 2):
            #     return 1
            bge  a0 2 b_else
-           li   v0 1 
-           b   b_efs
+           li   t0 1 
+           beq  x0 x0 b_efs
            # else:
            #    return $a0 * factorial($a0 - 1)
    b_else: sw   a0 -4(fp)
            addi a0 a0 -1
            jal  factorial
-           lw   v1 -4(fp)
-           mul  v0 v0 v1
+           lw   t1 -4(fp)
+           mul  t0 t0 t1
 
            # finalizar "stack frame"
    b_efs:  lw   ra 8(sp)
            lw   fp 4(sp)
            addu sp sp 12
 
-           # return v0
+           # return t0
            jr ra
 
