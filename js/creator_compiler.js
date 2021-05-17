@@ -3805,7 +3805,27 @@ function pseudoinstruction_compiler ( instruction, label, line )
 
         console_log(definition);
 
-        re = /op\((.*)\)/;
+        re = /reg\.pc/
+        console_log(re);
+        while (definition.search(re) != -1){
+          definition = definition.replace(re, "getReg('PC')");
+          console_log(definition);
+        }
+
+        re = /no_ret_op\{([^}]*)\};/;
+        console_log(re);
+        while (definition.search(re) != -1){
+          var match = re.exec(definition);
+
+          console_log(match[1]);
+
+          eval(match[1]);
+
+          definition = definition.replace(re, '');
+          console_log(definition);
+        }
+
+        re = /op\{([^}]*)\}/;
         console_log(re);
         while (definition.search(re) != -1){
           var match = re.exec(definition);
@@ -4023,6 +4043,19 @@ function field(field, action, type)
 
   }
   return -1;
+}
+
+function getReg(name){
+  for (var i = 0; i < architecture.components.length; i++)
+   {
+      for (var j = 0; j < architecture.components[i].elements.length; j++)
+      {
+          if (architecture.components[i].elements[j].name == name)
+          {
+              return parseInt(architecture.components[i].elements[j].value);
+          }
+      }
+   }
 }
 
 
