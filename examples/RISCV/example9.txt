@@ -12,30 +12,30 @@
 main:
     la a0 msg
     li a7 4
-    syscall
+    ecall
     
     li a7 5
-    syscall
+    ecall
     add t0 a7 zero
     
     la a0 msg2
     li a7 4
-    syscall
+    ecall
     
     li a7 5
-    syscall
+    ecall
     add t1 a7 zero
     
     add t2 t0 t1
     
     la a0 msg3
     li a7 4
-    syscall
+    ecall
 
     add a0 t2 zero
     li a7 1
-    syscall
+    ecall
     
     li a7 10
-    syscall
+    ecall
     
