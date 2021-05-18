@@ -4,7 +4,7 @@
 #
 
 .text
-      main:
+    main:
       li  t0 4
       li  t1 2
       li  t3 5
@@ -13,7 +13,7 @@
     jump2: 
       li t3 34
       li a7 10
-      syscall
+      ecall
 
     jump1:
       li t4 11

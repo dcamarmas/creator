@@ -9,17 +9,16 @@
 
      main: 
            # t1 = factorial(5)
-           li  a7 5
+           li  a0 5
            jal x0 factorial
 
            # print_int(t1)
-           add a0 t1 zero
            li  a7 1
-           syscall
+           ecall
 
            # exit
            li a7 10
-           syscall
+           ecall
 
 
 factorial:
@@ -29,18 +28,18 @@ factorial:
            sw   fp 4(sp)
            addu fp sp 4
 
-           # if ($a < 2):
+           # if (a0 < 2):
            #     return 1
            bge  a0 2 b_else
-           li   t0 1 
+           li   a0 1 
            beq  x0 x0 b_efs
            # else:
-           #    return $a0 * factorial($a0 - 1)
+           #    return a0 * factorial(a0 - 1)
    b_else: sw   a0 -4(fp)
            addi a0 a0 -1
-           jal  factorial
+           jal  x0 factorial
            lw   t1 -4(fp)
-           mul  t0 t0 t1
+           mul  a0 a0 t1
 
            # finalizar "stack frame"
    b_efs:  lw   ra 8(sp)
