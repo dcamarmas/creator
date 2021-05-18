@@ -64,5 +64,11 @@
     "id": "e11",
     "url":"examples/MIPS/example11.txt",
     "description": "Subrutines"
+  },
+  {
+    "name": "Example 12",
+    "id": "e12",
+    "url":"examples/MIPS/example12.txt",
+    "description": "Factorial"
   }
 ]

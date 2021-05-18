@@ -1,19 +1,35 @@
 
 #
-# WepSIM (https://wepsim.github.io/wepsim/)
+# Creator (https://creatorsim.github.io/creator/)
 #
-
+ 
+.data
+    a: .double 34.544
+    b: .double 11.443
+    c: .double 665.4
+    
+    d: .section 24
+    
 .text
 main:
-           # loop initialization
-           lui x1  0
-           lui x2  5
-           lui x3  1
-           # loop header
-    loop1: beq x1 x2 fin1
-           # loop body
-           add x1 x1 x3
-           beq x0 x0 loop1
+    la x1 a
+    la x2 b
+    la x3 c
+    la x4 d
+    
+    fld   FP0  0(x1)
+    fld   FP2  0(x2)
+    fld   FP10 0(x3)
+    fadd.d FP0  FP0  FP0
+    fsub.d FP4  FP10 FP0
+    fdiv.d FP12 FP10 FP2
+    
+    fsd  FP0  0(x4)
+    addi x4 x4 8
+    fsd  FP4  0(x4)
+    addi x4 x4 8
+    fsd  FP12 0(x4)
 
-     fin1: jalr x0, 0(ra)
+    li a7 10
+    ecall
 

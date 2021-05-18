@@ -1,63 +1,20 @@
 
 #
-# WepSIM (https://wepsim.github.io/wepsim/)
+# Creator (https://creatorsim.github.io/creator/)
 #
 
+# Sum of the first 10 numbers from 0 to 9
 .data
-
-   matrix: .word 1, 0, 3, 0, 0, 1
-           .word 1, 2, 0, 1, 1, 0
+	max: .byte 10
 
 .text
+	main: 	    lb   t0 max
+		   		li   t1 0
+		   		li   a0 0
+	while:	   	bge  t1 t0 end_while
+		   		add  a0 a0 t1
+		   		add  t1 t1 1
+		   		beq  x0 x0 while
 
-counting:
-       # result = 0
-       add  t5 a0 x0
-       lui  a0 0
-
-       # for (t0=0; t0 < a1; ...
-       lui  t0 0
-   b1: bge  t0 a1 f1
-
-       # for (t1=0; t1 < a2; ...
-       lui  t1 0
-   b2: bge  t1 a2 f2
-
-       # t2 = (t0*a2 + t1) * 4
-       mul  t2 t0 a2
-       add  t2 t2 t1
-       lui  t3 4
-       mul  t2 t2 t3
-
-       # elto = *( t5 + t2 ) 
-       add  t2 t5 t2
-       lw   t2 0(t2)
-
-       bne  t2 x0 nozero
-       lui  t3 1
-       add  a0 a0 t3
-nozero: 
-
-       # ... t1++) 
-       lui  t3 1
-       add  t1 t1 t3
-       beq  x0 x0 b2
-
-f2:
-       # ... t0++) 
-       lui  t3 1
-       add  t0 t0 t3
-       beq  x0 x0 b1
-
-f1:
-       # return
-       jalr x0, 0(ra)
-
-
-main: 
-       # counting (matrix, 2, 6)
-       lui a0 matrix
-       lui a1 2
-       lui a2 6
-       jal ra counting
-
+	end_while: 	li a7 1
+		   		ecall # print_int
