@@ -42,16 +42,45 @@
   *   },
   *   ...
   * ] ;
+  *
   */
 
  /*
+  *
+  * TODO: update this with draw.io graph
   * States:
   *  0 -> Init
   *  1 -> Saved in memory/stack
-  *  2 -> Restored from memory/stack
+  *  2 -> Restored from memory/stack (read from memory stage)
+  *  5 -> Restored from memory/stack (write register stage)
   *  3 -> Error
   *  4 -> Save/.../Restore/Save
+  *
+  *
+  * Transitions (state x action -> next state):
+  *
+  *           WM==  WM!= RM  WR  RR  END
+  *      0     1    1     2  a4   0   3
+  *      1     1    7     6  5    1   b4
+  *      2     1    1     2  e4   2   3
+  *      3     -    -     -  -    -   -
+  *      4     -    -     -  -    -   -
+  *      5     d4   5     6  5    5   c4
+  *      6     d4   6     6  0    6   c4
+  *      7     7    7     6  5    7   b4
+  *
   */
+
+ var stack_state_transition = [
+	{ "wm==": 1,  "wm!=": 1,  "rm": 2,  "wr":40,  "rr": 0,  "end": 3  },
+	{ "wm==": 1,  "wm!=": 7,  "rm": 6,  "wr": 5,  "rr": 1,  "end":40  },
+	{ "wm==": 1,  "wm!=": 1,  "rm": 2,  "wr":45,  "rr": 2,  "end": 3  },
+	{ "wm==":-1,  "wm!=":-1,  "rm":-1,  "wr":-1,  "rr":-1,  "end":-1  },
+	{ "wm==":-1,  "wm!=":-1,  "rm":-1,  "wr":-1,  "rr":-1,  "end":-1  },
+	{ "wm==":44,  "wm!=": 5,  "rm": 6,  "wr": 5,  "rr": 5,  "end":43  },
+	{ "wm==":44,  "wm!=": 6,  "rm": 6,  "wr": 0,  "rr": 6,  "end":43  },
+	{ "wm==": 7,  "wm!=": 7,  "rm": 6,  "wr": 5,  "rr": 7,  "end":42  }
+     ];
 
  var stack_call_registers = [];
 
@@ -196,7 +225,9 @@ function creator_callstack_leave()
         {
             for (var j = 0; j < architecture.components[i].elements.length; j++)
             {
-                if ( (last_elto.registers_sm[i][j] != 0 && last_elto.registers_sm[i][j] != 2) &&
+                creator_callstack_do_transition("end", indexComponent, indexElement, address);
+
+                if ( (last_elto.registers_sm[i][j] != 3) &&
                      (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
                 )
                 {
@@ -209,7 +240,7 @@ function creator_callstack_leave()
     }
 
     //Check address
-    if (ret.ok)
+    /*if (ret.ok)
     {
         for (var i = 0; i < architecture.components.length; i++)
         {
@@ -228,9 +259,11 @@ function creator_callstack_leave()
                 }
             }
         }
-    }
+    }*/
 
     //Check size
+    //TODO: Check size within do_transition function
+
     if (ret.ok)
     {
         for (var i = 0; i < architecture.components.length; i++)
@@ -371,21 +404,12 @@ function creator_callstack_getState (indexComponent, indexElement)
 //
 function creator_callstack_newWrite (indexComponent, indexElement, address, length)
 {
-  var elto = creator_callstack_getTop();
-  elto.val.register_address_write[indexComponent][indexElement].push(address);
-  elto.val.registers_size_write[indexComponent][indexElement].push(length);
+   var elto = creator_callstack_getTop();
+   elto.val.register_address_write[indexComponent][indexElement].push(address);
+   elto.val.registers_size_write[indexComponent][indexElement].push(length);
 
-  //Move state finite machine
-  var state = creator_callstack_getState(indexComponent, indexElement);
-  if(state == 0 || state == 1){
-    creator_callstack_setState(indexComponent, indexElement, 1);
-    return;
-  }
-  if(state == 2){
-    creator_callstack_setState(indexComponent, indexElement, 4);
-    return;
-  }
-  creator_callstack_setState(indexComponent, indexElement, 3);
+   // Move state finite machine
+   creator_callstack_do_transition("wm", indexComponent, indexElement, address);
 }
 
 //
@@ -394,17 +418,12 @@ function creator_callstack_newWrite (indexComponent, indexElement, address, leng
 //
 function creator_callstack_newRead (indexComponent, indexElement, address, length)
 {
-  var elto = creator_callstack_getTop();
-  elto.val.register_address_read[indexComponent][indexElement].push(address);
-  elto.val.registers_size_read[indexComponent][indexElement].push(length);
+   var elto = creator_callstack_getTop();
+   elto.val.register_address_read[indexComponent][indexElement].push(address);
+   elto.val.registers_size_read[indexComponent][indexElement].push(length);
 
-  //Move state finite machine
-  var state = creator_callstack_getState(indexComponent, indexElement);
-  if(state == 1 || state == 2 || state == 4){
-    creator_callstack_setState(indexComponent, indexElement, 2);
-    return;
-  }
-  creator_callstack_setState(indexComponent, indexElement, 3);
+   // Move state finite machine
+   creator_callstack_do_transition("rm", indexComponent, indexElement, address);
 }
 
 //
@@ -413,13 +432,8 @@ function creator_callstack_newRead (indexComponent, indexElement, address, lengt
 //
 function creator_callstack_writeRegister (indexComponent, indexElement)
 {
-  //Move state finite machine
-  var state = creator_callstack_getState(indexComponent, indexElement);
-  if(state == 1 || state == 4){
-    creator_callstack_setState(indexComponent, indexElement, 1);
-    return;
-  }
-  creator_callstack_setState(indexComponent, indexElement, 3);
+   // Move state finite machine
+   creator_callstack_do_transition("wr", indexComponent, indexElement, address);
 }
 
 //
@@ -440,5 +454,81 @@ function creator_callstack_reset()
 
     // return ok
     return ret ;
+}
+
+//
+// do state transition
+// Example: creator_callstack_do_transition("wm", 1, 2, 0x12345678)
+//
+function creator_callstack_do_transition ( doAction, indexComponent, indexElement, address )
+{
+    // get current state
+    var state = creator_callstack_getState(indexComponent, indexElement);
+
+    // get action
+    var action = doAction ;
+    if (doAction == "wm")
+    {
+        // NOW: check all saved value in memory (once saved should be read-only)
+        // TODO: review if check first saved address or all saved address (current)
+        var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address); 
+        action = (equal) ? "wm==" : "wm!=" ;
+    }
+
+    // NOW: check transition is possible
+    // TODO: add checking for (state < 0) and (state >= 40)...
+    if ( (typeof(stack_state_transition[state])         === "undefined") ||
+         (typeof(stack_state_transition[state][action]) === "undefined") )
+    {
+        console_log("creator_callstack_do_transition: transition from " +
+                    "state '" + state + "' and action '" + action + "' is empty (warning).") ;
+        return ;
+    }
+
+    // get new state: transition(state, action) -> new_state
+    var new_state = stack_state_transition[state][action];
+    creator_callstack_setState(indexComponent, indexElement, new_state);
+}
+
+// initial "doTransition" version...
+function creator_callstack_do_transition_old (doAction, indexComponent, indexElement, address)
+{
+   if (doAction == "wm")
+   {
+	  var state = creator_callstack_getState(indexComponent, indexElement);
+	  if(state == 0 || state == 1){
+	    creator_callstack_setState(indexComponent, indexElement, 1);
+	    return;
+	  }
+	  if(state == 2){
+	    creator_callstack_setState(indexComponent, indexElement, 4);
+	    return;
+	  }
+	  creator_callstack_setState(indexComponent, indexElement, 3);
+   }
+   if (doAction == "rm")
+   {
+	  var state = creator_callstack_getState(indexComponent, indexElement);
+	  if(state == 1 || state == 2 || state == 4){
+	    creator_callstack_setState(indexComponent, indexElement, 2);
+	    return;
+	  }
+	  creator_callstack_setState(indexComponent, indexElement, 3);
+   }
+   if (doAction == "wr")
+   {
+	  var state = creator_callstack_getState(indexComponent, indexElement);
+	  if(state == 1 || state == 4){
+	    creator_callstack_setState(indexComponent, indexElement, 1);
+	    return;
+	  }
+	  creator_callstack_setState(indexComponent, indexElement, 3);
+   }
+   if (doAction == "rr")
+   {
+   }
+   if (doAction == "end")
+   {
+   }
 }
 
