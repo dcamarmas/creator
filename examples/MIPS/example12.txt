@@ -39,8 +39,8 @@ factorial:
    b_else: sw   $a0 -4($fp)
            addi $a0 $a0 -1
            jal  factorial
-           lw   $v1 -4($fp)
-           mul  $v0 $v0 $v1
+           lw   $t1 -4($fp)
+           mul  $v0 $v0 $t1
 
            # finalizar "stack frame"
    b_efs:  lw   $ra 8($sp)

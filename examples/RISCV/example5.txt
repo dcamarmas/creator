@@ -8,16 +8,13 @@
 	max: .byte 10
 
 .text
-	main: 	   lb   t0 max
-		   li   t1 0
-		   add  a0 zero zero
-	while:	   bge  t1 t0 end_while
-		   add  a0 a0 t1
-		   add  t1 t1 1
-		   beq  x0 x0 while
+	main: 	    lb   t0 max
+		   		li   t1 0
+		   		li   a0 0
+	while:	   	bge  t1 t0 end_while
+		   		add  a0 a0 t1
+		   		add  t1 t1 1
+		   		beq  x0 x0 while
 
-	end_while: li a7 1
-		   syscall # print_int
-
-			
-		
+	end_while: 	li a7 1
+		   		ecall # print_int
