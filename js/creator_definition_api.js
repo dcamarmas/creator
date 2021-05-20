@@ -30,14 +30,17 @@ function type2size ( type )
     switch (type)
     {
         case 'b':
+        case 'bu':
              size = 1;
              break
 
         case 'h':
+        case 'hu':
              size = 2;
              break
 
         case 'w':
+        case 'wu':
              size = 4;
              break
     }
