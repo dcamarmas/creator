@@ -772,6 +772,74 @@ function creator_callstack_do_transition_old (doAction, indexComponent, indexEle
  */
 
 //
+// memory access
+//
+
+function mp_write ( reg_name, value, addr, type )
+{
+
+    var msg = "The memory must be align";
+    var size = 4;
+
+    switch(type){
+        case 'b':
+            size = 1;
+            break
+        case 'h':
+            size = 2;
+            break
+    }
+
+    if(addr % 4 != 0){
+        if (typeof app !== "undefined")
+            app.exception(msg);
+        else
+            console.log(msg);
+        return;
+    }
+
+    writeMemory ( value, addr, type );
+
+    if (reg_name == '') {
+        return;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg_name) {
+                creator_callstack_newWrite(i, j, addr, type);
+            }
+        }
+    }
+}
+
+function mp_read ( reg_name, value, addr, type )
+{
+
+    var msg = "The memory must be align";
+
+    if(addr % 4 != 0){
+        if (typeof app !== "undefined")
+            app.exception(msg);
+        else
+            console.log(msg);
+        return;
+    }
+
+    value = readMemory ( addr, type );
+
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg_name) {
+                writeRegister(value, i, j);
+                creator_callstack_newRead(i, j, addr, length);
+            }
+        }
+    }
+}
+
+
+//
 // check stack
 //
 
@@ -809,28 +877,6 @@ function passing_convention_end ()
     if (typeof window !== "undefined")
          show_notification(ret.msg, 'warning');
     else console.log(ret.msg);
-}
-
-function passing_convention_writeMem (addr, reg, length)
-{   
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg) {
-                creator_callstack_newWrite(i, j, addr, length);
-            }
-        }
-    }
-}
-
-function passing_convention_readMem (addr, reg, length)
-{   
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg) {
-                creator_callstack_newRead(i, j, addr, length);
-            }
-        }
-    }
 }
 
 
@@ -5890,7 +5936,7 @@ function executeInstruction ( )
           re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name.join('|')+") *=)[^=])", "g");
           while ((myMatch = re.exec(auxDef)) != null) {
               auxDef = auxDef.replace(myMatch[2], "reg"+regIndex + "=")
-              auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+", false);";
+              auxDef = "var reg"+ regIndex +"= null\n"+ auxDef+"\nwriteRegister(reg"+ regIndex+", "+i+", "+j+");";
               myMatch.index=0;
               isMatch = true;
           }
@@ -5914,7 +5960,7 @@ function executeInstruction ( )
               re = new RegExp("R"+regNum+" *=","g");
               auxDef = auxDef.replace(re, "var reg"+ regIndex+"=");
               auxDef = "var reg" + regIndex + "=null\n" + auxDef;
-              auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+", false);"
+              auxDef = auxDef + "\n writeRegister(reg"+regIndex+","+i+" ,"+j+");"
               regIndex++;
             }
           }
@@ -5948,7 +5994,7 @@ function executeInstruction ( )
       console_log(auxDef);
 
       /*Check if stack limit was modify*/
-      re = /check_stack_limit\((.*)\)/;
+      /*re = /check_stack_limit\((.*)\)/;
       if (auxDef.search(re) != -1){
         var match = re.exec(auxDef);
         var args = match[1].split(";");
@@ -5959,7 +6005,7 @@ function executeInstruction ( )
         re = /check_stack_limit\((.*)\)/;
         auxDef = auxDef.replace(re, "");
         auxDef = auxDef + "\n\nif('"+args[0]+"'=='"+args[1]+"'){\n\tif(("+args[2]+") != architecture.memory_layout[4].value){\n\t\twriteStackLimit("+args[2]+")\n\t}\n}";
-      }
+      }*/
 
       console_log(auxDef);
 
@@ -6184,7 +6230,7 @@ function readRegister ( indexComp, indexElem )
 }
 
 /*Write value in register*/
-function writeRegister ( value, indexComp, indexElem, memory )
+function writeRegister ( value, indexComp, indexElem )
 {
 
 	  var draw = {
@@ -6206,24 +6252,27 @@ function writeRegister ( value, indexComp, indexElem, memory )
                 (architecture.components[indexComp].elements[indexElem].properties[1] != "write"))
             {
 /*
-                show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
-                instructions[executionIndex]._rowVariant = 'danger';
-                executionIndex = -1;
-                return;
+              show_notification('The register '+ architecture.components[indexComp].elements[indexElem].name +' cannot be written', 'danger') ;
+              instructions[executionIndex]._rowVariant = 'danger';
+              executionIndex = -1;
+              return;
 */
-	        for (var i = 0; i < instructions.length; i++) {
-	  	     draw.space.push(i);
-	        }
-	        draw.danger.push(executionIndex);
+    	        for (var i = 0; i < instructions.length; i++) {
+    	  	     draw.space.push(i);
+    	        }
+    	        draw.danger.push(executionIndex);
 
-	        executionIndex = -1;
-	        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', draw);
+    	        executionIndex = -1;
+    	        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', draw);
             }
 
             architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
+            creator_callstack_writeRegister(indexComp, indexElem);
 
-            if (memory == false) {
-              creator_callstack_writeRegister(indexComp, indexElem);
+            if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
+                (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+                (value != architecture.memory_layout[4].value)) {
+                  writeStackLimit(value);
             }
 
             if (typeof window !== "undefined")
@@ -6252,6 +6301,12 @@ function writeRegister ( value, indexComp, indexElem, memory )
 
             architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
             creator_callstack_writeRegister(indexComp, indexElem);
+
+            if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
+                (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+                (value != architecture.memory_layout[4].value)) {
+                  writeStackLimit(value);
+            }
 
             updateDouble(indexComp, indexElem);
 
@@ -6820,37 +6875,37 @@ function writeStackLimit ( stackLimit )
 	    flash: []
 	  } ;
     
-        if(stackLimit != null){
-          if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-	          draw.danger.push(executionIndex);
-            executionIndex = -1;
-            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+    if(stackLimit != null){
+      if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
+        draw.danger.push(executionIndex);
+        executionIndex = -1;
+        throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+      }
+      else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
+        draw.danger.push(executionIndex);
+        executionIndex = -1;
+        throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+      }
+      else{
+        var diff = memory[memory_hash[2]][0].Address - stackLimit;
+        var auxStackLimit = stackLimit;
+        var newRow = 0;
+
+        for (var i = 0; i < (diff/4); i++){
+          memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
+          for (var z = 0; z < 4; z++){
+            (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+            auxStackLimit++;
           }
-          else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-	          draw.danger.push(executionIndex);
-            executionIndex = -1;
-            throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-          }
-          else{
-            var diff = memory[memory_hash[2]][0].Address - stackLimit;
-            var auxStackLimit = stackLimit;
-            var newRow = 0;
-
-            for (var i = 0; i < (diff/4); i++){
-              memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
-              for (var z = 0; z < 4; z++){
-                (memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
-                auxStackLimit++;
-              }
-              newRow++;
-            }
-
-            track_stack_setsp(stackLimit);
-
-            architecture.memory_layout[4].value = stackLimit;
-
-          }
+          newRow++;
         }
+
+        track_stack_setsp(stackLimit);
+
+        architecture.memory_layout[4].value = stackLimit;
+
+      }
+    }
 }
 
 /*Syscall*/
@@ -6963,7 +7018,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                         keyboard = keyboard + " " + value;
 
-                        writeRegister(value, indexComp, indexElem, false);
+                        writeRegister(value, indexComp, indexElem);
                         return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -6997,7 +7052,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else {
                         var value = parseInt(app._data.keyboard);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem, false);
+                        writeRegister(value, indexComp, indexElem);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -7031,7 +7086,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                           keyboard = keyboard + " " + value;
 
-                          writeRegister(value, indexComp, indexElem, false);
+                          writeRegister(value, indexComp, indexElem);
                           return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -7063,7 +7118,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else{
                         var value = parseFloat(app._data.keyboard, 10);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem, false);
+                        writeRegister(value, indexComp, indexElem);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -7097,7 +7152,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
       						        keyboard = keyboard + " " + value;
 
-                          writeRegister(value, indexComp, indexElem, false);
+                          writeRegister(value, indexComp, indexElem);
                           return packExecute(false, 'The data has been uploaded', 'danger', null);
                       }
 
@@ -7129,7 +7184,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       else{
                         var value = parseFloat(app._data.keyboard, 10);
                         console_log(value);
-                        writeRegister(value, indexComp, indexElem, false);
+                        writeRegister(value, indexComp, indexElem);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
@@ -7320,7 +7375,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
                          keyboard = keyboard + " " + value;
 
-                         writeRegister(value, indexComp, indexElem, false);
+                         writeRegister(value, indexComp, indexElem);
                          return packExecute(false, 'The data has been uploaded', 'danger', null);
                      }
 
@@ -7352,7 +7407,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
                       }
                       else{
                         var value = (app._data.keyboard).charCodeAt(0);
-                        writeRegister(value, indexComp, indexElem, false);
+                        writeRegister(value, indexComp, indexElem);
                         app._data.keyboard = "";
                         consoleMutex = false;
                         mutexRead = false;
