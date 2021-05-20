@@ -1663,7 +1663,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd=((MP.b.[inm+rs1] << 24) >> 24);\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "rd=((MP.b.[inm+rs1] << 24) >> 24);",
       "separated": [
         false,
         false,
@@ -1714,7 +1714,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "assert((inm+rs1)%2==0; \"The memory must be aligned\")\nrd=((MP.h.[inm+rs1] << 16 ) >> 16);\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "assert((inm+rs1)%2==0; \"The memory must be aligned\")\nrd=((MP.h.[inm+rs1] << 16 ) >> 16);",
       "separated": [
         false,
         false,
@@ -1765,7 +1765,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd=MP.w.[inm+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd=MP.w.[inm+rs1];",
       "separated": [
         false,
         false,
@@ -1816,7 +1816,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd=(MP.h.[rs1+inm] >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd=(MP.h.[rs1+inm] >>> 0);",
       "separated": [
         false,
         false,
@@ -1867,7 +1867,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd=(MP.b.[rs1+inm] >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd=(MP.b.[rs1+inm] >>> 0);",
       "separated": [
         false,
         false,
@@ -2089,7 +2089,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "assert(((rs1 >> 0) >= 0 && (inm >> 0) <= 0) || ((rs1 >> 0) <= 0 && (inm >> 0) >= 0) || ((rs1 >> 0) > 0 && (inm >> 0) > 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) > 0) || ((rs1 >> 0) < 0 && (inm >> 0) < 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) < 0); \"Integer Overflow\")\nrd=rs1+inm;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "assert(((rs1 >> 0) >= 0 && (inm >> 0) <= 0) || ((rs1 >> 0) <= 0 && (inm >> 0) >= 0) || ((rs1 >> 0) > 0 && (inm >> 0) > 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) > 0) || ((rs1 >> 0) < 0 && (inm >> 0) < 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) < 0); \"Integer Overflow\")\nrd=rs1+inm;",
       "separated": [
         false,
         false,
@@ -2139,7 +2139,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = (rs1 >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rs1.name; sp.name; rs1);",
+      "definition": "rd = (rs1 >> 0) < (inm >> 0) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2189,7 +2189,7 @@
           "valueField": "011"
         }
       ],
-      "definition": "rd = (rs1 >>> 0) < (inm >>> 0) ? 1 : 0;\ncheck_stack_limit(rs1.name; sp.name; rs1);",
+      "definition": "rd = (rs1 >>> 0) < (inm >>> 0) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2239,7 +2239,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd=rs1^inm;\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "rd=rs1^inm;",
       "separated": [
         false,
         false,
@@ -2290,7 +2290,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "rd=rs1|inm;\ncheck_stack_limit(rd.name; sp.name; rd)\n",
+      "definition": "rd=rs1|inm;\n",
       "separated": [
         false,
         false,
@@ -2341,7 +2341,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "rd=rs1&(inm>>>0);\ncheck_stack_limit(rd.name; sp.name; rd)\n",
+      "definition": "rd=rs1&(inm>>>0);\n",
       "separated": [
         false,
         false,
@@ -2399,7 +2399,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = (rs1 << shamt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 << shamt) >>> 0;",
       "separated": [
         false,
         false,
@@ -2458,7 +2458,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = (rs1 >> shamt);\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 >> shamt);",
       "separated": [
         false,
         false,
@@ -2517,7 +2517,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = (rs1 >> shamt) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 >> shamt) >>> 0;",
       "separated": [
         false,
         false,
@@ -2694,7 +2694,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = (rs1 << rs2) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 << rs2) >>> 0;",
       "separated": [
         false,
         false,
@@ -2752,7 +2752,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = (rs1 >> 0) < (rd >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 >> 0) < (rd >> 0) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2810,7 +2810,7 @@
           "valueField": "011"
         }
       ],
-      "definition": "rd = (rs1 << rs2) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 << rs2) >>> 0;",
       "separated": [
         false,
         false,
@@ -2868,7 +2868,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = (rs1^rs2);\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1^rs2);",
       "separated": [
         false,
         false,
@@ -2926,7 +2926,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = rs1 >> rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = rs1 >> rs2;",
       "separated": [
         false,
         false,
@@ -2985,7 +2985,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = (rs1 >> rs2) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = (rs1 >> rs2) >>> 0;",
       "separated": [
         false,
         false,
@@ -3044,7 +3044,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "rd = rs1 | rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = rs1 | rs2;",
       "separated": [
         false,
         false,
@@ -3103,7 +3103,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "rd = rs1 & rs2;\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "rd = rs1 & rs2;",
       "separated": [
         false,
         false,
@@ -3155,7 +3155,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%4 == 0; \"The memory must be align\");\nrd=(MP.w.[inm+(rs1>>>0)])\ncheck_stack_limit(rd.name; sp.name; rd);",
+      "definition": "assert((inm+rs1)%4 == 0; \"The memory must be align\");\nrd=(MP.w.[inm+(rs1>>>0)])",
       "separated": [
         false,
         false,
@@ -3206,7 +3206,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%8 == 0; \"The memory must be align\");\nrd = MP.d.[inm+rs1];\ncheck_stack_limit(rd.name; sp.name; rd)",
+      "definition": "assert((inm+rs1)%8 == 0; \"The memory must be align\");\nrd = MP.d.[inm+rs1];",
       "separated": [
         false,
         false,

@@ -1323,7 +1323,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "assert(((reg1 >> 0) >= 0 && (reg2 >> 0) <= 0) || ((reg1 >> 0) <= 0 && (reg2 >> 0) >= 0) || ((reg1 >> 0) > 0 && (reg2 >> 0) > 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (reg2 >> 0) < 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
+      "definition": "assert(((reg1 >> 0) >= 0 && (reg2 >> 0) <= 0) || ((reg1 >> 0) <= 0 && (reg2 >> 0) >= 0) || ((reg1 >> 0) > 0 && (reg2 >> 0) > 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (reg2 >> 0) < 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg3=reg1+reg2;"
     },
     {
       "name": "add.s",
@@ -1468,7 +1468,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg2=reg1+val;\ncheck_stack_limit(reg2.name; sp.name; reg2);"
+      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg2=reg1+val;"
     },
     {
       "name": "addiu",
@@ -1507,7 +1507,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg2=reg1+val;\ncheck_stack_limit(reg2.name; sp.name; reg2)"
+      "definition": "reg2=reg1+val;"
     },
     {
       "name": "addu",
@@ -1553,7 +1553,7 @@
           "valueField": "100001"
         }
       ],
-      "definition": "reg3=reg1+reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
+      "definition": "reg3=reg1+reg2;"
     },
     {
       "name": "and",
@@ -1599,7 +1599,7 @@
           "valueField": "100100"
         }
       ],
-      "definition": "reg3=reg1&reg2;\ncheck_stack_limit(reg3.name; sp.name; reg3)"
+      "definition": "reg3=reg1&reg2;"
     },
     {
       "name": "andi",
@@ -1638,7 +1638,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg2=reg1&(val>>>0);\ncheck_stack_limit(reg2.name; sp.name; reg2)"
+      "definition": "reg2=reg1&(val>>>0);"
     },
     {
       "name": "bc",
@@ -2346,7 +2346,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}"
     },
     {
       "name": "div",
@@ -2667,7 +2667,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\ncheck_stack_limit(reg1.name; sp.name; reg1);\npassing_convention_readMem (val+reg2, 'reg1.name', 'b');"
+      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\npassing_convention_readMem (val+reg2, 'reg1.name', 'b');"
     },
     {
       "name": "lbu",
@@ -2706,7 +2706,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.b.[base+off] >>> 0);\ncheck_stack_limit(rt.name; sp.name; rt);\npassing_convention_readMem (base+off, 'rt.name', 'b');"
+      "definition": "rt=(MP.b.[base+off] >>> 0);\npassing_convention_readMem (base+off, 'rt.name', 'b');"
     },
     {
       "name": "lh",
@@ -2745,7 +2745,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncheck_stack_limit(reg1.name; sp.name; reg1);\npassing_convention_readMem (val+reg2, 'reg1.name', 'h');"
+      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\npassing_convention_readMem (val+reg2, 'reg1.name', 'h');"
     },
     {
       "name": "lhu",
@@ -2784,7 +2784,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.h.[base+off] >>> 0);\ncheck_stack_limit(rt.name; sp.name; rt);\npassing_convention_readMem (base+off,'rt.name', 'h');"
+      "definition": "rt=(MP.h.[base+off] >>> 0);\npassing_convention_readMem (base+off,'rt.name', 'h');"
     },
     {
       "name": "lui",
@@ -2817,7 +2817,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=val<<16;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=val<<16;"
     },
     {
       "name": "lw",
@@ -2856,7 +2856,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%4==0; 'The memory must be align')\nreg1=MP.w.[val+reg2];\ncheck_stack_limit(reg1.name; sp.name; reg1);\npassing_convention_readMem (val+reg2, 'reg1.name', 'w');"
+      "definition": "mp_read('reg1.name', reg1, val+reg2, 'w');"
     },
     {
       "name": "lwc1",
@@ -2935,7 +2935,7 @@
           "stopbit": 11
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = fs;\nrt = (new Uint32Array(buf))[0];\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = fs;\nrt = (new Uint32Array(buf))[0];"
     },
     {
       "name": "mfhi",
@@ -2969,7 +2969,7 @@
           "valueField": "010000"
         }
       ],
-      "definition": "rd=HI;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd=HI;"
     },
     {
       "name": "mflo",
@@ -3003,7 +3003,7 @@
           "valueField": "010010"
         }
       ],
-      "definition": "rd=LO;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd=LO;"
     },
     {
       "name": "mod",
@@ -3049,7 +3049,7 @@
           "valueField": "00011011010"
         }
       ],
-      "definition": "rd = (rs >> 0) % (rt >> 0);\ncheck_stack_limit(rd.name; sp.name; rd)"
+      "definition": "rd = (rs >> 0) % (rt >> 0);"
     },
     {
       "name": "modu",
@@ -3095,7 +3095,7 @@
           "valueField": "00011011011"
         }
       ],
-      "definition": "rd = (rs >>> 0) % (rt >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd)"
+      "definition": "rd = (rs >>> 0) % (rt >>> 0);"
     },
     {
       "name": "mov.s",
@@ -3343,7 +3343,7 @@
           "valueField": "000010"
         }
       ],
-      "definition": "reg1=reg2*reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=reg2*reg3;"
     },
     {
       "name": "mul.s",
@@ -3603,7 +3603,7 @@
           "valueField": "101111"
         }
       ],
-      "definition": "rd = (~ (rs | rt));\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = (~ (rs | rt));"
     },
     {
       "name": "or",
@@ -3649,7 +3649,7 @@
           "valueField": "100101"
         }
       ],
-      "definition": "reg1=reg2|reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=reg2|reg3;"
     },
     {
       "name": "ori",
@@ -3688,7 +3688,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2|val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=reg2|val;"
     },
     {
       "name": "rotr",
@@ -3741,7 +3741,7 @@
           "valueField": "000010"
         }
       ],
-      "definition": "rd = (((rt >>> sa) | (rt << (32 - sa))) >>> 0);\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = (((rt >>> sa) | (rt << (32 - sa))) >>> 0);"
     },
     {
       "name": "rsqrt.s",
@@ -3959,7 +3959,7 @@
           "valueField": "111111"
         }
       ],
-      "definition": "rd = (rt << sa) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = (rt << sa) >>> 0;"
     },
     {
       "name": "slt",
@@ -4005,7 +4005,7 @@
           "valueField": "101010"
         }
       ],
-      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;"
     },
     {
       "name": "sltu",
@@ -4051,7 +4051,7 @@
           "valueField": "101011"
         }
       ],
-      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;"
     },
     {
       "name": "slti",
@@ -4090,7 +4090,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rs = (rt >> 0) < (inm >> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
+      "definition": "rs = (rt >> 0) < (inm >> 0) ? 1 : 0;"
     },
     {
       "name": "sltiu",
@@ -4129,7 +4129,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rs = (rt >>> 0) < (inm >>> 0) ? 1 : 0;\ncheck_stack_limit(rt.name; sp.name; rt);"
+      "definition": "rs = (rt >>> 0) < (inm >>> 0) ? 1 : 0;"
     },
     {
       "name": "sqrt.s",
@@ -4269,7 +4269,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "rd = (rt >> sa) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = (rt >> sa) >>> 0;"
     },
     {
       "name": "srl",
@@ -4322,7 +4322,7 @@
           "valueField": "000010"
         }
       ],
-      "definition": "rd = rt >>> sa;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = rt >>> sa;"
     },
     {
       "name": "sub",
@@ -4368,7 +4368,7 @@
           "valueField": "100010"
         }
       ],
-      "definition": "reg1=((reg2 >> 0) - (reg3 >> 0)) >>> 0;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=((reg2 >> 0) - (reg3 >> 0)) >>> 0;"
     },
     {
       "name": "sub.s",
@@ -4520,7 +4520,7 @@
           "valueField": "100011"
         }
       ],
-      "definition": "rd = ((rs >>> 0) - (rt >>> 0)) >>> 0;\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "rd = ((rs >>> 0) - (rt >>> 0)) >>> 0;"
     },
     {
       "name": "sw",
@@ -4559,7 +4559,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%4==0; 'The memory must be align')\nMP.w.[val+reg2]=reg1;\npassing_convention_writeMem (val+reg2, 'reg1.name', 'w');"
+      "definition": "mp_write('reg1.name', reg1, val+reg2, 'w');"
     },
     {
       "name": "swc1",
@@ -4683,7 +4683,7 @@
           "valueField": "100110"
         }
       ],
-      "definition": "reg1=reg2^reg3;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=reg2^reg3;"
     },
     {
       "name": "xori",
@@ -4722,7 +4722,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2^val;\ncheck_stack_limit(reg1.name; sp.name; reg1)"
+      "definition": "reg1=reg2^val;"
     },
     {
       "name": "syscall",
@@ -4803,7 +4803,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));\ncheck_stack_limit(rd.name; sp.name; rd);"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));"
     },
     {
       "name": "divu",
