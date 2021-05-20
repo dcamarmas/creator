@@ -24,6 +24,74 @@
  */
 
 //
+// memory access
+//
+
+function mp_write ( reg_name, value, addr, type )
+{
+
+    var msg = "The memory must be align";
+    var size = 4;
+
+    switch(type){
+        case 'b':
+            size = 1;
+            break
+        case 'h':
+            size = 2;
+            break
+    }
+
+    if(addr % 4 != 0){
+        if (typeof app !== "undefined")
+            app.exception(msg);
+        else
+            console.log(msg);
+        return;
+    }
+
+    writeMemory ( value, addr, type );
+
+    if (reg_name == '') {
+        return;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg_name) {
+                creator_callstack_newWrite(i, j, addr, type);
+            }
+        }
+    }
+}
+
+function mp_read ( reg_name, value, addr, type )
+{
+
+    var msg = "The memory must be align";
+
+    if(addr % 4 != 0){
+        if (typeof app !== "undefined")
+            app.exception(msg);
+        else
+            console.log(msg);
+        return;
+    }
+
+    value = readMemory ( addr, type );
+
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg_name) {
+                writeRegister(value, i, j);
+                creator_callstack_newRead(i, j, addr, length);
+            }
+        }
+    }
+}
+
+
+//
 // check stack
 //
 
@@ -61,28 +129,6 @@ function passing_convention_end ()
     if (typeof window !== "undefined")
          show_notification(ret.msg, 'warning');
     else console.log(ret.msg);
-}
-
-function passing_convention_writeMem (addr, reg, length)
-{   
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg) {
-                creator_callstack_newWrite(i, j, addr, length);
-            }
-        }
-    }
-}
-
-function passing_convention_readMem (addr, reg, length)
-{   
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg) {
-                creator_callstack_newRead(i, j, addr, length);
-            }
-        }
-    }
 }
 
 
