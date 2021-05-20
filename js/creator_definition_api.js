@@ -20,8 +20,31 @@
 
 
 /*
- *  Description API 
+ *  CREATOR instruction description API 
  */
+
+function type2size ( type )
+{
+    var size = 4;
+
+    switch (type)
+    {
+        case 'b':
+             size = 1;
+             break
+
+        case 'h':
+             size = 2;
+             break
+
+        case 'w':
+             size = 4;
+             break
+    }
+
+    return size ;
+}
+
 
 //
 // memory access
@@ -29,29 +52,25 @@
 
 function mp_write ( reg_name, value, addr, type )
 {
+    var size = 1 ;
+    var msg  = "The memory must be align";
 
-    var msg = "The memory must be align";
-    var size = 4;
-
-    switch(type){
-        case 'b':
-            size = 1;
-            break
-        case 'h':
-            size = 2;
-            break
-    }
-
-    if(addr % 4 != 0){
+    // 1) check address is aligned
+    //    FUTURE: if (architecture.properties.memory_align == false) return;
+    size = type2size(type) ;
+    if (addr % size != 0)
+    {
         if (typeof app !== "undefined")
-            app.exception(msg);
-        else
-            console.log(msg);
+             app.exception(msg);
+        else console.log(msg);
+
         return;
     }
 
-    writeMemory ( value, addr, type );
+    // 2) write into memory
+    writeMemory(value, addr, type);
 
+    // 3) move the associated finite state machine...
     if (reg_name == '') {
         return;
     }
@@ -67,26 +86,32 @@ function mp_write ( reg_name, value, addr, type )
 
 function mp_read ( reg_name, value, addr, type )
 {
-
+    var size = 1 ;
     var msg = "The memory must be align";
 
-    if(addr % 4 != 0){
+    // 1) check address is aligned
+    //    FUTURE: if (architecture.properties.memory_align == false) return;
+    size = type2size(type) ;
+    if (addr % size != 0)
+    {
         if (typeof app !== "undefined")
-            app.exception(msg);
-        else
-            console.log(msg);
+             app.exception(msg);
+        else console.log(msg);
+
         return;
     }
 
-    value = readMemory ( addr, type );
+    // 2) read from memory
+    value = readMemory(addr, type);
 
+    // 3) move the associated finite state machine...
     for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                writeRegister(value, i, j);
-                creator_callstack_newRead(i, j, addr, length);
-            }
-        }
+         for (var j = 0; j < architecture.components[i].elements.length; j++) {
+              if (architecture.components[i].elements[j].name == reg_name) {
+                  writeRegister(value, i, j);
+                  creator_callstack_newRead(i, j, addr, length);
+              }
+         }
     }
 }
 
