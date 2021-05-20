@@ -3874,7 +3874,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.b.[off+base]=rt;\npassing_convention_writeMem (off+base, 'rt.name', 'b');"
+      "definition": "mp_write('rt.name', rt, off+base, 'b');"
     },
     {
       "name": "sh",
@@ -3913,7 +3913,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((off+base)%2==0; 'The memory must be align')\nMP.h.[off+base]=rt;\npassing_convention_writeMem (off+base, 'rt.name', 'h');"
+      "definition": "mp_write('rt.name', rt, off+base, 'h');"
     },
     {
       "name": "sll",
