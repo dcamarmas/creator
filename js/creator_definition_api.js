@@ -53,7 +53,13 @@ function type2size ( type )
 // memory access
 //
 
-function mp_write ( reg_name, value, addr, type )
+
+/*
+ * Name:        mp_write - Write value into a memory address
+ * Sypnosis:    mp_write (destination_address, value2store, byte_or_half_or_word)
+ * Description: similar to memmove/memcpy, store a value into an address
+ */
+function mp_write ( addr, value, type )
 {
     var size = 1 ;
     var msg  = "The memory must be align";
@@ -72,22 +78,14 @@ function mp_write ( reg_name, value, addr, type )
 
     // 2) write into memory
     writeMemory(value, addr, type);
-
-    // 3) move the associated finite state machine...
-    if (reg_name == '') {
-        return;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                creator_callstack_newWrite(i, j, addr, type);
-            }
-        }
-    }
 }
 
-function mp_read ( reg_name, value, addr, type )
+/*
+ * Name:        mp_read - Read value from a memory address
+ * Sypnosis:    mp_read (source_address, byte_or_half_or_word)
+ * Description: read a value from an address
+ */
+function mp_read ( addr, type )
 {
     var size = 1 ;
     var msg = "The memory must be align";
@@ -105,17 +103,7 @@ function mp_read ( reg_name, value, addr, type )
     }
 
     // 2) read from memory
-    value = readMemory(addr, type);
-
-    // 3) move the associated finite state machine...
-    for (var i = 0; i < architecture.components.length; i++) {
-         for (var j = 0; j < architecture.components[i].elements.length; j++) {
-              if (architecture.components[i].elements[j].name == reg_name) {
-                  writeRegister(value, i, j);
-                  creator_callstack_newRead(i, j, addr, length);
-              }
-         }
-    }
+    return readMemory(addr, type);
 }
 
 
@@ -157,6 +145,40 @@ function passing_convention_end ()
     if (typeof window !== "undefined")
          show_notification(ret.msg, 'warning');
     else console.log(ret.msg);
+}
+
+function passing_convention_writeMem ( addr, reg_name, type )
+{
+
+    // 1) move the associated finite state machine...
+    if (reg_name == '') {
+        return;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg_name) {
+                creator_callstack_newWrite(i, j, addr, type);
+            }
+        }
+    }
+}
+
+function passing_convention_readMem ( addr, reg_name, type )
+{
+
+    // 1) move the associated finite state machine...
+    if (reg_name == '') {
+        return;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++) {
+        for (var j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg_name) {
+                creator_callstack_newRead(i, j, addr, type);
+            }
+        }
+    }
 }
 
 

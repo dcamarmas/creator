@@ -2856,7 +2856,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "mp_read('reg1.name', reg1, val+reg2, 'w');"
+      "definition": "reg1 = mp_read ( val+reg2, 'w' );\npassing_convention_readMem(val+reg2, 'reg1.name', 'w');"
     },
     {
       "name": "lwc1",
@@ -3874,7 +3874,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "mp_write('rt.name', rt, off+base, 'b');"
+      "definition": "MP.b.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt.name', 'b');"
     },
     {
       "name": "sh",
@@ -3913,7 +3913,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "mp_write('rt.name', rt, off+base, 'h');"
+      "definition": "MP.h.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt.name', 'h');"
     },
     {
       "name": "sll",
@@ -4559,7 +4559,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "mp_write('reg1.name', reg1, val+reg2, 'w');"
+      "definition": "mp_write ( val+reg2, reg1, 'w' );\npassing_convention_writeMem(val+reg2, 'reg1.name', 'w');"
     },
     {
       "name": "swc1",
