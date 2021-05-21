@@ -476,8 +476,6 @@ function creator_callstack_leave()
     }
 
     //Check size
-    //TODO: Check size within do_transition function
-
     if (ret.ok)
     {
         for (var i = 0; i < architecture.components.length; i++)
@@ -497,38 +495,7 @@ function creator_callstack_leave()
                 }
             }
         }
-        console.log("AQUI");
     }
-
-
-
-
-    /*****************************
-
-
-    // check values (check currrent state)
-    if (ret.ok)
-    {
-        for (var i = 0; i < architecture.components.length; i++)
-        {
-            for (var j = 0; j < architecture.components[i].elements.length; j++)
-            {
-                if (
-                     (true  == last_elto.register_modified[i][j]) && // modified but
-                     (last_elto.register_address_read[i][j] != last_elto.register_address_write[i][j]) && // not read the same address...
-                     (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
-                )
-                {
-                    ret.ok  = false;
-           //       ret.msg = "The value of one or more protected register is not kept between calls";
-                    ret.msg = "The value of one or more protected register has not been restored correctly from the address where the register was saved";
-
-                    break;
-                }
-            }
-        }
-    }
-    **********************************/
 
     // pop stack
     stack_call_register.pop();
@@ -684,19 +651,15 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
     var action = doAction ;
     if (doAction == "wm")
     {
-        // NOW: check all saved value in memory (once saved should be read-only)
-        // TODO: review if check first saved address or all saved address (current)
         var elto = creator_callstack_getTop();
         var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address); 
         action = (equal) ? "wm==" : "wm!=" ;
     }
 
-    // NOW: check transition is possible
-    // TODO: add checking for (state < 0) and (state >= 40)...
     if ( (typeof(stack_state_transition[state])         === "undefined") ||
          (typeof(stack_state_transition[state][action]) === "undefined") )
     {
-        if (state < 40) {
+        if (state < 40 || state < 0) {
           console.log("Undefined action");
         } 
         return ;
@@ -710,53 +673,7 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
       console.log("creator_callstack_do_transition [" + architecture.components[indexComponent].elements[indexElement].name +"]: transition from " +
                       "state '" + state + "'' to state '" + new_state + "' and action '" + action + "' is empty (warning).") ;
     }
-
-    //console.log("TRANSITION: " + doAction + " " + );
-}
-
-// initial "doTransition" version...
-function creator_callstack_do_transition_old (doAction, indexComponent, indexElement, address)
-{
-   if (doAction == "wm")
-   {
-	  var state = creator_callstack_getState(indexComponent, indexElement);
-	  if(state == 0 || state == 1){
-	    creator_callstack_setState(indexComponent, indexElement, 1);
-	    return;
-	  }
-	  if(state == 2){
-	    creator_callstack_setState(indexComponent, indexElement, 4);
-	    return;
-	  }
-	  creator_callstack_setState(indexComponent, indexElement, 3);
-   }
-   if (doAction == "rm")
-   {
-	  var state = creator_callstack_getState(indexComponent, indexElement);
-	  if(state == 1 || state == 2 || state == 4){
-	    creator_callstack_setState(indexComponent, indexElement, 2);
-	    return;
-	  }
-	  creator_callstack_setState(indexComponent, indexElement, 3);
-   }
-   if (doAction == "wr")
-   {
-	  var state = creator_callstack_getState(indexComponent, indexElement);
-	  if(state == 1 || state == 4){
-	    creator_callstack_setState(indexComponent, indexElement, 1);
-	    return;
-	  }
-	  creator_callstack_setState(indexComponent, indexElement, 3);
-   }
-   if (doAction == "rr")
-   {
-   }
-   if (doAction == "end")
-   {
-   }
-}
-
-/*
+}/*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
