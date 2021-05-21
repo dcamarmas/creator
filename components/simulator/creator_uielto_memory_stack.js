@@ -75,11 +75,11 @@
 										'	        <div v-for="item2 in architecture.components[item.index].elements">' +
 										'	          <b-badge variant="info" ' +
 										'	                   class="border border-info shadow memoryTag" ' +
-										'	                   v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'stack\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                   v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\'))&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
 										'	            {{item2.name[0]}}' +
 										'	          </b-badge>' +
 										'	          <span class="fas fa-long-arrow-alt-right" ' +
-										'	                v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'stack\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\') )&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
 										'	          </span>' +
 										'	' +
 										'	        </div>' +
