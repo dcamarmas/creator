@@ -139,7 +139,7 @@ function passing_convention_end ()
 
     // 3) Othewise report some warning...
     // Google Analytics
-    creator_ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
+    creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
     // User notification
     if (typeof window !== "undefined")

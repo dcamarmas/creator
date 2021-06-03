@@ -962,7 +962,7 @@ function executeProgramOneShot ( limit_n_instructions )
 		var ret = null;
 
 		/* Google Analytics */
-		creator_ga('send', 'event', 'execute', 'execute.run');
+		creator_ga('execute', 'execute.run');
 
 		// execute program
 		for (var i=0; i<limit_n_instructions; i++)
@@ -1705,7 +1705,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 							} ;
 
 							/* Google Analytics */
-							creator_ga('send', 'event', 'execute', 'execute.syscall', 'execute.syscall.' + action);
+							creator_ga('execute', 'execute.syscall', 'execute.syscall.' + action);
 
 							switch(action)
 							{
