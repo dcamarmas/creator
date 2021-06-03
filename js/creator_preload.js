@@ -1,5 +1,5 @@
 /*
- *  Copyright 2015-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso, Lucas Elvira Martín, Javier Prieto Cepeda, Saul Alonso Monsalve
+ *  Copyright 2015-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso, Lucas Elvira Martín, Javier Prieto Cepeda, Saul Alonso Monsalve
  *
  *  This file is part of Creator.
  *
@@ -17,6 +17,23 @@
  *  along with Creator.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
+
+
+    //
+    // Auxiliar functions
+    //
+
+    function preload_load_example ( data , url )
+    {
+        code_assembly = data ;
+        app.assembly_compiler(code_assembly) ;
+
+        // show notification
+        show_notification(' The selected example has been loaded.', 'success') ;
+
+        // Google Analytics
+        creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
+    }
 
 
     //
@@ -78,7 +95,12 @@
     				         {
 					    if (example_available[i].id === hash.example) 
                                             {
-					        app.load_example_init(example_available[i].url) ;
+                  var url = example_available[i].url;
+					        $.get(url,
+                                                      function(data) {
+                                                         preload_load_example(data, url);
+                                                      }) ;
+
 					        resolve('Example loaded.') ;
 					    }
 					 }
@@ -150,3 +172,4 @@
 	// return ok
 	return o ;
     }
+
