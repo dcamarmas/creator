@@ -670,7 +670,7 @@ try
 				         show_notification('The selected architecture has been loaded correctly', 'success') ;
 
 				         /* Google Analytics */
-					       creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
+					       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
 
                  return;
              }
@@ -682,7 +682,7 @@ try
 		      show_notification('The selected architecture has been loaded correctly', 'success') ;
 
 		      /* Google Analytics */
-		      creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised');
+		      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customised');
 
 	        }).fail(function() {
 	          hide_loading();
@@ -2805,7 +2805,7 @@ try
         hide_loading();
 
         /* Google Analytics */
-	creator_ga('send', 'event', 'assembly', 'assebly.load', 'assebly.load');
+	creator_ga('assembly', 'assebly.load', 'assebly.load');
       },
 
       assembly_update(){
@@ -2845,7 +2845,7 @@ try
         downloadLink.click();
 
         /* Google Analytics */
-	creator_ga('send', 'event', 'assembly', 'assebly.save', 'assebly.save');
+	creator_ga('assembly', 'assebly.save', 'assebly.save');
       },
 
       /*Load the available examples*/
@@ -3098,8 +3098,8 @@ try
         this.newValue = '';
 
         /* Google Analytics */
-	  creator_ga('send', 'event', 'data', 'data.change', 'data.change.register_value');
-	  creator_ga('send', 'event', 'data', 'data.change', 'data.change.register_value_' + elem);
+	  creator_ga('data', 'data.change', 'data.change.register_value');
+	  creator_ga('data', 'data.change', 'data.change.register_value_' + elem);
       },
 
       /*Execute one instruction*/
@@ -3107,7 +3107,7 @@ try
       {
 
       	 /* Google Analytics */
-	 creator_ga('send', 'event', 'execute', 'execute.instruction', 'execute.instruction');
+	 creator_ga('execute', 'execute.instruction', 'execute.instruction');
 
          var ret = executeInstruction();
          // console.log(JSON.stringify(ret,2,null));
@@ -3161,7 +3161,7 @@ try
       executeProgram ( but )
       {
         /* Google Analytics */
-	creator_ga('send', 'event', 'execute', 'execute.run', 'execute.run');
+	creator_ga('execute', 'execute.run', 'execute.run');
 
         app._data.runExecution = true;
         app._data.runExecution = false;
@@ -3257,7 +3257,7 @@ try
          executionIndex = -1;
 
          /* Google Analytics */
-	       creator_ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.' + error);
+	       creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
 
          return;
       },
@@ -3266,7 +3266,7 @@ try
       reset ( reset_graphic )
       {
       	/* Google Analytics */
-        creator_ga('send', 'event', 'execute', 'execute.reset', 'execute.reset');
+        creator_ga('execute', 'execute.reset', 'execute.reset');
 
         show_loading();
         setTimeout(function() {
@@ -3532,7 +3532,7 @@ try
         app.$forceUpdate();
 
           /* Google Analytics */
-	        creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
+	        creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
 
@@ -3797,7 +3797,7 @@ catch(e)
   show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + e, 'danger') ;
 
   /* Google Analytics */
-  creator_ga('send', 'event', 'creator', 'creator.exception', 'creator.exception.' + e);
+  creator_ga('creator', 'creator.exception', 'creator.exception.' + e);
 
   setTimeout(function(){
     location.reload(true)
