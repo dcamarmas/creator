@@ -814,7 +814,7 @@ function passing_convention_end ()
 
     // 3) Othewise report some warning...
     // Google Analytics
-    creator_ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
+    creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
     // User notification
     if (typeof window !== "undefined")
@@ -1151,8 +1151,8 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor )
   ret.msg = compileError[err_code](ret) ;
 
   /*Google Analytics*/
-  creator_ga('send', 'event', 'compile', 'compile.error', 'compile.error.' + ret.msg);
-  creator_ga('send', 'event', 'compile', 'compile.type_error', 'compile.type_error.' + err_code);
+  creator_ga('compile', 'compile.error', 'compile.error.' + ret.msg);
+  creator_ga('compile', 'compile.type_error', 'compile.type_error.' + err_code);
 
   return ret ;
 }
@@ -1328,7 +1328,7 @@ function assembly_compiler()
         } ;
 
         /* Google Analytics */
-        creator_ga('send', 'event', 'compile', 'compile.assembly');
+        creator_ga('compile', 'compile.assembly');
       	
         instructions = [];
         instructions_tag = [];
@@ -6150,7 +6150,7 @@ function executeProgramOneShot ( limit_n_instructions )
 		var ret = null;
 
 		/* Google Analytics */
-		creator_ga('send', 'event', 'execute', 'execute.run');
+		creator_ga('execute', 'execute.run');
 
 		// execute program
 		for (var i=0; i<limit_n_instructions; i++)
@@ -6893,7 +6893,7 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 							} ;
 
 							/* Google Analytics */
-							creator_ga('send', 'event', 'execute', 'execute.syscall', 'execute.syscall.' + action);
+							creator_ga('execute', 'execute.syscall', 'execute.syscall.' + action);
 
 							switch(action)
 							{

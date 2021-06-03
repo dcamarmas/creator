@@ -32,7 +32,7 @@
         show_notification(' The selected example has been loaded.', 'success') ;
 
         // Google Analytics
-        creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
+        creator_ga('example', 'example.loading', 'example.loading.' + url);
     }
 
 
