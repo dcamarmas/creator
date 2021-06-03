@@ -256,8 +256,8 @@ function packCompileError(err_code, err_token, err_ti, err_bgcolor )
   ret.msg = compileError[err_code](ret) ;
 
   /*Google Analytics*/
-  creator_ga('send', 'event', 'compile', 'compile.error', 'compile.error.' + ret.msg);
-  creator_ga('send', 'event', 'compile', 'compile.type_error', 'compile.type_error.' + err_code);
+  creator_ga('compile', 'compile.error', 'compile.error.' + ret.msg);
+  creator_ga('compile', 'compile.type_error', 'compile.type_error.' + err_code);
 
   return ret ;
 }
@@ -433,7 +433,7 @@ function assembly_compiler()
         } ;
 
         /* Google Analytics */
-        creator_ga('send', 'event', 'compile', 'compile.assembly');
+        creator_ga('compile', 'compile.assembly');
       	
         instructions = [];
         instructions_tag = [];

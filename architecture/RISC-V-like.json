@@ -35,7 +35,8 @@
           "value": "0",
           "default_value": "0",
           "properties": [
-            "read"
+            "read",
+            "ignore_write"
           ]
         },
         {
@@ -136,14 +137,17 @@
         {
           "name": [
             "s0",
-            "x8"
+            "x8",
+            "fp"
           ],
           "nbits": "32",
           "value": "0",
           "default_value": "0",
           "properties": [
             "read",
-            "write"
+            "write",
+            "pointer",
+            "frame"
           ]
         },
         {
@@ -1200,6 +1204,10 @@
       "signatureRaw": "jal rd inm",
       "co": "1101111",
       "cop": "",
+      "help": "",
+      "properties": [
+        "enter_subrutine"
+      ],
       "nwords": 1,
       "fields": [
         {
@@ -1221,7 +1229,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC;\n PC=inm;\n draw_stack_jal(inm);",
+      "definition": "rd=PC;\n PC=inm;\n draw_stack_begin(inm);",
       "separated": [
         false,
         false,
@@ -1236,6 +1244,10 @@
       "signatureRaw": "jalr rd inm (rs1)",
       "co": "1100111",
       "cop": "000",
+      "help": "",
+      "properties": [
+        "exit_subrutine"
+      ],
       "nwords": 1,
       "fields": [
         {
@@ -1270,7 +1282,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd=PC;\n PC=(rs1+inm)&~1; draw_stack_jal((rs1+inm)&~1);",
+      "definition": "rd=PC;\n PC=(rs1+inm)&~1; draw_stack_end((rs1+inm)&~1);",
       "separated": [
         false,
         false,
@@ -1625,7 +1637,7 @@
       "name": "lb",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lb,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "lb,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "lb rd inm (rs1)",
       "co": "0000011",
       "cop": "000",
@@ -1639,7 +1651,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 20
         },
@@ -1676,7 +1688,7 @@
       "name": "lh",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lh,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "lh,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "lh rd inm (rs1)",
       "co": "0000011",
       "cop": "001",
@@ -1690,7 +1702,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 20
         },
@@ -1727,7 +1739,7 @@
       "name": "lw",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lw,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "lw,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "lw rd inm (rs1)",
       "co": "0000011",
       "cop": "010",
@@ -1741,7 +1753,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 20
         },
@@ -1778,7 +1790,7 @@
       "name": "lhu",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lhu,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "lhu,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "lhu rd inm (rs1)",
       "co": "0000011",
       "cop": "101",
@@ -1792,7 +1804,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 20
         },
@@ -1829,7 +1841,7 @@
       "name": "lbu",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "lbu,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "lbu,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "lbu rd inm (rs1)",
       "co": "0000011",
       "cop": "100",
@@ -1843,7 +1855,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 20
         },
@@ -1880,7 +1892,7 @@
       "name": "sb",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sb,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "sb,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "sb rs2 inm (rs1)",
       "co": "0100011",
       "cop": "000",
@@ -1894,7 +1906,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": [
             31,
             11
@@ -1937,7 +1949,7 @@
       "name": "sh",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sh,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "sh,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "sh rs2 inm (rs1)",
       "co": "0100011",
       "cop": "001",
@@ -1951,7 +1963,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-signeinm-unsigned",
           "startbit": [
             31,
             11
@@ -1994,7 +2006,7 @@
       "name": "sw",
       "type": "Memory access",
       "signature_definition": "F0 F2 F1 (F3)",
-      "signature": "sw,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "sw,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "sw rs2 inm (rs1)",
       "co": "0100011",
       "cop": "010",
@@ -2008,7 +2020,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": [
             31,
             11
@@ -3117,7 +3129,7 @@
       "name": "lwu",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "lwu,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "lwu,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "lwu rd inm (rs1)",
       "co": "0000011",
       "cop": "110",
@@ -3131,7 +3143,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 30,
           "stopbit": 20
         },
@@ -3168,7 +3180,7 @@
       "name": "ld",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "ld,INT-Reg,inm-signed,(INT-Reg)",
+      "signature": "ld,INT-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "ld rd inm (rs1)",
       "co": "0000011",
       "cop": "011",
@@ -3182,7 +3194,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 31,
           "stopbit": 20
         },
@@ -3219,7 +3231,7 @@
       "name": "fsd",
       "type": "Memory access",
       "signature_definition": "F0 F2 F3 (F1)",
-      "signature": "fsd,DFP-Reg,inm-signed,(INT-Reg)",
+      "signature": "fsd,DFP-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "fsd ft off (base)",
       "co": "0100111",
       "cop": "011",
@@ -3245,7 +3257,7 @@
         },
         {
           "name": "off",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 15,
           "stopbit": 0
         }
@@ -4427,7 +4439,7 @@
       "name": "fsw",
       "type": "Memory access",
       "signature_definition": "F0 F3 F1 (F2)",
-      "signature": "fsw,SFP-Reg,inm-signed,(INT-Reg)",
+      "signature": "fsw,SFP-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "fsw rs1 inm (rs2)",
       "co": "0100111",
       "cop": "010",
@@ -4441,7 +4453,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": [
             31,
             11
@@ -5836,7 +5848,7 @@
       "name": "fld",
       "type": "Memory access",
       "signature_definition": "F0 F4 F1 (F2)",
-      "signature": "fld,DFP-Reg,inm-signed,(INT-Reg)",
+      "signature": "fld,DFP-Reg,inm-unsigned,(INT-Reg)",
       "signatureRaw": "fld rd inm (rs1)",
       "co": "0000111",
       "cop": "011",
@@ -5850,7 +5862,7 @@
         },
         {
           "name": "inm",
-          "type": "inm-signed",
+          "type": "inm-unsigned",
           "startbit": 20,
           "stopbit": 20
         },
@@ -7641,7 +7653,7 @@
           "stopbit": "16"
         }
       ],
-      "definition": "jalr x1 rs 0;"
+      "definition": "jalr x1 0 (rs);"
     },
     {
       "name": "jr",
@@ -7659,7 +7671,7 @@
           "stopbit": "16"
         }
       ],
-      "definition": "jalr x0 rs 0;"
+      "definition": "jalr x0 0 (rs);"
     },
     {
       "name": "jal",
@@ -7706,7 +7718,7 @@
       "properties": [],
       "nwords": 1,
       "fields": [],
-      "definition": "jalr x0 x1 0;"
+      "definition": "jalr x0 0 (x1);"
     },
     {
       "name": "lb",
