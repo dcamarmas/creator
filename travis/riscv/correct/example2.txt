@@ -4,17 +4,14 @@
 #
 
 .text
-  accu: addi    sp, sp, -4
-        sw      a0, 0(sp)
-        lui     a1, 0
-    b1: beq     a0, zero, f1
-        add     a1, a1, a0
-        addi    a0, a0, -1
-        beq     zero, zero, b1
-    f1: lw      a0, 0(sp)
-        addi    sp, sp, 4
-        jalr    zero, ra, 0
+main:
 
-main:   lui     a0, 2
-        jal     ra, accu
+    li x5 10
+    li x6 13
+    li x7 45
+    li x8 33
 
+    add x9 x5 x6 # 10+13
+    sub x10 x7 x8 # 45-33
+    mul x11 x8 x8 # 33*33
+    div x12 x11 x6 # x6/13
