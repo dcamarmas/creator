@@ -295,7 +295,12 @@ h2 {
 }
 
 
-
+.help-scroll-y {
+  display: block;
+  max-height: 80vh;
+  overflow-y: auto;
+  -ms-overflow-style: -ms-autohiding-scrollbar;
+}
 
 
 
@@ -309,13 +314,11 @@ h2 {
 
 .registers{
   background-color: #f5f5f5;
-  //font-size: 95%;
   font-size: 1.03em;
 }
 
 .modRegister{
   background-color: #c2c2c2;
-  //font-size: 95%;
   font-size: 1.03em;
 }
 
@@ -336,14 +339,13 @@ h2 {
 }
 
 .popoverText {
-  //font-size: 16px;
   font-size: 1.2em;
 }
 
 
 .memory_table{
-  //font-size: 13px;
   max-height:49vh;
+  padding-left: 1vw;
 }
 
 .table-mem-wrapper-scroll-y {
@@ -363,11 +365,19 @@ h2 {
   solid gray;
 }
 
+.memoryTag {
+  float: left;
+  position: relative;
+  left: -0.7vw;
+}
+
+.binaryTag {
+  position:relative;top:-9px;
+}
 
 .instructions_table{
-  //font-size: 15px;
   font-size: 1em;
-  padding-right: 1%;
+  padding-right: 1vw;
   cursor:pointer; 
   max-height:61vh;
 }
@@ -379,10 +389,6 @@ h2 {
   -ms-overflow-style: -ms-autohiding-scrollbar;
 }
 
-.instruction_table{
-  //font-size: 15px;
-}
-
 .breakPoint {
   width:auto !important;
   height:4vh;
@@ -391,10 +397,8 @@ h2 {
 .executionTag {
   float:right;
   position:relative;
-  right:-12px;
-  margin-left: -20vw;
+  right:-0.7vw;
 }
-
 
 .consoleIcon {
   height:5vh;
@@ -410,6 +414,13 @@ h2 {
   transform: rotate(90deg);
 }
 
+.text-blue-funny {
+  color: #00BCFE;
+}
+
+.variant-blue-funny {
+  background-color: #00BCFE;
+}
 
 .stats{
   font-size: 0.85em;
@@ -439,13 +450,11 @@ h2 {
 
 @media only screen and (min-width: 2560px){
   .instructions_table{
-    //font-size: 15px;
     padding-right: 1%;
     cursor:pointer; 
     max-height:80vh;
   }
   .memory_table{
-    //font-size: 13px;
     font-size: 0.85em;
     max-height:70vh;
   }

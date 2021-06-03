@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2020 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -34,11 +34,6 @@ try
 
     /*DOM ID*/
     el: "#app",
-
-    /*Import Graph component*/
-    components: {
-      apexchart: VueApexCharts,
-    },
 
     /*Vue data*/
     data: {
@@ -158,7 +153,7 @@ try
         precision: '',
       },
       /*Instructions table fields*/
-      instFields: ['name', 'co', 'cop', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+      instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Instructions types*/
       instructionsTypes: instructionsTypes,
       /*Instructions fields*/
@@ -178,7 +173,7 @@ try
       showEditInstruction: false,
       /*Modal pagination*/
       instructionFormPage: 1,
-      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition'],
+      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'],
       /*Edit instruction modal*/
       modalEditInst:{
         title: '',
@@ -199,6 +194,8 @@ try
         co: '',
         cop: '',
         nwords: 1,
+        help: '',
+        properties: [],
         numfields: "1",
         numfieldsAux: "1",
         nameField: [],
@@ -214,7 +211,7 @@ try
         definition: '',
       },
       /*Pseudoinstructions table fields*/
-      pseudoinstFields: ['name', 'nwords', 'signature', 'signatureRaw', 'fields', 'definition', 'actions'],
+      pseudoinstFields: ['name', 'nwords', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Pseudoinstructions reset*/
       modalResetPseudoinst:{
         title: '',
@@ -249,6 +246,7 @@ try
         signatureRaw: '',
         signature_definition: '',
         definition: '',
+        help: '',
       },
       /*Directives table fields*/
       directivesFields: ['name', 'action', 'size', 'actions'],
@@ -319,137 +317,61 @@ try
       /*Displayed notifications*/
       notifications: notifications,
       /*Accesskey*/
-      navigator: "",
-      /*Calculator*/
-      calculator: {
-        bits: 32,
-        hexadecimal: "",
-        sign: "",
-        exponent: "",
-        mantissa: "",
-        mantisaDec: 0,
-        exponentDec: "",
-        decimal: "",
-        variant32: "primary",
-        variant64: "outline-primary",
-        lengthHexadecimal: 8,
-        lengthSign: 1,
-        lengthExponent: 8,
-        lengthMantissa: 23,
-      },
+      browser: "",
       /*Run instructions*/
       instructionsPacked: 20,
       /*Run button*/
       runExecution: false,
       /*Reset button*/
       resetBut: false,
-      /*Instrutions table fields*/
-      archInstructions: ['Break', 'Address', 'Label', 'userInstructions', 'loadedInstructions'],
       /*Instructions memory*/
       instructions: instructions,
-      /*Register type displayed*/
+      /*Registers*/
       register_type: 'integer',
-      /*Register select*/
-      nameTabReg: 'Decimal',
-      nameReg: 'INT Registers',
-      regType: 'int',
+      name_tab_Reg: 'Decimal',
+      name_reg: 'INT Registers',
+      reg_type: 'int',
       register_popover: '',
       /*Data mode*/
       data_mode: 'registers',
       /*Register form*/
       newValue: '',
-      /*Memory table fields*/
-      memFields: ['Address', 'Binary', 'Value'],
-      row_index: null,
-      selected_space_view: null,
-      selected_stack_view: null,
+
+
+
+
+
+
+
       /*Memory*/
+      memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
       memory: memory,
-      unallocated_memory: unallocated_memory,
-      /*Stats table fields*/
-      statsFields: {
-        type: {
-          label: 'Type',
-          sortable: true
-        },
-        number_instructions: {
-          label: 'Number of instructions',
-          sortable: true
-        },
-        percentage: {
-          label: 'Percentage',
-          sortable: true
-        }
-      },
+
+      row_index: null, //TODO: try to include in a component
+      selected_space_view: null, //TODO: try to include in a component
+      selected_stack_view: null, //TODO: try to include in a component
+      
+      track_stack_names: track_stack_names,
+      callee_subrutine: "",
+      caller_subrutine: "",
+      stack_pointer: 0,
+      begin_caller: 0,
+      end_caller: 0,
+      begin_callee: 0,
+      end_callee: 0,
+
+
+
+
+
+
+
+
       /*Stats*/
       totalStats: totalStats,
       stats: stats,
-
       /*Stats Graph values*/
       stats_value: stats_value,
-
-      /*Stats Graph configure*/
-      chartOptions: {
-        colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
-        chart: {
-          id: 'graphic',
-          type: 'donut',
-        },
-        labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
-        dataLabels: {
-          enabled: true
-        },
-        donut: {
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              showAlways: true,
-              label: "Total",
-            },
-          },
-        },
-        fill: {
-          type: 'gradient',
-          gradient: {
-            shade: 'dark',
-            type: "horizontal",
-            shadeIntensity: 0.5,
-            gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
-            inverseColors: true,
-            opacityFrom: 1,
-            opacityTo: 1,
-            stops: [0, 50, 100],
-            colorStops: []
-          },
-          colors: ['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
-        },
-        legend: {
-          formatter: function(val, opts) {
-            return val + " - " + opts.w.globals.series[opts.seriesIndex]
-          }
-        },
-        plotOptions: {
-          pie: {
-            donut: {
-              labels: {
-                show: true,
-                total: {
-                  show: true,
-                  showAlways: true,
-                  color: 'black',
-                  formatter: function (w) {
-                    return w.globals.seriesTotals.reduce((a, b) => {
-                      return a + b
-                    }, 0)
-                  }
-                }
-              }
-            }
-          }
-        },
-      },
-
       /*Display*/
       display: '',
       /*Keyboard*/
@@ -461,13 +383,13 @@ try
     created(){
       this.load_num_version();
       this.load_arch_available();
-      this.detectNavigator();
+      this.detectBrowser();
     },
 
     /*Mounted vue instance*/
     mounted(){
       this.backupCopyModal();
-      this.verifyNavigator();
+      this.verifyBrowser();
       this.get_configuration();
 
       // pre-load following URL params
@@ -490,15 +412,15 @@ try
         });
       },
 
-      verifyNavigator() {
+      verifyBrowser() {
         if (navigator.userAgent.indexOf("OPR") > -1) {
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
         else if (navigator.userAgent.indexOf("MIE") > -1) {
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
         else if (navigator.userAgent.indexOf("Edge") > -1) {
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
         else if(navigator.userAgent.indexOf("Chrome") > -1) {
           return;
@@ -510,7 +432,7 @@ try
           return
         }
         else{
-          this.$refs.navigator.show();
+          this.$refs.browser.show();
         }
       },
 
@@ -554,80 +476,9 @@ try
         }
       },
 
-      /*Change the execution speed*/
-      change_execution_speed(value) {
-      	 if (value)
-         {
-      	     this.instructionsPacked= this.instructionsPacked + value;
-      	     if (this.instructionsPacked < 1){
-      	       	 this.instructionsPacked = 1;
-      	     }
-      	     if (this.instructionsPacked > 101) {
-      	     	 this.instructionsPacked = 101;
-      	     }
-      	 }
-      	 else {
-      	    this.instructionsPacked = parseInt(this.instructionsPacked);
-      	 }
-      	
-      	 localStorage.setItem("instructionsPacked", this.instructionsPacked);
-      },
+      
 
-      /*Change autoscroll mode*/
-      change_autoscroll() {
-        app._data.autoscroll= !app._data.autoscroll;
-        localStorage.setItem("autoscroll", app._data.autoscroll);
-      },
-
-      /*change the time a notification is displayed*/
-      change_notification_time(value){
-      	if (value) {
-      	     this.notificationTime= this.notificationTime + value;
-      	     if (this.notificationTime < 1000){
-      	      	 this.notificationTime = 1000;
-      	     }
-      	     if (this.notificationTime > 3500) {
-      	      	 this.notificationTime = 3500;
-      	     }
-      	 }
-      	 else {
-      	      	this.notificationTime = parseInt(this.notificationTime);
-      	 }
-
-      	 localStorage.setItem("notificationTime", this.notificationTime);
-      },
-
-      /*change the font size*/
-      change_font_size(value){
-        if (value) {
-           this.fontSize= this.fontSize + value;
-           if (this.fontSize < 8){
-               this.fontSize = 8;
-           }
-           if (this.fontSize > 48) {
-               this.fontSize = 48;
-           }
-         }
-         else {
-            this.fontSize = parseInt(this.fontSize);
-         }
-
-         document.getElementsByTagName("body")[0].style.fontSize = this.fontSize + "px";
-         //localStorage.setItem("fontSize", this.fontSize);
-      },
-
-      /*Dark  Mode*/
-      change_dark_mode(){
-        app._data.dark= !app._data.dark;
-        if (app._data.dark){
-            document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
-            localStorage.setItem("dark_mode", "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;");
-        }
-        else {
-            document.getElementsByTagName("body")[0].style = "";
-            localStorage.setItem("dark_mode", "");
-        }
-      },
+      
 
       /*Screen change*/
       change_UI_mode(e) {
@@ -722,7 +573,7 @@ try
 
       /*Load the available architectures and check if exists backup*/
       load_arch_available() {
-        $.getJSON('architecture/available_arch.json', function(cfg){
+        $.getJSON('architecture/available_arch.json' + "?v=" + new Date().getTime(), function(cfg){
           architecture_available = cfg;
 
           if (typeof(Storage) !== "undefined"){
@@ -778,65 +629,11 @@ try
         }
       },
 
-      /*Load backup*/
-      load_copy(){
-        this.architecture_name = localStorage.getItem("arch_name");
-
-        var auxArchitecture = JSON.parse(localStorage.getItem("architecture_copy"));
-        architecture = bigInt_deserialize(auxArchitecture);
-
-        app._data.architecture = architecture;
-        code_assembly = localStorage.getItem("assembly_copy");
-        //textarea_assembly_editor.setValue(localStorage.getItem("assembly_copy"));
-
-        for (var i = 0; i < app._data.arch_available.length; i++) {
-        	if(this.arch_available[i].name === this.architecture_name){
-        		app.load_examples_available(this.arch_available[i].examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-        	}
-        }
-
-        architecture_hash = [];
-        for (var i = 0; i < architecture.components.length; i++){
-          architecture_hash.push({name: architecture.components[i].name, index: i});
-          app._data.architecture_hash = architecture_hash;
-        }
-
-        backup_stack_address = architecture.memory_layout[4].value;
-        backup_data_address = architecture.memory_layout[3].value;
-
-        this.reset(false);
-
-        //$("#architecture_menu").hide();
-        app.change_UI_mode('simulator');
-        app.change_data_view('registers' , 'int');
-        app.$forceUpdate();
-        /*$("#save_btn_arch").show();
-        $("#advanced_mode").show();
-        $("#assembly_btn_arch").show();
-        $("#load_arch_btn_arch").hide();
-        $("#sim_btn_arch").show();
-        $("#load_arch").hide();
-        $("#load_menu_arch").hide();
-        $("#view_components").show();*/
-
-        this.$refs.copyRef.hide();
-
-        show_notification('The backup has been loaded correctly', 'success') ;
-      },
-
-      /*Delete backup*/
-      remove_copy(){
-        localStorage.removeItem("architecture_copy");
-        localStorage.removeItem("assembly_copy");
-        localStorage.removeItem("date_copy");
-        this.$refs.copyRef.hide();
-      },
-
       /*Auxiliar to Load the selected architecture*/
       load_arch_select_aux(ename, cfg, load_associated_examples, e)
       {
 			  var auxArchitecture = cfg;
-			  architecture = bigInt_deserialize(auxArchitecture);
+			  architecture = register_value_deserialize(auxArchitecture);
 			  app._data.architecture = architecture;
 
 			  architecture_hash = [];
@@ -869,16 +666,24 @@ try
              if (e.name == load_architectures[i].id) {
                  var auxArchitecture = JSON.parse(load_architectures[i].architecture);
                  app.load_arch_select_aux(e.name, auxArchitecture, true, e) ;
-	         hide_loading();
-	         show_notification('The selected architecture has been loaded correctly', 'success') ;
+				         hide_loading();
+				         show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+				         /* Google Analytics */
+					       creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
+
                  return;
              }
         }
 
-        $.getJSON('architecture/'+e.name+'.json', function(cfg) {
+        $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg) {
           app.load_arch_select_aux(e.name, cfg, true, e) ;
 		      hide_loading();
 		      show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+		      /* Google Analytics */
+		      creator_ga('send', 'event', 'architecture', 'architecture.loading', 'architectures.loading.customised');
+
 	        }).fail(function() {
 	          hide_loading();
 	          show_notification('The selected architecture is not currently available', 'info') ;
@@ -990,14 +795,14 @@ try
       /*Save the current architecture in a JSON file*/
       arch_save(){
         var auxObject = jQuery.extend(true, {}, architecture);
-        var auxArchitecture = bigInt_serialize(auxObject);
+        var auxArchitecture = register_value_serialize(auxObject);
 
-	auxArchitecture.components.forEach((c, i) => {
-		c.elements.forEach((e, j) => {
-			if (e.default_value) e.value = e.default_value;
-			else e.value = 0;
-		});
-	});
+      	auxArchitecture.components.forEach((c, i) => {
+      		c.elements.forEach((e, j) => {
+      			if (e.default_value) e.value = e.default_value;
+      			else e.value = "0";
+      		});
+      	});
 
         var textToWrite = JSON.stringify(auxArchitecture, null, 2);
         var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
@@ -1050,7 +855,7 @@ try
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.memory_layout = auxArchitecture.memory_layout;
             app._data.architecture = architecture;
@@ -1065,7 +870,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.memory_layout = auxArchitecture2.memory_layout;
           app._data.architecture = architecture;
 
@@ -1152,7 +957,7 @@ try
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.components = auxArchitecture.components;
             app._data.architecture = architecture;
@@ -1173,7 +978,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.components = auxArchitecture2.components;
 
           app._data.architecture = architecture;
@@ -1310,8 +1115,7 @@ try
 
       /*Verify all field of new element*/
       newElementVerify(evt, comp){
-        evt.preventDefault();
-        if (!this.formArchitecture.name){
+        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name){
              show_notification('Please complete all fields', 'danger') ;
         }
         else{
@@ -1332,10 +1136,12 @@ try
       newElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if (this.formArchitecture.name == architecture.components[i].elements[j].name){
-                show_notification('The element already exists', 'danger') ;
-                return;
-            }
+            for (var z = 0; z < this.formArchitecture.name.length; z++){
+	            if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
+	                show_notification('The element already exists', 'danger') ;
+	                return;
+	            }
+	          }
           }
         }
 
@@ -1430,7 +1236,7 @@ try
       /*Check all field of modified element*/
       editElementVerify(evt, comp){
         evt.preventDefault();
-        if (!this.formArchitecture.name || !this.formArchitecture.defValue) {
+        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name || !this.formArchitecture.defValue) {
           show_notification('Please complete all fields', 'danger') ;
         }
         else if(isNaN(this.formArchitecture.defValue)){
@@ -1445,10 +1251,12 @@ try
       editElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-            if ((this.formArchitecture.name == architecture.components[i].elements[j].name) && (comp != this.formArchitecture.name)){
-                show_notification('The element already exists', 'danger') ;
-                return;
-            }
+          	for (var z = 0; z < this.formArchitecture.name.length; z++){
+	            if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
+	                show_notification('The element already exists', 'danger') ;
+	                return;
+	            }
+	          }
           }
         }
 
@@ -1538,7 +1346,7 @@ try
         for (var i = 0; i < load_architectures.length; i++){
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.instructions = auxArchitecture.instructions;
             app._data.architecture = architecture;
@@ -1553,7 +1361,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.instructions = auxArchitecture2.instructions;
 
           app._data.architecture = architecture;
@@ -1739,7 +1547,9 @@ try
           signature: signature, signatureRaw: signatureRaw,
           co: this.formInstruction.co,
           cop: this.formInstruction.cop,
-          nwords: this.formInstruction.nwords ,
+          nwords: this.formInstruction.nwords,
+          properties: this.formInstruction.properties,
+          help: this.formInstruction.help,
           fields: [],
           definition: this.formInstruction.definition,
           separated:[]
@@ -1773,7 +1583,9 @@ try
             this.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
             this.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
             this.formInstruction.definition = architecture.instructions[i].definition;
+            this.formInstruction.help = architecture.instructions[i].help;
             this.formInstruction.separated = [];
+            this.formInstruction.properties = architecture.instructions[i].properties;
 
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
               this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
@@ -1916,8 +1728,10 @@ try
             architecture.instructions[i].co = this.formInstruction.co;
             architecture.instructions[i].cop = this.formInstruction.cop;
             architecture.instructions[i].nwords = this.formInstruction.nwords;
+            architecture.instructions[i].help = this.formInstruction.help;
             architecture.instructions[i].signature_definition = this.formInstruction.signature_definition;
             architecture.instructions[i].definition = this.formInstruction.definition;
+            architecture.instructions[i].properties = this.formInstruction.properties;
             if (!architecture.instructions[i].separated)
                 architecture.instructions[i].separated =Array(this.formInstruction.numfields).fill(false);
 
@@ -2029,6 +1843,7 @@ try
         this.formInstruction.numfields = "1";
         this.formInstruction.numfieldsAux = "1";
         this.formInstruction.nameField = [];
+        this.formInstruction.properties = [];
         this.formInstruction.typeField = [];
         this.formInstruction.startBitField = [];
         this.formInstruction.stopBitField = [];
@@ -2040,6 +1855,7 @@ try
         this.formInstruction.signature_definition = '';
         this.formInstruction.definition = '';
         this.instructionFormPage = 1;
+        this.formInstruction.help = '';
       },
 
       /*Show pseudoinstruction fields modal*/
@@ -2075,7 +1891,7 @@ try
         for (var i = 0; i < load_architectures.length; i++) {
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.pseudoinstructions = auxArchitecture.pseudoinstructions;
             app._data.architecture = architecture;
@@ -2090,7 +1906,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.pseudoinstructions = auxArchitecture2.pseudoinstructions;
 
           app._data.architecture = architecture;
@@ -2144,7 +1960,7 @@ try
         var signature = this.formPseudoinstruction.signature;
         var signatureRaw = this.formPseudoinstruction.signatureRaw;
 
-        var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition};
+        var newPseudoinstruction = {name: this.formPseudoinstruction.name, signature_definition: this.formPseudoinstruction.signature_definition, signature: signature, signatureRaw: signatureRaw, nwords: this.formPseudoinstruction.nwords , fields: [], definition: this.formPseudoinstruction.definition, help: this.formPseudoinstruction.help};
         architecture.pseudoinstructions.push(newPseudoinstruction);
 
         for (var i = 0; i < this.formPseudoinstruction.numfields; i++) {
@@ -2165,6 +1981,7 @@ try
         this.formPseudoinstruction.numfieldsAux = architecture.pseudoinstructions[index].fields.length;
         this.formPseudoinstruction.signature_definition = architecture.pseudoinstructions[index].signature_definition;
         this.formPseudoinstruction.definition = architecture.pseudoinstructions[index].definition;
+        this.formPseudoinstruction.help = architecture.pseudoinstructions[index].help;
 
         for (var j = 0; j < architecture.pseudoinstructions[index].fields.length; j++) {
           this.formPseudoinstruction.nameField[j] = architecture.pseudoinstructions[index].fields[j].name;
@@ -2222,6 +2039,7 @@ try
         architecture.pseudoinstructions[index].nwords = this.formPseudoinstruction.nwords;
         architecture.pseudoinstructions[index].definition = this.formPseudoinstruction.definition;
         architecture.pseudoinstructions[index].signature_definition = this.formPseudoinstruction.signature_definition;
+        architecture.pseudoinstructions[index].help = this.formPseudoinstruction.help;
 
         for (var j = 0; j < this.formPseudoinstruction.numfields; j++){
           if(j < architecture.pseudoinstructions[index].fields.length){
@@ -2708,6 +2526,7 @@ try
         this.formPseudoinstruction.signatureRaw = '';
         this.formPseudoinstruction.signature_definition = '';
         this.formPseudoinstruction.definition = '';
+        this.formPseudoinstruction.help = '';
         this.instructionFormPage = 1;
       },
 
@@ -2734,7 +2553,7 @@ try
         for (var i = 0; i < load_architectures.length; i++) {
           if(arch == load_architectures[i].id){
             var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = bigInt_deserialize(auxArch);
+            var auxArchitecture = register_value_deserialize(auxArch);
 
             architecture.directives = auxArchitecture.directives;
             app._data.architecture = architecture;
@@ -2748,7 +2567,7 @@ try
         $.getJSON('architecture/'+arch+'.json', function(cfg){
           var auxArchitecture = cfg;
 
-          var auxArchitecture2 = bigInt_deserialize(auxArchitecture);
+          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
           architecture.directives = auxArchitecture2.directives;
 
           app._data.architecture = architecture;
@@ -2923,7 +2742,7 @@ try
             if (typeof(Storage) !== "undefined")
             {
               var auxObject = jQuery.extend(true, {}, architecture);
-              var auxArchitecture = bigInt_serialize(auxObject);
+              var auxArchitecture = register_value_serialize(auxObject);
               var auxArch = JSON.stringify(auxArchitecture, null, 2);
 
               var date = new Date();
@@ -2984,6 +2803,9 @@ try
           code_assembly = event.currentTarget.result;
         }
         hide_loading();
+
+        /* Google Analytics */
+	creator_ga('send', 'event', 'assembly', 'assebly.load', 'assebly.load');
       },
 
       assembly_update(){
@@ -3021,77 +2843,56 @@ try
         document.body.appendChild(downloadLink);
 
         downloadLink.click();
+
+        /* Google Analytics */
+	creator_ga('send', 'event', 'assembly', 'assebly.save', 'assebly.save');
       },
 
       /*Load the available examples*/
       load_examples_available( set_name ) {
-	this._data.example_loaded = new Promise(function(resolve, reject) {
+	     this._data.example_loaded = new Promise(function(resolve, reject) {
 
-		      $.getJSON('examples/example_set.json', function(set) {
+		$.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
 
-                          // current architecture in upperCase
-                          var current_architecture = app._data.architecture_name.toUpperCase() ;
+                  // current architecture in upperCase
+		  var current_architecture = app._data.architecture_name.toUpperCase() ;
 
-                          // search for set_name in the example set 'set'
-			  for (var i=0; i<set.length; i++)
-                          {
-                                // if set_name in set[i]...
-				if (set[i].id.toUpperCase() == set_name.toUpperCase())
-				{
-                                        // if current_architecture active but not the associated with set, skip
-				        if ( (current_architecture != '') &&
-      					     (set[i].architecture.toUpperCase() != current_architecture) )
-				        {
-				             continue ;
-				        }
+                  // search for set_name in the example set 'set'
+		  for (var i=0; i<set.length; i++)
+		  {
+			// if set_name in set[i]...
+			if (set[i].id.toUpperCase() == set_name.toUpperCase())
+			{
+			    // if current_architecture active but not the associated with set, skip
+			    if ( (current_architecture != '') &&
+  				 (set[i].architecture.toUpperCase() != current_architecture) )
+		            {
+		                 continue ;
+		            }
 
-                                        // if no current_architecture loaded then load the associated
-				        if (current_architecture == '') {
-					    $.getJSON('architecture/'+ set[i].architecture +'.json',
-						       function(cfg) {
-						          app.load_arch_select_aux(set[i].architecture,
-										   cfg, false, null);
-					               }) ;
-				        }
+			    // if no current_architecture loaded then load the associated
+		            if (current_architecture == '') {
+				    $.getJSON('architecture/'+ set[i].architecture +'.json',
+					       function(cfg) {
+						  app.load_arch_select_aux(set[i].architecture,
+									   cfg, false, null);
+					       }) ;
+			    }
 
-                                        // load the associate example list
-					$.getJSON(set[i].url, function(cfg){
-					    example_available = cfg ;
-					    app._data.example_available = example_available ;
-					    resolve('Example list loaded.') ;
-					});
+			    // load the associate example list
+			    $.getJSON(set[i].url, function(cfg){
+				    example_available = cfg ;
+				    app._data.example_available = example_available ;
+				    resolve('Example list loaded.') ;
+			    });
 
-                                        return ;
-				}
-			  }
+	                    return ;
+			}
+		  }
 
-			  reject('Unavailable example list.') ;
-		      });
-               }) ;
-      },
-
-      /*Load a selected example*/
-      load_example(url)
-      {
-         this.$root.$emit('bv::hide::modal', 'examples', '#closeExample');
-
-         $.get(url, function(data) {
-		        code_assembly = data ;
-                        textarea_assembly_editor.setValue(code_assembly) ;
-		        show_notification(' The selected example has been loaded correctly', 'success') ;
-		    });
-      },
-
-       /*Load a selected example and compile*/
-      load_example_init(url)
-      {
-         this.$root.$emit('bv::hide::modal', 'examples2', '#closeExample');
-
-         $.get(url, function(data) {
-	 	        code_assembly = data ;
-		        app.assembly_compiler(code_assembly) ;
-		        show_notification(' The selected example has been loaded correctly', 'success') ;
-	 	    });
+		  reject('Unavailable example list.') ;
+		});
+             }) ;
       },
 
       /*Save a binary in a local file*/
@@ -3227,236 +3028,20 @@ try
       /*Simulator*/
 
       /*Detects the browser being used*/
-      detectNavigator(){
+      detectBrowser(){
         if(navigator.appVersion.indexOf("Mac")!=-1) {
-          this.navigator = "Mac";
+          this.browser = "Mac";
           return;
         }
 
         if (navigator.userAgent.search("Chrome") >= 0) {
-          this.navigator = "Chrome";
+          this.browser = "Chrome";
         }
         else if (navigator.userAgent.search("Firefox") >= 0) {
-          this.navigator = "Firefox";
+          this.browser = "Firefox";
         }
         else if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
-          this.navigator = "Chrome";
-        }
-      },
-
-      /*Change bits of calculator*/
-      changeBitsCalculator(index){
-        if(index == 0){
-          this.calculator.bits = 32;
-          this.calculator.variant32 = "primary";
-          this.calculator.variant64 = "outline-primary";
-          this.calculator.lengthHexadecimal = 8;
-          this.calculator.lengthSign = 1;
-          this.calculator.lengthExponent = 8;
-          this.calculator.lengthMantissa = 23;
-        }
-        if(index == 1){
-          this.calculator.bits = 64;
-          this.calculator.variant64 = "primary";
-          this.calculator.variant32 = "outline-primary";
-          this.calculator.lengthHexadecimal = 16;
-          this.calculator.lengthSign = 1;
-          this.calculator.lengthExponent = 11;
-          this.calculator.lengthMantissa = 52;
-        }
-        this.calculator.hexadecimal = "";
-        this.calculator.sign = "";
-        this.calculator.exponent = "";
-        this.calculator.mantissa = "";
-        this.calculator.decimal = "";
-        this.calculator.sign = "";
-        this.calculator.exponentDec = "";
-        this.calculator.mantissaDec = "";
-      },
-
-      /*Calculator functionality*/
-      calculatorFunct(index){
-        switch(index){
-          case 0:
-            console_log(this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0"));
-            var hex = this.calculator.hexadecimal.padStart((this.calculator.bits/4), "0");
-            var float;
-            var binary;
-
-            if(this.calculator.bits == 32){
-              var re = /[0-9A-Fa-f]{8}/g;
-              if(!re.test(hex)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.sign = "";
-                this.calculator.exponent = "";
-                this.calculator.mantissa = "";
-                this.calculator.exponentDec = "";
-                this.calculator.mantissaDec = 0;
-                this.calculator.decimal = "";
-
-                return;
-              }
-
-              float = this.hex2float("0x" + hex);
-              console_log(this.hex2float("0x" + hex));
-              binary = this.float2bin(float).padStart(this.calculator.bits, "0");
-
-              this.calculator.decimal = float;
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 9);
-              this.calculator.mantissa = binary.substring(9, 32);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-            }
-            if(this.calculator.bits == 64){
-              var re = /[0-9A-Fa-f]{16}/g;
-              if(!re.test(hex)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.sign = "";
-                this.calculator.exponent = "";
-                this.calculator.mantissa = "";
-                this.calculator.exponentDec = "";
-                this.calculator.mantissaDec = 0;
-                this.calculator.decimal = "";
-
-                return;
-              }
-
-              float = this.hex2double("0x"+hex);
-              binary = this.double2bin(float);
-
-              this.calculator.decimal = float;
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 12);
-              this.calculator.mantissa = binary.substring(12, 64);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-            }
-
-            break;
-          case 1:
-            if(this.calculator.bits == 32){
-              this.calculator.sign = this.calculator.sign.padStart(1, "0");
-              this.calculator.exponent = this.calculator.exponent.padStart(8, "0");
-              this.calculator.mantissa = this.calculator.mantissa.padStart(23, "0");
-
-              var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-              console_log(binary);
-
-              var re = /[0-1]{32}/g;
-              if(!re.test(binary)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.hexadecimal = "";
-                this.calculator.decimal = "";
-                this.calculator.exponentDec = "";
-                this.calculator.mantissaDec = 0;
-                return;
-              }
-
-              float = this.hex2float("0x" + this.bin2hex(binary));
-              hexadecimal = this.bin2hex(binary);
-
-              this.calculator.decimal = float;
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-            }
-            if(this.calculator.bits == 64){
-              this.calculator.sign = this.calculator.sign.padStart(1, "0");
-              this.calculator.exponent = this.calculator.exponent.padStart(11, "0");
-              this.calculator.mantissa = this.calculator.mantissa.padStart(52, "0");
-
-              var binary = this.calculator.sign + this.calculator.exponent + this.calculator.mantissa;
-
-              var re = /[0-1]{64}/g;
-              if(!re.test(binary)){
-                show_notification('Character not allowed', 'danger') ;
-
-                this.calculator.hexadecimal = "";
-                this.calculator.decimal = "";
-                this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-                this.calculator.mantissaDec = 0;
-
-                var j = 0;
-                for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                  j--;
-                  this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-                }
-                return;
-              }
-
-              double = this.hex2double("0x" + this.bin2hex(binary));
-              hexadecimal = this.bin2hex(binary);
-
-              this.calculator.decimal = double;
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-            }
-
-            break;
-          case 2:
-            var float = parseFloat(this.calculator.decimal, 10);
-            var binary;
-            var hexadecimal;
-
-            if(this.calculator.bits == 32){
-              hexadecimal = this.bin2hex(this.float2bin(float));
-              binary = this.float2bin(float);
-
-              console_log(hexadecimal);
-
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 9);
-              this.calculator.mantissa = binary.substring(9, 32);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-            }
-
-            if(this.calculator.bits == 64){
-              hexadecimal = this.bin2hex(this.double2bin(float));
-              binary = this.double2bin(float);
-
-              this.calculator.hexadecimal = hexadecimal.padStart((this.calculator.bits/4), "0");
-              this.calculator.sign = binary.substring(0, 1);
-              this.calculator.exponent = binary.substring(1, 12);
-              this.calculator.mantissa = binary.substring(12, 64);
-              this.calculator.exponentDec = parseInt(this.bin2hex(this.calculator.exponent), 16);
-              this.calculator.mantissaDec = 0;
-
-              var j = 0;
-              for (var i = 0; i < this.calculator.mantissa.length; i++) {
-                j--;
-                this.calculator.mantissaDec = this.calculator.mantissaDec + (parseInt(this.calculator.mantissa.charAt(i)) * Math.pow(2, j))
-              }
-            }
-            break;
+          this.browser = "Chrome";
         }
       },
 
@@ -3511,11 +3096,19 @@ try
           }
         }
         this.newValue = '';
+
+        /* Google Analytics */
+	  creator_ga('send', 'event', 'data', 'data.change', 'data.change.register_value');
+	  creator_ga('send', 'event', 'data', 'data.change', 'data.change.register_value_' + elem);
       },
 
       /*Execute one instruction*/
       executeInstruction ( )
       {
+
+      	 /* Google Analytics */
+	 creator_ga('send', 'event', 'execute', 'execute.instruction', 'execute.instruction');
+
          var ret = executeInstruction();
          // console.log(JSON.stringify(ret,2,null));
 
@@ -3567,21 +3160,27 @@ try
       /*Execute all program*/
       executeProgram ( but )
       {
+        /* Google Analytics */
+	creator_ga('send', 'event', 'execute', 'execute.run', 'execute.run');
+
         app._data.runExecution = true;
         app._data.runExecution = false;
         runProgram=true;
 
-        if (instructions.length == 0){
+        if (instructions.length == 0)
+        {
             show_notification('No instructions in memory', 'danger') ;
             runProgram=false;
             return;
         }
-        if (executionIndex < -1){
+        if (executionIndex < -1)
+        {
             show_notification('The program has finished', 'danger') ;
             runProgram=false;
             return;
         }
-        if (executionIndex == -1){
+        if (executionIndex == -1)
+        {
             show_notification('The program has finished with errors', 'danger') ;
             runProgram=false;
             return;
@@ -3651,15 +3250,23 @@ try
       },
 
       /*Exception Notification*/
-      exception(error){
-        show_notification("There is been an exception. Error description: '" + error, 'danger') ;
-        instructions[executionIndex]._rowVariant = 'danger';
-        executionIndex = -1;
-        return;
+      exception(error)
+      {
+         show_notification("There is been an exception. Error description: '" + error, 'danger') ;
+         instructions[executionIndex]._rowVariant = 'danger';
+         executionIndex = -1;
+
+         /* Google Analytics */
+	       creator_ga('send', 'event', 'execute', 'execute.exception', 'execute.exception.' + error);
+
+         return;
       },
 
-      /*Reset execution*/
-      reset(reset_graphic){
+      /* Reset execution */
+      reset ( reset_graphic )
+      {
+      	/* Google Analytics */
+        creator_ga('send', 'event', 'execute', 'execute.reset', 'execute.reset');
 
         show_loading();
         setTimeout(function() {
@@ -3683,8 +3290,6 @@ try
                    instructions[i]._rowVariant = 'success' ;
                }
           }
-
-          app._data.unallocated_memory = unallocated_memory ;
 
           /*Auto-scroll*/
           if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
@@ -3710,24 +3315,17 @@ try
 
       },
 
-      /*Enter a breakpoint*/
-      breakPoint(record, index){
-        for (var i = 0; i < instructions.length; i++) {
-          if(instructions[i].Address == record.Address){
-            index = i;
-            break;
-          }
-        }
 
-        if(instructions[index].Break == null){
-          instructions[index].Break = true;
-          app._data.instructions[index].Break = true;
-        }
-        else if(instructions[index].Break == true){
-          instructions[index].Break = null;
-          app._data.instructions[index].Break = null;
-        }
-      },
+
+
+
+
+
+
+
+
+
+
 
       /*Console mutex*/
       consoleEnter(){
@@ -3735,12 +3333,30 @@ try
           consoleMutex = true;
         }
       },
-
       /*Empty keyboard and display*/
       consoleClear(){
         this.keyboard = "";
         this.display = "";
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Convert hexadecimal number to floating point number*/
       hex2float ( hexvalue ){
@@ -3880,80 +3496,59 @@ try
         return ret;
       },
 
-
-      /*Filter table instructions*/
-      filter(row, filter){
-        if(row.hide == true){
-          return false;
-        }
-        else{
-          return true;
-        }
-      },
-
       /*Popover functions*/
       popoverId(i){
         return 'popoverValueContent' + i;
       },
 
-      closePopover(){
+      closePopover(){ //TODO: remove when all components are created
         this.$root.$emit('bv::hide::popover')
       },
 
-      /*Show integer registers*/
-      /*showIntReg(){
-        app._data.register_type = 'integer';
-        app._data.nameTabReg = "Decimal";
-        app._data.nameReg = 'INT Registers';
-        app._data.data_mode = "registers";
-        app.$forceUpdate();
-      },*/
 
-      /*Show floating point registers*/
-      /*showFpReg(){
-        app._data.register_type = 'floating point';
-        app._data.nameTabReg = "Real";
-        app._data.nameReg = 'FP Registers';
-        app._data.data_mode = "registers";
-        app.$forceUpdate();
-      },*/
 
+      //TODO: delete when all dependences are remove
       change_data_view(e, type){
         app._data.data_mode = e;
 
         if(e == "registers"){
           if(type == "int"){
             app._data.register_type = 'integer';
-            app._data.nameTabReg = "Decimal";
-            app._data.nameReg = 'INT Registers';
-            app._data.regType = 'int';
+            app._data.name_tab_Reg = "Decimal";
+            app._data.name_reg = 'INT Registers';
+            app._data.reg_type = 'int';
           }
           else if(type == "fp"){
             app._data.register_type = 'floating point';
-            app._data.nameTabReg = "Real";
-            app._data.nameReg = 'FP Registers';
-            app._data.regType = 'fp';
+            app._data.name_tab_Reg = "Real";
+            app._data.name_reg = 'FP Registers';
+            app._data.reg_type = 'fp';
           }
         }
         if(e == "memory"){
         	app._data.data_mode = e;
-          /*app._data.data_mode = "stats";
-          setTimeout(function(){
-            app.$forceUpdate();
-            app._data.data_mode = e;
-          }, 10);*/
         }
 
         app.$forceUpdate();
+
+          /* Google Analytics */
+	        creator_ga('send', 'event', 'data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
-      select_space_type(record, index){
-        if(record.type == "space" && (memory[memory_hash[0]][index].Binary[0].Tag != null) || memory[memory_hash[0]][index].Binary[1].Tag != null || memory[memory_hash[0]][index].Binary[2].Tag != null || memory[memory_hash[0]][index].Binary[3].Tag != null){
-        	app._data.row_index = index;
-        	this.$refs['space_modal'].show();
-        }
-      },
 
+
+
+
+
+
+
+
+
+
+
+
+
+      //TODO: try to include in a component
       change_space_view(){
       	if(app._data.selected_space_view == "sig_int"){
     			var hex = "";
@@ -4019,15 +3614,17 @@ try
       	}
       },
 
+      //TODO: try to include in a component
       hide_space_modal(){
         app._data.selected_space_view = null;
       },
 
-      select_stack_type(record, index){
-        app._data.row_index = index;
-        this.$refs['stack_modal'].show();
+      //TODO: try to include in a component
+      hide_space_modal(){
+        app._data.selected_space_view = null;
       },
 
+      //TODO: try to include in a component
       change_stack_view(){
         if(app._data.selected_stack_view == "sig_int"){
           var hex = "";
@@ -4059,13 +3656,23 @@ try
         }
       },
 
+      //TODO: try to include in a component
       hide_stack_modal(){
         app._data.selected_stack_view = null;
       },
 
-      hide_space_modal(){
-      	app._data.selected_space_view = null;
-      },
+
+
+
+
+
+
+
+
+
+
+
+      
 
       change_popover_register(e){
         this.$root.$emit('bv::hide::popover');
@@ -4187,10 +3794,13 @@ try
 }
 catch(e)
 {
-   show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + e, 'danger') ;
+  show_notification('An error has ocurred, the simulator is going to restart.  \n Error: ' + e, 'danger') ;
 
-   setTimeout(function(){
-     location.reload(true)
-   }, 3000);
+  /* Google Analytics */
+  creator_ga('send', 'event', 'creator', 'creator.exception', 'creator.exception.' + e);
+
+  setTimeout(function(){
+    location.reload(true)
+  }, 3000);
 }
 
