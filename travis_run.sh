@@ -7,7 +7,7 @@
 
 echo ""
 echo " MIPS: examples"
-MIPS_TEST="2 3 4 5 6 7 8 11 12 13"
+MIPS_TEST="2 3 4 5 6 7 8 11 12 20 21"
 for I in $MIPS_TEST;
 do
    echo -n " * ./travis/MIPS/correct/example$I: "
@@ -40,7 +40,7 @@ done
 
 echo ""
 echo " RISC-V:"
-RV_TEST="1"
+RV_TEST="2 3 4 5 6 7 8 11 12"
 for I in $RV_TEST;
 do
   echo -n " * ./travis/riscv/correct/example$I: "
