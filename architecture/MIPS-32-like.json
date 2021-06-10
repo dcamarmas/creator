@@ -148,7 +148,8 @@
       "elements": [
         {
           "name": [
-            "zero"
+            "zero",
+            "0"
           ],
           "nbits": "32",
           "value": "0",
@@ -159,7 +160,8 @@
         },
         {
           "name": [
-            "at"
+            "at",
+            "1"
           ],
           "nbits": "32",
           "value": "0",
@@ -171,7 +173,8 @@
         },
         {
           "name": [
-            "v0"
+            "v0",
+            "2"
           ],
           "nbits": "32",
           "value": "0",
@@ -183,7 +186,8 @@
         },
         {
           "name": [
-            "v1"
+            "v1",
+            "3"
           ],
           "nbits": "32",
           "value": "0",
@@ -195,7 +199,8 @@
         },
         {
           "name": [
-            "a0"
+            "a0",
+            "4"
           ],
           "nbits": "32",
           "value": "0",
@@ -207,7 +212,8 @@
         },
         {
           "name": [
-            "a1"
+            "a1",
+            "5"
           ],
           "nbits": "32",
           "value": "0",
@@ -219,7 +225,8 @@
         },
         {
           "name": [
-            "a2"
+            "a2",
+            "6"
           ],
           "nbits": "32",
           "value": "0",
@@ -231,7 +238,8 @@
         },
         {
           "name": [
-            "a3"
+            "a3",
+            "7"
           ],
           "nbits": "32",
           "value": "0",
@@ -243,7 +251,8 @@
         },
         {
           "name": [
-            "t0"
+            "t0",
+            "8"
           ],
           "nbits": "32",
           "value": "0",
@@ -255,7 +264,8 @@
         },
         {
           "name": [
-            "t1"
+            "t1",
+            "9"
           ],
           "nbits": "32",
           "value": "0",
@@ -267,7 +277,8 @@
         },
         {
           "name": [
-            "t2"
+            "t2",
+            "10"
           ],
           "nbits": "32",
           "value": "0",
@@ -279,7 +290,8 @@
         },
         {
           "name": [
-            "t3"
+            "t3",
+            "11"
           ],
           "nbits": "32",
           "value": "0",
@@ -291,7 +303,8 @@
         },
         {
           "name": [
-            "t4"
+            "t4",
+            "12"
           ],
           "nbits": "32",
           "value": "0",
@@ -303,7 +316,8 @@
         },
         {
           "name": [
-            "t5"
+            "t5",
+            "13"
           ],
           "nbits": "32",
           "value": "0",
@@ -315,7 +329,8 @@
         },
         {
           "name": [
-            "t6"
+            "t6",
+            "14"
           ],
           "nbits": "32",
           "value": "0",
@@ -327,7 +342,8 @@
         },
         {
           "name": [
-            "t7"
+            "t7",
+            "15"
           ],
           "nbits": "32",
           "value": "0",
@@ -339,7 +355,8 @@
         },
         {
           "name": [
-            "s0"
+            "s0",
+            "16"
           ],
           "nbits": "32",
           "value": "0",
@@ -352,7 +369,8 @@
         },
         {
           "name": [
-            "s1"
+            "s1",
+            "17"
           ],
           "nbits": "32",
           "value": "0",
@@ -365,7 +383,8 @@
         },
         {
           "name": [
-            "s2"
+            "s2",
+            "18"
           ],
           "nbits": "32",
           "value": "0",
@@ -378,7 +397,8 @@
         },
         {
           "name": [
-            "s3"
+            "s3",
+            "19"
           ],
           "nbits": "32",
           "value": "0",
@@ -391,7 +411,8 @@
         },
         {
           "name": [
-            "s4"
+            "s4",
+            "20"
           ],
           "nbits": "32",
           "value": "0",
@@ -404,7 +425,8 @@
         },
         {
           "name": [
-            "s5"
+            "s5",
+            "21"
           ],
           "nbits": "32",
           "value": "0",
@@ -417,7 +439,8 @@
         },
         {
           "name": [
-            "s6"
+            "s6",
+            "22"
           ],
           "nbits": "32",
           "value": "0",
@@ -430,7 +453,8 @@
         },
         {
           "name": [
-            "s7"
+            "s7",
+            "23"
           ],
           "nbits": "32",
           "value": "0",
@@ -443,7 +467,8 @@
         },
         {
           "name": [
-            "t8"
+            "t8",
+            "24"
           ],
           "nbits": "32",
           "value": "0",
@@ -455,7 +480,8 @@
         },
         {
           "name": [
-            "t9"
+            "t9",
+            "25"
           ],
           "nbits": "32",
           "value": "0",
@@ -467,7 +493,8 @@
         },
         {
           "name": [
-            "k0"
+            "k0",
+            "26"
           ],
           "nbits": "32",
           "value": "0",
@@ -479,7 +506,8 @@
         },
         {
           "name": [
-            "k1"
+            "k1",
+            "27"
           ],
           "nbits": "32",
           "value": "0",
@@ -491,7 +519,8 @@
         },
         {
           "name": [
-            "gp"
+            "gp",
+            "28"
           ],
           "nbits": "32",
           "value": "0",
@@ -505,7 +534,8 @@
         },
         {
           "name": [
-            "sp"
+            "sp",
+            "29"
           ],
           "nbits": "32",
           "value": "268435452",
@@ -519,7 +549,8 @@
         },
         {
           "name": [
-            "fp"
+            "fp",
+            "30"
           ],
           "nbits": "32",
           "value": "0",
@@ -533,7 +564,8 @@
         },
         {
           "name": [
-            "ra"
+            "ra",
+            "31"
           ],
           "nbits": "32",
           "value": "4294967295",
@@ -2592,7 +2624,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC;\n PC=rs;\n check_stack_limit(rd.name; sp.name; rd);\n passing_convention_begin(rs); draw_stack_begin(rs);"
+      "definition": "rd=PC;\n PC=rs;\n passing_convention_begin(rs); draw_stack_begin(rs);"
     },
     {
       "name": "jr",
@@ -2667,7 +2699,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\npassing_convention_readMem (val+reg2, 'reg1.name', 'b');"
+      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\npassing_convention_readMem (val+reg2, 'reg1', 'b');"
     },
     {
       "name": "lbu",
@@ -2706,7 +2738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.b.[base+off] >>> 0);\npassing_convention_readMem (base+off, 'rt.name', 'b');"
+      "definition": "rt=(MP.b.[base+off] >>> 0);\npassing_convention_readMem (base+off, 'rt', 'b');"
     },
     {
       "name": "lh",
@@ -2745,7 +2777,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\npassing_convention_readMem (val+reg2, 'reg1.name', 'h');"
+      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\npassing_convention_readMem (val+reg2, 'reg1', 'h');"
     },
     {
       "name": "lhu",
@@ -2784,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.h.[base+off] >>> 0);\npassing_convention_readMem (base+off,'rt.name', 'h');"
+      "definition": "rt=(MP.h.[base+off] >>> 0);\npassing_convention_readMem (base+off,'rt', 'h');"
     },
     {
       "name": "lui",
@@ -2856,7 +2888,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = mp_read ( val+reg2, 'w' );\npassing_convention_readMem(val+reg2, 'reg1.name', 'w');"
+      "definition": "reg1 = mp_read ( val+reg2, 'w' );\npassing_convention_readMem(val+reg2, 'reg1', 'w');"
     },
     {
       "name": "lwc1",
@@ -2895,7 +2927,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = MP.w.[base+off];\nft = (new Float32Array(buf))[0];\npassing_convention_readMem (base+off, 'ft.name', 'w');"
+      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = MP.w.[base+off];\nft = (new Float32Array(buf))[0];\npassing_convention_readMem (base+off, 'ft', 'w');"
     },
     {
       "name": "mfc1",
@@ -3874,7 +3906,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.b.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt.name', 'b');"
+      "definition": "MP.b.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt', 'b');"
     },
     {
       "name": "sh",
@@ -3913,7 +3945,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.h.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt.name', 'h');"
+      "definition": "MP.h.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt', 'h');"
     },
     {
       "name": "sll",
@@ -4559,7 +4591,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "mp_write ( val+reg2, reg1, 'w' );\npassing_convention_writeMem(val+reg2, 'reg1.name', 'w');"
+      "definition": "mp_write ( val+reg2, reg1, 'w' );\npassing_convention_writeMem(val+reg2, 'reg1', 'w');"
     },
     {
       "name": "swc1",
@@ -4598,7 +4630,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = ft;\nMP.w.[base+off] = (new Uint32Array(buf))[0];\npassing_convention_writeMem (base+off, 'ft.name', 'w');"
+      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = ft;\nMP.w.[base+off] = (new Uint32Array(buf))[0];\npassing_convention_writeMem (base+off, 'ft', 'w');"
     },
     {
       "name": "sdc1",
@@ -4637,7 +4669,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);\npassing_convention_writeMem (base+off, 'ft.name', 'd');"
+      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);\npassing_convention_writeMem (base+off, 'ft', 'd');"
     },
     {
       "name": "xor",
@@ -4750,7 +4782,7 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(v0){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
+      "definition": "switch(v0){\ncase 1:\ncapi_syscall('print_int','a0');\nbreak;\ncase 2:\n\ncapi_syscall('print_float','f12');\nbreak;\ncase 3:\ncapi_syscall('print_double','FP12');\nbreak;\ncase 4:\ncapi_syscall('print_string','a0');\nbreak;\ncase 5:\ncapi_syscall('read_int','v0');\nbreak;\ncase 6:\ncapi_syscall('read_float','f0');\nbreak;\ncase 7:\ncapi_syscall('read_double','FP0');\nbreak;\ncase 8:\ncapi_syscall('read_string', 'a0', 'a1');\nbreak;\ncase 9:\ncapi_syscall('sbrk','a0', 'v0');\nbreak;\ncase 10:\ncapi_syscall('exit');\nbreak;\ncase 11:\ncapi_syscall('print_char','a0');\nbreak;\ncase 12:\ncapi_syscall('read_char','v0');\nbreak;\n}"
     },
     {
       "name": "divu",
@@ -4882,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\npassing_convention_readMem (base+off, 'ft.name', 'd');"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\npassing_convention_readMem (base+off, 'ft', 'd');"
     },
     {
       "name": "bc1f",
