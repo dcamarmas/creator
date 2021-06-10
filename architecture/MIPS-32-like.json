@@ -2927,7 +2927,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = MP.w.[base+off];\nft = (new Float32Array(buf))[0];\ncapi_passing_convention_readMem (base+off, 'ft', 'w');"
+      "definition": "ft = capi_uint2float32(MP.w.[base+off]);\ncapi_passing_convention_readMem(base+off, 'ft', 'w');"
     },
     {
       "name": "mfc1",
@@ -2967,7 +2967,7 @@
           "stopbit": 11
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = fs;\nrt = (new Uint32Array(buf))[0];"
+      "definition": "rt = capi_float322uint(fs);\n"
     },
     {
       "name": "mfhi",
@@ -3261,7 +3261,7 @@
           "stopbit": 11
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = rt;\nfs = (new Float32Array(buf))[0];"
+      "definition": "var fs = capi_uint2float32(rt);\n"
     },
     {
       "name": "mthi",
@@ -4630,7 +4630,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = ft;\nMP.w.[base+off] = (new Uint32Array(buf))[0];\ncapi_passing_convention_writeMem (base+off, 'ft', 'w');"
+      "definition": "MP.w.[base+off] = capi_float322uint(ft);\ncapi_passing_convention_writeMem(base+off, 'ft', 'w');"
     },
     {
       "name": "sdc1",
@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\ncapi_passing_convention_readMem (base+off, 'ft', 'd');"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\ncapi_passing_convention_readMem(base+off, 'ft', 'd');"
     },
     {
       "name": "bc1f",

@@ -983,6 +983,25 @@ function capi_drawstack_end ()
     else console.log("WARNING: " + ret.msg) ;
 }
 
+
+//
+// Convert
+//
+
+function capi_uint2float32 ( value )
+{
+    var buf = new ArrayBuffer(4) ;
+    (new Uint32Array(buf))[0] = value ;
+    return (new Float32Array(buf))[0] ;
+}
+
+function capi_float322uint ( value )
+{
+    var buf = new ArrayBuffer(4) ;
+    (new Float32Array(buf))[0] = value ;
+    return (new Uint32Array(buf))[0];
+}
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
