@@ -728,13 +728,12 @@ function type2size ( type )
 // memory access
 //
 
-
 /*
  * Name:        mp_write - Write value into a memory address
  * Sypnosis:    mp_write (destination_address, value2store, byte_or_half_or_word)
  * Description: similar to memmove/memcpy, store a value into an address
  */
-function mp_write ( addr, value, type )
+function capi_mem_write ( addr, value, type )
 {
     var size = 1 ;
     var msg  = "The memory must be align";
@@ -760,7 +759,7 @@ function mp_write ( addr, value, type )
  * Sypnosis:    mp_read (source_address, byte_or_half_or_word)
  * Description: read a value from an address
  */
-function mp_read ( addr, type )
+function capi_mem_read ( addr, type )
 {
     var size = 1 ;
     var msg = "The memory must be align";
@@ -785,67 +784,68 @@ function mp_read ( addr, type )
 // Syscall
 //
 
-
-//function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_time)
-
+var arr_pr1 = [ "print_int", "print_float", "print_double", "print_string", 
+                "read_int" , "read_float" , "read_double" ];
 
 /*
- * Name:        
- * Sypnosis:    
- * Description: 
+ * Name:        capi_syscall - request system call
+ * Sypnosis:    capi_syscall (action, value1 [, value2])
+ * Description: request a system call
  */
 function capi_syscall ( action, value1, value2 )
 {
-    var arr_pr = ["print_int", "print_float", "print_double", "print_string", 
-                  "read_int" , "read_float" , "read_double"];
+    if (action == "exit") {
+        syscall('exit', null, null, null, null);
+        return ;
+    }
 
-    if (arr_pr.includes(action)){
+    if (arr_pr1.includes(action))
+    {
         var compIndex, elemIndex;
-        var match = -1;
+        var match = 0;
 
-        for (var i = 0; i < architecture.components.length; i++){
-            for (var j = 0; j < architecture.components[i].elements.length; j++){
-                if(architecture.components[i].elements[j].name.includes(value1) != false){
-                    compIndex = i;
-                    elemIndex = j;
-                    match = 1;
-                }
-            }
+        for (var i = 0; i < architecture.components.length; i++) {
+             for (var j = 0; j < architecture.components[i].elements.length; j++) {
+                  if (architecture.components[i].elements[j].name.includes(value1) != false) {
+                      compIndex = i;
+                      elemIndex = j;
+                      match = 1;
+                  }
+             }
         }
 
-        if (match == -1) {
-            throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        if (match == 0) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null); //TODO: not found
             return;
         }
 
+        // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
         syscall(action, compIndex, elemIndex, null, null, true);
     }
 
-    if (action == "exit") {
-        syscall('exit', null, null, null, null);
-    }
-
-    if (action == "read_string" || action == "sbrk") {
+    if (action == "read_string" || action == "sbrk")
+    {
         var compIndex, elemIndex, compIndex2, elemIndex2;
         var match = 0;
-        for (var i = 0; i < architecture.components.length; i++){
-            for (var j = 0; j < architecture.components[i].elements.length; j++){
-                if(architecture.components[i].elements[j].name.includes(value1) != false){
-                    compIndex = i;
-                    elemIndex = j;
-                    match++;
-                }
-            }
+
+        for (var i = 0; i < architecture.components.length; i++) {
+             for (var j = 0; j < architecture.components[i].elements.length; j++) {
+                  if (architecture.components[i].elements[j].name.includes(value1) != false) {
+                      compIndex = i;
+                      elemIndex = j;
+                      match++;
+                  }
+             }
         }
 
-        for (var i = 0; i < architecture.components.length; i++){
-            for (var j = 0; j < architecture.components[i].elements.length; j++){
-                if(architecture.components[i].elements[j].name.includes(value2) != false){
-                    compIndex2 = i;
-                    elemIndex2 = j;
-                    match++;
-                }
-            }
+        for (var i = 0; i < architecture.components.length; i++) {
+             for (var j = 0; j < architecture.components[i].elements.length; j++) {
+                  if (architecture.components[i].elements[j].name.includes(value2) != false) {
+                      compIndex2 = i;
+                      elemIndex2 = j;
+                      match++;
+                  }
+             }
         }
 
         if (match < 2) {
@@ -858,20 +858,11 @@ function capi_syscall ( action, value1, value2 )
 }
 
 
-
-
-
-
-
-
-
-
-
 //
 // check stack
 //
 
-function passing_convention_begin ( addr )
+function capi_passing_convention_begin ( addr )
 {
     var function_name = "" ;
 
@@ -887,7 +878,7 @@ function passing_convention_begin ( addr )
     creator_callstack_enter(function_name) ;
 }
 
-function passing_convention_end ()
+function capi_passing_convention_end ()
 {
     // 1.- callstack_leave
     var ret = creator_callstack_leave();
@@ -907,7 +898,7 @@ function passing_convention_end ()
     else console.log(ret.msg);
 }
 
-function passing_convention_writeMem ( addr, reg_name, type )
+function capi_passing_convention_writeMem ( addr, reg_name, type )
 {
 
     // 1) move the associated finite state machine...
@@ -924,7 +915,7 @@ function passing_convention_writeMem ( addr, reg_name, type )
     }
 }
 
-function passing_convention_readMem ( addr, reg_name, type )
+function capi_passing_convention_readMem ( addr, reg_name, type )
 {
 
     // 1) move the associated finite state machine...
@@ -943,10 +934,10 @@ function passing_convention_readMem ( addr, reg_name, type )
 
 
 //
-// draw stack
+// Draw stack
 //
 
-function draw_stack_begin ( addr )
+function capi_drawstack_begin ( addr )
 {
     var function_name = "" ;
 
@@ -962,7 +953,7 @@ function draw_stack_begin ( addr )
     track_stack_enter(function_name) ;
 }
 
-function draw_stack_end ()
+function capi_drawstack_end ()
 {
     // track leave
     var ret = track_stack_leave() ;
@@ -5509,6 +5500,7 @@ function executeInstruction ( )
 					while(auxDef.search(re1) != -1 || auxDef.search(re2) != -1 || auxDef.search(re3) != -1 && (auxDef.search(re1) != prevSearchIndex || auxDef.search(re2) != prevSearchIndex || auxDef.search(re3) != prevSearchIndex)){
 						console_log(signatureRawParts[i])
 						if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
+							//TODO: delete R reg
 							/*re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
 							if(instructionExecParts[i].search(re) != -1){
 								var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
@@ -5536,30 +5528,30 @@ function executeInstruction ( )
 								}
 							}
 							else{*/
-								var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
+							var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
 
-								if (auxDef.search(re) != -1){
-									match = re.exec(auxDef);
-									console_log(match)
-									auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
-								}
+							if (auxDef.search(re) != -1){
+								match = re.exec(auxDef);
+								console_log(match)
+								auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
+							}
 
-								var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
+							var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
 
-								if (auxDef.search(re) != -1){
-									match = re.exec(auxDef);
-									console_log(match)
-									auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
-								}
+							if (auxDef.search(re) != -1){
+								match = re.exec(auxDef);
+								console_log(match)
+								auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
+							}
 
-								var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
+							var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
 
-								if (auxDef.search(re) != -1){
-									match = re.exec(auxDef);
-									console_log(match)
-									auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
-								}
-							//}
+							if (auxDef.search(re) != -1){
+								match = re.exec(auxDef);
+								console_log(match)
+								auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
+							}
+							//} //TODO: delete R reg
 						}
 						else{
 							var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
