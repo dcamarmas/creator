@@ -2734,13 +2734,14 @@ function instruction_compiler ( instruction, userInstruction, label, line,
 
             console_log(token);
 
-            var id = -1;
+            //TODO: Delete reg R
+            /*var id = -1;
             re = new RegExp("[0-9]+");
             if(token.search(re) != -1){
               re = new RegExp("(.*?)$");
               match = re.exec(token);
               id = match[1];
-            }
+            }*/
 
             var validReg = false;
             var regNum = 0;
@@ -2775,7 +2776,8 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
                     }
-                    else if(id == regNum){
+                    //TODO: Delete reg R
+                    /*else if(id == regNum){
                       validReg = true;
 
                       fieldsLength = architecture.instructions[i].fields[a].startbit - architecture.instructions[i].fields[a].stopbit + 1;
@@ -2789,7 +2791,7 @@ function instruction_compiler ( instruction, userInstruction, label, line,
                       //re = RegExp("[fF][0-9]+");
                       re = RegExp("Field[0-9]+");
                       instruction = instruction.replace(re, token);
-                    }
+                    }*/
                     else if(z == architecture_hash.length-1 && w == architecture.components[z].elements.length-1 && validReg == false){
                       return packCompileError('m4', token, 'error', "danger") ;
                     }

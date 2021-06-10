@@ -106,6 +106,91 @@ function mp_read ( addr, type )
     return readMemory(addr, type);
 }
 
+//
+// Syscall
+//
+
+
+//function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_time)
+
+
+/*
+ * Name:        
+ * Sypnosis:    
+ * Description: 
+ */
+function capi_syscall ( action, value1, value2 )
+{
+    var arr_pr = ["print_int", "print_float", "print_double", "print_string", 
+                  "read_int" , "read_float" , "read_double"];
+
+    if (arr_pr.includes(action)){
+        var compIndex, elemIndex;
+        var match = -1;
+
+        for (var i = 0; i < architecture.components.length; i++){
+            for (var j = 0; j < architecture.components[i].elements.length; j++){
+                if(architecture.components[i].elements[j].name.includes(value1) != false){
+                    compIndex = i;
+                    elemIndex = j;
+                    match = 1;
+                }
+            }
+        }
+
+        if (match == -1) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null); //TODO: not found
+            return;
+        }
+
+        syscall(action, compIndex, elemIndex, null, null, true);
+    }
+
+    if (action == "exit") {
+        syscall('exit', null, null, null, null);
+    }
+
+    if (action == "read_string" || action == "sbrk") {
+        var compIndex, elemIndex, compIndex2, elemIndex2;
+        var match = 0;
+        for (var i = 0; i < architecture.components.length; i++){
+            for (var j = 0; j < architecture.components[i].elements.length; j++){
+                if(architecture.components[i].elements[j].name.includes(value1) != false){
+                    compIndex = i;
+                    elemIndex = j;
+                    match++;
+                }
+            }
+        }
+
+        for (var i = 0; i < architecture.components.length; i++){
+            for (var j = 0; j < architecture.components[i].elements.length; j++){
+                if(architecture.components[i].elements[j].name.includes(value2) != false){
+                    compIndex2 = i;
+                    elemIndex2 = j;
+                    match++;
+                }
+            }
+        }
+
+        if (match < 2) {
+            throw packExecute(true, "capi_syscall: register " + value1 + " or " + value2 + " not found", 'danger', null);
+            return;
+        }
+
+        syscall(action, compIndex, elemIndex, compIndex2, elemIndex2, true);
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 //
 // check stack
@@ -143,7 +228,7 @@ function passing_convention_end ()
 
     // User notification
     if (typeof window !== "undefined")
-         show_notification(ret.msg, 'warning');
+         show_notification(ret.msg, 'danger');
     else console.log(ret.msg);
 }
 

@@ -670,7 +670,7 @@ try
 				         show_notification('The selected architecture has been loaded correctly', 'success') ;
 
 				         /* Google Analytics */
-					       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
+					       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
 
                  return;
              }
@@ -682,7 +682,7 @@ try
 		      show_notification('The selected architecture has been loaded correctly', 'success') ;
 
 		      /* Google Analytics */
-		      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customised');
+		      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
 
 	        }).fail(function() {
 	          hide_loading();
