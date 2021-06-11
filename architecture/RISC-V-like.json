@@ -1229,7 +1229,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC;\n PC=inm;\n draw_stack_begin(inm);",
+      "definition": "rd=PC;\n PC=inm;\n capi_drawstack_begin(inm);",
       "separated": [
         false,
         false,
@@ -1282,7 +1282,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd=PC;\n PC=(rs1+inm)&~1; draw_stack_end((rs1+inm)&~1);",
+      "definition": "rd=PC;\n PC=(rs1+inm)&~1; capi_drawstack_end((rs1+inm)&~1);",
       "separated": [
         false,
         false,
@@ -4426,7 +4426,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var buff = new ArrayBuffer(4);\n(new Uint32Array(buff))[0] = MP.w.[inm+rs2];\nrd = (new Float32Array(buff))[0];",
+      "definition": "rd = capi_uint2float32(MP.w.[inm+rs2]);\n",
       "separated": [
         false,
         false,
@@ -4484,7 +4484,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = rs1;\nMP.w.[inm+rs2] = (new Uint32Array(buf))[0];",
+      "definition": "MP.w.[inm+rs2] = capi_uint2float32(rs1);\n",
       "separated": [
         false,
         true,
