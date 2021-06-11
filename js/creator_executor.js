@@ -234,58 +234,39 @@ function executeInstruction ( )
 					while(auxDef.search(re1) != -1 || auxDef.search(re2) != -1 || auxDef.search(re3) != -1 && (auxDef.search(re1) != prevSearchIndex || auxDef.search(re2) != prevSearchIndex || auxDef.search(re3) != prevSearchIndex)){
 						console_log(signatureRawParts[i])
 						if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
-							//TODO: delete R reg
-							/*re = new RegExp("[0-9]{" + instructionExecParts[i].length + "}");
-							if(instructionExecParts[i].search(re) != -1){
-								var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
 
-								if (auxDef.search(re) != -1){
-									match = re.exec(auxDef);
-									console_log(match)
-									auxDef = auxDef.replace(re, match[1] + "R" + instructionExecParts[i] + match[2]);
-								}
-
-								var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
-
-								if (auxDef.search(re) != -1){
-									match = re.exec(auxDef);
-									console_log(match)
-									auxDef = auxDef.replace(re,"R" + instructionExecParts[i] + match[1]);
-								}
-
-								var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
-
-								if (auxDef.search(re) != -1){
-									match = re.exec(auxDef);
-									console_log(match)
-									auxDef = auxDef.replace(re, match[1] + "R" + instructionExecParts[i]);
+							var register = instructionExecParts[i];
+							for (var j = 0; j < architecture.components.length; j++){
+								for (var z = architecture.components[j].elements.length-1; z >= 0; z--){
+									if (architecture.components[j].elements[z].name.includes(instructionExecParts[i])) {
+										register = architecture.components[j].elements[z].name[0];
+									}
 								}
 							}
-							else{*/
+
 							var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
 
 							if (auxDef.search(re) != -1){
 								match = re.exec(auxDef);
-								console_log(match)
-								auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
+								var clean_name = clean_string(register, 'reg_');
+								auxDef = auxDef.replace(re, match[1] + clean_name + match[2]);
 							}
 
 							var re = new RegExp('^'+signatureRawParts[i]+'([^A-Za-z])');
 
 							if (auxDef.search(re) != -1){
 								match = re.exec(auxDef);
-								console_log(match)
-								auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
+								var clean_name = clean_string(register, 'reg_');
+								auxDef = auxDef.replace(re, clean_name + match[1]);
 							}
 
 							var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'$');
 
 							if (auxDef.search(re) != -1){
 								match = re.exec(auxDef);
-								console_log(match)
-								auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
+								var clean_name = clean_string(register, 'reg_');
+								auxDef = auxDef.replace(re, match[1] + clean_name);
 							}
-							//} //TODO: delete R reg
 						}
 						else{
 							var re = new RegExp('([^A-Za-z])'+signatureRawParts[i]+'([^A-Za-z])');
@@ -293,7 +274,6 @@ function executeInstruction ( )
 							if (auxDef.search(re) != -1){
 								prevSearchIndex = auxDef.search(re);
 								match = re.exec(auxDef);
-								console_log(match)
 								auxDef = auxDef.replace(re, match[1] + instructionExecParts[i] + match[2]);
 							}
 
@@ -302,7 +282,6 @@ function executeInstruction ( )
 							if (auxDef.search(re) != -1){
 								prevSearchIndex = auxDef.search(re);
 								match = re.exec(auxDef);
-								console_log(match)
 								auxDef = auxDef.replace(re, instructionExecParts[i] + match[1]);
 							}
 
@@ -311,7 +290,6 @@ function executeInstruction ( )
 							if (auxDef.search(re) != -1){
 								prevSearchIndex = auxDef.search(re);
 								match = re.exec(auxDef);
-								console_log(match)
 								auxDef = auxDef.replace(re, match[1] + instructionExecParts[i]);
 							}
 						}
@@ -378,14 +356,7 @@ function executeInstruction ( )
 							}
 						}
 					}
-					/*if(architecture.instructions[auxIndex].fields[j].type == "inm-signed"){
-						var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
-						var valueSign = value.charAt(0);
-						var newValue =  value.padStart(32, valueSign) ;
-						newValue = parseInt(newValue, 2) ;
-						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-						auxDef = auxDef.replace(re, newValue >> 0);
-					}*/
+
 					if(architecture.instructions[auxIndex].fields[j].type == "inm-signed"){
 						var value = "";
 						if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
@@ -402,12 +373,7 @@ function executeInstruction ( )
 						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
 						auxDef = auxDef.replace(re, newValue >> 0);
 					}
-					/*if(architecture.instructions[auxIndex].fields[j].type == "inm-unsigned"){
-						var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
-						newValue = parseInt(newValue, 2) ;
-						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-						auxDef = auxDef.replace(re, newValue >> 0);
-					}*/
+
 					if(architecture.instructions[auxIndex].fields[j].type == "inm-unsigned"){
 						var value = "";
 						if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
@@ -422,11 +388,7 @@ function executeInstruction ( )
 						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
 						auxDef = auxDef.replace(re, newValue >> 0);
 					}
-					/*if(architecture.instructions[auxIndex].fields[j].type == "address"){
-						var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
-						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-						auxDef = auxDef.replace(re, parseInt(value, 2));
-					}*/
+
 					if(architecture.instructions[auxIndex].fields[j].type == "address"){
 						var value = "";
 						if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
@@ -440,15 +402,7 @@ function executeInstruction ( )
 						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
 						auxDef = auxDef.replace(re, parseInt(value, 2));
 					}
-					/*if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
-						var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
-						var valueSign = value.charAt(0);
-						var newValue =  value.padStart(32, valueSign) ;
-						newValue = parseInt(newValue, 2) ;
-//danger
-						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-						auxDef = auxDef.replace(re, newValue >> 0);
-					}*/
+
 					if(architecture.instructions[auxIndex].fields[j].type == "offset_words"){
 						var value = "";
 						if(architecture.instructions[auxIndex].separated && architecture.instructions[auxIndex].separated[j] == true){
@@ -462,19 +416,10 @@ function executeInstruction ( )
 						var valueSign = value.charAt(0);
 						var newValue =  value.padStart(32, valueSign) ;
 						newValue = parseInt(newValue, 2) ;
-//danger
 						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
 						auxDef = auxDef.replace(re, newValue >> 0);
 					}
-					/*if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
-						var value = instructionExecParts[0].substring(((architecture.instructions[auxIndex].nwords*31) - architecture.instructions[auxIndex].fields[j].startbit), ((architecture.instructions[auxIndex].nwords*32) - architecture.instructions[auxIndex].fields[j].stopbit))
-						var valueSign = value.charAt(0);
-						var newValue =  value.padStart(32, valueSign) ;
-						newValue = parseInt(newValue, 2) ;
-//danger
-						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
-						auxDef = auxDef.replace(re, newValue >> 0);
-					}*/
+
 					if(architecture.instructions[auxIndex].fields[j].type == "offset_bytes"){
 						var value = "";
 						if(architecture.instructions[auxIndex].separated &&  architecture.instructions[auxIndex].separated[j] == true){
@@ -488,7 +433,6 @@ function executeInstruction ( )
 						var valueSign = value.charAt(0);
 						var newValue =  value.padStart(32, valueSign) ;
 						newValue = parseInt(newValue, 2) ;
-						//danger
 						var re = new RegExp(architecture.instructions[auxIndex].fields[j].name,"g");
 						auxDef = auxDef.replace(re, newValue >> 0);
 					}
@@ -497,31 +441,25 @@ function executeInstruction ( )
 
 			console_log(auxDef);
 
-			/*Divides a double into two parts*/
-			re = /splitDouble\((.*)\)/;
-			while (auxDef.search(re) != -1){
-				var match = re.exec(auxDef);
-				match[1] = match[1].replace(";", ",");
-				auxDef = auxDef.replace(re, "divDouble(" + match [1] + ")");
-			}
-
-			console_log(auxDef);
-
+			/*writeRegister and readRegister*/
 			var readings_description = "";
 			var writings_description = "";
 
 			for (var i = 0; i < architecture.components.length; i++){
 				for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
-					//TODO: pendiente manejar alias y alias numerico (li $1 23)
-					re = new RegExp( "(?:\\W|^)(((" + architecture.components[i].elements[j].name.join('|')+") *=)[^=])", "g");
+
+					var clean_name = clean_string(architecture.components[i].elements[j].name[0], 'reg_');
+					var clean_aliases = architecture.components[i].elements[j].name.map((x)=> clean_string(x, 'reg_')).join('|');
+
+					re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
 					if(auxDef.search(re) != -1){
-							writings_description = writings_description+"\nwriteRegister("+ architecture.components[i].elements[j].name[0] +", "+i+", "+j+");";
+							writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
 					}
 
 
-					re = new RegExp("([^a-zA-Z0-9])(?:" + architecture.components[i].elements[j].name.join('|') + ")");
+					re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
 					if(auxDef.search(re) != -1){
-						readings_description = readings_description + "var " + architecture.components[i].elements[j].name[0] + " = readRegister("+i+" ,"+j+");\n";
+						readings_description = readings_description + "var " + clean_name + " = readRegister("+i+" ,"+j+");\n";
 					}
 
 				}
@@ -1950,19 +1888,6 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
 											break;
 							}
-			}
-
-			/*Divides a double into two parts*/
-			function divDouble(reg, index)
-			{
-				var value = bin2hex(double2bin(reg));
-				console_log(value);
-				if(index == 0){
-					return value.substring(0,8);
-				}
-				if(index == 1) {
-					return value.substring(8,16);
-				}
 			}
 
 			/*Reset execution*/
