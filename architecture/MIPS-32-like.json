@@ -1898,7 +1898,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC; if(rs >> 0 >=0) { PC=PC+((off << 16) >> 14)\n passing_convention_begin(reg0); draw_stack_begin(reg0); }"
+      "definition": "ra=PC; if(rs >> 0 >=0) { PC=PC+((off << 16) >> 14)\n capi_passing_convention_begin(reg0); capi_drawstack_begin(reg0); }"
     },
     {
       "name": "bgtz",
@@ -2582,7 +2582,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC\nPC=addr;\n passing_convention_begin(addr); draw_stack_begin(addr);"
+      "definition": "ra=PC\nPC=addr;\n capi_passing_convention_begin(addr); capi_drawstack_begin(addr);"
     },
     {
       "name": "jalr",
@@ -2624,7 +2624,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC;\n PC=rs;\n passing_convention_begin(rs); draw_stack_begin(rs);"
+      "definition": "rd=PC;\n PC=rs;\n capi_passing_convention_begin(rs); capi_drawstack_begin(rs);"
     },
     {
       "name": "jr",
@@ -2660,7 +2660,7 @@
           "valueField": "001000"
         }
       ],
-      "definition": "PC=rs; \npassing_convention_end(); draw_stack_end();"
+      "definition": "PC=rs; \ncapi_passing_convention_end(); capi_drawstack_end();"
     },
     {
       "name": "lb",
@@ -2699,7 +2699,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\npassing_convention_readMem (val+reg2, 'reg1', 'b');"
+      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\ncapi_passing_convention_readMem (val+reg2, 'reg1', 'b');"
     },
     {
       "name": "lbu",
@@ -2738,7 +2738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.b.[base+off] >>> 0);\npassing_convention_readMem (base+off, 'rt', 'b');"
+      "definition": "rt=(MP.b.[base+off] >>> 0);\ncapi_passing_convention_readMem (base+off, 'rt', 'b');"
     },
     {
       "name": "lh",
@@ -2777,7 +2777,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\npassing_convention_readMem (val+reg2, 'reg1', 'h');"
+      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncapi_passing_convention_readMem (val+reg2, 'reg1', 'h');"
     },
     {
       "name": "lhu",
@@ -2816,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.h.[base+off] >>> 0);\npassing_convention_readMem (base+off,'rt', 'h');"
+      "definition": "rt=(MP.h.[base+off] >>> 0);\ncapi_passing_convention_readMem (base+off,'rt', 'h');"
     },
     {
       "name": "lui",
@@ -2888,7 +2888,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = mp_read ( val+reg2, 'w' );\npassing_convention_readMem(val+reg2, 'reg1', 'w');"
+      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\ncapi_passing_convention_readMem(val+reg2, 'reg1', 'w');"
     },
     {
       "name": "lwc1",
@@ -2927,7 +2927,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = MP.w.[base+off];\nft = (new Float32Array(buf))[0];\npassing_convention_readMem (base+off, 'ft', 'w');"
+      "definition": "ft = capi_uint2float32(MP.w.[base+off]);\ncapi_passing_convention_readMem(base+off, 'ft', 'w');"
     },
     {
       "name": "mfc1",
@@ -2967,7 +2967,7 @@
           "stopbit": 11
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = fs;\nrt = (new Uint32Array(buf))[0];"
+      "definition": "rt = capi_float322uint(fs);\n"
     },
     {
       "name": "mfhi",
@@ -3261,7 +3261,7 @@
           "stopbit": 11
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Uint32Array(buf))[0] = rt;\nfs = (new Float32Array(buf))[0];"
+      "definition": "var fs = capi_uint2float32(rt);\n"
     },
     {
       "name": "mthi",
@@ -3906,7 +3906,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.b.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt', 'b');"
+      "definition": "MP.b.[off+base]=rt;\ncapi_passing_convention_writeMem(off+base, 'rt', 'b');"
     },
     {
       "name": "sh",
@@ -3945,7 +3945,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.h.[off+base]=rt;\npassing_convention_writeMem(off+base, 'rt', 'h');"
+      "definition": "MP.h.[off+base]=rt;\ncapi_passing_convention_writeMem(off+base, 'rt', 'h');"
     },
     {
       "name": "sll",
@@ -4591,7 +4591,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "mp_write ( val+reg2, reg1, 'w' );\npassing_convention_writeMem(val+reg2, 'reg1', 'w');"
+      "definition": "capi_mem_write( val+reg2, reg1, 'w');\ncapi_passing_convention_writeMem(val+reg2, 'reg1', 'w');"
     },
     {
       "name": "swc1",
@@ -4630,7 +4630,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = ft;\nMP.w.[base+off] = (new Uint32Array(buf))[0];\npassing_convention_writeMem (base+off, 'ft', 'w');"
+      "definition": "MP.w.[base+off] = capi_float322uint(ft);\ncapi_passing_convention_writeMem(base+off, 'ft', 'w');"
     },
     {
       "name": "sdc1",
@@ -4669,7 +4669,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);\npassing_convention_writeMem (base+off, 'ft', 'd');"
+      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);\ncapi_passing_convention_writeMem (base+off, 'ft', 'd');"
     },
     {
       "name": "xor",
@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\npassing_convention_readMem (base+off, 'ft', 'd');"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\ncapi_passing_convention_readMem(base+off, 'ft', 'd');"
     },
     {
       "name": "bc1f",
