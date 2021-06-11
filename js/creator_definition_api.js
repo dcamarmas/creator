@@ -310,8 +310,25 @@ function capi_drawstack_end ()
 
 
 //
-// Convert
+// Auxiliar functions
 //
+
+/*
+ * Name:        capi_split_double
+ * Sypnosis:    capi_split_double (reg, index)
+ * Description: split the double register in highter part and lower part
+ */
+function capi_split_double ( reg, index )
+{
+    var value = bin2hex(double2bin(reg));
+    console_log(value);
+    if(index == 0){
+        return value.substring(0,8);
+    }
+    if(index == 1) {
+        return value.substring(8,16);
+    }
+}
 
 function capi_uint2float32 ( value )
 {

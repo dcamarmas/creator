@@ -77,3 +77,14 @@
 	return new DataView( buffer ).getFloat32(0, false);
   }
 
+  function clean_string( value, prefix )
+  {
+	var value2 = value.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
+
+	re = new RegExp("^[0-9]+$");
+	if (value2.search(re) != -1 && prefix != "undefined") {
+		value2 = prefix + value2;
+	}
+
+	return value2;
+  }
