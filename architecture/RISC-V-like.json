@@ -3262,7 +3262,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);",
+      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);",
       "separated": [
         false,
         true,
