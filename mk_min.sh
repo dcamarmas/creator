@@ -51,9 +51,10 @@ cat js/creator_bigint.js \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
     components/simulator/creator_uielto_data_view_selector.js \
-    components/simulator/creator_uielto_memory_data.js \
-    components/simulator/creator_uielto_memory_text.js \
-    components/simulator/creator_uielto_memory_stack.js \
+    components/simulator/creator_uielto_register_int_popover.js \
+    components/simulator/creator_uielto_register_float_popover.js \
+    components/simulator/creator_uielto_register_double_popover.js \
+    components/simulator/creator_uielto_memory.js \
     components/simulator/creator_uielto_stats.js \
     components/simulator/creator_uielto_stats_plot.js \
     components/simulator/creator_uielto_stats_table.js \
