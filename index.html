@@ -3813,7 +3813,12 @@
                 <!-- Data memory -->
                 <b-tab title="Data" active>
 
-                  <table-mem-data :memory="memory"></table-mem-data>
+                  <table-mem :memory="memory"
+                             :memory_segment="memory_hash[0]"
+                             :track_stack_names="track_stack_names" 
+                             :callee_subrutine="callee_subrutine" 
+                             :caller_subrutine="caller_subrutine">
+                  </table-mem>
 
                   <!--TODO: try to include in a component this modal-->
                   <b-modal ref="space_modal" 
@@ -3832,17 +3837,24 @@
                 <!-- Text memory -->
                 <b-tab title="Text">
 
-                  <table-mem-text :memory="memory"></table-mem-text>
+                  <table-mem :memory="memory"
+                             :memory_segment="memory_hash[1]"
+                             :track_stack_names="track_stack_names" 
+                             :callee_subrutine="callee_subrutine" 
+                             :caller_subrutine="caller_subrutine">
+                  </table-mem>
 
                 </b-tab>
 
                 <!-- Stack memory -->
                 <b-tab title="Stack">
 
-                  <table-mem-stack :memory="memory[memory_hash[2]]" 
-				   :track_stack_names="track_stack_names" 
-				   :callee_subrutine="callee_subrutine" 
-				   :caller_subrutine="caller_subrutine"></table-mem-stack>
+                  <table-mem :memory="memory"
+                             :memory_segment="memory_hash[2]"
+                             :track_stack_names="track_stack_names" 
+                             :callee_subrutine="callee_subrutine" 
+                             :caller_subrutine="caller_subrutine">
+                  </table-mem>
 
                   <!--TODO: try to include in a component this modal-->
                   <b-modal ref="stack_modal" 
@@ -3919,7 +3931,7 @@
 
     <!-- Required scripts -->
     <script>
-		  document.write("<script src=\"js/min.creator_web.js?id=" + new Date().getTime() + "\"><\/script>");
-		</script>
+      document.write("<script src=\"js/min.creator_web.js?id=" + new Date().getTime() + "\"><\/script>");
+    </script>
   </body>
 </html>

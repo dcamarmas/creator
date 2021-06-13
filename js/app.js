@@ -3612,6 +3612,7 @@ try
 	    		}
       		i++;
       	}
+        app._data.memory = memory;
       },
 
       //TODO: try to include in a component
@@ -3654,12 +3655,16 @@ try
           }
           memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
         }
+        app._data.memory = memory;
       },
 
       //TODO: try to include in a component
       hide_stack_modal(){
         app._data.selected_stack_view = null;
       },
+
+
+
 
 
 
