@@ -2764,6 +2764,7 @@
         <!-- Assembly view -->
         <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
+          <!-- TODO: navbar component -->
           <!-- Navbar -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
@@ -2982,6 +2983,7 @@
         <!-- Simulator view -->
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
+          <!-- TODO: navbar component -->
           <!-- Navbar -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
@@ -3146,7 +3148,7 @@
 
 
 
-
+            <!-- TODO: register component -->
             <!-- Registers view -->
             <div class="col-lg-12 col-sm-12 px-0" id="registers" v-if="data_mode == 'registers'">
               <b-tabs content-class="mt-3">
@@ -3163,7 +3165,6 @@
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                   :id="popoverId(item2.name + 'Int')" 
-                                  @click="change_popover_register(popoverId(item2.name + 'Int'))"
                                   onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                           <span class="text-truncate">{{item2.name[0]}}</span> 
                           <b-badge class="regValue registerValue" 
@@ -3178,93 +3179,12 @@
                         </b-button>
 
                         <!-- Register popover -->
-                        <b-popover show :target="popoverId(item2.name + 'Int')" 
-                                   triggers="click blur" 
-                                   class="popover" 
-                                   v-if="register_popover == popoverId(item2.name + 'Int')">
-                          <template v-slot:title>
-                            <b-button @click="closePopover" class="close" aria-label="Close">
-                              <span class="d-inline-block" aria-hidden="true">&times;</span>
-                            </b-button>
-                            {{item2.name.join(' | ')}}
-                          </template>
+                        <popover-register-int :target="popoverId(item2.name + 'Int')" 
+                                              :component="item"
+                                              :register="item2">
+                        </popover-register-int>
 
-                          <table class="table table-bordered table-sm popoverText">
-                            <tbody>
-                              <tr>
-                                <td>Hex.</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Binary</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Signed</td>
-                                <td>
-                                  <b-badge class="registerPopover" 
-                                           v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
-                                    {{parseInt(item2.value.toString(10))-0x100000000}}
-                                  </b-badge>
-                                  <b-badge class="registerPopover"
-                                           v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">
-                                    {{(item2.value).toString(10)}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Unsig.</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{(item2.value).toString(10) >>> 0}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Char</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Float</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-
-                          <div class="col-lg-12 col-sm-12 row mx-0">
-                            <div class="col-lg-6 col-sm-6 popoverFooter">
-                              <b-form-input v-on:input="debounce('newValue', $event)" 
-                                            :value="newValue" 
-                                            type="text" 
-                                            size="sm" 
-                                            title="New Register Value" 
-                                            placeholder="Enter new value">
-                              </b-form-input>
-                            </div>
-                            <div class="col-lg-6 col-sm-6 popoverFooter">
-                              <b-button class="btn btn-primary btn-block btn-sm" 
-                                        @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">
-                                Update
-                              </b-button>
-                            </div>
-                          </div>
-                        </b-popover>
+        
                       </div>
 
                       <div class="col-lg-3 col-sm-4 buttons" 
@@ -3275,7 +3195,6 @@
                              v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name + 'FP')" 
-                                    @click="change_popover_register(popoverId(item2.name + 'FP'))"
                                     onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">{{item2.name[0]}}</span>  
                             <b-badge class="registerValue">
@@ -3284,80 +3203,11 @@
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover show 
-                                     :target="popoverId(item2.name + 'FP')" 
-                                     triggers="click blur" 
-                                     v-if="register_popover == popoverId(item2.name + 'FP')">
-                            <template v-slot:title>
-                              <b-button @click="closePopover" class="close" aria-label="Close">
-                                <span class="d-inline-block" aria-hidden="true">&times;</span>
-                              </b-button>
-                              {{item2.name.join(' | ')}}
-                            </template>
+                          <popover-register-float :target="popoverId(item2.name + 'FP')" 
+                                                  :component="item"
+                                                  :register="item2">
+                          </popover-register-float>
 
-                            <table class="table table-bordered table-sm popoverText">
-                              <tbody>
-                                <tr>
-                                  <td>Hex.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{"0x"+ bin2hex(float2bin(item2.value))}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Binary</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{float2bin(item2.value)}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Signed</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Unsig.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >>> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Float</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                    {{item2.value}}
-                                  </b-badge>
-                                </td>
-                                </tr>
-                              </tbody>
-                            </table>
-
-                            <div class="col-lg-12 col-sm-12 row mx-0">
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" 
-                                              :value="newValue" 
-                                              type="text" 
-                                              size="sm" 
-                                              title="New Register Value" 
-                                              placeholder="Enter new value">
-                                </b-form-input>
-                              </div>
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-button class="btn btn-primary btn-block btn-sm" 
-                                          @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">
-                                  Update
-                                </b-button>
-                              </div>
-                            </div>
-                          </b-popover>
                         </div>
 
                         <!-- Double floating point registers -->
@@ -3365,7 +3215,6 @@
                              v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name + 'DFP')" 
-                                    @click="change_popover_register(popoverId(item2.name + 'DFP'))"
                                     onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">
                               {{item2.name[0]}}
@@ -3376,80 +3225,11 @@
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover show 
-                                     :target="popoverId(item2.name + 'DFP')" 
-                                     triggers="click blur" 
-                                     v-if="register_popover == popoverId(item2.name + 'DFP')">
-                            <template v-slot:title>
-                              <b-button @click="closePopover" class="close" aria-label="Close">
-                                <span class="d-inline-block" aria-hidden="true">&times;</span>
-                              </b-button>
-                              {{item2.name.join(' | ')}}
-                            </template>
+                          <popover-register-double :target="popoverId(item2.name + 'DFP')" 
+                                                   :component="item"
+                                                   :register="item2">
+                          </popover-register-double>
 
-                            <table class="table table-bordered table-sm popoverText">
-                              <tbody>
-                                <tr>
-                                  <td>Hex.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{"0x"+ bin2hex(double2bin(item2.value))}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Binary</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{double2bin(item2.value)}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Signed</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Unsig.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >>> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Float</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{item2.value}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-
-                            <div class="col-lg-12 col-sm-12 row mx-0">
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" 
-                                              :value="newValue" 
-                                              type="text" 
-                                              size="sm" 
-                                              title="New Register Value" 
-                                              placeholder="Enter new value">
-                                </b-form-input>
-                              </div>
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-button class="btn btn-primary btn-block btn-sm" 
-                                          @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">
-                                  Update
-                                </b-button>
-                              </div>
-                            </div>
-                          </b-popover>
                         </div> 
                       </div>
                     </div>
@@ -3468,7 +3248,6 @@
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
                         <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                   :id="popoverId(item2.name)" 
-                                  @click="change_popover_register(popoverId(item2.name))"
                                   onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                           <span class="text-truncate">{{item2.name[0]}}</span>  
                           <b-badge class="registerValue" 
@@ -3478,94 +3257,11 @@
                         </b-button>
 
                         <!-- Register popover -->
-                        <b-popover show 
-                                   :target="popoverId(item2.name)" 
-                                   triggers="click blur" 
-                                   class="popover" 
-                                   v-if="register_popover == popoverId(item2.name)">
-                          <template v-slot:title>
-                            <b-button @click="closePopover" class="close" aria-label="Close">
-                              <span class="d-inline-block" aria-hidden="true">&times;</span>
-                            </b-button>
-                            {{item2.name.join(' | ')}}
-                          </template>
+                        <popover-register-int :target="popoverId(item2.name)" 
+                                              :component="item"
+                                              :register="item2">
+                        </popover-register-int>
 
-                          <table class="table table-bordered table-sm popoverText">
-                            <tbody>
-                              <tr>
-                                <td>Hex.</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{"0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Binary</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{(((item2.value).toString(2)).padStart(item2.nbits, "0"))}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Signed</td>
-                                <td>
-                                  <b-badge class="registerPopover" 
-                                           v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
-                                    {{parseInt(item2.value.toString(10))-0x100000000}}
-                                  </b-badge>
-                                  <b-badge class="registerPopover" 
-                                           v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">
-                                    {{(item2.value).toString(10)}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Unsig.</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{(item2.value).toString(10) >>> 0}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Char</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{hex2char8((((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                              <tr>
-                                <td>Float</td>
-                                <td>
-                                  <b-badge class="registerPopover">
-                                    {{hex2float("0x"+(((item2.value).toString(16)).padStart(item2.nbits/4, "0")))}}
-                                  </b-badge>
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-
-                          <div class="col-lg-12 col-sm-12 row mx-0">
-                            <div class="col-lg-6 col-sm-6 popoverFooter">
-                              <b-form-input v-on:input="debounce('newValue', $event)" 
-                                            :value="newValue"
-                                            type="text" 
-                                            size="sm" 
-                                            title="New Register Value" 
-                                            placeholder="Enter new value">
-                              </b-form-input>
-                            </div>
-                            <div class="col-lg-6 col-sm-6 popoverFooter">
-                              <b-button class="btn btn-primary btn-block btn-sm" 
-                                        @click="updateReg(item.index, item2.name, architecture.components[item.index].type)">
-                                Update
-                              </b-button>
-                            </div>
-                          </div>
-                        </b-popover>
                       </div>
 
                       <div class="col-lg-3 col-sm-4 buttons" 
@@ -3577,7 +3273,6 @@
                              v-if="architecture.components[item.index].double_precision == false">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
-                                    @click="change_popover_register(popoverId(item2.name))"
                                     onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">
                               {{item2.name[0]}}
@@ -3588,80 +3283,10 @@
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover show 
-                                     :target="popoverId(item2.name)" 
-                                     triggers="click blur" 
-                                     v-if="register_popover == popoverId(item2.name)">
-                            <template v-slot:title>
-                              <b-button @click="closePopover" class="close" aria-label="Close">
-                                <span class="d-inline-block" aria-hidden="true">&times;</span>
-                              </b-button>
-                              {{item2.name.join(' | ')}}
-                            </template>
-
-                            <table class="table table-bordered table-sm popoverText">
-                              <tbody>
-                                <tr>
-                                  <td>Hex.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{"0x"+ bin2hex(float2bin(item2.value))}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Binary</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{float2bin(item2.value)}}
-                                  </b-badge>
-                                </td>
-                                </tr>
-                                <tr>
-                                  <td>Signed</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Unsig.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >>> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Float</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{item2.value}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-
-                            <div class="col-lg-12 col-sm-12 row mx-0">
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" 
-                                              :value="newValue" 
-                                              type="text" 
-                                              size="sm" 
-                                              title="New Register Value" 
-                                              placeholder="Enter new value">
-                                </b-form-input>
-                              </div>
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-button class="btn btn-primary btn-block btn-sm" 
-                                          @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">
-                                  Update
-                                </b-button>
-                              </div>
-                            </div>
-                          </b-popover>
+                          <popover-register-float :target="popoverId(item2.name)" 
+                                                  :component="item"
+                                                  :register="item2">
+                          </popover-register-float>
                         </div>
 
                         <!-- Double floating point registers -->
@@ -3669,7 +3294,6 @@
                              v-if="architecture.components[item.index].double_precision == true">
                           <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
                                     :id="popoverId(item2.name)" 
-                                    @click="change_popover_register(popoverId(item2.name))"
                                     onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
                             <span class="text-truncate">{{item2.name[0]}}</span> 
                             <b-badge class="registerValue">
@@ -3678,80 +3302,11 @@
                           </b-button>
 
                           <!-- Register popover -->
-                          <b-popover show 
-                                     :target="popoverId(item2.name)" 
-                                     triggers="click blur"
-                                     v-if="register_popover == popoverId(item2.name)">
-                            <template v-slot:title>
-                              <b-button @click="closePopover" class="close" aria-label="Close">
-                                <span class="d-inline-block" aria-hidden="true">&times;</span>
-                              </b-button>
-                              {{item2.name.join(' | ')}}
-                            </template>
-
-                            <table class="table table-bordered table-sm popoverText">
-                              <tbody>
-                                <tr>
-                                  <td>Hex.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{"0x"+ bin2hex(double2bin(item2.value))}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Binary</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{double2bin(item2.value)}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Signed</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Unsig.</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                      {{parseInt(item2.value.toString(), 10) >>> 0}}
-                                    </b-badge>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td>Float</td>
-                                  <td>
-                                    <b-badge class="registerPopover">
-                                    {{item2.value}}
-                                  </b-badge>
-                                </td>
-                                </tr>
-                              </tbody>
-                            </table>
-
-                            <div class="col-lg-12 col-sm-12 row mx-0">
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-form-input v-on:input="debounce('newValue', $event)" 
-                                              :value="newValue" 
-                                              type="text" 
-                                              size="sm" 
-                                              title="New Register Value" 
-                                              placeholder="Enter new value">
-                                </b-form-input>
-                              </div>
-                              <div class="col-lg-6 col-sm-6 popoverFooter">
-                                <b-button class="btn btn-primary btn-block btn-sm" 
-                                          @click="updateReg(item.index, item2.name, architecture.components[item.index].type, architecture.components[item.index].double_precision)">
-                                  Update
-                                </b-button>
-                              </div>
-                            </div>
-                          </b-popover>
+                          <popover-register-double :target="popoverId(item2.name)" 
+                                                   :component="item"
+                                                   :register="item2">
+                          </popover-register-double>
+                          
                         </div> 
                       </div>
                     </div>
@@ -3813,7 +3368,12 @@
                 <!-- Data memory -->
                 <b-tab title="Data" active>
 
-                  <table-mem-data :memory="memory"></table-mem-data>
+                  <table-mem :memory="memory"
+                             :memory_segment="memory_hash[0]"
+                             :track_stack_names="track_stack_names" 
+                             :callee_subrutine="callee_subrutine" 
+                             :caller_subrutine="caller_subrutine">
+                  </table-mem>
 
                   <!--TODO: try to include in a component this modal-->
                   <b-modal ref="space_modal" 
@@ -3832,17 +3392,24 @@
                 <!-- Text memory -->
                 <b-tab title="Text">
 
-                  <table-mem-text :memory="memory"></table-mem-text>
+                  <table-mem :memory="memory"
+                             :memory_segment="memory_hash[1]"
+                             :track_stack_names="track_stack_names" 
+                             :callee_subrutine="callee_subrutine" 
+                             :caller_subrutine="caller_subrutine">
+                  </table-mem>
 
                 </b-tab>
 
                 <!-- Stack memory -->
                 <b-tab title="Stack">
 
-                  <table-mem-stack :memory="memory[memory_hash[2]]" 
-				   :track_stack_names="track_stack_names" 
-				   :callee_subrutine="callee_subrutine" 
-				   :caller_subrutine="caller_subrutine"></table-mem-stack>
+                  <table-mem :memory="memory"
+                             :memory_segment="memory_hash[2]"
+                             :track_stack_names="track_stack_names" 
+                             :callee_subrutine="callee_subrutine" 
+                             :caller_subrutine="caller_subrutine">
+                  </table-mem>
 
                   <!--TODO: try to include in a component this modal-->
                   <b-modal ref="stack_modal" 
@@ -3919,7 +3486,7 @@
 
     <!-- Required scripts -->
     <script>
-		  document.write("<script src=\"js/min.creator_web.js?id=" + new Date().getTime() + "\"><\/script>");
-		</script>
+      document.write("<script src=\"js/min.creator_web.js?id=" + new Date().getTime() + "\"><\/script>");
+    </script>
   </body>
 </html>
