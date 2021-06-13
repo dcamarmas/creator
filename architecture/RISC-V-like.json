@@ -1229,7 +1229,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC;\n PC=inm;\n draw_stack_begin(inm);",
+      "definition": "rd=PC;\n PC=inm;\n capi_drawstack_begin(inm);",
       "separated": [
         false,
         false,
@@ -1282,7 +1282,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd=PC;\n PC=(rs1+inm)&~1; draw_stack_end((rs1+inm)&~1);",
+      "definition": "rd=PC;\n PC=(rs1+inm)&~1; capi_drawstack_end((rs1+inm)&~1);",
       "separated": [
         false,
         false,
@@ -3262,7 +3262,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = splitDouble(ft; 1); MP.w.[base+off+4] = splitDouble(ft; 0);",
+      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);",
       "separated": [
         false,
         true,
@@ -4426,7 +4426,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var buff = new ArrayBuffer(4);\n(new Uint32Array(buff))[0] = MP.w.[inm+rs2];\nrd = (new Float32Array(buff))[0];",
+      "definition": "rd = capi_uint2float32(MP.w.[inm+rs2]);\n",
       "separated": [
         false,
         false,
@@ -4484,7 +4484,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "var buf = new ArrayBuffer(4);\n(new Float32Array(buf))[0] = rs1;\nMP.w.[inm+rs2] = (new Uint32Array(buf))[0];",
+      "definition": "MP.w.[inm+rs2] = capi_uint2float32(rs1);\n",
       "separated": [
         false,
         true,
@@ -7262,7 +7262,7 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(a7){\ncase 1:\nprint_int(a0);\nbreak;\ncase 2:\n\nprint_float(f12);\nbreak;\ncase 3:\nprint_double(FP12);\nbreak;\ncase 4:\nprint_string(a0);\nbreak;\ncase 5:\nread_int(v0);\nbreak;\ncase 6:\nread_float(f0);\nbreak;\ncase 7:\nread_double(FP0);\nbreak;\ncase 8:\nread_string(a0, a1);\nbreak;\ncase 9:\nsbrk(a0, v0);\nbreak;\ncase 10:\nexit();\nbreak;\ncase 11:\nprint_char(a0);\nbreak;\ncase 12:\nread_char(v0);\nbreak;\n}"
+      "definition": "switch(a7){\ncase 1:\ncapi_syscall('print_int','a0');\nbreak;\ncase 2:\n\ncapi_syscall('print_float','f12');\nbreak;\ncase 3:\ncapi_syscall('print_double','FP12');\nbreak;\ncase 4:\ncapi_syscall('print_string','a0');\nbreak;\ncase 5:\ncapi_syscall('read_int','v0');\nbreak;\ncase 6:\ncapi_syscall('read_float','f0');\nbreak;\ncase 7:\ncapi_syscall('read_double','FP0');\nbreak;\ncase 8:\ncapi_syscall('read_string', 'a0', 'a1');\nbreak;\ncase 9:\ncapi_syscall('sbrk','a0', 'v0');\nbreak;\ncase 10:\ncapi_syscall('exit');\nbreak;\ncase 11:\ncapi_syscall('print_char','a0');\nbreak;\ncase 12:\ncapi_syscall('read_char','v0');\nbreak;\n}"
     }
   ],
   "pseudoinstructions": [

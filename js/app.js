@@ -670,7 +670,7 @@ try
 				         show_notification('The selected architecture has been loaded correctly', 'success') ;
 
 				         /* Google Analytics */
-					       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customised' + e.name);
+					       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
 
                  return;
              }
@@ -682,7 +682,7 @@ try
 		      show_notification('The selected architecture has been loaded correctly', 'success') ;
 
 		      /* Google Analytics */
-		      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customised');
+		      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
 
 	        }).fail(function() {
 	          hide_loading();
@@ -3045,69 +3045,12 @@ try
         }
       },
 
-      /*Update a new register value*/
-      updateReg(comp, elem, type, precision){
-        for (var i = 0; i < architecture.components[comp].elements.length; i++) {
-          if(type == "integer" || type == "control"){
-            if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-              var value = this.newValue.split("x");
-              if(value[1].length * 4 > architecture.components[comp].elements[i].nbits){
-                value[1] = value[1].substring(((value[1].length * 4) - architecture.components[comp].elements[i].nbits)/4, value[1].length)
-              }
-              architecture.components[comp].elements[i].value = bi_intToBigInt(value[1], 16);
-            }
-            else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-              architecture.components[comp].elements[i].value = bi_intToBigInt(this.newValue,10);
-            }
-            else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-              architecture.components[comp].elements[i].value = bi_intToBigInt(this.newValue,10);
-            }
-          }
-          else if(type =="floating point"){
-            if(precision == false){
-              if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-                architecture.components[comp].elements[i].value = this.hex2float(this.newValue);
-                updateDouble(comp, i);
-              }
-              else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-                architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                updateDouble(comp, i);
-              }
-              else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-                architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                updateDouble(comp, i);
-              }
-            }
-
-            else if(precision == true){
-              if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^0x/)){
-                architecture.components[comp].elements[i].value = this.hex2double(this.newValue);
-                updateSimple(comp, i);
-              }
-              else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^(\d)+/)){
-                architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                updateSimple(comp, i);
-              }
-              else if(architecture.components[comp].elements[i].name == elem && this.newValue.match(/^-/)){
-                architecture.components[comp].elements[i].value = parseFloat(this.newValue, 10);
-                updateSimple(comp, i)
-              }
-            }
-          }
-        }
-        this.newValue = '';
-
-        /* Google Analytics */
-	  creator_ga('data', 'data.change', 'data.change.register_value');
-	  creator_ga('data', 'data.change', 'data.change.register_value_' + elem);
-      },
-
       /*Execute one instruction*/
       executeInstruction ( )
       {
 
       	 /* Google Analytics */
-	 creator_ga('execute', 'execute.instruction', 'execute.instruction');
+	       creator_ga('execute', 'execute.instruction', 'execute.instruction');
 
          var ret = executeInstruction();
          // console.log(JSON.stringify(ret,2,null));
@@ -3161,7 +3104,7 @@ try
       executeProgram ( but )
       {
         /* Google Analytics */
-	creator_ga('execute', 'execute.run', 'execute.run');
+	      creator_ga('execute', 'execute.run', 'execute.run');
 
         app._data.runExecution = true;
         app._data.runExecution = false;
@@ -3501,9 +3444,6 @@ try
         return 'popoverValueContent' + i;
       },
 
-      closePopover(){ //TODO: remove when all components are created
-        this.$root.$emit('bv::hide::popover')
-      },
 
 
 
@@ -3612,6 +3552,7 @@ try
 	    		}
       		i++;
       	}
+        app._data.memory = memory;
       },
 
       //TODO: try to include in a component
@@ -3654,6 +3595,7 @@ try
           }
           memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
         }
+        app._data.memory = memory;
       },
 
       //TODO: try to include in a component
@@ -3661,26 +3603,6 @@ try
         app._data.selected_stack_view = null;
       },
 
-
-
-
-
-
-
-
-
-
-
-
-      
-
-      change_popover_register(e){
-        this.$root.$emit('bv::hide::popover');
-        setTimeout(function(){
-          app._data.register_popover = e;
-          app.$forceUpdate();
-        }, 120);
-      },
 
       /*Stop user interface refresh*/
       debounce: _.debounce(function (param, e) {
