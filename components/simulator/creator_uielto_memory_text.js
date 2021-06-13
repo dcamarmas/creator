@@ -19,39 +19,39 @@
  */
 
 
-        /* jshint esversion: 6 */
+				/* jshint esversion: 6 */
 
-        var uielto_memory_text = {
+				var uielto_memory_text = {
 
-			  props:      {
+				props:      {
 											memory:   { type: Array, required: true }
 										},
 
 				data: 			function () {
 											return {
-          							/*Memory table fields*/
-      									memFields: ['Tag', 'Address', 'Binary', 'Value']
-  										}
-        						},
+												/*Memory table fields*/
+												memFields: ['Tag', 'Address', 'Binary', 'Value']
+											}
+										},
 
-			  methods: 		{
-			  							/*Filter table instructions*/
-								      filter(row, filter){
-								        if(row.hide == true){
-								          return false;
-								        }
-								        else{
-								          return true;
-								        }
-								      },			
-			  						},
+				methods: 		{
+											/*Filter table instructions*/
+											filter(row, filter){
+												if(row.hide == true){
+													return false;
+												}
+												else{
+													return true;
+												}
+											},			
+										},
 
-      	template:   '	<div class="col-lg-12 col-sm-12">' +
+				template:   '	<div class="col-lg-12 col-sm-12">' +
 										'	  <b-table sticky-header ' +
 										'	           striped ' +
 										'	           small ' +
 										'	           hover ' +
-										'	           :items="Object.values(memory)[1]" ' +
+										'	           :items="memory" ' +
 										'	           :fields="memFields" ' +
 										'	           class="memory_table" ' +
 										'	           :filter-function=filter ' +
@@ -139,8 +139,8 @@
 										'	    </template>' +
 										'	  </b-table>' +
 										'	</div>'
-												  
+													
 				}
 
-        Vue.component('table-mem-text', uielto_memory_text) ;
+				Vue.component('table-mem-text', uielto_memory_text) ;
 
