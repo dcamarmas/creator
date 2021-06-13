@@ -19,36 +19,36 @@
  */
 
 
-        /* jshint esversion: 6 */
+				/* jshint esversion: 6 */
 
-        var uielto_memory_data = {
+				var uielto_memory_data = {
 
-			  props:      {
+				props:      {
 											memory:   { type: Array, required: true }
 										},
 
 				data: 			function () {
 											return {
-          							/*Memory table fields*/
-      									memFields: ['Tag', 'Address', 'Binary', 'Value']
-  										}
-        						},
+												/*Memory table fields*/
+												memFields: ['Tag', 'Address', 'Binary', 'Value']
+											}
+										},
 
-			  methods: 		{
-			  							select_space_type(record, index){
-								        if(record.type == "space" && (memory[memory_hash[0]][index].Binary[0].Tag != null) || memory[memory_hash[0]][index].Binary[1].Tag != null || memory[memory_hash[0]][index].Binary[2].Tag != null || memory[memory_hash[0]][index].Binary[3].Tag != null){
-								        	app._data.row_index = index; //TODO: vue bidirectional updates
-								        	app.$refs['space_modal'].show(); //TODO: vue bidirectional updates
-								        }
-								      }		
-			  						},
+				methods: 		{
+											select_space_type(record, index){
+												if(record.type == "space" && (memory[memory_hash[0]][index].Binary[0].Tag != null) || memory[memory_hash[0]][index].Binary[1].Tag != null || memory[memory_hash[0]][index].Binary[2].Tag != null || memory[memory_hash[0]][index].Binary[3].Tag != null){
+													app._data.row_index = index; //TODO: vue bidirectional updates
+													app.$refs['space_modal'].show(); //TODO: vue bidirectional updates
+												}
+											}		
+										},
 
-      	template:   '	<div class="col-lg-12 col-sm-12">' +
+				template:   '	<div class="col-lg-12 col-sm-12">' +
 										'	  <b-table sticky-header ' +
 										'	           striped ' +
 										'	           small ' +
 										'	           hover ' +
-										'	           :items="Object.values(memory)[0]" ' +
+										'	           :items="memory" ' +
 										'	           :fields="memFields" ' +
 										'	           class="memory_table" ' +
 										'	           @row-clicked="select_space_type"' +
@@ -143,8 +143,8 @@
 										'	    </template>' +
 										'	  </b-table>' +
 										'	</div>'
-		  
+			
 				}
 
-        Vue.component('table-mem-data', uielto_memory_data) ;
+				Vue.component('table-mem-data', uielto_memory_data) ;
 
