@@ -3561,11 +3561,6 @@ try
       },
 
       //TODO: try to include in a component
-      hide_space_modal(){
-        app._data.selected_space_view = null;
-      },
-
-      //TODO: try to include in a component
       change_stack_view(){
         if(app._data.selected_stack_view == "sig_int"){
           var hex = "";
@@ -3602,6 +3597,31 @@ try
       hide_stack_modal(){
         app._data.selected_stack_view = null;
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
       /*Stop user interface refresh*/
