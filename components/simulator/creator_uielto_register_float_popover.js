@@ -137,7 +137,7 @@
 											'    <b-button @click="closePopover" class="close" aria-label="Close">' +
 											'      <span class="d-inline-block" aria-hidden="true">&times;</span>' +
 											'    </b-button>' +
-											'    {{register.name}}' +
+											'    {{register.name.join(\' | \')}}' +
 											'  </template>' +
 											'' +
 											'  <table class="table table-bordered table-sm popoverText">' +
