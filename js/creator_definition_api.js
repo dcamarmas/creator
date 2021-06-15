@@ -178,11 +178,13 @@ function capi_mem_read ( addr, type )
  * Sypnosis:    capi_syscall (action, value1 [, value2])
  * Description: request a system call
  */
+
+var arr_pr1 = [ "print_int", "print_float", "print_double", "print_char", "print_string", 
+                "read_int" , "read_float" , "read_double",  "read_char" ];
+var arr_pr2 = [ "read_string", "sbrk" ];
+
 function capi_syscall ( action, value1, value2 )
 {
-    var arr_pr1 = [ "print_int", "print_float", "print_double", "print_string", 
-                    "read_int" , "read_float" , "read_double" ];
-
     if (arr_pr1.includes(action)) {
         aux_syscall1(action, value1) ;
         return ;
@@ -193,7 +195,7 @@ function capi_syscall ( action, value1, value2 )
         return ;
     }
 
-    if (action == "read_string" || action == "sbrk") {
+    if (arr_pr2.includes(action)) {
         aux_syscall2(action, value1, value2) ;
     }
 }
