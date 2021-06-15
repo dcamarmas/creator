@@ -57,6 +57,7 @@
 												}
 											},
 
+											//TODO: gereric and include modal
 											select_data_type(record, index){
 												if (this.memory_segment == "instructions_memory") {
 													return
