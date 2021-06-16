@@ -27,7 +27,14 @@
 // Internal auxiliar functions
 //
 
-function type2size ( type )
+function aux_showmsg ( msg, level )
+{
+    if (typeof window !== "undefined")
+         show_notification(msg, level);
+    else console.log(level.toUpperCase() + ": " + msg);
+}
+
+function aux_type2size ( type )
 {
     var size = 4;
 
@@ -35,16 +42,19 @@ function type2size ( type )
     {
         case 'b':
         case 'bu':
+        case 'byte':
              size = 1;
              break
 
         case 'h':
         case 'hu':
+        case 'half':
              size = 2;
              break
 
         case 'w':
         case 'wu':
+        case 'word':
              size = 4;
              break
     }
@@ -52,7 +62,7 @@ function type2size ( type )
     return size ;
 }
 
-function aux_syscall1 ( action, value1 )
+function syscall_one_argument ( action, value1 )
 {
     var compIndex, elemIndex;
     var match = 0;
@@ -78,7 +88,7 @@ function aux_syscall1 ( action, value1 )
     syscall(action, compIndex, elemIndex, null, null, true) ;
 }
 
-function aux_syscall2 ( action, value1, value2 )
+function syscall_two_arguments ( action, value1, value2 )
 {
     var compIndex, elemIndex, compIndex2, elemIndex2;
     var match = 0;
@@ -128,7 +138,7 @@ function capi_mem_write ( addr, value, type )
 
     // 1) check address is aligned
     //    FUTURE: if (architecture.properties.memory_align == false) return;
-    size = type2size(type) ;
+    size = aux_type2size(type) ;
     if (addr % size != 0)
     {
         if (typeof app !== "undefined")
@@ -154,7 +164,7 @@ function capi_mem_read ( addr, type )
 
     // 1) check address is aligned
     //    FUTURE: if (architecture.properties.memory_align == false) return;
-    size = type2size(type) ;
+    size = aux_type2size(type) ;
     if (addr % size != 0)
     {
         if (typeof app !== "undefined")
@@ -186,7 +196,7 @@ var arr_pr2 = [ "read_string", "sbrk" ];
 function capi_syscall ( action, value1, value2 )
 {
     if (arr_pr1.includes(action)) {
-        aux_syscall1(action, value1) ;
+        syscall_one_argument(action, value1) ;
         return ;
     }
 
@@ -196,7 +206,7 @@ function capi_syscall ( action, value1, value2 )
     }
 
     if (arr_pr2.includes(action)) {
-        aux_syscall2(action, value1, value2) ;
+        syscall_two_arguments(action, value1, value2) ;
     }
 }
 
@@ -205,7 +215,7 @@ function capi_syscall ( action, value1, value2 )
 // Check stack
 //
 
-function capi_passing_convention_begin ( addr )
+function capi_callconv_begin ( addr )
 {
     var function_name = "" ;
 
@@ -221,7 +231,7 @@ function capi_passing_convention_begin ( addr )
     creator_callstack_enter(function_name) ;
 }
 
-function capi_passing_convention_end ()
+function capi_callconv_end ()
 {
     // 1.- callstack_leave
     var ret = creator_callstack_leave();
@@ -236,12 +246,46 @@ function capi_passing_convention_end ()
     creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
     // User notification
-    if (typeof window !== "undefined")
-         show_notification(ret.msg, 'danger');
-    else console.log(ret.msg);
+    aux_showmsg(ret.msg, 'danger') ;
 }
 
-function capi_passing_convention_writeMem ( addr, reg_name, type )
+function capi_callconv_memAction ( action, addr, reg_name, type )
+{
+    // 1) move the associated finite state machine...
+    if (reg_name == '') {
+        return;
+    }
+
+    // 2) search for reg_name...
+    var i = 0;
+    var j = 0;
+    var found = 0;
+    for (i = 0; i < architecture.components.length; i++) {
+        for (j = 0; j < architecture.components[i].elements.length; j++) {
+            if (architecture.components[i].elements[j].name == reg_name) {
+                found = 1;
+                break;
+            }
+        }
+    }
+    if (found == 0) {
+        return;
+    }
+
+    // 3) switch action...
+    switch (action) 
+    {
+        case 'write': creator_callstack_newWrite(i, j, addr, type);
+                      break;
+        case 'read':  creator_callstack_newRead(i, j, addr, type);
+                      break;
+        default:      aux_showmsg(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
+                      break;
+    }
+}
+
+/*
+function capi_callconv_writeMem ( addr, reg_name, type )
 {
     // 1) move the associated finite state machine...
     if (reg_name == '') {
@@ -257,7 +301,7 @@ function capi_passing_convention_writeMem ( addr, reg_name, type )
     }
 }
 
-function capi_passing_convention_readMem ( addr, reg_name, type )
+function capi_callconv_readMem ( addr, reg_name, type )
 {
     // 1) move the associated finite state machine...
     if (reg_name == '') {
@@ -272,6 +316,7 @@ function capi_passing_convention_readMem ( addr, reg_name, type )
         }
     }
 }
+*/
 
 
 //
@@ -305,9 +350,7 @@ function capi_drawstack_end ()
     }
 
     // User notification
-    if (typeof window !== "undefined")
-         show_notification(ret.msg, 'warning');
-    else console.log("WARNING: " + ret.msg) ;
+    aux_showmsg(ret.msg, 'warning') ;
 }
 
 
