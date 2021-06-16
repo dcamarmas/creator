@@ -1074,6 +1074,11 @@ function capi_float322uint ( value )
     return (new Uint32Array(buf))[0];
 }
 
+function capi_int2uint ( value )
+{
+    return (value >>> 0) ;
+}
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *

@@ -389,3 +389,8 @@ function capi_float322uint ( value )
     return (new Uint32Array(buf))[0];
 }
 
+function capi_int2uint ( value )
+{
+    return (value >>> 0) ;
+}
+
