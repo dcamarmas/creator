@@ -1670,7 +1670,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg2=reg1&(val>>>0);"
+      "definition": "reg2=reg1 & capi_int2uint(val);"
     },
     {
       "name": "bc",
@@ -2738,7 +2738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.b.[base+off] >>> 0);\ncapi_callconv_memAction('read', base+off, 'rt', 'b');"
+      "definition": "rt=capi_int2uint(MP.b.[base+off]);\ncapi_callconv_memAction('read', base+off, 'rt', 'b');"
     },
     {
       "name": "lh",
@@ -2816,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.h.[base+off] >>> 0);\ncapi_callconv_memAction('read', base+off,'rt', 'h');"
+      "definition": "rt=capi_int2uint(MP.h.[base+off]);\ncapi_callconv_memAction('read', base+off,'rt', 'h');"
     },
     {
       "name": "lui",
@@ -3127,7 +3127,7 @@
           "valueField": "00011011011"
         }
       ],
-      "definition": "rd = (rs >>> 0) % (rt >>> 0);"
+      "definition": "rd = capi_int2uint(rs) % capi_int2uint(rt);"
     },
     {
       "name": "mov.s",
@@ -3561,7 +3561,7 @@
           "valueField": "011001"
         }
       ],
-      "definition": "var result = (rs >>> 0) * (rt >>> 0);\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO= result % Math.pow(2, 32) >>> 0;"
+      "definition": "var result = capi_int2uint(rs) * capi_int2uint(rt);\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO = result % Math.pow(2, 32) >>> 0;"
     },
     {
       "name": "nop",
@@ -3991,7 +3991,7 @@
           "valueField": "111111"
         }
       ],
-      "definition": "rd = (rt << sa) >>> 0;"
+      "definition": "rd = capi_int2uint(rt << sa);"
     },
     {
       "name": "slt",
@@ -4161,7 +4161,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rs = (rt >>> 0) < (inm >>> 0) ? 1 : 0;"
+      "definition": "rs = capi_int2uint(rt) < capi_int2uint(inm) ? 1 : 0;"
     },
     {
       "name": "sqrt.s",
@@ -4301,7 +4301,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "rd = (rt >> sa) >>> 0;"
+      "definition": "rd = capi_int2uint(rt >> sa);"
     },
     {
       "name": "srl",
@@ -4400,7 +4400,7 @@
           "valueField": "100010"
         }
       ],
-      "definition": "reg1=((reg2 >> 0) - (reg3 >> 0)) >>> 0;"
+      "definition": "reg1 = capi_int2uint((reg2 >> 0) - (reg3 >> 0));"
     },
     {
       "name": "sub.s",
@@ -4552,7 +4552,7 @@
           "valueField": "100011"
         }
       ],
-      "definition": "rd = ((rs >>> 0) - (rt >>> 0)) >>> 0;"
+      "definition": "rd = capi_int2uint(capi_int2uint(rs) - capi_int2uint(rt)) ;"
     },
     {
       "name": "sw",
@@ -4835,7 +4835,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));"
     },
     {
       "name": "divu",
@@ -4875,7 +4875,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt);"
     },
     {
       "name": "ldc1",
@@ -5061,7 +5061,7 @@
           "valueField": "0010"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc);\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.eq.d",
@@ -5114,7 +5114,7 @@
           "valueField": "0010"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.olt.s",
@@ -5167,7 +5167,7 @@
           "valueField": "0100"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.olt.d",
@@ -5220,7 +5220,7 @@
           "valueField": "0100"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.ole.s",
@@ -5273,7 +5273,7 @@
           "valueField": "0110"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.ole.d",
@@ -5326,7 +5326,7 @@
           "valueField": "0110"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     }
   ],
   "pseudoinstructions": [
