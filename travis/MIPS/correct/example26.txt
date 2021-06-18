@@ -22,3 +22,7 @@ main:
     
 	la $a0 string3
     syscall
+
+    li $a0 '\n'
+    li %v0 11
+    syscall
