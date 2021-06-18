@@ -1670,7 +1670,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg2=reg1&(val>>>0);"
+      "definition": "reg2=reg1 & capi_int2uint(val);"
     },
     {
       "name": "bc",
@@ -1898,7 +1898,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC; if(rs >> 0 >=0) { PC=PC+((off << 16) >> 14)\n capi_passing_convention_begin(reg0); capi_drawstack_begin(reg0); }"
+      "definition": "ra=PC; if(rs >> 0 >=0) { PC=PC+((off << 16) >> 14)\n capi_callconv_begin(reg0); capi_drawstack_begin(reg0); }"
     },
     {
       "name": "bgtz",
@@ -2582,7 +2582,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC\nPC=addr;\n capi_passing_convention_begin(addr); capi_drawstack_begin(addr);"
+      "definition": "ra=PC\nPC=addr;\n capi_callconv_begin(addr); capi_drawstack_begin(addr);"
     },
     {
       "name": "jalr",
@@ -2624,7 +2624,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC;\n PC=rs;\n capi_passing_convention_begin(rs); capi_drawstack_begin(rs);"
+      "definition": "rd=PC;\n PC=rs;\n capi_callconv_begin(rs); capi_drawstack_begin(rs);"
     },
     {
       "name": "jr",
@@ -2660,7 +2660,7 @@
           "valueField": "001000"
         }
       ],
-      "definition": "PC=rs; \ncapi_passing_convention_end(); capi_drawstack_end();"
+      "definition": "PC=rs; \ncapi_callconv_end(); capi_drawstack_end();"
     },
     {
       "name": "lb",
@@ -2699,7 +2699,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\ncapi_passing_convention_readMem (val+reg2, 'reg1', 'b');"
+      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'b');"
     },
     {
       "name": "lbu",
@@ -2738,7 +2738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.b.[base+off] >>> 0);\ncapi_passing_convention_readMem (base+off, 'rt', 'b');"
+      "definition": "rt=capi_int2uint(MP.b.[base+off]);\ncapi_callconv_memAction('read', base+off, 'rt', 'b');"
     },
     {
       "name": "lh",
@@ -2777,7 +2777,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncapi_passing_convention_readMem (val+reg2, 'reg1', 'h');"
+      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'h');"
     },
     {
       "name": "lhu",
@@ -2816,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=(MP.h.[base+off] >>> 0);\ncapi_passing_convention_readMem (base+off,'rt', 'h');"
+      "definition": "rt=capi_int2uint(MP.h.[base+off]);\ncapi_callconv_memAction('read', base+off,'rt', 'h');"
     },
     {
       "name": "lui",
@@ -2888,7 +2888,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\ncapi_passing_convention_readMem(val+reg2, 'reg1', 'w');"
+      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'w');"
     },
     {
       "name": "lwc1",
@@ -2927,7 +2927,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ft = capi_uint2float32(MP.w.[base+off]);\ncapi_passing_convention_readMem(base+off, 'ft', 'w');"
+      "definition": "ft = capi_uint2float32(MP.w.[base+off]);\ncapi_callconv_memAction('read', base+off, 'ft', 'w');"
     },
     {
       "name": "mfc1",
@@ -3127,7 +3127,7 @@
           "valueField": "00011011011"
         }
       ],
-      "definition": "rd = (rs >>> 0) % (rt >>> 0);"
+      "definition": "rd = capi_int2uint(rs) % capi_int2uint(rt);"
     },
     {
       "name": "mov.s",
@@ -3561,7 +3561,7 @@
           "valueField": "011001"
         }
       ],
-      "definition": "var result = (rs >>> 0) * (rt >>> 0);\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO= result % Math.pow(2, 32) >>> 0;"
+      "definition": "var result = capi_int2uint(rs) * capi_int2uint(rt);\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO = result % Math.pow(2, 32) >>> 0;"
     },
     {
       "name": "nop",
@@ -3906,7 +3906,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.b.[off+base]=rt;\ncapi_passing_convention_writeMem(off+base, 'rt', 'b');"
+      "definition": "MP.b.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, 'rt', 'b');"
     },
     {
       "name": "sh",
@@ -3945,7 +3945,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.h.[off+base]=rt;\ncapi_passing_convention_writeMem(off+base, 'rt', 'h');"
+      "definition": "MP.h.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, 'rt', 'h');"
     },
     {
       "name": "sll",
@@ -3991,7 +3991,7 @@
           "valueField": "111111"
         }
       ],
-      "definition": "rd = (rt << sa) >>> 0;"
+      "definition": "rd = capi_int2uint(rt << sa);"
     },
     {
       "name": "slt",
@@ -4161,7 +4161,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rs = (rt >>> 0) < (inm >>> 0) ? 1 : 0;"
+      "definition": "rs = capi_int2uint(rt) < capi_int2uint(inm) ? 1 : 0;"
     },
     {
       "name": "sqrt.s",
@@ -4301,7 +4301,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "rd = (rt >> sa) >>> 0;"
+      "definition": "rd = capi_int2uint(rt >> sa);"
     },
     {
       "name": "srl",
@@ -4400,7 +4400,7 @@
           "valueField": "100010"
         }
       ],
-      "definition": "reg1=((reg2 >> 0) - (reg3 >> 0)) >>> 0;"
+      "definition": "reg1 = capi_int2uint((reg2 >> 0) - (reg3 >> 0));"
     },
     {
       "name": "sub.s",
@@ -4552,7 +4552,7 @@
           "valueField": "100011"
         }
       ],
-      "definition": "rd = ((rs >>> 0) - (rt >>> 0)) >>> 0;"
+      "definition": "rd = capi_int2uint(capi_int2uint(rs) - capi_int2uint(rt)) ;"
     },
     {
       "name": "sw",
@@ -4591,7 +4591,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "capi_mem_write( val+reg2, reg1, 'w');\ncapi_passing_convention_writeMem(val+reg2, 'reg1', 'w');"
+      "definition": "capi_mem_write( val+reg2, reg1, 'w');\ncapi_callconv_memAction('write', val+reg2, 'reg1', 'w');"
     },
     {
       "name": "swc1",
@@ -4630,7 +4630,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = capi_float322uint(ft);\ncapi_passing_convention_writeMem(base+off, 'ft', 'w');"
+      "definition": "MP.w.[base+off] = capi_float322uint(ft);\ncapi_callconv_memAction('write', base+off, 'ft', 'w');"
     },
     {
       "name": "sdc1",
@@ -4669,7 +4669,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);\ncapi_passing_convention_writeMem (base+off, 'ft', 'd');"
+      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);\ncapi_callconv_memAction('write', base+off, 'ft', 'd');"
     },
     {
       "name": "xor",
@@ -4835,7 +4835,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor((rs >>> 0) / (rt >>> 0));"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));"
     },
     {
       "name": "divu",
@@ -4875,7 +4875,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor((rs >>> 0) / (rt >>> 0));\nHI = (rs >>> 0) % (rt >>> 0);"
+      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt);"
     },
     {
       "name": "ldc1",
@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\ncapi_passing_convention_readMem(base+off, 'ft', 'd');"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\ncapi_callconv_memAction('read', base+off, 'ft', 'd');"
     },
     {
       "name": "bc1f",
@@ -5061,7 +5061,7 @@
           "valueField": "0010"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc);\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.eq.d",
@@ -5114,7 +5114,7 @@
           "valueField": "0010"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (ft == fs) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.olt.s",
@@ -5167,7 +5167,7 @@
           "valueField": "0100"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.olt.d",
@@ -5220,7 +5220,7 @@
           "valueField": "0100"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs < ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.ole.s",
@@ -5273,7 +5273,7 @@
           "valueField": "0110"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     },
     {
       "name": "c.ole.d",
@@ -5326,7 +5326,7 @@
           "valueField": "0110"
         }
       ],
-      "definition": "var off = cc >>> 0;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
+      "definition": "var off = capi_int2uint(cc) ;\nif (off != 0) {\n    off = off +1;\n}\nvar condition = (fs <= ft) ? 1 : 0;\nFCSR = (FCSR & ((24 + off) >= 32 ? 0 : (-1 << (24 + off)))) | (condition << (23+off)) | (FCSR & (-1 >>> (9 - off))); FCCR = condition"
     }
   ],
   "pseudoinstructions": [
