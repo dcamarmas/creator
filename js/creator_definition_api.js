@@ -284,40 +284,6 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
     }
 }
 
-/*
-function capi_callconv_writeMem ( addr, reg_name, type )
-{
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
-        return;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                creator_callstack_newWrite(i, j, addr, type);
-            }
-        }
-    }
-}
-
-function capi_callconv_readMem ( addr, reg_name, type )
-{
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
-        return;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                creator_callstack_newRead(i, j, addr, type);
-            }
-        }
-    }
-}
-*/
-
 
 //
 // Draw stack
