@@ -355,7 +355,7 @@ function capi_drawstack_end ()
 
 
 //
-// Auxiliar functions
+// Representation
 //
 
 /*
@@ -375,6 +375,11 @@ function capi_split_double ( reg, index )
     }
 }
 
+/*
+ * Name:        capi_uint2float32
+ * Sypnosis:    capi_uint2float32 ( value )
+ * Description: convert from unsigned int to float32
+ */
 function capi_uint2float32 ( value )
 {
     var buf = new ArrayBuffer(4) ;
@@ -382,6 +387,11 @@ function capi_uint2float32 ( value )
     return (new Float32Array(buf))[0] ;
 }
 
+/*
+ * Name:        capi_float322uint
+ * Sypnosis:    capi_float322uint ( value )
+ * Description: convert from float32 to unsigned int
+ */
 function capi_float322uint ( value )
 {
     var buf = new ArrayBuffer(4) ;
@@ -389,11 +399,21 @@ function capi_float322uint ( value )
     return (new Uint32Array(buf))[0];
 }
 
+/*
+ * Name:        capi_int2uint
+ * Sypnosis:    capi_int2uint ( value )
+ * Description: convert from signed int to unsigned int
+ */
 function capi_int2uint ( value )
 {
     return (value >>> 0) ;
 }
 
+/*
+ * Name:        capi_uint2int
+ * Sypnosis:    capi_uint2int ( value )
+ * Description: convert from unsigned int to signed int
+ */
 function capi_uint2int ( value )
 {
     return (value >> 0) ;
