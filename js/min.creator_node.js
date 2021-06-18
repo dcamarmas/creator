@@ -1079,6 +1079,27 @@ function capi_int2uint ( value )
     return (value >>> 0) ;
 }
 
+function capi_uint2int ( value )
+{
+    return (value >> 0) ;
+}
+
+function capi_uint2float64 ( value0, value1 )
+{
+    var buf = new ArrayBuffer(8) ;
+    var arr = new Uint32Array(buf) ;
+    arr[0] = value0 ;
+    arr[1] = value1 ;
+    return (new Float64Array(buf))[0] ;
+}
+
+function capi_float642uint ( value )
+{
+    var buf = new ArrayBuffer(8) ;
+    (new Float64Array(buf))[0] = value ;
+    return (new Uint32Array(buf)) ;
+}
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
