@@ -2472,7 +2472,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "assert(ft!=0; 'Division by zero not allowed')\nfd = fs / ft;"
+      "definition": "var e = capi_assert(ft!=0, 'Division by zero not allowed')\n if (0 == e)\n { fd = fs / ft; }"
     },
     {
       "name": "div.d",
@@ -2526,7 +2526,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "assert(ft!=0; 'Division by zero not allowed');\nfd = fs / ft;"
+      "definition": "var e = capi_assert(ft!=0, 'Division by zero not allowed')\n if (0 == e)\n { fd = fs / ft; }"
     },
     {
       "name": "j",
@@ -4835,7 +4835,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));"
+      "definition": "var e = capi_assert(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt)); }"
     },
     {
       "name": "divu",
@@ -4875,7 +4875,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt);"
+      "definition": "var e = capi_assert(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { LO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt); }"
     },
     {
       "name": "ldc1",
