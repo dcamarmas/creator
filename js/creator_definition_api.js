@@ -333,3 +333,20 @@ function capi_checkTypeIEEE ( s, e, m )
     return checkTypeIEEE(s, e, m) ;
 }
 
+
+/*
+ *  CREATOR instruction description API:
+ *  Assert
+ */
+
+function capi_assert ( condition, msg )
+{
+    var exception = 0;
+
+    if (!condition) {
+	exception = app.exception(msg) ;
+    }
+
+    return exception ;
+}
+
