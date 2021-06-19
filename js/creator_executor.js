@@ -368,7 +368,7 @@ function executeInstruction ( )
 						 auxDef.replace(/this./g,"elto.") + "\n" +
 					"}\n" +
 					"catch(e){\n" +
-					"  return e;\n" +
+					"  throw e;\n" +
 					"}\n" +
 					" }; ") ;
 		}
