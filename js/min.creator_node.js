@@ -705,117 +705,16 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
 
 
 /*
- *  CREATOR instruction description API 
+ *  CREATOR instruction description API:
+ *  Memory access
  */
-
-//
-// Internal auxiliar functions
-//
-
-function aux_showmsg ( msg, level )
-{
-    if (typeof window !== "undefined")
-         show_notification(msg, level);
-    else console.log(level.toUpperCase() + ": " + msg);
-}
-
-function aux_type2size ( type )
-{
-    var size = 4;
-
-    switch (type)
-    {
-        case 'b':
-        case 'bu':
-        case 'byte':
-             size = 1;
-             break
-
-        case 'h':
-        case 'hu':
-        case 'half':
-             size = 2;
-             break
-
-        case 'w':
-        case 'wu':
-        case 'word':
-             size = 4;
-             break
-    }
-
-    return size ;
-}
-
-function syscall_one_argument ( action, value1 )
-{
-    var compIndex, elemIndex;
-    var match = 0;
-
-    for (var i = 0; i < architecture.components.length; i++)
-    {
-         for (var j = 0; j < architecture.components[i].elements.length; j++)
-         {
-              if (architecture.components[i].elements[j].name.includes(value1) != false) {
-                  compIndex = i;
-                  elemIndex = j;
-                  match = 1;
-              }
-         }
-    }
-
-    if (match == 0) {
-        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null); //TODO: not found
-        return;
-    }
-
-    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
-    syscall(action, compIndex, elemIndex, null, null, true) ;
-}
-
-function syscall_two_arguments ( action, value1, value2 )
-{
-    var compIndex, elemIndex, compIndex2, elemIndex2;
-    var match = 0;
-
-    for (var i = 0; i < architecture.components.length; i++) {
-         for (var j = 0; j < architecture.components[i].elements.length; j++) {
-              if (architecture.components[i].elements[j].name.includes(value1) != false) {
-                  compIndex = i;
-                  elemIndex = j;
-                  match++;
-              }
-         }
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-         for (var j = 0; j < architecture.components[i].elements.length; j++) {
-              if (architecture.components[i].elements[j].name.includes(value2) != false) {
-                  compIndex2 = i;
-                  elemIndex2 = j;
-                  match++;
-              }
-         }
-    }
-
-    if (match < 2) {
-        throw packExecute(true, "capi_syscall: register " + value1 + " or " + value2 + " not found", 'danger', null);
-        return;
-    }
-
-    syscall(action, compIndex, elemIndex, compIndex2, elemIndex2, true);
-}
-
-
-//
-// Memory access
-//
 
 /*
  * Name:        mp_write - Write value into a memory address
  * Sypnosis:    mp_write (destination_address, value2store, byte_or_half_or_word)
  * Description: similar to memmove/memcpy, store a value into an address
  */
+
 function capi_mem_write ( addr, value, type )
 {
     var size = 1 ;
@@ -842,6 +741,7 @@ function capi_mem_write ( addr, value, type )
  * Sypnosis:    mp_read (source_address, byte_or_half_or_word)
  * Description: read a value from an address
  */
+
 function capi_mem_read ( addr, type )
 {
     var size = 1 ;
@@ -864,9 +764,11 @@ function capi_mem_read ( addr, type )
 }
 
 
-//
-// Syscall
-//
+/*
+ *  CREATOR instruction description API:
+ *  Memory access
+ *  Syscall
+ */
 
 /*
  * Name:        capi_syscall - request system call
@@ -874,31 +776,51 @@ function capi_mem_read ( addr, type )
  * Description: request a system call
  */
 
-var arr_pr1 = [ "print_int", "print_float", "print_double", "print_char", "print_string", 
-                "read_int" , "read_float" , "read_double",  "read_char" ];
-var arr_pr2 = [ "read_string", "sbrk" ];
+var capi_sc_nargs = {
+			"exit":         0,
+			"print_char":   1,
+			"print_int":    1,
+			"print_float":  1,
+			"print_double": 1,
+			"print_string": 1,
+			"read_char":    1,
+			"read_int":     1,
+			"read_float":   1,
+			"read_double":  1,
+			"read_string":  2,
+			"sbrk":         2
+		    } ;
 
 function capi_syscall ( action, value1, value2 )
 {
-    if (arr_pr1.includes(action)) {
-        syscall_one_argument(action, value1) ;
-        return ;
+    var nargs = capi_sc_nargs[action] ;
+    if (nargs == 0) value1 = "" ;
+    if (nargs  < 2) value2 = "" ;
+
+    var ret1 = aux_findReg(value1) ;
+    if ( (value2 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
     }
 
-    if (action == "exit") {
-        syscall('exit', null, null, null, null);
-        return ;
+    var ret2 = aux_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
     }
 
-    if (arr_pr2.includes(action)) {
-        syscall_two_arguments(action, value1, value2) ;
-    }
+    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
+    syscall(action, ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex, true);
 }
 
 
-//
-// Check stack
-//
+/*
+ *  CREATOR instruction description API:
+ *  Memory access
+ *  Check stack
+ */
 
 function capi_callconv_begin ( addr )
 {
@@ -969,44 +891,12 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
     }
 }
 
+
 /*
-function capi_callconv_writeMem ( addr, reg_name, type )
-{
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
-        return;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                creator_callstack_newWrite(i, j, addr, type);
-            }
-        }
-    }
-}
-
-function capi_callconv_readMem ( addr, reg_name, type )
-{
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
-        return;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                creator_callstack_newRead(i, j, addr, type);
-            }
-        }
-    }
-}
-*/
-
-
-//
-// Draw stack
-//
+ *  CREATOR instruction description API:
+ *  Memory access
+ *  Draw stack
+ */
 
 function capi_drawstack_begin ( addr )
 {
@@ -1039,15 +929,18 @@ function capi_drawstack_end ()
 }
 
 
-//
-// Representation
-//
+/*
+ *  CREATOR instruction description API:
+ *  Memory access
+ *  Representation
+ */
 
 /*
  * Name:        capi_split_double
  * Sypnosis:    capi_split_double (reg, index)
  * Description: split the double register in highter part and lower part
  */
+
 function capi_split_double ( reg, index )
 {
     var value = bin2hex(double2bin(reg));
@@ -1065,6 +958,7 @@ function capi_split_double ( reg, index )
  * Sypnosis:    capi_uint2float32 ( value )
  * Description: convert from unsigned int to float32
  */
+
 function capi_uint2float32 ( value )
 {
     var buf = new ArrayBuffer(4) ;
@@ -1077,6 +971,7 @@ function capi_uint2float32 ( value )
  * Sypnosis:    capi_float322uint ( value )
  * Description: convert from float32 to unsigned int
  */
+
 function capi_float322uint ( value )
 {
     var buf = new ArrayBuffer(4) ;
@@ -1089,6 +984,7 @@ function capi_float322uint ( value )
  * Sypnosis:    capi_int2uint ( value )
  * Description: convert from signed int to unsigned int
  */
+
 function capi_int2uint ( value )
 {
     return (value >>> 0) ;
@@ -1099,6 +995,7 @@ function capi_int2uint ( value )
  * Sypnosis:    capi_uint2int ( value )
  * Description: convert from unsigned int to signed int
  */
+
 function capi_uint2int ( value )
 {
     return (value >> 0) ;
@@ -5425,12 +5322,12 @@ function packExecute ( error, err_msg, err_type, draw )
 function executeInstruction ( )
 {
 	var draw = {
-								space:   [],
-								info:    [],
-								success: [],
-								danger:  [],
-								flash:   []
-							} ;
+			space:   [],
+			info:    [],
+			success: [],
+			danger:  [],
+			flash:   []
+		   } ;
 
 	console_log(mutexRead);
 	newExecution = false;
@@ -5440,17 +5337,17 @@ function executeInstruction ( )
 		console_log(architecture.components[0].elements[0].value);
 
 		if (instructions.length == 0) {
-				return packExecute(true, 'No instructions in memory', 'danger', null);
+			return packExecute(true, 'No instructions in memory', 'danger', null);
 		}
 		if (executionIndex < -1) {
-				return packExecute(true, 'The program has finished', 'danger', null);
+			return packExecute(true, 'The program has finished', 'danger', null);
 		}
 		if (executionIndex == -1) {
-				return packExecute(true, 'The program has finished with errors', 'danger', null);
+			return packExecute(true, 'The program has finished with errors', 'danger', null);
 		}
 		else if (mutexRead == true) {
-						 return packExecute(false, '', 'info', null);
-				 }
+			return packExecute(false, '', 'info', null);
+		}
 
 		/*Search a main tag*/
 		if (executionInit == 1)
@@ -5685,26 +5582,6 @@ function executeInstruction ( )
 				}
 			}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			console_log(auxDef);
 
 			/*Check if stack limit was modify*/
@@ -5713,7 +5590,7 @@ function executeInstruction ( )
 				var match = re.exec(auxDef);
 				var args = match[1].split(";");
 				auxDef = auxDef.replace(re, "");
-				auxDef = "var exception = 0;\nif("+ args[0] +"){}else{exception=app.exception("+ args[1] +");}\nif(exception==0){" + auxDef + "}";
+				auxDef = "var exception = 0;\nif ("+ args[0] +"){}\nelse {\nexception=app.exception("+ args[1] +");\n}\nif(exception==0){\n" + auxDef + "\n}\n";
 			}
 
 			console_log(auxDef);
@@ -5895,6 +5772,79 @@ function executeProgramOneShot ( limit_n_instructions )
 
 		return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
+
+
+//
+// CAPI auxiliar functions
+//
+
+function aux_showmsg ( msg, level )
+{
+    if (typeof window !== "undefined")
+         show_notification(msg, level);
+    else console.log(level.toUpperCase() + ": " + msg);
+}
+
+function aux_type2size ( type )
+{
+    var size = 4;
+
+    switch (type)
+    {
+        case 'b':
+        case 'bu':
+        case 'byte':
+             size = 1;
+             break
+
+        case 'h':
+        case 'hu':
+        case 'half':
+             size = 2;
+             break
+
+        case 'w':
+        case 'wu':
+        case 'word':
+             size = 4;
+             break
+    }
+
+    return size ;
+}
+
+function aux_findReg ( value1 )
+{
+    var ret = {} ;
+
+    ret.match = 0;
+    ret.compIndex = null;
+    ret.elemIndex = null;
+
+    if (value1 == "") {
+        return ret;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++)
+    {
+         for (var j = 0; j < architecture.components[i].elements.length; j++)
+         {
+              if (architecture.components[i].elements[j].name.includes(value1) != false)
+              {
+                  ret.match = 1;
+                  ret.compIndex = i;
+                  ret.elemIndex = j;
+              }
+         }
+    }
+
+    return ret ;
+}
+
+
+//
+// Executor auxiliar functions
+//
 
 /*Read register value*/
 function readRegister ( indexComp, indexElem )
@@ -7598,6 +7548,7 @@ function updateSimple(comp, elem){
 		}
 	}
 }
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
