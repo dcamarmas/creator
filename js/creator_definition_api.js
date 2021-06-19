@@ -62,6 +62,35 @@ function aux_type2size ( type )
     return size ;
 }
 
+function aux_findReg ( value1 )
+{
+    var ret = {} ;
+
+    ret.match = 0;
+    ret.compIndex = null;
+    ret.elemIndex = null;
+
+    if (value1 == "") {
+        return ret;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++)
+    {
+         for (var j = 0; j < architecture.components[i].elements.length; j++)
+         {
+              if (architecture.components[i].elements[j].name.includes(value1) != false)
+              {
+                  ret.match = 1;
+                  ret.compIndex = i;
+                  ret.elemIndex = j;
+              }
+         }
+    }
+
+    return ret ;
+}
+
+/*
 function syscall_one_argument ( action, value1 )
 {
     var compIndex, elemIndex;
@@ -120,6 +149,28 @@ function syscall_two_arguments ( action, value1, value2 )
 
     syscall(action, compIndex, elemIndex, compIndex2, elemIndex2, true);
 }
+*/
+
+function aux_syscall ( action, value1, value2 )
+{
+    var ret1 = aux_findReg(value1) ;
+    if ( (value2 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = aux_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
+    syscall(action, ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex, true);
+}
+
 
 
 //
@@ -189,25 +240,27 @@ function capi_mem_read ( addr, type )
  * Description: request a system call
  */
 
-var arr_pr1 = [ "print_int", "print_float", "print_double", "print_char", "print_string", 
-                "read_int" , "read_float" , "read_double",  "read_char" ];
-var arr_pr2 = [ "read_string", "sbrk" ];
+var arr_pr = {
+                "exit":         0,
+                "print_int":    1,
+                "print_float":  1,
+                "print_double": 1,
+                "print_char":   1,
+                "print_string": 1,
+                "read_int":     1,
+                "read_float":   1,
+                "read_double":  1,
+                "read_char":    1,
+                "read_string":  2,
+                "sbrk":         2
+             } ;
 
 function capi_syscall ( action, value1, value2 )
 {
-    if (arr_pr1.includes(action)) {
-        syscall_one_argument(action, value1) ;
-        return ;
-    }
-
-    if (action == "exit") {
-        syscall('exit', null, null, null, null);
-        return ;
-    }
-
-    if (arr_pr2.includes(action)) {
-        syscall_two_arguments(action, value1, value2) ;
-    }
+    nargs = arr_pr[action] ;
+    if (nargs == 0) aux_syscall(action, "",     "") ;
+    if (nargs == 1) aux_syscall(action, value1, "") ;
+    if (nargs == 2) aux_syscall(action, value1, value2) ;
 }
 
 
