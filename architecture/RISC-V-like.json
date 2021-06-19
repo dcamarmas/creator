@@ -4197,7 +4197,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_assert(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = parseInt(rs1 / rs2); }",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = parseInt(rs1 / rs2); }",
       "separated": [
         false,
         false,
@@ -4256,7 +4256,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_assert(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { parseInt(capi_int2uint(rs1) / capi_int2uint(rs2)); }",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { parseInt(capi_int2uint(rs1) / capi_int2uint(rs2)); }",
       "separated": [
         false,
         false,
@@ -4923,7 +4923,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_assert(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
       "separated": [
         false,
         false,
@@ -6322,7 +6322,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_assert(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
       "separated": [
         false,
         false,
