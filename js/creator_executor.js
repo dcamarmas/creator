@@ -484,6 +484,79 @@ function executeProgramOneShot ( limit_n_instructions )
 		return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
+
+//
+// CAPI auxiliar functions
+//
+
+function aux_showmsg ( msg, level )
+{
+    if (typeof window !== "undefined")
+         show_notification(msg, level);
+    else console.log(level.toUpperCase() + ": " + msg);
+}
+
+function aux_type2size ( type )
+{
+    var size = 4;
+
+    switch (type)
+    {
+        case 'b':
+        case 'bu':
+        case 'byte':
+             size = 1;
+             break
+
+        case 'h':
+        case 'hu':
+        case 'half':
+             size = 2;
+             break
+
+        case 'w':
+        case 'wu':
+        case 'word':
+             size = 4;
+             break
+    }
+
+    return size ;
+}
+
+function aux_findReg ( value1 )
+{
+    var ret = {} ;
+
+    ret.match = 0;
+    ret.compIndex = null;
+    ret.elemIndex = null;
+
+    if (value1 == "") {
+        return ret;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++)
+    {
+         for (var j = 0; j < architecture.components[i].elements.length; j++)
+         {
+              if (architecture.components[i].elements[j].name.includes(value1) != false)
+              {
+                  ret.match = 1;
+                  ret.compIndex = i;
+                  ret.elemIndex = j;
+              }
+         }
+    }
+
+    return ret ;
+}
+
+
+//
+// Executor auxiliar functions
+//
+
 /*Read register value*/
 function readRegister ( indexComp, indexElem )
 {
@@ -2186,3 +2259,4 @@ function updateSimple(comp, elem){
 		}
 	}
 }
+
