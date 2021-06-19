@@ -1828,7 +1828,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = capi_mem_read(rs1+inm, 'h');\n rd = capi_int2uint(rd);",
+      "definition": "rd = capi_mem_read(rs1+inm, 'hu');\n rd = capi_int2uint(rd);",
       "separated": [
         false,
         false,
@@ -1879,7 +1879,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = capi_mem_read(rs1+inm, 'b');\n rd = capi_int2uint(rd);",
+      "definition": "rd = capi_mem_read(rs1+inm, 'bu');\n rd = capi_int2uint(rd);",
       "separated": [
         false,
         false,
