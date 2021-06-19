@@ -1152,7 +1152,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = inm<<12",
+      "definition": "rd = inm << 12;",
       "separated": [
         false,
         false,
@@ -1189,7 +1189,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC+(inm<<12);",
+      "definition": "rd = PC + (inm << 12);",
       "separated": [
         false,
         false,
@@ -1229,7 +1229,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=PC;\n PC=inm;\n capi_drawstack_begin(inm);",
+      "definition": "rd = PC;\n PC = inm;\n capi_drawstack_begin(inm);",
       "separated": [
         false,
         false,
@@ -1282,7 +1282,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd=PC;\n PC=(rs1+inm)&~1; capi_drawstack_end((rs1+inm)&~1);",
+      "definition": "rd = PC;\n PC = (rs1+inm)&~1; capi_drawstack_end(PC);",
       "separated": [
         false,
         false,
@@ -1339,7 +1339,7 @@
           "stopbit": 15
         }
       ],
-      "definition": "if (rs1 === rs2)PC=PC+((inm<<16)>>14)",
+      "definition": "if (rs1 === rs2)\n PC = PC + ((inm<<16)>>14); ",
       "separated": [
         false,
         false,
@@ -1396,7 +1396,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "if (rs1 !== rs2) PC=PC+((inm<<16)>>14);",
+      "definition": "if (rs1 !== rs2)\n PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1453,7 +1453,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "if ((rs1>>0) < (rs2>>0))PC=PC+((inm<<16)>>14);",
+      "definition": "if ((rs1>>0) < (rs2>>0))\n PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1510,7 +1510,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "if ((rs1>>0) >= (rs2>>0)) PC=PC+((inm<<16)>>14);",
+      "definition": "if ((rs1>>0) >= (rs2>>0)) PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1567,7 +1567,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "if ((rs1>>>0) < (rs2>>>0))PC=PC+((inm<<16)>>14);",
+      "definition": "if ((rs1>>>0) < (rs2>>>0)) PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1624,7 +1624,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "if ((rs1>>>0)> (rs2>>>0))PC=PC+((inm<<16)>>14);",
+      "definition": "if ((rs1>>>0) > (rs2>>>0)) PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1675,7 +1675,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd=((MP.b.[inm+rs1] << 24) >> 24);",
+      "definition": "rd = ((MP.b.[inm+rs1] << 24) >> 24);",
       "separated": [
         false,
         false,
@@ -1777,7 +1777,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd=MP.w.[inm+rs1];",
+      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd = MP.w.[inm+rs1];",
       "separated": [
         false,
         false,
@@ -1828,7 +1828,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd=(MP.h.[rs1+inm] >>> 0);",
+      "definition": "rd = capi_int2uint(MP.h.[rs1+inm]);",
       "separated": [
         false,
         false,
@@ -1879,7 +1879,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd=(MP.b.[rs1+inm] >>> 0);",
+      "definition": "rd = capi_int2uint(MP.b.[rs1+inm]);",
       "separated": [
         false,
         false,
@@ -1936,7 +1936,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "MP.b.[inm+rs1]=rs2",
+      "definition": "MP.b.[inm+rs1] = rs2;",
       "separated": [
         false,
         true,
@@ -1993,7 +1993,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "assert((inm+rs1)%2==0; \"The memory must be align\")\nMP.h.[inm+rs1]=rs2;",
+      "definition": "assert((inm+rs1)%2==0; \"The memory must be align\")\nMP.h.[inm+rs1] = rs2;",
       "separated": [
         false,
         true,
@@ -2050,7 +2050,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nMP.w.[inm+rs1]=rs2",
+      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nMP.w.[inm+rs1] = rs2",
       "separated": [
         false,
         true,
@@ -2101,7 +2101,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "assert(((rs1 >> 0) >= 0 && (inm >> 0) <= 0) || ((rs1 >> 0) <= 0 && (inm >> 0) >= 0) || ((rs1 >> 0) > 0 && (inm >> 0) > 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) > 0) || ((rs1 >> 0) < 0 && (inm >> 0) < 0 && (((rs1 >> 0) + (inm >> 0)) >> 0) < 0); \"Integer Overflow\")\nrd=rs1+inm;",
+      "definition": "assert((capi_uint2int(rs1) >= 0 && capi_uint2int(inm) <= 0) || (capi_uint2int(rs1) <= 0 && capi_uint2int(inm) >= 0) || (capi_uint2int(rs1) > 0 && capi_uint2int(inm) > 0 && ((capi_uint2int(rs1) + capi_uint2int(inm)) >> 0) > 0) || (capi_uint2int(rs1) < 0 && capi_uint2int(inm) < 0 && ((capi_uint2int(rs1) + capi_uint2int(inm)) >> 0) < 0); \"Integer Overflow\")\nrd = rs1 + inm;",
       "separated": [
         false,
         false,
@@ -2151,7 +2151,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = (rs1 >> 0) < (inm >> 0) ? 1 : 0;",
+      "definition": "rd = capi_uint2int(rs1) < capi_uint2int(inm) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2201,7 +2201,7 @@
           "valueField": "011"
         }
       ],
-      "definition": "rd = (rs1 >>> 0) < (inm >>> 0) ? 1 : 0;",
+      "definition": "rd = capi_int2uint(rs1) < capi_int2uint(inm) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2251,7 +2251,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd=rs1^inm;",
+      "definition": "rd = rs1^inm;",
       "separated": [
         false,
         false,
@@ -2302,7 +2302,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "rd=rs1|inm;\n",
+      "definition": "rd = rs1|inm;\n",
       "separated": [
         false,
         false,
@@ -2353,7 +2353,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "rd=rs1&(inm>>>0);\n",
+      "definition": "rd = rs1 & (inm>>>0);\n",
       "separated": [
         false,
         false,
@@ -2411,7 +2411,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = (rs1 << shamt) >>> 0;",
+      "definition": "rd = capi_int2uint(rs1 << shamt);",
       "separated": [
         false,
         false,
@@ -2529,7 +2529,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = (rs1 >> shamt) >>> 0;",
+      "definition": "rd = capi_int2uint(rs1 >> shamt);",
       "separated": [
         false,
         false,
@@ -2588,7 +2588,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = rs2+rs1",
+      "definition": "rd = rs2 + rs1",
       "separated": [
         false,
         false,
@@ -2647,7 +2647,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd =rs1-rs2",
+      "definition": "rd = rs1 - rs2;",
       "separated": [
         false,
         false,
@@ -2706,7 +2706,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = (rs1 << rs2) >>> 0;",
+      "definition": "rd = capi_int2uint(rs1 << rs2);",
       "separated": [
         false,
         false,
@@ -2764,7 +2764,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = (rs1 >> 0) < (rd >> 0) ? 1 : 0;",
+      "definition": "rd = capi_uint2int(rs1) < capi_uint2int(rd) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2822,7 +2822,7 @@
           "valueField": "011"
         }
       ],
-      "definition": "rd = (rs1 << rs2) >>> 0;",
+      "definition": "rd = capi_int2uint(rs1 << rs2);",
       "separated": [
         false,
         false,
@@ -2880,7 +2880,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = (rs1^rs2);",
+      "definition": "rd = (rs1 ^ rs2);",
       "separated": [
         false,
         false,
@@ -2997,7 +2997,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = (rs1 >> rs2) >>> 0;",
+      "definition": "rd = capi_int2uint(rs1 >> rs2);",
       "separated": [
         false,
         false,
@@ -3320,7 +3320,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (rs1 << shamt) >>> 0;",
+      "definition": "rd = capi_int2uint(rs1 << shamt);",
       "separated": [
         false,
         false,
@@ -3379,7 +3379,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (rs1 >>shamt) >>> 0;",
+      "definition": "rd = capi_int2uint(rs1 >> shamt);",
       "separated": [
         false,
         false,
@@ -3431,7 +3431,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=parseInt((rs1+inm).toString(2).slice(-31), 2)",
+      "definition": "rd = parseInt((rs1+inm).toString(2).slice(-31), 2);",
       "separated": [
         false,
         false,
@@ -3489,7 +3489,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 << shamt",
+      "definition": "rd = rs1 << shamt;",
       "separated": [
         false,
         false,
@@ -3548,7 +3548,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 >> shamt",
+      "definition": "rd = rs1 >> shamt;",
       "separated": [
         false,
         false,
@@ -3607,7 +3607,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (rs1 >> shamt) >>> 0",
+      "definition": "rd = capi_int2uint(rs1 >> shamt);",
       "separated": [
         false,
         false,
@@ -3666,7 +3666,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 + rs2",
+      "definition": "rd = rs1 + rs2;",
       "separated": [
         false,
         false,
@@ -3725,7 +3725,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 - rs2",
+      "definition": "rd = rs1 - rs2;",
       "separated": [
         false,
         false,
@@ -3784,7 +3784,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 << parseInt(rs2.toString(2).slice(-5), 2)",
+      "definition": "rd = rs1 << parseInt(rs2.toString(2).slice(-5), 2);",
       "separated": [
         false,
         false,
@@ -3843,7 +3843,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 >> parseInt(rs2.toString(2).slice(-5), 2)",
+      "definition": "rd = rs1 >> parseInt(rs2.toString(2).slice(-5), 2);",
       "separated": [
         false,
         false,
@@ -3902,7 +3902,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 >> parseInt(rs2.toString(2).slice(-5), 2)\n",
+      "definition": "rd = rs1 >> parseInt(rs2.toString(2).slice(-5), 2);\n",
       "separated": [
         false,
         false,
@@ -3961,7 +3961,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 * rs2",
+      "definition": "rd = rs1 * rs2;",
       "separated": [
         false,
         false,
@@ -4020,7 +4020,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = ((rs1 * rs2) >>> 32)",
+      "definition": "rd = ((rs1 * rs2) >>> 32);",
       "separated": [
         false,
         false,
@@ -4079,7 +4079,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = ((rs1 * (rs2>>> 0)) >>> 32)",
+      "definition": "rd = ((rs1 * capi_int2uint(rs2)) >>> 32);",
       "separated": [
         false,
         false,
@@ -4138,7 +4138,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (((rs1 >>> 0) * (rs2>>> 0)) >>> 32)",
+      "definition": "rd = ((capi_int2uint(rs1) * capi_int2uint(rs2)) >>> 32);",
       "separated": [
         false,
         false,
@@ -4256,7 +4256,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt((rs1 >>> 0) / (rs2>>>0));",
+      "definition": "rd = parseInt(capi_int2uint(rs1) / capi_int2uint(rs2));",
       "separated": [
         false,
         false,
@@ -4315,7 +4315,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1%rs2;",
+      "definition": "rd = rs1 % rs2;",
       "separated": [
         false,
         false,
@@ -4374,7 +4374,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (rs1 >>> 0) / (rs2>>>0);",
+      "definition": "rd = capi_int2uint(rs1) / capi_int2uint(rs2);",
       "separated": [
         false,
         false,
@@ -4541,7 +4541,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2+rs3",
+      "definition": "rd = rs1 * rs2 + rs3;",
       "separated": [
         false,
         false,
@@ -4599,7 +4599,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2-rs3",
+      "definition": "rd = rs1 * rs2 - rs3;",
       "separated": [
         false,
         false,
@@ -4657,7 +4657,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = -rs1 * rs2 + rs3",
+      "definition": "rd = -rs1 * rs2 + rs3;",
       "separated": [
         false,
         false,
@@ -4715,7 +4715,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = -rs1 * rs2 -\nrs3",
+      "definition": "rd = -rs1 * rs2 -\nrs3;",
       "separated": [
         false,
         false,
@@ -4767,7 +4767,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2+rs1",
+      "definition": "rd = rs2 + rs1;",
       "separated": [
         false,
         false,
@@ -4923,7 +4923,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 / rs2",
+      "definition": "rd = rs1 / rs2;",
       "separated": [
         false,
         false,
@@ -4976,7 +4976,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.sqrt(rs1)",
+      "definition": "rd = Math.sqrt(rs1);",
       "separated": [
         false,
         false,
@@ -5036,7 +5036,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 >= 0 ? Math.abs(rs1) : -Math.abs(rs1)",
+      "definition": "rd = rs2 >= 0 ? Math.abs(rs1) : -Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -5096,7 +5096,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 <= 0 ? Math.abs(rs1) : -Math.abs(rs1)",
+      "definition": "rd = rs2 <= 0 ? Math.abs(rs1) : -Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -5216,7 +5216,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.min(rs1, rs2)",
+      "definition": "rd = Math.min(rs1, rs2);",
       "separated": [
         false,
         false,
@@ -5276,7 +5276,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.max(rs1, rs2)",
+      "definition": "rd = Math.max(rs1, rs2);",
       "separated": [
         false,
         false,
@@ -5329,7 +5329,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt(rs1)",
+      "definition": "rd = parseInt(rs1);",
       "separated": [
         false,
         false,
@@ -5382,7 +5382,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = (parseInt(rs1) >>> 0)",
+      "definition": "rd = capi_int2uint(parseInt(rs1));",
       "separated": [
         false,
         false,
@@ -5435,7 +5435,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1",
+      "definition": "rd = rs1;",
       "separated": [
         false,
         false,
@@ -5495,7 +5495,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = rs1 === rs2 ? 1 : 0",
+      "definition": "rd = rs1 === rs2 ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -5555,7 +5555,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = rs1<rs2 ? 1 : 0",
+      "definition": "rd = rs1<rs2 ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -5615,7 +5615,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = rs1<=rs2 ? 1 : 0",
+      "definition": "rd = rs1<=rs2 ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -5728,7 +5728,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1",
+      "definition": "rd = rs1;",
       "separated": [
         false,
         false,
@@ -5781,7 +5781,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd= (rs1>>>0)",
+      "definition": "rd = capi_int2uint(rs1);",
       "separated": [
         false,
         false,
@@ -5834,7 +5834,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd=rs1",
+      "definition": "rd = rs1;",
       "separated": [
         false,
         false,
@@ -5943,7 +5943,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2+rs3",
+      "definition": "rd = rs1*rs2+rs3;",
       "separated": [
         false,
         false,
@@ -6001,7 +6001,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2-rs3",
+      "definition": "rd = rs1*rs2-rs3;",
       "separated": [
         false,
         false,
@@ -6059,7 +6059,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = -rs1 * rs2 - rs3",
+      "definition": "rd = -rs1 * rs2 - rs3;",
       "separated": [
         false,
         false,
@@ -6117,7 +6117,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = -rs1 * rs2 + rs3",
+      "definition": "rd = -rs1 * rs2 + rs3;",
       "separated": [
         false,
         false,
@@ -6169,7 +6169,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1+rs2",
+      "definition": "rd = rs1+rs2;",
       "separated": [
         false,
         false,
@@ -6220,7 +6220,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1-rs2",
+      "definition": "rd = rs1-rs2;",
       "separated": [
         false,
         false,
@@ -6271,7 +6271,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2",
+      "definition": "rd = rs1*rs2;",
       "separated": [
         false,
         false,
@@ -6322,7 +6322,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1/rs2",
+      "definition": "rd = rs1/rs2;",
       "separated": [
         false,
         false,
@@ -6374,7 +6374,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.sqrt(rs1)",
+      "definition": "rd = Math.sqrt(rs1);",
       "separated": [
         false,
         false,
@@ -6433,7 +6433,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 > 0 ? Math.abs(rs1) : -Math.abs(rs1)",
+      "definition": "rd = rs2 > 0 ? Math.abs(rs1) : -Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -6493,7 +6493,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 > 0 ? -Math.abs(rs1) : +Math.abs(rs1)",
+      "definition": "rd = rs2 > 0 ? -Math.abs(rs1) : +Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -6613,7 +6613,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.min(rs1, rs2)",
+      "definition": "rd = Math.min(rs1, rs2);",
       "separated": [
         false,
         false,
@@ -6673,7 +6673,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = Math.max(rs1, rs2)",
+      "definition": "rd = Math.max(rs1, rs2);",
       "separated": [
         false,
         false,
@@ -6726,7 +6726,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1",
+      "definition": "rd = rs1;",
       "separated": [
         false,
         false,
@@ -6779,7 +6779,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1",
+      "definition": "rd = rs1;",
       "separated": [
         false,
         false,
@@ -6838,7 +6838,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1==rs2 ? 1 : 0",
+      "definition": "rd = rs1==rs2 ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -6897,7 +6897,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1<rs2 ? 1 : 0",
+      "definition": "rd = rs1<rs2 ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -6956,7 +6956,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1<=rs2 ? 1 : 0",
+      "definition": "rd = rs1<=rs2 ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -7069,7 +7069,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt(rs1)",
+      "definition": "rd = parseInt(rs1);",
       "separated": [
         false,
         false,
@@ -7122,7 +7122,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt(rs1) >>>0",
+      "definition": "rd = capi_int2uint(parseInt(rs1));",
       "separated": [
         false,
         false,
@@ -7175,7 +7175,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseFloat(rs1)",
+      "definition": "rd = parseFloat(rs1);",
       "separated": [
         false,
         false,
@@ -7228,7 +7228,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseFloat(rs1)>>>0",
+      "definition": "rd = capi_int2uint(parseFloat(rs1));",
       "separated": [
         false,
         false,
