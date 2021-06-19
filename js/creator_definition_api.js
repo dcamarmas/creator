@@ -339,7 +339,7 @@ function capi_checkTypeIEEE ( s, e, m )
  *  Assert
  */
 
-function capi_assert ( condition, msg )
+function capi_check ( condition, msg )
 {
     var exception = 0;
 
