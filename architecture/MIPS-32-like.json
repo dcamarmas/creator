@@ -1355,7 +1355,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "assert(((reg1 >> 0) >= 0 && (reg2 >> 0) <= 0) || ((reg1 >> 0) <= 0 && (reg2 >> 0) >= 0) || ((reg1 >> 0) > 0 && (reg2 >> 0) > 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (reg2 >> 0) < 0 && (((reg1 >> 0) + (reg2 >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg3=reg1+reg2;"
+      "definition": "assert((capi_uint2int(reg1) >= 0 && capi_uint2int(reg2) <= 0) || (capi_uint2int(reg1) <= 0 && capi_uint2int(reg2) >= 0) || (capi_uint2int(reg1) > 0 && capi_uint2int(reg2) > 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) > 0) || (capi_uint2int(reg1) < 0 && capi_uint2int(reg2) < 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) < 0); \"Integer Overflow\")\nreg3=reg1+reg2;"
     },
     {
       "name": "add.s",
@@ -1856,7 +1856,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if((rs >> 0) >= 0) {PC=PC+((off << 16) >> 14)}"
+      "definition": "if(capi_uint2int(rs) >= 0) {PC=PC+((off << 16) >> 14)}"
     },
     {
       "name": "bgezal",
@@ -1898,7 +1898,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC; if(rs >> 0 >=0) { PC=PC+((off << 16) >> 14)\n capi_callconv_begin(reg0); capi_drawstack_begin(reg0); }"
+      "definition": "ra = PC; if (capi_uint2int(rs) >= 0) { PC = PC + ((off << 16) >> 14)\n capi_callconv_begin(reg0); capi_drawstack_begin(reg0); }"
     },
     {
       "name": "bgtz",
@@ -1931,7 +1931,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(rs >> 0 > 0) {PC=PC+((off << 16) >> 14)}"
+      "definition": "if (capi_uint2int(rs) > 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "blez",
@@ -1964,7 +1964,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(rs >> 0 <= 0) {PC=PC+((off << 16) >> 14)}"
+      "definition": "if (capi_uint2int(rs) <= 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bltz",
@@ -2004,7 +2004,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(rs >> 0 < 0) {PC=PC+((off << 16) >> 14)}"
+      "definition": "if (capi_uint2int(rs) < 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bne",
@@ -2378,7 +2378,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "var cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}"
+      "definition": "var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}"
     },
     {
       "name": "div",
@@ -2418,7 +2418,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "HI = (rs >> 0) % (rt >> 0);\nvar cociente = ((rs >> 0) / (rt >> 0));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
+      "definition": "HI = capi_uint2int(rs) % capi_uint2int(rt);\nvar cociente = (capi_uint2int(rs) / capi_uint2int(rt));\nif (cociente < 0) {\n    LO = Math.ceil(cociente);\n} else {\n    LO = Math.floor(cociente);\n}\n"
     },
     {
       "name": "div.s",
@@ -3081,7 +3081,7 @@
           "valueField": "00011011010"
         }
       ],
-      "definition": "rd = (rs >> 0) % (rt >> 0);"
+      "definition": "rd = capi_uint2int(rs) % capi_uint2int(rt);"
     },
     {
       "name": "modu",
@@ -3521,7 +3521,7 @@
           "valueField": "011000"
         }
       ],
-      "definition": "var result = (rs >> 0) * (rt >> 0)\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
+      "definition": "var result = capi_uint2int(rs) * capi_uint2int(rt)\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
     },
     {
       "name": "multu",
@@ -4037,7 +4037,7 @@
           "valueField": "101010"
         }
       ],
-      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;"
+      "definition": "rd = capi_uint2int(rs) < capi_uint2int(rt) ? 1 : 0;"
     },
     {
       "name": "sltu",
@@ -4083,7 +4083,7 @@
           "valueField": "101011"
         }
       ],
-      "definition": "rd = (rs >> 0) < (rt >> 0) ? 1 : 0;"
+      "definition": "rd = capi_uint2int(rs) < capi_uint2int(rt) ? 1 : 0;"
     },
     {
       "name": "slti",
@@ -4122,7 +4122,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rs = (rt >> 0) < (inm >> 0) ? 1 : 0;"
+      "definition": "rs = capi_uint2int(rt) < capi_uint2int(inm) ? 1 : 0;"
     },
     {
       "name": "sltiu",
@@ -4400,7 +4400,7 @@
           "valueField": "100010"
         }
       ],
-      "definition": "reg1 = capi_int2uint((reg2 >> 0) - (reg3 >> 0));"
+      "definition": "reg1 = capi_int2uint(capi_uint2int(reg2) - capi_uint2int(reg3));"
     },
     {
       "name": "sub.s",
