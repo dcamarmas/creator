@@ -390,6 +390,7 @@ function executeInstruction ( )
 						executionIndex = -1;
 						return packExecute(true, 'The definition of the instruction contains errors, please review it', 'danger', null);
 				}
+			        // TODO: other exceptions... treat it!
 		}
 
 		/*Refresh stats*/
@@ -489,11 +490,18 @@ function executeProgramOneShot ( limit_n_instructions )
 // CAPI auxiliar functions
 //
 
-function aux_showmsg ( msg, level )
+function aux_show_notification ( msg, level )
 {
     if (typeof window !== "undefined")
          show_notification(msg, level);
     else console.log(level.toUpperCase() + ": " + msg);
+}
+
+function aux_show_exception ( msg )
+{
+    if (typeof app !== "undefined")
+         app.exception(msg);
+    else console.log(msg);
 }
 
 function aux_type2size ( type )
