@@ -1355,7 +1355,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "assert((capi_uint2int(reg1) >= 0 && capi_uint2int(reg2) <= 0) || (capi_uint2int(reg1) <= 0 && capi_uint2int(reg2) >= 0) || (capi_uint2int(reg1) > 0 && capi_uint2int(reg2) > 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) > 0) || (capi_uint2int(reg1) < 0 && capi_uint2int(reg2) < 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) < 0); \"Integer Overflow\")\nreg3=reg1+reg2;"
+      "definition": "assert((capi_uint2int(reg1) >= 0 && capi_uint2int(reg2) <= 0) || (capi_uint2int(reg1) <= 0 && capi_uint2int(reg2) >= 0) || (capi_uint2int(reg1) > 0 && capi_uint2int(reg2) > 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) > 0) || (capi_uint2int(reg1) < 0 && capi_uint2int(reg2) < 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) < 0); 'Integer Overflow')\n reg3 = reg1 + reg2;"
     },
     {
       "name": "add.s",
@@ -1500,7 +1500,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg2=reg1+val;"
+      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\n reg2 = reg1 + val;"
     },
     {
       "name": "addiu",
@@ -1737,7 +1737,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if (ft==0) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (ft == 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bc1nez",
@@ -1777,7 +1777,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if (ft!=0) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (ft != 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "beq",
@@ -2378,7 +2378,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}"
+      "definition": "var e = capi_check(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) {\n rd = Math.ceil(cociente);\n} else {\n rd = Math.floor(cociente);\n}\n }"
     },
     {
       "name": "div",
@@ -2777,7 +2777,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'h');"
+      "definition": "reg1 = capi_mem_read(reg2+val, 'h');\n capi_callconv_memAction('read', reg2+val, 'reg1', 'h');"
     },
     {
       "name": "lhu",
@@ -2888,7 +2888,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'w');"
+      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\n capi_callconv_memAction('read', val+reg2, 'reg1', 'w');"
     },
     {
       "name": "lwc1",
@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\ncapi_callconv_memAction('read', base+off, 'ft', 'd');"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = MP.w.[off+base];\narr[1] = MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, 'ft', 'd');"
     },
     {
       "name": "bc1f",

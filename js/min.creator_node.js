@@ -745,22 +745,36 @@ function capi_mem_write ( addr, value, type )
 function capi_mem_read ( addr, type )
 {
     var size = 1 ;
-    var msg = "The memory must be align";
+    var val  = 0x0 ;
+    var msg  = "The memory must be align";
 
     // 1) check address is aligned
-    //    FUTURE: if (architecture.properties.memory_align == false) return;
     size = aux_type2size(type) ;
-    if (addr % size != 0)
+    if (addr % size != 0) // && (architecture.properties.memory_align == true) <- FUTURE-WORK
     {
         if (typeof app !== "undefined")
              app.exception(msg);
         else console.log(msg);
 
-        return 0x0;
+        return val;
     }
 
     // 2) read from memory
-    return readMemory(addr, type);
+    val = readMemory(addr, type);
+    switch (type)
+    {
+        case 'b':
+	     val = ((val << 24) >> 24) ;
+	     break;
+        case 'h':
+	     val = ((val << 16) >> 16) ;
+	     break;
+        default:
+	     break;
+    }
+
+    // 3) return value
+    return val ;
 }
 
 
