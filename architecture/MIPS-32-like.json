@@ -2699,7 +2699,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = ((MP.b.[val+reg2] << 24) >> 24);\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'b');"
+      "definition": "reg1 = capi_mem_read(reg2+val, 'b');\n capi_callconv_memAction('read', reg2+val, 'reg1', 'b');"
     },
     {
       "name": "lbu",
@@ -2738,7 +2738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt = capi_int2uint(MP.b.[base+off]);\ncapi_callconv_memAction('read', base+off, 'rt', 'b');"
+      "definition": "rt = capi_mem_read(base+off, 'bu');\n capi_callconv_memAction('read', base+off, 'rt', 'b');"
     },
     {
       "name": "lh",
@@ -2816,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt = capi_int2uint(MP.h.[base+off]);\ncapi_callconv_memAction('read', base+off,'rt', 'h');"
+      "definition": "rt = capi_mem_read(base+off, 'hu');\n capi_callconv_memAction('read', base+off, 'rt', 'h');"
     },
     {
       "name": "lui",

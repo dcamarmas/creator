@@ -79,11 +79,25 @@ function capi_mem_read ( addr, type )
     switch (type)
     {
         case 'b':
+	     val = val & 0xFF ;
+	     if (val & 0x80) 
+	         val = 0xFFFFFF00 | val ;
+	     break;
+
+        case 'bu':
 	     val = ((val << 24) >> 24) ;
 	     break;
+
         case 'h':
+	     val = val & 0xFFFF ;
+	     if (val & 0x8000) 
+	         val = 0xFFFF0000 | val ;
+	     break;
+
+        case 'hu':
 	     val = ((val << 16) >> 16) ;
 	     break;
+
         default:
 	     break;
     }
