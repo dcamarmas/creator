@@ -1675,7 +1675,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = capi_mem_read(inm+rs1, 'b');\n rd = ((rd << 24) >> 24);",
+      "definition": "rd = capi_mem_read(inm+rs1, 'byte');\n rd = ((rd << 24) >> 24);",
       "separated": [
         false,
         false,
@@ -1726,7 +1726,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = capi_mem_read(inm+rs1, 'h');\n rd = ((rd << 16 ) >> 16);",
+      "definition": "rd = capi_mem_read(inm+rs1, 'half');\n rd = ((rd << 16 ) >> 16);",
       "separated": [
         false,
         false,
@@ -1828,7 +1828,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = capi_mem_read(rs1+inm, 'h');\n rd = capi_int2uint(rd);",
+      "definition": "rd = capi_mem_read(rs1+inm, 'half');\n rd = capi_int2uint(rd);",
       "separated": [
         false,
         false,
@@ -1879,7 +1879,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = capi_mem_read(rs1+inm, 'b');\n rd = capi_int2uint(rd);",
+      "definition": "rd = capi_mem_read(rs1+inm, 'byte');\n rd = capi_int2uint(rd);",
       "separated": [
         false,
         false,
@@ -1936,7 +1936,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "capi_mem_write(rs1+inm, rs2, 'b');",
+      "definition": "capi_mem_write(rs1+inm, rs2, 'byte');",
       "separated": [
         false,
         true,
@@ -1993,7 +1993,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'h');",
+      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'half');",
       "separated": [
         false,
         true,
@@ -2251,7 +2251,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = rs1 ^ inm;",
+      "definition": "rd = rs1 ^ inm;\n",
       "separated": [
         false,
         false,
@@ -3167,7 +3167,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = capi_mem_read(inm+(rs1>>>0), 'w');",
+      "definition": "var addr = capi_int2uint(rs1) + inm;\n rd = capi_mem_read(addr, 'w');",
       "separated": [
         false,
         false,
@@ -3262,7 +3262,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "capi_mem_write(base+off, capi_split_double(ft, 1), 'w');\n capi_mem_write(base+off+4, capi_split_double(ft, 0), 'w');",
+      "definition": "var val = capi_split_double(ft, 1);\n capi_mem_write(base+off, val, 'w');\n val = capi_split_double(ft, 0);\n capi_mem_write(base+off+4, val, 'w');",
       "separated": [
         false,
         true,
@@ -4197,7 +4197,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt(rs1/rs2);",
+      "definition": "rd = parseInt(rs1 / rs2);",
       "separated": [
         false,
         false,
@@ -4484,7 +4484,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "capi_mem_write(rs2+inm, capi_uint2float32(rs1), 'w');\n",
+      "definition": "var val = capi_uint2float32(rs1);\n capi_mem_write(rs2+inm, val, 'w');\n",
       "separated": [
         false,
         true,
@@ -4715,7 +4715,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = -rs1 * rs2 -rs3;",
+      "definition": "rd = -rs1 * rs2 - rs3;",
       "separated": [
         false,
         false,
