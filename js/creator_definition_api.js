@@ -33,22 +33,23 @@
 function capi_mem_write ( addr, value, type )
 {
     var size = 1 ;
-    var msg  = "The memory must be align";
 
     // 1) check address is aligned
     //    FUTURE: if (architecture.properties.memory_align == false) return;
     size = aux_type2size(type) ;
     if (addr % size != 0)
     {
-        if (typeof app !== "undefined")
-             app.exception(msg);
-        else console.log(msg);
-
+	aux_show_exception("The memory must be align") ;
         return;
     }
 
     // 2) write into memory
-    writeMemory(value, addr, type);
+    try {
+        writeMemory(value, addr, type);
+    } 
+    catch(e) {
+	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+    }
 }
 
 /*
@@ -61,21 +62,24 @@ function capi_mem_read ( addr, type )
 {
     var size = 1 ;
     var val  = 0x0 ;
-    var msg  = "The memory must be align";
 
     // 1) check address is aligned
     size = aux_type2size(type) ;
     if (addr % size != 0) // && (architecture.properties.memory_align == true) <- FUTURE-WORK
     {
-        if (typeof app !== "undefined")
-             app.exception(msg);
-        else console.log(msg);
-
+	aux_show_exception("The memory must be align") ;
         return val;
     }
 
     // 2) read from memory
-    val = readMemory(addr, type);
+    try {
+        val = readMemory(addr, type);
+    } 
+    catch(e) {
+	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+        return val;
+    }
+
     switch (type)
     {
         case 'b':
@@ -194,7 +198,7 @@ function capi_callconv_end ()
     creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
     // User notification
-    aux_showmsg(ret.msg, 'danger') ;
+    aux_show_notification(ret.msg, 'danger') ;
 }
 
 function capi_callconv_memAction ( action, addr, reg_name, type )
@@ -227,7 +231,7 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
                       break;
         case 'read':  creator_callstack_newRead(i, j, addr, type);
                       break;
-        default:      aux_showmsg(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
+        default:      aux_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
                       break;
     }
 }
@@ -265,7 +269,7 @@ function capi_drawstack_end ()
     }
 
     // User notification
-    aux_showmsg(ret.msg, 'warning') ;
+    aux_show_notification(ret.msg, 'warning') ;
 }
 
 
