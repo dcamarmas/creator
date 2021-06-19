@@ -118,12 +118,6 @@
        var limit_n_ins   = parseInt(argv.maxins) ;
        var output_format = argv.output.toUpperCase() ;
 
-       // work: welcome
-       if (output_format == "NORMAL") {
-           var msg = welcome() ;
-           console.log(msg.success) ;
-       }
-
        // work: a) help and usage
        if ( (argv.a != "") && (argv.describe != "") )
        {
@@ -137,6 +131,12 @@
              var o = help_usage() ;
              console.log(welcome() + '\n' + o) ;
              return process.exit(0) ;
+       }
+
+       // work: welcome
+       if (output_format == "NORMAL") {
+           var msg = welcome() ;
+           console.log(msg.success) ;
        }
 
        // work: b) list assembly files
