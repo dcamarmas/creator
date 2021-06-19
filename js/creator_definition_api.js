@@ -62,63 +62,32 @@ function aux_type2size ( type )
     return size ;
 }
 
-function syscall_one_argument ( action, value1 )
+function aux_findReg ( value1 )
 {
-    var compIndex, elemIndex;
-    var match = 0;
+    var ret = {} ;
+
+    ret.match = 0;
+    ret.compIndex = null;
+    ret.elemIndex = null;
+
+    if (value1 == "") {
+        return ret;
+    }
 
     for (var i = 0; i < architecture.components.length; i++)
     {
          for (var j = 0; j < architecture.components[i].elements.length; j++)
          {
-              if (architecture.components[i].elements[j].name.includes(value1) != false) {
-                  compIndex = i;
-                  elemIndex = j;
-                  match = 1;
+              if (architecture.components[i].elements[j].name.includes(value1) != false)
+              {
+                  ret.match = 1;
+                  ret.compIndex = i;
+                  ret.elemIndex = j;
               }
          }
     }
 
-    if (match == 0) {
-        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null); //TODO: not found
-        return;
-    }
-
-    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
-    syscall(action, compIndex, elemIndex, null, null, true) ;
-}
-
-function syscall_two_arguments ( action, value1, value2 )
-{
-    var compIndex, elemIndex, compIndex2, elemIndex2;
-    var match = 0;
-
-    for (var i = 0; i < architecture.components.length; i++) {
-         for (var j = 0; j < architecture.components[i].elements.length; j++) {
-              if (architecture.components[i].elements[j].name.includes(value1) != false) {
-                  compIndex = i;
-                  elemIndex = j;
-                  match++;
-              }
-         }
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-         for (var j = 0; j < architecture.components[i].elements.length; j++) {
-              if (architecture.components[i].elements[j].name.includes(value2) != false) {
-                  compIndex2 = i;
-                  elemIndex2 = j;
-                  match++;
-              }
-         }
-    }
-
-    if (match < 2) {
-        throw packExecute(true, "capi_syscall: register " + value1 + " or " + value2 + " not found", 'danger', null);
-        return;
-    }
-
-    syscall(action, compIndex, elemIndex, compIndex2, elemIndex2, true);
+    return ret ;
 }
 
 
@@ -189,25 +158,43 @@ function capi_mem_read ( addr, type )
  * Description: request a system call
  */
 
-var arr_pr1 = [ "print_int", "print_float", "print_double", "print_char", "print_string", 
-                "read_int" , "read_float" , "read_double",  "read_char" ];
-var arr_pr2 = [ "read_string", "sbrk" ];
+var arr_pr = {
+                "exit":         0,
+                "print_char":   1,
+                "print_int":    1,
+                "print_float":  1,
+                "print_double": 1,
+                "print_string": 1,
+                "read_char":    1,
+                "read_int":     1,
+                "read_float":   1,
+                "read_double":  1,
+                "read_string":  2,
+                "sbrk":         2
+             } ;
 
 function capi_syscall ( action, value1, value2 )
 {
-    if (arr_pr1.includes(action)) {
-        syscall_one_argument(action, value1) ;
-        return ;
+    var nargs = arr_pr[action] ;
+    if (nargs == 0) value1 = "" ;
+    if (nargs  < 2) value2 = "" ;
+
+    var ret1 = aux_findReg(value1) ;
+    if ( (value2 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
     }
 
-    if (action == "exit") {
-        syscall('exit', null, null, null, null);
-        return ;
+    var ret2 = aux_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
     }
 
-    if (arr_pr2.includes(action)) {
-        syscall_two_arguments(action, value1, value2) ;
-    }
+    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
+    syscall(action, ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex, true);
 }
 
 
@@ -283,40 +270,6 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
                       break;
     }
 }
-
-/*
-function capi_callconv_writeMem ( addr, reg_name, type )
-{
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
-        return;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                creator_callstack_newWrite(i, j, addr, type);
-            }
-        }
-    }
-}
-
-function capi_callconv_readMem ( addr, reg_name, type )
-{
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
-        return;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++) {
-        for (var j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                creator_callstack_newRead(i, j, addr, type);
-            }
-        }
-    }
-}
-*/
 
 
 //
