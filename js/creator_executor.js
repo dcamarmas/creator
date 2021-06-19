@@ -33,12 +33,12 @@ function packExecute ( error, err_msg, err_type, draw )
 function executeInstruction ( )
 {
 	var draw = {
-								space:   [],
-								info:    [],
-								success: [],
-								danger:  [],
-								flash:   []
-							} ;
+			space:   [],
+			info:    [],
+			success: [],
+			danger:  [],
+			flash:   []
+		   } ;
 
 	console_log(mutexRead);
 	newExecution = false;
@@ -48,17 +48,17 @@ function executeInstruction ( )
 		console_log(architecture.components[0].elements[0].value);
 
 		if (instructions.length == 0) {
-				return packExecute(true, 'No instructions in memory', 'danger', null);
+			return packExecute(true, 'No instructions in memory', 'danger', null);
 		}
 		if (executionIndex < -1) {
-				return packExecute(true, 'The program has finished', 'danger', null);
+			return packExecute(true, 'The program has finished', 'danger', null);
 		}
 		if (executionIndex == -1) {
-				return packExecute(true, 'The program has finished with errors', 'danger', null);
+			return packExecute(true, 'The program has finished with errors', 'danger', null);
 		}
 		else if (mutexRead == true) {
-						 return packExecute(false, '', 'info', null);
-				 }
+			return packExecute(false, '', 'info', null);
+		}
 
 		/*Search a main tag*/
 		if (executionInit == 1)
@@ -301,7 +301,7 @@ function executeInstruction ( )
 				var match = re.exec(auxDef);
 				var args = match[1].split(";");
 				auxDef = auxDef.replace(re, "");
-				auxDef = "var exception = 0;\nif("+ args[0] +"){}else{exception=app.exception("+ args[1] +");}\nif(exception==0){" + auxDef + "}";
+				auxDef = "var exception = 0;\nif ("+ args[0] +"){}\nelse {\nexception=app.exception("+ args[1] +");\n}\nif(exception==0){\n" + auxDef + "\n}\n";
 			}
 
 			console_log(auxDef);
