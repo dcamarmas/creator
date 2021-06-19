@@ -519,6 +519,12 @@ function aux_type2size ( type )
         case 'word':
              size = 4;
              break
+
+        case 'd':
+        case 'du':
+        case 'double':
+             size = 8;
+             break
     }
 
     return size ;
