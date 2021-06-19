@@ -756,7 +756,7 @@ function capi_mem_read ( addr, type )
              app.exception(msg);
         else console.log(msg);
 
-        return;
+        return 0x0;
     }
 
     // 2) read from memory
@@ -766,7 +766,6 @@ function capi_mem_read ( addr, type )
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Syscall
  */
 
@@ -818,7 +817,6 @@ function capi_syscall ( action, value1, value2 )
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Check stack
  */
 
@@ -894,7 +892,6 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Draw stack
  */
 
@@ -931,7 +928,6 @@ function capi_drawstack_end ()
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Representation
  */
 
