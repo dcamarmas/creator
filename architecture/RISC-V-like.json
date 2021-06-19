@@ -1675,7 +1675,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = capi_mem_read(inm+rs1, 'b');\n rd = ((rd << 24) >> 24);",
+      "definition": "rd = capi_mem_read(inm+rs1, 'b');",
       "separated": [
         false,
         false,
@@ -1726,7 +1726,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = capi_mem_read(inm+rs1, 'h');\n rd = ((rd << 16 ) >> 16);",
+      "definition": "rd = capi_mem_read(inm+rs1, 'h');",
       "separated": [
         false,
         false,
