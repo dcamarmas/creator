@@ -1013,6 +1013,11 @@ function capi_float642uint ( value )
     return (new Uint32Array(buf)) ;
 }
 
+function capi_checkTypeIEEE ( s, e, m )
+{
+    return checkTypeIEEE(s, e, m) ;
+}
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *

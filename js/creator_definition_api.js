@@ -328,3 +328,8 @@ function capi_float642uint ( value )
     return (new Uint32Array(buf)) ;
 }
 
+function capi_checkTypeIEEE ( s, e, m )
+{
+    return checkTypeIEEE(s, e, m) ;
+}
+
