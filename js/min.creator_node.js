@@ -720,9 +720,8 @@ function capi_mem_write ( addr, value, type )
     var size = 1 ;
 
     // 1) check address is aligned
-    //    FUTURE: if (architecture.properties.memory_align == false) return;
     size = aux_type2size(type) ;
-    if (addr % size != 0)
+    if (addr % size != 0) // && (architecture.properties.memory_align == true) <- FUTURE-WORK
     {
 	aux_show_exception("The memory must be align") ;
         return;
@@ -888,28 +887,16 @@ function capi_callconv_end ()
 
 function capi_callconv_memAction ( action, addr, reg_name, type )
 {
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
+    // 1) search for reg_name...
+    var ret = aux_findReg(reg_name) ;
+    if (ret.match == 0) {
         return;
     }
 
-    // 2) search for reg_name...
-    var i = 0;
-    var j = 0;
-    var found = 0;
-    for (i = 0; i < architecture.components.length; i++) {
-        for (j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                found = 1;
-                break;
-            }
-        }
-    }
-    if (found == 0) {
-        return;
-    }
+    var i = ret.compIndex ;
+    var j = ret.elemIndex ;
 
-    // 3) switch action...
+    // 2) switch action...
     switch (action) 
     {
         case 'write': creator_callstack_newWrite(i, j, addr, type);
@@ -5853,25 +5840,25 @@ function aux_type2size ( type )
         case 'bu':
         case 'byte':
              size = 1;
-             break
+             break;
 
         case 'h':
         case 'hu':
         case 'half':
              size = 2;
-             break
+             break;
 
         case 'w':
         case 'wu':
         case 'word':
              size = 4;
-             break
+             break;
 
         case 'd':
         case 'du':
         case 'double':
              size = 8;
-             break
+             break;
     }
 
     return size ;
@@ -5898,6 +5885,7 @@ function aux_findReg ( value1 )
                   ret.match = 1;
                   ret.compIndex = i;
                   ret.elemIndex = j;
+                  break ;
               }
          }
     }
