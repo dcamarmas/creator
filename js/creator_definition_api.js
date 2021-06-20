@@ -369,3 +369,22 @@ function capi_check ( condition, msg )
     return exception ;
 }
 
+function capi_arithmetic_overflow ( op1, op2, res_u )
+{
+    op1_u = capi_uint2int(op1) ;
+    op2_u = capi_uint2int(op2) ;
+    res_u = capi_uint2int(res_u) ;
+
+    return ((op1_u > 0) && (op2_u > 0) && (res_u < 0)) || 
+           ((op1_u < 0) && (op2_u < 0) && (res_u > 0)) ;
+
+/*
+    var is_ok = (op1_u >= 0 && op2_u <= 0) || 
+                (op1_u <= 0 && op2_u >= 0) || 
+                (op1_u >  0 && op2_u >  0 && res_u > 0) || 
+                (op1_u <  0 && op2_u <  0 && res_u < 0) ;
+    return !is_ok ;
+*/
+}
+
+
