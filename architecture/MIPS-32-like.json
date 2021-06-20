@@ -1355,7 +1355,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "var isover = capi_arithmetic_overflow(reg1, reg2, reg1+reg2);\n capi_check(!isover, 'Integer Overflow');\n reg3 = reg1 + reg2;",
+      "definition": "var isover = capi_arithmetic_overflow(reg1, reg2, reg1+reg2);\n capi_check(!isover, 'Integer Overflow');\n reg3 = reg1 + reg2;"
     },
     {
       "name": "add.s",
@@ -1500,7 +1500,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var isover = capi_arithmetic_overflow(reg1, val, reg1+val);\n capi_check(!isover, 'Integer Overflow');\n reg2 = reg1 + val;",
+      "definition": "var isover = capi_arithmetic_overflow(reg1, val, reg1+val);\n capi_check(!isover, 'Integer Overflow');\n reg2 = reg1 + val;"
     },
     {
       "name": "addiu",
