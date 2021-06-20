@@ -718,22 +718,23 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
 function capi_mem_write ( addr, value, type )
 {
     var size = 1 ;
-    var msg  = "The memory must be align";
 
     // 1) check address is aligned
     //    FUTURE: if (architecture.properties.memory_align == false) return;
     size = aux_type2size(type) ;
     if (addr % size != 0)
     {
-        if (typeof app !== "undefined")
-             app.exception(msg);
-        else console.log(msg);
-
+	aux_show_exception("The memory must be align") ;
         return;
     }
 
     // 2) write into memory
-    writeMemory(value, addr, type);
+    try {
+        writeMemory(value, addr, type);
+    } 
+    catch(e) {
+	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+    }
 }
 
 /*
@@ -745,28 +746,58 @@ function capi_mem_write ( addr, value, type )
 function capi_mem_read ( addr, type )
 {
     var size = 1 ;
-    var msg = "The memory must be align";
+    var val  = 0x0 ;
 
     // 1) check address is aligned
-    //    FUTURE: if (architecture.properties.memory_align == false) return;
     size = aux_type2size(type) ;
-    if (addr % size != 0)
+    if (addr % size != 0) // && (architecture.properties.memory_align == true) <- FUTURE-WORK
     {
-        if (typeof app !== "undefined")
-             app.exception(msg);
-        else console.log(msg);
-
-        return;
+	aux_show_exception("The memory must be align") ;
+        return val;
     }
 
     // 2) read from memory
-    return readMemory(addr, type);
+    try {
+        val = readMemory(addr, type);
+    } 
+    catch(e) {
+	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+        return val;
+    }
+
+    switch (type)
+    {
+        case 'b':
+	     val = val & 0xFF ;
+	     if (val & 0x80) 
+	         val = 0xFFFFFF00 | val ;
+	     break;
+
+        case 'bu':
+	     val = ((val << 24) >> 24) ;
+	     break;
+
+        case 'h':
+	     val = val & 0xFFFF ;
+	     if (val & 0x8000) 
+	         val = 0xFFFF0000 | val ;
+	     break;
+
+        case 'hu':
+	     val = ((val << 16) >> 16) ;
+	     break;
+
+        default:
+	     break;
+    }
+
+    // 3) return value
+    return val ;
 }
 
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Syscall
  */
 
@@ -818,7 +849,6 @@ function capi_syscall ( action, value1, value2 )
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Check stack
  */
 
@@ -853,7 +883,7 @@ function capi_callconv_end ()
     creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
     // User notification
-    aux_showmsg(ret.msg, 'danger') ;
+    aux_show_notification(ret.msg, 'danger') ;
 }
 
 function capi_callconv_memAction ( action, addr, reg_name, type )
@@ -886,7 +916,7 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
                       break;
         case 'read':  creator_callstack_newRead(i, j, addr, type);
                       break;
-        default:      aux_showmsg(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
+        default:      aux_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
                       break;
     }
 }
@@ -894,7 +924,6 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Draw stack
  */
 
@@ -925,13 +954,12 @@ function capi_drawstack_end ()
     }
 
     // User notification
-    aux_showmsg(ret.msg, 'warning') ;
+    aux_show_notification(ret.msg, 'warning') ;
 }
 
 
 /*
  *  CREATOR instruction description API:
- *  Memory access
  *  Representation
  */
 
@@ -1015,6 +1043,28 @@ function capi_float642uint ( value )
     var buf = new ArrayBuffer(8) ;
     (new Float64Array(buf))[0] = value ;
     return (new Uint32Array(buf)) ;
+}
+
+function capi_checkTypeIEEE ( s, e, m )
+{
+    return checkTypeIEEE(s, e, m) ;
+}
+
+
+/*
+ *  CREATOR instruction description API:
+ *  Assert
+ */
+
+function capi_check ( condition, msg )
+{
+    var exception = 0;
+
+    if (!condition) {
+	exception = app.exception(msg) ;
+    }
+
+    return exception ;
 }
 
 /*
@@ -5657,7 +5707,7 @@ function executeInstruction ( )
 						 auxDef.replace(/this./g,"elto.") + "\n" +
 					"}\n" +
 					"catch(e){\n" +
-					"  return e;\n" +
+					"  throw e;\n" +
 					"}\n" +
 					" }; ") ;
 		}
@@ -5679,6 +5729,7 @@ function executeInstruction ( )
 						executionIndex = -1;
 						return packExecute(true, 'The definition of the instruction contains errors, please review it', 'danger', null);
 				}
+			        // TODO: other exceptions... treat it!
 		}
 
 		/*Refresh stats*/
@@ -5778,11 +5829,18 @@ function executeProgramOneShot ( limit_n_instructions )
 // CAPI auxiliar functions
 //
 
-function aux_showmsg ( msg, level )
+function aux_show_notification ( msg, level )
 {
     if (typeof window !== "undefined")
          show_notification(msg, level);
     else console.log(level.toUpperCase() + ": " + msg);
+}
+
+function aux_show_exception ( msg )
+{
+    if (typeof app !== "undefined")
+         app.exception(msg);
+    else console.log(msg);
 }
 
 function aux_type2size ( type )
@@ -5807,6 +5865,12 @@ function aux_type2size ( type )
         case 'wu':
         case 'word':
              size = 4;
+             break
+
+        case 'd':
+        case 'du':
+        case 'double':
+             size = 8;
              break
     }
 

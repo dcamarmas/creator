@@ -1282,7 +1282,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = PC;\n PC = (rs1+inm)&~1; capi_drawstack_end(PC);",
+      "definition": "rd = PC;\n PC = (rs1+inm)&~1;\n capi_drawstack_end(PC);",
       "separated": [
         false,
         false,
@@ -1510,7 +1510,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "if ((rs1>>0) >= (rs2>>0)) PC = PC + ((inm<<16)>>14);",
+      "definition": "if ((rs1>>0) >= (rs2>>0))\n PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1567,7 +1567,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "if ((rs1>>>0) < (rs2>>>0)) PC = PC + ((inm<<16)>>14);",
+      "definition": "if ((rs1>>>0) < (rs2>>>0))\n PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1624,7 +1624,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "if ((rs1>>>0) > (rs2>>>0)) PC = PC + ((inm<<16)>>14);",
+      "definition": "if ((rs1>>>0) > (rs2>>>0))\n PC = PC + ((inm<<16)>>14);",
       "separated": [
         false,
         true,
@@ -1675,7 +1675,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = ((MP.b.[inm+rs1] << 24) >> 24);",
+      "definition": "rd = capi_mem_read(inm+rs1, 'b');",
       "separated": [
         false,
         false,
@@ -1726,7 +1726,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "assert((inm+rs1)%2==0; \"The memory must be aligned\")\nrd=((MP.h.[inm+rs1] << 16 ) >> 16);",
+      "definition": "rd = capi_mem_read(inm+rs1, 'h');",
       "separated": [
         false,
         false,
@@ -1777,7 +1777,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nrd = MP.w.[inm+rs1];",
+      "definition": "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'w');",
       "separated": [
         false,
         false,
@@ -1828,7 +1828,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "rd = capi_int2uint(MP.h.[rs1+inm]);",
+      "definition": "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'hu');\n rd = capi_int2uint(rd);",
       "separated": [
         false,
         false,
@@ -1879,7 +1879,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = capi_int2uint(MP.b.[rs1+inm]);",
+      "definition": "var addr = capi_int2uint(rs1)+inm;\n rd = capi_mem_read(addr, 'bu');\n rd = capi_int2uint(rd);",
       "separated": [
         false,
         false,
@@ -1936,7 +1936,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "MP.b.[inm+rs1] = rs2;",
+      "definition": "capi_mem_write(rs1+inm, rs2, 'b');",
       "separated": [
         false,
         true,
@@ -1993,7 +1993,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "assert((inm+rs1)%2==0; \"The memory must be align\")\nMP.h.[inm+rs1] = rs2;",
+      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'h');",
       "separated": [
         false,
         true,
@@ -2050,7 +2050,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "assert((inm+rs1)%4==0; \"The memory must be align\")\nMP.w.[inm+rs1] = rs2",
+      "definition": "rd = capi_mem_write(inm+rs1, rs2, 'w');",
       "separated": [
         false,
         true,
@@ -2151,7 +2151,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_uint2int(rs1) < capi_uint2int(inm) ? 1 : 0;",
+      "definition": "rd = (capi_uint2int(rs1) < capi_uint2int(inm)) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2201,7 +2201,7 @@
           "valueField": "011"
         }
       ],
-      "definition": "rd = capi_int2uint(rs1) < capi_int2uint(inm) ? 1 : 0;",
+      "definition": "rd = (capi_int2uint(rs1) < capi_int2uint(inm)) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -2251,7 +2251,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "rd = rs1^inm;",
+      "definition": "rd = rs1 ^ inm;\n",
       "separated": [
         false,
         false,
@@ -2302,7 +2302,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "rd = rs1|inm;\n",
+      "definition": "rd = rs1 | inm;\n",
       "separated": [
         false,
         false,
@@ -2353,7 +2353,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "rd = rs1 & (inm>>>0);\n",
+      "definition": "rd = rs1 & capi_int2uint(inm);\n",
       "separated": [
         false,
         false,
@@ -2764,7 +2764,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = capi_uint2int(rs1) < capi_uint2int(rd) ? 1 : 0;",
+      "definition": "rd = (capi_uint2int(rs1) < capi_uint2int(rd)) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -3167,7 +3167,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%4 == 0; \"The memory must be align\");\nrd=(MP.w.[inm+(rs1>>>0)])",
+      "definition": "var addr = capi_int2uint(rs1) + inm;\n rd = capi_mem_read(addr, 'w');",
       "separated": [
         false,
         false,
@@ -3262,7 +3262,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);",
+      "definition": "var val = capi_split_double(ft, 1);\n capi_mem_write(base+off, val, 'w');\n val = capi_split_double(ft, 0);\n capi_mem_write(base+off+4, val, 'w');",
       "separated": [
         false,
         true,
@@ -4197,7 +4197,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt(rs1/rs2);",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = parseInt(rs1 / rs2); }",
       "separated": [
         false,
         false,
@@ -4256,7 +4256,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = parseInt(capi_int2uint(rs1) / capi_int2uint(rs2));",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { parseInt(capi_int2uint(rs1) / capi_int2uint(rs2)); }",
       "separated": [
         false,
         false,
@@ -4426,7 +4426,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = capi_uint2float32(MP.w.[inm+rs2]);\n",
+      "definition": "rd = capi_mem_read(rs2+inm, 'w');\n rd = capi_uint2float32(rd);\n",
       "separated": [
         false,
         false,
@@ -4484,7 +4484,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "MP.w.[inm+rs2] = capi_uint2float32(rs1);\n",
+      "definition": "var val = capi_uint2float32(rs1);\n capi_mem_write(rs2+inm, val, 'w');\n",
       "separated": [
         false,
         true,
@@ -4715,7 +4715,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = -rs1 * rs2 -\nrs3;",
+      "definition": "rd = -rs1 * rs2 - rs3;",
       "separated": [
         false,
         false,
@@ -4923,7 +4923,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1 / rs2;",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
       "separated": [
         false,
         false,
@@ -5036,7 +5036,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 >= 0 ? Math.abs(rs1) : -Math.abs(rs1);",
+      "definition": "rd = (rs2 >= 0) ? Math.abs(rs1) : -Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -5096,7 +5096,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 <= 0 ? Math.abs(rs1) : -Math.abs(rs1);",
+      "definition": "rd = (rs2 <= 0) ? Math.abs(rs1) : -Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -5156,7 +5156,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? -Math.abs(rs1) : Math.abs(rs1);",
+      "definition": "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -5495,7 +5495,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "rd = rs1 === rs2 ? 1 : 0;",
+      "definition": "rd = (rs1 === rs2) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -5555,7 +5555,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "rd = rs1<rs2 ? 1 : 0;",
+      "definition": "rd = (rs1 < rs2) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -5615,7 +5615,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "rd = rs1<=rs2 ? 1 : 0;",
+      "definition": "rd = (rs1 <= rs2) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -5675,7 +5675,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "let a = app.float2bin(rs1);\nrd=checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));",
+      "definition": "let a = app.float2bin(rs1);\nrd=capi_checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));",
       "separated": [
         false,
         false,
@@ -5943,7 +5943,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2+rs3;",
+      "definition": "rd = rs1 * rs2 + rs3;",
       "separated": [
         false,
         false,
@@ -6001,7 +6001,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2-rs3;",
+      "definition": "rd = rs1 * rs2 - rs3;",
       "separated": [
         false,
         false,
@@ -6169,7 +6169,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1+rs2;",
+      "definition": "rd = rs1 + rs2;",
       "separated": [
         false,
         false,
@@ -6220,7 +6220,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1-rs2;",
+      "definition": "rd = rs1 - rs2;",
       "separated": [
         false,
         false,
@@ -6271,7 +6271,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1*rs2;",
+      "definition": "rd = rs1 * rs2;",
       "separated": [
         false,
         false,
@@ -6322,7 +6322,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1/rs2;",
+      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
       "separated": [
         false,
         false,
@@ -6433,7 +6433,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 > 0 ? Math.abs(rs1) : -Math.abs(rs1);",
+      "definition": "rd = (rs2 > 0) ? Math.abs(rs1) : -Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -6493,7 +6493,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs2 > 0 ? -Math.abs(rs1) : +Math.abs(rs1);",
+      "definition": "rd = (rs2 > 0) ? -Math.abs(rs1) : +Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -6553,7 +6553,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = rs1<0; let b = rs2<0;\nrd = a^b ? -Math.abs(rs1) : Math.abs(rs1);",
+      "definition": "let a = rs1<0; let b = rs2<0;\nrd = (a^b) ? -Math.abs(rs1) : Math.abs(rs1);",
       "separated": [
         false,
         false,
@@ -6838,7 +6838,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1==rs2 ? 1 : 0;",
+      "definition": "rd = (rs1 == rs2) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -6897,7 +6897,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1<rs2 ? 1 : 0;",
+      "definition": "rd = (rs1 < rs2) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -6956,7 +6956,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "rd = rs1<=rs2 ? 1 : 0;",
+      "definition": "rd = (rs1 <= rs2) ? 1 : 0;",
       "separated": [
         false,
         false,
@@ -7016,7 +7016,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = app.float2bin(rs1);\nrd=checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));",
+      "definition": "let a = app.float2bin(rs1);\nrd=capi_checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));",
       "separated": [
         false,
         false,
