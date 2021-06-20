@@ -1355,7 +1355,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "assert((capi_uint2int(reg1) >= 0 && capi_uint2int(reg2) <= 0) || (capi_uint2int(reg1) <= 0 && capi_uint2int(reg2) >= 0) || (capi_uint2int(reg1) > 0 && capi_uint2int(reg2) > 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) > 0) || (capi_uint2int(reg1) < 0 && capi_uint2int(reg2) < 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) < 0); 'Integer Overflow')\n reg3 = reg1 + reg2;"
+      "definition": "var isover = capi_arithmetic_overflow(reg1, reg2, reg1+reg2);\n capi_check(!isover, 'Integer Overflow');\n reg3 = reg1 + reg2;",
     },
     {
       "name": "add.s",
@@ -1500,7 +1500,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\n reg2 = reg1 + val;"
+      "definition": "var isover = capi_arithmetic_overflow(reg1, val, reg1+val);\n capi_check(!isover, 'Integer Overflow');\n reg2 = reg1 + val;",
     },
     {
       "name": "addiu",
@@ -2849,7 +2849,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1 = val<<16;"
+      "definition": "reg1 = val << 16;"
     },
     {
       "name": "lw",
