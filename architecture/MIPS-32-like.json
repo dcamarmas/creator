@@ -1262,7 +1262,7 @@
           "valueField": "000101"
         }
       ],
-      "definition": "fd = Math.abs(fs)"
+      "definition": "fd = Math.abs(fs);"
     },
     {
       "name": "abs.d",
@@ -1309,7 +1309,7 @@
           "valueField": "000101"
         }
       ],
-      "definition": "fd = Math.abs(fs)"
+      "definition": "fd = Math.abs(fs);"
     },
     {
       "name": "add",
@@ -1355,7 +1355,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "assert((capi_uint2int(reg1) >= 0 && capi_uint2int(reg2) <= 0) || (capi_uint2int(reg1) <= 0 && capi_uint2int(reg2) >= 0) || (capi_uint2int(reg1) > 0 && capi_uint2int(reg2) > 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) > 0) || (capi_uint2int(reg1) < 0 && capi_uint2int(reg2) < 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) < 0); \"Integer Overflow\")\nreg3=reg1+reg2;"
+      "definition": "assert((capi_uint2int(reg1) >= 0 && capi_uint2int(reg2) <= 0) || (capi_uint2int(reg1) <= 0 && capi_uint2int(reg2) >= 0) || (capi_uint2int(reg1) > 0 && capi_uint2int(reg2) > 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) > 0) || (capi_uint2int(reg1) < 0 && capi_uint2int(reg2) < 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) < 0); 'Integer Overflow')\n reg3 = reg1 + reg2;"
     },
     {
       "name": "add.s",
@@ -1408,7 +1408,7 @@
           "valueField": "000000"
         }
       ],
-      "definition": "fd = fs + ft"
+      "definition": "fd = fs + ft;"
     },
     {
       "name": "add.d",
@@ -1461,7 +1461,7 @@
           "valueField": "000000"
         }
       ],
-      "definition": "fd = fs + ft"
+      "definition": "fd = fs + ft;"
     },
     {
       "name": "addi",
@@ -1500,7 +1500,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\nreg2=reg1+val;"
+      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\n reg2 = reg1 + val;"
     },
     {
       "name": "addiu",
@@ -1539,7 +1539,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg2=reg1+val;"
+      "definition": "reg2 = reg1 + val;"
     },
     {
       "name": "addu",
@@ -1585,7 +1585,7 @@
           "valueField": "100001"
         }
       ],
-      "definition": "reg3=reg1+reg2;"
+      "definition": "reg3 = reg1 + reg2;"
     },
     {
       "name": "and",
@@ -1631,7 +1631,7 @@
           "valueField": "100100"
         }
       ],
-      "definition": "reg3=reg1&reg2;"
+      "definition": "reg3 = reg1 & reg2;"
     },
     {
       "name": "andi",
@@ -1670,7 +1670,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg2=reg1 & capi_int2uint(val);"
+      "definition": "reg2 = reg1 & capi_int2uint(val);"
     },
     {
       "name": "bc",
@@ -1697,7 +1697,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "PC=PC+((off << 6) >> 4)"
+      "definition": "PC = PC + ((off << 6) >> 4);"
     },
     {
       "name": "bc1eqz",
@@ -1737,7 +1737,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(ft==0){PC=PC+((off << 16) >> 14)}"
+      "definition": "if (ft == 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bc1nez",
@@ -1777,7 +1777,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(ft!=0){PC=PC+((off << 16) >> 14)}"
+      "definition": "if (ft != 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "beq",
@@ -1816,7 +1816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 == reg2){PC=PC+((off << 16) >> 14)}"
+      "definition": "if (reg1 == reg2) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bgez",
@@ -1856,7 +1856,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(capi_uint2int(rs) >= 0) {PC=PC+((off << 16) >> 14)}"
+      "definition": "if (capi_uint2int(rs) >= 0) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bgezal",
@@ -1898,7 +1898,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra = PC; if (capi_uint2int(rs) >= 0) { PC = PC + ((off << 16) >> 14)\n capi_callconv_begin(reg0); capi_drawstack_begin(reg0); }"
+      "definition": "ra = PC;\n if (capi_uint2int(rs) >= 0)\n { PC = PC + ((off << 16) >> 14)\n capi_callconv_begin(reg0); capi_drawstack_begin(reg0); }"
     },
     {
       "name": "bgtz",
@@ -1931,7 +1931,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if (capi_uint2int(rs) > 0) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (capi_uint2int(rs) > 0)\n { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "blez",
@@ -1964,7 +1964,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if (capi_uint2int(rs) <= 0) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (capi_uint2int(rs) <= 0)\n { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bltz",
@@ -2004,7 +2004,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if (capi_uint2int(rs) < 0) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (capi_uint2int(rs) < 0)\n { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "bne",
@@ -2043,7 +2043,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if(reg1 != reg2){PC=PC+((off << 16) >> 14)}"
+      "definition": "if (reg1 != reg2) { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "cvt.d.s",
@@ -2090,7 +2090,7 @@
           "valueField": "100001"
         }
       ],
-      "definition": "fd = fs"
+      "definition": "fd = fs;"
     },
     {
       "name": "cvt.d.w",
@@ -2137,7 +2137,7 @@
           "valueField": "100001"
         }
       ],
-      "definition": "fd = fs"
+      "definition": "fd = fs;"
     },
     {
       "name": "cvt.s.d",
@@ -2184,7 +2184,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "fd = fs"
+      "definition": "fd = fs;"
     },
     {
       "name": "cvt.s.w",
@@ -2231,7 +2231,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "fd = parseFloat(fs)"
+      "definition": "fd = parseFloat(fs);"
     },
     {
       "name": "cvt.w.s",
@@ -2278,7 +2278,7 @@
           "valueField": "100100"
         }
       ],
-      "definition": "fd = parseInt(fs)"
+      "definition": "fd = parseInt(fs);"
     },
     {
       "name": "cvt.w.d",
@@ -2325,7 +2325,7 @@
           "valueField": "100100"
         }
       ],
-      "definition": "fd = parseInt(fs)"
+      "definition": "fd = parseInt(fs);"
     },
     {
       "name": "div",
@@ -2378,7 +2378,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\nif (cociente < 0) {\n    rd = Math.ceil(cociente);\n} else {\n    rd = Math.floor(cociente);\n}"
+      "definition": "var e = capi_check(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) {\n rd = Math.ceil(cociente);\n} else {\n rd = Math.floor(cociente);\n}\n }"
     },
     {
       "name": "div",
@@ -2472,7 +2472,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "assert(ft!=0; 'Division by zero not allowed')\nfd = fs / ft"
+      "definition": "var e = capi_check(ft!=0, 'Division by zero not allowed')\n if (0 == e)\n { fd = fs / ft; }"
     },
     {
       "name": "div.d",
@@ -2526,7 +2526,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "assert(ft!=0; 'Division by zero not allowed');\nfd = fs / ft"
+      "definition": "var e = capi_check(ft!=0, 'Division by zero not allowed')\n if (0 == e)\n { fd = fs / ft; }"
     },
     {
       "name": "j",
@@ -2553,7 +2553,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "PC=addr"
+      "definition": "PC = addr;"
     },
     {
       "name": "jal",
@@ -2582,7 +2582,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra=PC\nPC=addr;\n capi_callconv_begin(addr); capi_drawstack_begin(addr);"
+      "definition": "ra = PC\nPC = addr;\n capi_callconv_begin(addr); capi_drawstack_begin(addr);"
     },
     {
       "name": "jalr",
@@ -2624,7 +2624,7 @@
           "valueField": "001001"
         }
       ],
-      "definition": "rd=PC;\n PC=rs;\n capi_callconv_begin(rs); capi_drawstack_begin(rs);"
+      "definition": "rd = PC;\n PC = rs;\n capi_callconv_begin(rs); capi_drawstack_begin(rs);"
     },
     {
       "name": "jr",
@@ -2660,7 +2660,7 @@
           "valueField": "001000"
         }
       ],
-      "definition": "PC=rs; \ncapi_callconv_end(); capi_drawstack_end();"
+      "definition": "PC = rs; \ncapi_callconv_end(); capi_drawstack_end();"
     },
     {
       "name": "lb",
@@ -2699,7 +2699,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1=((MP.b.[val+reg2] << 24) >> 24);\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'b');"
+      "definition": "reg1 = capi_mem_read(reg2+val, 'b');\n capi_callconv_memAction('read', reg2+val, 'reg1', 'b');"
     },
     {
       "name": "lbu",
@@ -2738,7 +2738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=capi_int2uint(MP.b.[base+off]);\ncapi_callconv_memAction('read', base+off, 'rt', 'b');"
+      "definition": "rt = capi_mem_read(base+off, 'bu');\n capi_callconv_memAction('read', base+off, 'rt', 'b');"
     },
     {
       "name": "lh",
@@ -2777,7 +2777,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "assert((val+reg2)%2==0; \"The memory must be aligned\")\nreg1=((MP.h.[val+reg2] << 16 ) >> 16);\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'h');"
+      "definition": "reg1 = capi_mem_read(reg2+val, 'h');\n capi_callconv_memAction('read', reg2+val, 'reg1', 'h');"
     },
     {
       "name": "lhu",
@@ -2816,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt=capi_int2uint(MP.h.[base+off]);\ncapi_callconv_memAction('read', base+off,'rt', 'h');"
+      "definition": "rt = capi_mem_read(base+off, 'hu');\n capi_callconv_memAction('read', base+off, 'rt', 'h');"
     },
     {
       "name": "lui",
@@ -2849,7 +2849,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=val<<16;"
+      "definition": "reg1 = val<<16;"
     },
     {
       "name": "lw",
@@ -2888,7 +2888,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\ncapi_callconv_memAction('read', val+reg2, 'reg1', 'w');"
+      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\n capi_callconv_memAction('read', val+reg2, 'reg1', 'w');"
     },
     {
       "name": "lwc1",
@@ -3001,7 +3001,7 @@
           "valueField": "010000"
         }
       ],
-      "definition": "rd=HI;"
+      "definition": "rd = HI;"
     },
     {
       "name": "mflo",
@@ -3035,7 +3035,7 @@
           "valueField": "010010"
         }
       ],
-      "definition": "rd=LO;"
+      "definition": "rd = LO;"
     },
     {
       "name": "mod",
@@ -3174,7 +3174,7 @@
           "valueField": "000110"
         }
       ],
-      "definition": "fd = fs"
+      "definition": "fd = fs;"
     },
     {
       "name": "mov.d",
@@ -3221,7 +3221,7 @@
           "valueField": "000110"
         }
       ],
-      "definition": "fd = fs"
+      "definition": "fd = fs;"
     },
     {
       "name": "mtc1",
@@ -3295,7 +3295,7 @@
           "valueField": "010001"
         }
       ],
-      "definition": "HI=rs"
+      "definition": "HI = rs;"
     },
     {
       "name": "mtlo",
@@ -3329,7 +3329,7 @@
           "valueField": "010011"
         }
       ],
-      "definition": "LO=rs"
+      "definition": "LO = rs;"
     },
     {
       "name": "mul",
@@ -3375,7 +3375,7 @@
           "valueField": "000010"
         }
       ],
-      "definition": "reg1=reg2*reg3;"
+      "definition": "reg1 = reg2 * reg3;"
     },
     {
       "name": "mul.s",
@@ -3428,7 +3428,7 @@
           "valueField": "000010"
         }
       ],
-      "definition": "fd = fs * ft"
+      "definition": "fd = fs * ft;"
     },
     {
       "name": "mul.d",
@@ -3481,7 +3481,7 @@
           "valueField": "000010"
         }
       ],
-      "definition": "fd = fs * ft"
+      "definition": "fd = fs * ft;"
     },
     {
       "name": "mult",
@@ -3681,7 +3681,7 @@
           "valueField": "100101"
         }
       ],
-      "definition": "reg1=reg2|reg3;"
+      "definition": "reg1 = reg2 | reg3;"
     },
     {
       "name": "ori",
@@ -3720,7 +3720,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2|val;"
+      "definition": "reg1 = reg2 | val;"
     },
     {
       "name": "rotr",
@@ -3820,7 +3820,7 @@
           "valueField": "010110"
         }
       ],
-      "definition": "fd = 1.0/Math.sqrt(fs)"
+      "definition": "fd = 1.0/Math.sqrt(fs);"
     },
     {
       "name": "rsqrt.d",
@@ -3867,7 +3867,7 @@
           "valueField": "010110"
         }
       ],
-      "definition": "fd = 1.0/Math.sqrt(fs)"
+      "definition": "fd = 1.0/Math.sqrt(fs);"
     },
     {
       "name": "sb",
@@ -4208,7 +4208,7 @@
           "valueField": "000100"
         }
       ],
-      "definition": "fd = Math.sqrt(fs)"
+      "definition": "fd = Math.sqrt(fs);"
     },
     {
       "name": "sqrt.d",
@@ -4255,7 +4255,7 @@
           "valueField": "000100"
         }
       ],
-      "definition": "fd = Math.sqrt(fs)"
+      "definition": "fd = Math.sqrt(fs);"
     },
     {
       "name": "sra",
@@ -4453,7 +4453,7 @@
           "valueField": "000001"
         }
       ],
-      "definition": "fd = fs - ft"
+      "definition": "fd = fs - ft;"
     },
     {
       "name": "sub.d",
@@ -4506,7 +4506,7 @@
           "valueField": "000001"
         }
       ],
-      "definition": "fd = fs - ft"
+      "definition": "fd = fs - ft;"
     },
     {
       "name": "subu",
@@ -4591,7 +4591,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "capi_mem_write( val+reg2, reg1, 'w');\ncapi_callconv_memAction('write', val+reg2, 'reg1', 'w');"
+      "definition": "capi_mem_write(val+reg2, reg1, 'w');\ncapi_callconv_memAction('write', val+reg2, 'reg1', 'w');"
     },
     {
       "name": "swc1",
@@ -4715,7 +4715,7 @@
           "valueField": "100110"
         }
       ],
-      "definition": "reg1=reg2^reg3;"
+      "definition": "reg1 = reg2 ^ reg3;"
     },
     {
       "name": "xori",
@@ -4754,7 +4754,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1=reg2^val;"
+      "definition": "reg1 = reg2 ^ val;"
     },
     {
       "name": "syscall",
@@ -4835,7 +4835,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nrd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));"
+      "definition": "var e = capi_check(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt)); }"
     },
     {
       "name": "divu",
@@ -4875,7 +4875,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "assert(rt!=0; 'Division by zero not allowed')\nLO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt);"
+      "definition": "var e = capi_check(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { LO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt); }"
     },
     {
       "name": "ldc1",
@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[off+base];\narr[1] =  MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\ncapi_callconv_memAction('read', base+off, 'ft', 'd');"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = MP.w.[off+base];\narr[1] = MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, 'ft', 'd');"
     },
     {
       "name": "bc1f",
