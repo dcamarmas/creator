@@ -2101,7 +2101,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "assert((capi_uint2int(rs1) >= 0 && capi_uint2int(inm) <= 0) || (capi_uint2int(rs1) <= 0 && capi_uint2int(inm) >= 0) || (capi_uint2int(rs1) > 0 && capi_uint2int(inm) > 0 && ((capi_uint2int(rs1) + capi_uint2int(inm)) >> 0) > 0) || (capi_uint2int(rs1) < 0 && capi_uint2int(inm) < 0 && ((capi_uint2int(rs1) + capi_uint2int(inm)) >> 0) < 0); \"Integer Overflow\")\nrd = rs1 + inm;",
+      "definition": "var isover = capi_arithmetic_overflow(rs1, inm, rs1+inm);\n capi_check(isover, 'Integer Overflow');\n rd = rs1 + inm;",
       "separated": [
         false,
         false,
@@ -3218,7 +3218,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%8 == 0; \"The memory must be align\");\nrd = MP.d.[inm+rs1];",
+      "definition": "var addr = capi_int2uint(rs1) + inm;\n rd = capi_mem_read(addr, 'd');",
       "separated": [
         false,
         false,
