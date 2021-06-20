@@ -2101,7 +2101,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "var isover = capi_arithmetic_overflow(rs1, inm, rs1+inm);\n capi_check(isover, 'Integer Overflow');\n rd = rs1 + inm;",
+      "definition": "var isover = capi_arithmetic_overflow(rs1, inm, rs1+inm);\n capi_check(!isover, 'Integer Overflow');\n rd = rs1 + inm;",
       "separated": [
         false,
         false,
