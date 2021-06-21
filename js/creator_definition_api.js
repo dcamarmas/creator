@@ -358,15 +358,9 @@ function capi_checkTypeIEEE ( s, e, m )
  *  Assert
  */
 
-function capi_check ( condition, msg )
+function capi_raise ( msg )
 {
-    var exception = 0;
-
-    if (!condition) {
-	exception = app.exception(msg) ;
-    }
-
-    return exception ;
+    return app.exception(msg) ;
 }
 
 function capi_arithmetic_overflow ( op1, op2, res_u )
@@ -386,5 +380,4 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
     return !is_ok ;
 */
 }
-
 
