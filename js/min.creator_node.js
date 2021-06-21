@@ -1154,6 +1154,7 @@ var code_assembly = '';
 /*Compilation index*/
 var tokenIndex = 0 ;
 var nEnters = 0 ;
+var pc = 4; //PRUEBA
 /*Instructions memory address*/
 var address;
 /*Data memory address*/
@@ -1517,6 +1518,8 @@ function assembly_compiler()
         data = [];
         executionInit = 1;
         mutexRead = false;
+
+        pc = 4;
 
         nEnters = 0;
 
@@ -4545,6 +4548,11 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
       if(validTagPC == false && resultPseudo == -3){
         console_log("pendiente");
 
+
+        pc=pc+(architecture.instructions[i].nwords*4); //PRUEBA
+
+
+
         var padding = "";
         padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
         binary = binary + padding;
@@ -4584,7 +4592,11 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
 
       else{
         if(resultPseudo == -3){
-          console_log("no pendiente")
+          console_log("no pendiente");
+
+
+          pc=pc+(architecture.instructions[i].nwords*4); //Prueba
+
 
           var padding = "";
           padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
@@ -4853,7 +4865,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
         re = /reg\.pc/
         console_log(re);
         while (definition.search(re) != -1){
-          definition = definition.replace(re, "getReg('PC')");
+          //definition = definition.replace(re, "getReg('PC')");
+          definition = definition.replace(re, "pc"); //PRUEBA
           console_log(definition);
         }
 
