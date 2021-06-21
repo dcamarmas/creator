@@ -7742,7 +7742,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nlb rd op{tmp_low} (rd);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nlb rd op{tmp_low} (rd);\n"
     },
     {
       "name": "lh",
@@ -7766,7 +7766,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nlh rd op{tmp_low} (rd);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nlh rd op{tmp_low} (rd);\n"
     },
     {
       "name": "lw",
@@ -7790,7 +7790,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nlw rd op{tmp_low} (rd);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nlw rd op{tmp_low} (rd);\n"
     },
     {
       "name": "sb",
@@ -7820,7 +7820,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nsb rd op{tmp_low} (rd);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nsb rd op{tmp_low} (rd);\n"
     },
     {
       "name": "sh",
@@ -7850,7 +7850,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nsh rd op{tmp_low} (rd);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nsh rd op{tmp_low} (rd);\n"
     },
     {
       "name": "sw",
@@ -7880,7 +7880,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nsw rd op{tmp_low} (rd);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rd op{tmp_hi};\nsw rd op{tmp_low} (rd);\n"
     },
     {
       "name": "flw",
@@ -7910,7 +7910,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nflw rd op{tmp_low} (rt);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nflw rd op{tmp_low} (rt);\n"
 
     },
     {
@@ -7941,7 +7941,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nfld rd op{tmp_low} (rt);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nfld rd op{tmp_low} (rt);\n"
     },
     {
       "name": "fsw",
@@ -7971,7 +7971,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nfsw rd op{tmp_low} (rt);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nfsw rd op{tmp_low} (rt);\n"
     },
     {
       "name": "fsd",
@@ -8001,7 +8001,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nfsd rd op{tmp_low} (rt);\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nfsd rd op{tmp_low} (rt);\n"
     },
 
 
@@ -8317,7 +8317,7 @@
           "stopbit": "0"
         }
       ],
-      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc - 4;\ntmp_hi='0x'+((tmp&0xFFFFF000)>>12).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n"
+      "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_low='0x'+(tmp&0x00000FFF).toString(16)};\nauipc rd op{tmp_hi};\naddi rd rd op{tmp_low};\n"
     },
     {
       "name": "li",
