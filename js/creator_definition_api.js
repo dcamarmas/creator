@@ -21,6 +21,35 @@
 
 /*
  *  CREATOR instruction description API:
+ *  Assert
+ */
+
+function capi_raise ( msg )
+{
+    if (typeof app !== "undefined")
+         app.exception(msg);
+    else console.log(msg);
+}
+
+function capi_arithmetic_overflow ( op1, op2, res_u )
+{
+    op1_u = capi_uint2int(op1) ;
+    op2_u = capi_uint2int(op2) ;
+    res_u = capi_uint2int(res_u) ;
+
+    return ((op1_u > 0) && (op2_u > 0) && (res_u < 0)) || 
+           ((op1_u < 0) && (op2_u < 0) && (res_u > 0)) ;
+}
+
+function capi_bad_align ( addr, type )
+{
+    size = aux_type2size(type) ;
+    return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
+}
+
+
+/*
+ *  CREATOR instruction description API:
  *  Memory access
  */
 
@@ -35,11 +64,9 @@ function capi_mem_write ( addr, value, type )
     var size = 1 ;
 
     // 1) check address is aligned
-    //    FUTURE: if (architecture.properties.memory_align == false) return;
-    size = aux_type2size(type) ;
-    if (addr % size != 0)
+    if (capi_bad_align(addr, type))
     {
-	aux_show_exception("The memory must be align") ;
+	capi_raise("The memory must be align") ;
         return;
     }
 
@@ -48,7 +75,7 @@ function capi_mem_write ( addr, value, type )
         writeMemory(value, addr, type);
     } 
     catch(e) {
-	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
     }
 }
 
@@ -64,10 +91,9 @@ function capi_mem_read ( addr, type )
     var val  = 0x0 ;
 
     // 1) check address is aligned
-    size = aux_type2size(type) ;
-    if (addr % size != 0) // && (architecture.properties.memory_align == true) <- FUTURE-WORK
+    if (capi_bad_align(addr, type))
     {
-	aux_show_exception("The memory must be align") ;
+	capi_raise("The memory must be align") ;
         return val;
     }
 
@@ -76,7 +102,7 @@ function capi_mem_read ( addr, type )
         val = readMemory(addr, type);
     } 
     catch(e) {
-	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
         return val;
     }
 
@@ -203,28 +229,16 @@ function capi_callconv_end ()
 
 function capi_callconv_memAction ( action, addr, reg_name, type )
 {
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
+    // 1) search for reg_name...
+    var ret = aux_findReg(reg_name) ;
+    if (ret.match == 0) {
         return;
     }
 
-    // 2) search for reg_name...
-    var i = 0;
-    var j = 0;
-    var found = 0;
-    for (i = 0; i < architecture.components.length; i++) {
-        for (j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                found = 1;
-                break;
-            }
-        }
-    }
-    if (found == 0) {
-        return;
-    }
+    var i = ret.compIndex ;
+    var j = ret.elemIndex ;
 
-    // 3) switch action...
+    // 2) switch action...
     switch (action) 
     {
         case 'write': creator_callstack_newWrite(i, j, addr, type);
@@ -363,22 +377,5 @@ function capi_float642uint ( value )
 function capi_checkTypeIEEE ( s, e, m )
 {
     return checkTypeIEEE(s, e, m) ;
-}
-
-
-/*
- *  CREATOR instruction description API:
- *  Assert
- */
-
-function capi_check ( condition, msg )
-{
-    var exception = 0;
-
-    if (!condition) {
-	exception = app.exception(msg) ;
-    }
-
-    return exception ;
 }
 
