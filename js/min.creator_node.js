@@ -706,6 +706,35 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
 
 /*
  *  CREATOR instruction description API:
+ *  Assert
+ */
+
+function capi_raise ( msg )
+{
+    if (typeof app !== "undefined")
+         app.exception(msg);
+    else console.log(msg);
+}
+
+function capi_arithmetic_overflow ( op1, op2, res_u )
+{
+    op1_u = capi_uint2int(op1) ;
+    op2_u = capi_uint2int(op2) ;
+    res_u = capi_uint2int(res_u) ;
+
+    return ((op1_u > 0) && (op2_u > 0) && (res_u < 0)) || 
+           ((op1_u < 0) && (op2_u < 0) && (res_u > 0)) ;
+}
+
+function capi_bad_align ( addr, type )
+{
+    size = aux_type2size(type) ;
+    return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
+}
+
+
+/*
+ *  CREATOR instruction description API:
  *  Memory access
  */
 
@@ -720,11 +749,9 @@ function capi_mem_write ( addr, value, type )
     var size = 1 ;
 
     // 1) check address is aligned
-    //    FUTURE: if (architecture.properties.memory_align == false) return;
-    size = aux_type2size(type) ;
-    if (addr % size != 0)
+    if (capi_bad_align(addr, type))
     {
-	aux_show_exception("The memory must be align") ;
+	capi_raise("The memory must be align") ;
         return;
     }
 
@@ -733,7 +760,7 @@ function capi_mem_write ( addr, value, type )
         writeMemory(value, addr, type);
     } 
     catch(e) {
-	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
     }
 }
 
@@ -749,10 +776,9 @@ function capi_mem_read ( addr, type )
     var val  = 0x0 ;
 
     // 1) check address is aligned
-    size = aux_type2size(type) ;
-    if (addr % size != 0) // && (architecture.properties.memory_align == true) <- FUTURE-WORK
+    if (capi_bad_align(addr, type))
     {
-	aux_show_exception("The memory must be align") ;
+	capi_raise("The memory must be align") ;
         return val;
     }
 
@@ -761,7 +787,7 @@ function capi_mem_read ( addr, type )
         val = readMemory(addr, type);
     } 
     catch(e) {
-	aux_show_exception("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
         return val;
     }
 
@@ -888,28 +914,16 @@ function capi_callconv_end ()
 
 function capi_callconv_memAction ( action, addr, reg_name, type )
 {
-    // 1) move the associated finite state machine...
-    if (reg_name == '') {
+    // 1) search for reg_name...
+    var ret = aux_findReg(reg_name) ;
+    if (ret.match == 0) {
         return;
     }
 
-    // 2) search for reg_name...
-    var i = 0;
-    var j = 0;
-    var found = 0;
-    for (i = 0; i < architecture.components.length; i++) {
-        for (j = 0; j < architecture.components[i].elements.length; j++) {
-            if (architecture.components[i].elements[j].name == reg_name) {
-                found = 1;
-                break;
-            }
-        }
-    }
-    if (found == 0) {
-        return;
-    }
+    var i = ret.compIndex ;
+    var j = ret.elemIndex ;
 
-    // 3) switch action...
+    // 2) switch action...
     switch (action) 
     {
         case 'write': creator_callstack_newWrite(i, j, addr, type);
@@ -1050,23 +1064,6 @@ function capi_checkTypeIEEE ( s, e, m )
     return checkTypeIEEE(s, e, m) ;
 }
 
-
-/*
- *  CREATOR instruction description API:
- *  Assert
- */
-
-function capi_check ( condition, msg )
-{
-    var exception = 0;
-
-    if (!condition) {
-	exception = app.exception(msg) ;
-    }
-
-    return exception ;
-}
-
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -1155,6 +1152,7 @@ var code_assembly = '';
 /*Compilation index*/
 var tokenIndex = 0 ;
 var nEnters = 0 ;
+var pc = 4; //PRUEBA
 /*Instructions memory address*/
 var address;
 /*Data memory address*/
@@ -1518,6 +1516,8 @@ function assembly_compiler()
         data = [];
         executionInit = 1;
         mutexRead = false;
+
+        pc = 4;
 
         nEnters = 0;
 
@@ -4546,6 +4546,11 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
       if(validTagPC == false && resultPseudo == -3){
         console_log("pendiente");
 
+
+        pc=pc+(architecture.instructions[i].nwords*4); //PRUEBA
+
+
+
         var padding = "";
         padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
         binary = binary + padding;
@@ -4585,7 +4590,11 @@ console_log((architecture.instructions[i].co).padStart(fieldsLength, "0"));
 
       else{
         if(resultPseudo == -3){
-          console_log("no pendiente")
+          console_log("no pendiente");
+
+
+          pc=pc+(architecture.instructions[i].nwords*4); //Prueba
+
 
           var padding = "";
           padding = padding.padStart((architecture.instructions[i].nwords*32)-(binary.length), "0");
@@ -4854,7 +4863,8 @@ function pseudoinstruction_compiler ( instruction, label, line )
         re = /reg\.pc/
         console_log(re);
         while (definition.search(re) != -1){
-          definition = definition.replace(re, "getReg('PC')");
+          //definition = definition.replace(re, "getReg('PC')");
+          definition = definition.replace(re, "pc"); //PRUEBA
           console_log(definition);
         }
 
@@ -5566,16 +5576,23 @@ function executeInstruction ( )
 
 				var var_readings_definitions      = {};
 				var var_readings_definitions_prev = {};
+				var var_readings_definitions_name = {};
 				var var_writings_definitions      = {};
 
 				//Generate all registers, values, etc. readings
-				for (var i = 1; i < signatureRawParts.length; i++){
-					if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
-						for (var j = 0; j < architecture.components.length; j++){
-							for (var z = architecture.components[j].elements.length-1; z >= 0; z--){
-								if(architecture.components[j].elements[z].name.includes(instructionExecParts[i])){
+				for (var i = 1; i < signatureRawParts.length; i++)
+				{
+					if (signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg")
+					{
+						for (var j = 0; j < architecture.components.length; j++)
+						{
+							for (var z = architecture.components[j].elements.length-1; z >= 0; z--)
+							{
+								if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
+								{
 									var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+");\n";
 									var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+");\n";
+									var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "';\n";
 
 									re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
 									//If the register is in the left hand than '=' then write register always
@@ -5584,7 +5601,8 @@ function executeInstruction ( )
 									}
 									//Write register only if value is diferent
 									else{
-										var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev){writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+");}\n";
+										var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
+											                                          " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
 									}
 
 								}
@@ -5597,41 +5615,45 @@ function executeInstruction ( )
 				}
 
 				for (var elto in var_readings_definitions){
-					readings_description = readings_description + var_readings_definitions[elto];
+				     readings_description = readings_description + var_readings_definitions[elto];
 				}
-
 				for (var elto in var_readings_definitions_prev){
-					readings_description = readings_description + var_readings_definitions_prev[elto];
+				     readings_description = readings_description + var_readings_definitions_prev[elto];
 				}
-
+				for (var elto in var_readings_definitions_name){
+				     readings_description = readings_description + var_readings_definitions_name[elto];
+				}
 				for (var elto in var_writings_definitions){
-					writings_description = writings_description + var_writings_definitions[elto];
+				     writings_description = writings_description + var_writings_definitions[elto];
 				}
 			}
 
-			console_log(auxDef);
+			//console_log(auxDef);
 
-			/*writeRegister and readRegister direcly named include into the definition*/
-			for (var i = 0; i < architecture.components.length; i++){
-				for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
-
+			/* writeRegister and readRegister direcly named include into the definition */
+			for (var i = 0; i < architecture.components.length; i++)
+			{
+				for (var j = architecture.components[i].elements.length-1; j >= 0; j--)
+				{
 					var clean_name = clean_string(architecture.components[i].elements[j].name[0], 'reg_');
 					var clean_aliases = architecture.components[i].elements[j].name.map((x)=> clean_string(x, 'reg_')).join('|');
 
 					re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
-					if(auxDef.search(re) != -1){
-							writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
+					if (auxDef.search(re) != -1){
+					    writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
 					}
-
 
 					re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
-					if(auxDef.search(re) != -1){
-						readings_description = readings_description + "var " + clean_name + " = readRegister("+i+" ,"+j+");\n";
+					if (auxDef.search(re) != -1){
+					    readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+");\n";
+					    readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
 					}
-
 				}
 			}
 
+			//
+			// BEGIN string-replace
+			//
 			console_log(auxDef);
 
 			/*Check if stack limit was modify*/
@@ -5643,7 +5665,7 @@ function executeInstruction ( )
 				auxDef = "var exception = 0;\nif ("+ args[0] +"){}\nelse {\nexception=app.exception("+ args[1] +");\n}\nif(exception==0){\n" + auxDef + "\n}\n";
 			}
 
-			console_log(auxDef);
+			// console_log(auxDef);
 
 			/*Write in memory*/
 			var index = 0;
@@ -5656,7 +5678,7 @@ function executeInstruction ( )
 
 				re = /MP.[whbd].\[(.*?)\] *=/;
 				auxDef = auxDef.replace(re, "dir" + index + "=");
-				auxDef = "var dir" + index + " =null\n" + auxDef;
+				auxDef = "var dir" + index + " = null;\n" + auxDef;
 
 				auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
 				re = /MP.([whb]).\[(.*?)\] *=/;
@@ -5668,7 +5690,7 @@ function executeInstruction ( )
 				var match = re.exec(auxDef);
 				re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
 				auxDef = auxDef.replace(re, "dir" + index + " =");
-				auxDef = "var dir" + index + " =null\n" + auxDef;
+				auxDef = "var dir" + index + " = null;\n" + auxDef;
 
 				auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
 				re = new RegExp("MP.([whbd]).(.*?) *=");
@@ -5691,25 +5713,32 @@ function executeInstruction ( )
 				auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
 				re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
 			}
+			//
+			// END string-replace
+			//
 
-			auxDef = "/*Read all instruction fields*/\n" + 
-								readings_description +
-			         "\n/*Original instruction definition*/\n" + 
+			auxDef = "\n/* Read all instruction fields */\n" + 
+					readings_description +
+			         "\n/* Original instruction definition */\n" + 
 			         	auxDef + 
-			         "\n\n/*Modify values*/\n" + 
+			         "\n\n/* Modify values */\n" + 
 			         	writings_description;
 
-			console_log(auxDef);
+			// DEBUG
+			console_log(" ................................. " +
+			            "instructions[" + executionIndex + "]:\n" +
+			            auxDef + "\n" +
+			            " ................................. ");
 
 			// preload instruction
 			eval("instructions[" + executionIndex + "].preload = function(elto) { " +
-					"try {\n" +
-						 auxDef.replace(/this./g,"elto.") + "\n" +
-					"}\n" +
-					"catch(e){\n" +
-					"  throw e;\n" +
-					"}\n" +
-					" }; ") ;
+			     "   try {\n" +
+			 	   auxDef.replace(/this./g,"elto.") + "\n" +
+			     "   }\n" +
+			     "   catch(e){\n" +
+			     "     throw e;\n" +
+			     "   }\n" +
+			     "}; ") ;
 		}
 
 
@@ -5836,13 +5865,6 @@ function aux_show_notification ( msg, level )
     else console.log(level.toUpperCase() + ": " + msg);
 }
 
-function aux_show_exception ( msg )
-{
-    if (typeof app !== "undefined")
-         app.exception(msg);
-    else console.log(msg);
-}
-
 function aux_type2size ( type )
 {
     var size = 4;
@@ -5853,25 +5875,25 @@ function aux_type2size ( type )
         case 'bu':
         case 'byte':
              size = 1;
-             break
+             break;
 
         case 'h':
         case 'hu':
         case 'half':
              size = 2;
-             break
+             break;
 
         case 'w':
         case 'wu':
         case 'word':
              size = 4;
-             break
+             break;
 
         case 'd':
         case 'du':
         case 'double':
              size = 8;
-             break
+             break;
     }
 
     return size ;
@@ -5898,6 +5920,7 @@ function aux_findReg ( value1 )
                   ret.match = 1;
                   ret.compIndex = i;
                   ret.elemIndex = j;
+                  break ;
               }
          }
     }

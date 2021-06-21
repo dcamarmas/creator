@@ -1355,7 +1355,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "assert((capi_uint2int(reg1) >= 0 && capi_uint2int(reg2) <= 0) || (capi_uint2int(reg1) <= 0 && capi_uint2int(reg2) >= 0) || (capi_uint2int(reg1) > 0 && capi_uint2int(reg2) > 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) > 0) || (capi_uint2int(reg1) < 0 && capi_uint2int(reg2) < 0 && ((capi_uint2int(reg1) + capi_uint2int(reg2)) >> 0) < 0); 'Integer Overflow')\n reg3 = reg1 + reg2;"
+      "definition": "var isover = capi_arithmetic_overflow(reg1, reg2, reg1+reg2);\n if (!isover)\n { reg3 = reg1 + reg2; }\n else\n { capi_raise('Integer Overflow'); }\n"
     },
     {
       "name": "add.s",
@@ -1500,7 +1500,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert(((reg1 >> 0) >= 0 && (val >> 0) <= 0) || ((reg1 >> 0) <= 0 && (val >> 0) >= 0) || ((reg1 >> 0) > 0 && (val >> 0) > 0 && (((reg1 >> 0) + (val >> 0)) >> 0) > 0) || ((reg1 >> 0) < 0 && (val >> 0) < 0 && (((reg1 >> 0) + (val >> 0)) >> 0) < 0); \"Integer Overflow\")\n reg2 = reg1 + val;"
+      "definition": "var isover = capi_arithmetic_overflow(reg1, val, reg1+val);\n if (!isover)\n { reg2 = reg1 + val; }\n else\n { capi_raise('Integer Overflow'); }\n"
     },
     {
       "name": "addiu",
@@ -2378,7 +2378,7 @@
           "valueField": "011010"
         }
       ],
-      "definition": "var e = capi_check(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) {\n rd = Math.ceil(cociente);\n} else {\n rd = Math.floor(cociente);\n}\n }"
+      "definition": "if (rt != 0)\n { var cociente = (capi_uint2int(rs) / capi_uint2int(rt));\n if (cociente < 0) { rd = Math.ceil(cociente); } else { rd = Math.floor(cociente); }\n }\n else\n { capi_raise('Division by zero not allowed'); }\n"
     },
     {
       "name": "div",
@@ -2472,7 +2472,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "var e = capi_check(ft!=0, 'Division by zero not allowed')\n if (0 == e)\n { fd = fs / ft; }"
+      "definition": "if (ft != 0)\n { fd = fs / ft; }\n else { capi_raise('Division by zero not allowed'); }\n"
     },
     {
       "name": "div.d",
@@ -2526,7 +2526,7 @@
           "valueField": "000011"
         }
       ],
-      "definition": "var e = capi_check(ft!=0, 'Division by zero not allowed')\n if (0 == e)\n { fd = fs / ft; }"
+      "definition": "if (ft != 0)\n { fd = fs / ft; }\n else { capi_raise('Division by zero not allowed'); }\n"
     },
     {
       "name": "j",
@@ -2699,7 +2699,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = capi_mem_read(reg2+val, 'b');\n capi_callconv_memAction('read', reg2+val, 'reg1', 'b');"
+      "definition": "reg1 = capi_mem_read(reg2+val, 'b');\n capi_callconv_memAction('read', reg2+val, reg1_name, 'b');"
     },
     {
       "name": "lbu",
@@ -2738,7 +2738,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt = capi_mem_read(base+off, 'bu');\n capi_callconv_memAction('read', base+off, 'rt', 'b');"
+      "definition": "rt = capi_mem_read(base+off, 'bu');\n capi_callconv_memAction('read', base+off, rt_name, 'b');"
     },
     {
       "name": "lh",
@@ -2777,7 +2777,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = capi_mem_read(reg2+val, 'h');\n capi_callconv_memAction('read', reg2+val, 'reg1', 'h');"
+      "definition": "reg1 = capi_mem_read(reg2+val, 'h');\n capi_callconv_memAction('read', reg2+val, reg1_name, 'h');"
     },
     {
       "name": "lhu",
@@ -2816,7 +2816,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "rt = capi_mem_read(base+off, 'hu');\n capi_callconv_memAction('read', base+off, 'rt', 'h');"
+      "definition": "rt = capi_mem_read(base+off, 'hu');\n capi_callconv_memAction('read', base+off, rt_name, 'h');"
     },
     {
       "name": "lui",
@@ -2849,7 +2849,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "reg1 = val<<16;"
+      "definition": "reg1 = val << 16;"
     },
     {
       "name": "lw",
@@ -2888,7 +2888,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\n capi_callconv_memAction('read', val+reg2, 'reg1', 'w');"
+      "definition": "reg1 = capi_mem_read(val+reg2, 'w');\n capi_callconv_memAction('read', val+reg2, reg1_name, 'w');"
     },
     {
       "name": "lwc1",
@@ -2927,7 +2927,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ft = capi_uint2float32(MP.w.[base+off]);\ncapi_callconv_memAction('read', base+off, 'ft', 'w');"
+      "definition": "ft = capi_uint2float32(MP.w.[base+off]);\ncapi_callconv_memAction('read', base+off, ft_name, 'w');"
     },
     {
       "name": "mfc1",
@@ -3906,7 +3906,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.b.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, 'rt', 'b');"
+      "definition": "MP.b.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, rt_name, 'b');"
     },
     {
       "name": "sh",
@@ -3945,7 +3945,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.h.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, 'rt', 'h');"
+      "definition": "MP.h.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, rt_name, 'h');"
     },
     {
       "name": "sll",
@@ -4591,7 +4591,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "capi_mem_write(val+reg2, reg1, 'w');\ncapi_callconv_memAction('write', val+reg2, 'reg1', 'w');"
+      "definition": "capi_mem_write(val+reg2, reg1, 'w');\ncapi_callconv_memAction('write', val+reg2, reg1_name, 'w');"
     },
     {
       "name": "swc1",
@@ -4630,7 +4630,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = capi_float322uint(ft);\ncapi_callconv_memAction('write', base+off, 'ft', 'w');"
+      "definition": "MP.w.[base+off] = capi_float322uint(ft);\ncapi_callconv_memAction('write', base+off, ft_name, 'w');"
     },
     {
       "name": "sdc1",
@@ -4669,7 +4669,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);\ncapi_callconv_memAction('write', base+off, 'ft', 'd');"
+      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);\ncapi_callconv_memAction('write', base+off, ft_name, 'd');"
     },
     {
       "name": "xor",
@@ -4835,7 +4835,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "var e = capi_check(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt)); }"
+      "definition": "if (rt != 0)\n { rd = Math.floor(capi_int2uint(rs) / capi_int2uint(rt)); }\n else { capi_raise('Division by zero not allowed'); }\n"
     },
     {
       "name": "divu",
@@ -4875,7 +4875,7 @@
           "valueField": "011011"
         }
       ],
-      "definition": "var e = capi_check(rt!=0, 'Division by zero not allowed')\n if (0 == e)\n { LO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt); }"
+      "definition": "if (rt != 0)\n { LO = Math.floor(capi_int2uint(rs) / capi_int2uint(rt));\nHI = capi_int2uint(rs) % capi_int2uint(rt); }\n else { capi_raise('Division by zero not allowed'); }\n"
     },
     {
       "name": "ldc1",
@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = MP.w.[off+base];\narr[1] = MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, 'ft', 'd');"
+      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = MP.w.[off+base];\narr[1] = MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, ft_name, 'd');"
     },
     {
       "name": "bc1f",
