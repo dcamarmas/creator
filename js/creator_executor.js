@@ -532,25 +532,25 @@ function aux_type2size ( type )
         case 'bu':
         case 'byte':
              size = 1;
-             break
+             break;
 
         case 'h':
         case 'hu':
         case 'half':
              size = 2;
-             break
+             break;
 
         case 'w':
         case 'wu':
         case 'word':
              size = 4;
-             break
+             break;
 
         case 'd':
         case 'du':
         case 'double':
              size = 8;
-             break
+             break;
     }
 
     return size ;
@@ -577,6 +577,7 @@ function aux_findReg ( value1 )
                   ret.match = 1;
                   ret.compIndex = i;
                   ret.elemIndex = j;
+                  break ;
               }
          }
     }
