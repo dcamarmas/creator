@@ -358,6 +358,11 @@ function capi_checkTypeIEEE ( s, e, m )
  *  Assert
  */
 
+function capi_raise ( msg )
+{
+    return app.exception(msg) ;
+}
+
 function capi_check ( condition, msg )
 {
     var exception = 0;
