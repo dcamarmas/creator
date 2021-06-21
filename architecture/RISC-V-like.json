@@ -2101,7 +2101,7 @@
           "valueField": "000"
         }
       ],
-      "definition": "var isover = capi_arithmetic_overflow(rs1, inm, rs1+inm);\n capi_check(!isover, 'Integer Overflow');\n rd = rs1 + inm;",
+      "definition": "var isover = capi_arithmetic_overflow(rs1, inm, rs1+inm);\n if (isover)\n { capi_raise('Integer Overflow'); }\n else\n { rd = rs1 + inm; }\n",
       "separated": [
         false,
         false,
@@ -4197,7 +4197,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = parseInt(rs1 / rs2); }",
+      "definition": "if (rs2 != 0)\n { rd = parseInt(rs1 / rs2); }\n else { capi_raise('Division by zero not allowed'); }\n",
       "separated": [
         false,
         false,
@@ -4256,7 +4256,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { parseInt(capi_int2uint(rs1) / capi_int2uint(rs2)); }",
+      "definition": "if (rs2 != 0)\n { rd = parseInt(capi_int2uint(rs1) / capi_int2uint(rs2)); }\n else { capi_raise('Division by zero not allowed'); }\n",
       "separated": [
         false,
         false,
@@ -4923,7 +4923,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
       "separated": [
         false,
         false,
@@ -6322,7 +6322,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "var e = capi_check(rs2!=0, 'Division by zero not allowed')\n if (0 == e)\n { rd = rs1 / rs2; }",
+      "definition": "if (rs2 != 0)\n { rd = rs1 / rs2; }\n else { capi_raise('Division by zero not allowed'); }\n",
       "separated": [
         false,
         false,
