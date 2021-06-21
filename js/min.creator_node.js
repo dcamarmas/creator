@@ -5634,7 +5634,8 @@ function executeInstruction ( )
 
 					re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
 					if (auxDef.search(re) != -1){
-					    readings_description = readings_description + "var " + clean_name + " = readRegister("+i+" ,"+j+");\n";
+					    readings_description = readings_description + "var " + clean_name + "      = readRegister("+i+" ,"+j+");\n";
+					    readings_description = readings_description + "var " + clean_name + "_name = '" + clean_name + "';\n";
 					}
 				}
 			}
@@ -5715,7 +5716,7 @@ function executeInstruction ( )
 			// DEBUG
 			console_log(" ................................. " +
 			            "instructions[" + executionIndex + "]:\n" +
-			            auxDef +
+			            auxDef + "\n" +
 			            " ................................. ");
 
 			// preload instruction
