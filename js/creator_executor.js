@@ -227,16 +227,23 @@ function executeInstruction ( )
 
 				var var_readings_definitions      = {};
 				var var_readings_definitions_prev = {};
+				var var_readings_definitions_name = {};
 				var var_writings_definitions      = {};
 
 				//Generate all registers, values, etc. readings
-				for (var i = 1; i < signatureRawParts.length; i++){
-					if(signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg"){
-						for (var j = 0; j < architecture.components.length; j++){
-							for (var z = architecture.components[j].elements.length-1; z >= 0; z--){
-								if(architecture.components[j].elements[z].name.includes(instructionExecParts[i])){
+				for (var i = 1; i < signatureRawParts.length; i++)
+				{
+					if (signatureParts[i] == "INT-Reg" || signatureParts[i] == "SFP-Reg" || signatureParts[i] == "DFP-Reg" || signatureParts[i] == "Ctrl-Reg")
+					{
+						for (var j = 0; j < architecture.components.length; j++)
+						{
+							for (var z = architecture.components[j].elements.length-1; z >= 0; z--)
+							{
+								if (architecture.components[j].elements[z].name.includes(instructionExecParts[i]))
+								{
 									var_readings_definitions[signatureRawParts[i]]      = "var " + signatureRawParts[i] + "      = readRegister ("+j+" ,"+z+");\n";
 									var_readings_definitions_prev[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_prev = readRegister ("+j+" ,"+z+");\n";
+									var_readings_definitions_name[signatureRawParts[i]] = "var " + signatureRawParts[i] + "_name = '" + instructionExecParts[i] + "');\n";
 
 									re = new RegExp( "(?:\\W|^)(((" + signatureRawParts[i] +") *=)[^=])", "g");
 									//If the register is in the left hand than '=' then write register always
@@ -245,7 +252,8 @@ function executeInstruction ( )
 									}
 									//Write register only if value is diferent
 									else{
-										var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev){writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+");}\n";
+										var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
+											                                          " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
 									}
 
 								}
@@ -258,41 +266,44 @@ function executeInstruction ( )
 				}
 
 				for (var elto in var_readings_definitions){
-					readings_description = readings_description + var_readings_definitions[elto];
+				     readings_description = readings_description + var_readings_definitions[elto];
 				}
-
 				for (var elto in var_readings_definitions_prev){
-					readings_description = readings_description + var_readings_definitions_prev[elto];
+				     readings_description = readings_description + var_readings_definitions_prev[elto];
 				}
-
+				for (var elto in var_readings_definitions_name){
+				     readings_description = readings_description + var_readings_definitions_name[elto];
+				}
 				for (var elto in var_writings_definitions){
-					writings_description = writings_description + var_writings_definitions[elto];
+				     writings_description = writings_description + var_writings_definitions[elto];
 				}
 			}
 
-			console_log(auxDef);
+			//console_log(auxDef);
 
-			/*writeRegister and readRegister direcly named include into the definition*/
-			for (var i = 0; i < architecture.components.length; i++){
-				for (var j = architecture.components[i].elements.length-1; j >= 0; j--){
-
+			/* writeRegister and readRegister direcly named include into the definition */
+			for (var i = 0; i < architecture.components.length; i++)
+			{
+				for (var j = architecture.components[i].elements.length-1; j >= 0; j--)
+				{
 					var clean_name = clean_string(architecture.components[i].elements[j].name[0], 'reg_');
 					var clean_aliases = architecture.components[i].elements[j].name.map((x)=> clean_string(x, 'reg_')).join('|');
 
 					re = new RegExp( "(?:\\W|^)(((" + clean_aliases +") *=)[^=])", "g");
-					if(auxDef.search(re) != -1){
-							writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
+					if (auxDef.search(re) != -1){
+					    writings_description = writings_description+"\nwriteRegister("+ clean_name +", "+i+", "+j+");";
 					}
-
 
 					re = new RegExp("([^a-zA-Z0-9])(?:" + clean_aliases + ")");
-					if(auxDef.search(re) != -1){
-						readings_description = readings_description + "var " + clean_name + " = readRegister("+i+" ,"+j+");\n";
+					if (auxDef.search(re) != -1){
+					    readings_description = readings_description + "var " + clean_name + " = readRegister("+i+" ,"+j+");\n";
 					}
-
 				}
 			}
 
+			//
+			// BEGIN string-replace
+			//
 			console_log(auxDef);
 
 			/*Check if stack limit was modify*/
@@ -304,7 +315,7 @@ function executeInstruction ( )
 				auxDef = "var exception = 0;\nif ("+ args[0] +"){}\nelse {\nexception=app.exception("+ args[1] +");\n}\nif(exception==0){\n" + auxDef + "\n}\n";
 			}
 
-			console_log(auxDef);
+			// console_log(auxDef);
 
 			/*Write in memory*/
 			var index = 0;
@@ -317,7 +328,7 @@ function executeInstruction ( )
 
 				re = /MP.[whbd].\[(.*?)\] *=/;
 				auxDef = auxDef.replace(re, "dir" + index + "=");
-				auxDef = "var dir" + index + " =null\n" + auxDef;
+				auxDef = "var dir" + index + " = null;\n" + auxDef;
 
 				auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
 				re = /MP.([whb]).\[(.*?)\] *=/;
@@ -329,7 +340,7 @@ function executeInstruction ( )
 				var match = re.exec(auxDef);
 				re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
 				auxDef = auxDef.replace(re, "dir" + index + " =");
-				auxDef = "var dir" + index + " =null\n" + auxDef;
+				auxDef = "var dir" + index + " = null;\n" + auxDef;
 
 				auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
 				re = new RegExp("MP.([whbd]).(.*?) *=");
@@ -352,25 +363,32 @@ function executeInstruction ( )
 				auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
 				re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
 			}
+			//
+			// END string-replace
+			//
 
-			auxDef = "/*Read all instruction fields*/\n" + 
-								readings_description +
-			         "\n/*Original instruction definition*/\n" + 
+			auxDef = "\n/* Read all instruction fields */\n" + 
+					readings_description +
+			         "\n/* Original instruction definition */\n" + 
 			         	auxDef + 
-			         "\n\n/*Modify values*/\n" + 
+			         "\n\n/* Modify values */\n" + 
 			         	writings_description;
 
-			console_log(auxDef);
+			// DEBUG
+			console_log(" ................................. " +
+			            "instructions[" + executionIndex + "]:\n" +
+			            auxDef +
+			            " ................................. ");
 
 			// preload instruction
 			eval("instructions[" + executionIndex + "].preload = function(elto) { " +
-					"try {\n" +
-						 auxDef.replace(/this./g,"elto.") + "\n" +
-					"}\n" +
-					"catch(e){\n" +
-					"  throw e;\n" +
-					"}\n" +
-					" }; ") ;
+			     "   try {\n" +
+			 	   auxDef.replace(/this./g,"elto.") + "\n" +
+			     "   }\n" +
+			     "   catch(e){\n" +
+			     "     throw e;\n" +
+			     "   }\n" +
+			     "}; ") ;
 		}
 
 
