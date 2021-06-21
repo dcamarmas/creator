@@ -516,13 +516,6 @@ function aux_show_notification ( msg, level )
     else console.log(level.toUpperCase() + ": " + msg);
 }
 
-function aux_show_exception ( msg )
-{
-    if (typeof app !== "undefined")
-         app.exception(msg);
-    else console.log(msg);
-}
-
 function aux_type2size ( type )
 {
     var size = 4;
