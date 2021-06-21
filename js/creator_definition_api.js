@@ -363,17 +363,6 @@ function capi_raise ( msg )
     return app.exception(msg) ;
 }
 
-function capi_check ( condition, msg )
-{
-    var exception = 0;
-
-    if (!condition) {
-	exception = app.exception(msg) ;
-    }
-
-    return exception ;
-}
-
 function capi_arithmetic_overflow ( op1, op2, res_u )
 {
     op1_u = capi_uint2int(op1) ;
@@ -391,5 +380,4 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
     return !is_ok ;
 */
 }
-
 
