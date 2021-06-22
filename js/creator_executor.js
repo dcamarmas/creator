@@ -516,13 +516,6 @@ function aux_show_notification ( msg, level )
     else console.log(level.toUpperCase() + ": " + msg);
 }
 
-function aux_show_exception ( msg )
-{
-    if (typeof app !== "undefined")
-         app.exception(msg);
-    else console.log(msg);
-}
-
 function aux_type2size ( type )
 {
     var size = 4;
@@ -1030,7 +1023,7 @@ function writeMemory ( value, addr, type)
 									}
 
 									memory[index][i].Value = null;
-									for (var z = 3; z < 4; z=z-2){
+									for (var z=3; (z<4) && (z>=0); z=z-2){
 										memory[index][i].Value = memory[index][i].Value + (parseInt((memory[index][i].Binary[z].Bin + memory[index][i].Binary[z-1].Bin), 16) >> 0) + " ";
 									}
 									if (typeof app !== "undefined")
@@ -1186,7 +1179,7 @@ function writeMemory ( value, addr, type)
 								var charIndex = memValue.length-1;
 								memory[index][i].Binary[j].Bin = memValue.charAt(charIndex-1).toUpperCase()+memValue.charAt(charIndex).toUpperCase();
 								memory[index][i].Value = null;
-								for (var z = 3; z < 4; z--){
+								for (var z=3; (z<4) && (z>=0); z--){
 									memory[index][i].Value = memory[index][i].Value + parseInt(memory[index][i].Binary[z].Bin, 16) + " ";
 								}
 								return;

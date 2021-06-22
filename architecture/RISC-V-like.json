@@ -1339,7 +1339,7 @@
           "stopbit": 15
         }
       ],
-      "definition": "if (rs1 === rs2)\n PC = PC + ((inm<<16)>>14); ",
+      "definition": "if (rs1 === rs2)\n PC = PC + ((inm << 16) >> 14); ",
       "separated": [
         false,
         false,
@@ -1396,7 +1396,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "if (rs1 !== rs2)\n PC = PC + ((inm<<16)>>14);",
+      "definition": "if (rs1 !== rs2)\n PC = PC + ((inm << 16) >> 14);",
       "separated": [
         false,
         true,
@@ -1453,7 +1453,7 @@
           "valueField": "100"
         }
       ],
-      "definition": "if ((rs1>>0) < (rs2>>0))\n PC = PC + ((inm<<16)>>14);",
+      "definition": "if (capi_uint2int(rs1) < capi_uint2int(rs2))\n PC = PC + ((inm << 16) >> 14);",
       "separated": [
         false,
         true,
@@ -1510,7 +1510,7 @@
           "valueField": "101"
         }
       ],
-      "definition": "if ((rs1>>0) >= (rs2>>0))\n PC = PC + ((inm<<16)>>14);",
+      "definition": "if (capi_uint2int(rs1) >= capi_uint2int(rs2))\n PC = PC + ((inm << 16) >> 14);",
       "separated": [
         false,
         true,
@@ -1567,7 +1567,7 @@
           "valueField": "110"
         }
       ],
-      "definition": "if ((rs1>>>0) < (rs2>>>0))\n PC = PC + ((inm<<16)>>14);",
+      "definition": "if (capi_int2uint(rs1) < capi_int2uint(rs2))\n PC = PC + ((inm << 16) >> 14);",
       "separated": [
         false,
         true,
@@ -1624,7 +1624,7 @@
           "valueField": "111"
         }
       ],
-      "definition": "if ((rs1>>>0) > (rs2>>>0))\n PC = PC + ((inm<<16)>>14);",
+      "definition": "if (capi_int2uint(rs1) > capi_int2uint(rs2))\n PC = PC + ((inm << 16) >> 14);",
       "separated": [
         false,
         true,
@@ -7911,7 +7911,6 @@
         }
       ],
       "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nflw rd op{tmp_low} (rt);\n"
-
     },
     {
       "name": "fld",
@@ -8003,9 +8002,6 @@
       ],
       "definition": "no_ret_op{tmp=Field.2.(31,0).int - reg.pc;\ntmp_hi='0x'+(((tmp&0xFFFFF000)>>12) + ((tmp&0x00000400)>>11)).toString(16);\ntmp_hi=(tmp&0xFFFFF000)>>12;\ntmp_low=tmp&0x00000FFF};\nauipc rt op{tmp_hi};\nfsd rd op{tmp_low} (rt);\n"
     },
-
-
-
     {
       "name": "fmv.s",
       "signature_definition": "fmv.s F0 F1",
