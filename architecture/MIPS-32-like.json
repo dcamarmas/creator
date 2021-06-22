@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "var isnotalign = capi_bad_align(base+off, 'd');\n if (isnotalign) {  capi_raise("The memory must be align"); }\n var val1 = capi_mem_read(base+off, 'w');\n var val2 = capi_mem_read(base+off+4, 'w');\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = val1;\n arr[1] = val2;\n ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, ft_name, 'd');"
+      "definition": "var isnotalign = capi_bad_align(base+off, 'd');\n if (isnotalign) {  capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(base+off, 'w');\n var val2 = capi_mem_read(base+off+4, 'w');\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = val1;\n arr[1] = val2;\n ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, ft_name, 'd');"
     },
     {
       "name": "bc1f",
