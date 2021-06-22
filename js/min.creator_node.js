@@ -5635,11 +5635,11 @@ function executeInstruction ( )
 
                         // crex_replace_magic(auxDef) ; // old code
 
-			auxDef = "\n/* Read all instruction fields */\n" + 
+			auxDef = "\n/* Read all instruction fields */\n" +
 					readings_description +
-			         "\n/* Original instruction definition */\n" + 
-			         	auxDef + 
-			         "\n\n/* Modify values */\n" + 
+			         "\n/* Original instruction definition */\n" +
+			         	auxDef +
+			         "\n\n/* Modify values */\n" +
 			         	writings_description;
 
 			// DEBUG
@@ -5854,7 +5854,7 @@ function crex_value_by_type ( val, type )
     {
         case 'b':
 	     val = val & 0xFF ;
-	     if (val & 0x80) 
+	     if (val & 0x80)
 	         val = 0xFFFFFF00 | val ;
 	     break;
 
@@ -5864,7 +5864,7 @@ function crex_value_by_type ( val, type )
 
         case 'h':
 	     val = val & 0xFFFF ;
-	     if (val & 0x8000) 
+	     if (val & 0x8000)
 	         val = 0xFFFF0000 | val ;
 	     break;
 
@@ -6806,9 +6806,10 @@ function read_int ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 	// UI
 	mutexRead = true;
 	app._data.enter = false;
-
 	console_log(mutexRead);
-	if (newExecution == true) {
+
+	if (newExecution == true)
+        {
 		app._data.keyboard = "";
 		consoleMutex  = false;
 		mutexRead     = false;
@@ -6892,9 +6893,9 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2, first_time 
 	}
 
 	 mutexRead = true;
-
 	 app._data.enter = false;
 	 console_log(mutexRead);
+
 	 if (newExecution == true)
 	 {
 		 app._data.keyboard = "";
@@ -6990,6 +6991,7 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 	mutexRead = true;
 	app._data.enter = false;
 	console_log(mutexRead);
+
 	if (newExecution == true)
         {
 		app._data.keyboard = "";
@@ -7067,7 +7069,7 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 	app._data.enter = false;
 	console_log(mutexRead);
 
-	if (newExecution == true) 
+	if (newExecution == true)
         {
 		 app._data.keyboard = "";
 		 consoleMutex = false;
@@ -7142,6 +7144,7 @@ function read_double ( indexComp, indexElem, indexComp2, indexElem2, first_time 
 	mutexRead = true;
 	app._data.enter = false;
 	console_log(mutexRead);
+
 	if (newExecution == true)
         {
 		app._data.keyboard = "";
@@ -7203,14 +7206,15 @@ function sc_sbrk ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 		return packExecute(true, 'Not enough memory for data segment', 'danger', null);
 	}
 
-	for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++){
+	for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++)
+        {
 		memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
 
 		if(i==0){
 			architecture.components[indexComp2].elements[indexElem2].value = aux_addr;
 		}
 
-		for (var z = 0; z < 4; z++){
+		for (var z = 0; z < 4; z++) {
 			(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
 			aux_addr++;
 		}
@@ -7243,24 +7247,24 @@ function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_t
 
 	switch (action)
 	{
-		case "print_int": 
-                      print_int(indexComp, indexElem) ;
+		case "print_int":
+                      return print_int(indexComp, indexElem) ;
 		      break;
 
 		case "print_float":
-                      print_float(indexComp, indexElem) ;
+                      return print_float(indexComp, indexElem) ;
 		      break;
 
 		case "print_double":
-                      print_double(indexComp, indexElem) ;
+                      return print_double(indexComp, indexElem) ;
 		      break;
 
 		case "print_string":
-                      print_string(indexComp, indexElem) ;
+                      return print_string(indexComp, indexElem) ;
 		      break;
 
 		case "print_char":
-		      print_char(indexComp, indexElem) ;
+		      return print_char(indexComp, indexElem) ;
 		      break;
 
 		case "read_int":
