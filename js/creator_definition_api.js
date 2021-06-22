@@ -106,34 +106,8 @@ function capi_mem_read ( addr, type )
         return val;
     }
 
-    switch (type)
-    {
-        case 'b':
-	     val = val & 0xFF ;
-	     if (val & 0x80) 
-	         val = 0xFFFFFF00 | val ;
-	     break;
-
-        case 'bu':
-	     val = ((val << 24) >> 24) ;
-	     break;
-
-        case 'h':
-	     val = val & 0xFFFF ;
-	     if (val & 0x8000) 
-	         val = 0xFFFF0000 | val ;
-	     break;
-
-        case 'hu':
-	     val = ((val << 16) >> 16) ;
-	     break;
-
-        default:
-	     break;
-    }
-
     // 3) return value
-    return val ;
+    return capi_value_by_type(val, type) ;
 }
 
 
@@ -374,8 +348,44 @@ function capi_float642uint ( value )
     return (new Uint32Array(buf)) ;
 }
 
-function capi_checkTypeIEEE ( s, e, m )
+function capi_build_ieee32 ( s, e, m )
 {
     return checkTypeIEEE(s, e, m) ;
+}
+
+function capi_float2bin ( f )
+{
+    return app.float2bin(f) ;
+}
+
+function capi_value_by_type ( val, type )
+{
+    switch (type)
+    {
+        case 'b':
+	     val = val & 0xFF ;
+	     if (val & 0x80) 
+	         val = 0xFFFFFF00 | val ;
+	     break;
+
+        case 'bu':
+	     val = ((val << 24) >> 24) ;
+	     break;
+
+        case 'h':
+	     val = val & 0xFFFF ;
+	     if (val & 0x8000) 
+	         val = 0xFFFF0000 | val ;
+	     break;
+
+        case 'hu':
+	     val = ((val << 16) >> 16) ;
+	     break;
+
+        default:
+	     break;
+    }
+
+    return val ;
 }
 
