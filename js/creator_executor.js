@@ -30,6 +30,73 @@ function packExecute ( error, err_msg, err_type, draw )
 		return ret ;
 }
 
+function replace_magic ( auxDef )
+{
+	        // Before replace...
+		console_log("Before replace: \n" + auxDef + "\n");
+
+		/* Check assert */
+		re = /assert\((.*)\)/;
+		if (auxDef.search(re) != -1){
+			var match = re.exec(auxDef);
+			var args = match[1].split(";");
+			auxDef = auxDef.replace(re, "");
+			auxDef = "var exception = 0;\nif ("+ args[0] +"){}\nelse {\nexception=app.exception("+ args[1] +");\n}\nif(exception==0){\n" + auxDef + "\n}\n";
+		}
+
+		/*Write in memory*/
+		var index = 0;
+		re = /MP.([whbd]).\[(.*?)\] *=/;
+		while (auxDef.search(re) != -1){
+			index++;
+			var match = re.exec(auxDef);
+			var auxDir;
+			//eval("auxDir="+match[2]);
+
+			re = /MP.[whbd].\[(.*?)\] *=/;
+			auxDef = auxDef.replace(re, "dir" + index + "=");
+			auxDef = "var dir" + index + " = null;\n" + auxDef;
+
+			auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
+			re = /MP.([whb]).\[(.*?)\] *=/;
+		}
+
+		re = new RegExp("MP.([whbd]).(.*?) *=");
+		while (auxDef.search(re) != -1){
+			index++;
+			var match = re.exec(auxDef);
+			re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
+			auxDef = auxDef.replace(re, "dir" + index + " =");
+			auxDef = "var dir" + index + " = null;\n" + auxDef;
+
+			auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
+			re = new RegExp("MP.([whbd]).(.*?) *=");
+		}
+
+		re = /MP.([whbd]).\[(.*?)\]/;
+		while (auxDef.search(re) != -1){
+			var match = re.exec(auxDef);
+			var auxDir;
+			//eval("auxDir="+match[2]);
+			re = /MP.[whbd].\[(.*?)\]/;
+			auxDef = auxDef.replace(re, "readMemory("+match[2]+", '"+match[1]+"')");
+			re = /MP.([whbd]).\[(.*?)\]/;
+		}
+
+		re = new RegExp("MP.([whbd]).([0-9]*[a-z]*[0-9]*)");
+		while (auxDef.search(re) != -1){
+			var match = re.exec(auxDef);
+			re = new RegExp("MP."+match[1]+"."+match[2]);
+			auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
+			re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
+		}
+
+	        // After replace...
+		console_log("After replace: \n" + auxDef + "\n");
+
+	        return auxDef ;
+}
+
 function executeInstruction ( )
 {
 	var draw = {
@@ -202,16 +269,15 @@ function executeInstruction ( )
 
 
 		// preload
-		if (typeof instructions[executionIndex].preload === "undefined"){
-
+		if (typeof instructions[executionIndex].preload === "undefined")
+		{
 			//writeRegister and readRegister
 			var readings_description = "";
 			var writings_description = "";
 
-			if(binary == true){
+			if (binary == true) {
 				auxDef = execute_binary(auxIndex, instructionExecParts, auxDef);
 			}
-
 			else{
 				//TODO: move to the compilation stage
 				re = new RegExp(signatureDef+"$");
@@ -279,8 +345,6 @@ function executeInstruction ( )
 				}
 			}
 
-			//console_log(auxDef);
-
 			/* writeRegister and readRegister direcly named include into the definition */
 			for (var i = 0; i < architecture.components.length; i++)
 			{
@@ -304,67 +368,7 @@ function executeInstruction ( )
 
 			//
 			// BEGIN string-replace
-			//
-			console_log(auxDef);
-
-			/*Check if stack limit was modify*/
-			re = /assert\((.*)\)/;
-			if (auxDef.search(re) != -1){
-				var match = re.exec(auxDef);
-				var args = match[1].split(";");
-				auxDef = auxDef.replace(re, "");
-				auxDef = "var exception = 0;\nif ("+ args[0] +"){}\nelse {\nexception=app.exception("+ args[1] +");\n}\nif(exception==0){\n" + auxDef + "\n}\n";
-			}
-
-			// console_log(auxDef);
-
-			/*Write in memory*/
-			var index = 0;
-			re = /MP.([whbd]).\[(.*?)\] *=/;
-			while (auxDef.search(re) != -1){
-				index++;
-				var match = re.exec(auxDef);
-				var auxDir;
-				//eval("auxDir="+match[2]);
-
-				re = /MP.[whbd].\[(.*?)\] *=/;
-				auxDef = auxDef.replace(re, "dir" + index + "=");
-				auxDef = "var dir" + index + " = null;\n" + auxDef;
-
-				auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
-				re = /MP.([whb]).\[(.*?)\] *=/;
-			}
-
-			re = new RegExp("MP.([whbd]).(.*?) *=");
-			while (auxDef.search(re) != -1){
-				index++;
-				var match = re.exec(auxDef);
-				re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
-				auxDef = auxDef.replace(re, "dir" + index + " =");
-				auxDef = "var dir" + index + " = null;\n" + auxDef;
-
-				auxDef = auxDef + "\n writeMemory(dir" + index +","+match[2]+",'"+match[1]+"');";
-				re = new RegExp("MP.([whbd]).(.*?) *=");
-			}
-
-			re = /MP.([whbd]).\[(.*?)\]/;
-			while (auxDef.search(re) != -1){
-				var match = re.exec(auxDef);
-				var auxDir;
-				//eval("auxDir="+match[2]);
-				re = /MP.[whbd].\[(.*?)\]/;
-				auxDef = auxDef.replace(re, "readMemory("+match[2]+", '"+match[1]+"')");
-				re = /MP.([whbd]).\[(.*?)\]/;
-			}
-
-			re = new RegExp("MP.([whbd]).([0-9]*[a-z]*[0-9]*)");
-			while (auxDef.search(re) != -1){
-				var match = re.exec(auxDef);
-				re = new RegExp("MP."+match[1]+"."+match[2]);
-				auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
-				re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
-			}
-			//
+                        replace_magic(auxDef) ;
 			// END string-replace
 			//
 
@@ -396,34 +400,37 @@ function executeInstruction ( )
 		try{
 			var result = instructions[executionIndex].preload(this);
 			if (result.error) {
-					return result;
+			    return result;
 			}
 		}
 		catch(e)
 		{
 				if (e instanceof SyntaxError)
 				{
-						console_log("Error");
-						error = 1;
-						draw.danger.push(executionIndex) ;
-						executionIndex = -1;
-						return packExecute(true, 'The definition of the instruction contains errors, please review it', 'danger', null);
+					console_log("Error");
+					error = 1;
+					draw.danger.push(executionIndex) ;
+					executionIndex = -1;
+					return packExecute(true, 'The definition of the instruction contains errors, please review it', 'danger', null);
 				}
+
 			        // TODO: other exceptions... treat it!
 		}
 
 		/*Refresh stats*/
-		for (var i = 0; i < stats.length; i++){
-			if(type == stats[i].type){
+		for (var i = 0; i < stats.length; i++)
+		{
+			if (type == stats[i].type)
+			{
 				stats[i].number_instructions++;
 				stats_value[i] ++;
 				totalStats++;
 				if (typeof app !== "undefined")
-						app._data.totalStats++;
+				    app._data.totalStats++;
 			}
 		}
 		for (var i = 0; i < stats.length; i++){
-				 stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
+			 stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
 		}
 
 		/*Execution error*/
@@ -494,10 +501,10 @@ function executeProgramOneShot ( limit_n_instructions )
 			 ret = executeInstruction();
 
 			 if (ret.error == true){
-					 return ret;
+				 return ret;
 			 }
 			 if (executionIndex < -1) {
-					 return ret;
+				 return ret;
 			 }
 		}
 
