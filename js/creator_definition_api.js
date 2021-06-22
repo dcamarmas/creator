@@ -43,7 +43,7 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 
 function capi_bad_align ( addr, type )
 {
-    size = aux_type2size(type) ;
+    size = crex_type2size(type) ;
     return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
 }
 
@@ -107,7 +107,7 @@ function capi_mem_read ( addr, type )
     }
 
     // 3) return value
-    return capi_value_by_type(val, type) ;
+    return crex_value_by_type(val, type) ;
 }
 
 
@@ -143,14 +143,14 @@ function capi_syscall ( action, value1, value2 )
     if (nargs == 0) value1 = "" ;
     if (nargs  < 2) value2 = "" ;
 
-    var ret1 = aux_findReg(value1) ;
+    var ret1 = crex_findReg(value1) ;
     if ( (value2 != "") && (ret1.match == 0) )
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
-    var ret2 = aux_findReg(value2) ;
+    var ret2 = crex_findReg(value2) ;
     if ( (value2 != "") && (ret2.match == 0) )
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
@@ -198,13 +198,13 @@ function capi_callconv_end ()
     creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
     // User notification
-    aux_show_notification(ret.msg, 'danger') ;
+    crex_show_notification(ret.msg, 'danger') ;
 }
 
 function capi_callconv_memAction ( action, addr, reg_name, type )
 {
     // 1) search for reg_name...
-    var ret = aux_findReg(reg_name) ;
+    var ret = crex_findReg(reg_name) ;
     if (ret.match == 0) {
         return;
     }
@@ -219,7 +219,7 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
                       break;
         case 'read':  creator_callstack_newRead(i, j, addr, type);
                       break;
-        default:      aux_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
+        default:      crex_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
                       break;
     }
 }
@@ -257,7 +257,7 @@ function capi_drawstack_end ()
     }
 
     // User notification
-    aux_show_notification(ret.msg, 'warning') ;
+    crex_show_notification(ret.msg, 'warning') ;
 }
 
 
@@ -356,36 +356,5 @@ function capi_build_ieee32 ( s, e, m )
 function capi_float2bin ( f )
 {
     return app.float2bin(f) ;
-}
-
-function capi_value_by_type ( val, type )
-{
-    switch (type)
-    {
-        case 'b':
-	     val = val & 0xFF ;
-	     if (val & 0x80) 
-	         val = 0xFFFFFF00 | val ;
-	     break;
-
-        case 'bu':
-	     val = ((val << 24) >> 24) ;
-	     break;
-
-        case 'h':
-	     val = val & 0xFFFF ;
-	     if (val & 0x8000) 
-	         val = 0xFFFF0000 | val ;
-	     break;
-
-        case 'hu':
-	     val = ((val << 16) >> 16) ;
-	     break;
-
-        default:
-	     break;
-    }
-
-    return val ;
 }
 
