@@ -5886,7 +5886,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[inm+rs1];\narr[1] =  MP.w.[inm+rs1+4]\nrd = (new Float64Array(buf))[0];",
+      "definition": "var isnotalign = capi_bad_align(rs1+inm, 'd');\n if (isnotalign) {  capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+inm, 'w');\n var val2 = capi_mem_read(rs1+inm+4, 'w');\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = val1;\n arr[1] = val2;\n ft = (new Float64Array(buf))[0];\n;",
       "separated": [
         false,
         false,
