@@ -5725,11 +5725,7 @@ function executeInstruction ( )
 				}
 			}
 
-			//
-			// BEGIN string-replace
-                        replace_magic(auxDef) ;
-			// END string-replace
-			//
+                        // replace_magic(auxDef) ;
 
 			auxDef = "\n/* Read all instruction fields */\n" + 
 					readings_description +
