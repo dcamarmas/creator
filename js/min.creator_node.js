@@ -5565,7 +5565,8 @@ function executeInstruction ( )
 				}
 			}
 
-			if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
+			if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length)
+                        {
 				type = architecture.instructions[i].type;
 				signatureDef = architecture.instructions[i].signature_definition;
 
@@ -5751,21 +5752,8 @@ function executeInstruction ( )
 			return packExecute(true, msg, 'danger', null) ;
 		}
 
-		/* Refresh stats */
-		for (var i = 0; i < stats.length; i++)
-		{
-			if (type == stats[i].type)
-			{
-				stats[i].number_instructions++;
-				stats_value[i] ++;
-				totalStats++;
-				if (typeof app !== "undefined")
-				    app._data.totalStats++;
-			}
-		}
-		for (var i = 0; i < stats.length; i++){
-			 stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
-		}
+	        /* Refresh stats */
+                stats_update(type) ;
 
 		/* Execution error */
 		if (executionIndex == -1){
@@ -6007,6 +5995,48 @@ function crex_replace_magic ( auxDef )
 	console_log("After replace: \n" + auxDef + "\n");
 
 	return auxDef ;
+}
+
+
+/*
+ * Stats
+ */
+
+function stats_update ( type )
+{
+	for (var i = 0; i < stats.length; i++)
+	{
+		if (type == stats[i].type)
+		{
+			stats[i].number_instructions++;
+			stats_value[i] ++;
+
+			totalStats++;
+			if (typeof app !== "undefined") {
+			    app._data.totalStats++;
+                        }
+		}
+	}
+
+	for (var i = 0; i < stats.length; i++){
+	     stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
+	}
+}
+
+function stats_reset ( )
+{
+	totalStats = 0 ;
+	if (typeof app !== "undefined") {
+	    app._data.totalStats = 0 ;
+        }
+
+	for (var i = 0; i < stats.length; i++)
+        {
+		stats[i].percentage = 0;
+
+		stats[i].number_instructions = 0;
+		stats_value[i] = 0;
+	}
 }
 
 
@@ -6289,8 +6319,8 @@ return 0;
 				}
 }
 
-/*Write value in memory*/
-function writeMemory ( value, addr, type)
+/* Write value in memory */
+function writeMemory ( value, addr, type )
 {
 	var draw = {
 		space: [] ,
@@ -6697,6 +6727,18 @@ function writeStackLimit ( stackLimit )
 		}
 }
 
+
+/* I/O */
+function display_print ( info )
+{
+	if (typeof app !== "undefined")
+             app._data.display += info ;
+	else process.stdout.write(info + '\n') ;
+
+	display += val_int ;
+}
+
+
 /* Syscalls */
 function print_int ( indexComp, indexElem )
 {
@@ -6707,11 +6749,7 @@ function print_int ( indexComp, indexElem )
 	var value   = architecture.components[indexComp].elements[indexElem].value;
 	var val_int = parseInt(value.toString()) >> 0 ;
 
-	if (typeof app !== "undefined")
-             app._data.display += val_int ;
-	else process.stdout.write(val_int + '\n') ;
-
-	display += val_int ;
+        display_print(val_int) ;
 }
 
 function print_float ( indexComp, indexElem )
@@ -6722,11 +6760,7 @@ function print_float ( indexComp, indexElem )
         /* print float */
 	var value = architecture.components[indexComp].elements[indexElem].value;
 
-	if (typeof app !== "undefined")
-	     app._data.display += value;
-	else process.stdout.write(value + '\n') ;
-
-	display += value ;
+        display_print(value) ;
 }
 
 function print_double ( indexComp, indexElem )
@@ -6737,11 +6771,7 @@ function print_double ( indexComp, indexElem )
         /* print double */
 	var value = architecture.components[indexComp].elements[indexElem].value;
 
-	if (typeof app !== "undefined")
-	     app._data.display += value;
-	else process.stdout.write(value + '\n') ;
-
-	display += value ;
+        display_print(value) ;
 }
 
 function print_char ( indexComp, indexElem )
@@ -6757,11 +6787,7 @@ function print_char ( indexComp, indexElem )
 	var value = aux2.substring(length-2, length) ;
 	    value = String.fromCharCode(parseInt(value, 16)) ;
 
-	if (typeof app !== "undefined")
-	     app._data.display += value ;
-	else process.stdout.write(value) ;
-
-	display += value ;
+        display_print(value) ;
 }
 
 function print_string ( indexComp, indexElem )
@@ -7437,17 +7463,7 @@ function reset ()
 	executionInit = 1;
 
 	/* Reset stats */
-	totalStats = 0 ;
-	if (typeof app !== "undefined") {
-	    app._data.totalStats = 0 ;
-        }
-
-	for (var i = 0; i < stats.length; i++)
-        {
-		stats[i].percentage = 0;
-		stats[i].number_instructions = 0;
-		stats_value[i] = 0;
-	}
+        stats_reset() ;
 
 	/* Reset console */
 	mutexRead    = false ;
