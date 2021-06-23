@@ -3318,7 +3318,7 @@ try
 
       /*Convert hexadecimal number to double floating point number*/
       hex2double ( hexvalue ){
-        return hex_to_double(hexvalue) ;
+        return hex2double(hexvalue) ;
 	/*
         var value = hexvalue.split('x');
         var value_bit = '';
@@ -3365,7 +3365,7 @@ try
       /*Convert floating point number to binary*/
       float2bin (number)
       {
-        return float_to_bin(number) ;
+        return float2bin(number) ;
 	/*
         var i, result = "";
         var dv = new DataView(new ArrayBuffer(4));
@@ -3386,7 +3386,7 @@ try
       /*Convert double floating point number to binary*/
       double2bin(number)
       {
-        return double_to_bin(number) ;
+        return double2bin(number) ;
 	/*
         var i, result = "";
         var dv = new DataView(new ArrayBuffer(8));
@@ -3407,7 +3407,7 @@ try
       /*Convert binary number to hexadecimal number*/
       bin2hex(s)
       {
-        return bin_to_hex(s) ;
+        return bin2hex(s) ;
         /*
         var i, k, part, accum, ret = '';
         for (i = s.length-1; i >= 3; i -= 4){

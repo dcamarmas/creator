@@ -155,7 +155,46 @@ function register_value_serialize(object)
 
 
   /* 
-   * Convert to
+   * Representation
+   */
+
+  /**
+   * method in chage of map a float number separated in parts and determinte what it.
+   * @param s {Number} the sing of the number
+   * @param e {Number} the exponent of the number.
+   * @param m {Number} the mantinsa of the number
+   * @return {number} 2^n with n as
+   *      0 -> -infinite
+   *      1 -> -normal number
+   *      2 -> -subnormal number
+   *      3 -> -0
+   *      4 -> +0
+   *      5 -> +normal number
+   *      6 -> +subnormal number
+   *      7 -> +inf
+   *      8 -> -NaN
+   *      9 -> +NaN
+   */
+  function checkTypeIEEE(s, e, m)
+  {
+      let rd = 0;
+
+      if (!m && !e)
+          rd = s ? 1<<3 : 1<<4;
+      else if (!e)
+          rd = s ? 1<<2 : 1<<5;
+      else if (!(e ^ 255))
+          if (m)
+              rd = s ? 1<<8 : 1<<9;
+          else
+              rd = s ? 1<<0 : 1<<7;
+      else
+          rd = s ? 1<<1 : 1<<6;
+      return rd;
+  }
+
+  /* 
+   * Convert to...
    */
 
   function hex2char8 ( hexvalue )
@@ -235,25 +274,32 @@ function register_value_serialize(object)
       return (new Float64Array(buf))[0] ;
   }
 
-  function float_to_bin ( number )
+  function float64_to_uint ( value )
   {
-      var i, result = "";
-      var dv = new DataView(new ArrayBuffer(4));
-
-      dv.setFloat32(0, number, false);
-
-      for (i=0; i<4; i++)
-      {
-           var bits = dv.getUint8(i).toString(2);
-           if (bits.length < 8) {
-               bits = new Array(8 - bits.length).fill('0').join("") + bits;
-           }
-           result += bits;
-      }
-      return result;
+      var buf = new ArrayBuffer(8) ;
+      (new Float64Array(buf))[0] = value ;
+      return (new Uint32Array(buf)) ;
   }
 
-  function double_to_bin ( number )
+  function float2bin ( number )
+  {
+    var i, result = "";
+    var dv = new DataView(new ArrayBuffer(4));
+
+    dv.setFloat32(0, number, false);
+
+    for (i = 0; i < 4; i++)
+    {
+        var bits = dv.getUint8(i).toString(2);
+        if (bits.length < 8) {
+            bits = new Array(8 - bits.length).fill('0').join("") + bits;
+        }
+        result += bits;
+    }
+    return result;
+  }
+
+  function double2bin ( number )
   {
       var i, result = "";
       var dv = new DataView(new ArrayBuffer(8));
@@ -262,16 +308,16 @@ function register_value_serialize(object)
 
       for (i = 0; i < 8; i++)
       {
-            var bits = dv.getUint8(i).toString(2);
-            if (bits.length < 8) {
-                bits = new Array(8 - bits.length).fill('0').join("") + bits;
-            }
-            result += bits;
+          var bits = dv.getUint8(i).toString(2);
+          if (bits.length < 8) {
+            bits = new Array(8 - bits.length).fill('0').join("") + bits;
+          }
+          result += bits;
       }
       return result;
   }
 
-  function bin_to_hex ( s )
+  function bin2hex ( s )
   {
       var i, k, part, accum, ret = '';
 
@@ -310,7 +356,7 @@ function register_value_serialize(object)
       return ret;
   }
 
-  function hex_to_double ( hexvalue )
+  function hex2double ( hexvalue )
   {
       var value = hexvalue.split('x');
       var value_bit = '';
@@ -988,7 +1034,7 @@ function capi_print_char ( value1 )
     return print_char(ret1.compIndex, ret1.elemIndex) ;
 }
 
-function capi_read_int ( value1, value2 )
+function capi_read_int ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -997,18 +1043,11 @@ function capi_read_int ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_int(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_int(ret1.compIndex, ret1.elemIndex) ;
 }
 
-function capi_read_float ( value1, value2 )
+function capi_read_float ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -1017,18 +1056,11 @@ function capi_read_float ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_float(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_float(ret1.compIndex, ret1.elemIndex) ;
 }
 
-function capi_read_double ( value1, value2 )
+function capi_read_double ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -1037,15 +1069,8 @@ function capi_read_double ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_double(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_double(ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_read_string ( value1, value2 )
@@ -1068,7 +1093,7 @@ function capi_read_string ( value1, value2 )
     return read_string(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
 }
 
-function capi_read_char ( value1, value2 )
+function capi_read_char ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -1077,15 +1102,8 @@ function capi_read_char ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_char(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_char(ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_sbrk ( value1, value2 )
@@ -1251,19 +1269,17 @@ function capi_uint2float64 ( value0, value1 )
 
 function capi_float642uint ( value )
 {
-    var buf = new ArrayBuffer(8) ;
-    (new Float64Array(buf))[0] = value ;
-    return (new Uint32Array(buf)) ;
+    return float64_to_uint(value) ;
 }
 
-function capi_build_ieee32 ( s, e, m )
+function capi_check_ieee ( s, e, m )
 {
     return checkTypeIEEE(s, e, m) ;
 }
 
 function capi_float2bin ( f )
 {
-    return float_to_bin(f) ;
+    return float2bin(f) ;
 }
 
 /*
@@ -5303,7 +5319,8 @@ function field(field, action, type)
   return -1;
 }
 
-function getReg(name){
+function getReg(name)
+{
   for (var i = 0; i < architecture.components.length; i++)
    {
       for (var j = 0; j < architecture.components[i].elements.length; j++)
@@ -5316,150 +5333,6 @@ function getReg(name){
    }
 }
 
-
-/*Convert hexadecimal number to floating point number*/
-function hex2float ( hexvalue )
-{
-  /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
-  var exponent = ((hexvalue >> 23) & 0xff) - 127;
-  var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
-
-  var valuef = sign * mantissa * Math.pow(2, exponent);
-  if (-127 == exponent)
-    if (1 == mantissa)
-      valuef = (sign == 1) ? "+0" : "-0";
-    else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
-  if (128 == exponent)
-    if (1 == mantissa)
-      valuef = (sign == 1) ? "+Inf" : "-Inf";
-    else valuef = NaN;
-
-  return valuef ;*/
-  var value = hexvalue.split('x');
-  var value_bit = '';
-
-  for (var i = 0; i < value[1].length; i++){
-    var aux = value[1].charAt(i);
-    aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-    value_bit = value_bit + aux;
-  }
-
-  var buffer = new ArrayBuffer(4);
-  new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
-  return new DataView( buffer ).getFloat32(0, false);
-}
-
-/*Convert hexadecimal number to double floating point number*/
-function hex2double ( hexvalue )
-{
-  var value = hexvalue.split('x');
-  var value_bit = '';
-
-  for (var i = 0; i < value[1].length; i++){
-    var aux = value[1].charAt(i);
-    aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-    value_bit = value_bit + aux;
-  }
-
-  var buffer = new ArrayBuffer(8);
-  new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
-  return new DataView( buffer ).getFloat64(0, false);
-}
-
-/*Convert hexadecimal number to char*/
-function hex2char8 ( hexvalue )
-{
-  var num_char = ((hexvalue.toString().length))/2;
-  var exponent = 0;
-  var pos = 0;
-
-  var valuec = new Array();
-
-  for (var i = 0; i < num_char; i++) {
-    var auxHex = hexvalue.substring(pos, pos+2);
-    valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-    pos = pos + 2;
-  }
-
-  var characters = '';
-
-  for (var i = 0; i < valuec.length; i++){
-    characters = characters + valuec[i] + ' ';
-  }
-
-  return  characters;
-}
-
-/*Convert floating point number to binary*/
-function float2bin (number)
-{
-  var i, result = "";
-  var dv = new DataView(new ArrayBuffer(4));
-
-  dv.setFloat32(0, number, false);
-
-  for (i = 0; i < 4; i++) {
-      var bits = dv.getUint8(i).toString(2);
-      if (bits.length < 8) {
-        bits = new Array(8 - bits.length).fill('0').join("") + bits;
-      }
-      result += bits;
-  }
-  return result;
-}
-
-/*Convert double floating point number to binary*/
-function double2bin(number)
-{
-  var i, result = "";
-  var dv = new DataView(new ArrayBuffer(8));
-
-  dv.setFloat64(0, number, false);
-
-  for (i = 0; i < 8; i++) {
-      var bits = dv.getUint8(i).toString(2);
-      if (bits.length < 8) {
-        bits = new Array(8 - bits.length).fill('0').join("") + bits;
-      }
-      result += bits;
-  }
-  return result;
-}
-
-/*Convert binary number to hexadecimal number*/
-function bin2hex(s)
-{
-  var i, k, part, accum, ret = '';
-  for (i = s.length-1; i >= 3; i -= 4){
-
-    part = s.substr(i+1-4, 4);
-    accum = 0;
-    for (k = 0; k < 4; k += 1){
-      if (part[k] !== '0' && part[k] !== '1'){
-          return { valid: false };
-      }
-      accum = accum * 2 + parseInt(part[k], 10);
-    }
-    if (accum >= 10){
-      ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
-    }
-    else {
-      ret = String(accum) + ret;
-    }
-  }
-
-  if (i >= 0){
-    accum = 0;
-    for (k = 0; k <= i; k += 1){
-      if (s[k] !== '0' && s[k] !== '1') {
-          return { valid: false };
-      }
-      accum = accum * 2 + parseInt(s[k], 10);
-    }
-    ret = String(accum) + ret;
-  }
-  return ret;
-}
 
 
 /**
@@ -5509,41 +5382,6 @@ function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, 
 	return binary;
 }
 
-
-/**
- * method in chage of map a float number separated in parts and determinte what it.
- * @param s {Number} the sing of the number
- * @param e {Number} the exponent of the number.
- * @param m {Number} the mantinsa of the number
- * @return {number} 2^n with n as
- *      0 -> -infinite
- *      1 -> -normal number
- *      2 -> -subnormal number
- *      3 -> -0
- *      4 -> +0
- *      5 -> +normal number
- *      6 -> +subnormal number
- *      7 -> +inf
- *      8 -> -NaN
- *      9 -> +NaN
- */
-function checkTypeIEEE(s, e, m)
-{
-    let rd = 0;
-
-    if (!m && !e)
-        rd = s ? 1<<3 : 1<<4;
-    else if (!e)
-        rd = s ? 1<<2 : 1<<5;
-    else if (!(e ^ 255))
-        if (m)
-            rd = s ? 1<<8 : 1<<9;
-        else
-            rd = s ? 1<<0 : 1<<7;
-    else
-        rd = s ? 1<<1 : 1<<6;
-    return rd;
-}
 
 function binaryStringToInt( b ) {
     return parseInt(b, 2);
@@ -7014,7 +6852,7 @@ function print_string ( indexComp, indexElem )
 	}
 }
 
-function read_int ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_int ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -7062,7 +6900,7 @@ function read_int ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false) {
-	    setTimeout(read_int, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+	    setTimeout(read_int, 1000, indexComp, indexElem);
 	    return ;
 	}
 
@@ -7153,7 +6991,7 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false){
-		setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2);
 		return ;
 	}
 
@@ -7199,7 +7037,7 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 }
 
-function read_float ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_float ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -7246,7 +7084,7 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false) {
-		setTimeout(read_float, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_float, 1000, indexComp, indexElem);
 		return ;
 	}
 
@@ -7275,7 +7113,7 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 }
 
-function read_char ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_char ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -7322,7 +7160,7 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2 )
 	 }
 
 	if (consoleMutex == false) {
-		setTimeout(read_char, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_char, 1000, indexComp, indexElem);
 	}
 
 	var value = (app._data.keyboard).charCodeAt(0);
@@ -7351,7 +7189,7 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 }
 
-function read_double ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_double ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -7398,7 +7236,7 @@ function read_double ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false) {
-		setTimeout(read_double, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_double, 1000, indexComp, indexElem);
 		return ;
 	}
 
