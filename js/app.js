@@ -3266,10 +3266,6 @@ try
 
 
 
-
-
-
-
       /*Console mutex*/
       consoleEnter(){
         if(this.keyboard != ""){
@@ -3281,18 +3277,6 @@ try
         this.keyboard = "";
         this.display = "";
       },
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3334,117 +3318,37 @@ try
 
       /*Convert hexadecimal number to double floating point number*/
       hex2double ( hexvalue ){
-        var value = hexvalue.split('x');
-        var value_bit = '';
-
-        for (var i = 0; i < value[1].length; i++){
-          var aux = value[1].charAt(i);
-          aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-          value_bit = value_bit + aux;
-        }
-
-        var buffer = new ArrayBuffer(8);
-        new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
-        return new DataView( buffer ).getFloat64(0, false);
+          return hex2double(hexvalue) ;
       },
 
       /*Convert hexadecimal number to char*/
-      hex2char8 ( hexvalue ){
-        var num_char = ((hexvalue.toString().length))/2;
-        var exponent = 0;
-        var pos = 0;
-
-        var valuec = new Array();
-
-        for (var i = 0; i < num_char; i++) {
-          var auxHex = hexvalue.substring(pos, pos+2);
-          valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-          pos = pos + 2;
-        }
-
-        var characters = '';
-
-        for (var i = 0; i < valuec.length; i++){
-          characters = characters + valuec[i] + ' ';
-        }
-
-        return  characters;
+      hex2char8 ( hexvalue )
+      {
+          return hex2char8(hexvalue) ;
       },
 
       /*Convert floating point number to binary*/
-      float2bin (number){
-        var i, result = "";
-        var dv = new DataView(new ArrayBuffer(4));
-
-        dv.setFloat32(0, number, false);
-
-        for (i = 0; i < 4; i++) {
-            var bits = dv.getUint8(i).toString(2);
-            if (bits.length < 8) {
-              bits = new Array(8 - bits.length).fill('0').join("") + bits;
-            }
-            result += bits;
-        }
-        return result;
+      float2bin (number)
+      {
+          return float2bin(number) ;
       },
 
       /*Convert double floating point number to binary*/
-      double2bin(number) {
-        var i, result = "";
-        var dv = new DataView(new ArrayBuffer(8));
-
-        dv.setFloat64(0, number, false);
-
-        for (i = 0; i < 8; i++) {
-            var bits = dv.getUint8(i).toString(2);
-            if (bits.length < 8) {
-              bits = new Array(8 - bits.length).fill('0').join("") + bits;
-            }
-            result += bits;
-        }
-        return result;
+      double2bin(number)
+      {
+          return double2bin(number) ;
       },
 
       /*Convert binary number to hexadecimal number*/
-      bin2hex(s) {
-        var i, k, part, accum, ret = '';
-        for (i = s.length-1; i >= 3; i -= 4){
-
-          part = s.substr(i+1-4, 4);
-          accum = 0;
-          for (k = 0; k < 4; k += 1){
-            if (part[k] !== '0' && part[k] !== '1'){
-                return { valid: false };
-            }
-            accum = accum * 2 + parseInt(part[k], 10);
-          }
-          if (accum >= 10){
-            ret = String.fromCharCode(accum - 10 + 'A'.charCodeAt(0)) + ret;
-          }
-          else {
-            ret = String(accum) + ret;
-          }
-        }
-
-        if (i >= 0){
-          accum = 0;
-          for (k = 0; k <= i; k += 1){
-            if (s[k] !== '0' && s[k] !== '1') {
-                return { valid: false };
-            }
-            accum = accum * 2 + parseInt(s[k], 10);
-          }
-          ret = String(accum) + ret;
-        }
-        return ret;
+      bin2hex(s)
+      {
+          return bin2hex(s) ;
       },
 
       /*Popover functions*/
       popoverId(i){
-        return 'popoverValueContent' + i;
+          return 'popoverValueContent' + i;
       },
-
-
 
 
       //TODO: delete when all dependences are remove
