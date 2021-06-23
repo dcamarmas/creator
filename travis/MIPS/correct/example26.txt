@@ -24,6 +24,6 @@ main:
     syscall
 
     li $a0 '\n'
-    li %v0 11
+    li $v0 11
     syscall
 

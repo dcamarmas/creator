@@ -801,35 +801,75 @@ function capi_mem_read ( addr, type )
  *  Syscall
  */
 
-/*
- * Name:        capi_syscall - request system call
- * Sypnosis:    capi_syscall (action, value1 [, value2])
- * Description: request a system call
- */
-
-var capi_sc_nargs = {
-			"exit":         0,
-			"print_char":   1,
-			"print_int":    1,
-			"print_float":  1,
-			"print_double": 1,
-			"print_string": 1,
-			"read_char":    1,
-			"read_int":     1,
-			"read_float":   1,
-			"read_double":  1,
-			"read_string":  2,
-			"sbrk":         2
-		    } ;
-
-function capi_syscall ( action, value1, value2 )
+function capi_exit ( )
 {
-    var nargs = capi_sc_nargs[action] ;
-    if (nargs == 0) value1 = "" ;
-    if (nargs  < 2) value2 = "" ;
+    return syscall_exit() ;
+}
 
+function capi_print_int ( value1 )
+{
     var ret1 = crex_findReg(value1) ;
-    if ( (value2 != "") && (ret1.match == 0) )
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_int(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_float ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_float(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_double ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_double(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_string ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_string(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_char ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_char(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_read_int ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
@@ -842,8 +882,107 @@ function capi_syscall ( action, value1, value2 )
         return;
     }
 
-    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
-    syscall(action, ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex, true);
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_int(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_float ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_float(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_double ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_double(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_string ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_string(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_char ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_char(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_sbrk ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    return syscall_sbrk(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
 }
 
 
@@ -6668,6 +6807,9 @@ function writeStackLimit ( stackLimit )
 /* Syscalls */
 function print_int ( indexComp, indexElem )
 {
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_int');
+
         /* print integer */
 	var value   = architecture.components[indexComp].elements[indexElem].value;
 	var val_int = parseInt(value.toString()) >> 0 ;
@@ -6681,6 +6823,9 @@ function print_int ( indexComp, indexElem )
 
 function print_float ( indexComp, indexElem )
 {
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_float');
+
         /* print float */
 	var value = architecture.components[indexComp].elements[indexElem].value;
 
@@ -6693,6 +6838,9 @@ function print_float ( indexComp, indexElem )
 
 function print_double ( indexComp, indexElem )
 {
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_double');
+
         /* print double */
 	var value = architecture.components[indexComp].elements[indexElem].value;
 
@@ -6705,6 +6853,9 @@ function print_double ( indexComp, indexElem )
 
 function print_char ( indexComp, indexElem )
 {
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_char');
+
         /* print char */
 	var aux    = architecture.components[indexComp].elements[indexElem].value;
 	var aux2   = aux.toString(16);
@@ -6722,6 +6873,9 @@ function print_char ( indexComp, indexElem )
 
 function print_string ( indexComp, indexElem )
 {
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
+
 	 var addr = architecture.components[indexComp].elements[indexElem].value;
 	 var index;
 
@@ -6776,7 +6930,7 @@ function print_string ( indexComp, indexElem )
 	}
 }
 
-function read_int ( indexComp, indexElem, indexComp2, indexElem2, first_time )
+function read_int ( indexComp, indexElem, indexComp2, indexElem2 )
 {
 	var draw = {
 		space: [] ,
@@ -6785,6 +6939,9 @@ function read_int ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 		danger: [],
 		flash: []
 	} ;
+
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_int');
 
 	// CL
 	if (typeof app === "undefined")
@@ -6797,10 +6954,6 @@ function read_int ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 
 		writeRegister(value, indexComp, indexElem);
 		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	if (first_time == true) {
-	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
 	// UI
@@ -6825,34 +6978,35 @@ function read_int ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 	}
 
 	if (consoleMutex == false) {
-		setTimeout(read_int, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+	    setTimeout(read_int, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+	    return ;
 	}
-	else {
-		var value = parseInt(app._data.keyboard);
-		console_log(value);
-		writeRegister(value, indexComp, indexElem);
-		app._data.keyboard = "";
-		consoleMutex = false;
-		mutexRead = false;
-		app._data.enter = null;
 
-		show_notification('The data has been uploaded', 'info') ;
+	var value = parseInt(app._data.keyboard);
+	console_log(value);
+	writeRegister(value, indexComp, indexElem);
+	app._data.keyboard = "";
+	consoleMutex = false;
+	mutexRead = false;
+	app._data.enter = null;
 
-		if (executionIndex >= instructions.length)
-		{
-			 for (var i = 0; i < instructions.length; i++) {
-				draw.space.push(i) ;
-			 }
-			 executionIndex = -2;
-			 return packExecute(true, 'The execution of the program has finished', 'success', null);
-		}
-		else if (runProgram == false) {
-			 app.executeProgram();
-		}
+	show_notification('The data has been uploaded', 'info') ;
+
+	if (executionIndex >= instructions.length)
+	{
+		 for (var i = 0; i < instructions.length; i++) {
+			draw.space.push(i) ;
+		 }
+		 executionIndex = -2;
+		 return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
+
+	if (runProgram == false) {
+		 app.executeProgram();
 	}
 }
 
-function read_string ( indexComp, indexElem, indexComp2, indexElem2, first_time )
+function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 {
 	var draw = {
 		space: [] ,
@@ -6862,34 +7016,33 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2, first_time 
 		flash: []
 	} ;
 
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_string');
+
 	// CL
 	if (typeof app === "undefined")
 	{
-			var readlineSync = require('readline-sync') ;
-			keystroke        = readlineSync.question(' $> ') ;
-			var value = "";
+		var readlineSync = require('readline-sync') ;
+		keystroke        = readlineSync.question(' $> ') ;
+		var value = "";
 
-			for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
-					 value = value + keystroke.charAt(i);
-			}
+		for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
+			 value = value + keystroke.charAt(i);
+		}
 
-			keyboard = keyboard + " " + value;
+		keyboard = keyboard + " " + value;
 
-			var addr = architecture.components[indexComp].elements[indexElem].value;
-			var valueIndex = 0;
-			var auxAddr = data_address;
-			var index;
+		var addr = architecture.components[indexComp].elements[indexElem].value;
+		var valueIndex = 0;
+		var auxAddr = data_address;
+		var index;
 
-			var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
-			if (ret.status != 'ok') {
-				return ret ;
-			}
+		var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
+		if (ret.status != 'ok') {
+			return ret ;
+		}
 
-			return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	if (first_time == true) {
-	    document.getElementById('enter_keyboard').scrollIntoView();
+		return packExecute(false, 'The data has been uploaded', 'danger', null);
 	}
 
 	 mutexRead = true;
@@ -6917,51 +7070,52 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2, first_time 
 
 	if (consoleMutex == false){
 		setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		return ;
 	}
-	else {
-		var keystroke = '' ;
-		keystroke = app.keyboard ;
 
-		var value = "";
-		for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
-			 value = value + keystroke.charAt(i);
+	var keystroke = '' ;
+	keystroke = app.keyboard ;
+
+	var value = "";
+	for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
+		 value = value + keystroke.charAt(i);
+	}
+	console_log(value);
+
+	var addr = architecture.components[indexComp].elements[indexElem].value;
+	var valueIndex = 0;
+	var auxAddr = data_address;
+	var index;
+
+	var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
+	if (ret.status != 'ok') {
+		return ret ;
+	}
+
+	app._data.memory[index] = memory[index];
+	app.keyboard = "";
+	app._data.enter = null;
+
+	consoleMutex = false;
+	mutexRead = false;
+
+	show_notification('The data has been uploaded', 'info') ;
+
+	if (executionIndex >= instructions.length)
+	{
+		for (var i = 0; i < instructions.length; i++) {
+			 draw.space.push(i) ;
 		}
-		console_log(value);
+		executionIndex = -2;
+		return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
 
-		var addr = architecture.components[indexComp].elements[indexElem].value;
-		var valueIndex = 0;
-		var auxAddr = data_address;
-		var index;
-
-		var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
-		if (ret.status != 'ok') {
-			return ret ;
-		}
-
-		app._data.memory[index] = memory[index];
-		app.keyboard = "";
-		app._data.enter = null;
-
-		consoleMutex = false;
-		mutexRead = false;
-
-		show_notification('The data has been uploaded', 'info') ;
-
-		if (executionIndex >= instructions.length)
-		{
-			for (var i = 0; i < instructions.length; i++) {
-				 draw.space.push(i) ;
-			}
-			executionIndex = -2;
-			return packExecute(true, 'The execution of the program has finished', 'success', null);
-		}
-		else if (runProgram == false){
-			app.executeProgram();
-		}
+	if (runProgram == false){
+		app.executeProgram();
 	}
 }
 
-function read_float ( indexComp, indexElem, indexComp2, indexElem2, first_time )
+function read_float ( indexComp, indexElem, indexComp2, indexElem2 )
 {
 	var draw = {
 		space: [] ,
@@ -6970,6 +7124,9 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 		danger: [],
 		flash: []
 	} ;
+
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_float');
 
 	// CL
 	if (typeof app === "undefined")
@@ -6982,10 +7139,6 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 
 		writeRegister(value, indexComp, indexElem);
 		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	if (first_time == true){
-	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
 	mutexRead = true;
@@ -7010,34 +7163,35 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 
 	if (consoleMutex == false) {
 		setTimeout(read_float, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		return ;
 	}
-	else{
-		var value = parseFloat(app._data.keyboard, 10);
-		console_log(value);
-		writeRegister(value, indexComp, indexElem);
-		app._data.keyboard = "";
-		consoleMutex = false;
-		mutexRead = false;
-		app._data.enter = null;
 
-		show_notification('The data has been uploaded', 'info') ;
+	var value = parseFloat(app._data.keyboard, 10);
+	console_log(value);
+	writeRegister(value, indexComp, indexElem);
+	app._data.keyboard = "";
+	consoleMutex = false;
+	mutexRead = false;
+	app._data.enter = null;
 
-		if (executionIndex >= instructions.length)
-                {
-			for (var i = 0; i < instructions.length; i++) {
-				 draw.space.push(i) ;
-			}
+	show_notification('The data has been uploaded', 'info') ;
 
-			executionIndex = -2;
-			return packExecute(true, 'The execution of the program has finished', 'success', null);
+	if (executionIndex >= instructions.length)
+	{
+		for (var i = 0; i < instructions.length; i++) {
+			 draw.space.push(i) ;
 		}
-		else if (runProgram == false){
-			 app.executeProgram();
-		}
+
+		executionIndex = -2;
+		return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
+
+	if (runProgram == false){
+		 app.executeProgram();
 	}
 }
 
-function read_char ( indexComp, indexElem, indexComp2, indexElem2, first_time )
+function read_char ( indexComp, indexElem, indexComp2, indexElem2 )
 {
 	var draw = {
 		space: [] ,
@@ -7047,6 +7201,8 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 		flash: []
 	} ;
 
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
 
 	// CL
 	if (typeof app === "undefined")
@@ -7059,10 +7215,6 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 
 		 writeRegister(value, indexComp, indexElem);
 		 return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	if (first_time == true) {
-		 document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
 	mutexRead = true;
@@ -7088,33 +7240,34 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 	if (consoleMutex == false) {
 		setTimeout(read_char, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
 	}
-	else {
-		var value = (app._data.keyboard).charCodeAt(0);
-		writeRegister(value, indexComp, indexElem);
-		app._data.keyboard = "";
-		consoleMutex = false;
-		mutexRead = false;
-		app._data.enter = null;
 
-		show_notification('The data has been uploaded', 'info') ;
+	var value = (app._data.keyboard).charCodeAt(0);
+	writeRegister(value, indexComp, indexElem);
+	app._data.keyboard = "";
+	consoleMutex = false;
+	mutexRead = false;
+	app._data.enter = null;
 
-		console_log(mutexRead);
+	show_notification('The data has been uploaded', 'info') ;
 
-		if (executionIndex >= instructions.length) {
-			for (var i = 0; i < instructions.length; i++){
-			     draw.space.push(i) ;
-			}
+	console_log(mutexRead);
 
-			executionIndex = -2;
-			return packExecute(true, 'The execution of the program has finished', 'success', null);
+	if (executionIndex >= instructions.length)
+	{
+		for (var i = 0; i < instructions.length; i++){
+		     draw.space.push(i) ;
 		}
-		else if (runProgram == false) {
-			 app.executeProgram();
-		}
+
+		executionIndex = -2;
+		return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
+
+	if (runProgram == false) {
+		 app.executeProgram();
 	}
 }
 
-function read_double ( indexComp, indexElem, indexComp2, indexElem2, first_time )
+function read_double ( indexComp, indexElem, indexComp2, indexElem2 )
 {
 	var draw = {
 		space: [] ,
@@ -7123,6 +7276,9 @@ function read_double ( indexComp, indexElem, indexComp2, indexElem2, first_time 
 		danger: [],
 		flash: []
 	} ;
+
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_double');
 
 	// CL
 	if (typeof app === "undefined")
@@ -7135,10 +7291,6 @@ function read_double ( indexComp, indexElem, indexComp2, indexElem2, first_time 
 
 		writeRegister(value, indexComp, indexElem);
 		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	if (first_time == true) {
-	    document.getElementById('enter_keyboard').scrollIntoView();
 	}
 
 	mutexRead = true;
@@ -7163,41 +7315,38 @@ function read_double ( indexComp, indexElem, indexComp2, indexElem2, first_time 
 
 	if (consoleMutex == false) {
 		setTimeout(read_double, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		return ;
 	}
-	else {
-		var value = parseFloat(app._data.keyboard, 10);
-		console_log(value);
-		writeRegister(value, indexComp, indexElem);
-		app._data.keyboard = "";
-		consoleMutex = false;
-		mutexRead = false;
-		app._data.enter = null;
 
-		show_notification('The data has been uploaded', 'info') ;
+	var value = parseFloat(app._data.keyboard, 10);
+	console_log(value);
+	writeRegister(value, indexComp, indexElem);
+	app._data.keyboard = "";
+	consoleMutex = false;
+	mutexRead = false;
+	app._data.enter = null;
 
-		if (executionIndex >= instructions.length) {
-			for (var i = 0; i < instructions.length; i++) {
-				 draw.space.push(i) ;
-			}
+	show_notification('The data has been uploaded', 'info') ;
 
-			executionIndex = -2;
-			return packExecute(true, 'The execution of the program has finished', 'success', null);
+	if (executionIndex >= instructions.length)
+	{
+		for (var i = 0; i < instructions.length; i++) {
+			 draw.space.push(i) ;
 		}
-		else if (runProgram == false){
-			 app.executeProgram();
-		}
+
+		executionIndex = -2;
+		return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
+
+	if (runProgram == false){
+		 app.executeProgram();
 	}
 }
 
-function sc_sbrk ( indexComp, indexElem, indexComp2, indexElem2, first_time )
+function syscall_sbrk ( indexComp, indexElem, indexComp2, indexElem2 )
 {
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
+	/* Google Analytics */
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.sbrk');
 
 	var aux_addr = architecture.memory_layout[3].value + 1;
 
@@ -7220,8 +7369,9 @@ function sc_sbrk ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 		}
 	}
 
-	if (typeof app !== "undefined")
+	if (typeof app !== "undefined") {
 	    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+	}
 
 	architecture.memory_layout[3].value = aux_addr-1;
 
@@ -7230,80 +7380,20 @@ function sc_sbrk ( indexComp, indexElem, indexComp2, indexElem2, first_time )
 	}
 }
 
-
-/* Syscall */
-function syscall ( action, indexComp, indexElem, indexComp2, indexElem2, first_time )
+function syscall_exit ( )
 {
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
 	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.' + action);
+	creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
 
-	switch (action)
-	{
-		case "print_int":
-                      return print_int(indexComp, indexElem) ;
-		      break;
-
-		case "print_float":
-                      return print_float(indexComp, indexElem) ;
-		      break;
-
-		case "print_double":
-                      return print_double(indexComp, indexElem) ;
-		      break;
-
-		case "print_string":
-                      return print_string(indexComp, indexElem) ;
-		      break;
-
-		case "print_char":
-		      return print_char(indexComp, indexElem) ;
-		      break;
-
-		case "read_int":
-                      return read_int(indexComp, indexElem, indexComp2, indexElem2, first_time) ;
-		      break;
-
-		case "read_float":
-                      return read_float(indexComp, indexElem, indexComp2, indexElem2, first_time) ;
-		      break;
-
-		case "read_double":
-                      return read_double(indexComp, indexElem, indexComp2, indexElem2, first_time) ;
-		      break;
-
-		case "read_string":
-                      return read_string(indexComp, indexElem, indexComp2, indexElem2, first_time) ;
-		      break;
-
-		case "read_char":
-                      return read_char(indexComp, indexElem, indexComp2, indexElem2, first_time) ;
-		      break;
-
-		case "sbrk":
-                      return sc_sbrk(indexComp, indexElem, indexComp2, indexElem2, first_time) ;
-		      break;
-
-		case "exit":
-		      executionIndex = instructions.length + 1;
-		      break;
-	}
+        executionIndex = instructions.length + 1;
 }
 
 
+/*
+ *  Execute binary
+ */
 
-
-
-
-
-function execute_binary(index, instructionExecParts, auxDef)
+function execute_binary ( index, instructionExecParts, auxDef )
 {
 	console_log("Binary");
 
