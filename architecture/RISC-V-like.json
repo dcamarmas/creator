@@ -4484,7 +4484,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "var val = capi_uint2float32(rs1);\n capi_mem_write(rs2+inm, val, 'w');\n",
+      "definition": "var val1 = capi_float322uint(rs1);\n capi_mem_write(rs2+inm, val1, 'w');\n",
       "separated": [
         false,
         true,
