@@ -1463,7 +1463,7 @@ function print_string ( indexComp, indexElem )
 	}
 }
 
-function read_int ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_int ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -1511,7 +1511,7 @@ function read_int ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false) {
-	    setTimeout(read_int, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+	    setTimeout(read_int, 1000, indexComp, indexElem);
 	    return ;
 	}
 
@@ -1602,7 +1602,7 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false){
-		setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2);
 		return ;
 	}
 
@@ -1648,7 +1648,7 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 }
 
-function read_float ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_float ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -1695,7 +1695,7 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false) {
-		setTimeout(read_float, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_float, 1000, indexComp, indexElem);
 		return ;
 	}
 
@@ -1724,7 +1724,7 @@ function read_float ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 }
 
-function read_char ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_char ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -1771,7 +1771,7 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2 )
 	 }
 
 	if (consoleMutex == false) {
-		setTimeout(read_char, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_char, 1000, indexComp, indexElem);
 	}
 
 	var value = (app._data.keyboard).charCodeAt(0);
@@ -1800,7 +1800,7 @@ function read_char ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 }
 
-function read_double ( indexComp, indexElem, indexComp2, indexElem2 )
+function read_double ( indexComp, indexElem )
 {
 	var draw = {
 		space: [] ,
@@ -1847,7 +1847,7 @@ function read_double ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 
 	if (consoleMutex == false) {
-		setTimeout(read_double, 1000, indexComp, indexElem, indexComp2, indexElem2, false);
+		setTimeout(read_double, 1000, indexComp, indexElem);
 		return ;
 	}
 

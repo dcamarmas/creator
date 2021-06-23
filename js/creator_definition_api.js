@@ -181,7 +181,7 @@ function capi_print_char ( value1 )
     return print_char(ret1.compIndex, ret1.elemIndex) ;
 }
 
-function capi_read_int ( value1, value2 )
+function capi_read_int ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -190,18 +190,11 @@ function capi_read_int ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_int(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_int(ret1.compIndex, ret1.elemIndex) ;
 }
 
-function capi_read_float ( value1, value2 )
+function capi_read_float ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -210,18 +203,11 @@ function capi_read_float ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_float(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_float(ret1.compIndex, ret1.elemIndex) ;
 }
 
-function capi_read_double ( value1, value2 )
+function capi_read_double ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -230,15 +216,8 @@ function capi_read_double ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_double(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_double(ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_read_string ( value1, value2 )
@@ -261,7 +240,7 @@ function capi_read_string ( value1, value2 )
     return read_string(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
 }
 
-function capi_read_char ( value1, value2 )
+function capi_read_char ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
@@ -270,15 +249,8 @@ function capi_read_char ( value1, value2 )
         return;
     }
 
-    var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
-        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
-    }
-
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_char(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_char(ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_sbrk ( value1, value2 )
@@ -444,18 +416,16 @@ function capi_uint2float64 ( value0, value1 )
 
 function capi_float642uint ( value )
 {
-    var buf = new ArrayBuffer(8) ;
-    (new Float64Array(buf))[0] = value ;
-    return (new Uint32Array(buf)) ;
+    return float64_to_uint(value) ;
 }
 
-function capi_build_ieee32 ( s, e, m )
+function capi_check_ieee ( s, e, m )
 {
     return checkTypeIEEE(s, e, m) ;
 }
 
 function capi_float2bin ( f )
 {
-    return float_to_bin(f) ;
+    return float2bin(f) ;
 }
 

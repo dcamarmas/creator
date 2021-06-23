@@ -20,7 +20,46 @@
 
 
   /* 
-   * Convert to
+   * Representation
+   */
+
+  /**
+   * method in chage of map a float number separated in parts and determinte what it.
+   * @param s {Number} the sing of the number
+   * @param e {Number} the exponent of the number.
+   * @param m {Number} the mantinsa of the number
+   * @return {number} 2^n with n as
+   *      0 -> -infinite
+   *      1 -> -normal number
+   *      2 -> -subnormal number
+   *      3 -> -0
+   *      4 -> +0
+   *      5 -> +normal number
+   *      6 -> +subnormal number
+   *      7 -> +inf
+   *      8 -> -NaN
+   *      9 -> +NaN
+   */
+  function checkTypeIEEE(s, e, m)
+  {
+      let rd = 0;
+
+      if (!m && !e)
+          rd = s ? 1<<3 : 1<<4;
+      else if (!e)
+          rd = s ? 1<<2 : 1<<5;
+      else if (!(e ^ 255))
+          if (m)
+              rd = s ? 1<<8 : 1<<9;
+          else
+              rd = s ? 1<<0 : 1<<7;
+      else
+          rd = s ? 1<<1 : 1<<6;
+      return rd;
+  }
+
+  /* 
+   * Convert to...
    */
 
   function hex2char8 ( hexvalue )
@@ -100,25 +139,32 @@
       return (new Float64Array(buf))[0] ;
   }
 
-  function float_to_bin ( number )
+  function float64_to_uint ( value )
   {
-      var i, result = "";
-      var dv = new DataView(new ArrayBuffer(4));
-
-      dv.setFloat32(0, number, false);
-
-      for (i=0; i<4; i++)
-      {
-           var bits = dv.getUint8(i).toString(2);
-           if (bits.length < 8) {
-               bits = new Array(8 - bits.length).fill('0').join("") + bits;
-           }
-           result += bits;
-      }
-      return result;
+      var buf = new ArrayBuffer(8) ;
+      (new Float64Array(buf))[0] = value ;
+      return (new Uint32Array(buf)) ;
   }
 
-  function double_to_bin ( number )
+  function float2bin ( number )
+  {
+    var i, result = "";
+    var dv = new DataView(new ArrayBuffer(4));
+
+    dv.setFloat32(0, number, false);
+
+    for (i = 0; i < 4; i++)
+    {
+        var bits = dv.getUint8(i).toString(2);
+        if (bits.length < 8) {
+            bits = new Array(8 - bits.length).fill('0').join("") + bits;
+        }
+        result += bits;
+    }
+    return result;
+  }
+
+  function double2bin ( number )
   {
       var i, result = "";
       var dv = new DataView(new ArrayBuffer(8));
@@ -127,16 +173,16 @@
 
       for (i = 0; i < 8; i++)
       {
-            var bits = dv.getUint8(i).toString(2);
-            if (bits.length < 8) {
-                bits = new Array(8 - bits.length).fill('0').join("") + bits;
-            }
-            result += bits;
+          var bits = dv.getUint8(i).toString(2);
+          if (bits.length < 8) {
+            bits = new Array(8 - bits.length).fill('0').join("") + bits;
+          }
+          result += bits;
       }
       return result;
   }
 
-  function bin_to_hex ( s )
+  function bin2hex ( s )
   {
       var i, k, part, accum, ret = '';
 
@@ -175,7 +221,7 @@
       return ret;
   }
 
-  function hex_to_double ( hexvalue )
+  function hex2double ( hexvalue )
   {
       var value = hexvalue.split('x');
       var value_bit = '';
