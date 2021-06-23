@@ -3266,10 +3266,6 @@ try
 
 
 
-
-
-
-
       /*Console mutex*/
       consoleEnter(){
         if(this.keyboard != ""){
@@ -3281,18 +3277,6 @@ try
         this.keyboard = "";
         this.display = "";
       },
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -3334,6 +3318,8 @@ try
 
       /*Convert hexadecimal number to double floating point number*/
       hex2double ( hexvalue ){
+        return hex_to_double(hexvalue) ;
+	/*
         var value = hexvalue.split('x');
         var value_bit = '';
 
@@ -3346,10 +3332,14 @@ try
         var buffer = new ArrayBuffer(8);
         new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
         return new DataView( buffer ).getFloat64(0, false);
+	*/
       },
 
       /*Convert hexadecimal number to char*/
-      hex2char8 ( hexvalue ){
+      hex2char8 ( hexvalue )
+      {
+        return hex2char8(hexvalue) ;
+	/*
         var num_char = ((hexvalue.toString().length))/2;
         var exponent = 0;
         var pos = 0;
@@ -3369,10 +3359,14 @@ try
         }
 
         return  characters;
+	*/
       },
 
       /*Convert floating point number to binary*/
-      float2bin (number){
+      float2bin (number)
+      {
+        return float_to_bin(number) ;
+	/*
         var i, result = "";
         var dv = new DataView(new ArrayBuffer(4));
 
@@ -3386,10 +3380,14 @@ try
             result += bits;
         }
         return result;
+	*/
       },
 
       /*Convert double floating point number to binary*/
-      double2bin(number) {
+      double2bin(number)
+      {
+        return double_to_bin(number) ;
+	/*
         var i, result = "";
         var dv = new DataView(new ArrayBuffer(8));
 
@@ -3403,10 +3401,14 @@ try
             result += bits;
         }
         return result;
+	*/
       },
 
       /*Convert binary number to hexadecimal number*/
-      bin2hex(s) {
+      bin2hex(s)
+      {
+        return bin_to_hex(s) ;
+        /*
         var i, k, part, accum, ret = '';
         for (i = s.length-1; i >= 3; i -= 4){
 
@@ -3437,14 +3439,13 @@ try
           ret = String(accum) + ret;
         }
         return ret;
+	*/
       },
 
       /*Popover functions*/
       popoverId(i){
-        return 'popoverValueContent' + i;
+          return 'popoverValueContent' + i;
       },
-
-
 
 
       //TODO: delete when all dependences are remove

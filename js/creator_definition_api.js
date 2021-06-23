@@ -124,7 +124,7 @@ function capi_exit ( )
 function capi_print_int ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
@@ -136,7 +136,7 @@ function capi_print_int ( value1 )
 function capi_print_float ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
@@ -148,7 +148,7 @@ function capi_print_float ( value1 )
 function capi_print_double ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
@@ -160,7 +160,7 @@ function capi_print_double ( value1 )
 function capi_print_string ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
@@ -172,7 +172,7 @@ function capi_print_string ( value1 )
 function capi_print_char ( value1 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
@@ -184,14 +184,14 @@ function capi_print_char ( value1 )
 function capi_read_int ( value1, value2 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if ( (value2 != "") && (ret2.match == 0) )
+    if (ret2.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
         return;
@@ -204,14 +204,14 @@ function capi_read_int ( value1, value2 )
 function capi_read_float ( value1, value2 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if ( (value2 != "") && (ret2.match == 0) )
+    if (ret2.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
         return;
@@ -224,14 +224,14 @@ function capi_read_float ( value1, value2 )
 function capi_read_double ( value1, value2 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if ( (value2 != "") && (ret2.match == 0) )
+    if (ret2.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
         return;
@@ -244,14 +244,14 @@ function capi_read_double ( value1, value2 )
 function capi_read_string ( value1, value2 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if ( (value2 != "") && (ret2.match == 0) )
+    if (ret2.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
         return;
@@ -264,14 +264,14 @@ function capi_read_string ( value1, value2 )
 function capi_read_char ( value1, value2 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if ( (value2 != "") && (ret2.match == 0) )
+    if (ret2.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
         return;
@@ -284,14 +284,14 @@ function capi_read_char ( value1, value2 )
 function capi_sbrk ( value1, value2 )
 {
     var ret1 = crex_findReg(value1) ;
-    if ( (value1 != "") && (ret1.match == 0) )
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if ( (value2 != "") && (ret2.match == 0) )
+    if (ret2.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
         return;
@@ -405,12 +405,6 @@ function capi_drawstack_end ()
  *  Representation
  */
 
-/*
- * Name:        capi_split_double
- * Sypnosis:    capi_split_double (reg, index)
- * Description: split the double register in highter part and lower part
- */
-
 function capi_split_double ( reg, index )
 {
     var value = bin2hex(double2bin(reg));
@@ -423,48 +417,20 @@ function capi_split_double ( reg, index )
     }
 }
 
-/*
- * Name:        capi_uint2float32
- * Sypnosis:    capi_uint2float32 ( value )
- * Description: convert from unsigned int to float32
- */
-
 function capi_uint2float32 ( value )
 {
-    var buf = new ArrayBuffer(4) ;
-    (new Uint32Array(buf))[0] = value ;
-    return (new Float32Array(buf))[0] ;
+    return uint_to_float32(value) ;
 }
-
-/*
- * Name:        capi_float322uint
- * Sypnosis:    capi_float322uint ( value )
- * Description: convert from float32 to unsigned int
- */
 
 function capi_float322uint ( value )
 {
-    var buf = new ArrayBuffer(4) ;
-    (new Float32Array(buf))[0] = value ;
-    return (new Uint32Array(buf))[0];
+    return float32_to_uint(value) ;
 }
-
-/*
- * Name:        capi_int2uint
- * Sypnosis:    capi_int2uint ( value )
- * Description: convert from signed int to unsigned int
- */
 
 function capi_int2uint ( value )
 {
     return (value >>> 0) ;
 }
-
-/*
- * Name:        capi_uint2int
- * Sypnosis:    capi_uint2int ( value )
- * Description: convert from unsigned int to signed int
- */
 
 function capi_uint2int ( value )
 {
@@ -473,11 +439,7 @@ function capi_uint2int ( value )
 
 function capi_uint2float64 ( value0, value1 )
 {
-    var buf = new ArrayBuffer(8) ;
-    var arr = new Uint32Array(buf) ;
-    arr[0] = value0 ;
-    arr[1] = value1 ;
-    return (new Float64Array(buf))[0] ;
+    return uint_to_float64(value0, value1) ;
 }
 
 function capi_float642uint ( value )
@@ -494,6 +456,6 @@ function capi_build_ieee32 ( s, e, m )
 
 function capi_float2bin ( f )
 {
-    return app.float2bin(f) ;
+    return float_to_bin(f) ;
 }
 
