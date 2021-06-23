@@ -4484,7 +4484,7 @@
           "valueField": "010"
         }
       ],
-      "definition": "var val = capi_uint2float32(rs1);\n capi_mem_write(rs2+inm, val, 'w');\n",
+      "definition": "var val1 = capi_float322uint(rs1);\n capi_mem_write(rs2+inm, val1, 'w');\n",
       "separated": [
         false,
         true,
@@ -5675,7 +5675,7 @@
           "valueField": "001"
         }
       ],
-      "definition": "let a = app.float2bin(rs1);\nrd=capi_checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));",
+      "definition": "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,9), 2), parseInt(a.slice(10), 2));",
       "separated": [
         false,
         false,
@@ -5886,7 +5886,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "assert((inm+rs1)%8==0; \"The memory must be aligned\");\nvar buf = new ArrayBuffer(8);\nvar arr = (new Uint32Array(buf));\narr[0] =  MP.w.[inm+rs1];\narr[1] =  MP.w.[inm+rs1+4]\nrd = (new Float64Array(buf))[0];",
+      "definition": " var isnotalign = capi_bad_align(rs1+inm, 'd');\n if (isnotalign) { capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(rs1+inm, 'w');\n var val2 = capi_mem_read(rs1+inm+4, 'w');\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\n arr[0] = val1;\n arr[1] = val2;\n rd = (new Float64Array(buf))[0];\n",
       "separated": [
         false,
         false,
@@ -7016,7 +7016,7 @@
           "stopbit": 7
         }
       ],
-      "definition": "let a = app.float2bin(rs1);\nrd=capi_checkTypeIEEE(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));",
+      "definition": "let a = capi_float2bin(rs1);\nrd=capi_check_ieee(parseInt(a[0]), parseInt(a.slice(1,12), 2), parseInt(a.slice(13), 2));",
       "separated": [
         false,
         false,
@@ -7262,7 +7262,7 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(a7){\ncase 1:\ncapi_syscall('print_int','a0');\nbreak;\ncase 2:\n\ncapi_syscall('print_float','f12');\nbreak;\ncase 3:\ncapi_syscall('print_double','FP12');\nbreak;\ncase 4:\ncapi_syscall('print_string','a0');\nbreak;\ncase 5:\ncapi_syscall('read_int','v0');\nbreak;\ncase 6:\ncapi_syscall('read_float','f0');\nbreak;\ncase 7:\ncapi_syscall('read_double','FP0');\nbreak;\ncase 8:\ncapi_syscall('read_string', 'a0', 'a1');\nbreak;\ncase 9:\ncapi_syscall('sbrk','a0', 'v0');\nbreak;\ncase 10:\ncapi_syscall('exit');\nbreak;\ncase 11:\ncapi_syscall('print_char','a0');\nbreak;\ncase 12:\ncapi_syscall('read_char','v0');\nbreak;\n}"
+      "definition": "switch(a7){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('fa0');\nbreak;\ncase 3:\ncapi_print_double('fa0');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('a0');\nbreak;\ncase 6:\ncapi_read_float('fa0');\nbreak;\ncase 7:\ncapi_read_double('fa0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'a0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('a0');\nbreak;\n}"
     }
   ],
   "pseudoinstructions": [

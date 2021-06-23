@@ -43,7 +43,7 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 
 function capi_bad_align ( addr, type )
 {
-    size = aux_type2size(type) ;
+    size = crex_type2size(type) ;
     return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
 }
 
@@ -106,34 +106,8 @@ function capi_mem_read ( addr, type )
         return val;
     }
 
-    switch (type)
-    {
-        case 'b':
-	     val = val & 0xFF ;
-	     if (val & 0x80) 
-	         val = 0xFFFFFF00 | val ;
-	     break;
-
-        case 'bu':
-	     val = ((val << 24) >> 24) ;
-	     break;
-
-        case 'h':
-	     val = val & 0xFFFF ;
-	     if (val & 0x8000) 
-	         val = 0xFFFF0000 | val ;
-	     break;
-
-        case 'hu':
-	     val = ((val << 16) >> 16) ;
-	     break;
-
-        default:
-	     break;
-    }
-
     // 3) return value
-    return val ;
+    return crex_value_by_type(val, type) ;
 }
 
 
@@ -142,49 +116,160 @@ function capi_mem_read ( addr, type )
  *  Syscall
  */
 
-/*
- * Name:        capi_syscall - request system call
- * Sypnosis:    capi_syscall (action, value1 [, value2])
- * Description: request a system call
- */
-
-var capi_sc_nargs = {
-			"exit":         0,
-			"print_char":   1,
-			"print_int":    1,
-			"print_float":  1,
-			"print_double": 1,
-			"print_string": 1,
-			"read_char":    1,
-			"read_int":     1,
-			"read_float":   1,
-			"read_double":  1,
-			"read_string":  2,
-			"sbrk":         2
-		    } ;
-
-function capi_syscall ( action, value1, value2 )
+function capi_exit ( )
 {
-    var nargs = capi_sc_nargs[action] ;
-    if (nargs == 0) value1 = "" ;
-    if (nargs  < 2) value2 = "" ;
+    return syscall_exit() ;
+}
 
-    var ret1 = aux_findReg(value1) ;
-    if ( (value2 != "") && (ret1.match == 0) )
+function capi_print_int ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
     }
 
-    var ret2 = aux_findReg(value2) ;
-    if ( (value2 != "") && (ret2.match == 0) )
+    return print_int(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_float ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_float(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_double ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_double(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_string ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_string(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_char ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_char(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_read_int ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_int(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_read_float ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_float(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_read_double ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_double(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_read_string ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if (ret2.match == 0)
     {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
         return;
     }
 
-    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
-    syscall(action, ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex, true);
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_string(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_char ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_char(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_sbrk ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if (ret2.match == 0)
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    return syscall_sbrk(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
 }
 
 
@@ -224,13 +309,13 @@ function capi_callconv_end ()
     creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
     // User notification
-    aux_show_notification(ret.msg, 'danger') ;
+    crex_show_notification(ret.msg, 'danger') ;
 }
 
 function capi_callconv_memAction ( action, addr, reg_name, type )
 {
     // 1) search for reg_name...
-    var ret = aux_findReg(reg_name) ;
+    var ret = crex_findReg(reg_name) ;
     if (ret.match == 0) {
         return;
     }
@@ -245,7 +330,7 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
                       break;
         case 'read':  creator_callstack_newRead(i, j, addr, type);
                       break;
-        default:      aux_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
+        default:      crex_show_notification(" Unknown action '" + action + "' at ...sing_convention_memory.\n", 'danger') ;
                       break;
     }
 }
@@ -283,19 +368,13 @@ function capi_drawstack_end ()
     }
 
     // User notification
-    aux_show_notification(ret.msg, 'warning') ;
+    crex_show_notification(ret.msg, 'warning') ;
 }
 
 
 /*
  *  CREATOR instruction description API:
  *  Representation
- */
-
-/*
- * Name:        capi_split_double
- * Sypnosis:    capi_split_double (reg, index)
- * Description: split the double register in highter part and lower part
  */
 
 function capi_split_double ( reg, index )
@@ -310,48 +389,20 @@ function capi_split_double ( reg, index )
     }
 }
 
-/*
- * Name:        capi_uint2float32
- * Sypnosis:    capi_uint2float32 ( value )
- * Description: convert from unsigned int to float32
- */
-
 function capi_uint2float32 ( value )
 {
-    var buf = new ArrayBuffer(4) ;
-    (new Uint32Array(buf))[0] = value ;
-    return (new Float32Array(buf))[0] ;
+    return uint_to_float32(value) ;
 }
-
-/*
- * Name:        capi_float322uint
- * Sypnosis:    capi_float322uint ( value )
- * Description: convert from float32 to unsigned int
- */
 
 function capi_float322uint ( value )
 {
-    var buf = new ArrayBuffer(4) ;
-    (new Float32Array(buf))[0] = value ;
-    return (new Uint32Array(buf))[0];
+    return float32_to_uint(value) ;
 }
-
-/*
- * Name:        capi_int2uint
- * Sypnosis:    capi_int2uint ( value )
- * Description: convert from signed int to unsigned int
- */
 
 function capi_int2uint ( value )
 {
     return (value >>> 0) ;
 }
-
-/*
- * Name:        capi_uint2int
- * Sypnosis:    capi_uint2int ( value )
- * Description: convert from unsigned int to signed int
- */
 
 function capi_uint2int ( value )
 {
@@ -360,22 +411,21 @@ function capi_uint2int ( value )
 
 function capi_uint2float64 ( value0, value1 )
 {
-    var buf = new ArrayBuffer(8) ;
-    var arr = new Uint32Array(buf) ;
-    arr[0] = value0 ;
-    arr[1] = value1 ;
-    return (new Float64Array(buf))[0] ;
+    return uint_to_float64(value0, value1) ;
 }
 
 function capi_float642uint ( value )
 {
-    var buf = new ArrayBuffer(8) ;
-    (new Float64Array(buf))[0] = value ;
-    return (new Uint32Array(buf)) ;
+    return float64_to_uint(value) ;
 }
 
-function capi_checkTypeIEEE ( s, e, m )
+function capi_check_ieee ( s, e, m )
 {
     return checkTypeIEEE(s, e, m) ;
+}
+
+function capi_float2bin ( f )
+{
+    return float2bin(f) ;
 }
 
