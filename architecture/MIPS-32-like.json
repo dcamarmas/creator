@@ -2043,7 +2043,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "if (reg1 != reg2) { PC = PC + ((off << 16) >> 14) }"
+      "definition": "if (reg1 != reg2)\n { PC = PC + ((off << 16) >> 14) }"
     },
     {
       "name": "cvt.d.s",
@@ -2582,7 +2582,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ra = PC\nPC = addr;\n capi_callconv_begin(addr); capi_drawstack_begin(addr);"
+      "definition": "ra = PC;\n PC = addr;\n capi_callconv_begin(addr); capi_drawstack_begin(addr);"
     },
     {
       "name": "jalr",
@@ -2660,7 +2660,7 @@
           "valueField": "001000"
         }
       ],
-      "definition": "PC = rs; \ncapi_callconv_end(); capi_drawstack_end();"
+      "definition": "PC = rs;\n capi_callconv_end(); capi_drawstack_end();"
     },
     {
       "name": "lb",
@@ -2927,7 +2927,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "ft = capi_uint2float32(MP.w.[base+off]);\ncapi_callconv_memAction('read', base+off, ft_name, 'w');"
+      "definition": "ft = capi_mem_read(base+off, 'w');\n ft = capi_uint2float32(ft);\n capi_callconv_memAction('read', base+off, ft_name, 'w');"
     },
     {
       "name": "mfc1",
@@ -3521,7 +3521,7 @@
           "valueField": "011000"
         }
       ],
-      "definition": "var result = capi_uint2int(rs) * capi_uint2int(rt)\nHI=Math.floor(result / Math.pow (2, 32)) >>> 0\nLO=result % Math.pow(2, 32) >>> 0"
+      "definition": "var result = capi_uint2int(rs) * capi_uint2int(rt);\n HI=Math.floor(result / Math.pow (2, 32));\n LO=result % Math.pow(2, 32);\n"
     },
     {
       "name": "multu",
@@ -3561,7 +3561,7 @@
           "valueField": "011001"
         }
       ],
-      "definition": "var result = capi_int2uint(rs) * capi_int2uint(rt);\nHI = Math.floor(result / Math.pow(2, 32)) >>> 0;\nLO = result % Math.pow(2, 32) >>> 0;"
+      "definition": "var result = capi_int2uint(rs) * capi_int2uint(rt);\n HI = Math.floor(result / Math.pow(2, 32));\n HI = HI >>> 0;\n LO = result % Math.pow(2, 32);\n LO = LO >>> 0;\n"
     },
     {
       "name": "nop",
@@ -3773,7 +3773,7 @@
           "valueField": "000010"
         }
       ],
-      "definition": "rd = (((rt >>> sa) | (rt << (32 - sa))) >>> 0);"
+      "definition": "rd = capi_int2uint((rt >>> sa) | (rt << (32 - sa)));"
     },
     {
       "name": "rsqrt.s",
@@ -3906,7 +3906,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.b.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, rt_name, 'b');"
+      "definition": "capi_mem_write(base+off, rt, 'b');\n capi_callconv_memAction('write', off+base, rt_name, 'b');"
     },
     {
       "name": "sh",
@@ -3945,7 +3945,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.h.[off+base]=rt;\ncapi_callconv_memAction('write', off+base, rt_name, 'h');"
+      "definition": "capi_mem_write(base+off, rt, 'h');\n capi_callconv_memAction('write', off+base, rt_name, 'h');"
     },
     {
       "name": "sll",
@@ -4591,7 +4591,7 @@
           "stopbit": 21
         }
       ],
-      "definition": "capi_mem_write(val+reg2, reg1, 'w');\ncapi_callconv_memAction('write', val+reg2, reg1_name, 'w');"
+      "definition": "capi_mem_write(val+reg2, reg1, 'w');\n capi_callconv_memAction('write', val+reg2, reg1_name, 'w');"
     },
     {
       "name": "swc1",
@@ -4630,7 +4630,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = capi_float322uint(ft);\ncapi_callconv_memAction('write', base+off, ft_name, 'w');"
+      "definition": "capi_mem_write(base+off, capi_float322uint(ft), 'w');\n capi_callconv_memAction('write', base+off, ft_name, 'w');"
     },
     {
       "name": "sdc1",
@@ -4669,7 +4669,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "MP.w.[base+off] = capi_split_double(ft, 1); MP.w.[base+off+4] = capi_split_double(ft, 0);\ncapi_callconv_memAction('write', base+off, ft_name, 'd');"
+      "definition": "capi_mem_write(base+off, capi_split_double(ft, 1), 'w');\n capi_mem_write(base+off+4, capi_split_double(ft, 0), 'w');\n capi_callconv_memAction('write', base+off, ft_name, 'd');"
     },
     {
       "name": "xor",
@@ -4782,7 +4782,7 @@
           "valueField": "001100"
         }
       ],
-      "definition": "switch(v0){\ncase 1:\ncapi_syscall('print_int','a0');\nbreak;\ncase 2:\ncapi_syscall('print_float','f12');\nbreak;\ncase 3:\ncapi_syscall('print_double','FP12');\nbreak;\ncase 4:\ncapi_syscall('print_string','a0');\nbreak;\ncase 5:\ncapi_syscall('read_int','v0');\nbreak;\ncase 6:\ncapi_syscall('read_float','f0');\nbreak;\ncase 7:\ncapi_syscall('read_double','FP0');\nbreak;\ncase 8:\ncapi_syscall('read_string', 'a0', 'a1');\nbreak;\ncase 9:\ncapi_syscall('sbrk','a0', 'v0');\nbreak;\ncase 10:\ncapi_syscall('exit');\nbreak;\ncase 11:\ncapi_syscall('print_char','a0');\nbreak;\ncase 12:\ncapi_syscall('read_char','v0');\nbreak;\n}"
+      "definition": "switch(v0){\ncase 1:\ncapi_print_int('a0');\nbreak;\ncase 2:\ncapi_print_float('f12');\nbreak;\ncase 3:\ncapi_print_double('FP12');\nbreak;\ncase 4:\ncapi_print_string('a0');\nbreak;\ncase 5:\ncapi_read_int('v0');\nbreak;\ncase 6:\ncapi_read_float('f0');\nbreak;\ncase 7:\ncapi_read_double('FP0');\nbreak;\ncase 8:\ncapi_read_string('a0', 'a1');\nbreak;\ncase 9:\ncapi_sbrk('a0', 'v0');\nbreak;\ncase 10:\ncapi_exit();\nbreak;\ncase 11:\ncapi_print_char('a0');\nbreak;\ncase 12:\ncapi_read_char('v0');\nbreak;\n}"
     },
     {
       "name": "divu",
@@ -4914,7 +4914,7 @@
           "stopbit": 0
         }
       ],
-      "definition": "assert((base+off)%8==0; \"The memory must be aligned\");\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = MP.w.[off+base];\narr[1] = MP.w.[off+4+base]\n;ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, ft_name, 'd');"
+      "definition": "var isnotalign = capi_bad_align(base+off, 'd');\n if (isnotalign) {  capi_raise('The memory must be align'); }\n var val1 = capi_mem_read(base+off, 'w');\n var val2 = capi_mem_read(base+off+4, 'w');\n var buf = new ArrayBuffer(8);\n var arr = (new Uint32Array(buf));\narr[0] = val1;\n arr[1] = val2;\n ft = (new Float64Array(buf))[0];\n capi_callconv_memAction('read', base+off, ft_name, 'd');"
     },
     {
       "name": "bc1f",
