@@ -116,35 +116,75 @@ function capi_mem_read ( addr, type )
  *  Syscall
  */
 
-/*
- * Name:        capi_syscall - request system call
- * Sypnosis:    capi_syscall (action, value1 [, value2])
- * Description: request a system call
- */
-
-var capi_sc_nargs = {
-			"exit":         0,
-			"print_char":   1,
-			"print_int":    1,
-			"print_float":  1,
-			"print_double": 1,
-			"print_string": 1,
-			"read_char":    1,
-			"read_int":     1,
-			"read_float":   1,
-			"read_double":  1,
-			"read_string":  2,
-			"sbrk":         2
-		    } ;
-
-function capi_syscall ( action, value1, value2 )
+function capi_exit ( )
 {
-    var nargs = capi_sc_nargs[action] ;
-    if (nargs == 0) value1 = "" ;
-    if (nargs  < 2) value2 = "" ;
+    return syscall_exit() ;
+}
 
+function capi_print_int ( value1 )
+{
     var ret1 = crex_findReg(value1) ;
-    if ( (value2 != "") && (ret1.match == 0) )
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_int(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_float ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_float(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_double ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_double(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_string ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_string(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_print_char ( value1 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    return print_char(ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_read_int ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
     {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
         return;
@@ -157,8 +197,107 @@ function capi_syscall ( action, value1, value2 )
         return;
     }
 
-    // syscall(action, indexComp, indexElem, indexComp2, indexElem2, first_time)
-    syscall(action, ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex, true);
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_int(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_float ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_float(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_double ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_double(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_string ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_string(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_read_char ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+    return read_char(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+}
+
+function capi_sbrk ( value1, value2 )
+{
+    var ret1 = crex_findReg(value1) ;
+    if ( (value1 != "") && (ret1.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+        return;
+    }
+
+    var ret2 = crex_findReg(value2) ;
+    if ( (value2 != "") && (ret2.match == 0) )
+    {
+        throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
+        return;
+    }
+
+    return syscall_sbrk(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
 }
 
 
