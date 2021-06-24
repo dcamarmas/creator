@@ -41,6 +41,11 @@
      return true ;
   }
 
+
+  /*
+   *  Loading
+   */
+
   function show_loading()
   {
      // if loading is programmed, skip
@@ -65,5 +70,38 @@
 
       // disable loading spinner
       $("#loading").hide();
+  }
+
+
+  /*
+   *  Glowing
+   */
+
+  function btn_int_glow ( btn_name )
+  {
+	var buttonDec = '#popoverValueContent' + btn_name + "Int" ;
+	var buttonHex = '#popoverValueContent' + btn_name ;
+
+	        $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+	        $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+
+	setTimeout(function() {
+		$(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+		$(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+	}, 500);
+  }
+
+  function btn_fp_glow ( btn_name, post_label )
+  {
+	var buttonDec = '#popoverValueContent' + btn_name + post_label ;
+	var buttonHex = '#popoverValueContent' + btn_name;
+
+	        $(buttonDec).attr("style", "background-color:#c2c2c2;");
+	        $(buttonHex).attr("style", "background-color:#c2c2c2;");
+
+	setTimeout(function() {
+		$(buttonDec).attr("style", "background-color:#f5f5f5;");
+		$(buttonHex).attr("style", "background-color:#f5f5f5;");
+	}, 500);
   }
 
