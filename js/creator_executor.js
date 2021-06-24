@@ -1340,9 +1340,51 @@ function display_print ( info )
 
 
 /* Syscalls */
-function print_string ( indexComp, indexElem )
+function crex_sbrk ( new_size )
 {
-	 var addr = architecture.components[indexComp].elements[indexElem].value;
+	var new_addr = 0 ;
+	var aux_addr = architecture.memory_layout[3].value + 1 ;
+
+	if ((architecture.memory_layout[3].value + new_size) >= architecture.memory_layout[4].value)
+	{
+		executionIndex = -1 ;
+		return packExecute(true, 'Not enough memory for data segment', 'danger', null) ;
+	}
+
+	for (var i = 0; i < (new_size / 4); i++)
+        {
+		memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true}) ;
+
+		if (i == 0) {
+		    new_addr = aux_addr ;
+		}
+
+		for (var z = 0; z < 4; z++) {
+		     (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},) ;
+		     aux_addr++ ;
+		}
+	}
+
+	if (typeof app !== "undefined") {
+	    app._data.memory[memory_hash[0]] = memory[memory_hash[0]] ;
+	}
+
+	architecture.memory_layout[3].value = aux_addr-1 ;
+
+	if (typeof app !== "undefined") {
+	    app.architecture.memory_layout[3].value = aux_addr-1 ;
+	}
+
+        return packExecute(false, '', 'danger', new_addr) ;
+}
+
+function crex_exit ( )
+{
+        executionIndex = instructions.length + 1;
+}
+
+function print_string ( addr )
+{
 	 var index;
 
 	 if ((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
@@ -1792,45 +1834,6 @@ function read_double ( indexComp, indexElem )
 	if (runProgram == false){
 		 app.executeProgram();
 	}
-}
-
-function syscall_sbrk ( indexComp, indexElem, indexComp2, indexElem2 )
-{
-	var aux_addr = architecture.memory_layout[3].value + 1;
-
-	if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
-		executionIndex = -1;
-		return packExecute(true, 'Not enough memory for data segment', 'danger', null);
-	}
-
-	for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++)
-        {
-		memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
-
-		if(i==0){
-			architecture.components[indexComp2].elements[indexElem2].value = aux_addr;
-		}
-
-		for (var z = 0; z < 4; z++) {
-			(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
-			aux_addr++;
-		}
-	}
-
-	if (typeof app !== "undefined") {
-	    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-	}
-
-	architecture.memory_layout[3].value = aux_addr-1;
-
-	if (typeof app !== "undefined") {
-	    app.architecture.memory_layout[3].value = aux_addr-1;
-	}
-}
-
-function crex_exit ( )
-{
-        executionIndex = instructions.length + 1;
 }
 
 

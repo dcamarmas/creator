@@ -82,8 +82,8 @@ function register_value_serialize(object)
 
 			if (architecture.components[i].double_precision != true)
 			{
-				var aux = architecture.components[i].elements[j].default_value;
-				auxObject.components[i].elements[j].default_value = aux.toString();
+				var aux2 = architecture.components[i].elements[j].default_value;
+				auxObject.components[i].elements[j].default_value = aux2.toString();
 			}
 		}
 	}
