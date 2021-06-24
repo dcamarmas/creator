@@ -118,11 +118,18 @@ function capi_mem_read ( addr, type )
 
 function capi_exit ( )
 {
-    return syscall_exit() ;
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
+
+    return crex_exit() ;
 }
 
 function capi_print_int ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_int');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -130,11 +137,19 @@ function capi_print_int ( value1 )
         return;
     }
 
-    return print_int(ret1.compIndex, ret1.elemIndex) ;
+    /* Print integer */
+    var value   = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var val_int = parseInt(value.toString()) >> 0 ;
+
+    display_print(val_int) ;
 }
 
 function capi_print_float ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_float');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -142,11 +157,18 @@ function capi_print_float ( value1 )
         return;
     }
 
-    return print_float(ret1.compIndex, ret1.elemIndex) ;
+    /* Print float */
+    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+
+    display_print(value) ;
 }
 
 function capi_print_double ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_double');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -154,11 +176,18 @@ function capi_print_double ( value1 )
         return;
     }
 
-    return print_double(ret1.compIndex, ret1.elemIndex) ;
+    /* Print double */
+    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+
+    display_print(value) ;
 }
 
 function capi_print_string ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -166,11 +195,15 @@ function capi_print_string ( value1 )
         return;
     }
 
-    return print_string(ret1.compIndex, ret1.elemIndex) ;
+    print_string(ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_print_char ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_char');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -178,11 +211,23 @@ function capi_print_char ( value1 )
         return;
     }
 
-    return print_char(ret1.compIndex, ret1.elemIndex) ;
+    /* Print char */
+    var aux    = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var aux2   = aux.toString(16);
+    var length = aux2.length;
+
+    var value = aux2.substring(length-2, length) ;
+        value = String.fromCharCode(parseInt(value, 16)) ;
+
+    display_print(value) ;
 }
 
 function capi_read_int ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_int');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -196,6 +241,10 @@ function capi_read_int ( value1 )
 
 function capi_read_float ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_float');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -209,6 +258,10 @@ function capi_read_float ( value1 )
 
 function capi_read_double ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_double');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -222,6 +275,10 @@ function capi_read_double ( value1 )
 
 function capi_read_string ( value1, value2 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_string');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -242,6 +299,10 @@ function capi_read_string ( value1, value2 )
 
 function capi_read_char ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
@@ -255,6 +316,10 @@ function capi_read_char ( value1 )
 
 function capi_sbrk ( value1, value2 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.sbrk');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
     if (ret1.match == 0)
     {
