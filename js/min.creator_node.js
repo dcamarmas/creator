@@ -504,7 +504,7 @@ function creator_callstack_create()
 // "jal X, ..." -> add new element (at the end)
 // Example: creator_callstack_Enter("main")
 //
-function creator_callstack_enter(function_name)
+function creator_callstack_enter ( function_name )
 {
     var ret = {
         ok: true,
@@ -747,15 +747,25 @@ function creator_callstack_setTop( field, indexComponent, indexElement, value )
 //
 function creator_callstack_setState (indexComponent, indexElement, newState)
 {
-  var elto = creator_callstack_getTop();
-  elto.val.register_sm[indexComponent][indexElement] = newState;
+    var elto = creator_callstack_getTop();
+    if (elto.ok == false) {
+        console_log('creator_callstack_setState: ' + elto.msg) ;
+	return '' ;
+    }
+
+    elto.val.register_sm[indexComponent][indexElement] = newState;
 }
 
 
 function creator_callstack_getState (indexComponent, indexElement)
 {
-  var elto = creator_callstack_getTop();
-  return elto.val.register_sm[indexComponent][indexElement];
+    var elto = creator_callstack_getTop();
+    if (elto.ok == false) {
+        console_log('creator_callstack_getState: ' + elto.msg) ;
+	return '' ;
+    }
+
+    return elto.val.register_sm[indexComponent][indexElement];
 }
 
 //
@@ -764,12 +774,17 @@ function creator_callstack_getState (indexComponent, indexElement)
 //
 function creator_callstack_newWrite (indexComponent, indexElement, address, length)
 {
-   // Move state finite machine
-   creator_callstack_do_transition("wm", indexComponent, indexElement, address);
+    // Move state finite machine
+    creator_callstack_do_transition("wm", indexComponent, indexElement, address);
 
-   var elto = creator_callstack_getTop();
-   elto.val.register_address_write[indexComponent][indexElement].push(address);
-   elto.val.register_size_write[indexComponent][indexElement].push(length);
+    var elto = creator_callstack_getTop();
+    if (elto.ok == false) {
+        console_log('creator_callstack_newWrite: ' + elto.msg) ;
+	return '' ;
+    }
+
+    elto.val.register_address_write[indexComponent][indexElement].push(address);
+    elto.val.register_size_write[indexComponent][indexElement].push(length);
 }
 
 //
@@ -778,12 +793,17 @@ function creator_callstack_newWrite (indexComponent, indexElement, address, leng
 //
 function creator_callstack_newRead (indexComponent, indexElement, address, length)
 {
-   var elto = creator_callstack_getTop();
-   elto.val.register_address_read[indexComponent][indexElement].push(address);
-   elto.val.register_size_read[indexComponent][indexElement].push(length);
+    var elto = creator_callstack_getTop();
+    if (elto.ok == false) {
+        console_log('creator_callstack_newRead: ' + elto.msg) ;
+	return '' ;
+    }
 
-   // Move state finite machine
-   creator_callstack_do_transition("rm", indexComponent, indexElement, address);
+    elto.val.register_address_read[indexComponent][indexElement].push(address);
+    elto.val.register_size_read[indexComponent][indexElement].push(length);
+
+    // Move state finite machine
+    creator_callstack_do_transition("rm", indexComponent, indexElement, address);
 }
 
 //
@@ -830,6 +850,11 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
     if (doAction == "wm")
     {
         var elto = creator_callstack_getTop();
+        if (elto.ok == false) {
+            console_log('creator_callstack_do_transition: ' + elto.msg) ;
+	    return '' ;
+        }
+
         var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address); 
         action = (equal) ? "wm==" : "wm!=" ;
     }
@@ -838,7 +863,7 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
          (typeof(stack_state_transition[state][action]) === "undefined") )
     {
         if (state < 40 || state < 0) {
-          console_log("Undefined action");
+            console_log("creator_callstack_do_transition: undefined action");
         } 
         return ;
     }
@@ -848,10 +873,12 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
     creator_callstack_setState(indexComponent, indexElement, new_state);
 
     if (action != "end") {
-      console_log("creator_callstack_do_transition [" + architecture.components[indexComponent].elements[indexElement].name +"]: transition from " +
-                      "state '" + state + "'' to state '" + new_state + "' and action '" + action + "' is empty (warning).") ;
+        console_log("creator_callstack_do_transition [" + architecture.components[indexComponent].elements[indexElement].name +"]: transition from " +
+                    "state '" + state + "'' to state '" + new_state + "' and action '" + action + "' is empty (warning).") ;
     }
-}/*
+}
+
+/*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
@@ -989,7 +1016,7 @@ function capi_print_int ( value1 )
     }
 
     /* Print integer */
-    var value   = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var value   = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
     var val_int = parseInt(value.toString()) >> 0 ;
 
     display_print(val_int) ;
@@ -1007,7 +1034,7 @@ function capi_print_float ( value1 )
     }
 
     /* Print float */
-    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
 
     display_print(value) ;
 }
@@ -1024,7 +1051,7 @@ function capi_print_double ( value1 )
     }
 
     /* Print double */
-    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
 
     display_print(value) ;
 }
@@ -1041,7 +1068,7 @@ function capi_print_string ( value1 )
     }
 
     /* Print string */
-    var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value ;
+    var addr = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
     print_string(addr) ;
 }
 
@@ -1057,7 +1084,7 @@ function capi_print_char ( value1 )
     }
 
     /* Print char */
-    var aux    = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var aux    = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
     var aux2   = aux.toString(16);
     var length = aux2.length;
 
@@ -5790,7 +5817,8 @@ function executeInstruction ( )
                         var msg = '' ;
 			if (e instanceof SyntaxError)
 			     msg = 'The definition of the instruction contains errors, please review it' ;
-			else msg = 'Exception on executing instruction "'+ executionIndex + '": ' + e ;
+			else msg = 'Exception on executing instruction "'+ executionIndex + '": ' + e + '\n' +
+				   ' Stack trace: ' + e.stack + '\n' ;
 
 			console_log("Error: " + e);
 			error = 1;

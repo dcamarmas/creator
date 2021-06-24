@@ -136,7 +136,7 @@ function capi_print_int ( value1 )
     }
 
     /* Print integer */
-    var value   = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var value   = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
     var val_int = parseInt(value.toString()) >> 0 ;
 
     display_print(val_int) ;
@@ -154,7 +154,7 @@ function capi_print_float ( value1 )
     }
 
     /* Print float */
-    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
 
     display_print(value) ;
 }
@@ -171,7 +171,7 @@ function capi_print_double ( value1 )
     }
 
     /* Print double */
-    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
 
     display_print(value) ;
 }
@@ -188,7 +188,7 @@ function capi_print_string ( value1 )
     }
 
     /* Print string */
-    var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value ;
+    var addr = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
     print_string(addr) ;
 }
 
@@ -204,7 +204,7 @@ function capi_print_char ( value1 )
     }
 
     /* Print char */
-    var aux    = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
+    var aux    = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
     var aux2   = aux.toString(16);
     var length = aux2.length;
 
