@@ -1384,14 +1384,18 @@ function crex_exit ( )
         executionIndex = instructions.length + 1;
 }
 
-function print_string ( addr )
+function crex_get_string_from_memory ( addr )
 {
-	 var index;
+	 var index   = 0 ;
+	 var ret_msg = '' ;
 
-	 if ((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+	 if ((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value)
+	 {
 		 executionIndex = -1;
-		 if (typeof app !== "undefined")
-			app._data.keyboard = "";
+		 if (typeof app !== "undefined") {
+		     app._data.keyboard = "";
+		 }
+
 		 return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
 	 }
 
@@ -1418,17 +1422,13 @@ function print_string ( addr )
 						console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
 
 						if (memory[index][i].Binary[k].Bin == "00") {
-						    return packExecute(false, 'printed', 'info', null);
+						    return packExecute(false, 'printed', 'info', ret_msg);
 						}
 
-						if (typeof app !== "undefined")
-						     app._data.display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
-						else process.stdout.write(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
-
-						display += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+						ret_msg += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
 
 						if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
-							return packExecute(false, 'printed', 'info', null);
+						    return packExecute(false, 'printed', 'info', ret_msg);
 						}
 
 						j=0;
