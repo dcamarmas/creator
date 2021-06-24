@@ -333,8 +333,8 @@ function executeInstruction ( )
 
 		try {
 			var result = instructions[executionIndex].preload(this);
-			if (result.error) {
-			    return result;
+			if ( (typeof result != "undefined") && (result.error) ) {
+			      return result;
 			}
 		}
 		catch ( e )
@@ -342,7 +342,7 @@ function executeInstruction ( )
                         var msg = '' ;
 			if (e instanceof SyntaxError)
 			     msg = 'The definition of the instruction contains errors, please review it' ;
-			else msg = 'Exception on executing instruction "'+ executionIndex + '".' ;
+			else msg = 'Exception on executing instruction "'+ executionIndex + '": ' + e ;
 
 			console_log("Error: " + e);
 			error = 1;
