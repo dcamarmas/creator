@@ -429,3 +429,14 @@ function capi_float2bin ( f )
     return float2bin(f) ;
 }
 
+
+/*
+ *  CREATOR instruction description API:
+ *  Expr
+ */
+
+function capi_eval ( expr )
+{
+    return crex_replace_magic(expr) ;
+}
+
