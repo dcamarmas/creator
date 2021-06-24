@@ -1562,80 +1562,72 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 	{
 		var readlineSync = require('readline-sync') ;
 		keystroke        = readlineSync.question(' $> ') ;
-		var value = "";
 
-		for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
-			 value = value + keystroke.charAt(i);
+		var value = "";
+		var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
+		for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
+		     value = value + keystroke.charAt(i);
 		}
 
 		keyboard = keyboard + " " + value;
 
-		var addr = architecture.components[indexComp].elements[indexElem].value;
-		var valueIndex = 0;
-		var auxAddr = data_address;
-		var index;
-
-		var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
+		var addr = architecture.components[indexComp].elements[indexElem].value ;
+		var ret  = read_string_into_memory(keystroke, value, addr, 0, data_address) ;
 		if (ret.status != 'ok') {
-			return ret ;
+		    return ret ;
 		}
 
 		return packExecute(false, 'The data has been uploaded', 'danger', null);
 	}
 
-	 mutexRead = true;
-	 app._data.enter = false;
-	 console_log(mutexRead);
+	// UI
+	mutexRead = true;
+	app._data.enter = false;
+	console_log(mutexRead);
 
-	 if (newExecution == true)
-	 {
-		 app._data.keyboard = "";
-		 consoleMutex = false;
-		 mutexRead = false;
-		 if (typeof app !== "undefined")
-			 app._data.enter = null;
+	if (newExecution == true)
+	{
+		app._data.keyboard = "";
+		consoleMutex    = false;
+		mutexRead       = false;
+		app._data.enter = null;
 
-		 if (window.document)
-			show_notification('The data has been uploaded', 'info') ;
+		show_notification('The data has been uploaded', 'info') ;
 
-		 if (runProgram == false) {
-			 if (typeof app !== "undefined")
-				 app.executeProgram();
-		 }
+		if (runProgram == false) {
+		    app.executeProgram();
+		}
 
-		 return;
+		return;
 	}
 
-	if (consoleMutex == false){
-		setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2);
-		return ;
+	if (consoleMutex == false) {
+	    setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2);
+	    return ;
 	}
 
 	var keystroke = '' ;
 	keystroke = app.keyboard ;
 
 	var value = "";
-	for (var i = 0; i < architecture.components[indexComp2].elements[indexElem2].value && i < keystroke.length; i++) {
-		 value = value + keystroke.charAt(i);
+	var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
+	for (var i = 0;(i < neltos) && (i < keystroke.length); i++) {
+	     value = value + keystroke.charAt(i);
 	}
+
 	console_log(value);
 
-	var addr = architecture.components[indexComp].elements[indexElem].value;
-	var valueIndex = 0;
-	var auxAddr = data_address;
-	var index;
-
-	var ret = read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index);
+	var addr = architecture.components[indexComp].elements[indexElem].value ;
+	var ret = read_string_into_memory(keystroke, value, addr, 0, data_address) ;
 	if (ret.status != 'ok') {
-		return ret ;
+	    return ret ;
 	}
 
-	app._data.memory[index] = memory[index];
-	app.keyboard = "";
-	app._data.enter = null;
+	app._data.keyboard = "";
 
 	consoleMutex = false;
 	mutexRead = false;
+	app._data.enter = null;
 
 	show_notification('The data has been uploaded', 'info') ;
 
@@ -1891,9 +1883,8 @@ function reset ()
 }
 
 
-function read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, index,)
+function read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr, index )
 {
-
 	var ret = {
 		errorcode: "",
 		token: "",
@@ -1901,6 +1892,8 @@ function read_string_into_memory(keystroke, value, addr, valueIndex, auxAddr, in
 		update: "",
 		status: "ok"
 	} ;
+
+	var index ;
 
 	if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
 		executionIndex = -1;
@@ -2005,13 +1998,15 @@ show_notification('The data has been uploaded', 'info') ;
 
 	var auxAddr = parseInt(addr);
 
-	while(valueIndex < value.length){
+	while (valueIndex < value.length)
+	{
 		memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
-		for (var z = 0; z < 4; z++){
-			if(valueIndex > value.length-1){
+		for (var z = 0; z < 4; z++)
+		{
+			if (valueIndex > value.length-1){
 				(memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
 			}
-			else{
+			else {
 				(memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
 				memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
 			}
