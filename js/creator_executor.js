@@ -1335,7 +1335,7 @@ function display_print ( info )
              app._data.display += info ;
 	else process.stdout.write(info + '\n') ;
 
-	display += val_int ;
+	display += info ;
 }
 
 
