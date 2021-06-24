@@ -189,7 +189,12 @@ function capi_print_string ( value1 )
 
     /* Print string */
     var addr = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
-    print_string(addr) ;
+    var ret  = crex_get_string_from_memory(addr) ;
+    if (ret.error == true) {
+        throw packExecute(true, ret.msg, ret.type, ret.draw) ;
+    }
+
+    display_print(ret.draw) ;
 }
 
 function capi_print_char ( value1 )
