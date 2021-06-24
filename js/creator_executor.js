@@ -1340,61 +1340,8 @@ function display_print ( info )
 
 
 /* Syscalls */
-function print_int ( indexComp, indexElem )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_int');
-
-        /* print integer */
-	var value   = architecture.components[indexComp].elements[indexElem].value;
-	var val_int = parseInt(value.toString()) >> 0 ;
-
-        display_print(val_int) ;
-}
-
-function print_float ( indexComp, indexElem )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_float');
-
-        /* print float */
-	var value = architecture.components[indexComp].elements[indexElem].value;
-
-        display_print(value) ;
-}
-
-function print_double ( indexComp, indexElem )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_double');
-
-        /* print double */
-	var value = architecture.components[indexComp].elements[indexElem].value;
-
-        display_print(value) ;
-}
-
-function print_char ( indexComp, indexElem )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_char');
-
-        /* print char */
-	var aux    = architecture.components[indexComp].elements[indexElem].value;
-	var aux2   = aux.toString(16);
-	var length = aux2.length;
-
-	var value = aux2.substring(length-2, length) ;
-	    value = String.fromCharCode(parseInt(value, 16)) ;
-
-        display_print(value) ;
-}
-
 function print_string ( indexComp, indexElem )
 {
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
-
 	 var addr = architecture.components[indexComp].elements[indexElem].value;
 	 var index;
 
@@ -1458,9 +1405,6 @@ function read_int ( indexComp, indexElem )
 		danger: [],
 		flash: []
 	} ;
-
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_int');
 
 	// CL
 	if (typeof app === "undefined")
@@ -1534,9 +1478,6 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 		danger: [],
 		flash: []
 	} ;
-
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_string');
 
 	// CL
 	if (typeof app === "undefined")
@@ -1644,9 +1585,6 @@ function read_float ( indexComp, indexElem )
 		flash: []
 	} ;
 
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_float');
-
 	// CL
 	if (typeof app === "undefined")
 	{
@@ -1719,9 +1657,6 @@ function read_char ( indexComp, indexElem )
 		danger: [],
 		flash: []
 	} ;
-
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
 
 	// CL
 	if (typeof app === "undefined")
@@ -1796,9 +1731,6 @@ function read_double ( indexComp, indexElem )
 		flash: []
 	} ;
 
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_double');
-
 	// CL
 	if (typeof app === "undefined")
 	{
@@ -1864,9 +1796,6 @@ function read_double ( indexComp, indexElem )
 
 function syscall_sbrk ( indexComp, indexElem, indexComp2, indexElem2 )
 {
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.sbrk');
-
 	var aux_addr = architecture.memory_layout[3].value + 1;
 
 	if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
@@ -1899,11 +1828,8 @@ function syscall_sbrk ( indexComp, indexElem, indexComp2, indexElem2 )
 	}
 }
 
-function syscall_exit ( )
+function crex_exit ( )
 {
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
-
         executionIndex = instructions.length + 1;
 }
 
