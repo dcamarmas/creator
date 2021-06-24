@@ -131,10 +131,8 @@ function capi_print_int ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     /* Print integer */
@@ -151,10 +149,8 @@ function capi_print_float ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     /* Print float */
@@ -170,10 +166,8 @@ function capi_print_double ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     /* Print double */
@@ -189,13 +183,13 @@ function capi_print_string ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
-    print_string(ret1.compIndex, ret1.elemIndex) ;
+    /* Print string */
+    var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value ;
+    print_string(addr) ;
 }
 
 function capi_print_char ( value1 )
@@ -205,10 +199,8 @@ function capi_print_char ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     /* Print char */
@@ -229,10 +221,8 @@ function capi_read_int ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -246,10 +236,8 @@ function capi_read_float ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -263,10 +251,8 @@ function capi_read_double ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -280,17 +266,13 @@ function capi_read_string ( value1, value2 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
+    if (ret2.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -304,10 +286,8 @@ function capi_read_char ( value1 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -321,20 +301,23 @@ function capi_sbrk ( value1, value2 )
 
     /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
+    if (ret2.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
     }
 
-    return syscall_sbrk(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    /* Request more memory */
+    var new_size = parseInt(architecture.components[indexComp].elements[indexElem].value) ;
+    var ret = crex_sbrk(new_size) ;
+    if (ret.error == true) {
+        throw packExecute(true, ret.msg, ret.type, ret.draw) ;
+    }
+
+    architecture.components[ret2.indexComp].elements[ret2.indexElem].value = ret.draw ;
 }
 
 
