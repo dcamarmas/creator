@@ -342,7 +342,8 @@ function executeInstruction ( )
                         var msg = '' ;
 			if (e instanceof SyntaxError)
 			     msg = 'The definition of the instruction contains errors, please review it' ;
-			else msg = 'Exception on executing instruction "'+ executionIndex + '": ' + e ;
+			else msg = 'Exception on executing instruction "'+ executionIndex + '": ' + e + '\n' +
+				   ' Stack trace: ' + e.stack + '\n' ;
 
 			console_log("Error: " + e);
 			error = 1;
