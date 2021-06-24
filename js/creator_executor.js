@@ -1736,6 +1736,7 @@ function read_char ( indexComp, indexElem )
 
 	if (consoleMutex == false) {
 		setTimeout(read_char, 1000, indexComp, indexElem);
+		return;
 	}
 
 	var value = (app._data.keyboard).charCodeAt(0);
