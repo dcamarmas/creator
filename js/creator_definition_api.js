@@ -136,7 +136,7 @@ function capi_print_int ( value1 )
     }
 
     /* Print integer */
-    var value   = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var value   = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
     var val_int = parseInt(value.toString()) >> 0 ;
 
     display_print(val_int) ;
@@ -154,7 +154,7 @@ function capi_print_float ( value1 )
     }
 
     /* Print float */
-    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
 
     display_print(value) ;
 }
@@ -171,7 +171,7 @@ function capi_print_double ( value1 )
     }
 
     /* Print double */
-    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var value = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
 
     display_print(value) ;
 }
@@ -188,7 +188,7 @@ function capi_print_char ( value1 )
     }
 
     /* Print char */
-    var aux    = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var aux    = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
     var aux2   = aux.toString(16);
     var length = aux2.length;
 
@@ -210,7 +210,7 @@ function capi_print_string ( value1 )
     }
 
     /* Print string */
-    var addr = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
     var ret  = crex_get_string_from_memory(addr) ;
     if (ret.error == true) {
         throw packExecute(true, ret.msg, ret.type, ret.draw) ;
@@ -233,7 +233,7 @@ function capi_read_int ( value1 )
     /* Read integer */
     document.getElementById('enter_keyboard').scrollIntoView();
 
-    return keyboard_read(kbd_read_int, ret1.compIndex, ret1.elemIndex) ;
+    return keyboard_read(kbd_read_int, ret1) ;
 }
 
 function capi_read_float ( value1 )
@@ -249,7 +249,7 @@ function capi_read_float ( value1 )
 
     document.getElementById('enter_keyboard').scrollIntoView();
 
-    return keyboard_read(kbd_read_float, ret1.compIndex, ret1.elemIndex) ;
+    return keyboard_read(kbd_read_float, ret1) ;
 }
 
 function capi_read_double ( value1 )
@@ -265,7 +265,7 @@ function capi_read_double ( value1 )
 
     document.getElementById('enter_keyboard').scrollIntoView();
 
-    return keyboard_read(kbd_read_double, ret1.compIndex, ret1.elemIndex) ;
+    return keyboard_read(kbd_read_double, ret1) ;
 }
 
 function capi_read_char ( value1 )
@@ -281,7 +281,7 @@ function capi_read_char ( value1 )
 
     document.getElementById('enter_keyboard').scrollIntoView();
 
-    return keyboard_read(kbd_read_char, ret1.compIndex, ret1.elemIndex) ;
+    return keyboard_read(kbd_read_char, ret1) ;
 }
 
 function capi_read_string ( value1, value2 )
@@ -301,7 +301,7 @@ function capi_read_string ( value1, value2 )
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_string(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    return read_string(ret1.indexComp, ret1.indexElem, ret2.indexComp, ret2.indexElem) ;
 }
 
 function capi_sbrk ( value1, value2 )
@@ -321,13 +321,13 @@ function capi_sbrk ( value1, value2 )
     }
 
     /* Request more memory */
-    var new_size = parseInt(architecture.components[ret1.compIndex].elements[ret1.elemIndex].value) ;
+    var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
     var ret = crex_sbrk(new_size) ;
     if (ret.error == true) {
         throw packExecute(true, ret.msg, ret.type, ret.draw) ;
     }
 
-    architecture.components[ret2.compIndex].elements[ret2.elemIndex].value = ret.draw ;
+    architecture.components[ret2.indexComp].elements[ret2.indexElem].value = ret.draw ;
 }
 
 
@@ -378,8 +378,8 @@ function capi_callconv_memAction ( action, addr, reg_name, type )
         return;
     }
 
-    var i = ret.compIndex ;
-    var j = ret.elemIndex ;
+    var i = ret.indexComp ;
+    var j = ret.indexElem ;
 
     // 2) switch action...
     switch (action) 
