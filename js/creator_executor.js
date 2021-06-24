@@ -165,7 +165,8 @@ function executeInstruction ( )
 				}
 			}
 
-			if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length){
+			if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length)
+                        {
 				type = architecture.instructions[i].type;
 				signatureDef = architecture.instructions[i].signature_definition;
 
@@ -305,8 +306,6 @@ function executeInstruction ( )
 				}
 			}
 
-                        // crex_replace_magic(auxDef) ; // old code
-
 			auxDef = "\n/* Read all instruction fields */\n" +
 					readings_description +
 			         "\n/* Original instruction definition */\n" +
@@ -334,39 +333,28 @@ function executeInstruction ( )
 
 		try {
 			var result = instructions[executionIndex].preload(this);
-			if (result.error) {
-			    return result;
+			if ( (typeof result != "undefined") && (result.error) ) {
+			      return result;
 			}
 		}
-		catch(e)
+		catch ( e )
 		{
-				if (e instanceof SyntaxError)
-				{
-					console_log("Error");
-					error = 1;
-					draw.danger.push(executionIndex) ;
-					executionIndex = -1;
-					return packExecute(true, 'The definition of the instruction contains errors, please review it', 'danger', null);
-				}
+                        var msg = '' ;
+			if (e instanceof SyntaxError)
+			     msg = 'The definition of the instruction contains errors, please review it' ;
+			else msg = 'Exception on executing instruction "'+ executionIndex + '": ' + e + '\n' +
+				   ' Stack trace: ' + e.stack + '\n' ;
 
-			        // TODO: other exceptions... treat it!
+			console_log("Error: " + e);
+			error = 1;
+			draw.danger.push(executionIndex) ;
+			executionIndex = -1;
+
+			return packExecute(true, msg, 'danger', null) ;
 		}
 
-		/* Refresh stats */
-		for (var i = 0; i < stats.length; i++)
-		{
-			if (type == stats[i].type)
-			{
-				stats[i].number_instructions++;
-				stats_value[i] ++;
-				totalStats++;
-				if (typeof app !== "undefined")
-				    app._data.totalStats++;
-			}
-		}
-		for (var i = 0; i < stats.length; i++){
-			 stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
-		}
+	        /* Refresh stats */
+                stats_update(type) ;
 
 		/* Execution error */
 		if (executionIndex == -1){
@@ -377,7 +365,8 @@ function executeInstruction ( )
 		/* Next instruction to execute */
 		if (error != 1 && executionIndex < instructions.length)
 		{
-			for (var i = 0; i < instructions.length; i++) {
+			for (var i = 0; i < instructions.length; i++)
+                        {
 				if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
 					executionIndex = i;
 					draw.success.push(executionIndex) ;
@@ -411,7 +400,7 @@ function executeInstruction ( )
 			return packExecute(false, 'The execution of the program has finished', 'success', draw);
 		}
 		else{
-			if(error != 1){
+			if (error != 1) {
 				draw.success.push(executionIndex);
 			}
 		}
@@ -556,15 +545,6 @@ function crex_replace_magic ( auxDef )
 	// Before replace...
 	console_log("Before replace: \n" + auxDef + "\n");
 
-	/* Check assert */
-	re = /assert\((.*)\)/;
-	if (auxDef.search(re) != -1){
-		var match = re.exec(auxDef);
-		var args = match[1].split(";");
-		auxDef = auxDef.replace(re, "");
-		auxDef = "var exception = 0;\nif ("+ args[0] +"){}\nelse {\nexception=app.exception("+ args[1] +");\n}\nif(exception==0){\n" + auxDef + "\n}\n";
-	}
-
 	/* Write in memory */
 	var index = 0;
 	re = /MP.([whbd]).\[(.*?)\] *=/;
@@ -616,6 +596,48 @@ function crex_replace_magic ( auxDef )
 	console_log("After replace: \n" + auxDef + "\n");
 
 	return auxDef ;
+}
+
+
+/*
+ * Stats
+ */
+
+function stats_update ( type )
+{
+	for (var i = 0; i < stats.length; i++)
+	{
+		if (type == stats[i].type)
+		{
+			stats[i].number_instructions++;
+			stats_value[i] ++;
+
+			totalStats++;
+			if (typeof app !== "undefined") {
+			    app._data.totalStats++;
+                        }
+		}
+	}
+
+	for (var i = 0; i < stats.length; i++){
+	     stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
+	}
+}
+
+function stats_reset ( )
+{
+	totalStats = 0 ;
+	if (typeof app !== "undefined") {
+	    app._data.totalStats = 0 ;
+        }
+
+	for (var i = 0; i < stats.length; i++)
+        {
+		stats[i].percentage = 0;
+
+		stats[i].number_instructions = 0;
+		stats_value[i] = 0;
+	}
 }
 
 
@@ -681,7 +703,7 @@ function writeRegister ( value, indexComp, indexElem )
 				}
 
 				for (var i = 0; i < instructions.length; i++) {
-				 draw.space.push(i);
+				     draw.space.push(i);
 				}
 				draw.danger.push(executionIndex);
 
@@ -698,18 +720,8 @@ function writeRegister ( value, indexComp, indexElem )
 						writeStackLimit(value);
 			}
 
-			if (typeof window !== "undefined")
-			{
-				var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name  + "Int";
-				var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
-
-				$(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-				$(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-
-				setTimeout(function() {
-					$(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-					$(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-				}, 500);
+			if (typeof window !== "undefined") {
+                            btn_int_glow(architecture.components[indexComp].elements[indexElem].name) ;
 			}
 	}
 
@@ -736,18 +748,8 @@ function writeRegister ( value, indexComp, indexElem )
 
 			updateDouble(indexComp, indexElem);
 
-			if (typeof window !== "undefined")
-			{
-				var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "FP";
-				var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
-
-				$(buttonDec).attr("style", "background-color:#c2c2c2;");
-				$(buttonHex).attr("style", "background-color:#c2c2c2;");
-
-				setTimeout(function() {
-					$(buttonDec).attr("style", "background-color:#f5f5f5;");
-					$(buttonHex).attr("style", "background-color:#f5f5f5;");
-				}, 500);
+			if (typeof window !== "undefined") {
+                            btn_fp_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
 			}
 		}
 
@@ -765,20 +767,9 @@ function writeRegister ( value, indexComp, indexElem )
 			updateSimple(indexComp, indexElem);
 			creator_callstack_writeRegister(indexComp, indexElem);
 
-			if (typeof window !== "undefined")
-			{
-						var buttonDec = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name + "DFP";
-						var buttonHex = '#popoverValueContent' + architecture.components[indexComp].elements[indexElem].name;
-
-						$(buttonDec).attr("style", "background-color:#c2c2c2;");
-						$(buttonHex).attr("style", "background-color:#c2c2c2;");
-
-						setTimeout(function() {
-							$(buttonDec).attr("style", "background-color:#f5f5f5;");
-							$(buttonHex).attr("style", "background-color:#f5f5f5;");
-						}, 500);
-			} // if
-
+			if (typeof window !== "undefined") {
+                            btn_fp_glow(architecture.components[indexComp].elements[indexElem].name, "DFP") ;
+	                }
 		}
 	}
 }
@@ -929,8 +920,8 @@ return 0;
 				}
 }
 
-/*Write value in memory*/
-function writeMemory ( value, addr, type)
+/* Write value in memory */
+function writeMemory ( value, addr, type )
 {
 	var draw = {
 		space: [] ,
@@ -1337,79 +1328,64 @@ function writeStackLimit ( stackLimit )
 		}
 }
 
+
+/* I/O */
+function display_print ( info )
+{
+	if (typeof app !== "undefined")
+             app._data.display += info ;
+	else process.stdout.write(info + '\n') ;
+
+	display += info ;
+}
+
+
 /* Syscalls */
-function print_int ( indexComp, indexElem )
+function crex_sbrk ( new_size )
 {
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_int');
+	var new_addr = 0 ;
+	var aux_addr = architecture.memory_layout[3].value + 1 ;
 
-        /* print integer */
-	var value   = architecture.components[indexComp].elements[indexElem].value;
-	var val_int = parseInt(value.toString()) >> 0 ;
+	if ((architecture.memory_layout[3].value + new_size) >= architecture.memory_layout[4].value)
+	{
+		executionIndex = -1 ;
+		return packExecute(true, 'Not enough memory for data segment', 'danger', null) ;
+	}
 
-	if (typeof app !== "undefined")
-             app._data.display += val_int ;
-	else process.stdout.write(val_int + '\n') ;
+	for (var i = 0; i < (new_size / 4); i++)
+        {
+		memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true}) ;
 
-	display += val_int ;
+		if (i == 0) {
+		    new_addr = aux_addr ;
+		}
+
+		for (var z = 0; z < 4; z++) {
+		     (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},) ;
+		     aux_addr++ ;
+		}
+	}
+
+	if (typeof app !== "undefined") {
+	    app._data.memory[memory_hash[0]] = memory[memory_hash[0]] ;
+	}
+
+	architecture.memory_layout[3].value = aux_addr-1 ;
+
+	if (typeof app !== "undefined") {
+	    app.architecture.memory_layout[3].value = aux_addr-1 ;
+	}
+
+        return packExecute(false, '', 'danger', new_addr) ;
 }
 
-function print_float ( indexComp, indexElem )
+function crex_exit ( )
 {
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_float');
-
-        /* print float */
-	var value = architecture.components[indexComp].elements[indexElem].value;
-
-	if (typeof app !== "undefined")
-	     app._data.display += value;
-	else process.stdout.write(value + '\n') ;
-
-	display += value ;
+        executionIndex = instructions.length + 1;
 }
 
-function print_double ( indexComp, indexElem )
+function print_string ( addr )
 {
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_double');
-
-        /* print double */
-	var value = architecture.components[indexComp].elements[indexElem].value;
-
-	if (typeof app !== "undefined")
-	     app._data.display += value;
-	else process.stdout.write(value + '\n') ;
-
-	display += value ;
-}
-
-function print_char ( indexComp, indexElem )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_char');
-
-        /* print char */
-	var aux    = architecture.components[indexComp].elements[indexElem].value;
-	var aux2   = aux.toString(16);
-	var length = aux2.length;
-
-	var value = aux2.substring(length-2, length) ;
-	    value = String.fromCharCode(parseInt(value, 16)) ;
-
-	if (typeof app !== "undefined")
-	     app._data.display += value ;
-	else process.stdout.write(value) ;
-
-	display += value ;
-}
-
-function print_string ( indexComp, indexElem )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
-
-	 var addr = architecture.components[indexComp].elements[indexElem].value;
 	 var index;
 
 	 if ((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
@@ -1472,9 +1448,6 @@ function read_int ( indexComp, indexElem )
 		danger: [],
 		flash: []
 	} ;
-
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_int');
 
 	// CL
 	if (typeof app === "undefined")
@@ -1549,9 +1522,6 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 		flash: []
 	} ;
 
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_string');
-
 	// CL
 	if (typeof app === "undefined")
 	{
@@ -1593,7 +1563,7 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 		 if (window.document)
 			show_notification('The data has been uploaded', 'info') ;
 
-		 if (runProgram == false){
+		 if (runProgram == false) {
 			 if (typeof app !== "undefined")
 				 app.executeProgram();
 		 }
@@ -1657,9 +1627,6 @@ function read_float ( indexComp, indexElem )
 		danger: [],
 		flash: []
 	} ;
-
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_float');
 
 	// CL
 	if (typeof app === "undefined")
@@ -1734,9 +1701,6 @@ function read_char ( indexComp, indexElem )
 		flash: []
 	} ;
 
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
-
 	// CL
 	if (typeof app === "undefined")
 	{
@@ -1810,9 +1774,6 @@ function read_double ( indexComp, indexElem )
 		flash: []
 	} ;
 
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.read_double');
-
 	// CL
 	if (typeof app === "undefined")
 	{
@@ -1874,51 +1835,6 @@ function read_double ( indexComp, indexElem )
 	if (runProgram == false){
 		 app.executeProgram();
 	}
-}
-
-function syscall_sbrk ( indexComp, indexElem, indexComp2, indexElem2 )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.sbrk');
-
-	var aux_addr = architecture.memory_layout[3].value + 1;
-
-	if ((architecture.memory_layout[3].value+parseInt(architecture.components[indexComp].elements[indexElem].value)) >= architecture.memory_layout[4].value) {
-		executionIndex = -1;
-		return packExecute(true, 'Not enough memory for data segment', 'danger', null);
-	}
-
-	for (var i = 0; i < ((parseInt(architecture.components[indexComp].elements[indexElem].value))/4); i++)
-        {
-		memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true});
-
-		if(i==0){
-			architecture.components[indexComp2].elements[indexElem2].value = aux_addr;
-		}
-
-		for (var z = 0; z < 4; z++) {
-			(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},);
-			aux_addr++;
-		}
-	}
-
-	if (typeof app !== "undefined") {
-	    app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-	}
-
-	architecture.memory_layout[3].value = aux_addr-1;
-
-	if (typeof app !== "undefined") {
-	    app.architecture.memory_layout[3].value = aux_addr-1;
-	}
-}
-
-function syscall_exit ( )
-{
-	/* Google Analytics */
-	creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
-
-        executionIndex = instructions.length + 1;
 }
 
 
@@ -2070,36 +1986,27 @@ function execute_binary ( index, instructionExecParts, auxDef )
 
 
 
-
-
-
-
-
-/*Reset execution*/
+/* Reset execution */
 function reset ()
 {
 	executionIndex = 0;
 	executionInit = 1;
 
-	/*Reset stats*/
-	totalStats = 0 ;
-	if (typeof app !== "undefined")
-			app._data.totalStats = 0 ;
-	for (var i = 0; i < stats.length; i++){
-		stats[i].percentage = 0;
-		stats[i].number_instructions = 0;
-		stats_value[i] = 0;
-	}
+	/* Reset stats */
+        stats_reset() ;
 
-	/*Reset console*/
+	/* Reset console */
 	mutexRead    = false ;
 	newExecution = true ;
 	keyboard = '' ;
 	display  = '' ;
 
-	for (var i = 0; i < architecture_hash.length; i++) {
-		for (var j = 0; j < architecture.components[i].elements.length; j++) {
-			if(architecture.components[i].double_precision == false){
+	for (var i = 0; i < architecture_hash.length; i++)
+        {
+		for (var j = 0; j < architecture.components[i].elements.length; j++)
+                {
+			if (architecture.components[i].double_precision == false)
+                        {
 				architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
 			}
 
@@ -2108,12 +2015,14 @@ function reset ()
 				var aux_sim1;
 				var aux_sim2;
 
-				for (var a = 0; a < architecture_hash.length; a++) {
-					for (var b = 0; b < architecture.components[a].elements.length; b++) {
-						if(architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+				for (var a = 0; a < architecture_hash.length; a++)
+                                {
+					for (var b = 0; b < architecture.components[a].elements.length; b++)
+                                        {
+						if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
 							aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
 						}
-						if(architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+						if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
 							aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
 						}
 					}
@@ -2129,12 +2038,14 @@ function reset ()
 	architecture.memory_layout[3].value = backup_data_address;
 
 	// reset memory
-	for (var i = 0; i < memory[memory_hash[0]].length; i++) {
-		if(memory[memory_hash[0]][i].reset == true){
+	for (var i = 0; i < memory[memory_hash[0]].length; i++)
+        {
+		if (memory[memory_hash[0]][i].reset == true)
+                {
 			memory[memory_hash[0]].splice(i, 1);
 			i--;
 		}
-		else{
+		else {
 			memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
 			for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
 				memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
@@ -2142,7 +2053,8 @@ function reset ()
 		}
 	}
 
-	for (var i = 0; i < memory[memory_hash[2]].length; i++) {
+	for (var i = 0; i < memory[memory_hash[2]].length; i++)
+        {
 		if(memory[memory_hash[2]][i].reset == true){
 			memory[memory_hash[2]].splice(i, 1);
 			i--;
@@ -2300,16 +2212,18 @@ show_notification('The data has been uploaded', 'info') ;
 /*Modifies double precision registers according to simple precision registers*/
 function updateDouble(comp, elem)
 {
-	for (var j = 0; j < architecture.components.length; j++) {
-		for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++) {
-			if(architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
+	for (var j = 0; j < architecture.components.length; j++)
+        {
+		for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
+                {
+			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
 				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
 				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
 				var newDouble = simple + double;
 
 				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
 			}
-			if(architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
+			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
 				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
 				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
 				var newDouble = double + simple;
@@ -2326,12 +2240,14 @@ function updateSimple ( comp, elem )
 	var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
 	var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
 
-	for (var j = 0; j < architecture.components.length; j++) {
-		for (var z = 0; z < architecture.components[j].elements.length; z++) {
-			if(architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false){
+	for (var j = 0; j < architecture.components.length; j++)
+        {
+		for (var z = 0; z < architecture.components[j].elements.length; z++)
+                {
+			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
 				architecture.components[j].elements[z].value = hex2float("0x"+part1);
 			}
-			if(architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false){
+			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
 				architecture.components[j].elements[z].value = hex2float("0x"+part2);
 			}
 		}
