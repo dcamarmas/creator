@@ -1191,13 +1191,13 @@ function capi_sbrk ( value1, value2 )
     }
 
     /* Request more memory */
-    var new_size = parseInt(architecture.components[indexComp].elements[indexElem].value) ;
+    var new_size = parseInt(architecture.components[ret1.compIndex].elements[ret1.elemIndex].value) ;
     var ret = crex_sbrk(new_size) ;
     if (ret.error == true) {
         throw packExecute(true, ret.msg, ret.type, ret.draw) ;
     }
 
-    architecture.components[ret2.indexComp].elements[ret2.indexElem].value = ret.draw ;
+    architecture.components[ret2.compIndex].elements[ret2.elemIndex].value = ret.draw ;
 }
 
 
