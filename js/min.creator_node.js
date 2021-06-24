@@ -6181,6 +6181,104 @@ function executeProgramOneShot ( limit_n_instructions )
 	return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
 }
 
+function crex_exit ( )
+{
+	/* Google Analytics */
+	creator_ga('execute', 'execute.exit');
+
+        executionIndex = instructions.length + 1;
+}
+
+function reset ()
+{
+	/* Google Analytics */
+	creator_ga('execute', 'execute.reset');
+
+	executionIndex = 0;
+	executionInit = 1;
+
+	/* Reset stats */
+        stats_reset() ;
+
+	/* Reset console */
+	mutexRead    = false ;
+	newExecution = true ;
+	keyboard = '' ;
+	display  = '' ;
+
+	for (var i = 0; i < architecture_hash.length; i++)
+        {
+		for (var j = 0; j < architecture.components[i].elements.length; j++)
+                {
+			if (architecture.components[i].double_precision == false)
+                        {
+				architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
+			}
+
+			else{
+				var aux_value;
+				var aux_sim1;
+				var aux_sim2;
+
+				for (var a = 0; a < architecture_hash.length; a++)
+                                {
+					for (var b = 0; b < architecture.components[a].elements.length; b++)
+                                        {
+						if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
+							aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+						}
+						if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
+							aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+						}
+					}
+				}
+
+				aux_value = aux_sim1 + aux_sim2;
+				architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
+			}
+		}
+	}
+
+	architecture.memory_layout[4].value = backup_stack_address;
+	architecture.memory_layout[3].value = backup_data_address;
+
+	// reset memory
+	for (var i = 0; i < memory[memory_hash[0]].length; i++)
+        {
+		if (memory[memory_hash[0]][i].reset == true)
+                {
+			memory[memory_hash[0]].splice(i, 1);
+			i--;
+		}
+		else {
+			memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
+			for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
+				memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
+			}
+		}
+	}
+
+	for (var i = 0; i < memory[memory_hash[2]].length; i++)
+        {
+		if(memory[memory_hash[2]][i].reset == true){
+			memory[memory_hash[2]].splice(i, 1);
+			i--;
+		}
+		else{
+			memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
+			for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
+				memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
+			}
+		}
+	}
+
+	//Stack Reset
+	creator_callstack_reset();
+	track_stack_reset();
+
+	return true ;
+}
+
 
 /*
  * Auxiliar functions
@@ -6191,35 +6289,6 @@ function crex_show_notification ( msg, level )
     if (typeof window !== "undefined")
          show_notification(msg, level);
     else console.log(level.toUpperCase() + ": " + msg);
-}
-
-function crex_findReg ( value1 )
-{
-    var ret = {} ;
-
-    ret.match = 0;
-    ret.compIndex = null;
-    ret.elemIndex = null;
-
-    if (value1 == "") {
-        return ret;
-    }
-
-    for (var i = 0; i < architecture.components.length; i++)
-    {
-         for (var j = 0; j < architecture.components[i].elements.length; j++)
-         {
-              if (architecture.components[i].elements[j].name.includes(value1) != false)
-              {
-                  ret.match = 1;
-                  ret.compIndex = i;
-                  ret.elemIndex = j;
-                  break ;
-              }
-         }
-    }
-
-    return ret ;
 }
 
 function crex_type2size ( type )
@@ -6345,6 +6414,51 @@ function crex_replace_magic ( auxDef )
 	return auxDef ;
 }
 
+/* Modify the stack limit */
+function writeStackLimit ( stackLimit )
+{
+	var draw = {
+		space: [] ,
+		info: [] ,
+		success: [] ,
+		danger: [],
+		flash: []
+	} ;
+	
+	if (stackLimit != null)
+	{
+		if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
+			draw.danger.push(executionIndex);
+			executionIndex = -1;
+			throw packExecute(true, 'Segmentation fault. You tried to read in the data segment', 'danger', null);
+		}
+		else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
+			draw.danger.push(executionIndex);
+			executionIndex = -1;
+			throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+		}
+		else{
+			var diff = memory[memory_hash[2]][0].Address - stackLimit;
+			var auxStackLimit = stackLimit;
+			var newRow = 0;
+
+			for (var i = 0; i < (diff/4); i++){
+				memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
+				for (var z = 0; z < 4; z++){
+					(memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+					auxStackLimit++;
+				}
+				newRow++;
+			}
+
+			track_stack_setsp(stackLimit);
+
+			architecture.memory_layout[4].value = stackLimit;
+
+		}
+	}
+}
+
 
 /*
  * Stats
@@ -6388,9 +6502,303 @@ function stats_reset ( )
 }
 
 
-/*
- * Read/write register
+/* 
+ * I/O 
  */
+
+function display_print ( info )
+{
+	if (typeof app !== "undefined")
+             app._data.display += info ;
+	else process.stdout.write(info + '\n') ;
+
+	display += info ;
+}
+
+
+function kbd_read_char ( keystroke, indexComp, indexElem )
+{
+        var value = keystroke.charCodeAt(0);
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+function kbd_read_int ( keystroke, indexComp, indexElem )
+{
+	var value = parseInt(keystroke) ;
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+function kbd_read_float ( keystroke, indexComp, indexElem )
+{
+	var value = parseFloat(keystroke, 10) ;
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+function kbd_read_double ( keystroke, indexComp, indexElem )
+{
+	var value = parseFloat(keystroke, 10) ;
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+
+function keyboard_read ( fn_post_read, indexComp, indexElem )
+{
+	var draw = {
+		space: [] ,
+		info: [] ,
+		success: [] ,
+		danger: [],
+		flash: []
+	} ;
+
+	// CL
+	if (typeof app === "undefined")
+	{
+		 var readlineSync = require('readline-sync') ;
+		 var keystroke    = readlineSync.question(' > ') ;
+
+		 var value = fn_post_read(keystroke, indexComp, indexElem) ;
+	         keyboard = keyboard + " " + value;
+
+	         return packExecute(false, 'The data has been uploaded', 'danger', null);
+	}
+
+	// UI
+	mutexRead = true;
+	app._data.enter = false;
+	console_log(mutexRead);
+
+	if (newExecution == true)
+        {
+		 app._data.keyboard = "";
+		 consoleMutex    = false;
+		 mutexRead       = false;
+		 app._data.enter = null;
+
+		 show_notification('The data has been uploaded', 'info') ;
+
+		 if (runProgram == false){
+		     app.executeProgram();
+		 }
+
+		 return;
+	 }
+
+	if (consoleMutex == false) {
+	    setTimeout(keyboard_read, 1000, fn_post_read, indexComp, indexElem);
+	    return;
+	}
+
+	fn_post_read(app._data.keyboard, indexComp, indexElem) ;
+
+	app._data.keyboard = "";
+	consoleMutex    = false;
+	mutexRead       = false;
+	app._data.enter = null;
+
+	show_notification('The data has been uploaded', 'info') ;
+
+	console_log(mutexRead);
+
+	if (executionIndex >= instructions.length)
+	{
+		for (var i = 0; i < instructions.length; i++){
+		     draw.space.push(i) ;
+		}
+
+		executionIndex = -2;
+		return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
+
+	if (runProgram == false) {
+	    app.executeProgram();
+	}
+}
+
+function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
+{
+	var draw = {
+		space: [] ,
+		info: [] ,
+		success: [] ,
+		danger: [],
+		flash: []
+	} ;
+
+	// CL
+	if (typeof app === "undefined")
+	{
+		var readlineSync = require('readline-sync') ;
+		keystroke        = readlineSync.question(' $> ') ;
+
+		var value = "";
+		var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
+		for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
+		     value = value + keystroke.charAt(i);
+		}
+
+		keyboard = keyboard + " " + value;
+
+		var addr = architecture.components[indexComp].elements[indexElem].value ;
+		var ret  = crex_read_string_into_memory(keystroke, value, addr, 0, data_address) ;
+		if (ret.status != 'ok') {
+		    return ret ;
+		}
+
+		return packExecute(false, 'The data has been uploaded', 'danger', null);
+	}
+
+	// UI
+	mutexRead = true;
+	app._data.enter = false;
+	console_log(mutexRead);
+
+	if (newExecution == true)
+	{
+		app._data.keyboard = "";
+		consoleMutex    = false;
+		mutexRead       = false;
+		app._data.enter = null;
+
+		show_notification('The data has been uploaded', 'info') ;
+
+		if (runProgram == false) {
+		    app.executeProgram();
+		}
+
+		return;
+	}
+
+	if (consoleMutex == false) {
+	    setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2);
+	    return ;
+	}
+
+	var keystroke = '' ;
+	keystroke = app.keyboard ;
+
+	var value = "";
+	var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
+	for (var i = 0;(i < neltos) && (i < keystroke.length); i++) {
+	     value = value + keystroke.charAt(i);
+	}
+
+	console_log(value);
+
+	var addr = architecture.components[indexComp].elements[indexElem].value ;
+	var ret = crex_read_string_into_memory(keystroke, value, addr, 0, data_address) ;
+	if (ret.status != 'ok') {
+	    return ret ;
+	}
+
+	app._data.keyboard = "";
+
+	consoleMutex = false;
+	mutexRead = false;
+	app._data.enter = null;
+
+	show_notification('The data has been uploaded', 'info') ;
+
+	if (executionIndex >= instructions.length)
+	{
+		for (var i = 0; i < instructions.length; i++) {
+			 draw.space.push(i) ;
+		}
+		executionIndex = -2;
+		return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
+
+	if (runProgram == false){
+		app.executeProgram();
+	}
+}
+
+
+/*
+ *  Register operations
+ */
+
+function crex_findReg ( value1 )
+{
+    var ret = {} ;
+
+    ret.match = 0;
+    ret.compIndex = null;
+    ret.elemIndex = null;
+
+    if (value1 == "") {
+        return ret;
+    }
+
+    for (var i = 0; i < architecture.components.length; i++)
+    {
+         for (var j = 0; j < architecture.components[i].elements.length; j++)
+         {
+              if (architecture.components[i].elements[j].name.includes(value1) != false)
+              {
+                  ret.match = 1;
+                  ret.compIndex = i;
+                  ret.elemIndex = j;
+                  break ;
+              }
+         }
+    }
+
+    return ret ;
+}
+
+/*Modifies double precision registers according to simple precision registers*/
+function updateDouble(comp, elem)
+{
+	for (var j = 0; j < architecture.components.length; j++)
+        {
+		for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
+                {
+			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
+				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
+				var newDouble = simple + double;
+
+				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+			}
+			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
+				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
+				var newDouble = double + simple;
+
+				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+			}
+		}
+	}
+}
+
+/*Modifies single precision registers according to double precision registers*/
+function updateSimple ( comp, elem )
+{
+	var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
+	var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
+
+	for (var j = 0; j < architecture.components.length; j++)
+        {
+		for (var z = 0; z < architecture.components[j].elements.length; z++)
+                {
+			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+				architecture.components[j].elements[z].value = hex2float("0x"+part1);
+			}
+			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+				architecture.components[j].elements[z].value = hex2float("0x"+part2);
+			}
+		}
+	}
+}
 
 function readRegister ( indexComp, indexElem )
 {
@@ -6523,149 +6931,238 @@ function writeRegister ( value, indexComp, indexElem )
 
 
 /*
- * Read/write memory
+ *  Memory operations
  */
 
-function readMemory ( addr, type )
+function crex_sbrk ( new_size )
 {
-	var memValue = '';
-	var index;
+	var new_addr = 0 ;
+	var aux_addr = architecture.memory_layout[3].value + 1 ;
 
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-
-	if (type == "d") {
-				// debugger;
-				if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-					draw.danger.push(executionIndex);
-					executionIndex = -1;
-					throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-				}
-				if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value) index = memory_hash[0];
-
-				if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value) index = memory_hash[2];
-
-				for (var i = 0; i < memory[index].length; i++){
-					for (var j = 0; j < memory[index][i].Binary.length; j++){
-						var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-						if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-	for (let k = 0; k<2; k++)
-		for (var z = 0; z < memory[index][i].Binary.length; z++)
-				memValue = memory[index][k].Binary[z].Bin + memValue;
-							//return bi_intToBigInt(memValue, 16) ;
-	return parseInt(memValue, 16);
-						}
-					}
-				}
-return 0;
+	if ((architecture.memory_layout[3].value + new_size) >= architecture.memory_layout[4].value)
+	{
+		executionIndex = -1 ;
+		return packExecute(true, 'Not enough memory for data segment', 'danger', null) ;
 	}
 
-				if (type == "w"){
-					if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-			draw.danger.push(executionIndex);
-						executionIndex = -1;
-						throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-					}
+	for (var i = 0; i < (new_size / 4); i++)
+        {
+		memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true}) ;
 
-					if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-						index = memory_hash[0];
-					}
+		if (i == 0) {
+		    new_addr = aux_addr ;
+		}
 
-					if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-						index = memory_hash[2];
-					}
+		for (var z = 0; z < 4; z++) {
+		     (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},) ;
+		     aux_addr++ ;
+		}
+	}
 
-					for (var i = 0; i < memory[index].length; i++){
-						for (var j = 0; j < memory[index][i].Binary.length; j++){
-							var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-							if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-								for (var z = 0; z < memory[index][i].Binary.length; z++){
-									memValue = memory[index][i].Binary[z].Bin + memValue;
-								}
-								//return bi_intToBigInt(memValue, 16) ;
-								return parseInt(memValue,16);
-							}
-						}
-					}
-					//return bi_intToBigInt(0,10) ;
-					return 0;
-				}
+	if (typeof app !== "undefined") {
+	    app._data.memory[memory_hash[0]] = memory[memory_hash[0]] ;
+	}
 
-				if (type == "h"){
-					if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-			draw.danger.push(executionIndex);
-						executionIndex = -1;
-						throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-					}
+	architecture.memory_layout[3].value = aux_addr-1 ;
 
-					if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-						index = memory_hash[0];
-					}
+	if (typeof app !== "undefined") {
+	    app.architecture.memory_layout[3].value = aux_addr-1 ;
+	}
 
-					if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-						index = memory_hash[2];
-					}
-
-					for (var i = 0; i < memory[index].length; i++){
-						for (var j = 0; j < memory[index][i].Binary.length; j++){
-							var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-							if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-								if(j < 2){
-									for (var z = 0; z < memory[index][i].Binary.length -2; z++){
-										memValue = memory[index][i].Binary[z].Bin + memValue;
-									}
-									//return bi_intToBigInt(memValue, 16) ;
-									return parseInt(memValue,16);
-								}
-								else{
-									for (var z = 2; z < memory[index][i].Binary.length; z++){
-										memValue = memory[index][i].Binary[z].Bin + memValue;
-									}
-									//return bi_intToBigInt(memValue, 16) ;
-									return parseInt(memValue,16);
-								}
-							}
-						}
-					}
-					//return bi_intToBigInt(0,10) ;
-					return 0;
-				}
-
-				if (type == "b"){
-					if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
-			draw.danger.push(executionIndex);
-						executionIndex = -1;
-						throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-					}
-
-					if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
-						index = memory_hash[0];
-					}
-
-					if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
-						index = memory_hash[2];
-					}
-
-					for (var i = 0; i < memory[index].length; i++){
-						for (var j = 0; j < memory[index][i].Binary.length; j++){
-							var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-							if(aux == addr || memory[index][i].Binary[j].Tag == addr){
-								memValue = memory[index][i].Binary[j].Bin + memValue;
-								//return bi_intToBigInt(memValue, 16) ;
-								return parseInt(memValue,16);
-							}
-						}
-					}
-					//return bi_intToBigInt(0,10) ;
-					return 0;
-				}
+        return packExecute(false, '', 'danger', new_addr) ;
 }
+
+function crex_get_string_from_memory ( addr )
+{
+	 var index   = 0 ;
+	 var ret_msg = '' ;
+
+	 if ((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value)
+	 {
+		 executionIndex = -1;
+		 if (typeof app !== "undefined") {
+		     app._data.keyboard = "";
+		 }
+
+		 return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
+	 }
+
+	 if ((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+		 index = memory_hash[0];
+	 }
+
+	 if ((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+		 index = memory_hash[2];
+	 }
+
+	for (var i = 0; i < memory[index].length; i++)
+        {
+		for (var j = 0; j < memory[index][i].Binary.length; j++)
+                {
+			var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+			if (aux == addr)
+                        {
+				for (var i; i < memory[index].length; i++)
+                                {
+					for (var k = j; k < memory[index][i].Binary.length; k++)
+					{
+						console_log(parseInt(memory[index][i].Binary[k].Bin, 16));
+						console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
+
+						if (memory[index][i].Binary[k].Bin == "00") {
+						    return packExecute(false, 'printed', 'info', ret_msg);
+						}
+
+						ret_msg += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
+
+						if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
+						    return packExecute(false, 'printed', 'info', ret_msg);
+						}
+
+						j=0;
+					}
+				}
+			}
+		}
+	}
+}
+
+function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr, index )
+{
+	var ret = {
+		errorcode: "",
+		token: "",
+		type: "",
+		update: "",
+		status: "ok"
+	} ;
+
+	var index ;
+
+	if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
+		executionIndex = -1;
+		if (typeof app !== "undefined")
+				app.keyboard = "";
+		return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	}
+
+	if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
+		index = memory_hash[0];
+	}
+
+	if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
+		index = memory_hash[2];
+	}
+
+	for (var i = 0; i < memory[index].length && keystroke.length > 0; i++){
+		for (var j = 0; j < memory[index][i].Binary.length; j++){
+			var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+			if(aux == addr){
+				for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+					memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+					auxAddr = memory[index][i].Binary[j].Addr;
+					valueIndex++;
+					addr++;
+				}
+
+				memory[index][i].Value = "";
+				for (var j = 0; j < memory[index][i].Binary.length; j++){
+					memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+				}
+
+				if((i+1) < memory[index].length && valueIndex < value.length){
+					i++;
+					for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
+						memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
+						auxAddr = memory[index][i].Binary[j].Addr;
+						valueIndex++;
+						addr++;
+					}
+
+					memory[index][i].Value = "";
+					for (var j = 0; j < memory[index][i].Binary.length; j++){
+						memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+					}
+
+				}
+				else if(valueIndex < value.length){
+					data_address = auxAddr;
+					memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
+					i++;
+					for (var z = 0; z < 4; z++){
+						if(valueIndex < value.length){
+							(memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+							valueIndex++;
+							data_address++;
+						}
+						else{
+							(memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+							data_address++;
+						}
+					}
+
+					memory[index][i].Value = "";
+					for (var j = 0; j < memory[index][i].Binary.length; j++){
+						memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
+					}
+				}
+			}
+		}
+	}
+
+	if (valueIndex == value.length)
+	{
+		 if (typeof app !== "undefined")
+				 app.keyboard = "";
+
+		 consoleMutex = false;
+		 mutexRead = false;
+
+		 if (typeof app !== "undefined")
+			 app._data.enter = null;
+
+		if (window.document)
+                    show_notification('The data has been uploaded', 'info') ;
+
+		if (executionIndex >= instructions.length)
+		{
+				for (var i = 0; i < instructions.length; i++) {
+						 draw.space.push(i) ;
+				}
+				executionIndex = -2;
+				return packExecute(true, 'The execution of the program has finished', 'success', null);
+		}
+		else if (runProgram == false){
+						 if (typeof app !== "undefined")
+								 app.executeProgram();
+		}
+
+		return ret;
+	}
+
+	var auxAddr = parseInt(addr);
+
+	while (valueIndex < value.length)
+	{
+		memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
+		for (var z = 0; z < 4; z++)
+		{
+			if (valueIndex > value.length-1){
+				(memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
+			}
+			else {
+				(memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
+				memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
+			}
+			auxAddr++;
+			valueIndex++;
+		}
+		i++;
+	}
+
+	return ret;
+}
+
 
 /* Write value in memory */
 function writeMemory ( value, addr, type )
@@ -7031,97 +7528,11 @@ draw.danger.push(executionIndex);
 	}
 }
 
-/* Modify the stack limit */
-function writeStackLimit ( stackLimit )
+function readMemory ( addr, type )
 {
-		var draw = {
-			space: [] ,
-			info: [] ,
-			success: [] ,
-			danger: [],
-			flash: []
-		} ;
-		
-		if(stackLimit != null){
-			if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-				draw.danger.push(executionIndex);
-				executionIndex = -1;
-				throw packExecute(true, 'Segmentation fault. You tried to read in the data segment', 'danger', null);
-			}
-			else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-				draw.danger.push(executionIndex);
-				executionIndex = -1;
-				throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-			}
-			else{
-				var diff = memory[memory_hash[2]][0].Address - stackLimit;
-				var auxStackLimit = stackLimit;
-				var newRow = 0;
+	var memValue = '';
+	var index;
 
-				for (var i = 0; i < (diff/4); i++){
-					memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
-					for (var z = 0; z < 4; z++){
-						(memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
-						auxStackLimit++;
-					}
-					newRow++;
-				}
-
-				track_stack_setsp(stackLimit);
-
-				architecture.memory_layout[4].value = stackLimit;
-
-			}
-		}
-}
-
-
-/* I/O */
-function display_print ( info )
-{
-	if (typeof app !== "undefined")
-             app._data.display += info ;
-	else process.stdout.write(info + '\n') ;
-
-	display += info ;
-}
-
-
-function kbd_read_char ( keystroke, indexComp, indexElem )
-{
-        var value = keystroke.charCodeAt(0);
-	writeRegister(value, indexComp, indexElem);
-
-	return value ;
-}
-
-function kbd_read_int ( keystroke, indexComp, indexElem )
-{
-	var value = parseInt(keystroke) ;
-	writeRegister(value, indexComp, indexElem);
-
-	return value ;
-}
-
-function kbd_read_float ( keystroke, indexComp, indexElem )
-{
-	var value = parseFloat(keystroke, 10) ;
-	writeRegister(value, indexComp, indexElem);
-
-	return value ;
-}
-
-function kbd_read_double ( keystroke, indexComp, indexElem )
-{
-	var value = parseFloat(keystroke, 10) ;
-	writeRegister(value, indexComp, indexElem);
-
-	return value ;
-}
-
-
-function keyboard_read ( fn_post_read, indexComp, indexElem )
-{
 	var draw = {
 		space: [] ,
 		info: [] ,
@@ -7130,266 +7541,132 @@ function keyboard_read ( fn_post_read, indexComp, indexElem )
 		flash: []
 	} ;
 
-	// CL
-	if (typeof app === "undefined")
-	{
-		 var readlineSync = require('readline-sync') ;
-		 var keystroke    = readlineSync.question(' > ') ;
 
-		 var value = fn_post_read(keystroke, indexComp, indexElem) ;
-	         keyboard = keyboard + " " + value;
+	if (type == "d") {
+				// debugger;
+				if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+					draw.danger.push(executionIndex);
+					executionIndex = -1;
+					throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+				}
+				if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value) index = memory_hash[0];
 
-	         return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
+				if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value) index = memory_hash[2];
 
-	// UI
-	mutexRead = true;
-	app._data.enter = false;
-	console_log(mutexRead);
-
-	if (newExecution == true)
-        {
-		 app._data.keyboard = "";
-		 consoleMutex    = false;
-		 mutexRead       = false;
-		 app._data.enter = null;
-
-		 show_notification('The data has been uploaded', 'info') ;
-
-		 if (runProgram == false){
-		     app.executeProgram();
-		 }
-
-		 return;
-	 }
-
-	if (consoleMutex == false) {
-	    setTimeout(keyboard_read, 1000, fn_post_read, indexComp, indexElem);
-	    return;
-	}
-
-	fn_post_read(app._data.keyboard, indexComp, indexElem) ;
-
-	app._data.keyboard = "";
-	consoleMutex    = false;
-	mutexRead       = false;
-	app._data.enter = null;
-
-	show_notification('The data has been uploaded', 'info') ;
-
-	console_log(mutexRead);
-
-	if (executionIndex >= instructions.length)
-	{
-		for (var i = 0; i < instructions.length; i++){
-		     draw.space.push(i) ;
-		}
-
-		executionIndex = -2;
-		return packExecute(true, 'The execution of the program has finished', 'success', null);
-	}
-
-	if (runProgram == false) {
-	    app.executeProgram();
-	}
-}
-
-
-/* Syscalls */
-function crex_sbrk ( new_size )
-{
-	var new_addr = 0 ;
-	var aux_addr = architecture.memory_layout[3].value + 1 ;
-
-	if ((architecture.memory_layout[3].value + new_size) >= architecture.memory_layout[4].value)
-	{
-		executionIndex = -1 ;
-		return packExecute(true, 'Not enough memory for data segment', 'danger', null) ;
-	}
-
-	for (var i = 0; i < (new_size / 4); i++)
-        {
-		memory[memory_hash[0]].push({Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true}) ;
-
-		if (i == 0) {
-		    new_addr = aux_addr ;
-		}
-
-		for (var z = 0; z < 4; z++) {
-		     (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: aux_addr, DefBin: "00", Bin: "00", Tag: null},) ;
-		     aux_addr++ ;
-		}
-	}
-
-	if (typeof app !== "undefined") {
-	    app._data.memory[memory_hash[0]] = memory[memory_hash[0]] ;
-	}
-
-	architecture.memory_layout[3].value = aux_addr-1 ;
-
-	if (typeof app !== "undefined") {
-	    app.architecture.memory_layout[3].value = aux_addr-1 ;
-	}
-
-        return packExecute(false, '', 'danger', new_addr) ;
-}
-
-function crex_exit ( )
-{
-        executionIndex = instructions.length + 1;
-}
-
-function crex_get_string_from_memory ( addr )
-{
-	 var index   = 0 ;
-	 var ret_msg = '' ;
-
-	 if ((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value)
-	 {
-		 executionIndex = -1;
-		 if (typeof app !== "undefined") {
-		     app._data.keyboard = "";
-		 }
-
-		 return packExecute(true, 'Segmentation fault. You tried to write in the text segment', 'danger', null);
-	 }
-
-	 if ((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-		 index = memory_hash[0];
-	 }
-
-	 if ((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-		 index = memory_hash[2];
-	 }
-
-	for (var i = 0; i < memory[index].length; i++)
-        {
-		for (var j = 0; j < memory[index][i].Binary.length; j++)
-                {
-			var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-			if (aux == addr)
-                        {
-				for (var i; i < memory[index].length; i++)
-                                {
-					for (var k = j; k < memory[index][i].Binary.length; k++)
-					{
-						console_log(parseInt(memory[index][i].Binary[k].Bin, 16));
-						console_log(String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16)));
-
-						if (memory[index][i].Binary[k].Bin == "00") {
-						    return packExecute(false, 'printed', 'info', ret_msg);
+				for (var i = 0; i < memory[index].length; i++){
+					for (var j = 0; j < memory[index][i].Binary.length; j++){
+						var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+						if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+	for (let k = 0; k<2; k++)
+		for (var z = 0; z < memory[index][i].Binary.length; z++)
+				memValue = memory[index][k].Binary[z].Bin + memValue;
+							//return bi_intToBigInt(memValue, 16) ;
+	return parseInt(memValue, 16);
 						}
-
-						ret_msg += String.fromCharCode(parseInt(memory[index][i].Binary[k].Bin, 16));
-
-						if (i == memory[index].length-1 && k == memory[index][i].Binary.length-1) {
-						    return packExecute(false, 'printed', 'info', ret_msg);
-						}
-
-						j=0;
 					}
 				}
-			}
-		}
-	}
-}
-
-function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	// CL
-	if (typeof app === "undefined")
-	{
-		var readlineSync = require('readline-sync') ;
-		keystroke        = readlineSync.question(' $> ') ;
-
-		var value = "";
-		var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
-		for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
-		     value = value + keystroke.charAt(i);
-		}
-
-		keyboard = keyboard + " " + value;
-
-		var addr = architecture.components[indexComp].elements[indexElem].value ;
-		var ret  = read_string_into_memory(keystroke, value, addr, 0, data_address) ;
-		if (ret.status != 'ok') {
-		    return ret ;
-		}
-
-		return packExecute(false, 'The data has been uploaded', 'danger', null);
+return 0;
 	}
 
-	// UI
-	mutexRead = true;
-	app._data.enter = false;
-	console_log(mutexRead);
+				if (type == "w"){
+					if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+			draw.danger.push(executionIndex);
+						executionIndex = -1;
+						throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+					}
 
-	if (newExecution == true)
-	{
-		app._data.keyboard = "";
-		consoleMutex    = false;
-		mutexRead       = false;
-		app._data.enter = null;
+					if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+						index = memory_hash[0];
+					}
 
-		show_notification('The data has been uploaded', 'info') ;
+					if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+						index = memory_hash[2];
+					}
 
-		if (runProgram == false) {
-		    app.executeProgram();
-		}
+					for (var i = 0; i < memory[index].length; i++){
+						for (var j = 0; j < memory[index][i].Binary.length; j++){
+							var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+							if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+								for (var z = 0; z < memory[index][i].Binary.length; z++){
+									memValue = memory[index][i].Binary[z].Bin + memValue;
+								}
+								//return bi_intToBigInt(memValue, 16) ;
+								return parseInt(memValue,16);
+							}
+						}
+					}
+					//return bi_intToBigInt(0,10) ;
+					return 0;
+				}
 
-		return;
-	}
+				if (type == "h"){
+					if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+			draw.danger.push(executionIndex);
+						executionIndex = -1;
+						throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+					}
 
-	if (consoleMutex == false) {
-	    setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2);
-	    return ;
-	}
+					if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+						index = memory_hash[0];
+					}
 
-	var keystroke = '' ;
-	keystroke = app.keyboard ;
+					if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+						index = memory_hash[2];
+					}
 
-	var value = "";
-	var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
-	for (var i = 0;(i < neltos) && (i < keystroke.length); i++) {
-	     value = value + keystroke.charAt(i);
-	}
+					for (var i = 0; i < memory[index].length; i++){
+						for (var j = 0; j < memory[index][i].Binary.length; j++){
+							var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+							if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+								if(j < 2){
+									for (var z = 0; z < memory[index][i].Binary.length -2; z++){
+										memValue = memory[index][i].Binary[z].Bin + memValue;
+									}
+									//return bi_intToBigInt(memValue, 16) ;
+									return parseInt(memValue,16);
+								}
+								else{
+									for (var z = 2; z < memory[index][i].Binary.length; z++){
+										memValue = memory[index][i].Binary[z].Bin + memValue;
+									}
+									//return bi_intToBigInt(memValue, 16) ;
+									return parseInt(memValue,16);
+								}
+							}
+						}
+					}
+					//return bi_intToBigInt(0,10) ;
+					return 0;
+				}
 
-	console_log(value);
+				if (type == "b"){
+					if((parseInt(addr, 16) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr, 16) == architecture.memory_layout[0].value || parseInt(addr, 16) == architecture.memory_layout[1].value){
+			draw.danger.push(executionIndex);
+						executionIndex = -1;
+						throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+					}
 
-	var addr = architecture.components[indexComp].elements[indexElem].value ;
-	var ret = read_string_into_memory(keystroke, value, addr, 0, data_address) ;
-	if (ret.status != 'ok') {
-	    return ret ;
-	}
+					if((parseInt(addr, 16) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr, 16) == architecture.memory_layout[2].value || parseInt(addr, 16) == architecture.memory_layout[3].value){
+						index = memory_hash[0];
+					}
 
-	app._data.keyboard = "";
+					if((parseInt(addr, 16) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr, 16) == architecture.memory_layout[4].value || parseInt(addr, 16) == architecture.memory_layout[5].value){
+						index = memory_hash[2];
+					}
 
-	consoleMutex = false;
-	mutexRead = false;
-	app._data.enter = null;
-
-	show_notification('The data has been uploaded', 'info') ;
-
-	if (executionIndex >= instructions.length)
-	{
-		for (var i = 0; i < instructions.length; i++) {
-			 draw.space.push(i) ;
-		}
-		executionIndex = -2;
-		return packExecute(true, 'The execution of the program has finished', 'success', null);
-	}
-
-	if (runProgram == false){
-		app.executeProgram();
-	}
+					for (var i = 0; i < memory[index].length; i++){
+						for (var j = 0; j < memory[index][i].Binary.length; j++){
+							var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
+							if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+								memValue = memory[index][i].Binary[j].Bin + memValue;
+								//return bi_intToBigInt(memValue, 16) ;
+								return parseInt(memValue,16);
+							}
+						}
+					}
+					//return bi_intToBigInt(0,10) ;
+					return 0;
+				}
 }
 
 
@@ -7537,279 +7814,6 @@ function execute_binary ( index, instructionExecParts, auxDef )
 	}
 
 	return auxDef;
-}
-
-
-
-/* Reset execution */
-function reset ()
-{
-	executionIndex = 0;
-	executionInit = 1;
-
-	/* Reset stats */
-        stats_reset() ;
-
-	/* Reset console */
-	mutexRead    = false ;
-	newExecution = true ;
-	keyboard = '' ;
-	display  = '' ;
-
-	for (var i = 0; i < architecture_hash.length; i++)
-        {
-		for (var j = 0; j < architecture.components[i].elements.length; j++)
-                {
-			if (architecture.components[i].double_precision == false)
-                        {
-				architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
-			}
-
-			else{
-				var aux_value;
-				var aux_sim1;
-				var aux_sim2;
-
-				for (var a = 0; a < architecture_hash.length; a++)
-                                {
-					for (var b = 0; b < architecture.components[a].elements.length; b++)
-                                        {
-						if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
-							aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-						}
-						if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
-							aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
-						}
-					}
-				}
-
-				aux_value = aux_sim1 + aux_sim2;
-				architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
-			}
-		}
-	}
-
-	architecture.memory_layout[4].value = backup_stack_address;
-	architecture.memory_layout[3].value = backup_data_address;
-
-	// reset memory
-	for (var i = 0; i < memory[memory_hash[0]].length; i++)
-        {
-		if (memory[memory_hash[0]][i].reset == true)
-                {
-			memory[memory_hash[0]].splice(i, 1);
-			i--;
-		}
-		else {
-			memory[memory_hash[0]][i].Value = memory[memory_hash[0]][i].DefValue;
-			for (var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++) {
-				memory[memory_hash[0]][i].Binary[j].Bin = memory[memory_hash[0]][i].Binary[j].DefBin;
-			}
-		}
-	}
-
-	for (var i = 0; i < memory[memory_hash[2]].length; i++)
-        {
-		if(memory[memory_hash[2]][i].reset == true){
-			memory[memory_hash[2]].splice(i, 1);
-			i--;
-		}
-		else{
-			memory[memory_hash[2]][i].Value = memory[memory_hash[2]][i].DefValue;
-			for (var j = 0; j < memory[memory_hash[2]][i].Binary.length; j++) {
-				memory[memory_hash[2]][i].Binary[j].Bin = memory[memory_hash[2]][i].Binary[j].DefBin;
-			}
-		}
-	}
-
-	//Stack Reset
-	creator_callstack_reset();
-	track_stack_reset();
-
-	return true ;
-}
-
-
-function read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr, index )
-{
-	var ret = {
-		errorcode: "",
-		token: "",
-		type: "",
-		update: "",
-		status: "ok"
-	} ;
-
-	var index ;
-
-	if((parseInt(addr) > architecture.memory_layout[0].value && parseInt(addr) < architecture.memory_layout[1].value) ||  parseInt(addr) == architecture.memory_layout[0].value || parseInt(addr) == architecture.memory_layout[1].value){
-		executionIndex = -1;
-		if (typeof app !== "undefined")
-				app.keyboard = "";
-		return packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-	}
-
-	if((parseInt(addr) > architecture.memory_layout[2].value && parseInt(addr) < architecture.memory_layout[3].value) ||  parseInt(addr) == architecture.memory_layout[2].value || parseInt(addr) == architecture.memory_layout[3].value){
-		index = memory_hash[0];
-	}
-
-	if((parseInt(addr) > architecture.memory_layout[4].value && parseInt(addr) < architecture.memory_layout[5].value) ||  parseInt(addr) == architecture.memory_layout[4].value || parseInt(addr) == architecture.memory_layout[5].value){
-		index = memory_hash[2];
-	}
-
-	for (var i = 0; i < memory[index].length && keystroke.length > 0; i++){
-		for (var j = 0; j < memory[index][i].Binary.length; j++){
-			var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-			if(aux == addr){
-				for (var j = j; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-					memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-					auxAddr = memory[index][i].Binary[j].Addr;
-					valueIndex++;
-					addr++;
-				}
-
-				memory[index][i].Value = "";
-				for (var j = 0; j < memory[index][i].Binary.length; j++){
-					memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-				}
-
-				if((i+1) < memory[index].length && valueIndex < value.length){
-					i++;
-					for (var j = 0; j < memory[index][i].Binary.length && valueIndex < value.length; j++){
-						memory[index][i].Binary[j].Bin = (value.charCodeAt(valueIndex)).toString(16);
-						auxAddr = memory[index][i].Binary[j].Addr;
-						valueIndex++;
-						addr++;
-					}
-
-					memory[index][i].Value = "";
-					for (var j = 0; j < memory[index][i].Binary.length; j++){
-						memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-					}
-
-				}
-				else if(valueIndex < value.length){
-					data_address = auxAddr;
-					memory[index].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false});
-					i++;
-					for (var z = 0; z < 4; z++){
-						if(valueIndex < value.length){
-							(memory[index][i].Binary).push({Addr: data_address, DefBin: (value.charCodeAt(valueIndex)).toString(16), Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-							valueIndex++;
-							data_address++;
-						}
-						else{
-							(memory[index][i].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-							data_address++;
-						}
-					}
-
-					memory[index][i].Value = "";
-					for (var j = 0; j < memory[index][i].Binary.length; j++){
-						memory[index][i].Value = String.fromCharCode(parseInt(memory[index][i].Binary[j].Bin, 16)) + " " + memory[index][i].Value;
-					}
-				}
-			}
-		}
-	}
-
-	if (valueIndex == value.length)
-	{
-		 if (typeof app !== "undefined")
-				 app.keyboard = "";
-
-		 consoleMutex = false;
-		 mutexRead = false;
-
-		 if (typeof app !== "undefined")
-				 app._data.enter = null;
-
-		if (window.document)
-show_notification('The data has been uploaded', 'info') ;
-
-		if (executionIndex >= instructions.length)
-		{
-				for (var i = 0; i < instructions.length; i++) {
-						 draw.space.push(i) ;
-				}
-				executionIndex = -2;
-				return packExecute(true, 'The execution of the program has finished', 'success', null);
-		}
-		else if (runProgram == false){
-						 if (typeof app !== "undefined")
-								 app.executeProgram();
-		}
-
-		return ret;
-	}
-
-	var auxAddr = parseInt(addr);
-
-	while (valueIndex < value.length)
-	{
-		memory[index].push({Address: auxAddr, Binary: [], Value: "", DefValue: "", reset: false});
-		for (var z = 0; z < 4; z++)
-		{
-			if (valueIndex > value.length-1){
-				(memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: "00", Tag: null},);
-			}
-			else {
-				(memory[index][i].Binary).push({Addr: auxAddr, DefBin: "00", Bin: (value.charCodeAt(valueIndex)).toString(16), Tag: null},);
-				memory[index][i].Value = value.charAt(valueIndex) + " " + memory[index][i].Value;
-			}
-			auxAddr++;
-			valueIndex++;
-		}
-		i++;
-	}
-
-	return ret;
-}
-
-
-/*Modifies double precision registers according to simple precision registers*/
-function updateDouble(comp, elem)
-{
-	for (var j = 0; j < architecture.components.length; j++)
-        {
-		for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
-                {
-			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
-				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
-				var newDouble = simple + double;
-
-				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-			}
-			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
-				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
-				var newDouble = double + simple;
-
-				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-			}
-		}
-	}
-}
-
-/*Modifies single precision registers according to double precision registers*/
-function updateSimple ( comp, elem )
-{
-	var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
-	var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
-
-	for (var j = 0; j < architecture.components.length; j++)
-        {
-		for (var z = 0; z < architecture.components[j].elements.length; z++)
-                {
-			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
-				architecture.components[j].elements[z].value = hex2float("0x"+part1);
-			}
-			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
-				architecture.components[j].elements[z].value = hex2float("0x"+part2);
-			}
-		}
-	}
 }
 
 /*
