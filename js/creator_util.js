@@ -68,18 +68,18 @@
 	var exponent = 0;
 	var pos = 0;
 
-	var valuec = new Array();
+	var valuec = [] ;
 
 	for (var i = 0; i < num_char; i++) {
-	  var auxHex = hexvalue.substring(pos, pos+2);
-	  valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-	  pos = pos + 2;
+	     var auxHex = hexvalue.substring(pos, pos+2);
+	     valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
+	     pos = pos + 2;
 	}
 
 	var characters = '';
 
 	for (var i = 0; i < valuec.length; i++){
-	  characters = characters + valuec[i] + ' ';
+	     characters = characters + valuec[i] + ' ';
 	}
 
 	return  characters;
