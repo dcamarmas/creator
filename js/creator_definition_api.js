@@ -300,8 +300,13 @@ function capi_read_string ( value1, value2 )
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
     }
 
+    /* Read string */
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_string(ret1.indexComp, ret1.indexElem, ret2.indexComp, ret2.indexElem) ;
+
+    ret1.indexComp2 = ret2.indexComp ;
+    ret1.indexElem2 = ret2.indexElem ;
+
+    return keyboard_read(kbd_read_string, ret1) ;
 }
 
 function capi_sbrk ( value1, value2 )
@@ -495,6 +500,6 @@ function capi_float2bin ( f )
 
 function capi_eval ( expr )
 {
-    return crex_replace_magic(expr) ;
+    eval(crex_replace_magic(expr)) ;
 }
 

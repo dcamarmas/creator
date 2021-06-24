@@ -800,6 +800,20 @@ function kbd_read_double ( keystroke, params )
 	return value ;
 }
 
+function kbd_read_string ( keystroke, params )
+{
+	var value = "";
+	var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ;
+	for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
+	     value = value + keystroke.charAt(i);
+	}
+
+	var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
+	crex_read_string_into_memory(keystroke, value, addr, 0) ;
+
+	return value ;
+}
+
 
 function keyboard_read ( fn_post_read, fn_post_params )
 {
@@ -872,104 +886,6 @@ function keyboard_read ( fn_post_read, fn_post_params )
 
 	if (runProgram == false) {
 	    app.executeProgram();
-	}
-}
-
-function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	// CL
-	if (typeof app === "undefined")
-	{
-		var readlineSync = require('readline-sync') ;
-		keystroke        = readlineSync.question(' $> ') ;
-
-		var value = "";
-		var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
-		for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
-		     value = value + keystroke.charAt(i);
-		}
-
-		keyboard = keyboard + " " + value;
-
-		var addr = architecture.components[indexComp].elements[indexElem].value ;
-		var ret  = crex_read_string_into_memory(keystroke, value, addr, 0, data_address) ;
-		if (ret.status != 'ok') {
-		    return ret ;
-		}
-
-		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	// UI
-	mutexRead = true;
-	app._data.enter = false;
-	console_log(mutexRead);
-
-	if (newExecution == true)
-	{
-		app._data.keyboard = "";
-		consoleMutex    = false;
-		mutexRead       = false;
-		app._data.enter = null;
-
-		show_notification('The data has been uploaded', 'info') ;
-
-		if (runProgram == false) {
-		    app.executeProgram();
-		}
-
-		return;
-	}
-
-	if (consoleMutex == false) {
-	    setTimeout(read_string, 1000, indexComp, indexElem, indexComp2, indexElem2);
-	    return ;
-	}
-
-	var keystroke = '' ;
-	keystroke = app.keyboard ;
-
-	var value = "";
-	var neltos = architecture.components[indexComp2].elements[indexElem2].value ;
-	for (var i = 0;(i < neltos) && (i < keystroke.length); i++) {
-	     value = value + keystroke.charAt(i);
-	}
-
-	console_log(value);
-
-	var addr = architecture.components[indexComp].elements[indexElem].value ;
-	var ret = crex_read_string_into_memory(keystroke, value, addr, 0, data_address) ;
-	if (ret.status != 'ok') {
-	    return ret ;
-	}
-
-	app._data.keyboard = "";
-
-	consoleMutex = false;
-	mutexRead = false;
-	app._data.enter = null;
-
-	show_notification('The data has been uploaded', 'info') ;
-
-	if (executionIndex >= instructions.length)
-	{
-		for (var i = 0; i < instructions.length; i++) {
-			 draw.space.push(i) ;
-		}
-		executionIndex = -2;
-		return packExecute(true, 'The execution of the program has finished', 'success', null);
-	}
-
-	if (runProgram == false){
-		app.executeProgram();
 	}
 }
 
@@ -1279,7 +1195,7 @@ function crex_get_string_from_memory ( addr )
 	}
 }
 
-function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr, index )
+function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
 	var ret = {
 		errorcode: "",
