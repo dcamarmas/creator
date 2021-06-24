@@ -118,76 +118,111 @@ function capi_mem_read ( addr, type )
 
 function capi_exit ( )
 {
-    return syscall_exit() ;
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.exit');
+
+    return crex_exit() ;
 }
 
 function capi_print_int ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_int');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
-    return print_int(ret1.compIndex, ret1.elemIndex) ;
+    /* Print integer */
+    var value   = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var val_int = parseInt(value.toString()) >> 0 ;
+
+    display_print(val_int) ;
 }
 
 function capi_print_float ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_float');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
-    return print_float(ret1.compIndex, ret1.elemIndex) ;
+    /* Print float */
+    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+
+    display_print(value) ;
 }
 
 function capi_print_double ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_double');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
-    return print_double(ret1.compIndex, ret1.elemIndex) ;
+    /* Print double */
+    var value = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+
+    display_print(value) ;
 }
 
 function capi_print_string ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
-    return print_string(ret1.compIndex, ret1.elemIndex) ;
+    /* Print string */
+    var addr = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    print_string(addr) ;
 }
 
 function capi_print_char ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_char');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
-    return print_char(ret1.compIndex, ret1.elemIndex) ;
+    /* Print char */
+    var aux    = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var aux2   = aux.toString(16);
+    var length = aux2.length;
+
+    var value = aux2.substring(length-2, length) ;
+        value = String.fromCharCode(parseInt(value, 16)) ;
+
+    display_print(value) ;
 }
 
 function capi_read_int ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_int');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -196,11 +231,13 @@ function capi_read_int ( value1 )
 
 function capi_read_float ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_float');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -209,11 +246,13 @@ function capi_read_float ( value1 )
 
 function capi_read_double ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_double');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -222,18 +261,18 @@ function capi_read_double ( value1 )
 
 function capi_read_string ( value1, value2 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_string');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
+    if (ret2.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -242,11 +281,13 @@ function capi_read_string ( value1, value2 )
 
 function capi_read_char ( value1 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
@@ -255,21 +296,28 @@ function capi_read_char ( value1 )
 
 function capi_sbrk ( value1, value2 )
 {
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.sbrk');
+
+    /* Get register id */
     var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0)
-    {
+    if (ret1.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-        return;
     }
 
     var ret2 = crex_findReg(value2) ;
-    if (ret2.match == 0)
-    {
+    if (ret2.match == 0) {
         throw packExecute(true, "capi_syscall: register " + value2 + " not found", 'danger', null);
-        return;
     }
 
-    return syscall_sbrk(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
+    /* Request more memory */
+    var new_size = parseInt(architecture.components[indexComp].elements[indexElem].value) ;
+    var ret = crex_sbrk(new_size) ;
+    if (ret.error == true) {
+        throw packExecute(true, ret.msg, ret.type, ret.draw) ;
+    }
+
+    architecture.components[ret2.indexComp].elements[ret2.indexElem].value = ret.draw ;
 }
 
 
@@ -427,5 +475,16 @@ function capi_check_ieee ( s, e, m )
 function capi_float2bin ( f )
 {
     return float2bin(f) ;
+}
+
+
+/*
+ *  CREATOR instruction description API:
+ *  Expr
+ */
+
+function capi_eval ( expr )
+{
+    return crex_replace_magic(expr) ;
 }
 
