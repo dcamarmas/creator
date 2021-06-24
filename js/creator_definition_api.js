@@ -176,27 +176,6 @@ function capi_print_double ( value1 )
     display_print(value) ;
 }
 
-function capi_print_string ( value1 )
-{
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
-
-    /* Get register id */
-    var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0) {
-        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
-
-    /* Print string */
-    var addr = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
-    var ret  = crex_get_string_from_memory(addr) ;
-    if (ret.error == true) {
-        throw packExecute(true, ret.msg, ret.type, ret.draw) ;
-    }
-
-    display_print(ret.draw) ;
-}
-
 function capi_print_char ( value1 )
 {
     /* Google Analytics */
@@ -219,6 +198,27 @@ function capi_print_char ( value1 )
     display_print(value) ;
 }
 
+function capi_print_string ( value1 )
+{
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.print_string');
+
+    /* Get register id */
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0) {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+    }
+
+    /* Print string */
+    var addr = architecture.components[ret1.compIndex].elements[ret1.elemIndex].value;
+    var ret  = crex_get_string_from_memory(addr) ;
+    if (ret.error == true) {
+        throw packExecute(true, ret.msg, ret.type, ret.draw) ;
+    }
+
+    display_print(ret.draw) ;
+}
+
 function capi_read_int ( value1 )
 {
     /* Google Analytics */
@@ -230,8 +230,10 @@ function capi_read_int ( value1 )
         throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
     }
 
+    /* Read integer */
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_int(ret1.compIndex, ret1.elemIndex) ;
+
+    return keyboard_read(kbd_read_int, ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_read_float ( value1 )
@@ -246,7 +248,8 @@ function capi_read_float ( value1 )
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_float(ret1.compIndex, ret1.elemIndex) ;
+
+    return keyboard_read(kbd_read_float, ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_read_double ( value1 )
@@ -261,7 +264,24 @@ function capi_read_double ( value1 )
     }
 
     document.getElementById('enter_keyboard').scrollIntoView();
-    return read_double(ret1.compIndex, ret1.elemIndex) ;
+
+    return keyboard_read(kbd_read_double, ret1.compIndex, ret1.elemIndex) ;
+}
+
+function capi_read_char ( value1 )
+{
+    /* Google Analytics */
+    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
+
+    /* Get register id */
+    var ret1 = crex_findReg(value1) ;
+    if (ret1.match == 0) {
+        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
+    }
+
+    document.getElementById('enter_keyboard').scrollIntoView();
+
+    return keyboard_read(kbd_read_char, ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_read_string ( value1, value2 )
@@ -282,21 +302,6 @@ function capi_read_string ( value1, value2 )
 
     document.getElementById('enter_keyboard').scrollIntoView();
     return read_string(ret1.compIndex, ret1.elemIndex, ret2.compIndex, ret2.elemIndex) ;
-}
-
-function capi_read_char ( value1 )
-{
-    /* Google Analytics */
-    creator_ga('execute', 'execute.syscall', 'execute.syscall.read_char');
-
-    /* Get register id */
-    var ret1 = crex_findReg(value1) ;
-    if (ret1.match == 0) {
-        throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
-    }
-
-    document.getElementById('enter_keyboard').scrollIntoView();
-    return read_char(ret1.compIndex, ret1.elemIndex) ;
 }
 
 function capi_sbrk ( value1, value2 )

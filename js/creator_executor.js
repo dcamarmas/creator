@@ -1340,6 +1340,114 @@ function display_print ( info )
 }
 
 
+function kbd_read_char ( keystroke, indexComp, indexElem )
+{
+        var value = keystroke.charCodeAt(0);
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+function kbd_read_int ( keystroke, indexComp, indexElem )
+{
+	var value = parseInt(keystroke) ;
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+function kbd_read_float ( keystroke, indexComp, indexElem )
+{
+	var value = parseFloat(keystroke, 10) ;
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+function kbd_read_double ( keystroke, indexComp, indexElem )
+{
+	var value = parseFloat(keystroke, 10) ;
+	writeRegister(value, indexComp, indexElem);
+
+	return value ;
+}
+
+
+function keyboard_read ( fn_post_read, indexComp, indexElem )
+{
+	var draw = {
+		space: [] ,
+		info: [] ,
+		success: [] ,
+		danger: [],
+		flash: []
+	} ;
+
+	// CL
+	if (typeof app === "undefined")
+	{
+		 var readlineSync = require('readline-sync') ;
+		 var keystroke    = readlineSync.question(' > ') ;
+
+		 var value = fn_post_read(keystroke, indexComp, indexElem) ;
+	         keyboard = keyboard + " " + value;
+
+	         return packExecute(false, 'The data has been uploaded', 'danger', null);
+	}
+
+	// UI
+	mutexRead = true;
+	app._data.enter = false;
+	console_log(mutexRead);
+
+	if (newExecution == true)
+        {
+		 app._data.keyboard = "";
+		 consoleMutex    = false;
+		 mutexRead       = false;
+		 app._data.enter = null;
+
+		 show_notification('The data has been uploaded', 'info') ;
+
+		 if (runProgram == false){
+		     app.executeProgram();
+		 }
+
+		 return;
+	 }
+
+	if (consoleMutex == false) {
+	    setTimeout(keyboard_read, 1000, fn_post_read, indexComp, indexElem);
+	    return;
+	}
+
+	fn_post_read(app._data.keyboard, indexComp, indexElem) ;
+
+	app._data.keyboard = "";
+	consoleMutex    = false;
+	mutexRead       = false;
+	app._data.enter = null;
+
+	show_notification('The data has been uploaded', 'info') ;
+
+	console_log(mutexRead);
+
+	if (executionIndex >= instructions.length)
+	{
+		for (var i = 0; i < instructions.length; i++){
+		     draw.space.push(i) ;
+		}
+
+		executionIndex = -2;
+		return packExecute(true, 'The execution of the program has finished', 'success', null);
+	}
+
+	if (runProgram == false) {
+	    app.executeProgram();
+	}
+}
+
+
 /* Syscalls */
 function crex_sbrk ( new_size )
 {
@@ -1436,79 +1544,6 @@ function crex_get_string_from_memory ( addr )
 				}
 			}
 		}
-	}
-}
-
-function read_int ( indexComp, indexElem )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	// CL
-	if (typeof app === "undefined")
-	{
-		var readlineSync = require('readline-sync') ;
-		var keystroke    = readlineSync.question(' $> ') ;
-		var value        = parseInt(keystroke) ;
-
-		keyboard = keyboard + " " + value;
-
-		writeRegister(value, indexComp, indexElem);
-		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	// UI
-	mutexRead = true;
-	app._data.enter = false;
-	console_log(mutexRead);
-
-	if (newExecution == true)
-        {
-		app._data.keyboard = "";
-		consoleMutex  = false;
-		mutexRead     = false;
-		app._data.enter = null;
-
-		show_notification('The data has been uploaded', 'info') ;
-
-		if (runProgram == false) {
-		    app.executeProgram();
-		}
-
-		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	if (consoleMutex == false) {
-	    setTimeout(read_int, 1000, indexComp, indexElem);
-	    return ;
-	}
-
-	var value = parseInt(app._data.keyboard);
-	console_log(value);
-	writeRegister(value, indexComp, indexElem);
-	app._data.keyboard = "";
-	consoleMutex = false;
-	mutexRead = false;
-	app._data.enter = null;
-
-	show_notification('The data has been uploaded', 'info') ;
-
-	if (executionIndex >= instructions.length)
-	{
-		 for (var i = 0; i < instructions.length; i++) {
-			draw.space.push(i) ;
-		 }
-		 executionIndex = -2;
-		 return packExecute(true, 'The execution of the program has finished', 'success', null);
-	}
-
-	if (runProgram == false) {
-		 app.executeProgram();
 	}
 }
 
@@ -1615,226 +1650,6 @@ function read_string ( indexComp, indexElem, indexComp2, indexElem2 )
 
 	if (runProgram == false){
 		app.executeProgram();
-	}
-}
-
-function read_float ( indexComp, indexElem )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	// CL
-	if (typeof app === "undefined")
-	{
-		var readlineSync = require('readline-sync') ;
-		var keystroke    = readlineSync.question(' $> ') ;
-		var value        = parseFloat(keystroke) ;
-
-		keyboard = keyboard + " " + value;
-
-		writeRegister(value, indexComp, indexElem);
-		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	mutexRead = true;
-	app._data.enter = false;
-	console_log(mutexRead);
-
-	if (newExecution == true)
-        {
-		app._data.keyboard = "";
-		consoleMutex = false;
-		mutexRead = false;
-		app._data.enter = null;
-
-		show_notification('The data has been uploaded', 'info') ;
-
-		if (runProgram == false){
-			app.executeProgram();
-		}
-
-		return;
-	}
-
-	if (consoleMutex == false) {
-		setTimeout(read_float, 1000, indexComp, indexElem);
-		return ;
-	}
-
-	var value = parseFloat(app._data.keyboard, 10);
-	console_log(value);
-	writeRegister(value, indexComp, indexElem);
-	app._data.keyboard = "";
-	consoleMutex = false;
-	mutexRead = false;
-	app._data.enter = null;
-
-	show_notification('The data has been uploaded', 'info') ;
-
-	if (executionIndex >= instructions.length)
-	{
-		for (var i = 0; i < instructions.length; i++) {
-			 draw.space.push(i) ;
-		}
-
-		executionIndex = -2;
-		return packExecute(true, 'The execution of the program has finished', 'success', null);
-	}
-
-	if (runProgram == false){
-		 app.executeProgram();
-	}
-}
-
-function read_char ( indexComp, indexElem )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	// CL
-	if (typeof app === "undefined")
-	{
-		 var readlineSync = require('readline-sync') ;
-		 var keystroke    = readlineSync.question(' read char> ') ;
-		 var value        = keystroke.charCodeAt(0);
-
-		 keyboard = keyboard + " " + value;
-
-		 writeRegister(value, indexComp, indexElem);
-		 return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	mutexRead = true;
-	app._data.enter = false;
-	console_log(mutexRead);
-
-	if (newExecution == true)
-        {
-		 app._data.keyboard = "";
-		 consoleMutex = false;
-		 mutexRead = false;
-		 app._data.enter = null;
-
-		 show_notification('The data has been uploaded', 'info') ;
-
-		 if (runProgram == false){
-			 app.executeProgram();
-		 }
-
-		 return;
-	 }
-
-	if (consoleMutex == false) {
-		setTimeout(read_char, 1000, indexComp, indexElem);
-		return;
-	}
-
-	var value = (app._data.keyboard).charCodeAt(0);
-	writeRegister(value, indexComp, indexElem);
-	app._data.keyboard = "";
-	consoleMutex = false;
-	mutexRead = false;
-	app._data.enter = null;
-
-	show_notification('The data has been uploaded', 'info') ;
-
-	console_log(mutexRead);
-
-	if (executionIndex >= instructions.length)
-	{
-		for (var i = 0; i < instructions.length; i++){
-		     draw.space.push(i) ;
-		}
-
-		executionIndex = -2;
-		return packExecute(true, 'The execution of the program has finished', 'success', null);
-	}
-
-	if (runProgram == false) {
-		 app.executeProgram();
-	}
-}
-
-function read_double ( indexComp, indexElem )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	// CL
-	if (typeof app === "undefined")
-	{
-		var readlineSync = require('readline-sync') ;
-		var keystroke    = readlineSync.question(' $>  ') ;
-		var value        = parseFloat(keystroke) ;
-
-		keyboard = keyboard + " " + value;
-
-		writeRegister(value, indexComp, indexElem);
-		return packExecute(false, 'The data has been uploaded', 'danger', null);
-	}
-
-	mutexRead = true;
-	app._data.enter = false;
-	console_log(mutexRead);
-
-	if (newExecution == true)
-        {
-		app._data.keyboard = "";
-		consoleMutex = false;
-		mutexRead = false;
-		app._data.enter = null;
-
-		show_notification('The data has been uploaded', 'info') ;
-
-		if (runProgram == false){
-			app.executeProgram();
-		}
-
-		return;
-	}
-
-	if (consoleMutex == false) {
-		setTimeout(read_double, 1000, indexComp, indexElem);
-		return ;
-	}
-
-	var value = parseFloat(app._data.keyboard, 10);
-	console_log(value);
-	writeRegister(value, indexComp, indexElem);
-	app._data.keyboard = "";
-	consoleMutex = false;
-	mutexRead = false;
-	app._data.enter = null;
-
-	show_notification('The data has been uploaded', 'info') ;
-
-	if (executionIndex >= instructions.length)
-	{
-		for (var i = 0; i < instructions.length; i++) {
-			 draw.space.push(i) ;
-		}
-
-		executionIndex = -2;
-		return packExecute(true, 'The execution of the program has finished', 'success', null);
-	}
-
-	if (runProgram == false){
-		 app.executeProgram();
 	}
 }
 
