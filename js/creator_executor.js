@@ -707,7 +707,6 @@ function writeStackLimit ( stackLimit )
 			track_stack_setsp(stackLimit);
 
 			architecture.memory_layout[4].value = stackLimit;
-
 		}
 	}
 }
@@ -769,40 +768,40 @@ function display_print ( info )
 }
 
 
-function kbd_read_char ( keystroke, indexComp, indexElem )
+function kbd_read_char ( keystroke, params )
 {
         var value = keystroke.charCodeAt(0);
-	writeRegister(value, indexComp, indexElem);
+	writeRegister(value, params.indexComp, params.indexElem);
 
 	return value ;
 }
 
-function kbd_read_int ( keystroke, indexComp, indexElem )
+function kbd_read_int ( keystroke, params )
 {
 	var value = parseInt(keystroke) ;
-	writeRegister(value, indexComp, indexElem);
+	writeRegister(value, params.indexComp, params.indexElem);
 
 	return value ;
 }
 
-function kbd_read_float ( keystroke, indexComp, indexElem )
+function kbd_read_float ( keystroke, params )
 {
 	var value = parseFloat(keystroke, 10) ;
-	writeRegister(value, indexComp, indexElem);
+	writeRegister(value, params.indexComp, params.indexElem);
 
 	return value ;
 }
 
-function kbd_read_double ( keystroke, indexComp, indexElem )
+function kbd_read_double ( keystroke, params )
 {
 	var value = parseFloat(keystroke, 10) ;
-	writeRegister(value, indexComp, indexElem);
+	writeRegister(value, params.indexComp, params.indexElem);
 
 	return value ;
 }
 
 
-function keyboard_read ( fn_post_read, indexComp, indexElem )
+function keyboard_read ( fn_post_read, fn_post_params )
 {
 	var draw = {
 		space: [] ,
@@ -818,7 +817,7 @@ function keyboard_read ( fn_post_read, indexComp, indexElem )
 		 var readlineSync = require('readline-sync') ;
 		 var keystroke    = readlineSync.question(' > ') ;
 
-		 var value = fn_post_read(keystroke, indexComp, indexElem) ;
+		 var value = fn_post_read(keystroke, fn_post_params) ;
 	         keyboard = keyboard + " " + value;
 
 	         return packExecute(false, 'The data has been uploaded', 'danger', null);
@@ -846,11 +845,11 @@ function keyboard_read ( fn_post_read, indexComp, indexElem )
 	 }
 
 	if (consoleMutex == false) {
-	    setTimeout(keyboard_read, 1000, fn_post_read, indexComp, indexElem);
+	    setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
 	    return;
 	}
 
-	fn_post_read(app._data.keyboard, indexComp, indexElem) ;
+	fn_post_read(app._data.keyboard, fn_post_params) ;
 
 	app._data.keyboard = "";
 	consoleMutex    = false;
@@ -984,8 +983,8 @@ function crex_findReg ( value1 )
     var ret = {} ;
 
     ret.match = 0;
-    ret.compIndex = null;
-    ret.elemIndex = null;
+    ret.indexComp = null;
+    ret.indexElem = null;
 
     if (value1 == "") {
         return ret;
@@ -998,8 +997,8 @@ function crex_findReg ( value1 )
               if (architecture.components[i].elements[j].name.includes(value1) != false)
               {
                   ret.match = 1;
-                  ret.compIndex = i;
-                  ret.elemIndex = j;
+                  ret.indexComp = i;
+                  ret.indexElem = j;
                   break ;
               }
          }
