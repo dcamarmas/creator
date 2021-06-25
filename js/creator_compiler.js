@@ -4058,6 +4058,7 @@ function getReg(name)
 */
 function getFieldLength(separated, startbit, stopbit,a)
 {
+    if (startbit == stopbit) console_log("Warning: startbit equal to stopBit, please check the achitecture definitions");
 	let fieldsLength;
 	if (!separated || !separated[a])
 		fieldsLength = startbit - stopbit + 1;
