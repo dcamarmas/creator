@@ -145,7 +145,7 @@ function get_state ( )
                 }
 
                 aux_value = aux_sim1 + aux_sim2;
-                elto_dvalue = hex2double("0x" + aux_value)
+                elto_dvalue = hex2double("0x" + aux_value);
             }
             else{
               elto_dvalue = architecture.components[i].elements[j].default_value ;
@@ -250,7 +250,7 @@ function compare_states ( ref_state, alt_state )
                              }) ;
 
     ret.msg = "Different: " ;
-    for (elto in m_ref)
+    for (var elto in m_ref)
     {
          if (m_alt[elto] != m_ref[elto])
          {
