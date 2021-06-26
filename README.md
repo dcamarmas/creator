@@ -74,10 +74,10 @@
 
 ### :atom: 3.0.x:
 - [x] Several minor RISC-V improvements
-- [x] More modular design
+- [x] More modular design:
      * Initial user interface based on Vue components
      * Improved modular design on execution engine
-- [x] Improved instruction definitions
+- [x] Improved instruction definitions:
      * New CREATOR API for instruction definitions
      * Support for helping on check Stack Calling Conventions
        * Checking saved registers on stack are restored
