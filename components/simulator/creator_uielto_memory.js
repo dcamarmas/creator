@@ -164,7 +164,7 @@
 										'	        </b-badge>' +
 										'	' +
 										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}' +
+										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
 										'	        </span> ' +
 										'	        <span v-if="row.item.Binary[2].Tag == null">' +
 										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
@@ -213,7 +213,7 @@
 										'	        </b-badge>' +
 										'	' +
 										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}' +
+										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
 										'	        </span> ' +
 										'	        <span v-if="row.item.Binary[2].Tag == null">' +
 										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
@@ -262,7 +262,7 @@
 										'	        </b-badge>' +
 										'	' +
 										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}' +
+										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
 										'	        </span> ' +
 										'	        <span v-if="row.item.Binary[2].Tag == null">' +
 										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
@@ -412,7 +412,7 @@
 										'	        </b-badge>' +
 										'	' +
 										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}' +
+										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
 										'	        </span> ' +
 										'	        <span v-if="row.item.Binary[2].Tag == null">' +
 										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
