@@ -1044,7 +1044,7 @@ function writeRegister ( value, indexComp, indexElem )
 			}
 
 			if (typeof window !== "undefined") {
-                            btn_int_glow(architecture.components[indexComp].elements[indexElem].name) ;
+                            btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
 			}
 	}
 
@@ -1072,7 +1072,7 @@ function writeRegister ( value, indexComp, indexElem )
 			updateDouble(indexComp, indexElem);
 
 			if (typeof window !== "undefined") {
-                            btn_fp_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
+                            btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
 			}
 		}
 
@@ -1091,7 +1091,7 @@ function writeRegister ( value, indexComp, indexElem )
 			creator_callstack_writeRegister(indexComp, indexElem);
 
 			if (typeof window !== "undefined") {
-                            btn_fp_glow(architecture.components[indexComp].elements[indexElem].name, "DFP") ;
+                            btn_glow(architecture.components[indexComp].elements[indexElem].name, "DFP") ;
 	                }
 		}
 	}

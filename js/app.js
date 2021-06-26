@@ -3195,7 +3195,7 @@ try
       /*Exception Notification*/
       exception(error)
       {
-         show_notification("There is been an exception. Error description: '" + error, 'danger') ;
+         show_notification("There has been an exception. Error description: '" + error, 'danger') ;
          instructions[executionIndex]._rowVariant = 'danger';
          executionIndex = -1;
 
