@@ -73,12 +73,16 @@
 ## ChangeLog
 
 ### :atom: 3.0.x:
-- [x] Support for checking Stack Calling Conventions
-     * Colored stack
-     * SP and FP pointers are shown on the memory stack detail panel
-     * Checking saved registers on stack are restored
-- [x] Initial interface based on Vue components
 - [x] Several minor RISC-V improvements
+- [x] More modular design:
+     * Initial user interface based on Vue components
+     * Improved modular design on execution engine
+- [x] Improved instruction definitions:
+     * New CREATOR API for instruction definitions
+     * Support for helping on check Stack Calling Conventions
+       * Checking saved registers on stack are restored
+       * Colored stack
+       * SP and FP pointers are shown on the memory stack detail panel
 
 ### :atom: 2.1.x:
 - [x] **RISC-V** supported (Thanks to Lucas Elvira Martín @luck5941)
@@ -98,8 +102,4 @@
      * Preload example 'e3' from example set 'uc3m-ec':
        * https://creatorsim.github.io/creator/?example_set=uc3m-ec&example=e3
 - [x] Bootstrap-vue upgraded up to v2.15.0
-
-
-
-
 
