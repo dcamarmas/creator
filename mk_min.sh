@@ -26,6 +26,7 @@ cat js/creator_bigint.js \
     js/creator_sentinel.js \
     js/creator_definition_api.js \
     \
+    js/creator_memory.js \
     js/creator_compiler.js \
     js/creator_executor.js \
     \
@@ -76,6 +77,7 @@ cat js/creator_bigint.js \
     js/creator_definition_api.js \
     js/creator_track_stack.js \
     \
+    js/creator_memory.js \
     js/creator_compiler.js \
     js/creator_executor.js \
     \
