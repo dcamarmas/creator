@@ -755,8 +755,8 @@ function stats_reset ( )
 }
 
 
-/* 
- * I/O 
+/*
+ * I/O
  */
 
 function display_print ( info )
@@ -1336,6 +1336,12 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 /* Write value in memory */
 function writeMemory ( value, addr, type )
 {
+        // NEW
+        console.log(".");
+        main_memory_write_bytype(addr, value, type) ; // TODO: checks and return main_memory_write_bytype(...)
+        console.log("..");
+
+        // OLD
 	var draw = {
 		space: [] ,
 		info: [] ,
@@ -1699,6 +1705,10 @@ draw.danger.push(executionIndex);
 
 function readMemory ( addr, type )
 {
+        // NEW
+        main_memory_read_bytype(addr, type) ; // TODO: checks and return main_memory_read_bytype(...) value...
+
+        // OLD
 	var memValue = '';
 	var index;
 
