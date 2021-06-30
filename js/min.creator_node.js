@@ -923,7 +923,7 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 
 function capi_bad_align ( addr, type )
 {
-	size = crex_type2size(type) ;
+	size = creator_memory_type2size(type) ;
 	return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
 }
 
@@ -996,7 +996,7 @@ function capi_mem_read ( addr, type )
 	}
 
 	// 4) return value
-	return crex_value_by_type(val, type) ;
+	return creator_memory_value_by_type(val, type) ;
 }
 
 
@@ -1688,6 +1688,76 @@ var main_memory = [];
 
 var word_size_bits  = 32; //TODO: load from architecture
 var word_size_bytes = word_size_bits / 8; //TODO: load from architecture
+
+
+//
+// Type and size...
+//
+
+function creator_memory_type2size ( type )
+{
+	var size = 4;
+
+	switch (type)
+	{
+		case 'b':
+		case 'bu':
+		case 'byte':
+			 size = 1 ;
+			 break;
+
+		case 'h':
+		case 'hu':
+		case 'half':
+			 size = word_size_bytes / 2 ;
+			 break;
+
+		case 'w':
+		case 'wu':
+		case 'word':
+			 size = word_size_bytes ;
+			 break;
+
+		case 'd':
+		case 'du':
+		case 'double':
+			 size = word_size_bytes * 2 ;
+			 break;
+	}
+
+	return size ;
+}
+
+function creator_memory_value_by_type ( val, type )
+{
+	switch (type)
+	{
+		case 'b':
+		 val = val & 0xFF ;
+		 if (val & 0x80)
+			 val = 0xFFFFFF00 | val ;
+		 break;
+
+		case 'bu':
+		 val = ((val << 24) >> 24) ;
+		 break;
+
+		case 'h':
+		 val = val & 0xFFFF ;
+		 if (val & 0x8000)
+			 val = 0xFFFF0000 | val ;
+		 break;
+
+		case 'hu':
+		 val = ((val << 16) >> 16) ;
+		 break;
+
+		default:
+		 break;
+	}
+
+	return val ;
+}
 
 
 //
@@ -6456,71 +6526,6 @@ function crex_show_notification ( msg, level )
 	if (typeof window !== "undefined")
 		 show_notification(msg, level);
 	else console.log(level.toUpperCase() + ": " + msg);
-}
-
-function crex_type2size ( type )
-{
-	var size = 4;
-
-	switch (type)
-	{
-		case 'b':
-		case 'bu':
-		case 'byte':
-			 size = 1;
-			 break;
-
-		case 'h':
-		case 'hu':
-		case 'half':
-			 size = 2;
-			 break;
-
-		case 'w':
-		case 'wu':
-		case 'word':
-			 size = 4;
-			 break;
-
-		case 'd':
-		case 'du':
-		case 'double':
-			 size = 8;
-			 break;
-	}
-
-	return size ;
-}
-
-function crex_value_by_type ( val, type )
-{
-	switch (type)
-	{
-		case 'b':
-		 val = val & 0xFF ;
-		 if (val & 0x80)
-			 val = 0xFFFFFF00 | val ;
-		 break;
-
-		case 'bu':
-		 val = ((val << 24) >> 24) ;
-		 break;
-
-		case 'h':
-		 val = val & 0xFFFF ;
-		 if (val & 0x8000)
-			 val = 0xFFFF0000 | val ;
-		 break;
-
-		case 'hu':
-		 val = ((val << 16) >> 16) ;
-		 break;
-
-		default:
-		 break;
-	}
-
-	return val ;
 }
 
 function crex_replace_magic ( auxDef )

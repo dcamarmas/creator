@@ -35,6 +35,76 @@ var word_size_bytes = word_size_bits / 8; //TODO: load from architecture
 
 
 //
+// Type and size...
+//
+
+function creator_memory_type2size ( type )
+{
+	var size = 4;
+
+	switch (type)
+	{
+		case 'b':
+		case 'bu':
+		case 'byte':
+			 size = 1 ;
+			 break;
+
+		case 'h':
+		case 'hu':
+		case 'half':
+			 size = word_size_bytes / 2 ;
+			 break;
+
+		case 'w':
+		case 'wu':
+		case 'word':
+			 size = word_size_bytes ;
+			 break;
+
+		case 'd':
+		case 'du':
+		case 'double':
+			 size = word_size_bytes * 2 ;
+			 break;
+	}
+
+	return size ;
+}
+
+function creator_memory_value_by_type ( val, type )
+{
+	switch (type)
+	{
+		case 'b':
+		 val = val & 0xFF ;
+		 if (val & 0x80)
+			 val = 0xFFFFFF00 | val ;
+		 break;
+
+		case 'bu':
+		 val = ((val << 24) >> 24) ;
+		 break;
+
+		case 'h':
+		 val = val & 0xFFFF ;
+		 if (val & 0x8000)
+			 val = 0xFFFF0000 | val ;
+		 break;
+
+		case 'hu':
+		 val = ((val << 16) >> 16) ;
+		 break;
+
+		default:
+		 break;
+	}
+
+	return val ;
+}
+
+
+//
 // Read and write into/from memory (compilation)
 //
 

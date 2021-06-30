@@ -43,7 +43,7 @@ function capi_arithmetic_overflow ( op1, op2, res_u )
 
 function capi_bad_align ( addr, type )
 {
-	size = crex_type2size(type) ;
+	size = creator_memory_type2size(type) ;
 	return (addr % size != 0) ; // && (architecture.properties.memory_align == true) ; <- FUTURE-WORK
 }
 
@@ -116,7 +116,7 @@ function capi_mem_read ( addr, type )
 	}
 
 	// 4) return value
-	return crex_value_by_type(val, type) ;
+	return creator_memory_value_by_type(val, type) ;
 }
 
 
