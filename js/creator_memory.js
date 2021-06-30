@@ -24,8 +24,8 @@
  ********************/
 
 // OLD
-var memory_hash     = ["data_memory", "instructions_memory", "stack_memory"];
-var memory          = {data_memory: [], instructions_memory: [], stack_memory: []};
+var memory_hash     = [ "data_memory", "instructions_memory", "stack_memory" ] ;
+var memory          = { data_memory: [], instructions_memory: [], stack_memory: [] } ;
 
 // NEW
 var main_memory = [];
@@ -38,19 +38,19 @@ var word_size_bytes = word_size_bits / 8; //TODO: load from architecture
 // Read and write into/from memory (compilation)
 //
 
-function main_memory_read (addr) 
+function main_memory_read (addr)
 {
 	if (typeof main_memory[addr] !== "undefined")
 	{
-		return main_memory[addr];
+		return main_memory[addr] ;
 	}
 
-	return {addr: addr, bin: "00", def_bin: "00", tag: null};
+	return { addr: addr, bin: "00", def_bin: "00", tag: null } ;
 }
 
-function main_memory_write (addr, value) 
+function main_memory_write (addr, value)
 {
-	main_memory[addr] = value;
+	main_memory[addr] = value ;
 }
 
 
@@ -58,13 +58,13 @@ function main_memory_write (addr, value)
 // Read and write value (byte) (execution)
 //
 
-function main_memory_read_value (addr) 
+function main_memory_read_value (addr)
 {
 	return main_memory_read (addr).bin ;
 }
 
 //Addr as integer; Value in hexadecimal (string)
-function main_memory_write_value (addr, value) 
+function main_memory_write_value (addr, value)
 {
 	var value_obj = { addr: addr, bin: value, def_bin: "00", tag: null } ;
 	main_memory_write (addr, value_obj) ;
@@ -78,49 +78,64 @@ function main_memory_write_value (addr, value)
 function main_memory_read_nbytes ( addr, n )
 {
 	var value = "";
-	for (var i = 0; i < n; i++) {
-		value = value + main_memory_read_value(addr+i); //TODO: cast??
+	for (var i = 0; i < n; i++)
+        {
+	     value = value + main_memory_read_value(addr+i) ; //TODO: cast??
 	}
 
 	return value;
 }
 
 function main_memory_write_nbytes ( addr, value, n )
-{    
-	var chunks = value.match(/.{1,${value.length\/n}}/g);
+{
+        var value_str = value.toString(16).padStart(2*n, "0") ;
+        console.log(value_str) ;
 
-	for (var i = 0; i < chunks.length; i++) {
-		main_memory_write_value(addr+i, chunks[i]); //TODO: cast??
+	var chunks    = value_str.match(/.{1,2}/g) ;
+        console.log(JSON.stringify(chunks)) ;
+
+	for (var i = 0; i < chunks.length; i++)
+        {
+             console.log("main_memory_write_value[" + addr+i + "] = " + chunks[i]) ;
+	     main_memory_write_value(addr+i, chunks[i]) ; //TODO: cast??
 	}
 }
 
-function main_memory_read_bytype (addr, type) 
+function main_memory_read_bytype ( addr, type )
 {
+        var ret = 0x0 ;
+
 	switch (type)
         {
 		case 'b':
-			return main_memory_read_value(addr);
+		     ret = main_memory_read_value(addr) ;
 		case 'h':
-			return main_memory_read_nbytes (addr, word_size_bytes/2);
+		     ret = main_memory_read_nbytes(addr, word_size_bytes/2) ;
 		case 'w':
-			return main_memory_read_nbytes (addr, word_size_bytes); 
+		     ret = main_memory_read_nbytes(addr, word_size_bytes) ;
 		case 'd':
-			return main_memory_read_nbytes (addr, word_size_bytes*2); 
+		     ret = main_memory_read_nbytes(addr, word_size_bytes*2) ;
 	}
+
+	return ret ;
 }
 
-function main_memory_write_bytype (addr, value, type) 
+function main_memory_write_bytype ( addr, value, type )
 {
+        var ret = 0x0 ;
+
 	switch (type)
         {
 		case 'b':
-			return main_memory_write_value(addr, value);
+			ret = main_memory_write_value(addr, value) ;
 		case 'h':
-			return main_memory_write_nbytes (addr, value, word_size_bytes/2);
+			ret = main_memory_write_nbytes(addr, value, word_size_bytes/2) ;
 		case 'w':
-			return main_memory_write_nbytes (addr, value, word_size_bytes); 
+			ret = main_memory_write_nbytes(addr, value, word_size_bytes) ;
 		case 'd':
-			return main_memory_write_nbytes (addr, value, word_size_bytes*2); 
+			ret = main_memory_write_nbytes(addr, value, word_size_bytes*2) ;
 	}
+
+	return ret ;
 }
 
