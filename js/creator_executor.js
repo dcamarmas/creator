@@ -1337,9 +1337,7 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 function writeMemory ( value, addr, type )
 {
         // NEW
-        console.log(".");
         main_memory_write_bytype(addr, value, type) ; // TODO: checks and return main_memory_write_bytype(...)
-        console.log("..");
 
         // OLD
 	var draw = {
