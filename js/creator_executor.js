@@ -439,7 +439,8 @@ function creator_executor_exit ( )
 	/* Google Analytics */
 	creator_ga('execute', 'execute.exit');
 
-	executionIndex = -1;
+	// executionIndex = -1; // REASON: line 360 said that if executionIndex == -1 then throw error... :-(
+        executionIndex = instructions.length + 1;
 }
 
 function reset ()
