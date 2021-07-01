@@ -1675,6 +1675,234 @@ function track_stack_reset()
  */
 
 
+/*
+ *  Register operations
+ */
+
+function crex_findReg ( value1 )
+{
+	var ret = {} ;
+
+	ret.match = 0;
+	ret.indexComp = null;
+	ret.indexElem = null;
+
+	if (value1 == "") {
+		return ret;
+	}
+
+	for (var i = 0; i < architecture.components.length; i++)
+	{
+		 for (var j = 0; j < architecture.components[i].elements.length; j++)
+		 {
+			  if (architecture.components[i].elements[j].name.includes(value1) != false)
+			  {
+				  ret.match = 1;
+				  ret.indexComp = i;
+				  ret.indexElem = j;
+				  break ;
+			  }
+		 }
+	}
+
+	return ret ;
+}
+
+/*Modifies double precision registers according to simple precision registers*/
+function updateDouble(comp, elem)
+{
+	for (var j = 0; j < architecture.components.length; j++)
+		{
+		for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
+				{
+			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
+				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
+				var newDouble = simple + double;
+
+				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+			}
+			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
+				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
+				var newDouble = double + simple;
+
+				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+			}
+		}
+	}
+}
+
+/*Modifies single precision registers according to double precision registers*/
+function updateSimple ( comp, elem )
+{
+	var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
+	var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
+
+	for (var j = 0; j < architecture.components.length; j++)
+		{
+		for (var z = 0; z < architecture.components[j].elements.length; z++)
+				{
+			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+				architecture.components[j].elements[z].value = hex2float("0x"+part1);
+			}
+			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+				architecture.components[j].elements[z].value = hex2float("0x"+part2);
+			}
+		}
+	}
+}
+
+function readRegister ( indexComp, indexElem )
+{
+	var draw = {
+		space: [] ,
+		info: [] ,
+		success: [] ,
+		danger: [],
+		flash: []
+	} ;
+
+	if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") != true))
+	{
+		for (var i = 0; i < instructions.length; i++) {
+			draw.space.push(i);
+		}
+		draw.danger.push(executionIndex);
+		executionIndex = -1;
+
+		throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', draw);
+	}
+
+	if ((architecture.components[indexComp].type == "control") ||
+			(architecture.components[indexComp].type == "integer"))
+	{
+		console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
+		return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
+	}
+
+	if (architecture.components[indexComp].type == "floating point")
+	{
+		return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString());
+	}
+}
+
+function writeRegister ( value, indexComp, indexElem )
+{
+	var draw = {
+		space: [] ,
+		info: [] ,
+		success: [] ,
+		danger: [],
+		flash: []
+	} ;
+
+	if (value == null) {
+		return;
+	}
+
+	if ((architecture.components[indexComp].type == "integer") ||
+			(architecture.components[indexComp].type == "control"))
+	{
+			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+			{
+				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+					return;
+				}
+
+				for (var i = 0; i < instructions.length; i++) {
+					 draw.space.push(i);
+				}
+				draw.danger.push(executionIndex);
+
+				executionIndex = -1;
+				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', draw);
+			}
+
+			architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
+			creator_callstack_writeRegister(indexComp, indexElem);
+
+			if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
+					(architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+					(value != architecture.memory_layout[4].value)) {
+						writeStackLimit(value);
+			}
+
+			if (typeof window !== "undefined") {
+							btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
+			}
+	}
+
+	else if (architecture.components[indexComp].type =="floating point")
+	{
+		if (architecture.components[indexComp].double_precision == false)
+		{
+			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+			{
+				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+					return;
+				}
+				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
+			}
+
+			architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+			creator_callstack_writeRegister(indexComp, indexElem);
+
+			if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
+					(architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+					(value != architecture.memory_layout[4].value)) {
+						writeStackLimit(value);
+			}
+
+			updateDouble(indexComp, indexElem);
+
+			if (typeof window !== "undefined") {
+							btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
+			}
+		}
+
+		else if (architecture.components[indexComp].double_precision == true)
+		{
+			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+			{
+				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+					return;
+				}
+				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
+			}
+
+			architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+			updateSimple(indexComp, indexElem);
+			creator_callstack_writeRegister(indexComp, indexElem);
+
+			if (typeof window !== "undefined") {
+							btn_glow(architecture.components[indexComp].elements[indexElem].name, "DFP") ;
+					}
+		}
+	}
+}
+
+/*
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *
+ *  This file is part of CREATOR.
+ *
+ *  CREATOR is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  CREATOR is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public License
+ *  along with CREATOR.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
 /********************
  * Global variables *
  ********************/
@@ -1812,7 +2040,7 @@ function main_memory_read_nbytes ( addr, n )
 {
 	var value = "";
 	for (var i = 0; i < n; i++) {
-	     value = value + main_memory_read_value(addr+i) ; //TODO: cast??
+	     value = value + main_memory_read_value(addr+i) ;
 	}
 
 	return value;
@@ -1829,7 +2057,7 @@ function main_memory_write_nbytes ( addr, value, n )
 	for (var i = 0; i < chunks.length; i++)
         {
              //console_log("main_memory_write_value[" + addr+i + "] = " + chunks[i]) ;
-	     main_memory_write_value(addr+i, chunks[i]) ; //TODO: cast??
+	     main_memory_write_value(addr+i, chunks[i]) ;
 	}
 }
 
@@ -1877,6 +2105,31 @@ function main_memory_write_bytype ( addr, value, type )
 	}
 
 	return ret ;
+}
+
+
+//
+// Read and write a data type (string)
+//
+
+var string_length_limit = 4*1024 ;
+
+function create_memory_read_string ( addr )
+{
+	var ch = '' ;
+	var ret_msg = '' ;
+
+	for (var i=0; i<string_length_limit; i++) 
+	{
+	     ch = main_memory_read_value(addr+i) ;
+	     if (ch == '00') {
+	         return ret_msg ;
+	     }
+
+	     ret_msg += String.fromCharCode(parseInt(ch, 16));
+	}
+
+	return ret_msg + '... (string length greater than ' + string_length_limit + ' chars)' ;
 }
 
 
@@ -2404,9 +2657,12 @@ return 0;
 				}
 }
 
-
 function memory_reset ( )
 {
+        // NEW
+        main_memory_reset() ; // TODO: checks and return main_memory_read_bytype(...) value...
+
+        // OLD
 	for (var i = 0; i < memory[memory_hash[0]].length; i++)
 	{
 		if (memory[memory_hash[0]][i].reset == true)
@@ -2436,6 +2692,7 @@ function memory_reset ( )
 		}
 	}
 }
+
 
 function crex_sbrk ( new_size )
 {
@@ -2477,6 +2734,10 @@ function crex_sbrk ( new_size )
 
 function crex_get_string_from_memory ( addr )
 {
+        // NEW
+        create_memory_read_string(addr) ; // TODO: checks and return main_memory_read_bytype(...) value...
+
+        // OLD
 	 var index   = 0 ;
 	 var ret_msg = '' ;
 
@@ -7566,214 +7827,6 @@ function keyboard_read ( fn_post_read, fn_post_params )
 
 	if (runProgram == false) {
 		app.executeProgram();
-	}
-}
-
-
-/*
- *  Register operations
- */
-
-function crex_findReg ( value1 )
-{
-	var ret = {} ;
-
-	ret.match = 0;
-	ret.indexComp = null;
-	ret.indexElem = null;
-
-	if (value1 == "") {
-		return ret;
-	}
-
-	for (var i = 0; i < architecture.components.length; i++)
-	{
-		 for (var j = 0; j < architecture.components[i].elements.length; j++)
-		 {
-			  if (architecture.components[i].elements[j].name.includes(value1) != false)
-			  {
-				  ret.match = 1;
-				  ret.indexComp = i;
-				  ret.indexElem = j;
-				  break ;
-			  }
-		 }
-	}
-
-	return ret ;
-}
-
-/*Modifies double precision registers according to simple precision registers*/
-function updateDouble(comp, elem)
-{
-	for (var j = 0; j < architecture.components.length; j++)
-		{
-		for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
-				{
-			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
-				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
-				var newDouble = simple + double;
-
-				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-			}
-			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
-				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
-				var newDouble = double + simple;
-
-				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-			}
-		}
-	}
-}
-
-/*Modifies single precision registers according to double precision registers*/
-function updateSimple ( comp, elem )
-{
-	var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
-	var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
-
-	for (var j = 0; j < architecture.components.length; j++)
-		{
-		for (var z = 0; z < architecture.components[j].elements.length; z++)
-				{
-			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
-				architecture.components[j].elements[z].value = hex2float("0x"+part1);
-			}
-			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
-				architecture.components[j].elements[z].value = hex2float("0x"+part2);
-			}
-		}
-	}
-}
-
-function readRegister ( indexComp, indexElem )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") != true))
-	{
-		for (var i = 0; i < instructions.length; i++) {
-			draw.space.push(i);
-		}
-		draw.danger.push(executionIndex);
-		executionIndex = -1;
-
-		throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', draw);
-	}
-
-	if ((architecture.components[indexComp].type == "control") ||
-			(architecture.components[indexComp].type == "integer"))
-	{
-		console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
-		return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
-	}
-
-	if (architecture.components[indexComp].type == "floating point")
-	{
-		return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString());
-	}
-}
-
-function writeRegister ( value, indexComp, indexElem )
-{
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
-
-	if (value == null) {
-		return;
-	}
-
-	if ((architecture.components[indexComp].type == "integer") ||
-			(architecture.components[indexComp].type == "control"))
-	{
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
-			{
-				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
-					return;
-				}
-
-				for (var i = 0; i < instructions.length; i++) {
-					 draw.space.push(i);
-				}
-				draw.danger.push(executionIndex);
-
-				executionIndex = -1;
-				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', draw);
-			}
-
-			architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
-			creator_callstack_writeRegister(indexComp, indexElem);
-
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
-					(architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
-					(value != architecture.memory_layout[4].value)) {
-						writeStackLimit(value);
-			}
-
-			if (typeof window !== "undefined") {
-							btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
-			}
-	}
-
-	else if (architecture.components[indexComp].type =="floating point")
-	{
-		if (architecture.components[indexComp].double_precision == false)
-		{
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
-			{
-				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
-					return;
-				}
-				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
-			}
-
-			architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
-			creator_callstack_writeRegister(indexComp, indexElem);
-
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
-					(architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
-					(value != architecture.memory_layout[4].value)) {
-						writeStackLimit(value);
-			}
-
-			updateDouble(indexComp, indexElem);
-
-			if (typeof window !== "undefined") {
-							btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
-			}
-		}
-
-		else if (architecture.components[indexComp].double_precision == true)
-		{
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
-			{
-				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
-					return;
-				}
-				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
-			}
-
-			architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
-			updateSimple(indexComp, indexElem);
-			creator_callstack_writeRegister(indexComp, indexElem);
-
-			if (typeof window !== "undefined") {
-							btn_glow(architecture.components[indexComp].elements[indexElem].name, "DFP") ;
-					}
-		}
 	}
 }
 

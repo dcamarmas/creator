@@ -156,7 +156,7 @@ function main_memory_read_nbytes ( addr, n )
 {
 	var value = "";
 	for (var i = 0; i < n; i++) {
-	     value = value + main_memory_read_value(addr+i) ; //TODO: cast??
+	     value = value + main_memory_read_value(addr+i) ;
 	}
 
 	return value;
@@ -173,7 +173,7 @@ function main_memory_write_nbytes ( addr, value, n )
 	for (var i = 0; i < chunks.length; i++)
         {
              //console_log("main_memory_write_value[" + addr+i + "] = " + chunks[i]) ;
-	     main_memory_write_value(addr+i, chunks[i]) ; //TODO: cast??
+	     main_memory_write_value(addr+i, chunks[i]) ;
 	}
 }
 
@@ -221,6 +221,31 @@ function main_memory_write_bytype ( addr, value, type )
 	}
 
 	return ret ;
+}
+
+
+//
+// Read and write a data type (string)
+//
+
+var string_length_limit = 4*1024 ;
+
+function create_memory_read_string ( addr )
+{
+	var ch = '' ;
+	var ret_msg = '' ;
+
+	for (var i=0; i<string_length_limit; i++) 
+	{
+	     ch = main_memory_read_value(addr+i) ;
+	     if (ch == '00') {
+	         return ret_msg ;
+	     }
+
+	     ret_msg += String.fromCharCode(parseInt(ch, 16));
+	}
+
+	return ret_msg + '... (string length greater than ' + string_length_limit + ' chars)' ;
 }
 
 
@@ -748,9 +773,12 @@ return 0;
 				}
 }
 
-
 function memory_reset ( )
 {
+        // NEW
+        main_memory_reset() ; // TODO: checks and return main_memory_read_bytype(...) value...
+
+        // OLD
 	for (var i = 0; i < memory[memory_hash[0]].length; i++)
 	{
 		if (memory[memory_hash[0]][i].reset == true)
@@ -780,6 +808,7 @@ function memory_reset ( )
 		}
 	}
 }
+
 
 function crex_sbrk ( new_size )
 {
@@ -821,6 +850,10 @@ function crex_sbrk ( new_size )
 
 function crex_get_string_from_memory ( addr )
 {
+        // NEW
+        create_memory_read_string(addr) ; // TODO: checks and return main_memory_read_bytype(...) value...
+
+        // OLD
 	 var index   = 0 ;
 	 var ret_msg = '' ;
 
