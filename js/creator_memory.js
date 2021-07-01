@@ -23,10 +23,11 @@
  * Global variables *
  ********************/
 
-var main_memory = [];
+var main_memory = [] ;
+var main_memory_datatypes = {} ;
 
-var word_size_bits  = 32;                 // TODO: load from architecture
-var word_size_bytes = word_size_bits / 8; // TODO: load from architecture
+var word_size_bits  = 32 ;                 // TODO: load from architecture
+var word_size_bytes = word_size_bits / 8 ; // TODO: load from architecture
 
 
 //
@@ -165,10 +166,7 @@ function main_memory_read_nbytes ( addr, n )
 function main_memory_write_nbytes ( addr, value, n )
 {
         var value_str = value.toString(16).padStart(2*n, "0") ;
-        //console_log(value_str) ;
-
 	var chunks    = value_str.match(/.{1,2}/g) ;
-        //console_log(JSON.stringify(chunks)) ;
 
 	for (var i = 0; i < chunks.length; i++)
         {
@@ -246,6 +244,70 @@ function create_memory_read_string ( addr )
 	}
 
 	return ret_msg + '... (string length greater than ' + string_length_limit + ' chars)' ;
+}
+
+function create_memory_write_string ( addr, value )
+{
+	var ch = '' ;
+
+        // store byte to byte...
+	for (var i=0; i<value.length; i++) 
+	{
+             ch = value[addr+i] ;
+             ch = parseInt(ch, 16) ;
+             main_memory_write_value(addr+i, ch) ;
+	}
+
+        ch = parseInt(0, 16) ;
+        main_memory_write_value(addr+value.length+1, ch) ;
+
+        // datatype
+        main_memory_datatypes[addr] = { "type": "string", "address": addr, "value": value } ;
+}
+
+function create_memory_write_integer ( addr, value )
+{
+        // store byte to byte...
+	ret = main_memory_write_nbytes(addr, value, word_size_bytes) ;
+
+        // datatype
+        main_memory_datatypes[addr] = { "type": "integer", "address": addr, "value": value } ;
+}
+
+function create_memory_write_float ( addr, value )
+{
+        // store in memory
+	ret = main_memory_write_nbytes(addr, value, word_size_bytes) ;
+
+        // datatype
+        main_memory_datatypes[addr] = { "type": "float", "address": addr, "value": value } ;
+}
+
+function create_memory_write_double ( addr, value )
+{
+        // store in memory
+	ret = main_memory_write_nbytes(addr, value, word_size_bytes * 2) ;
+
+        // datatype
+        main_memory_datatypes[addr] = { "type": "double", "address": addr, "value": value } ;
+}
+
+function creator_memory_alloc ( new_size )
+{
+        // fill memory
+	var new_addr = architecture.memory_layout[3].value + 1 ;
+	for (var i=0; i<new_size; i++) {
+             var value = { Address: aux_addr, Binary: [], Value: null, DefValue: null, reset: true } ;
+             main_memory_write(new_addr+i, value) ;
+	}
+
+        // new segment limit
+	architecture.memory_layout[3].value = aux_addr - i ;
+	if (typeof app !== "undefined") {
+	    app.architecture.memory_layout[3].value = aux_addr - i ;
+	}
+
+	return new_addr ;
 }
 
 
@@ -812,6 +874,10 @@ function memory_reset ( )
 
 function crex_sbrk ( new_size )
 {
+        // NEW
+        creator_memory_alloc(new_size) ;
+
+        // OLD
 	var new_addr = 0 ;
 	var aux_addr = architecture.memory_layout[3].value + 1 ;
 
@@ -909,6 +975,10 @@ function crex_get_string_from_memory ( addr )
 
 function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
+        // NEW
+        create_memory_write_string(addr, keystroke) ;
+
+        // OLD
 	var ret = {
 		errorcode: "",
 		token: "",
