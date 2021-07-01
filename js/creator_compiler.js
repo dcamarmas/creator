@@ -151,9 +151,6 @@ var executionInit = 1;
 var consoleMutex = false;
 var mutexRead = false;
 var newExecution = true;
-/*Memory*/
-var memory_hash = ["data_memory", "instructions_memory", "stack_memory"];
-var memory = {data_memory: [], instructions_memory: [], stack_memory: []};
 /*Instructions memory*/
 var instructions = [];
 var instructions_tag = [];
