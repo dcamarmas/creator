@@ -268,10 +268,10 @@ function main_memory_write_bydatatype ( addr, value, type )
 		case 'string':
 	             var ch = '' ;
 		     for (var i=0; i<value.length; i++) {
-			  ch = parseInt(value[addr+i], 16) ;
+			  ch = value.charCodeAt(i);
 			  main_memory_write_value(addr+i, ch) ;
 		     }
-		     main_memory_write_value(addr+value.length+1, 0x0) ;
+		     main_memory_write_value(addr+value.length, 0x0) ;
                      break;
 	}
 
