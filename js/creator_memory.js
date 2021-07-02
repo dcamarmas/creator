@@ -118,6 +118,11 @@ function main_memory_reset ( )
         }
 }
 
+function creator_memory_clear ( )
+{
+        main_memory = [] ;
+}
+
 function main_memory_read ( addr )
 {
 	if (typeof main_memory[addr] !== "undefined") {
@@ -979,7 +984,7 @@ function crex_get_string_from_memory ( addr )
 function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
         // NEW
-        main_memory_write_bydatatype(addr, keystroke, "string") ;
+        main_memory_write_bydatatype(parseInt(addr), keystroke, "string") ;
 
         // OLD
 	var ret = {
@@ -1114,5 +1119,14 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 	}
 
 	return ret;
+}
+
+function crex_memory_clear ( )
+{
+        creator_memory_clear() ;
+
+        memory[memory_hash[0]] = [];
+        memory[memory_hash[1]] = [];
+        memory[memory_hash[2]] = [];
 }
 
