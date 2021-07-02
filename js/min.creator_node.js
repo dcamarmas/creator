@@ -2002,6 +2002,11 @@ function main_memory_reset ( )
         }
 }
 
+function creator_memory_clear ( )
+{
+        main_memory = [] ;
+}
+
 function main_memory_read ( addr )
 {
 	if (typeof main_memory[addr] !== "undefined") {
@@ -2863,7 +2868,7 @@ function crex_get_string_from_memory ( addr )
 function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
         // NEW
-        main_memory_write_bydatatype(addr, keystroke, "string") ;
+        main_memory_write_bydatatype(parseInt(addr), keystroke, "string") ;
 
         // OLD
 	var ret = {
@@ -2998,6 +3003,15 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 	}
 
 	return ret;
+}
+
+function crex_memory_clear ( )
+{
+        creator_memory_clear() ;
+
+        memory[memory_hash[0]] = [];
+        memory[memory_hash[1]] = [];
+        memory[memory_hash[2]] = [];
 }
 
 /*
@@ -3440,12 +3454,10 @@ function assembly_compiler()
         tag_instructions = {};
         pending_instructions = [];
         pending_tags = [];
-        memory[memory_hash[0]] = [];
         data_tag = [];
         instructions_binary =[];
-        memory[memory_hash[1]] = [];
+        crex_memory_clear() ;
         extern = [];
-        memory[memory_hash[2]] = [];
         data = [];
         executionInit = 1;
         mutexRead = false;
@@ -3545,13 +3557,11 @@ function assembly_compiler()
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
-                    memory[memory_hash[0]] = [];
                     data_tag = [];
                     instructions_binary = [];
-                    memory[memory_hash[1]] = [];
-                    memory[memory_hash[2]] = [];
                     data = [];
                     extern = [];
+                    crex_memory_clear() ;
 
                     return ret;
                   }
@@ -3568,13 +3578,11 @@ function assembly_compiler()
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
-                    memory[memory_hash[0]] = [];
                     data_tag = [];
                     instructions_binary = [];
-                    memory[memory_hash[1]] = [];
                     extern = [];
-                    memory[memory_hash[2]] = [];
                     data = [];
+                    crex_memory_clear() ;
 
                     return ret;
                   }
@@ -3733,11 +3741,9 @@ function assembly_compiler()
                 instructions = [];
                 pending_instructions = [];
                 pending_tags = [];
-                memory[memory_hash[0]] = [];
                 data_tag = [];
                 instructions_binary = [];
-                memory[memory_hash[1]] = [];
-                memory[memory_hash[2]] = [];
+                crex_memory_clear() ;
                 data = [];
                 extern = [];
                 return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -3801,11 +3807,9 @@ function assembly_compiler()
                 instructions = [];
                 pending_instructions = [];
                 pending_tags = [];
-                memory[memory_hash[0]] = [];
                 data_tag = [];
                 instructions_binary = [];
-                memory[memory_hash[1]] = [];
-                memory[memory_hash[2]] = [];
+                crex_memory_clear() ;
                 data = [];
                 extern = [];
                 return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -3863,11 +3867,9 @@ function assembly_compiler()
                 instructions = [];
                 pending_instructions = [];
                 pending_tags = [];
-                memory[memory_hash[0]] = [];
                 data_tag = [];
                 instructions_binary = [];
-                memory[memory_hash[1]] = [];
-                memory[memory_hash[2]] = [];
+                crex_memory_clear() ;
                 data = [];
                 extern = [];
                 return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -4005,12 +4007,10 @@ function assembly_compiler()
             instructions = [];
             pending_instructions = [];
             pending_tags = [];
-            memory[memory_hash[0]] = [];
             data_tag = [];
             instructions_binary = [];
-            memory[memory_hash[1]] = [];
             extern = [];
-            memory[memory_hash[2]] = [];
+            crex_memory_clear() ;
             data = [];
 
             return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
@@ -4024,12 +4024,10 @@ function assembly_compiler()
             instructions = [];
             pending_instructions = [];
             pending_tags = [];
-            memory[memory_hash[0]] = [];
             data_tag = [];
             instructions_binary = [];
-            memory[memory_hash[1]] = [];
             extern = [];
-            memory[memory_hash[2]] = [];
+            crex_memory_clear() ;
             data = [];
 
             return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
@@ -5432,12 +5430,10 @@ function code_segment_compiler()
                     instructions = [];
                     pending_instructions = [];
                     pending_tags = [];
-                    memory[memory_hash[0]] = [];
                     data_tag = [];
                     instructions_binary = [];
-                    memory[memory_hash[1]] = [];
                     extern = [];
-                    memory[memory_hash[2]] = [];
+                    crex_memory_clear() ;
                     data = [];
                  // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1,
                  //                        'error', "danger") ;
@@ -5456,12 +5452,10 @@ function code_segment_compiler()
               instructions = [];
               pending_instructions = [];
               pending_tags = [];
-              memory[memory_hash[0]] = [];
               data_tag = [];
               instructions_binary = [];
-              memory[memory_hash[1]] = [];
               extern = [];
-              memory[memory_hash[2]] = [];
+              crex_memory_clear() ;
               data = [];
 
               ret = packCompileError('m2', token, 'error', "danger");
@@ -5477,13 +5471,11 @@ function code_segment_compiler()
               instructions = [];
               pending_instructions = [];
               pending_tags = [];
-              memory[memory_hash[0]] = [];
               data_tag = [];
               instructions_binary = [];
-              memory[memory_hash[1]] = [];
               extern = [];
-              memory[memory_hash[2]] = [];
               data = [];
+              crex_memory_clear() ;
 
               //PRUEBA para dar error con mas detalle
               ret = packCompileError('m2', token, 'error', "danger");
@@ -5498,13 +5490,11 @@ function code_segment_compiler()
               instructions = [];
               pending_instructions = [];
               pending_tags = [];
-              memory[memory_hash[0]] = [];
               data_tag = [];
               instructions_binary = [];
-              memory[memory_hash[1]] = [];
               extern = [];
-              memory[memory_hash[2]] = [];
               data = [];
+              crex_memory_clear() ;
               ret = packCompileError('m24', "", 'error', "danger") ;
               return ret;
             }
