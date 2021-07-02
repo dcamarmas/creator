@@ -2868,7 +2868,7 @@ function crex_get_string_from_memory ( addr )
 function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
         // NEW
-        main_memory_write_bydatatype(addr, keystroke, "string") ;
+        main_memory_write_bydatatype(parseInt(addr), keystroke, "string") ;
 
         // OLD
 	var ret = {
