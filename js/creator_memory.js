@@ -23,11 +23,22 @@
  * Global variables *
  ********************/
 
-var main_memory = [] ;
-var main_memory_datatypes = {} ;
+var word_size_bits  = 32 ;
+    // TODO: load from architecture
 
-var word_size_bits  = 32 ;                 // TODO: load from architecture
-var word_size_bytes = word_size_bits / 8 ; // TODO: load from architecture
+var word_size_bytes = word_size_bits / 8 ;
+    // TODO: load from architecture
+
+var main_memory = [] ;
+    //  [
+    //    { addr: address, bin: "00", def_bin: "00", tag: null },
+    //    ...
+    //  ]
+
+var main_memory_datatypes = {} ;
+    //  {
+    //    { "type": type, "address": addr, "value": value, "default": "00" },
+    //  }
 
 
 //
@@ -111,16 +122,24 @@ function main_memory_get_addresses ( )
 
 function main_memory_reset ( )
 {
+	// reset memory
         var addrs = Object.keys(main_memory) ;
-
         for (var i=0; i<addrs.length; i++) {
              main_memory[addrs[i]].bin = main_memory[addrs[i]].def_bin ;
+        }
+
+	// reset datatypes
+        addrs = Object.keys(main_memory_datatypes) ;
+        for (var i=0; i<addrs.length; i++) {
+             main_memory_datatypes[addrs[i]].value = main_memory[addrs[i]].default ;
         }
 }
 
 function creator_memory_clear ( )
 {
+	// reset memory and datatypes
         main_memory = [] ;
+        main_memory_datatypes = {} ;
 }
 
 function main_memory_read ( addr )
@@ -147,9 +166,10 @@ function main_memory_read_value ( addr )
 	return main_memory_read (addr).bin ;
 }
 
-function main_memory_write_value ( addr, value ) // remember: addr is an integer and value is a string (hexadecimal)
+function main_memory_write_value ( addr, value ) // addr: integer,  value: string (hexadecimal)
 {
 	var value_obj = { addr: addr, bin: value, def_bin: "00", tag: null } ;
+
 	main_memory_write (addr, value_obj) ;
 }
 
@@ -221,6 +241,9 @@ function main_memory_write_bytype ( addr, value, type )
                      break;
 	}
 
+        // datatype
+        main_memory_datatypes[addr] = { "type": type, "address": addr, "value": value, "default": "00" } ;
+
 	return ret ;
 }
 
@@ -266,7 +289,7 @@ function main_memory_write_bydatatype ( addr, value, type )
                      break;
 
 		case 'string':
-	             var ch = '' ;
+	             var ch = 0 ;
 		     for (var i=0; i<value.length; i++) {
 			  ch = value.charCodeAt(i);
 			  main_memory_write_value(addr+i, ch) ;
@@ -276,7 +299,7 @@ function main_memory_write_bydatatype ( addr, value, type )
 	}
 
         // datatype
-        main_memory_datatypes[addr] = { "type": type, "address": addr, "value": value } ;
+        main_memory_datatypes[addr] = { "type": type, "address": addr, "value": value, "default": "00" } ;
 
 	return ret ;
 }
