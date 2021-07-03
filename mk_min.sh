@@ -53,6 +53,9 @@ cat js/creator_bigint.js \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
     components/simulator/creator_uielto_data_view_selector.js \
+    components/simulator/creator_uielto_register_int.js \
+    components/simulator/creator_uielto_register_float.js \
+    components/simulator/creator_uielto_register_double.js \
     components/simulator/creator_uielto_register_int_popover.js \
     components/simulator/creator_uielto_register_float_popover.js \
     components/simulator/creator_uielto_register_double_popover.js \

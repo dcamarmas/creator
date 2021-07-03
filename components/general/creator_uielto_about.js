@@ -47,7 +47,7 @@
                           '  author_alt="author_dcamarmas" ' +
                           '  author_full_name="Diego Camarmas Alonso" ' +
                           '  author_href_linked="https://www.linkedin.com/in/dcamarmas" ' +
-                          '  author_href_rgate="" ' +
+                          '  author_href_rgate="https://www.researchgate.net/profile/Diego-Camarmas-Alonso" ' +
                           '  author_href_github="https://github.com/dcamarmas" ' +
                           '></card-author>' +
                           '' +
