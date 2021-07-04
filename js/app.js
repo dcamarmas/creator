@@ -3345,10 +3345,19 @@ try
           return bin2hex(s) ;
       },
 
+
+
+
+
+
+      /*TODO: if is posible, include into component*/
       /*Popover functions*/
       popoverId(i){
           return 'popoverValueContent' + i;
       },
+
+
+
 
 
       //TODO: delete when all dependences are remove
@@ -3378,19 +3387,6 @@ try
           /* Google Analytics */
 	        creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
       },
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       //TODO: try to include in a component
       change_space_view(){
