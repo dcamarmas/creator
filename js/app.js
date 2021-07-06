@@ -3352,8 +3352,8 @@ try
 
       /*TODO: if is posible, include into component*/
       /*Popover functions*/
-      popoverId(i){
-          return 'popoverValueContent' + i;
+      popoverId(name){
+          return 'popoverValueContent' + name[0];
       },
 
 
