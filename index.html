@@ -3164,13 +3164,14 @@
                            v-for="item2 in architecture.components[item.index].elements" 
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
 
-                        <register-int :component="item"
-                                      :register="item2"
-                                      representation="dec">
-                        </register-int>
+                        <register :component="item"
+                                  :register="item2"
+                                  name_representation="logical"
+                                  value_representation="int-signed">
+                        </register>
 
                         <!--TODO: try to include it in the component-->
-                        <popover-register-int :target="popoverId(item2.name + 'Int')" 
+                        <popover-register-int :target="popoverId(item2.name)" 
                                               :component="item"
                                               :register="item2">
                         </popover-register-int>
@@ -3185,10 +3186,11 @@
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == false">
 
-                          <register-float :component="item"
-                                          :register="item2"
-                                          representation="dec">
-                          </register-float>
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="float">
+                          </register>
 
                           <!-- Register popover -->
                           <popover-register-float :target="popoverId(item2.name + 'FP')" 
@@ -3201,10 +3203,11 @@
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == true">
 
-                          <register-double  :component="item"
-                                            :register="item2"
-                                            representation="dec">
-                          </register-double>
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="double">
+                          </register>
 
                           <!--TODO: try to include it in the component-->
                           <popover-register-double :target="popoverId(item2.name + 'DFP')" 
@@ -3229,10 +3232,11 @@
                            v-for="item2 in architecture.components[item.index].elements" 
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
 
-                        <register-int :component="item"
-                                      :register="item2"
-                                      representation="hex">
-                        </register-int>
+                        <register :component="item"
+                                  :register="item2"
+                                  name_representation="logical"
+                                  value_representation="int-hex">
+                        </register>
 
                         <!--TODO: try to include it in the component-->
                         <popover-register-int :target="popoverId(item2.name)" 
@@ -3250,10 +3254,11 @@
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == false">
 
-                          <register-float :component="item"
-                                          :register="item2"
-                                          representation="hex">
-                          </register-float>
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="float-hex">
+                          </register>
 
                           <!--TODO: try to include it in the component-->
                           <popover-register-float :target="popoverId(item2.name)" 
@@ -3266,10 +3271,11 @@
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == true">
 
-                          <register-double  :component="item"
-                                            :register="item2"
-                                            representation="hex">
-                          </register-double>
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="double-hex">
+                          </register>
 
                           <!--TODO: try to include it in the component-->
                           <popover-register-double :target="popoverId(item2.name)" 
