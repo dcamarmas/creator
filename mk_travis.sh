@@ -14,11 +14,11 @@ do
 done
 
 echo " MIPS common errors:"
-MIPS_TEST="1 2 3 4 5 6 7 8 9 10 11"
+MIPS_TEST="1 2 3 4 5 6 7 8 9 10 11 31 32 33 34 35 36 37 38 39 40 41 46"
 for I in $MIPS_TEST;
 do
   echo " * ./MIPS/error/error$I... "
-  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/error/error$I.txt -o min > ./travis/MIPS/error/error$I.output
+  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/error/error-$I.txt -o min > ./travis/MIPS/error/error-$I.output
 done
 
 
