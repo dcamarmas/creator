@@ -3163,68 +3163,53 @@
                       <div class="col-lg-3 col-sm-4 buttons" 
                            v-for="item2 in architecture.components[item.index].elements" 
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
-                                  :id="popoverId(item2.name + 'Int')" 
-                                  onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-                          <span class="text-truncate">{{item2.name[0]}}</span> 
-                          <b-badge class="regValue registerValue" 
-                                   v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 1">
-                            {{parseInt(item2.value.toString(10))-0x100000000}}
-                          </b-badge>
 
-                           <b-badge class="regValue registerValue" 
-                                    v-if="(((item2.value).toString(2)).padStart(item2.nbits, '0')).charAt(0) == 0">
-                            {{(item2.value).toString(10)}}
-                          </b-badge>
-                        </b-button>
+                        <register :component="item"
+                                  :register="item2"
+                                  name_representation="logical"
+                                  value_representation="int-signed">
+                        </register>
 
-                        <!-- Register popover -->
-                        <popover-register-int :target="popoverId(item2.name + 'Int')" 
+                        <!--TODO: try to include it in the component-->
+                        <popover-register-int :target="popoverId(item2.name)" 
                                               :component="item"
                                               :register="item2">
                         </popover-register-int>
 
-        
                       </div>
 
                       <div class="col-lg-3 col-sm-4 buttons" 
                            v-for="item2 in architecture.components[item.index].elements" 
                            v-if="architecture.components[item.index].type == 'floating point'">
+
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == false">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
-                                    :id="popoverId(item2.name + 'FP')" 
-                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-                            <span class="text-truncate">{{item2.name[0]}}</span>  
-                            <b-badge class="registerValue">
-                              {{item2.value}}
-                            </b-badge>
-                          </b-button>
+
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="float">
+                          </register>
 
                           <!-- Register popover -->
                           <popover-register-float :target="popoverId(item2.name + 'FP')" 
                                                   :component="item"
                                                   :register="item2">
                           </popover-register-float>
-
                         </div>
 
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == true">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
-                                    :id="popoverId(item2.name + 'DFP')" 
-                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-                            <span class="text-truncate">
-                              {{item2.name[0]}}
-                            </span>  
-                            <b-badge class="registerValue" >
-                              {{item2.value}}
-                            </b-badge>
-                          </b-button>
 
-                          <!-- Register popover -->
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="double">
+                          </register>
+
+                          <!--TODO: try to include it in the component-->
                           <popover-register-double :target="popoverId(item2.name + 'DFP')" 
                                                    :component="item"
                                                    :register="item2">
@@ -3246,17 +3231,14 @@
                       <div class="col-lg-3 col-sm-4 buttons" 
                            v-for="item2 in architecture.components[item.index].elements" 
                            v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-                        <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
-                                  :id="popoverId(item2.name)" 
-                                  onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-                          <span class="text-truncate">{{item2.name[0]}}</span>  
-                          <b-badge class="registerValue" 
-                                    class="regValue">
-                            {{(((item2.value).toString(16)).padStart(item2.nbits/4, "0")).toUpperCase()}}
-                          </b-badge>
-                        </b-button>
 
-                        <!-- Register popover -->
+                        <register :component="item"
+                                  :register="item2"
+                                  name_representation="logical"
+                                  value_representation="int-hex">
+                        </register>
+
+                        <!--TODO: try to include it in the component-->
                         <popover-register-int :target="popoverId(item2.name)" 
                                               :component="item"
                                               :register="item2">
@@ -3271,18 +3253,14 @@
                         <!-- Simple floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == false">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
-                                    :id="popoverId(item2.name)" 
-                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-                            <span class="text-truncate">
-                              {{item2.name[0]}}
-                            </span> 
-                            <b-badge class="registerValue" >
-                              {{bin2hex(float2bin(item2.value))}}
-                            </b-badge>
-                          </b-button>
 
-                          <!-- Register popover -->
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="float-hex">
+                          </register>
+
+                          <!--TODO: try to include it in the component-->
                           <popover-register-float :target="popoverId(item2.name)" 
                                                   :component="item"
                                                   :register="item2">
@@ -3292,21 +3270,18 @@
                         <!-- Double floating point registers -->
                         <div class="col-lg-12 col-sm-12 nopadding h-100" 
                              v-if="architecture.components[item.index].double_precision == true">
-                          <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" 
-                                    :id="popoverId(item2.name)" 
-                                    onclick="creator_ga('send', 'event', 'data', 'data.view', 'data.view.registers_details');">
-                            <span class="text-truncate">{{item2.name[0]}}</span> 
-                            <b-badge class="registerValue">
-                              {{bin2hex(double2bin(item2.value))}}
-                            </b-badge>
-                          </b-button>
 
-                          <!-- Register popover -->
+                          <register :component="item"
+                                    :register="item2"
+                                    name_representation="logical"
+                                    value_representation="double-hex">
+                          </register>
+
+                          <!--TODO: try to include it in the component-->
                           <popover-register-double :target="popoverId(item2.name)" 
                                                    :component="item"
                                                    :register="item2">
                           </popover-register-double>
-                          
                         </div> 
                       </div>
                     </div>
