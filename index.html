@@ -3137,203 +3137,108 @@
             <data-view-selector :name_reg="name_reg" :reg_type="reg_type"></data-view-selector>
 
 
-
-
-
-
-
-
-
-
-
-
-
-            <!-- TODO: register component -->
+            <!-- TODO: register file component -->
             <!-- Registers view -->
             <div class="col-lg-12 col-sm-12 px-0" id="registers" v-if="data_mode == 'registers'">
-              <b-tabs content-class="mt-3">
+              <b-container>
+                <b-row>
+                  <b-col cols="auto">
+                    <b-form-group label="Register value representation:" v-slot="{ ariaDescribedby }">
+                      <b-form-radio-group
+                        id="btn-radios-1"
+                        v-model="reg_representation"
+                        :options="reg_representation_options"
+                        button-variant="outline-secondary"
+                        size="sm"
+                        :aria-describedby="ariaDescribedby"
+                        name="radios-btn-default"
+                        buttons
+                      ></b-form-radio-group>
+                    </b-form-group>
+                  </b-col>
 
-                <!-- Decimal view -->
-                <b-tab :title="name_tab_Reg" active>
-                  <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
-                    <div class="col-lg-12 col-sm-12 buttons row mb-2" 
-                          v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
-                      
-                      <!-- Control and integer registers -->
-                      <div class="col-lg-3 col-sm-4 buttons" 
-                           v-for="item2 in architecture.components[item.index].elements" 
-                           v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
+                  <b-col cols="auto" align-h="end">
+                    <b-form-group label="Register name representation:" v-slot="{ ariaDescribedby }">
+                      <b-form-radio-group
+                        id="btn-radios-2"
+                        v-model="reg_name_representation"
+                        :options="reg_name_representation_options"
+                        button-variant="outline-secondary"
+                        size="sm"
+                        :aria-describedby="ariaDescribedby"
+                        name="radios-btn-default"
+                        buttons
+                      ></b-form-radio-group>
+                    </b-form-group>
+                  </b-col>
+                </b-row>
+              </b-container>
+              
 
-                        <register :component="item"
-                                  :register="item2"
-                                  name_representation="logical"
-                                  value_representation="int-signed">
-                        </register>
+              <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
+                <div class="col-lg-12 col-sm-12 buttons row mb-2" 
+                      v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
+                  
+                  <!-- Control and integer registers -->
+                  <div class="col-lg-3 col-sm-4 buttons" 
+                       v-for="item2 in architecture.components[item.index].elements" 
+                       v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
 
-                        <!--TODO: try to include it in the component-->
-                        <popover-register-int :target="popoverId(item2.name)" 
+                    <register :component="item"
+                              :register="item2"
+                              :name_representation="reg_name_representation"
+                              :value_representation="reg_representation">
+                    </register>
+
+                    <!--TODO: try to include it in the component-->
+                    <popover-register-int :target="popoverId(item2.name)" 
+                                          :component="item"
+                                          :register="item2">
+                    </popover-register-int>
+
+                  </div>
+
+                  <div class="col-lg-3 col-sm-4 buttons" 
+                       v-for="item2 in architecture.components[item.index].elements" 
+                       v-if="architecture.components[item.index].type == 'floating point'">
+
+                    <!-- Simple floating point registers -->
+                    <div class="col-lg-12 col-sm-12 nopadding h-100" 
+                         v-if="architecture.components[item.index].double_precision == false">
+
+                      <register :component="item"
+                                :register="item2"
+                                :name_representation="reg_name_representation"
+                                :value_representation="reg_representation">
+                      </register>
+
+                      <!-- Register popover -->
+                      <popover-register-float :target="popoverId(item2.name)" 
                                               :component="item"
                                               :register="item2">
-                        </popover-register-int>
-
-                      </div>
-
-                      <div class="col-lg-3 col-sm-4 buttons" 
-                           v-for="item2 in architecture.components[item.index].elements" 
-                           v-if="architecture.components[item.index].type == 'floating point'">
-
-                        <!-- Simple floating point registers -->
-                        <div class="col-lg-12 col-sm-12 nopadding h-100" 
-                             v-if="architecture.components[item.index].double_precision == false">
-
-                          <register :component="item"
-                                    :register="item2"
-                                    name_representation="logical"
-                                    value_representation="float">
-                          </register>
-
-                          <!-- Register popover -->
-                          <popover-register-float :target="popoverId(item2.name + 'FP')" 
-                                                  :component="item"
-                                                  :register="item2">
-                          </popover-register-float>
-                        </div>
-
-                        <!-- Double floating point registers -->
-                        <div class="col-lg-12 col-sm-12 nopadding h-100" 
-                             v-if="architecture.components[item.index].double_precision == true">
-
-                          <register :component="item"
-                                    :register="item2"
-                                    name_representation="logical"
-                                    value_representation="double">
-                          </register>
-
-                          <!--TODO: try to include it in the component-->
-                          <popover-register-double :target="popoverId(item2.name + 'DFP')" 
-                                                   :component="item"
-                                                   :register="item2">
-                          </popover-register-double>
-
-                        </div> 
-                      </div>
+                      </popover-register-float>
                     </div>
+
+                    <!-- Double floating point registers -->
+                    <div class="col-lg-12 col-sm-12 nopadding h-100" 
+                         v-if="architecture.components[item.index].double_precision == true">
+
+                      <register :component="item"
+                                :register="item2"
+                                :name_representation="reg_name_representation"
+                                :value_representation="reg_representation">
+                      </register>
+
+                      <!--TODO: try to include it in the component-->
+                      <popover-register-double :target="popoverId(item2.name)" 
+                                               :component="item"
+                                               :register="item2">
+                      </popover-register-double>
+                    </div> 
                   </div>
-                </b-tab>
-
-                <!-- Hexadecimal view -->
-                <b-tab title="Hexadecimal">
-                  <div class="col-lg-12 col-sm-12 nopadding" v-for="item in architecture_hash">
-                    <div class="col-lg-12 col-sm-12 buttons row mb-2" 
-                         v-if="(register_type == architecture.components[item.index].type) || (register_type == 'integer' && architecture.components[item.index].type == 'control')">
-
-                    <!-- Control and integer registers -->
-                      <div class="col-lg-3 col-sm-4 buttons" 
-                           v-for="item2 in architecture.components[item.index].elements" 
-                           v-if="(architecture.components[item.index].type == 'integer') || (architecture.components[item.index].type == 'control')">
-
-                        <register :component="item"
-                                  :register="item2"
-                                  name_representation="logical"
-                                  value_representation="int-hex">
-                        </register>
-
-                        <!--TODO: try to include it in the component-->
-                        <popover-register-int :target="popoverId(item2.name)" 
-                                              :component="item"
-                                              :register="item2">
-                        </popover-register-int>
-
-                      </div>
-
-                      <div class="col-lg-3 col-sm-4 buttons" 
-                           v-for="item2 in architecture.components[item.index].elements" 
-                           v-if="architecture.components[item.index].type == 'floating point'">
-
-                        <!-- Simple floating point registers -->
-                        <div class="col-lg-12 col-sm-12 nopadding h-100" 
-                             v-if="architecture.components[item.index].double_precision == false">
-
-                          <register :component="item"
-                                    :register="item2"
-                                    name_representation="logical"
-                                    value_representation="float-hex">
-                          </register>
-
-                          <!--TODO: try to include it in the component-->
-                          <popover-register-float :target="popoverId(item2.name)" 
-                                                  :component="item"
-                                                  :register="item2">
-                          </popover-register-float>
-                        </div>
-
-                        <!-- Double floating point registers -->
-                        <div class="col-lg-12 col-sm-12 nopadding h-100" 
-                             v-if="architecture.components[item.index].double_precision == true">
-
-                          <register :component="item"
-                                    :register="item2"
-                                    name_representation="logical"
-                                    value_representation="double-hex">
-                          </register>
-
-                          <!--TODO: try to include it in the component-->
-                          <popover-register-double :target="popoverId(item2.name)" 
-                                                   :component="item"
-                                                   :register="item2">
-                          </popover-register-double>
-                        </div> 
-                      </div>
-                    </div>
-                  </div>
-                </b-tab>
-              </b-tabs>
+                </div>
+              </div>
             </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
             <!-- Memory view-->
