@@ -341,6 +341,25 @@ try
 
 
 
+      reg_representation: "signed",
+      reg_representation_options: [
+          { text: 'Signed', value: 'signed' },
+          { text: 'Unsigned', value: 'unsigned' },
+          { text: 'IEEE 754', value: 'decimal'},
+          { text: 'Hexadecimal', value: 'hex' }
+        ],
+
+      reg_name_representation: "logical",
+      reg_name_representation_options: [
+          { text: 'Name', value: 'logical' },
+          { text: 'Alias', value: 'alias' },
+          { text: 'All', value: 'all'}
+        ],
+
+
+
+
+
 
 
       /*Memory*/
@@ -3355,6 +3374,8 @@ try
       popoverId(name){
           return 'popoverValueContent' + name[0];
       },
+
+
 
 
 
