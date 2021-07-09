@@ -341,6 +341,25 @@ try
 
 
 
+      reg_representation: "signed",
+      reg_representation_options: [
+          { text: 'Signed', value: 'signed' },
+          { text: 'Unsigned', value: 'unsigned' },
+          { text: 'IEEE 754', value: 'decimal'},
+          { text: 'Hexadecimal', value: 'hex' }
+        ],
+
+      reg_name_representation: "logical",
+      reg_name_representation_options: [
+          { text: 'Name', value: 'logical' },
+          { text: 'Alias', value: 'alias' },
+          { text: 'All', value: 'all'}
+        ],
+
+
+
+
+
 
 
       /*Memory*/
@@ -3345,10 +3364,21 @@ try
           return bin2hex(s) ;
       },
 
+
+
+
+
+
+      /*TODO: if is posible, include into component*/
       /*Popover functions*/
-      popoverId(i){
-          return 'popoverValueContent' + i;
+      popoverId(name){
+          return 'popoverValueContent' + name[0];
       },
+
+
+
+
+
 
 
       //TODO: delete when all dependences are remove
@@ -3378,19 +3408,6 @@ try
           /* Google Analytics */
 	        creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
       },
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       //TODO: try to include in a component
       change_space_view(){
