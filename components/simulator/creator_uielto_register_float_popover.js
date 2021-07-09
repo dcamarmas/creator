@@ -175,7 +175,7 @@
 											'        </td>' +
 											'      </tr>' +
 											'      <tr>' +
-											'        <td>Float</td>' +
+											'        <td>IEEE 754</td>' +
 											'        <td>' +
 											'          <b-badge class="registerPopover">' +
 											'            {{register.value}}' +

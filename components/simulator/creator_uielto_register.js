@@ -40,33 +40,44 @@
 							      	var ret = 0;
 
 							      	switch(this.value_representation){
-							      		case "int-unsigned":
+							      		case "unsigned":
 							      			ret = parseInt(register.value.toString(10)) >>> 0;
 							      			break;
 
-							      		case "int-signed":
-							      			if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1)
-							      				ret = parseInt(register.value.toString(10))-0x100000000;
-							      			if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 0)
-							      				ret = (register.value).toString(10);
+							      		case "signed":
+							      			if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+								      			if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1)
+								      				ret = parseInt(register.value.toString(10))-0x100000000;
+								      			if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 0)
+								      				ret = (register.value).toString(10);
+								      		}
+								      		else {
+								      			ret = parseInt(register.value.toString(), 10) >> 0;
+								      		}
+								      		break;
+
+												case "decimal":
+													if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+														ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
+													}
+													else {
+														ret = register.value;
+													}
+													break;
+
+												case "hex":
+													if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+														ret = (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
+													}
+													else {
+														if (this.component.name == "Simple floating point registers") {
+															ret = bin2hex(float2bin(register.value));
+														}
+														else {
+															ret = bin2hex(double2bin(register.value));
+														}
+													}					
 							      			break;
-
-												case "float":
-												case "double":
-													ret = register.value;
-													break;
-
-												case "int-hex":
-													ret = (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
-													break;
-
-												case "float-hex":
-													ret = bin2hex(float2bin(register.value));
-													break;
-
-												case "double-hex":
-													ret = bin2hex(double2bin(register.value));
-													break;
 							      	}
 
 							      	ret = ret.toString();
