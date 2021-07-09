@@ -189,7 +189,7 @@
 											'        </td>' +
 											'      </tr>' +
 											'      <tr>' +
-											'        <td>Float</td>' +
+											'        <td>IEEE 754</td>' +
 											'        <td>' +
 											'          <b-badge class="registerPopover">' +
 											'            {{hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")))}}' +
