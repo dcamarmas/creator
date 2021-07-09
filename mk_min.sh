@@ -26,6 +26,8 @@ cat js/creator_bigint.js \
     js/creator_sentinel.js \
     js/creator_definition_api.js \
     \
+    js/creator_registerfile.js \
+    js/creator_memory.js \
     js/creator_compiler.js \
     js/creator_executor.js \
     \
@@ -51,6 +53,7 @@ cat js/creator_bigint.js \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
     components/simulator/creator_uielto_data_view_selector.js \
+    components/simulator/creator_uielto_register.js \
     components/simulator/creator_uielto_register_int_popover.js \
     components/simulator/creator_uielto_register_float_popover.js \
     components/simulator/creator_uielto_register_double_popover.js \
@@ -76,6 +79,8 @@ cat js/creator_bigint.js \
     js/creator_definition_api.js \
     js/creator_track_stack.js \
     \
+    js/creator_registerfile.js \
+    js/creator_memory.js \
     js/creator_compiler.js \
     js/creator_executor.js \
     \
