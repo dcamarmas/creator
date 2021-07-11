@@ -1264,6 +1264,6 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
         }
 
-        return true ;
+        return '' ;
 }
 

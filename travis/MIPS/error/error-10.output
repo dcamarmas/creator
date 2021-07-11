@@ -1,12 +1,5 @@
 
-
-Error at line 14 (max):
-Immediate number 'max' is too big
-
-  13 .text
-->14 	main: 		la $t2 max
-  15 			li $t1 0
-
+TypeError: compileError[err_code] is not a function
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
 

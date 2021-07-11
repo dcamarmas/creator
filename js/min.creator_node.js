@@ -3148,7 +3148,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
         }
 
-        return true ;
+        return '' ;
 }
 
 /*
@@ -5263,7 +5263,7 @@ function data_segment_compiler()
 }
 
 /* Stores a data in data memory */
-function data_compiler(value, size, dataLabel, DefValue, type)
+function data_compiler ( value, size, dataLabel, DefValue, type )
 {
 	var ret = {
           errorcode: "",
@@ -5273,7 +5273,10 @@ function data_compiler(value, size, dataLabel, DefValue, type)
           status: "ok"
         } ;
 
-        crex_memory_data_compiler(value, size, dataLabel, DefValue, type) ;
+        var r = crex_memory_data_compiler(value, size, dataLabel, DefValue, type) ;
+        if (r != "") {
+            return packCompileError(r, "", 'error', "danger") ;
+        }
 
         return ret;
 }
