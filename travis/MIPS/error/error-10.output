@@ -1,11 +1,11 @@
 
 
-Error at line 11:
-The data must be aligned
+Error at line 14 (max):
+Immediate number 'max' is too big
 
-  10     .byte 2
-->11 	max: .word 1
-  12 
+  13 .text
+->14 	main: 		la $t2 max
+  15 			li $t1 0
 
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
