@@ -1213,8 +1213,8 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
             }
           }
 
-          if(data_address % size != 0 && i == 0){
-            return packCompileError('m21', "", 'error', "danger") ;
+          if (data_address % size != 0 && i == 0) {
+              return 'm21' ;
           }
 
           if(data_address % 4 == 0){
