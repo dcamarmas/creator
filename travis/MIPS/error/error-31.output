@@ -1,5 +1,11 @@
 
-Error: ENOENT: no such file or directory, open './travis/MIPS/error/error-31.txt'
+
+Error at line 11 (A):
+Repeated tag: A
+
+  10     a:		.byte -1
+->11 	A:		.half 23
+
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
 
