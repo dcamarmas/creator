@@ -1,5 +1,11 @@
 
-Error: ENOENT: no such file or directory, open './travis/MIPS/error/error-34.txt'
+
+Error at line 14 (s50):
+Register 's50' not found
+
+  13 main:
+->14 	add $t0 $t1 $s50
+
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
 
