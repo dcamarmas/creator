@@ -1,3 +1,5 @@
 
-cr[PC]:0x4; ir[t0,8]:0x242; keyboard[0x0]:''; display[0x0]:''; 
+TypeError: compileError[err_code] is not a function
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
 
