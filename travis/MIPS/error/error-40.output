@@ -1,5 +1,11 @@
 
-Error: ENOENT: no such file or directory, open './travis/MIPS/error/error-40.txt'
+
+Error at line 11 (.directive):
+Invalid directive: .directive
+
+  10  	.align 2
+->11     example:	.directive 221
+
 Not executed
 keyboard[0x0]:''; display[0x0]:''; 
 

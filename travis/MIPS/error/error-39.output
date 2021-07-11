@@ -1,5 +1,6 @@
 
-Error: ENOENT: no such file or directory, open './travis/MIPS/error/error-39.txt'
-Not executed
+
+ Error found.
+ No instructions in memory
 keyboard[0x0]:''; display[0x0]:''; 
 
