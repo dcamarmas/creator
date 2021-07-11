@@ -281,22 +281,45 @@ function main_memory_write_bydatatype ( addr, value, type )
         // store byte to byte...
 	switch (type)
         {
+                case 'byte':
+		     ret = main_memory_write_nbytes(addr, value, 1) ;
+                     break;
+
+                case 'half_word':
+		     ret = main_memory_write_nbytes(addr, value, word_size_bytes / 2) ;
+                     break;
+
 		case 'integer':
 		case 'float':
+                case 'word':
 		     ret = main_memory_write_nbytes(addr, value, word_size_bytes) ;
                      break;
 
 		case 'double':
+                case 'double_word':
 		     ret = main_memory_write_nbytes(addr, value, word_size_bytes * 2) ;
                      break;
 
 		case 'string':
+                case 'ascii_null_end':
 	             var ch = 0 ;
 		     for (var i=0; i<value.length; i++) {
 			  ch = value.charCodeAt(i);
 			  main_memory_write_value(addr+i, ch) ;
 		     }
 		     main_memory_write_value(addr+value.length, 0x0) ;
+                     break;
+
+                case 'ascii_not_null_end':
+	             var ch = 0 ;
+		     for (var i=0; i<value.length; i++) {
+			  ch = value.charCodeAt(i);
+			  main_memory_write_value(addr+i, ch) ;
+		     }
+                     break;
+
+                case 'space':
+		     // TODO
                      break;
 	}
 
@@ -1187,9 +1210,10 @@ function crex_memory_clear ( )
 function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
         // NEW
-        //var algn = creator_memory_alignelto(data_address, size) ;
-        //main_memory_write_bydatatype(algn.new_addr, value, type) ; // TOCHECK type in memory == in compiler
-        //creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
+        var algn = creator_memory_alignelto(data_address, size) ;
+        main_memory_write_bydatatype(algn.new_addr, value, type) ;
+        creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
+        // data_address = data_address + algn.new_size ;
 
         // OLD
         for (var i = 0; i < (value.length/2); i++)
