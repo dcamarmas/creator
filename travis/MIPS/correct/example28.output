@@ -1,1 +1,0 @@
-cr[PC]:0xc; ir[v0,2]:0x7; sfpr[f0]:0x7FF80000; sfpr[f2]:0x7FF80000; dfpr[FP0]:0x7FF8000000000000; dfpr[FP2]:0x7FF8000000000000; keyboard[0x0]:'%20NaN'; display[0x0]:''; 
