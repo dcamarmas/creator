@@ -142,16 +142,35 @@ function main_memory_prereset ( )
 {
         var i = 0;
 
-	// reset memory
+	// prereset main memory
         var addrs = main_memory_get_addresses() ;
         for (i=0; i<addrs.length; i++) {
              main_memory[addrs[i]].def_bin = main_memory[addrs[i]].bin ;
         }
 
-	// reset datatypes
+	// prereset datatypes
         addrs = main_memory_datatype_get_addresses() ;
         for (i=0; i<addrs.length; i++) {
              main_memory_datatypes[addrs[i]].default = main_memory_datatypes[addrs[i]].value ;
+        }
+}
+
+function main_memory_consolelog ( )
+{
+        var i = 0;
+
+	// show main memory
+        console.log(' ~~~ main memory ~~~~~~~~~~~~~~') ;
+        var addrs = main_memory_get_addresses() ;
+        for (i=0; i<addrs.length; i++) {
+             console.log(JSON.stringify(main_memory[addrs[i]])) ;
+        }
+
+	// show datatypes
+        console.log(' ~~~ datatypes ~~~~~~~~~~~~~~') ;
+        addrs = main_memory_datatype_get_addresses() ;
+        for (i=0; i<addrs.length; i++) {
+             console.log(JSON.stringify(main_memory_datatypes[addrs[i]])) ;
         }
 }
 
