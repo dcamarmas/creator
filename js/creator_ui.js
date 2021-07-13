@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2019 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -19,59 +19,79 @@
  */
 
 
-  /*
-   * Notifications
-   */
-
-  function show_notification ( msg, type ) 
+  function show_notification ( msg, type )
   {
-    // show notification
-    app._data.alertMessage = msg ;
-    app._data.type         = type ;
-    app.$bvToast.toast(app._data.alertMessage, {
-      variant: app._data.type,
-      solid: true,
-      toaster: "b-toaster-top-center",
-      autoHideDelay: app._data.notificationTime,
-    });
+     // show notification
+     app._data.alertMessage = msg ;
+     app._data.type         = type ;
+     app.$bvToast.toast(app._data.alertMessage, {
+        variant: app._data.type,
+        solid: true,
+        toaster: "b-toaster-top-center",
+        autoHideDelay: app._data.notificationTime,
+     }) ;
 
-    // add notification to the notification summary
-    var date = new Date();
-    notifications.push({ mess: app._data.alertMessage, 
-                         color: app._data.type, 
-                         time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(), 
-                         date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }); 
-    return true ;
+     // add notification to the notification summary
+     var date = new Date() ;
+     notifications.push({ mess: app._data.alertMessage,
+                          color: app._data.type,
+                          time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(),
+                          date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }) ;
+
+     return true ;
   }
 
 
   /*
-   * Loading...
+   *  Loading
    */
 
-  var toHandler = null;
+  function show_loading()
+  {
+     // if loading is programmed, skip
+     if (toHandler != null) {
+         return ;
+     }
 
-  function show_loading(){
-    // if loading is programmed, skip
-    if(toHandler != null){
-      return;
-    }
-
-    // after half second show the loading spinner 
-    toHandler = setTimeout(function(){
-      $(".loading").show();
-      toHandler = null;
-    }, 500);
+     // after half second show the loading spinner
+     toHandler = setTimeout(function(){
+ 			       $("#loading").show() ;
+			       toHandler = null ;
+			    }, 500) ;
   }
 
-  function hide_loading(){
-    // if loading is programmed, cancel it
-    if(toHandler != null){
-      clearTimeout(toHandler);
-      toHandler = null;
-    }
+  function hide_loading ( )
+  {
+      // if loading is programmed, cancel it
+      if (toHandler != null) {
+          clearTimeout(toHandler);
+          toHandler = null;
+      }
 
-    // disable loading spinner
-    $(".loading").hide();
+      // disable loading spinner
+      $("#loading").hide();
+  }
+
+
+  /*
+   *  Glowing
+   */
+
+  function btn_glow ( btn_name, post_label )
+  {
+	var buttonDec = '#popoverValueContent' + btn_name + post_label ;
+	var buttonHex = '#popoverValueContent' + btn_name;
+
+	        $(buttonDec).attr("style", "background-color:#c2c2c2;");
+	        $(buttonHex).attr("style", "background-color:#c2c2c2;");
+	    //  $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+	    //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+
+	setTimeout(function() {
+		$(buttonDec).attr("style", "background-color:#f5f5f5;");
+		$(buttonHex).attr("style", "background-color:#f5f5f5;");
+	    //	$(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+	    //	$(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+	}, 500);
   }
 

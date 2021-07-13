@@ -1,0 +1,12 @@
+
+
+Error at line 13 (max1):
+Immediate number 'max1' is too big
+
+  12 .text
+->13 	main: 		la $t2 max1
+  14 			li $t1 0
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

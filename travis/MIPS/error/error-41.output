@@ -1,0 +1,12 @@
+
+
+Error at line 15 (&767):
+Invalid value '&767' as number.
+
+  14  	.align 2
+->15     example:	.word &767
+  16 
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

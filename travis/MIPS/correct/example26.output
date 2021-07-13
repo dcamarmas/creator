@@ -1,0 +1,1 @@
+cr[PC]:0x40; ir[at,1]:0x200020; ir[v0,2]:0xb; ir[a0,4]:0xa; keyboard[0x0]:''; display[0x0]:'First%20StringSecond%20Stringa%0A'; 

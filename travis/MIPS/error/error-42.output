@@ -1,0 +1,12 @@
+
+
+Error at line 11:
+The string of characters must start with "
+
+  10  	.align 2
+->11     example:	.ascii 'Hola que tal'
+  12 
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+
