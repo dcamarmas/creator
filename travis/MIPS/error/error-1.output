@@ -1,0 +1,12 @@
+
+
+Error at line 9:
+The string of characters must start with "
+
+  8 .data
+->9         str: .asciiz Bad string"
+  10 	max: .byte 10
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

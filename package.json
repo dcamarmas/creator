@@ -2,13 +2,17 @@
   "name": "creator-travisci",
   "description": "Check CREATOR",
   "author": "dcamarma@inf.uc3m.es",
-  "version": "1.3.1",
-  "devDependencies": {
-    "jshint": "^2.6.0"
-  },
+  "version": "3.0",
   "scripts": {
-    "test-creator-node":   "./mk_test.sh"
+    "test-creator-node": "./travis_run.sh",
+    "build-creator-web": "./mk_min.sh",
+    "build-creator-node": "./mk_min.sh"
   },
   "dependencies": {
+    "colors": "^1.4.0",
+    "jshint": "^2.13.0",
+    "readline-sync": "^1.4.10",
+    "terser": "^5.7.1",
+    "yargs": "^17.0.1"
   }
 }

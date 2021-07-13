@@ -1,0 +1,12 @@
+
+
+Error at line 13 (la $rd addr):
+Incorrect instruction syntax for 'la $rd addr'
+
+  12 .text
+->13 	main: 		la t2 max
+  14 			li $t1 0
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

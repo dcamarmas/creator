@@ -1,0 +1,12 @@
+
+
+Error at line 13 (lx):
+Instruction 'lx' not found
+
+  12 .text
+->13 	main: 		lx $t0 max
+  14 			li $t1 0
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
+

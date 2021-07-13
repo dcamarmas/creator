@@ -1,0 +1,23 @@
+[
+  {
+    "name": "MIPS Examples",
+    "id": "default",
+    "architecture":"MIPS-32-like",
+    "url":"examples/MIPS/list.json",
+    "description": "MIPS default examples"
+  },
+  {
+    "name": "RISC-V Examples",
+    "id": "default_rv",
+    "architecture":"RISC-V-like",
+    "url":"examples/RISCV/list.json",
+    "description": "RISC-V examples"
+  },
+  {
+    "name": "MIPS from UC3M-OCW",
+    "id": "uc3m-ec",
+    "architecture":"MIPS-32-like",
+    "url":"examples/ocw-uc3m-ec/list.json",
+    "description": "MIPS examples from UC3M course"
+  }
+]
