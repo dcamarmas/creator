@@ -437,6 +437,27 @@ function creator_memory_alloc ( new_size )
 	return algn.new_addr ;
 }
 
+function creator_memory_findaddress_bytag ( tag )
+{
+        var ret = {
+	             exit:  0,
+	             value: 0
+	          } ;
+
+	// find main memory by tag
+        var addrs = main_memory_get_addresses() ;
+        for (var i=0; i<addrs.length; i++)
+	{
+             if (main_memory[addrs[i]].tag == tag)
+	     {
+	         ret.exit  = 1 ;
+	         ret.value = parseInt(addrs[i]) ;
+	     }
+        }
+
+        return ret ;
+}
+
 
 /**********************************************
  *
@@ -1342,5 +1363,61 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
         }
 
         return '' ;
+}
+
+function creator_memory_findbytag ( tag )
+{
+        // NEW
+        creator_memory_findaddress_bytag(tag) ;  // TODO: return creator_memory_findaddress_bytag(tag) ;
+
+        // OLD
+        var ret = {
+	             exit: 0,
+	             value: 0
+	          } ;
+
+        //Search tag in data segment
+        for (var z = 0; z < memory[memory_hash[0]].length && ret.exit == 0; z++)
+        {
+          for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && ret.exit == 0; p++)
+          {
+            if (tag == memory[memory_hash[0]][z].Binary[p].Tag)
+	    {
+                ret.exit  = 1;
+                ret.value = parseInt(memory[memory_hash[0]][z].Address, 10);
+	        return ret ;
+            }
+          }
+        }
+
+        //Search tag in text segment
+        for (var z = 0; z < memory[memory_hash[1]].length && ret.exit == 0; z++)
+        {
+          for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && ret.exit == 0; p++)
+	  {
+            if (tag == memory[memory_hash[1]][z].Binary[p].Tag)
+	    {
+                ret.exit  = 1;
+                ret.value = parseInt(memory[memory_hash[1]][z].Address, 10);
+	        return ret ;
+            }
+          }
+        }
+
+        return ret ;
+}
+
+function creator_memory_copytoapp ( hash_index )
+{
+        // NEW
+        if (typeof app !== "undefined") {
+            //app._data.main_memory          = main_memory ;           // TODO
+            //app._data.main_memory_datatype = main_memory_datatype ;  // TODO
+	}
+
+        // OLD
+        if (typeof app !== "undefined") {
+            app._data.memory[memory_hash[hash_index]] = memory[memory_hash[hash_index]] ;
+	}
 }
 
