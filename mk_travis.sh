@@ -6,19 +6,19 @@
 #
 
 echo " MIPS examples:"
-MIPS_TEST="2 3 4 5 6 7 8 11 12 20 21 23 24 25 26 30 31"
+MIPS_TEST="002 003 004 005 006 007 008 011 012 020 021 023 024 025 026 030 031"
 for I in $MIPS_TEST;
 do
   echo " * ./MIPS/correct/example$I... "
-  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/correct/example$I.txt -o min | grep "PC" > ./travis/MIPS/correct/example$I.output
+  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/correct/test-mips-$I.s -o min | grep "PC" > ./travis/MIPS/correct/test-mips-$I.out
 done
 
 echo " MIPS common errors:"
-MIPS_TEST="1 2 3 4 5 6 7 8 9 10 11 31 32 33 34 35 36 37 39 40 41 42 43 44 45 46 47 48 49"
+MIPS_TEST="001 002 003 004 005 006 007 008 009 010 011 031 032 033 034 035 036 037 039 040 041 042 043 044 045 046 047 048 049"
 for I in $MIPS_TEST;
 do
   echo " * ./MIPS/error/error$I... "
-  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/error/error-$I.s -o min > ./travis/MIPS/error/error-$I.output
+  ./creator.sh -a ./architecture/MIPS-32-like.json -s ./travis/MIPS/error/testerror-mips-$I.s -o min > ./travis/MIPS/error/testerror-mips-$I.out
 done
 
 
@@ -27,10 +27,10 @@ done
 #
 
 echo " RISC-V:"
-RV_TEST="2 3 4 5 6 7 8 11 12"
+RV_TEST="002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
   echo " * ./riscv/correct/example$I... "
-  ./creator.sh -a ./architecture/RISC-V-like.json -s ./travis/riscv/correct/example$I.txt -o min | grep "PC" > ./travis/riscv/correct/example$I.output
+  ./creator.sh -a ./architecture/RISC-V-like.json -s ./travis/riscv/correct/test-riscv-$I.s -o min | grep "PC" > ./travis/riscv/correct/test-riscv-$I.out
 done
 
