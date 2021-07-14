@@ -3320,7 +3320,7 @@ function creator_memory_copytoapp ( hash_index )
 function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label )
 {
         // NEW
-        var size = Math.ceil(value.toString().length / 2) ;
+        var size = Math.ceil(hex.toString().length / 2) ;
         var algn = creator_memory_alignelto(auxAddr, size) ;
         main_memory_write_bydatatype(algn.new_addr, hex, "instruction", value) ;
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
