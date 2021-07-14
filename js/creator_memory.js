@@ -60,18 +60,23 @@ function creator_memory_type2size ( type )
 		case 'h':
 		case 'hu':
 		case 'half':
+                case 'half_word':
 			 size = word_size_bytes / 2 ;
 			 break;
 
 		case 'w':
 		case 'wu':
 		case 'word':
+		case 'float':
+		case 'integer':
+                case 'instruction':
 			 size = word_size_bytes ;
 			 break;
 
 		case 'd':
 		case 'du':
 		case 'double':
+                case 'double_word':
 			 size = word_size_bytes * 2 ;
 			 break;
 	}
@@ -334,7 +339,7 @@ function create_memory_read_string ( addr )
 	return ret_msg + '... (string length greater than ' + string_length_limit + ' chars)' ;
 }
 
-function main_memory_write_bydatatype ( addr, value, type )
+function main_memory_write_bydatatype ( addr, value, type, value_human )
 {
         var ret = 0x0 ;
 
@@ -375,12 +380,19 @@ function main_memory_write_bydatatype ( addr, value, type )
                      break;
 
                 case 'space':
-		     // TODO
+		     for (var i=0; i<parseInt(value); i++) {
+		          main_memory_write_value(addr+i, 0x0) ;
+		     }
+                     break;
+
+                case 'instruction':
+		     var nb = Math.ceil(value.toString().length / 2) ;
+		     ret = main_memory_write_nbytes(addr, value, nb) ;
                      break;
 	}
 
         // datatype
-        main_memory_datatypes[addr] = main_memory_datatypes_packs_foravt(addr, value, type) ;
+        main_memory_datatypes[addr] = main_memory_datatypes_packs_foravt(addr, value_human, type) ;
 
 	return ret ;
 }
@@ -1132,7 +1144,7 @@ function crex_get_string_from_memory ( addr )
 function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
         // NEW
-        main_memory_write_bydatatype(parseInt(addr), keystroke, "string") ;
+        main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ;
 
         // OLD
 	var ret = {
@@ -1284,10 +1296,10 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
         // NEW
         var algn = creator_memory_alignelto(data_address, size) ;
-        main_memory_write_bydatatype(algn.new_addr, value, type) ;
+        main_memory_write_bydatatype(algn.new_addr, value, type, value) ;
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
         // data_address = data_address + algn.new_size ;
-        main_memory_prereset() ; // TODO: better to do one time at the end of compilation
+        //main_memory_prereset() ; // TODO: better to do one time at the end of compilation
 
         // OLD
         for (var i = 0; i < (value.length/2); i++)
@@ -1376,7 +1388,7 @@ function creator_memory_findbytag ( tag )
 	             value: 0
 	          } ;
 
-        //Search tag in data segment
+        // Search tag in data segment
         for (var z = 0; z < memory[memory_hash[0]].length && ret.exit == 0; z++)
         {
           for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && ret.exit == 0; p++)
@@ -1390,7 +1402,7 @@ function creator_memory_findbytag ( tag )
           }
         }
 
-        //Search tag in text segment
+        // Search tag in text segment
         for (var z = 0; z < memory[memory_hash[1]].length && ret.exit == 0; z++)
         {
           for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && ret.exit == 0; p++)
@@ -1421,43 +1433,69 @@ function creator_memory_copytoapp ( hash_index )
 	}
 }
 
-function creator_insert_instruction(auxAddr, value, def_value, hide, hex, fill_hex, label){
-	for(var a = 0; a < hex.length/2; a++){
+function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label )
+{
+        // NEW
+        var size = Math.ceil(value.toString().length / 2) ;
+        var algn = creator_memory_alignelto(auxAddr, size) ;
+        main_memory_write_bydatatype(algn.new_addr, hex, "instruction", value) ;
+        creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
+        // auxAddr = auxAddr + algn.new_size ;
+
+        // OLD
+	for(var a = 0; a < hex.length/2; a++)
+	{
 	  var sub_hex = hex.substring(hex.length-(2+(2*a)), hex.length-(2*a));
-	  if(auxAddr % 4 == 0){
-	    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: value, DefValue: def_value, hide: hide});
-	    if(label == ""){
-	      label=null;
-	    }
+	  if (auxAddr % 4 == 0)
+	  {
+	     memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: value, DefValue: def_value, hide: hide});
+	     if (label == "") {
+	         label=null;
+	     }
 
-	    if(a == 0){
-	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
-	    }
-	    else{
-	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
-	    }
+	     if (a == 0) {
+	       (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
+	     }
+	     else{
+	       (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
+	     }
 
-	    auxAddr++;
+	     auxAddr++;
 	  }
-	  else{
-	    if(a == 0){
-	      console_log(label);
-	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
-	    }
-	    else{
-	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
-	    }
+	  else
+	  {
+	     if (a == 0) {
+	       console_log(label);
+	       (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
+	     }
+	     else{
+	       (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
+	     }
 
-	    auxAddr++;
+	     auxAddr++;
 	  }
 	}
 
-	if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
-	  var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
-	  for(var b = 0; b < num_iter; b++){
-	    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: fill_hex, Bin: fill_hex, Tag: null},);
-	  }
+	if (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4)
+	{
+	   var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
+	   for (var b = 0; b < num_iter; b++) {
+	        (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: fill_hex, Bin: fill_hex, Tag: null},);
+	   }
 	}
 
 	return auxAddr;
 }
+
+function creator_memory_stackinit ( stack_address )
+{
+        // NEW
+
+        // OLD
+        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
+
+        for(var i = 0; i<4; i++){
+            (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
+        }
+}
+
