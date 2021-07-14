@@ -3305,7 +3305,46 @@ function creator_memory_copytoapp ( hash_index )
 	}
 }
 
-/*
+function creator_insert_instruction(auxAddr, value, def_value, hide, hex, fill_hex, label){
+	for(var a = 0; a < hex.length/2; a++){
+	  var sub_hex = hex.substring(hex.length-(2+(2*a)), hex.length-(2*a));
+	  if(auxAddr % 4 == 0){
+	    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: value, DefValue: def_value, hide: hide});
+	    if(label == ""){
+	      label=null;
+	    }
+
+	    if(a == 0){
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
+	    }
+	    else{
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
+	    }
+
+	    auxAddr++;
+	  }
+	  else{
+	    if(a == 0){
+	      console_log(label);
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
+	    }
+	    else{
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
+	    }
+
+	    auxAddr++;
+	  }
+	}
+
+	if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
+	  var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
+	  for(var b = 0; b < num_iter; b++){
+	    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: fill_hex, Bin: fill_hex, Tag: null},);
+	  }
+	}
+
+	return auxAddr;
+}/*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
@@ -3420,7 +3459,7 @@ var compileError = {
 	 'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
 	 'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
 	 'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
-  'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
+    'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
       //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
 	'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
 	'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
@@ -4196,7 +4235,7 @@ function assembly_compiler()
               hide = false;
             }
 
-            for(var a = 0; a < hex.length/2; a++){
+            /*for(var a = 0; a < hex.length/2; a++){
               if(auxAddr % 4 == 0){
                 memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", DefValue: "********", hide: hide});
                 if(label == ""){
@@ -4230,8 +4269,9 @@ function assembly_compiler()
               for(var b = 0; b < num_iter; b++){
                 (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
               }
-            }
+            }*/
 
+            auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
             creator_memory_copytoapp(1) ;
           }
         }
@@ -4248,7 +4288,7 @@ function assembly_compiler()
               binNum = update_binary.instructions_binary.length
           }
 
-          for (var a = 0; a < hex.length/2; a++) {
+          /*for (var a = 0; a < hex.length/2; a++) {
             if (auxAddr % 4 == 0) {
 
               memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, DefValue: instructions[i + binNum].loaded, hide: false});
@@ -4282,8 +4322,9 @@ function assembly_compiler()
             for(var b = 0; b < num_iter; b++){
               (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
             }
-          }
+          }*/
 
+          auxAddr = creator_insert_instruction(auxAddr, instructions[i + binNum].loaded, instructions[i + binNum].loaded, false, hex, "00", label);
           creator_memory_copytoapp(1) ;
         }
 
