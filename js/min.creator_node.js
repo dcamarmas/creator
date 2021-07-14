@@ -2018,7 +2018,7 @@ function main_memory_packs_forav ( addr, value )
 {
 	return { addr: addr,
                  bin: value, def_bin: "00",
-                 reset: true, tag: null } ;
+                 reset: true, break: false, tag: null } ;
 }
 
 function main_memory_datatypes_packs_foravt ( addr, value, type )
@@ -2120,7 +2120,16 @@ function main_memory_read_value ( addr )
 // main_memory_write_value ( addr: integer,  value: string (hexadecimal) )
 function main_memory_write_value ( addr, value )
 {
-	var value_obj = main_memory_packs_forav(addr, value) ;
+        var value_obj = main_memory_read(addr) ;
+	value_obj.bin = value ;
+	main_memory_write (addr, value_obj) ;
+}
+
+// main_memory_write_tag ( addr: integer,  tag: string )
+function main_memory_write_tag ( addr, tag )
+{
+        var value_obj = main_memory_read(addr) ;
+	value_obj.tag = tag ;
 	main_memory_write (addr, value_obj) ;
 }
 
@@ -3183,7 +3192,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
         main_memory_write_bydatatype(algn.new_addr, value, type, value) ;
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
         // data_address = data_address + algn.new_size ;
-        //main_memory_prereset() ; // TODO: better to do one time at the end of compilation
+        main_memory_write_tag(algn.new_addr, dataLabel) ;
 
         // OLD
         for (var i = 0; i < (value.length/2); i++)
@@ -3325,6 +3334,7 @@ function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill
         main_memory_write_bydatatype(algn.new_addr, hex, "instruction", value) ;
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
         // auxAddr = auxAddr + algn.new_size ;
+        main_memory_write_tag(algn.new_addr, label) ;
 
         // OLD
 	for(var a = 0; a < hex.length/2; a++)
@@ -3374,6 +3384,7 @@ function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill
 function creator_memory_stackinit ( stack_address )
 {
         // NEW
+        main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
 
         // OLD
         memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
