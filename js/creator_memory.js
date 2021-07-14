@@ -1421,3 +1421,43 @@ function creator_memory_copytoapp ( hash_index )
 	}
 }
 
+function creator_insert_instruction(auxAddr, value, def_value, hide, hex, fill_hex, label){
+	for(var a = 0; a < hex.length/2; a++){
+	  var sub_hex = hex.substring(hex.length-(2+(2*a)), hex.length-(2*a));
+	  if(auxAddr % 4 == 0){
+	    memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: value, DefValue: def_value, hide: hide});
+	    if(label == ""){
+	      label=null;
+	    }
+
+	    if(a == 0){
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
+	    }
+	    else{
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
+	    }
+
+	    auxAddr++;
+	  }
+	  else{
+	    if(a == 0){
+	      console_log(label);
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: label},);
+	    }
+	    else{
+	      (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: sub_hex, Bin: sub_hex, Tag: null},);
+	    }
+
+	    auxAddr++;
+	  }
+	}
+
+	if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
+	  var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
+	  for(var b = 0; b < num_iter; b++){
+	    (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: fill_hex, Bin: fill_hex, Tag: null},);
+	  }
+	}
+
+	return auxAddr;
+}
