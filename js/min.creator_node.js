@@ -3291,6 +3291,20 @@ function creator_memory_findbytag ( tag )
         return ret ;
 }
 
+function creator_memory_copytoapp ( hash_index )
+{
+        // NEW
+        if (typeof app !== "undefined") {
+            //app._data.main_memory          = main_memory ;           // TODO
+            //app._data.main_memory_datatype = main_memory_datatype ;  // TODO
+	}
+
+        // OLD
+        if (typeof app !== "undefined") {
+            app._data.memory[memory_hash[hash_index]] = memory[memory_hash[hash_index]] ;
+	}
+}
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -4218,8 +4232,7 @@ function assembly_compiler()
               }
             }
 
-            if (typeof app != "undefined")
-                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+            creator_memory_copytoapp(1) ;
           }
         }
 
@@ -4270,8 +4283,8 @@ function assembly_compiler()
               (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
             }
           }
-          if (typeof app != "undefined")
-              app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO: ¿se hace en memory tambi'en?
+
+          creator_memory_copytoapp(1) ;
         }
 
 
@@ -4365,8 +4378,7 @@ function assembly_compiler()
           (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
         }
 
-        if (typeof app !== "undefined")
-            app._data.memory[memory_hash[2]] = memory[memory_hash[2]]; // CHECK
+        creator_memory_copytoapp(2) ; // CHECK
 
         address = architecture.memory_layout[0].value;
         data_address = architecture.memory_layout[2].value;
@@ -4413,17 +4425,18 @@ function data_segment_compiler()
 
               for (var i = 0; i < data_tag.length; i++)
               {
-                console_log(data_tag[i].tag);
-                console_log(token.substring(0,token.length-1))
-                if (data_tag[i].tag == token.substring(0,token.length-1)) {
-                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                }
+                   console_log(data_tag[i].tag);
+                   console_log(token.substring(0,token.length-1))
+                   if (data_tag[i].tag == token.substring(0,token.length-1)) {
+                       return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+                   }
               }
 
-              for (var i = 0; i < instructions.length; i++) {
-                if (instructions[i].Label == token.substring(0,token.length-1)) {
-                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                }
+              for (var i = 0; i < instructions.length; i++)
+	      {
+                   if (instructions[i].Label == token.substring(0,token.length-1)) {
+                       return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+                   }
               }
 
               label = token.substring(0,token.length-1);
@@ -4431,9 +4444,12 @@ function data_segment_compiler()
               token = get_token();
           }
 
-          for(var j = 0; j < architecture.directives.length; j++){
-            if(token == architecture.directives[j].name){
-              switch(architecture.directives[j].action){
+          for (var j = 0; j < architecture.directives.length; j++)
+	  {
+            if (token == architecture.directives[j].name)
+	    {
+              switch (architecture.directives[j].action)
+	      {
                 case "byte":
                   var isByte = true;
 
@@ -5314,35 +5330,6 @@ function data_segment_compiler()
                     }
                   }
 
-
-                  /*############################## NEW ##################################################*/
-
-                  /* //var old_length = memory[memory_hash[0]].length;
-                  var to_add = ((auxToken+auxToken-1)/4); //Redondeo por exceso auxToken+auxToken-1
-
-                  //memory[memory_hash[0]].length = old_length + to_add;
-
-                  //var new_length = memory[memory_hash[0]].length;
-
-
-                  //Array.from({length:10}, function(v, i){ return {'hello': i}; })
-
-                  var space_values = Array.from({length:to_add}, function(v, i){ var new_addr = data_address + i*4;
-                                                                                 var type_str = null
-                                                                                 if (i == 0) {type_str = label}
-                                                                                 return {Address: data_address = new_addr, Binary: [  {Addr: (new_addr), DefBin: "00", Bin: "00", Tag: type_str},
-                                                                                                                                      {Addr: (new_addr+1), DefBin: "00", Bin: "00", Tag: null},
-                                                                                                                                      {Addr: (new_addr+2), DefBin: "00", Bin: "00", Tag: null},
-                                                                                                                                      {Addr: (new_addr+3), DefBin: "00", Bin: "00", Tag: null}
-                                                                                                                                    ], Value: null, DefValue: null, reset: false, type: "space"};
-                                                                  });
-
-                  memory[memory_hash[0]] = memory[memory_hash[0]].concat(space_values);
-
-                  data_address = data_address + auxToken;*/
-
-                  /*#######################################################################################*/
-
                   next_token();
                   token = get_token();
 
@@ -5388,16 +5375,14 @@ function data_segment_compiler()
             }
 
             else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-              if (typeof app !== "undefined")
-                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
+              creator_memory_copytoapp(0) ; // CHECK
               return ret;
             }
 
           }
         }
 
-        if (typeof app !== "undefined")
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
+        creator_memory_copytoapp(0) ; // CHECK
 
         main_memory_prereset() ;
 
