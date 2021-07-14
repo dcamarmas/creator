@@ -113,7 +113,7 @@ var compileError = {
 	 'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
 	 'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
 	 'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
-  'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
+    'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
       //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
 	'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
 	'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
@@ -889,44 +889,8 @@ function assembly_compiler()
               hide = false;
             }
 
-            for(var a = 0; a < hex.length/2; a++){
-              if(auxAddr % 4 == 0){
-                memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", DefValue: "********", hide: hide});
-                if(label == ""){
-                  label=null;
-                }
-
-                if(a == 0){
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-                }
-                else{
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-                }
-
-                auxAddr++;
-              }
-              else{
-                if(a == 0){
-                  console_log(label);
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-                }
-                else{
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-                }
-
-                auxAddr++;
-              }
-            }
-
-            if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
-              var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
-              for(var b = 0; b < num_iter; b++){
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
-              }
-            }
-
-            if (typeof app != "undefined")
-                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+            auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
+            creator_memory_copytoapp(1) ;
           }
         }
 
@@ -942,43 +906,8 @@ function assembly_compiler()
               binNum = update_binary.instructions_binary.length
           }
 
-          for (var a = 0; a < hex.length/2; a++) {
-            if (auxAddr % 4 == 0) {
-
-              memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, DefValue: instructions[i + binNum].loaded, hide: false});
-              if(label == ""){
-                label=null;
-              }
-              if(a == 0){
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-              }
-              else{
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-              }
-
-              auxAddr++;
-            }
-            else{
-              if(a == 0){
-                console_log(label);
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-              }
-              else{
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-              }
-
-              auxAddr++;
-            }
-          }
-
-          if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
-            var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
-            for(var b = 0; b < num_iter; b++){
-              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-            }
-          }
-          if (typeof app != "undefined")
-              app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO: ¿se hace en memory tambi'en?
+          auxAddr = creator_insert_instruction(auxAddr, instructions[i + binNum].loaded, instructions[i + binNum].loaded, false, hex, "00", label);
+          creator_memory_copytoapp(1) ;
         }
 
 
@@ -1072,8 +1001,7 @@ function assembly_compiler()
           (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
         }
 
-        if (typeof app !== "undefined")
-            app._data.memory[memory_hash[2]] = memory[memory_hash[2]]; // CHECK
+        creator_memory_copytoapp(2) ; // CHECK
 
         address = architecture.memory_layout[0].value;
         data_address = architecture.memory_layout[2].value;
@@ -1120,17 +1048,18 @@ function data_segment_compiler()
 
               for (var i = 0; i < data_tag.length; i++)
               {
-                console_log(data_tag[i].tag);
-                console_log(token.substring(0,token.length-1))
-                if (data_tag[i].tag == token.substring(0,token.length-1)) {
-                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                }
+                   console_log(data_tag[i].tag);
+                   console_log(token.substring(0,token.length-1))
+                   if (data_tag[i].tag == token.substring(0,token.length-1)) {
+                       return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+                   }
               }
 
-              for (var i = 0; i < instructions.length; i++) {
-                if (instructions[i].Label == token.substring(0,token.length-1)) {
-                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                }
+              for (var i = 0; i < instructions.length; i++)
+	      {
+                   if (instructions[i].Label == token.substring(0,token.length-1)) {
+                       return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+                   }
               }
 
               label = token.substring(0,token.length-1);
@@ -1138,9 +1067,12 @@ function data_segment_compiler()
               token = get_token();
           }
 
-          for(var j = 0; j < architecture.directives.length; j++){
-            if(token == architecture.directives[j].name){
-              switch(architecture.directives[j].action){
+          for (var j = 0; j < architecture.directives.length; j++)
+	  {
+            if (token == architecture.directives[j].name)
+	    {
+              switch (architecture.directives[j].action)
+	      {
                 case "byte":
                   var isByte = true;
 
@@ -2021,35 +1953,6 @@ function data_segment_compiler()
                     }
                   }
 
-
-                  /*############################## NEW ##################################################*/
-
-                  /* //var old_length = memory[memory_hash[0]].length;
-                  var to_add = ((auxToken+auxToken-1)/4); //Redondeo por exceso auxToken+auxToken-1
-
-                  //memory[memory_hash[0]].length = old_length + to_add;
-
-                  //var new_length = memory[memory_hash[0]].length;
-
-
-                  //Array.from({length:10}, function(v, i){ return {'hello': i}; })
-
-                  var space_values = Array.from({length:to_add}, function(v, i){ var new_addr = data_address + i*4;
-                                                                                 var type_str = null
-                                                                                 if (i == 0) {type_str = label}
-                                                                                 return {Address: data_address = new_addr, Binary: [  {Addr: (new_addr), DefBin: "00", Bin: "00", Tag: type_str},
-                                                                                                                                      {Addr: (new_addr+1), DefBin: "00", Bin: "00", Tag: null},
-                                                                                                                                      {Addr: (new_addr+2), DefBin: "00", Bin: "00", Tag: null},
-                                                                                                                                      {Addr: (new_addr+3), DefBin: "00", Bin: "00", Tag: null}
-                                                                                                                                    ], Value: null, DefValue: null, reset: false, type: "space"};
-                                                                  });
-
-                  memory[memory_hash[0]] = memory[memory_hash[0]].concat(space_values);
-
-                  data_address = data_address + auxToken;*/
-
-                  /*#######################################################################################*/
-
                   next_token();
                   token = get_token();
 
@@ -2095,16 +1998,14 @@ function data_segment_compiler()
             }
 
             else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-              if (typeof app !== "undefined")
-                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
+              creator_memory_copytoapp(0) ; // CHECK
               return ret;
             }
 
           }
         }
 
-        if (typeof app !== "undefined")
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
+        creator_memory_copytoapp(0) ; // CHECK
 
         main_memory_prereset() ;
 
@@ -3690,7 +3591,6 @@ function pseudoinstruction_compiler ( instruction, label, line )
         re = /reg\.pc/
         console_log(re);
         while (definition.search(re) != -1){
-          //definition = definition.replace(re, "getReg('PC')");
           definition = definition.replace(re, "pc"); //PRUEBA
           console_log(definition);
         }
@@ -3806,53 +3706,36 @@ function pseudoinstruction_compiler ( instruction, label, line )
 }
 
 
-/*Get pseudoinstruction fields*/
-function field(field, action, type)
+/* Get pseudoinstruction fields */
+function field ( field, action, type )
 {
   console_log(field);
   console_log(action);
   console_log(type);
 
-  if(action == "SIZE"){
-    console_log("SIZE");
+  if (action == "SIZE")
+  {
+      console_log("SIZE");
 
-    if(field.match(/^0x/)){
-      var value = field.split("x");
-      return value[1].length*4;
-    }
-    else if (field.match(/^([\-\d])+\.(\d)+/)){
-      return float2bin(parseFloat(field)).length;
-    }
-    else if (field.match(/^([\-\d])+/)){
-      var numAux = parseInt(field, 10);
-      return (bi_intToBigInt(numAux,10).toString(2)).length;
-    }
-
-    else{
-      var exit = 0;
-      //Search tag in data segment
-      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
-            exit = 1;
-            var numAux = parseInt(memory[memory_hash[0]][z].Address, 10);
-            return (numAux.toString(2)).length;
-          }
-        }
+      if (field.match(/^0x/)){
+          var value = field.split("x");
+          return value[1].length*4;
       }
-
-      //Search tag in text segment
-      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
-            exit = 1;
-            var numAux = parseInt(memory[memory_hash[1]][z].Address, 10);
-            return (numAux.toString(2)).length;
-          }
-        }
+      else if (field.match(/^([\-\d])+\.(\d)+/)){
+          return float2bin(parseFloat(field)).length;
       }
-    }
-
+      else if (field.match(/^([\-\d])+/)){
+          var numAux = parseInt(field, 10);
+          return (bi_intToBigInt(numAux,10).toString(2)).length;
+      }
+      else
+      {
+  	  var ret = creator_memory_findbytag(field) ;
+  	  if (ret.exit == 1) {
+              var numAux = ret.value ;
+              return (numAux.toString(2)).length;
+	  }
+      }
   }
 
   re = /\((.*?)\)/;
@@ -3877,27 +3760,12 @@ function field(field, action, type)
       return hexNum;
     }
 
-    if(Number.isInteger(field) == false){
-      var exit = 0;
-      //Search tag in data segment
-      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
-            exit = 1;
-            field = parseInt(memory[memory_hash[0]][z].Address, 10);
-          }
-        }
-      }
-
-      //Search tag in text segment
-      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
-            exit = 1;
-            field = parseInt(memory[memory_hash[0]][z].Address, 10);
-          }
-        }
-      }
+    if (Number.isInteger(field) == false)
+    {
+        var ret = creator_memory_findbytag(field) ;
+	if (ret.exit == 1) {
+            field = ret.value ;
+	}
     }
 
     if(type == "int"){
@@ -3927,21 +3795,6 @@ function field(field, action, type)
   }
   return -1;
 }
-
-function getReg(name)
-{
-  for (var i = 0; i < architecture.components.length; i++)
-   {
-      for (var j = 0; j < architecture.components[i].elements.length; j++)
-      {
-          if (architecture.components[i].elements[j].name == name)
-          {
-              return parseInt(architecture.components[i].elements[j].value);
-          }
-      }
-   }
-}
-
 
 
 /**
