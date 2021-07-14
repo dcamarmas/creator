@@ -8,7 +8,7 @@
 ## Authors
 * :technologist: Diego Camarmas Alonso (Main Coordinator)
 * :technologist: Lucas Elvira Martín (RISC-V and several improvements)
-* :technologist: Elías Del Pozo Puñal
+* :technologist: Elías Del Pozo Puñal (Beta Tester)
 * :technologist: Félix García Carballeira 
 * :technologist: Alejandro Calderón Mateos
 
