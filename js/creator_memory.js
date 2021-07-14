@@ -1407,3 +1407,17 @@ function creator_memory_findbytag ( tag )
         return ret ;
 }
 
+function creator_memory_copytoapp ( hash_index )
+{
+        // NEW
+        if (typeof app !== "undefined") {
+            //app._data.main_memory          = main_memory ;           // TODO
+            //app._data.main_memory_datatype = main_memory_datatype ;  // TODO
+	}
+
+        // OLD
+        if (typeof app !== "undefined") {
+            app._data.memory[memory_hash[hash_index]] = memory[memory_hash[hash_index]] ;
+	}
+}
+
