@@ -437,6 +437,27 @@ function creator_memory_alloc ( new_size )
 	return algn.new_addr ;
 }
 
+function creator_memory_findaddress_bytag ( tag )
+{
+        var ret = {
+	             exit:  0,
+	             value: 0
+	          } ;
+
+	// find main memory by tag
+        var addrs = main_memory_get_addresses() ;
+        for (var i=0; i<addrs.length; i++)
+	{
+             if (main_memory[addrs[i]].tag == tag)
+	     {
+	         ret.exit  = 1 ;
+	         ret.value = parseInt(addrs[i]) ;
+	     }
+        }
+
+        return ret ;
+}
+
 
 /**********************************************
  *
@@ -1347,6 +1368,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 function creator_memory_findbytag ( tag )
 {
         // NEW
+        creator_memory_findaddress_bytag(tag) ;  // TODO: return creator_memory_findaddress_bytag(tag) ;
 
         // OLD
         var ret = {
