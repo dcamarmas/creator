@@ -3228,6 +3228,47 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
         return '' ;
 }
 
+function creator_memory_findbytag ( tag )
+{
+        // NEW
+
+        // OLD
+        var ret = {
+	             exit: 0,
+	             value: 0
+	          } ;
+
+        //Search tag in data segment
+        for (var z = 0; z < memory[memory_hash[0]].length && ret.exit == 0; z++)
+        {
+          for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && ret.exit == 0; p++)
+          {
+            if (tag == memory[memory_hash[0]][z].Binary[p].Tag)
+	    {
+                ret.exit  = 1;
+                ret.value = parseInt(memory[memory_hash[0]][z].Address, 10);
+	        return ret ;
+            }
+          }
+        }
+
+        //Search tag in text segment
+        for (var z = 0; z < memory[memory_hash[1]].length && ret.exit == 0; z++)
+        {
+          for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && ret.exit == 0; p++)
+	  {
+            if (tag == memory[memory_hash[1]][z].Binary[p].Tag)
+	    {
+                ret.exit  = 1;
+                ret.value = parseInt(memory[memory_hash[1]][z].Address, 10);
+	        return ret ;
+            }
+          }
+        }
+
+        return ret ;
+}
+
 /*
  *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
@@ -6920,7 +6961,6 @@ function pseudoinstruction_compiler ( instruction, label, line )
         re = /reg\.pc/
         console_log(re);
         while (definition.search(re) != -1){
-          //definition = definition.replace(re, "getReg('PC')");
           definition = definition.replace(re, "pc"); //PRUEBA
           console_log(definition);
         }
@@ -7036,53 +7076,36 @@ function pseudoinstruction_compiler ( instruction, label, line )
 }
 
 
-/*Get pseudoinstruction fields*/
-function field(field, action, type)
+/* Get pseudoinstruction fields */
+function field ( field, action, type )
 {
   console_log(field);
   console_log(action);
   console_log(type);
 
-  if(action == "SIZE"){
-    console_log("SIZE");
+  if (action == "SIZE")
+  {
+      console_log("SIZE");
 
-    if(field.match(/^0x/)){
-      var value = field.split("x");
-      return value[1].length*4;
-    }
-    else if (field.match(/^([\-\d])+\.(\d)+/)){
-      return float2bin(parseFloat(field)).length;
-    }
-    else if (field.match(/^([\-\d])+/)){
-      var numAux = parseInt(field, 10);
-      return (bi_intToBigInt(numAux,10).toString(2)).length;
-    }
-
-    else{
-      var exit = 0;
-      //Search tag in data segment
-      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
-            exit = 1;
-            var numAux = parseInt(memory[memory_hash[0]][z].Address, 10);
-            return (numAux.toString(2)).length;
-          }
-        }
+      if (field.match(/^0x/)){
+          var value = field.split("x");
+          return value[1].length*4;
       }
-
-      //Search tag in text segment
-      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
-            exit = 1;
-            var numAux = parseInt(memory[memory_hash[1]][z].Address, 10);
-            return (numAux.toString(2)).length;
-          }
-        }
+      else if (field.match(/^([\-\d])+\.(\d)+/)){
+          return float2bin(parseFloat(field)).length;
       }
-    }
-
+      else if (field.match(/^([\-\d])+/)){
+          var numAux = parseInt(field, 10);
+          return (bi_intToBigInt(numAux,10).toString(2)).length;
+      }
+      else
+      {
+  	  var ret = creator_memory_findbytag(field) ;
+  	  if (ret.exit == 1) {
+              var numAux = ret.value ;
+              return (numAux.toString(2)).length;
+	  }
+      }
   }
 
   re = /\((.*?)\)/;
@@ -7107,27 +7130,12 @@ function field(field, action, type)
       return hexNum;
     }
 
-    if(Number.isInteger(field) == false){
-      var exit = 0;
-      //Search tag in data segment
-      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
-            exit = 1;
-            field = parseInt(memory[memory_hash[0]][z].Address, 10);
-          }
-        }
-      }
-
-      //Search tag in text segment
-      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
-            exit = 1;
-            field = parseInt(memory[memory_hash[0]][z].Address, 10);
-          }
-        }
-      }
+    if (Number.isInteger(field) == false)
+    {
+        var ret = creator_memory_findbytag(field) ;
+	if (ret.exit == 1) {
+            field = ret.value ;
+	}
     }
 
     if(type == "int"){
@@ -7157,21 +7165,6 @@ function field(field, action, type)
   }
   return -1;
 }
-
-function getReg(name)
-{
-  for (var i = 0; i < architecture.components.length; i++)
-   {
-      for (var j = 0; j < architecture.components[i].elements.length; j++)
-      {
-          if (architecture.components[i].elements[j].name == name)
-          {
-              return parseInt(architecture.components[i].elements[j].value);
-          }
-      }
-   }
-}
-
 
 
 /**

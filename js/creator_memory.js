@@ -1344,3 +1344,44 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
         return '' ;
 }
 
+function creator_memory_findbytag ( tag )
+{
+        // NEW
+
+        // OLD
+        var ret = {
+	             exit: 0,
+	             value: 0
+	          } ;
+
+        //Search tag in data segment
+        for (var z = 0; z < memory[memory_hash[0]].length && ret.exit == 0; z++)
+        {
+          for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && ret.exit == 0; p++)
+          {
+            if (tag == memory[memory_hash[0]][z].Binary[p].Tag)
+	    {
+                ret.exit  = 1;
+                ret.value = parseInt(memory[memory_hash[0]][z].Address, 10);
+	        return ret ;
+            }
+          }
+        }
+
+        //Search tag in text segment
+        for (var z = 0; z < memory[memory_hash[1]].length && ret.exit == 0; z++)
+        {
+          for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && ret.exit == 0; p++)
+	  {
+            if (tag == memory[memory_hash[1]][z].Binary[p].Tag)
+	    {
+                ret.exit  = 1;
+                ret.value = parseInt(memory[memory_hash[1]][z].Address, 10);
+	        return ret ;
+            }
+          }
+        }
+
+        return ret ;
+}
+
