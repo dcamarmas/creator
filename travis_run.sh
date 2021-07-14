@@ -7,30 +7,30 @@
 
 echo ""
 echo " MIPS: examples"
-MIPS_TEST="2 3 4 5 6 7 8 11 12 20 21 23 24 25 26 30 31"
+MIPS_TEST="002 003 004 005 006 007 008 011 012 020 021 023 024 025 026 030 031"
 for I in $MIPS_TEST;
 do
-   echo -n " * ./travis/MIPS/correct/example-$I: "
+   echo -n " * ./travis/MIPS/correct/test-mips-$I: "
    ./creator.sh -a ./architecture/MIPS-32-like.json \
-                -s ./travis/MIPS/correct/example$I.txt \
-                -r ./travis/MIPS/correct/example$I.output -o min | tail -1
+                -s ./travis/MIPS/correct/test-mips-$I.s \
+                -r ./travis/MIPS/correct/test-mips-$I.out -o min | tail -1
 done
 
 echo ""
 echo " MIPS: common errors"
-MIPS_TEST="1 2 3 4 5 6 7 8 9 10 11 31 32 33 34 35 36 37 39 40 41 42 43 44 45 46 47 48 49"
+MIPS_TEST="001 002 003 004 005 006 007 008 009 010 011 031 032 033 034 035 036 037 039 040 041 042 043 044 045 046 047 048 049"
 for I in $MIPS_TEST;
 do
-   echo -n " * ./travis/MIPS/error/error-$I: "
+   echo -n " * ./travis/MIPS/error/testerror-mips-$I: "
    ./creator.sh -a ./architecture/MIPS-32-like.json \
-                -s ./travis/MIPS/error/error-$I.s -o min > /tmp/e-$I.output
-   diff /tmp/e-$I.output ./travis/MIPS/error/error-$I.output
+                -s ./travis/MIPS/error/testerror-mips-$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/MIPS/error/testerror-mips-$I.out
    if [ $? -ne 0 ]; then
        echo "Different: Error $I with different outputs...";
    else
        echo "Equals";
    fi
-   rm   /tmp/e-$I.output
+   rm   /tmp/e-$I.out
 done
 
 
@@ -40,12 +40,12 @@ done
 
 echo ""
 echo " RISC-V:"
-RV_TEST="2 3 4 5 6 7 8 11 12"
+RV_TEST="002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
-  echo -n " * ./travis/riscv/correct/example-$I: "
+  echo -n " * ./travis/riscv/correct/test-riscv-$I: "
   ./creator.sh -a ./architecture/RISC-V-like.json \
-               -s ./travis/riscv/correct/example$I.txt \
-               -r ./travis/riscv/correct/example$I.output -o min | tail -1
+               -s ./travis/riscv/correct/test-riscv-$I.s \
+               -r ./travis/riscv/correct/test-riscv-$I.out -o min | tail -1
 done
 

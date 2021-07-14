@@ -1266,6 +1266,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
         main_memory_write_bydatatype(algn.new_addr, value, type) ;
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
         // data_address = data_address + algn.new_size ;
+        main_memory_prereset() ; // TODO: better to do one time at the end of compilation
 
         // OLD
         for (var i = 0; i < (value.length/2); i++)

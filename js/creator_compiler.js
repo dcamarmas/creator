@@ -2106,6 +2106,8 @@ function data_segment_compiler()
         if (typeof app !== "undefined")
             app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
 
+        main_memory_prereset() ;
+
         return ret;
 }
 
