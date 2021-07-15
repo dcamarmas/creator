@@ -113,7 +113,7 @@ var compileError = {
 	 'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
 	 'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
 	 'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
-  'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
+    'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
       //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
 	'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
 	'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
@@ -631,106 +631,120 @@ function assembly_compiler()
         }
 
         /*Check pending instructions*/
-        for(var i = 0; i < pending_instructions.length; i++){
+        for (var i = 0; i < pending_instructions.length; i++)
+	{
           var exit = 0;
-          var signatureParts = pending_instructions[i].signature;
+          var signatureParts    = pending_instructions[i].signature;
           var signatureRawParts = pending_instructions[i].signatureRaw;
-          var instructionParts = (pending_instructions[i].instruction).split(' ');
+          var instructionParts  = (pending_instructions[i].instruction).split(' ');
           console_log(instructionParts);
-          for (var j = 0; j < signatureParts.length && exit == 0; j++){
-            if(signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address"){
-              for (var z = 0; z < instructions.length && exit == 0; z++){
-                if(instructions[z].Label == instructionParts[j]){
+
+          for (var j = 0; j < signatureParts.length && exit == 0; j++)
+	  {
+            if (signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address")
+            {
+
+              for (var z = 0; z < instructions.length && exit == 0; z++)
+	      {
+                if (instructions[z].Label == instructionParts[j])
+		{
                   var addr = instructions[z].Address;
-                  var bin = parseInt(addr, 16).toString(2);
+                  var bin  = parseInt(addr, 16).toString(2);
                   var startbit = pending_instructions[i].startBit;
-                  var stopbit = pending_instructions[i].stopBit;
+                  var stopbit  = pending_instructions[i].stopBit;
 
                   instructionParts[j] = addr;
-                  var newInstruction = "";
-                  for (var w = 0; w < instructionParts.length; w++) {
-                    if(w == instructionParts.length-1){
+                  var newInstruction  = "";
+                  for (var w=0; w < instructionParts.length; w++)
+	          {
                       newInstruction = newInstruction + instructionParts[w];
-                    }
-                    else{
-                      newInstruction = newInstruction + instructionParts[w] + " ";
-                    }
-                  }
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                    }
+                      if (w != instructionParts.length-1) {
+                          newInstruction = newInstruction + " ";
+                      }
                   }
 
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                      var fieldsLength = startbit - stopbit + 1;
-                      console_log(w)
-                      console_log(numBinaries)
-                      console_log(w - numBinaries)
-                      instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                      exit = 1;
-                    }
+                  for (var w=0; w < instructions.length && exit == 0; w++)
+		  {
+                       var aux = "0x" + (pending_instructions[i].address).toString(16);
+                       if (aux == instructions[w].Address) {
+                           instructions[w].loaded = newInstruction;
+                       }
+                  }
+
+                  for (var w=0; w < instructions.length && exit == 0; w++)
+	          {
+                       var aux = "0x" + (pending_instructions[i].address).toString(16);
+                       if (aux == instructions[w].Address)
+		       {
+                           instructions[w].loaded = newInstruction;
+                           var fieldsLength = startbit - stopbit + 1;
+                           console_log(w)
+                           console_log(numBinaries)
+                           console_log(w - numBinaries)
+	                   var iload =  instructions_binary[w - numBinaries].loaded;
+                           instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
+                           exit = 1;
+                       }
                   }
                 }
               }
 
-              for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-                for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-                  if(instructionParts[j] == memory[memory_hash[0]][z].Binary[p].Tag){
-                    var addr = (memory[memory_hash[0]][z].Binary[p].Addr);
-                    var bin = parseInt(addr, 16).toString(2);
+
+	      // NEW
+	      var ret1 = creator_memory_findbytag(instructionParts[j]);
+	      if (ret1.exit == 1)
+	      {
+                    var addr = ret1.value; // (memory[memory_hash[0]][z].Binary[p].Addr);
+                    var bin  = parseInt(addr, 16).toString(2);
                     var startbit = pending_instructions[i].startBit;
-                    var stopbit = pending_instructions[i].stopBit;
+                    var stopbit  = pending_instructions[i].stopBit;
 
                     instructionParts[j] = "0x" + addr.toString(16);
                     var newInstruction = "";
-                    for (var w = 0; w < instructionParts.length; w++) {
-                      if(w == instructionParts.length-1){
-                        newInstruction = newInstruction + instructionParts[w];
-                      }
-                      else{
-                        newInstruction = newInstruction + instructionParts[w] + " ";
-                      }
+                    for (var w=0; w < instructionParts.length; w++)
+	            {
+                         newInstruction = newInstruction + instructionParts[w];
+                         if (w != instructionParts.length-1){
+                             newInstruction = newInstruction + " ";
+                         }
                     }
-                    for (var w = 0; w < instructions.length && exit == 0; w++) {
-                      var aux = "0x" + (pending_instructions[i].address).toString(16);
-                      if(aux == instructions[w].Address){
-                        instructions[w].loaded = newInstruction;
-                      }
-                    }
-
-                    for (var w = 0; w < instructions.length && exit == 0; w++) {
-                      var aux = "0x" + (pending_instructions[i].address).toString(16);
-                      if(aux == instructions[w].Address){
-                        instructions[w].loaded = newInstruction;
-                        var fieldsLength = startbit - stopbit + 1;
-                        instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                        exit = 1;
-                      }
+                    for (var w=0; w < instructions.length; w++)
+		    {
+                         var aux = "0x" + (pending_instructions[i].address).toString(16);
+                         if (aux == instructions[w].Address) {
+                             instructions[w].loaded = newInstruction;
+                         }
                     }
 
-                  }
-                }
-              }
+                    for (var w=0; w < instructions.length && exit == 0; w++)
+		    {
+                         var aux = "0x" + (pending_instructions[i].address).toString(16);
+                         if (aux == instructions[w].Address)
+			 {
+                             instructions[w].loaded = newInstruction;
+                             var fieldsLength = startbit - stopbit + 1;
+	                     var iload        = instructions_binary[w - numBinaries].loaded;
+                             instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
+                             exit = 1;
+                         }
+                    }
+	      }
 
-              if(exit == 0 && isNaN(instructionParts[j]) == true){
-               //tokenIndex = 0;
-               //nEnters = 0 ;
+              if (exit == 0 && isNaN(instructionParts[j]) == true)
+	      {
+                //tokenIndex = 0;
+                //nEnters = 0 ;
                 //tokenIndex=pending_instructions[i].line;
-                nEnters=pending_instructions[i].line;
-                instructions = [];
-                pending_instructions = [];
-                pending_tags = [];
-                data_tag = [];
-                instructions_binary = [];
-                crex_memory_clear() ;
-                data = [];
-                extern = [];
-                return packCompileError('m7', instructionParts[j], "error", "danger");
+                  nEnters=pending_instructions[i].line;
+                  instructions = [];
+                  pending_instructions = [];
+                  pending_tags = [];
+                  data_tag = [];
+                  instructions_binary = [];
+                  crex_memory_clear() ;
+                  data = [];
+                  extern = [];
+                  return packCompileError('m7', instructionParts[j], "error", "danger");
               }
             }
 
@@ -862,75 +876,40 @@ function assembly_compiler()
           }
         }
 
-        /*Enter the binary in the text segment*/
+        /* Enter the binary in the text segment */
         if (update_binary.instructions_binary != null)
         {
           for (var i = 0; i < update_binary.instructions_binary.length; i++)
           {
-            var hex = bin2hex(update_binary.instructions_binary[i].loaded);
+            var hex     = bin2hex(update_binary.instructions_binary[i].loaded);
             var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
-            var label = update_binary.instructions_binary[i].Label;
-            var hide;
+            var label   = update_binary.instructions_binary[i].Label;
+            var hide    = false ;
 
-            if(i == 0){
+            if (i == 0) {
               hide = false;
               if(update_binary.instructions_binary[i].globl == false){
                 label = "";
               }
             }
             else if(update_binary.instructions_binary[i].globl == false){
+              hide  = true;
               label = "";
-              hide = true;
             }
             else if(update_binary.instructions_binary[i].globl == null){
               hide = true;
             }
-            else{
+            else {
               hide = false;
             }
 
-            for(var a = 0; a < hex.length/2; a++){
-              if(auxAddr % 4 == 0){
-                memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: "********", DefValue: "********", hide: hide});
-                if(label == ""){
-                  label=null;
-                }
-
-                if(a == 0){
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-                }
-                else{
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-                }
-
-                auxAddr++;
-              }
-              else{
-                if(a == 0){
-                  console_log(label);
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: label},);
-                }
-                else{
-                  (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: "**", Bin: "**", Tag: null},);
-                }
-
-                auxAddr++;
-              }
-            }
-
-            if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
-              var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
-              for(var b = 0; b < num_iter; b++){
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "**", Bin: "**", Tag: null},);
-              }
-            }
-
-            if (typeof app != "undefined")
-                app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+            auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
           }
+	  // update UI (with new instructions)
+          creator_memory_copytoapp(1) ;
         }
 
-        /*Enter the compilated instructions in the text segment*/
+        /* Enter the compilated instructions in the text segment */
         for (var i = 0; i < instructions_binary.length; i++)
         {
           var hex = bin2hex(instructions_binary[i].loaded);
@@ -942,50 +921,16 @@ function assembly_compiler()
               binNum = update_binary.instructions_binary.length
           }
 
-          for (var a = 0; a < hex.length/2; a++) {
-            if (auxAddr % 4 == 0) {
-
-              memory[memory_hash[1]].push({Address: auxAddr, Binary: [], Value: instructions[i + binNum].loaded, DefValue: instructions[i + binNum].loaded, hide: false});
-              if(label == ""){
-                label=null;
-              }
-              if(a == 0){
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-              }
-              else{
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-              }
-
-              auxAddr++;
-            }
-            else{
-              if(a == 0){
-                console_log(label);
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: label},);
-              }
-              else{
-                (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).splice(auxAddr%4, 1, {Addr: (auxAddr), DefBin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Bin: hex.substring(hex.length-(2+(2*a)), hex.length-(2*a)), Tag: null},);
-              }
-
-              auxAddr++;
-            }
-          }
-
-          if(memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length < 4){
-            var num_iter = 4 - memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary.length;
-            for(var b = 0; b < num_iter; b++){
-              (memory[memory_hash[1]][memory[memory_hash[1]].length-1].Binary).push({Addr: (auxAddr + (b + 1)), DefBin: "00", Bin: "00", Tag: null},);
-            }
-          }
-          if (typeof app != "undefined")
-              app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // TODO: ¿se hace en memory tambi'en?
+          auxAddr = creator_insert_instruction(auxAddr, instructions[i + binNum].loaded, instructions[i + binNum].loaded, false, hex, "00", label);
         }
+	// update UI (with new instructions)
+        creator_memory_copytoapp(1) ;
 
 
-        /*Check for overlap*/
-        if(memory[memory_hash[0]].length > 0)
+        /* Check for overlap */
+        if (memory[memory_hash[0]].length > 0)
         {
-          if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
+          if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value) {
             //tokenIndex = 0;
             //nEnters = 0 ;
             instructions = [];
@@ -1065,19 +1010,16 @@ function assembly_compiler()
         if (typeof app != "undefined")
             app._data.instructions = instructions;
 
-        /*Initialize stack*/
-        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
-
-        for(var i = 0; i<4; i++){
-          (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
-        }
-
-        if (typeof app !== "undefined")
-            app._data.memory[memory_hash[2]] = memory[memory_hash[2]]; // CHECK
+        /* Initialize stack */
+        creator_memory_stackinit(stack_address) ;
+        creator_memory_copytoapp(2) ; // CHECK
 
         address = architecture.memory_layout[0].value;
         data_address = architecture.memory_layout[2].value;
         stack_address = architecture.memory_layout[4].value;
+
+	// save current value as default values for reset()...
+        main_memory_prereset() ;
 
         return ret;
 }
@@ -1120,17 +1062,18 @@ function data_segment_compiler()
 
               for (var i = 0; i < data_tag.length; i++)
               {
-                console_log(data_tag[i].tag);
-                console_log(token.substring(0,token.length-1))
-                if (data_tag[i].tag == token.substring(0,token.length-1)) {
-                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                }
+                   console_log(data_tag[i].tag);
+                   console_log(token.substring(0,token.length-1))
+                   if (data_tag[i].tag == token.substring(0,token.length-1)) {
+                       return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+                   }
               }
 
-              for (var i = 0; i < instructions.length; i++) {
-                if (instructions[i].Label == token.substring(0,token.length-1)) {
-                    return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                }
+              for (var i = 0; i < instructions.length; i++)
+	      {
+                   if (instructions[i].Label == token.substring(0,token.length-1)) {
+                       return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+                   }
               }
 
               label = token.substring(0,token.length-1);
@@ -1138,9 +1081,12 @@ function data_segment_compiler()
               token = get_token();
           }
 
-          for(var j = 0; j < architecture.directives.length; j++){
-            if(token == architecture.directives[j].name){
-              switch(architecture.directives[j].action){
+          for (var j = 0; j < architecture.directives.length; j++)
+	  {
+            if (token == architecture.directives[j].name)
+	    {
+              switch (architecture.directives[j].action)
+	      {
                 case "byte":
                   var isByte = true;
 
@@ -2021,35 +1967,6 @@ function data_segment_compiler()
                     }
                   }
 
-
-                  /*############################## NEW ##################################################*/
-
-                  /* //var old_length = memory[memory_hash[0]].length;
-                  var to_add = ((auxToken+auxToken-1)/4); //Redondeo por exceso auxToken+auxToken-1
-
-                  //memory[memory_hash[0]].length = old_length + to_add;
-
-                  //var new_length = memory[memory_hash[0]].length;
-
-
-                  //Array.from({length:10}, function(v, i){ return {'hello': i}; })
-
-                  var space_values = Array.from({length:to_add}, function(v, i){ var new_addr = data_address + i*4;
-                                                                                 var type_str = null
-                                                                                 if (i == 0) {type_str = label}
-                                                                                 return {Address: data_address = new_addr, Binary: [  {Addr: (new_addr), DefBin: "00", Bin: "00", Tag: type_str},
-                                                                                                                                      {Addr: (new_addr+1), DefBin: "00", Bin: "00", Tag: null},
-                                                                                                                                      {Addr: (new_addr+2), DefBin: "00", Bin: "00", Tag: null},
-                                                                                                                                      {Addr: (new_addr+3), DefBin: "00", Bin: "00", Tag: null}
-                                                                                                                                    ], Value: null, DefValue: null, reset: false, type: "space"};
-                                                                  });
-
-                  memory[memory_hash[0]] = memory[memory_hash[0]].concat(space_values);
-
-                  data_address = data_address + auxToken;*/
-
-                  /*#######################################################################################*/
-
                   next_token();
                   token = get_token();
 
@@ -2093,21 +2010,18 @@ function data_segment_compiler()
                   break;
               }
             }
-
-            else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-              if (typeof app !== "undefined")
-                  app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
-              return ret;
+            else if (j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1)
+            {
+                main_memory_prereset() ;
+                creator_memory_copytoapp(0) ;
+                return ret;
             }
 
           }
         }
 
-        if (typeof app !== "undefined")
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; //CHECK
-
         main_memory_prereset() ;
-
+        creator_memory_copytoapp(0) ;
         return ret;
 }
 
@@ -3690,7 +3604,6 @@ function pseudoinstruction_compiler ( instruction, label, line )
         re = /reg\.pc/
         console_log(re);
         while (definition.search(re) != -1){
-          //definition = definition.replace(re, "getReg('PC')");
           definition = definition.replace(re, "pc"); //PRUEBA
           console_log(definition);
         }
@@ -3806,53 +3719,36 @@ function pseudoinstruction_compiler ( instruction, label, line )
 }
 
 
-/*Get pseudoinstruction fields*/
-function field(field, action, type)
+/* Get pseudoinstruction fields */
+function field ( field, action, type )
 {
   console_log(field);
   console_log(action);
   console_log(type);
 
-  if(action == "SIZE"){
-    console_log("SIZE");
+  if (action == "SIZE")
+  {
+      console_log("SIZE");
 
-    if(field.match(/^0x/)){
-      var value = field.split("x");
-      return value[1].length*4;
-    }
-    else if (field.match(/^([\-\d])+\.(\d)+/)){
-      return float2bin(parseFloat(field)).length;
-    }
-    else if (field.match(/^([\-\d])+/)){
-      var numAux = parseInt(field, 10);
-      return (bi_intToBigInt(numAux,10).toString(2)).length;
-    }
-
-    else{
-      var exit = 0;
-      //Search tag in data segment
-      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
-            exit = 1;
-            var numAux = parseInt(memory[memory_hash[0]][z].Address, 10);
-            return (numAux.toString(2)).length;
-          }
-        }
+      if (field.match(/^0x/)){
+          var value = field.split("x");
+          return value[1].length*4;
       }
-
-      //Search tag in text segment
-      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
-            exit = 1;
-            var numAux = parseInt(memory[memory_hash[1]][z].Address, 10);
-            return (numAux.toString(2)).length;
-          }
-        }
+      else if (field.match(/^([\-\d])+\.(\d)+/)){
+          return float2bin(parseFloat(field)).length;
       }
-    }
-
+      else if (field.match(/^([\-\d])+/)){
+          var numAux = parseInt(field, 10);
+          return (bi_intToBigInt(numAux,10).toString(2)).length;
+      }
+      else
+      {
+  	  var ret = creator_memory_findbytag(field) ;
+  	  if (ret.exit == 1) {
+              var numAux = ret.value ;
+              return (numAux.toString(2)).length;
+	  }
+      }
   }
 
   re = /\((.*?)\)/;
@@ -3877,27 +3773,12 @@ function field(field, action, type)
       return hexNum;
     }
 
-    if(Number.isInteger(field) == false){
-      var exit = 0;
-      //Search tag in data segment
-      for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[0]][z].Binary[p].Tag){
-            exit = 1;
-            field = parseInt(memory[memory_hash[0]][z].Address, 10);
-          }
-        }
-      }
-
-      //Search tag in text segment
-      for (var z = 0; z < memory[memory_hash[1]].length && exit == 0; z++){
-        for (var p = 0; p < memory[memory_hash[1]][z].Binary.length && exit == 0; p++){
-          if(field == memory[memory_hash[1]][z].Binary[p].Tag){
-            exit = 1;
-            field = parseInt(memory[memory_hash[0]][z].Address, 10);
-          }
-        }
-      }
+    if (Number.isInteger(field) == false)
+    {
+        var ret = creator_memory_findbytag(field) ;
+	if (ret.exit == 1) {
+            field = ret.value ;
+	}
     }
 
     if(type == "int"){
@@ -3927,21 +3808,6 @@ function field(field, action, type)
   }
   return -1;
 }
-
-function getReg(name)
-{
-  for (var i = 0; i < architecture.components.length; i++)
-   {
-      for (var j = 0; j < architecture.components[i].elements.length; j++)
-      {
-          if (architecture.components[i].elements[j].name == name)
-          {
-              return parseInt(architecture.components[i].elements[j].value);
-          }
-      }
-   }
-}
-
 
 
 /**
