@@ -4090,7 +4090,7 @@ function assembly_compiler()
 	      var ret1 = creator_memory_findbytag(instructionParts[j]);
 	      if (ret1.exit == 1)
 	      {
-                    var addr = ret1.value; // (memory[memory_hash[0]][z].Binary[p].Addr);
+                    var addr = ret1.value;
                     var bin  = parseInt(addr, 16).toString(2);
                     var startbit = pending_instructions[i].startBit;
                     var stopbit  = pending_instructions[i].stopBit;
@@ -5500,25 +5500,11 @@ function code_segment_compiler()
                   return packCompileError('m0', "Empty label", 'error', "danger") ;
               }
 
-	      // NEW
 	      var ret1 = creator_memory_findbytag(token.substring(0, token.length-1));
 	      if (ret1.exit == 1)
 	      {
                   return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
 	      }
-
-	      // OLD
-	      /*
-              for (var i = 0; i < memory[memory_hash[0]].length; i++)
-	      {
-                  for(var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++)
-		  {
-                    if (memory[memory_hash[0]][i].Binary[j].Tag == token.substring(0,token.length-1)) {
-                        return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                    }
-                  }
-              }
-	      */
 
               for (var i = 0; i < instructions.length; i++) {
                    if (instructions[i].Label == token.substring(0,token.length-1)) {
