@@ -4027,106 +4027,120 @@ function assembly_compiler()
         }
 
         /*Check pending instructions*/
-        for(var i = 0; i < pending_instructions.length; i++){
+        for (var i = 0; i < pending_instructions.length; i++)
+	{
           var exit = 0;
-          var signatureParts = pending_instructions[i].signature;
+          var signatureParts    = pending_instructions[i].signature;
           var signatureRawParts = pending_instructions[i].signatureRaw;
-          var instructionParts = (pending_instructions[i].instruction).split(' ');
+          var instructionParts  = (pending_instructions[i].instruction).split(' ');
           console_log(instructionParts);
-          for (var j = 0; j < signatureParts.length && exit == 0; j++){
-            if(signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address"){
-              for (var z = 0; z < instructions.length && exit == 0; z++){
-                if(instructions[z].Label == instructionParts[j]){
+
+          for (var j = 0; j < signatureParts.length && exit == 0; j++)
+	  {
+            if (signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address")
+            {
+
+              for (var z = 0; z < instructions.length && exit == 0; z++)
+	      {
+                if (instructions[z].Label == instructionParts[j])
+		{
                   var addr = instructions[z].Address;
-                  var bin = parseInt(addr, 16).toString(2);
+                  var bin  = parseInt(addr, 16).toString(2);
                   var startbit = pending_instructions[i].startBit;
-                  var stopbit = pending_instructions[i].stopBit;
+                  var stopbit  = pending_instructions[i].stopBit;
 
                   instructionParts[j] = addr;
-                  var newInstruction = "";
-                  for (var w = 0; w < instructionParts.length; w++) {
-                    if(w == instructionParts.length-1){
+                  var newInstruction  = "";
+                  for (var w=0; w < instructionParts.length; w++)
+	          {
                       newInstruction = newInstruction + instructionParts[w];
-                    }
-                    else{
-                      newInstruction = newInstruction + instructionParts[w] + " ";
-                    }
-                  }
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                    }
+                      if (w != instructionParts.length-1) {
+                          newInstruction = newInstruction + " ";
+                      }
                   }
 
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                      var fieldsLength = startbit - stopbit + 1;
-                      console_log(w)
-                      console_log(numBinaries)
-                      console_log(w - numBinaries)
-                      instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                      exit = 1;
-                    }
+                  for (var w=0; w < instructions.length && exit == 0; w++)
+		  {
+                       var aux = "0x" + (pending_instructions[i].address).toString(16);
+                       if (aux == instructions[w].Address) {
+                           instructions[w].loaded = newInstruction;
+                       }
+                  }
+
+                  for (var w=0; w < instructions.length && exit == 0; w++)
+	          {
+                       var aux = "0x" + (pending_instructions[i].address).toString(16);
+                       if (aux == instructions[w].Address)
+		       {
+                           instructions[w].loaded = newInstruction;
+                           var fieldsLength = startbit - stopbit + 1;
+                           console_log(w)
+                           console_log(numBinaries)
+                           console_log(w - numBinaries)
+	                   var iload =  instructions_binary[w - numBinaries].loaded;
+                           instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
+                           exit = 1;
+                       }
                   }
                 }
               }
 
-              for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-                for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-                  if(instructionParts[j] == memory[memory_hash[0]][z].Binary[p].Tag){
-                    var addr = (memory[memory_hash[0]][z].Binary[p].Addr);
-                    var bin = parseInt(addr, 16).toString(2);
+
+	      // NEW
+	      var ret1 = creator_memory_findbytag(instructionParts[j]);
+	      if (ret1.exit == 1)
+	      {
+                    var addr = ret1.value; // (memory[memory_hash[0]][z].Binary[p].Addr);
+                    var bin  = parseInt(addr, 16).toString(2);
                     var startbit = pending_instructions[i].startBit;
-                    var stopbit = pending_instructions[i].stopBit;
+                    var stopbit  = pending_instructions[i].stopBit;
 
                     instructionParts[j] = "0x" + addr.toString(16);
                     var newInstruction = "";
-                    for (var w = 0; w < instructionParts.length; w++) {
-                      if(w == instructionParts.length-1){
-                        newInstruction = newInstruction + instructionParts[w];
-                      }
-                      else{
-                        newInstruction = newInstruction + instructionParts[w] + " ";
-                      }
+                    for (var w=0; w < instructionParts.length; w++)
+	            {
+                         newInstruction = newInstruction + instructionParts[w];
+                         if (w != instructionParts.length-1){
+                             newInstruction = newInstruction + " ";
+                         }
                     }
-                    for (var w = 0; w < instructions.length && exit == 0; w++) {
-                      var aux = "0x" + (pending_instructions[i].address).toString(16);
-                      if(aux == instructions[w].Address){
-                        instructions[w].loaded = newInstruction;
-                      }
-                    }
-
-                    for (var w = 0; w < instructions.length && exit == 0; w++) {
-                      var aux = "0x" + (pending_instructions[i].address).toString(16);
-                      if(aux == instructions[w].Address){
-                        instructions[w].loaded = newInstruction;
-                        var fieldsLength = startbit - stopbit + 1;
-                        instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                        exit = 1;
-                      }
+                    for (var w=0; w < instructions.length; w++)
+		    {
+                         var aux = "0x" + (pending_instructions[i].address).toString(16);
+                         if (aux == instructions[w].Address) {
+                             instructions[w].loaded = newInstruction;
+                         }
                     }
 
-                  }
-                }
-              }
+                    for (var w=0; w < instructions.length && exit == 0; w++)
+		    {
+                         var aux = "0x" + (pending_instructions[i].address).toString(16);
+                         if (aux == instructions[w].Address)
+			 {
+                             instructions[w].loaded = newInstruction;
+                             var fieldsLength = startbit - stopbit + 1;
+	                     var iload        = instructions_binary[w - numBinaries].loaded;
+                             instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
+                             exit = 1;
+                         }
+                    }
+	      }
 
-              if(exit == 0 && isNaN(instructionParts[j]) == true){
-               //tokenIndex = 0;
-               //nEnters = 0 ;
+              if (exit == 0 && isNaN(instructionParts[j]) == true)
+	      {
+                //tokenIndex = 0;
+                //nEnters = 0 ;
                 //tokenIndex=pending_instructions[i].line;
-                nEnters=pending_instructions[i].line;
-                instructions = [];
-                pending_instructions = [];
-                pending_tags = [];
-                data_tag = [];
-                instructions_binary = [];
-                crex_memory_clear() ;
-                data = [];
-                extern = [];
-                return packCompileError('m7', instructionParts[j], "error", "danger");
+                  nEnters=pending_instructions[i].line;
+                  instructions = [];
+                  pending_instructions = [];
+                  pending_tags = [];
+                  data_tag = [];
+                  instructions_binary = [];
+                  crex_memory_clear() ;
+                  data = [];
+                  extern = [];
+                  return packCompileError('m7', instructionParts[j], "error", "danger");
               }
             }
 
