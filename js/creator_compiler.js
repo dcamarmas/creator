@@ -631,106 +631,120 @@ function assembly_compiler()
         }
 
         /*Check pending instructions*/
-        for(var i = 0; i < pending_instructions.length; i++){
+        for (var i = 0; i < pending_instructions.length; i++)
+	{
           var exit = 0;
-          var signatureParts = pending_instructions[i].signature;
+          var signatureParts    = pending_instructions[i].signature;
           var signatureRawParts = pending_instructions[i].signatureRaw;
-          var instructionParts = (pending_instructions[i].instruction).split(' ');
+          var instructionParts  = (pending_instructions[i].instruction).split(' ');
           console_log(instructionParts);
-          for (var j = 0; j < signatureParts.length && exit == 0; j++){
-            if(signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address"){
-              for (var z = 0; z < instructions.length && exit == 0; z++){
-                if(instructions[z].Label == instructionParts[j]){
+
+          for (var j = 0; j < signatureParts.length && exit == 0; j++)
+	  {
+            if (signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address")
+            {
+
+              for (var z = 0; z < instructions.length && exit == 0; z++)
+	      {
+                if (instructions[z].Label == instructionParts[j])
+		{
                   var addr = instructions[z].Address;
-                  var bin = parseInt(addr, 16).toString(2);
+                  var bin  = parseInt(addr, 16).toString(2);
                   var startbit = pending_instructions[i].startBit;
-                  var stopbit = pending_instructions[i].stopBit;
+                  var stopbit  = pending_instructions[i].stopBit;
 
                   instructionParts[j] = addr;
-                  var newInstruction = "";
-                  for (var w = 0; w < instructionParts.length; w++) {
-                    if(w == instructionParts.length-1){
+                  var newInstruction  = "";
+                  for (var w=0; w < instructionParts.length; w++)
+	          {
                       newInstruction = newInstruction + instructionParts[w];
-                    }
-                    else{
-                      newInstruction = newInstruction + instructionParts[w] + " ";
-                    }
-                  }
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                    }
+                      if (w != instructionParts.length-1) {
+                          newInstruction = newInstruction + " ";
+                      }
                   }
 
-                  for (var w = 0; w < instructions.length && exit == 0; w++) {
-                    var aux = "0x" + (pending_instructions[i].address).toString(16);
-                    if(aux == instructions[w].Address){
-                      instructions[w].loaded = newInstruction;
-                      var fieldsLength = startbit - stopbit + 1;
-                      console_log(w)
-                      console_log(numBinaries)
-                      console_log(w - numBinaries)
-                      instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                      exit = 1;
-                    }
+                  for (var w=0; w < instructions.length && exit == 0; w++)
+		  {
+                       var aux = "0x" + (pending_instructions[i].address).toString(16);
+                       if (aux == instructions[w].Address) {
+                           instructions[w].loaded = newInstruction;
+                       }
+                  }
+
+                  for (var w=0; w < instructions.length && exit == 0; w++)
+	          {
+                       var aux = "0x" + (pending_instructions[i].address).toString(16);
+                       if (aux == instructions[w].Address)
+		       {
+                           instructions[w].loaded = newInstruction;
+                           var fieldsLength = startbit - stopbit + 1;
+                           console_log(w)
+                           console_log(numBinaries)
+                           console_log(w - numBinaries)
+	                   var iload =  instructions_binary[w - numBinaries].loaded;
+                           instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
+                           exit = 1;
+                       }
                   }
                 }
               }
 
-              for (var z = 0; z < memory[memory_hash[0]].length && exit == 0; z++){
-                for (var p = 0; p < memory[memory_hash[0]][z].Binary.length && exit == 0; p++){
-                  if(instructionParts[j] == memory[memory_hash[0]][z].Binary[p].Tag){
-                    var addr = (memory[memory_hash[0]][z].Binary[p].Addr);
-                    var bin = parseInt(addr, 16).toString(2);
+
+	      // NEW
+	      var ret1 = creator_memory_findbytag(instructionParts[j]);
+	      if (ret1.exit == 1)
+	      {
+                    var addr = ret1.value;
+                    var bin  = parseInt(addr, 16).toString(2);
                     var startbit = pending_instructions[i].startBit;
-                    var stopbit = pending_instructions[i].stopBit;
+                    var stopbit  = pending_instructions[i].stopBit;
 
                     instructionParts[j] = "0x" + addr.toString(16);
                     var newInstruction = "";
-                    for (var w = 0; w < instructionParts.length; w++) {
-                      if(w == instructionParts.length-1){
-                        newInstruction = newInstruction + instructionParts[w];
-                      }
-                      else{
-                        newInstruction = newInstruction + instructionParts[w] + " ";
-                      }
+                    for (var w=0; w < instructionParts.length; w++)
+	            {
+                         newInstruction = newInstruction + instructionParts[w];
+                         if (w != instructionParts.length-1){
+                             newInstruction = newInstruction + " ";
+                         }
                     }
-                    for (var w = 0; w < instructions.length && exit == 0; w++) {
-                      var aux = "0x" + (pending_instructions[i].address).toString(16);
-                      if(aux == instructions[w].Address){
-                        instructions[w].loaded = newInstruction;
-                      }
-                    }
-
-                    for (var w = 0; w < instructions.length && exit == 0; w++) {
-                      var aux = "0x" + (pending_instructions[i].address).toString(16);
-                      if(aux == instructions[w].Address){
-                        instructions[w].loaded = newInstruction;
-                        var fieldsLength = startbit - stopbit + 1;
-                        instructions_binary[w - numBinaries].loaded = instructions_binary[w - numBinaries].loaded.substring(0, instructions_binary[w - numBinaries].loaded.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + instructions_binary[w - numBinaries].loaded.substring(instructions_binary[w - numBinaries].loaded.length - stopbit, instructions_binary[w - numBinaries].loaded.length);
-                        exit = 1;
-                      }
+                    for (var w=0; w < instructions.length; w++)
+		    {
+                         var aux = "0x" + (pending_instructions[i].address).toString(16);
+                         if (aux == instructions[w].Address) {
+                             instructions[w].loaded = newInstruction;
+                         }
                     }
 
-                  }
-                }
-              }
+                    for (var w=0; w < instructions.length && exit == 0; w++)
+		    {
+                         var aux = "0x" + (pending_instructions[i].address).toString(16);
+                         if (aux == instructions[w].Address)
+			 {
+                             instructions[w].loaded = newInstruction;
+                             var fieldsLength = startbit - stopbit + 1;
+	                     var iload        = instructions_binary[w - numBinaries].loaded;
+                             instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
+                             exit = 1;
+                         }
+                    }
+	      }
 
-              if(exit == 0 && isNaN(instructionParts[j]) == true){
-               //tokenIndex = 0;
-               //nEnters = 0 ;
+              if (exit == 0 && isNaN(instructionParts[j]) == true)
+	      {
+                //tokenIndex = 0;
+                //nEnters = 0 ;
                 //tokenIndex=pending_instructions[i].line;
-                nEnters=pending_instructions[i].line;
-                instructions = [];
-                pending_instructions = [];
-                pending_tags = [];
-                data_tag = [];
-                instructions_binary = [];
-                crex_memory_clear() ;
-                data = [];
-                extern = [];
-                return packCompileError('m7', instructionParts[j], "error", "danger");
+                  nEnters=pending_instructions[i].line;
+                  instructions = [];
+                  pending_instructions = [];
+                  pending_tags = [];
+                  data_tag = [];
+                  instructions_binary = [];
+                  crex_memory_clear() ;
+                  data = [];
+                  extern = [];
+                  return packCompileError('m7', instructionParts[j], "error", "danger");
               }
             }
 
@@ -862,39 +876,40 @@ function assembly_compiler()
           }
         }
 
-        /*Enter the binary in the text segment*/
+        /* Enter the binary in the text segment */
         if (update_binary.instructions_binary != null)
         {
           for (var i = 0; i < update_binary.instructions_binary.length; i++)
           {
-            var hex = bin2hex(update_binary.instructions_binary[i].loaded);
+            var hex     = bin2hex(update_binary.instructions_binary[i].loaded);
             var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
-            var label = update_binary.instructions_binary[i].Label;
-            var hide;
+            var label   = update_binary.instructions_binary[i].Label;
+            var hide    = false ;
 
-            if(i == 0){
+            if (i == 0) {
               hide = false;
               if(update_binary.instructions_binary[i].globl == false){
                 label = "";
               }
             }
             else if(update_binary.instructions_binary[i].globl == false){
+              hide  = true;
               label = "";
-              hide = true;
             }
             else if(update_binary.instructions_binary[i].globl == null){
               hide = true;
             }
-            else{
+            else {
               hide = false;
             }
 
             auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
-            creator_memory_copytoapp(1) ;
           }
+	  // update UI (with new instructions)
+          creator_memory_copytoapp(1) ;
         }
 
-        /*Enter the compilated instructions in the text segment*/
+        /* Enter the compilated instructions in the text segment */
         for (var i = 0; i < instructions_binary.length; i++)
         {
           var hex = bin2hex(instructions_binary[i].loaded);
@@ -907,14 +922,15 @@ function assembly_compiler()
           }
 
           auxAddr = creator_insert_instruction(auxAddr, instructions[i + binNum].loaded, instructions[i + binNum].loaded, false, hex, "00", label);
-          creator_memory_copytoapp(1) ;
         }
+	// update UI (with new instructions)
+        creator_memory_copytoapp(1) ;
 
 
-        /*Check for overlap*/
-        if(memory[memory_hash[0]].length > 0)
+        /* Check for overlap */
+        if (memory[memory_hash[0]].length > 0)
         {
-          if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
+          if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value) {
             //tokenIndex = 0;
             //nEnters = 0 ;
             instructions = [];
@@ -994,18 +1010,16 @@ function assembly_compiler()
         if (typeof app != "undefined")
             app._data.instructions = instructions;
 
-        /*Initialize stack*/
-        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
-
-        for(var i = 0; i<4; i++){
-          (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
-        }
-
+        /* Initialize stack */
+        creator_memory_stackinit(stack_address) ;
         creator_memory_copytoapp(2) ; // CHECK
 
         address = architecture.memory_layout[0].value;
         data_address = architecture.memory_layout[2].value;
         stack_address = architecture.memory_layout[4].value;
+
+	// save current value as default values for reset()...
+        main_memory_prereset() ;
 
         return ret;
 }
@@ -1631,10 +1645,10 @@ function data_segment_compiler()
                     if (string.search(re) != -1){
 	                string = string.replace(re, "");
 	                console_log(string);
-		    }
-		    else {
-		        return packCompileError('m16', "", 'error', "danger") ;
-		    }
+        		    }
+        		    else {
+        		        return packCompileError('m16', "", 'error', "danger") ;
+        		    }
 
                     re = new RegExp('"$');
                     if (string.search(re) != -1){
@@ -1651,67 +1665,7 @@ function data_segment_compiler()
 
                     console_log(string);
 
-                    for(var i = 0; i < string.length; i++){
-                      console_log(string.length);
-                      if((data_address % align) != 0 && i == 0 && align != 0){
-                        while((data_address % align) != 0){
-                          if(data_address % 4 == 0){
-                            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: "ascii"});
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                            data_address++;
-                          }
-                          else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
-                            data_address++;
-                          }
-                          else{
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                            data_address++;
-                          }
-                        }
-                      }
-
-                      if(data_address % 4 == 0){
-                        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false, type: "ascii"});
-
-                        if(i == 0){
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                          if(label != null){
-                            data_tag.push({tag: label, addr: data_address});
-                          }
-                          label = null;
-                        }
-                        else{
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                        }
-
-                        data_address++;
-
-                      }
-                      else{
-                        if(i == 0){
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
-                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
-                          if(label != null){
-                            data_tag.push({tag: label, addr: data_address});
-                          }
-                          label = null;
-                        }
-                        else{
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
-                          memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
-                        }
-                        data_address++;
-                      }
-                    }
-
-                    if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
-                      var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
-                      for(var i = 0; i < num_iter; i++){
-                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
-                      }
-                    }
+                    data_address = creator_memory_storestring ( string, string.length, data_address, label, "ascii", align );
 
                     console_log("ascii_not_null_end Terminado");
 
@@ -1758,93 +1712,22 @@ function data_segment_compiler()
                     if(string.search(re) != -1){
 	                    string = string.replace(re, "");
 	                    console_log(string);
-		                }
-		                else{
-		                	return packCompileError('m16', "", 'error', "danger") ;
-		                }
+	                }
+	                else{
+	                	return packCompileError('m16', "", 'error', "danger") ;
+	                }
                     re = new RegExp('"$');
                     if(string.search(re) != -1){
 	                    string = string.replace(re, "");
 	                    console_log(string);
-		                }
-		                else{
-		                	return packCompileError('m17', "", 'error', "danger") ;
-		                }
+	                }
+	                else{
+	                	return packCompileError('m17', "", 'error', "danger") ;
+	                }
 
                     console_log(string);
 
-                    for(var i = 0; i < string.length + 1; i++){
-                      console_log(string.length);
-                      if((data_address % align) != 0 && i == 0 && align != 0){
-                        while((data_address % align) != 0){
-                          if(data_address % 4 == 0){
-                            memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: "ascii"});
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                            data_address++;
-                          }
-                          else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
-                            data_address++;
-                          }
-                          else{
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                            data_address++;
-                          }
-                        }
-                      }
-
-                      if(data_address % 4 == 0){
-                        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string.charAt(i), DefValue: string.charAt(i), reset: false, type: "ascii"});
-
-                        if(i < string.length){
-                          if(i == 0){
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                            if(label != null){
-                              data_tag.push({tag: label, addr: data_address});
-                            }
-                            label = null;
-                          }
-                          else{
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                          }
-                        }
-                        else{
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
-                        }
-
-                        data_address++;
-                      }
-                      else{
-                        if(i < string.length){
-                          if(i == 0){
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: label},);
-                            memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
-                            memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
-                            if(label != null){
-                              data_tag.push({tag: label, addr: data_address});
-                            }
-                            label = null;
-                          }
-                          else{
-                            (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Bin: (string.charCodeAt(i).toString(16)).padStart(2, "0"), Tag: null},);
-                            memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
-                            memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = string.charAt(i) + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
-                          }
-                        }
-                        else{
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
-                        }
-
-                        data_address++;
-                      }
-                    }
-
-
-                    if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
-                      var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
-                      for(var i = 0; i < num_iter; i++){
-                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
-                      }
-                    }
+                    data_address = creator_memory_storestring ( string, string.length, data_address, label, "asciiz", align );
 
                     console_log("ascii_null_end Terminado");
 
@@ -1894,64 +1777,9 @@ function data_segment_compiler()
                     return packCompileError('m10', token, 'error', "danger") ;
                   }
 
-                  var auxToken = parseInt(token) * architecture.directives[j].size;
+                  var size = parseInt(token) * architecture.directives[j].size;
 
-                  for(var i = 0; i < auxToken; i++){
-                    if((data_address % align) != 0 && i == 0 && align != 0){
-                      while((data_address % align) != 0){
-                        if(data_address % 4 == 0){
-                          memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: "space"});
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                          data_address++;
-                        }
-                        else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
-                          data_address++;
-                        }
-                        else{
-                          (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
-                          data_address++;
-                        }
-                      }
-                    }
-
-                    if(data_address % 4 == 0){
-                      memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: string, DefValue: "", reset: false, type: "space"});
-
-                      if(i == 0){
-                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
-                        if(label != null){
-                          data_tag.push({tag: label, addr: data_address});
-                        }
-                        label = null;
-                      }
-                      else{
-                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
-                      }
-
-                      data_address++;
-                    }
-                    else{
-                      if(i == 0){
-                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: label},);
-                        if(label != null){
-                          data_tag.push({tag: label, addr: data_address});
-                        }
-                        label = null;
-                      }
-                      else{
-                        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
-                      }
-
-                      data_address++;
-                    }
-                  }
-
-                  if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
-                    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
-                    for(var i = 0; i < num_iter; i++){
-                      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
-                    }
-                  }
+                  data_address = creator_memory_storestring ( null, size, data_address, label, "space", align );
 
                   next_token();
                   token = get_token();
@@ -1996,19 +1824,18 @@ function data_segment_compiler()
                   break;
               }
             }
-
-            else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-              creator_memory_copytoapp(0) ; // CHECK
-              return ret;
+            else if (j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1)
+            {
+                main_memory_prereset() ;
+                creator_memory_copytoapp(0) ;
+                return ret;
             }
 
           }
         }
 
-        creator_memory_copytoapp(0) ; // CHECK
-
         main_memory_prereset() ;
-
+        creator_memory_copytoapp(0) ;
         return ret;
 }
 
@@ -2085,45 +1912,46 @@ function code_segment_compiler()
           var found = false;
           var end = false;
 
-          if(token.search(/\:$/) != -1){
-            if(token.length == 1){
-              return packCompileError('m0', "Empty label", 'error', "danger") ;
-            }
+          if (token.search(/\:$/) != -1)
+          {
+              if (token.length == 1){
+                  return packCompileError('m0', "Empty label", 'error', "danger") ;
+              }
 
-            for(var i = 0; i < memory[memory_hash[0]].length; i++){
-              for(var j = 0; j < memory[memory_hash[0]][i].Binary.length; j++){
-                if(memory[memory_hash[0]][i].Binary[j].Tag == token.substring(0,token.length-1)){
+	      var ret1 = creator_memory_findbytag(token.substring(0, token.length-1));
+	      if (ret1.exit == 1)
+	      {
                   return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-                }
-              }
-            }
+	      }
 
-            for(var i = 0; i < instructions.length; i++){
-              if(instructions[i].Label == token.substring(0,token.length-1)){
-                return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+              for (var i = 0; i < instructions.length; i++) {
+                   if (instructions[i].Label == token.substring(0,token.length-1)) {
+                       return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
+                   }
               }
-            }
 
-            label = token.substring(0,token.length-1);
-            next_token();
-            instInit = tokenIndex;
-            token = get_token();
+              label = token.substring(0,token.length-1);
+              next_token();
+              instInit = tokenIndex;
+              token = get_token();
 
-            if(token != null){
-              var re = new RegExp(",+$");
-              token = token.replace(re, "");
-            }
-            else{
-              var instIndex;
-              for (var i = 0; i < architecture.instructions.length; i++) {
-                if(architecture.instructions[i].name == "nop"){
-                  instIndex = i;
-                }
+              if (token != null)
+	      {
+                  var re = new RegExp(",+$");
+                  token = token.replace(re, "");
               }
-              instruction_compiler("nop", "nop", label, tokenIndex, false, 0, instInit, instIndex, false);
-              end = true;
-              found = true;
-            }
+              else
+	      {
+                  var instIndex;
+                  for (var i = 0; i < architecture.instructions.length; i++) {
+                    if (architecture.instructions[i].name == "nop") {
+                        instIndex = i;
+                    }
+                  }
+                  instruction_compiler("nop", "nop", label, tokenIndex, false, 0, instInit, instIndex, false);
+                  end = true;
+                  found = true;
+              }
           }
 
           var re = new RegExp(",+$");
