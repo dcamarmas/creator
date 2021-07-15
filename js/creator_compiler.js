@@ -862,39 +862,40 @@ function assembly_compiler()
           }
         }
 
-        /*Enter the binary in the text segment*/
+        /* Enter the binary in the text segment */
         if (update_binary.instructions_binary != null)
         {
           for (var i = 0; i < update_binary.instructions_binary.length; i++)
           {
-            var hex = bin2hex(update_binary.instructions_binary[i].loaded);
+            var hex     = bin2hex(update_binary.instructions_binary[i].loaded);
             var auxAddr = parseInt(update_binary.instructions_binary[i].Address, 16);
-            var label = update_binary.instructions_binary[i].Label;
-            var hide;
+            var label   = update_binary.instructions_binary[i].Label;
+            var hide    = false ;
 
-            if(i == 0){
+            if (i == 0) {
               hide = false;
               if(update_binary.instructions_binary[i].globl == false){
                 label = "";
               }
             }
             else if(update_binary.instructions_binary[i].globl == false){
+              hide  = true;
               label = "";
-              hide = true;
             }
             else if(update_binary.instructions_binary[i].globl == null){
               hide = true;
             }
-            else{
+            else {
               hide = false;
             }
 
             auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
-            creator_memory_copytoapp(1) ;
           }
+	  // update UI (with new instructions)
+          creator_memory_copytoapp(1) ;
         }
 
-        /*Enter the compilated instructions in the text segment*/
+        /* Enter the compilated instructions in the text segment */
         for (var i = 0; i < instructions_binary.length; i++)
         {
           var hex = bin2hex(instructions_binary[i].loaded);
@@ -907,14 +908,15 @@ function assembly_compiler()
           }
 
           auxAddr = creator_insert_instruction(auxAddr, instructions[i + binNum].loaded, instructions[i + binNum].loaded, false, hex, "00", label);
-          creator_memory_copytoapp(1) ;
         }
+	// update UI (with new instructions)
+        creator_memory_copytoapp(1) ;
 
 
-        /*Check for overlap*/
-        if(memory[memory_hash[0]].length > 0)
+        /* Check for overlap */
+        if (memory[memory_hash[0]].length > 0)
         {
-          if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value){
+          if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary[3].Addr > architecture.memory_layout[3].value) {
             //tokenIndex = 0;
             //nEnters = 0 ;
             instructions = [];
@@ -994,18 +996,16 @@ function assembly_compiler()
         if (typeof app != "undefined")
             app._data.instructions = instructions;
 
-        /*Initialize stack*/
-        memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
-
-        for(var i = 0; i<4; i++){
-          (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
-        }
-
+        /* Initialize stack */
+        creator_memory_stackinit(stack_address) ;
         creator_memory_copytoapp(2) ; // CHECK
 
         address = architecture.memory_layout[0].value;
         data_address = architecture.memory_layout[2].value;
         stack_address = architecture.memory_layout[4].value;
+
+	// save current value as default values for reset()...
+        main_memory_prereset() ;
 
         return ret;
 }
@@ -1996,19 +1996,18 @@ function data_segment_compiler()
                   break;
               }
             }
-
-            else if(j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1){
-              creator_memory_copytoapp(0) ; // CHECK
-              return ret;
+            else if (j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1)
+            {
+                main_memory_prereset() ;
+                creator_memory_copytoapp(0) ;
+                return ret;
             }
 
           }
         }
 
-        creator_memory_copytoapp(0) ; // CHECK
-
         main_memory_prereset() ;
-
+        creator_memory_copytoapp(0) ;
         return ret;
 }
 
