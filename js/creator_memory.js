@@ -1510,3 +1510,88 @@ function creator_memory_stackinit ( stack_address )
         }
 }
 
+function creator_memory_storestring ( string, string_length, data_address, label, type, align ) 
+{
+	var character;
+	var ascii;
+	for(var i = 0; i < string_length; i++){
+	  character = "";
+	  ascii = "0"
+	  if (type != "space") {
+		  character = string.charAt(i);
+		  ascii = string.charCodeAt(i);
+		}
+
+	  if((data_address % align) != 0 && i == 0 && align != 0){
+	    while((data_address % align) != 0){
+	      if(data_address % 4 == 0){
+	        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: type});
+	        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+	        data_address++;
+	      }
+	      else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
+	        data_address++;
+	      }
+	      else{
+	        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
+	        data_address++;
+	      }
+	    }
+	  }
+
+	  if(data_address % 4 == 0){
+	    memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: character, DefValue: character, reset: false, type: type});
+
+	    if(i == 0){
+	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: label},);
+	      if(label != null){
+	        data_tag.push({tag: label, addr: data_address});
+	      }
+	      label = null;
+	    }
+	    else{
+	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: null},);
+	    }
+
+	    data_address++;
+
+	  }
+	  else{
+	    if(i == 0){
+	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: label},);
+	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
+	      if(label != null){
+	        data_tag.push({tag: label, addr: data_address});
+	      }
+	      label = null;
+	    }
+	    else{
+	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: null},);
+	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
+	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
+	    }
+	    data_address++;
+	  }
+	}
+
+	if ( type == "asciiz" ) {
+		if(data_address % 4 == 0){
+			memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: "", DefValue: "", reset: false, type: type});
+			(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+		}
+		else{
+			(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
+		}
+		data_address++;
+	}
+
+	if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
+	  var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
+	  for(var i = 0; i < num_iter; i++){
+	    (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+	  }
+	}
+
+	return data_address;
+}
