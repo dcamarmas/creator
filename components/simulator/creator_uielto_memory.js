@@ -24,7 +24,7 @@
 				var uielto_memory = {
 
 				props:      {
-											memory:   	        { type: Array,  required: true },
+											main_memory:   	    { type: Array,  required: true },
 											memory_segment:   	{ type: String, required: true },
 											track_stack_names:  { type: Array,  required: true }, //TODO: optional
 											callee_subrutine:   { type: String, required: true }, //TODO: optional
@@ -41,7 +41,7 @@
 				methods: 		{
 											/*Filter table*/
 											filter(row, filter){
-												if (this.memory_segment == "instructions_memory") {
+												if ((this.memory_segment == "instructions_memory") && ((row.addr >= architecture.memory_layout[0].value) && (row.addr <= architecture.memory_layout[1].value))) {
 													if(row.hide == true){
 														return false;
 													}
@@ -49,11 +49,11 @@
 														return true;
 													}
 												}
-												if (this.memory_segment == "data_memory") {
+												if ((this.memory_segment == "data_memory") && ((row.addr >= architecture.memory_layout[2].value) && (row.addr <= architecture.memory_layout[3].value))) {
 													return true;
 												}
-												if (this.memory_segment == "stack_memory") {
-													return (Math.abs(row.Address - app._data.end_callee) < 40);
+												if ((this.memory_segment == "stack_memory") && ((row.addr >= architecture.memory_layout[4].value) && (row.addr <= architecture.memory_layout[5].value))) {
+													return (Math.abs(row.addr - app._data.end_callee) < 40);
 												}
 											},
 
@@ -63,7 +63,7 @@
 													return
 												}
 												if (this.memory_segment == "data_memory") {
-													if(record.type == "space" && (memory[memory_hash[0]][index].Binary[0].Tag != null) || memory[memory_hash[0]][index].Binary[1].Tag != null || memory[memory_hash[0]][index].Binary[2].Tag != null || memory[memory_hash[0]][index].Binary[3].Tag != null){
+													if(record.type && check_tag_null(record.hex)){
 														app._data.row_index = index; //TODO: vue bidirectional updates
 														app.$refs['space_modal'].show(); //TODO: vue bidirectional updates
 													}
@@ -72,6 +72,15 @@
 													app._data.row_index = index;  //TODO: vue bidirectional updates
 													app.$refs['stack_modal'].show(); //TODO: vue bidirectional updates
 												}
+											},
+
+											check_tag_null(record){
+												for (var i = 0; i < record.length; i++) {
+													if (record[i].tag != null){
+														return true;
+													}
+												}
+												return false;
 											}				
 										},
 
@@ -80,12 +89,12 @@
 										'<span class="container">' +
 										'  <b-row align-v="start">' +
 										'  <b-col style="min-height:35vh !important;">' +
-										'' +
+										' ' +
 										'	  <b-table sticky-header ' +
 										'	           striped ' +
 										'	           small ' +
 										'	           hover ' +
-										'	           :items="memory[memory_segment]" ' +
+										'	           :items="main_memory" ' +
 										'	           :fields="memFields" ' +
 										'	           :filter-function=filter ' +
 										'	           filter=" " ' +
@@ -101,27 +110,27 @@
 										'	        <div v-for="item2 in architecture.components[item.index].elements">' +
 										'	          <b-badge variant="info" ' +
 										'	                   class="border border-info shadow memoryTag" ' +
-										'	                   v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'data\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                   v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'data\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
 										'	            {{item2.name[0]}}' +
 										'	          </b-badge>' +
 										'	          <span class="fas fa-long-arrow-alt-right" ' +
-										'	                v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'data\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'data\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
 										'	          </span>' +
 										'	          <b-badge variant="success" ' +
 										'	                   class="border border-success shadow memoryTag" ' +
-										'	                   v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'code\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                   v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'code\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
 										'	            {{item2.name[0]}}' +
 										'	          </b-badge>' +
 										'	          <span class="fas fa-long-arrow-alt-right" ' +
-										'	                v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'code\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                v-if="item2.properties.includes(\'pointer\') && item2.properties.includes(\'code\') && ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
 										'	          </span>' +
 										'	          <b-badge variant="info" ' +
 										'	                   class="border border-info shadow memoryTag" ' +
-										'	                   v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\'))&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                   v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\'))&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
 										'	            {{item2.name[0]}}' +
 										'	          </b-badge>' +
 										'	          <span class="fas fa-long-arrow-alt-right" ' +
-										'	                v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\') )&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.Address & 0xFFFFFFFC))">' +
+										'	                v-if="item2.properties.includes(\'pointer\') && (item2.properties.includes(\'stack\') || item2.properties.includes(\'frame\') )&& ((parseInt(item2.value) & 0xFFFFFFFC) == (row.item.addr & 0xFFFFFFFC))">' +
 										'	          </span>' +
 										'	' +
 										'	        </div>' +
@@ -129,338 +138,116 @@
 										'	    </template>' +
 										'	' +
 										'	    <template v-slot:cell(Address)="row">' +
-										'	      <span class="h6Sm" v-if="((row.item.Address >= architecture.memory_layout[0].value) && (row.item.Address <= architecture.memory_layout[1].value))">' + //text
-										'	        0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}' +
+										'	      <span class="h6Sm" v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
+										'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
 										'	      </span>' +
-										'	      <span class="h6Sm" v-if="((row.item.Address >= architecture.memory_layout[2].value) && (row.item.Address <= architecture.memory_layout[3].value))">' + //data
-										'	        0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}' +
+										'	      <span class="h6Sm text-secondary" v-if="((row.item.addr < app._data.end_callee) && (Math.abs(row.item.addr - app._data.end_callee) < 40))">' + //Llamado
+										'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
 										'	      </span>' +
-										'	      <span class="h6Sm text-secondary" v-if="((row.item.Address < app._data.end_callee) && (Math.abs(row.item.Address - app._data.end_callee) < 40))">' + //Llamado
-										'	        0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}' +
+										'	      <span class="h6Sm text-success" v-if="((row.item.addr < app._data.begin_callee) && (row.item.addr >= app._data.end_callee))">' + //Llamante
+										'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
 										'	      </span>' +
-										'	      <span class="h6Sm text-success" v-if="((row.item.Address < app._data.begin_callee) && (row.item.Address >= app._data.end_callee))">' + //Llamante
-										'	        0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}' +
+										'	      <span class="h6Sm text-blue-funny" v-if="((row.item.addr < app._data.begin_caller) && (row.item.addr >= app._data.end_caller))">' +
+										'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
 										'	      </span>' +
-										'	      <span class="h6Sm text-blue-funny" v-if="((row.item.Address < app._data.begin_caller) && (row.item.Address >= app._data.end_caller))">' +
-										'	        0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}' +
-										'	      </span>' +
-										'	      <span class="h6Sm" v-if="(row.item.Address >= app._data.begin_caller)">' + //Antes del llamante
-										'	        0x{{((row.item.Address + 3).toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}} - 0x{{(row.item.Address.toString(16)).padStart(row.item.Address.length-2, "0").toUpperCase()}}' +
+										'	      <span class="h6Sm" v-if="(row.item.addr >= app._data.begin_caller)">' + //Antes del llamante
+										'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
 										'	      </span>' +
 										'	    </template>' +
 										'	' +
 										'	    <template v-slot:cell(Binary)="row">' +
-										'       <span class="h6Sm" v-if="((row.item.Address >= architecture.memory_layout[0].value) && (row.item.Address <= architecture.memory_layout[1].value))">' + //data
-										'	        <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[3].Tag == null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[2].Tag == null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[2].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[1].Tag == null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[0].Tag == null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span>' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Tag}}' +
-										'	        </b-badge>' +
-										'	      </span>' +
-										'       <span class="h6Sm" v-if="((row.item.Address >= architecture.memory_layout[2].value) && (row.item.Address <= architecture.memory_layout[3].value))">' + //text
-										'	        <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[3].Tag == null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[2].Tag == null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[2].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[1].Tag == null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[0].Tag == null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span>' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Tag}}' +
-										'	        </b-badge>' +
-										'	      </span>' +
-										'	      <span class="h6Sm text-secondary" v-if="((row.item.Address < app._data.end_callee) && (Math.abs(row.item.Address - app._data.end_callee) < 40))">' + //Llamado
-										'	        <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[3].Tag == null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[2].Tag == null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[2].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[1].Tag == null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[0].Tag == null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span>' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Tag}}' +
-										'	        </b-badge>' +
-										'	      </span>' +
-										'	' +
-										'	      <span class="h6Sm text-success" v-if="((row.item.Address < app._data.begin_callee) && (row.item.Address >= app._data.end_callee))">' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[3].Tag == null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[2].Tag == null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span>' +
-										'	        <span v-if="row.item.Binary[1].Tag == null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[0].Tag == null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Tag}}' +
-										'	        </b-badge>' +
+										'       <span class="h6Sm"  v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
+										' 				<span v-for="item in row.item.hex">' +
+										'	        	<span class="memoryBorder" v-if="item.tag != null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<span v-if="item.tag == null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<b-badge pill variant="info" ' +
+										'	          	       class="border border-info shadow binaryTag" ' +
+										'	            	     v-if="item.tag != null">' +
+										'	          	{{item.tag}}' +
+										'	        	</b-badge>' +
+										' 				</span>' +
 										'	      </span>' +
 										' ' +
-										'	      <span class="h6Sm text-blue-funny" v-if="((row.item.Address < app._data.begin_caller) && (row.item.Address >= app._data.end_caller))">' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[3].Tag == null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Tag}}' +
-										'	        </b-badge>' +
+										'	      <span class="h6Sm text-secondary" v-if="((row.item.addr < app._data.end_callee) && (Math.abs(row.item.addr - app._data.end_callee) < 40))">' + //Llamado
+										' 				<span v-for="item in row.item.hex">' +
+										'	        	<span class="memoryBorder" v-if="item.tag != null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<span v-if="item.tag == null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<b-badge pill variant="info" ' +
+										'	          	       class="border border-info shadow binaryTag" ' +
+										'	            	     v-if="item.tag != null">' +
+										'	          	{{item.tag}}' +
+										'	        	</b-badge>' +
+										' 				</span>' +
+										'	      </span>' +
 										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[2].Tag == null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span>' +
-										'	        <span v-if="row.item.Binary[1].Tag == null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[0].Tag == null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Tag}}' +
-										'	        </b-badge>' +
+										'	      <span class="h6Sm text-success" v-if="((row.item.addr < app._data.begin_callee) && (row.item.addr >= app._data.end_callee))">' +
+										' 				<span v-for="item in row.item.hex">' +
+										'	        	<span class="memoryBorder" v-if="item.tag != null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<span v-if="item.tag == null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<b-badge pill variant="info" ' +
+										'	          	       class="border border-info shadow binaryTag" ' +
+										'	            	     v-if="item.tag != null">' +
+										'	          	{{item.tag}}' +
+										'	        	</b-badge>' +
+										' 				</span>' +
 										'	      </span>' +
 										' ' +
-										'	      <span class="h6Sm" v-if="(row.item.Address >= app._data.begin_caller)">' + //Antes del llamante
-										'	        <span class="memoryBorder" v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[3].Tag == null">' +
-										'	          {{row.item.Binary[3].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[3].Tag != null">' +
-										'	          {{row.item.Binary[3].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[2].Tag != null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[2].Tag == null">' +
-										'	          {{row.item.Binary[2].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[2].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[1].Tag == null">' +
-										'	          {{row.item.Binary[1].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[1].Tag != null">' +
-										'	          {{row.item.Binary[1].Tag}}' +
-										'	        </b-badge>' +
-										'	' +
-										'	        <span class="memoryBorder" v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span> ' +
-										'	        <span v-if="row.item.Binary[0].Tag == null">' +
-										'	          {{row.item.Binary[0].Bin.toUpperCase()}}' +
-										'	        </span>' +
-										'	        <b-badge pill variant="info" ' +
-										'	                 class="border border-info shadow binaryTag" ' +
-										'	                 v-if="row.item.Binary[0].Tag != null">' +
-										'	          {{row.item.Binary[0].Tag}}' +
-										'	        </b-badge>' +
+										'	      <span class="h6Sm text-blue-funny" v-if="((row.item.addr < app._data.begin_caller) && (row.item.addr >= app._data.end_caller))">' +
+										' 				<span v-for="item in row.item.hex">' +
+										'	        	<span class="memoryBorder" v-if="item.tag != null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<span v-if="item.tag == null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<b-badge pill variant="info" ' +
+										'	          	       class="border border-info shadow binaryTag" ' +
+										'	            	     v-if="item.tag != null">' +
+										'	          	{{item.tag}}' +
+										'	        	</b-badge>' +
+										' 				</span>' +
+										'	      </span>' +
+										' ' +
+										'	      <span class="h6Sm" v-if="(row.item.addr >= app._data.begin_caller)">' + //Antes del llamante
+										' 				<span v-for="item in row.item.hex">' +
+										'	        	<span class="memoryBorder" v-if="item.tag != null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<span v-if="item.tag == null">' +
+										'	          	{{item.byte.toUpperCase()}}' +
+										'	        	</span> ' +
+										'	        	<b-badge pill variant="info" ' +
+										'	          	       class="border border-info shadow binaryTag" ' +
+										'	            	     v-if="item.tag != null">' +
+										'	          	{{item.tag}}' +
+										'	        	</b-badge>' +
+										' 				</span>' +
 										'	      </span>' +
 										'	' +
 										'	    </template>' +
 										'	    <template v-slot:cell(Value)="row">' +
-										'	      <span class="h6Sm"                 v-if="((row.item.Address >= architecture.memory_layout[0].value) && (row.item.Address <= architecture.memory_layout[1].value))">{{row.item.Value}}</span>' + //text
-										'	      <span class="h6Sm"                 v-if="((row.item.Address >= architecture.memory_layout[2].value) && (row.item.Address <= architecture.memory_layout[3].value))">' + //data
-										'         {{row.item.Value}}' +
+										'	      <span class="h6Sm" v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
+										'         {{row.item.value}}' +
 										'	        <span class="fas fa-eye memoryValue" ' +
-										'	              v-if="row.item.type == \'space\' && (row.item.Binary[0].Tag != null || row.item.Binary[1].Tag != null || row.item.Binary[2].Tag != null || row.item.Binary[3].Tag != null)">' +
+										'	              v-if="row.item.eye && check_tag_null(row.item.hex)">' +
 										'	        </span>' +
 										'       </span>' +
-										'	      <span class="h6Sm text-secondary"  v-if="((row.item.Address < app._data.end_callee) && (Math.abs(row.item.Address - app._data.end_callee) < 40))">{{row.item.Value}}</span>' +
-										'	      <span class="h6Sm text-success"    v-if="((row.item.Address < app._data.begin_callee) && (row.item.Address >= app._data.end_callee))">{{row.item.Value}}</span>' +
-										'	      <span class="h6Sm text-blue-funny" v-if="((row.item.Address < app._data.begin_caller) && (row.item.Address >= app._data.end_caller))">{{row.item.Value}}</span>' +
-										'	      <span class="h6Sm"                 v-if="(row.item.Address >= app._data.begin_caller)">{{row.item.Value}}</span>' +
+										'	      <span class="h6Sm text-secondary"  v-if="((row.item.addr < app._data.end_callee) && (Math.abs(row.item.addr - app._data.end_callee) < 40))">{{row.item.value}}</span>' +
+										'	      <span class="h6Sm text-success"    v-if="((row.item.addr < app._data.begin_callee) && (row.item.addr >= app._data.end_callee))">{{row.item.value}}</span>' +
+										'	      <span class="h6Sm text-blue-funny" v-if="((row.item.addr < app._data.begin_caller) && (row.item.addr >= app._data.end_caller))">{{row.item.value}}</span>' +
+										'	      <span class="h6Sm"                 v-if="(row.item.addr >= app._data.begin_caller)">{{row.item.value}}</span>' +
 										'	    </template>' +
 										'	  </b-table>' +
 										'' +
