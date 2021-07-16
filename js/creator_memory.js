@@ -40,6 +40,14 @@ var main_memory_datatypes = {} ;
     //    { "type": type, "address": addr, "value": value, "default": "00" },
     //  }
 
+var app_data_main_memory = [] ;
+    // [
+    //   0/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   4/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   8/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   ...
+    // ]
+
 
 //
 // Type and size...
@@ -477,6 +485,46 @@ function creator_memory_findaddress_bytag ( tag )
         }
 
         return ret ;
+}
+
+function creator_memory_updaterow ( addr )
+{
+    var elto = {} ;
+    var addr_hex = 0 ;
+
+    // addr_begin
+    addr_hex = parseInt(addr) ;
+    elto.addr_begin = "0x" + addr_hex.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
+
+    // addr_end
+    addr_hex = parseInt(addr) + word_size_bytes ;
+    elto.addr_end = "0x" + addr_hex.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
+
+    // hex
+    elto.hex = [] ;
+    for (var i=0; i<word_size_bytes; i++)
+    {
+         addr_hex = parseInt(addr) + i ;
+         elto.hex.push({
+                         byte: main_memory[addr_hex].bin,
+                         tag:  main_memory[addr_hex].tag
+                      }) ;
+    }
+
+    // value
+    addr_hex = parseInt(addr) ;
+    elto.value = main_memory_datatypes[addr_hex].value ;
+
+    // eye
+    addr_hex = parseInt(addr) ;
+    elto.eye = false ;
+    if (main_memory_datatypes[addr_hex].type == "space") {
+        elto.eye = true ;
+    }
+
+    // app._data...
+    //app._data.main_memory[addr] = elto ;
+    app_data_main_memory[addr] = elto ;
 }
 
 
@@ -1517,7 +1565,7 @@ function creator_memory_stackinit ( stack_address )
         }
 }
 
-function creator_memory_storestring ( string, string_length, data_address, label, type, align ) 
+function creator_memory_storestring ( string, string_length, data_address, label, type, align )
 {
         // NEW
         var algn = creator_memory_alignelto(data_address, string_length) ;
