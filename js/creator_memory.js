@@ -40,9 +40,17 @@ var main_memory_datatypes = {} ;
     //    { "type": type, "address": addr, "value": value, "default": "00" },
     //  }
 
+var app_data_main_memory = [] ;
+    // [
+    //   0/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   4/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   8/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   ...
+    // ]
+
 
 //
-// Type and size...
+// Type, size and address...
 //
 
 function creator_memory_type2size ( type )
@@ -115,6 +123,27 @@ function creator_memory_value_by_type ( val, type )
 	return val ;
 }
 
+function creator_memory_alignelto ( new_addr, new_size )
+{
+        var ret = {
+                    new_addr: new_addr,
+                    new_size: new_size
+                  } ;
+
+        // get align address and size
+        for (var i=0; i<word_size_bytes; i++)
+        {
+             if (((new_addr + i) % word_size_bytes) == 0) {
+                 ret.new_addr = new_addr + i ;
+             }
+             if (((new_size + i) % word_size_bytes) == 0) {
+                 ret.new_size = new_size + i ;
+             }
+        }
+
+	return ret ;
+}
+
 
 //
 // main_memory and main_memory_datatype auxiliar functions
@@ -158,6 +187,27 @@ function main_memory_prereset ( )
         for (i=0; i<addrs.length; i++) {
              main_memory_datatypes[addrs[i]].default = main_memory_datatypes[addrs[i]].value ;
         }
+}
+
+function creator_memory_findaddress_bytag ( tag )
+{
+        var ret = {
+	             exit:  0,
+	             value: 0
+	          } ;
+
+	// find main memory by tag
+        var addrs = main_memory_get_addresses() ;
+        for (var i=0; i<addrs.length; i++)
+	{
+             if (main_memory[addrs[i]].tag == tag)
+	     {
+	         ret.exit  = 1 ;
+	         ret.value = parseInt(addrs[i]) ;
+	     }
+        }
+
+        return ret ;
 }
 
 function main_memory_consolelog ( )
@@ -325,7 +375,7 @@ function main_memory_write_bytype ( addr, value, type )
 
 
 //
-// Read and write a data type (string)
+// Read and write a data type...
 //
 
 var string_length_limit = 4*1024 ;
@@ -406,26 +456,10 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
 	return ret ;
 }
 
-function creator_memory_alignelto ( new_addr, new_size )
-{
-        var ret = {
-                    new_addr: new_addr,
-                    new_size: new_size
-                  } ;
 
-        // get align address and size
-        for (var i=0; i<word_size_bytes; i++)
-        {
-             if (((new_addr + i) % word_size_bytes) == 0) {
-                 ret.new_addr = new_addr + i ;
-             }
-             if (((new_size + i) % word_size_bytes) == 0) {
-                 ret.new_size = new_size + i ;
-             }
-        }
-
-	return ret ;
-}
+//
+// memory zerofill, alloc, ...
+//
 
 function creator_memory_zerofill ( new_addr, new_size )
 {
@@ -458,25 +492,56 @@ function creator_memory_alloc ( new_size )
 	return algn.new_addr ;
 }
 
-function creator_memory_findaddress_bytag ( tag )
+function creator_memory_updaterow ( addr )
 {
-        var ret = {
-	             exit:  0,
-	             value: 0
-	          } ;
+    // base address
+    var addr_base = parseInt(addr) ;
+        addr_base = addr_base - (addr_base % word_size_bytes) ; // get word aligned address
 
-	// find main memory by tag
-        var addrs = main_memory_get_addresses() ;
-        for (var i=0; i<addrs.length; i++)
-	{
-             if (main_memory[addrs[i]].tag == tag)
-	     {
-	         ret.exit  = 1 ;
-	         ret.value = parseInt(addrs[i]) ;
-	     }
+    // get_or_create... // TODO: app_data_main_memory -> app._data.main_memory...
+    var elto = {} ;
+    if (typeof app_data_main_memory[addr_base] != "undefined")
+    { // reuse the existing element...
+        elto = app_data_main_memory[addr_base] ;
+    }
+    else
+    { // set a new element, and set the initial values...
+        app_data_main_memory[addr_base] = elto ;
+
+        elto.hex = [] ;
+        for (var i=0; i<word_size_bytes; i++)
+             elto.hex[i] = { byte: "00", tag: "" } ;
+    }
+
+    // addr_begin
+    elto.addr_begin = "0x" + addr_base.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
+
+    // addr_end
+    var addr_hex = addr_base + word_size_bytes ;
+    elto.addr_end = "0x" + addr_hex.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
+
+    // hex
+    var v1 = {} ;
+    for (var i=0; i<word_size_bytes; i++)
+    {
+         v1 = main_memory_read(addr_base + i) ;
+         elto.hex[i].byte = v1.bin;
+         elto.hex[i].tag  = v1.tag;
+    }
+
+    // value
+    elto.value = '' ;
+    if (typeof main_memory_datatypes[addr_base] != "undefined") {
+        elto.value = main_memory_datatypes[addr_base].value ;
+    }
+
+    // eye
+    elto.eye = false ;
+    if (typeof main_memory_datatypes[addr_base] != "undefined") {
+        if (main_memory_datatypes[addr_base].type == "space") {
+            elto.eye = true ;
         }
-
-        return ret ;
+    }
 }
 
 
@@ -494,7 +559,7 @@ var memory          = { data_memory: [], instructions_memory: [], stack_memory: 
 function writeMemory ( value, addr, type )
 {
         // NEW
-        main_memory_write_bytype(addr, value, type) ; // TODO: checks and return main_memory_write_bytype(...)
+        main_memory_write_bytype(addr, value, type) ; // TODO: checks and return ...
 
         // OLD
 	var draw = {
@@ -527,15 +592,18 @@ function writeMemory ( value, addr, type )
 			index = memory_hash[2];
 		}
 
-		for (var i = 0; i < memory[index].length; i++){
-			for (var j = 0; j < memory[index][i].Binary.length; j++){
+		for (var i = 0; i < memory[index].length; i++)
+                {
+			for (var j = 0; j < memory[index][i].Binary.length; j++)
+                        {
 				var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-				if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+				if (aux == addr || memory[index][i].Binary[j].Tag == addr)
+                                {
 					//memory[index][i].Value = parseInt(memValue, 16);
-					if(memory[index][i].type == "float"){
+					if (memory[index][i].type == "float") {
 						memory[index][i].Value = hex2float("0x" + memValue);
 					}
-					else{
+					else {
 						memory[index][i].Value = (parseInt(memValue, 16) >> 0);
 					}
 
@@ -546,10 +614,10 @@ function writeMemory ( value, addr, type )
 					}
 					//memory[index][i].Value = parseInt(memValue, 16);
 
-					if(memory[index][i].type == "float"){
+					if (memory[index][i].type == "float") {
 						memory[index][i].Value = hex2float("0x" + memValue);
 					}
-					else{
+					else {
 						memory[index][i].Value = (parseInt(memValue, 16) >> 0);
 					}
 
@@ -560,8 +628,10 @@ function writeMemory ( value, addr, type )
 			}
 		}
 
-		for (var i = 0; i < memory[index].length; i++){
-			if(memory[index][i].Address > addr){
+		for (var i = 0; i < memory[index].length; i++)
+                {
+			if (memory[index][i].Address > addr)
+                        {
 				var aux_addr = addr - (addr%4);
 				memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
 				var charIndex = memValue.length-1;
@@ -570,7 +640,7 @@ function writeMemory ( value, addr, type )
 					charIndex = charIndex - 2;
 				}
 				if (typeof app !== "undefined")
-						app._data.memory[index] = memory[index];
+					app._data.memory[index] = memory[index];
 				return;
 			}
 			else if(i == memory[index].length-1){
@@ -862,7 +932,7 @@ draw.danger.push(executionIndex);
 function readMemory ( addr, type )
 {
         // NEW
-        main_memory_read_bytype(addr, type) ; // TODO: checks and return main_memory_read_bytype(...) value...
+        main_memory_read_bytype(addr, type) ; // TODO: checks and return ...
 
         // OLD
 	var memValue = '';
@@ -1007,7 +1077,7 @@ return 0;
 function memory_reset ( )
 {
         // NEW
-        main_memory_reset() ; // TODO: checks and return main_memory_reset(...) value...
+        main_memory_reset() ; // TODO: checks and return ...
 
         // OLD
 	for (var i = 0; i < memory[memory_hash[0]].length; i++)
@@ -1044,7 +1114,7 @@ function memory_reset ( )
 function crex_sbrk ( new_size )
 {
         // NEW
-        creator_memory_alloc(new_size) ; // TODO: return creator_memory_alloc(...) value...
+        creator_memory_alloc(new_size) ; // TODO: return ...
 
         // OLD
 	var new_addr = 0 ;
@@ -1094,7 +1164,7 @@ function crex_sbrk ( new_size )
 function crex_get_string_from_memory ( addr )
 {
         // NEW
-        create_memory_read_string(parseInt(addr)) ; // TODO: return create_memory_read_string(...) value...
+        create_memory_read_string(parseInt(addr)) ; // TODO: return ...
 
         // OLD
 	 var index   = 0 ;
@@ -1153,7 +1223,7 @@ function crex_get_string_from_memory ( addr )
 function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
         // NEW
-        main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ;
+        main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ; // TODO: return ...
 
         // OLD
 	var ret = {
@@ -1309,6 +1379,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
         // data_address = data_address + algn.new_size ;
         main_memory_write_tag(algn.new_addr, dataLabel) ;
+        // return '' ;
 
         // OLD
         for (var i = 0; i < (value.length/2); i++)
@@ -1451,6 +1522,7 @@ function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
         // auxAddr = auxAddr + algn.new_size ;
         main_memory_write_tag(algn.new_addr, label) ;
+	// return auxAddr;
 
         // OLD
 	for(var a = 0; a < hex.length/2; a++)
@@ -1510,88 +1582,118 @@ function creator_memory_stackinit ( stack_address )
         }
 }
 
-function creator_memory_storestring ( string, string_length, data_address, label, type, align ) 
+function creator_memory_storestring ( string, string_length, data_address, label, type, align )
 {
-	var character;
-	var ascii;
-	for(var i = 0; i < string_length; i++){
-	  character = "";
-	  ascii = "0"
-	  if (type != "space") {
-		  character = string.charAt(i);
-		  ascii = string.charCodeAt(i);
-		}
+        // NEW
+        var algn = creator_memory_alignelto(data_address, string_length) ;
+        main_memory_write_bydatatype(algn.new_addr, string, type, string) ;
+        creator_memory_zerofill((algn.new_addr + string_length), (algn.new_size - string_length)) ;
+        // data_address = data_address + algn.new_size ;
+        main_memory_write_tag(algn.new_addr, label) ;
+	// return data_address;
 
-	  if((data_address % align) != 0 && i == 0 && align != 0){
-	    while((data_address % align) != 0){
-	      if(data_address % 4 == 0){
+        // OLD
+	var ascii;
+	var character;
+
+	for (var i = 0; i < string_length; i++)
+        {
+	  ascii = "0"
+	  character = "";
+	  if (type != "space")
+          {
+	      ascii = string.charCodeAt(i);
+	      character = string.charAt(i);
+	  }
+
+	  if ((data_address % align) != 0 && i == 0 && align != 0)
+          {
+	    while ((data_address % align) != 0)
+            {
+	      if (data_address % 4 == 0)
+              {
 	        memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: null, DefValue: null, reset: false, type: type});
 	        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
 	        data_address++;
 	      }
-	      else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4){
+	      else if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length == 4)
+              {
 	        data_address++;
 	      }
-	      else{
+	      else
+              {
 	        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: data_address, DefBin: "00", Bin: "00", Tag: null},);
 	        data_address++;
 	      }
 	    }
 	  }
 
-	  if(data_address % 4 == 0){
+	  if (data_address % 4 == 0)
+          {
 	    memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: character, DefValue: character, reset: false, type: type});
 
-	    if(i == 0){
+	    if (i == 0)
+            {
 	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: label},);
-	      if(label != null){
-	        data_tag.push({tag: label, addr: data_address});
+
+	      if (label != null) {
+	          data_tag.push({tag: label, addr: data_address});
 	      }
 	      label = null;
 	    }
-	    else{
+	    else
+            {
 	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: null},);
 	    }
 
 	    data_address++;
-
 	  }
-	  else{
-	    if(i == 0){
+	  else
+          {
+	    if (i == 0)
+            {
 	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: label},);
 	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
 	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
-	      if(label != null){
-	        data_tag.push({tag: label, addr: data_address});
+
+	      if (label != null) {
+	          data_tag.push({tag: label, addr: data_address});
 	      }
 	      label = null;
 	    }
-	    else{
+	    else
+            {
 	      (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: (ascii.toString(16)).padStart(2, "0"), Bin: (ascii.toString(16)).padStart(2, "0"), Tag: null},);
 	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].Value;
 	      memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue = character + " " + memory[memory_hash[0]][memory[memory_hash[0]].length-1].DefValue;
 	    }
+
 	    data_address++;
 	  }
 	}
 
-	if ( type == "asciiz" ) {
-		if(data_address % 4 == 0){
+	if (type == "asciiz")
+        {
+		if (data_address % 4 == 0)
+                {
 			memory[memory_hash[0]].push({Address: data_address, Binary: [], Value: "", DefValue: "", reset: false, type: type});
 			(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
 		}
-		else{
+		else {
 			(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).splice(data_address%4, 1, {Addr: (data_address), DefBin: "00", Bin: "00", Tag: null},);
 		}
+
 		data_address++;
 	}
 
-	if(memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4){
-	  var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
-	  for(var i = 0; i < num_iter; i++){
-	    (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
-	  }
+	if (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length < 4)
+        {
+	    var num_iter = 4 - memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary.length;
+	    for (var i = 0; i < num_iter; i++) {
+	        (memory[memory_hash[0]][memory[memory_hash[0]].length-1].Binary).push({Addr: (data_address + (i)), DefBin: "00", Bin: "00", Tag: null},);
+	    }
 	}
 
 	return data_address;
 }
+
