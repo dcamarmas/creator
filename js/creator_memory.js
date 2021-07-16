@@ -42,9 +42,9 @@ var main_memory_datatypes = {} ;
 
 var app_data_main_memory = [] ;
     // [
-    //   0/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   4/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   8/{addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   0/{addr: 200054, addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   4/{addr: 200054, addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   8/{addr: 200054, addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
     //   ...
     // ]
 
@@ -157,7 +157,7 @@ function main_memory_read_nbytes ( addr, n )
 
 function main_memory_write_nbytes ( addr, value, n )
 {
-        var value_str = value.toString(16).padStart(2*n, "0") ;
+    var value_str = value.toString(16).padStart(2*n, "0") ;
 	var chunks    = value_str.match(/.{1,2}/g) ;
 
 	for (var i = 0; i < chunks.length; i++) {
@@ -522,15 +522,18 @@ function creator_memory_updaterow ( addr )
 
         elto.hex = [] ;
         for (var i=0; i<word_size_bytes; i++)
-             elto.hex[i] = { byte: "00", tag: "" } ;
+             elto.hex[i] = { byte: "00", tag: null } ;
     }
 
     // addr_begin
-    elto.addr_begin = "0x" + addr_base.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
+    elto.addr_begin = "0x" + addr_base.toString(16).padStart(word_size_bytes * 2, "0").toUpperCase() ;
 
     // addr_end
-    var addr_hex = addr_base + word_size_bytes ;
-    elto.addr_end = "0x" + addr_hex.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
+    var addr_end = addr_base + word_size_bytes - 1;
+    elto.addr_end = "0x" + addr_end.toString(16).padStart(word_size_bytes * 2, "0").toUpperCase() ;
+
+    // addr
+    elto.addr = addr_end ;
 
     // hex
     var v1 = {} ;
@@ -538,7 +541,12 @@ function creator_memory_updaterow ( addr )
     {
          v1 = main_memory_read(addr_base + i) ;
          elto.hex[i].byte = v1.bin;
-         elto.hex[i].tag  = v1.tag;
+         if (v1.tag == "") {
+         	elto.hex[i].tag  = null;
+         }
+         else {
+         	elto.hex[i].tag  = v1.tag;
+         }
     }
 
     // value
@@ -554,6 +562,16 @@ function creator_memory_updaterow ( addr )
             elto.eye = true ;
         }
     }
+}
+
+function creator_memory_updateall ( )
+{
+	// show main memory
+    var addrs = main_memory_get_addresses() ;
+    for (var i=0; i<addrs.length; i++) {
+        creator_memory_updaterow(addrs[i]);
+    }
+
 }
 
 
@@ -573,6 +591,7 @@ function writeMemory ( value, addr, type )
         // NEW
         // return main_memory_write_bytype(addr, value, type) ; // FUTURE
         main_memory_write_bytype(addr, value, type) ;
+        creator_memory_updaterow(addr);
 
         // OLD
 	var draw = {
@@ -1093,6 +1112,9 @@ function memory_reset ( )
         // NEW
         // return main_memory_reset() ; // FUTURE
         main_memory_reset() ;
+        creator_memory_updateall();
+
+
 
         // OLD
 	for (var i = 0; i < memory[memory_hash[0]].length; i++)
@@ -1589,7 +1611,7 @@ function creator_memory_stackinit ( stack_address )
 {
         // NEW
         // return main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ; // FUTURE
-        main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
+        //main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
 
         // OLD
         memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
