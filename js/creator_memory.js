@@ -40,14 +40,6 @@ var main_memory_datatypes = {} ;
     //    { "type": type, "address": addr, "value": value, "default": "00" },
     //  }
 
-var app_data_main_memory = [] ;
-    // [
-    //   0/{addr: 200054, addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   4/{addr: 200054, addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   8/{addr: 200054, addr_begin: "0x200000", addr_end: "0x2000004", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   ...
-    // ]
-
 
 /********************
  * Internal API     *
@@ -506,30 +498,37 @@ function main_memory_storedata ( data_address, value, size, dataLabel, DefValue,
 
 function creator_memory_updaterow ( addr )
 {
+    // skip if app.data does not exit...
+    if ((typeof app == "undefined") || (typeof app._data.main_memory == "undefined") ) {
+        return ;
+    }
+
     // base address
     var addr_base = parseInt(addr) ;
         addr_base = addr_base - (addr_base % word_size_bytes) ; // get word aligned address
 
-    // get_or_create... // TODO: app_data_main_memory -> app._data.main_memory...
+    // get_or_create...
     var elto = {} ;
-    if (typeof app_data_main_memory[addr_base] != "undefined")
+    if (typeof app._data.main_memory[addr_base] != "undefined")
     { // reuse the existing element...
-        elto = app_data_main_memory[addr_base] ;
+        elto = app._data.main_memory[addr_base] ;
     }
     else
     { // set a new element, and set the initial values...
-        app_data_main_memory[addr_base] = elto ;
+        // app._data.main_memory[addr_base] = elto ;
+        Vue.set(app._data.main_memory, addr_base, elto) ;
 
         elto.hex = [] ;
-        for (var i=0; i<word_size_bytes; i++)
+        for (var i=0; i<word_size_bytes; i++) {
              elto.hex[i] = { byte: "00", tag: null } ;
+        }
     }
 
     // addr_begin
     elto.addr_begin = "0x" + addr_base.toString(16).padStart(word_size_bytes * 2, "0").toUpperCase() ;
 
     // addr_end
-    var addr_end = addr_base + word_size_bytes - 1;
+    var addr_end = addr_base + word_size_bytes - 1 ;
     elto.addr_end = "0x" + addr_end.toString(16).padStart(word_size_bytes * 2, "0").toUpperCase() ;
 
     // addr
@@ -540,12 +539,11 @@ function creator_memory_updaterow ( addr )
     for (var i=0; i<word_size_bytes; i++)
     {
          v1 = main_memory_read(addr_base + i) ;
+
          elto.hex[i].byte = v1.bin;
-         if (v1.tag == "") {
-         	elto.hex[i].tag  = null;
-         }
-         else {
-         	elto.hex[i].tag  = v1.tag;
+         elto.hex[i].tag  = null;
+         if (v1.tag != "") {
+             elto.hex[i].tag  = v1.tag;
          }
     }
 
@@ -566,7 +564,7 @@ function creator_memory_updaterow ( addr )
 
 function creator_memory_updateall ( )
 {
-	// show main memory
+    // update all app._data.main_memory...
     var addrs = main_memory_get_addresses() ;
     for (var i=0; i<addrs.length; i++) {
         creator_memory_updaterow(addrs[i]);
@@ -1114,8 +1112,6 @@ function memory_reset ( )
         main_memory_reset() ;
         creator_memory_updateall();
 
-
-
         // OLD
 	for (var i = 0; i < memory[memory_hash[0]].length; i++)
 	{
@@ -1611,7 +1607,7 @@ function creator_memory_stackinit ( stack_address )
 {
         // NEW
         // return main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ; // FUTURE
-        //main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
+        main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
 
         // OLD
         memory[memory_hash[2]].push({Address: stack_address, Binary: [], Value: null, DefValue: null, reset: false});
