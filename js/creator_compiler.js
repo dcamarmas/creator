@@ -1520,9 +1520,9 @@ function data_segment_compiler()
 
                     console_log(token);
 
-                    for(var z = 0; z < architecture.directives.length; z++){
-                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                        isFloat = false;
+                    for (var z = 0; z < architecture.directives.length; z++) {
+                      if (token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                          isFloat = false;
                       }
                     }
                   }
@@ -1530,7 +1530,7 @@ function data_segment_compiler()
                   j=0;
                   break;
 
-                case "double":
+             case "double":
                   var isDouble = true;
 
                   next_token();
@@ -1600,11 +1600,10 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
+                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
                     if (ret.status != 'ok') {
-                      return ret ;
+                        return ret ;
                     }
-
 
                     label = null;
 
@@ -1615,9 +1614,10 @@ function data_segment_compiler()
 
                     console_log(token);
 
-                    for (var z = 0; z < architecture.directives.length; z++){
-                        if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                           isDouble = false;
+                    for (var z = 0; z < architecture.directives.length; z++)
+                    {
+                        if (token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1) {
+                            isDouble = false;
                         }
                     }
                   }
