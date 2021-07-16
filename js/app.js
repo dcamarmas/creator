@@ -364,7 +364,8 @@ try
 
       /*Memory*/
       memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
-      memory: memory,
+      memory: memory, //TODO: delete
+      main_memory: app_data_main_memory,
 
       row_index: null, //TODO: try to include in a component
       selected_space_view: null, //TODO: try to include in a component
