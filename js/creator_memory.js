@@ -50,7 +50,7 @@ var app_data_main_memory = [] ;
 
 
 //
-// Type and size...
+// Type, size and address...
 //
 
 function creator_memory_type2size ( type )
@@ -123,6 +123,27 @@ function creator_memory_value_by_type ( val, type )
 	return val ;
 }
 
+function creator_memory_alignelto ( new_addr, new_size )
+{
+        var ret = {
+                    new_addr: new_addr,
+                    new_size: new_size
+                  } ;
+
+        // get align address and size
+        for (var i=0; i<word_size_bytes; i++)
+        {
+             if (((new_addr + i) % word_size_bytes) == 0) {
+                 ret.new_addr = new_addr + i ;
+             }
+             if (((new_size + i) % word_size_bytes) == 0) {
+                 ret.new_size = new_size + i ;
+             }
+        }
+
+	return ret ;
+}
+
 
 //
 // main_memory and main_memory_datatype auxiliar functions
@@ -166,6 +187,27 @@ function main_memory_prereset ( )
         for (i=0; i<addrs.length; i++) {
              main_memory_datatypes[addrs[i]].default = main_memory_datatypes[addrs[i]].value ;
         }
+}
+
+function creator_memory_findaddress_bytag ( tag )
+{
+        var ret = {
+	             exit:  0,
+	             value: 0
+	          } ;
+
+	// find main memory by tag
+        var addrs = main_memory_get_addresses() ;
+        for (var i=0; i<addrs.length; i++)
+	{
+             if (main_memory[addrs[i]].tag == tag)
+	     {
+	         ret.exit  = 1 ;
+	         ret.value = parseInt(addrs[i]) ;
+	     }
+        }
+
+        return ret ;
 }
 
 function main_memory_consolelog ( )
@@ -333,7 +375,7 @@ function main_memory_write_bytype ( addr, value, type )
 
 
 //
-// Read and write a data type (string)
+// Read and write a data type...
 //
 
 var string_length_limit = 4*1024 ;
@@ -414,26 +456,10 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
 	return ret ;
 }
 
-function creator_memory_alignelto ( new_addr, new_size )
-{
-        var ret = {
-                    new_addr: new_addr,
-                    new_size: new_size
-                  } ;
 
-        // get align address and size
-        for (var i=0; i<word_size_bytes; i++)
-        {
-             if (((new_addr + i) % word_size_bytes) == 0) {
-                 ret.new_addr = new_addr + i ;
-             }
-             if (((new_size + i) % word_size_bytes) == 0) {
-                 ret.new_size = new_size + i ;
-             }
-        }
-
-	return ret ;
-}
+//
+// memory zerofill, alloc, ...
+//
 
 function creator_memory_zerofill ( new_addr, new_size )
 {
@@ -466,65 +492,56 @@ function creator_memory_alloc ( new_size )
 	return algn.new_addr ;
 }
 
-function creator_memory_findaddress_bytag ( tag )
-{
-        var ret = {
-	             exit:  0,
-	             value: 0
-	          } ;
-
-	// find main memory by tag
-        var addrs = main_memory_get_addresses() ;
-        for (var i=0; i<addrs.length; i++)
-	{
-             if (main_memory[addrs[i]].tag == tag)
-	     {
-	         ret.exit  = 1 ;
-	         ret.value = parseInt(addrs[i]) ;
-	     }
-        }
-
-        return ret ;
-}
-
 function creator_memory_updaterow ( addr )
 {
+    // base address
+    var addr_base = parseInt(addr) ;
+        addr_base = addr_base - (addr_base % word_size_bytes) ; // get word aligned address
+
+    // get_or_create... // TODO: app_data_main_memory -> app._data.main_memory...
     var elto = {} ;
-    var addr_hex = 0 ;
+    if (typeof app_data_main_memory[addr_base] != "undefined")
+    { // reuse the existing element...
+        elto = app_data_main_memory[addr_base] ;
+    }
+    else
+    { // set a new element, and set the initial values...
+        app_data_main_memory[addr_base] = elto ;
+
+        elto.hex = [] ;
+        for (var i=0; i<word_size_bytes; i++)
+             elto.hex[i] = { byte: "00", tag: "" } ;
+    }
 
     // addr_begin
-    addr_hex = parseInt(addr) ;
-    elto.addr_begin = "0x" + addr_hex.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
+    elto.addr_begin = "0x" + addr_base.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
 
     // addr_end
-    addr_hex = parseInt(addr) + word_size_bytes ;
+    var addr_hex = addr_base + word_size_bytes ;
     elto.addr_end = "0x" + addr_hex.toString(16).padStart(word_size_bytes, "0").toUpperCase() ;
 
     // hex
-    elto.hex = [] ;
+    var v1 = {} ;
     for (var i=0; i<word_size_bytes; i++)
     {
-         addr_hex = parseInt(addr) + i ;
-         elto.hex.push({
-                         byte: main_memory[addr_hex].bin,
-                         tag:  main_memory[addr_hex].tag
-                      }) ;
+         v1 = main_memory_read(addr_base + i) ;
+         elto.hex[i].byte = v1.bin;
+         elto.hex[i].tag  = v1.tag;
     }
 
     // value
-    addr_hex = parseInt(addr) ;
-    elto.value = main_memory_datatypes[addr_hex].value ;
-
-    // eye
-    addr_hex = parseInt(addr) ;
-    elto.eye = false ;
-    if (main_memory_datatypes[addr_hex].type == "space") {
-        elto.eye = true ;
+    elto.value = '' ;
+    if (typeof main_memory_datatypes[addr_base] != "undefined") {
+        elto.value = main_memory_datatypes[addr_base].value ;
     }
 
-    // app._data...
-    //app._data.main_memory[addr] = elto ;
-    app_data_main_memory[addr] = elto ;
+    // eye
+    elto.eye = false ;
+    if (typeof main_memory_datatypes[addr_base] != "undefined") {
+        if (main_memory_datatypes[addr_base].type == "space") {
+            elto.eye = true ;
+        }
+    }
 }
 
 
