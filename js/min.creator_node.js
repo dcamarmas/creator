@@ -1964,6 +1964,32 @@ function main_memory_datatypes_packs_foravt ( addr, value, type )
                  "value": value, "default": "00" } ;
 }
 
+// reset (set to defaults) and clear (remove all values)
+
+function main_memory_reset ( )
+{
+        var i = 0;
+
+	// reset memory
+        var addrs = main_memory_get_addresses() ;
+        for (i=0; i<addrs.length; i++) {
+             main_memory[addrs[i]].bin = main_memory[addrs[i]].def_bin ;
+        }
+
+	// reset datatypes
+        addrs = main_memory_datatype_get_addresses() ;
+        for (i=0; i<addrs.length; i++) {
+             main_memory_datatypes[addrs[i]].value = main_memory_datatypes[addrs[i]].default ;
+        }
+}
+
+function main_memory_clear ( )
+{
+	// reset memory and datatypes
+        main_memory = [] ;
+        main_memory_datatypes = {} ;
+}
+
 //// Read/write (1/4): object level (compilation)
 
 function main_memory_read ( addr )
@@ -2313,32 +2339,6 @@ function creator_memory_consolelog ( )
         }
 }
 
-// reset (set to defaults) and clear (remove all values)
-
-function main_memory_reset ( )
-{
-        var i = 0;
-
-	// reset memory
-        var addrs = main_memory_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory[addrs[i]].bin = main_memory[addrs[i]].def_bin ;
-        }
-
-	// reset datatypes
-        addrs = main_memory_datatype_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             main_memory_datatypes[addrs[i]].value = main_memory_datatypes[addrs[i]].default ;
-        }
-}
-
-function creator_memory_clear ( )
-{
-	// reset memory and datatypes
-        main_memory = [] ;
-        main_memory_datatypes = {} ;
-}
-
 // memory zerofill and alloc ...
 
 function creator_memory_zerofill ( new_addr, new_size )
@@ -2370,6 +2370,20 @@ function creator_memory_alloc ( new_size )
 	}
 
 	return algn.new_addr ;
+}
+
+function main_memory_storedata ( data_address, value, size, dataLabel, DefValue, type )
+{
+        var algn = creator_memory_alignelto(data_address, size) ;
+
+        main_memory_write_bydatatype(algn.new_addr, value, type, value) ;
+        creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
+
+        if (dataLabel != '') {
+            main_memory_write_tag(algn.new_addr, dataLabel) ;
+        }
+
+        return data_address = data_address + algn.new_size ;
 }
 
 // update app._data.main_memory row
@@ -3251,8 +3265,8 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 function crex_memory_clear ( )
 {
         // NEW
-        // return creator_memory_clear() ; // FUTURE
-        creator_memory_clear() ;
+        // return main_memory_clear() ; // FUTURE
+        main_memory_clear() ;
 
         // OLD
         memory[memory_hash[0]] = [];
@@ -3263,12 +3277,8 @@ function crex_memory_clear ( )
 function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
         // NEW
-        var algn = creator_memory_alignelto(data_address, size) ;
-        main_memory_write_bydatatype(algn.new_addr, value, type, value) ;
-        creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
-        // data_address = data_address + algn.new_size ;
-        main_memory_write_tag(algn.new_addr, dataLabel) ;
-        // return '' ;
+        // return main_memory_storedata(data_address, value, size, dataLabel, DefValue, type) ; // FUTURE
+        main_memory_storedata(data_address, value, size, dataLabel, DefValue, type) ;
 
         // OLD
         for (var i = 0; i < (value.length/2); i++)
@@ -3476,12 +3486,8 @@ function creator_memory_stackinit ( stack_address )
 function creator_memory_storestring ( string, string_length, data_address, label, type, align )
 {
         // NEW
-        var algn = creator_memory_alignelto(data_address, string_length) ;
-        main_memory_write_bydatatype(algn.new_addr, string, type, string) ;
-        creator_memory_zerofill((algn.new_addr + string_length), (algn.new_size - string_length)) ;
-        // data_address = data_address + algn.new_size ;
-        main_memory_write_tag(algn.new_addr, label) ;
-	// return data_address;
+	// return main_memory_storedata(data_address, string, string_length, label, string, type) ; // FUTURE
+	main_memory_storedata(data_address, string, string_length, label, string, type) ;
 
         // OLD
 	var ascii;
