@@ -2411,15 +2411,18 @@ function writeMemory ( value, addr, type )
 			index = memory_hash[2];
 		}
 
-		for (var i = 0; i < memory[index].length; i++){
-			for (var j = 0; j < memory[index][i].Binary.length; j++){
+		for (var i = 0; i < memory[index].length; i++)
+                {
+			for (var j = 0; j < memory[index][i].Binary.length; j++)
+                        {
 				var aux = "0x"+(memory[index][i].Binary[j].Addr).toString(16);
-				if(aux == addr || memory[index][i].Binary[j].Tag == addr){
+				if (aux == addr || memory[index][i].Binary[j].Tag == addr)
+                                {
 					//memory[index][i].Value = parseInt(memValue, 16);
-					if(memory[index][i].type == "float"){
+					if (memory[index][i].type == "float") {
 						memory[index][i].Value = hex2float("0x" + memValue);
 					}
-					else{
+					else {
 						memory[index][i].Value = (parseInt(memValue, 16) >> 0);
 					}
 
@@ -2430,10 +2433,10 @@ function writeMemory ( value, addr, type )
 					}
 					//memory[index][i].Value = parseInt(memValue, 16);
 
-					if(memory[index][i].type == "float"){
+					if (memory[index][i].type == "float") {
 						memory[index][i].Value = hex2float("0x" + memValue);
 					}
-					else{
+					else {
 						memory[index][i].Value = (parseInt(memValue, 16) >> 0);
 					}
 
@@ -2444,8 +2447,10 @@ function writeMemory ( value, addr, type )
 			}
 		}
 
-		for (var i = 0; i < memory[index].length; i++){
-			if(memory[index][i].Address > addr){
+		for (var i = 0; i < memory[index].length; i++)
+                {
+			if (memory[index][i].Address > addr)
+                        {
 				var aux_addr = addr - (addr%4);
 				memory[index].splice(i, 0, {Address: aux_addr, Binary: [], Value: (parseInt(memValue, 16) >> 0), DefValue: null, reset: false});
 				var charIndex = memValue.length-1;
@@ -2454,7 +2459,7 @@ function writeMemory ( value, addr, type )
 					charIndex = charIndex - 2;
 				}
 				if (typeof app !== "undefined")
-						app._data.memory[index] = memory[index];
+					app._data.memory[index] = memory[index];
 				return;
 			}
 			else if(i == memory[index].length-1){
@@ -5033,9 +5038,9 @@ function data_segment_compiler()
 
                     console_log(token);
 
-                    for(var z = 0; z < architecture.directives.length; z++){
-                      if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                        isFloat = false;
+                    for (var z = 0; z < architecture.directives.length; z++) {
+                      if (token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
+                          isFloat = false;
                       }
                     }
                   }
@@ -5043,7 +5048,7 @@ function data_segment_compiler()
                   j=0;
                   break;
 
-                case "double":
+             case "double":
                   var isDouble = true;
 
                   next_token();
@@ -5113,11 +5118,10 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
+                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
                     if (ret.status != 'ok') {
-                      return ret ;
+                        return ret ;
                     }
-
 
                     label = null;
 
@@ -5128,9 +5132,10 @@ function data_segment_compiler()
 
                     console_log(token);
 
-                    for (var z = 0; z < architecture.directives.length; z++){
-                        if(token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1){
-                           isDouble = false;
+                    for (var z = 0; z < architecture.directives.length; z++)
+                    {
+                        if (token == architecture.directives[z].name || token == null || token.search(/\:$/) != -1) {
+                            isDouble = false;
                         }
                     }
                   }
