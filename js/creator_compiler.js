@@ -1022,7 +1022,7 @@ function assembly_compiler()
         stack_address = architecture.memory_layout[4].value;
 
 	// save current value as default values for reset()...
-        main_memory_prereset() ;
+        creator_memory_prereset() ;
 
         return ret;
 }
@@ -1808,7 +1808,7 @@ function data_segment_compiler()
             }
             else if (j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1)
             {
-                main_memory_prereset() ;
+                creator_memory_prereset() ;
                 creator_memory_copytoapp(0) ;
                 return ret;
             }
@@ -1816,7 +1816,7 @@ function data_segment_compiler()
           }
         }
 
-        main_memory_prereset() ;
+        creator_memory_prereset() ;
         creator_memory_copytoapp(0) ;
         return ret;
 }
