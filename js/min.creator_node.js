@@ -2469,11 +2469,11 @@ function creator_memory_updateall ( )
     for (var i=0; i<addrs.length; i++)
     {
 	curr_addr = parseInt(addrs[i]) ;
-	if (Math.abs(curr_addr - last_addr) > 3) {
+	if (Math.abs(curr_addr - last_addr) > 3)
+	{
             creator_memory_updaterow(addrs[i]);
+	    last_addr = curr_addr ;
 	}
-
-	last_addr = curr_addr ;
     }
 
     // update all rows in app._data.main_memory...
