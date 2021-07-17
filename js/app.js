@@ -362,14 +362,7 @@ try
        */
       memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
       memory: memory, //TODO: delete
-
       main_memory: [],
-	    // [
-	    //   0/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-	    //   4/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-	    //   8/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-	    //   ...
-	    // ]
 
       row_index: null,           //TODO: try to include in a component
       selected_space_view: null, //TODO: try to include in a component

@@ -40,6 +40,14 @@ var main_memory_datatypes = {} ;
     //    { "type": type, "address": addr, "value": value, "default": "00" },
     //  }
 
+//var app_data_main_memory = [] ;
+    // [
+    //   0/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   4/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   8/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+    //   ...
+    // ]
+
 
 /********************
  * Internal API     *
@@ -539,11 +547,11 @@ function creator_memory_updaterow ( addr )
     for (var i=0; i<word_size_bytes; i++)
     {
          v1 = main_memory_read(addr_base + i) ;
-
          elto.hex[i].byte = v1.bin;
-         elto.hex[i].tag  = null;
-         if (v1.tag != "") {
-             elto.hex[i].tag  = v1.tag;
+         elto.hex[i].tag  = v1.tag;
+
+         if (v1.tag == "") {
+             elto.hex[i].tag  = null;
          }
     }
 
@@ -564,12 +572,30 @@ function creator_memory_updaterow ( addr )
 
 function creator_memory_updateall ( )
 {
-    // update all app._data.main_memory...
-    var addrs = main_memory_get_addresses() ;
-    for (var i=0; i<addrs.length; i++) {
-        creator_memory_updaterow(addrs[i]);
+    // skip if app.data does not exit...
+    if ((typeof app == "undefined") || (typeof app._data.main_memory == "undefined") ) {
+        return ;
     }
 
+    // update all rows in app._data.main_memory...
+    var addrs = main_memory_get_addresses() ;
+
+    var last_addr = -1;
+    var curr_addr = -1;
+    for (var i=0; i<addrs.length; i++)
+    {
+	curr_addr = parseInt(addrs[i]) ;
+	if (Math.abs(curr_addr - last_addr) > 3) {
+            creator_memory_updaterow(addrs[i]);
+	}
+
+	last_addr = curr_addr ;
+    }
+
+    // update all rows in app._data.main_memory...
+    //app._data.main_memory = Object.entries(app_data_main_memory)
+//		                    .sort((a, b) => a[0] - b[0])
+//		                    .map(a => a[1]) ;
 }
 
 
