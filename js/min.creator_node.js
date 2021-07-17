@@ -1982,7 +1982,7 @@ function main_memory_clear ( )
         main_memory_datatypes = {} ;
 }
 
-//// Read/write (1/4): object level (compilation)
+//// Read/write (1/3): object level (compilation)
 
 function main_memory_read ( addr )
 {
@@ -1998,7 +1998,7 @@ function main_memory_write ( addr, value )
 	main_memory[addr] = value ;
 }
 
-//// Read/write (2/4): byte level (execution)
+//// Read/write (2/3): byte level (execution)
 
 function main_memory_read_value ( addr )
 { // main_memory_read_value  ( addr: integer )
@@ -2019,7 +2019,7 @@ function main_memory_write_tag ( addr, tag )
 	main_memory_write (addr, value_obj) ;
 }
 
-//// Read/write (3/4): type level (byte, half, word, etc)
+//// Read/write nbytes
 
 function main_memory_read_nbytes ( addr, n )
 {
@@ -2041,56 +2041,7 @@ function main_memory_write_nbytes ( addr, value, n )
 	}
 }
 
-function main_memory_read_bytype ( addr, type )
-{
-        var ret = 0x0 ;
-
-	switch (type)
-        {
-		case 'b':
-		     ret = main_memory_read_value(addr) ;
-                     break;
-		case 'h':
-		     ret = main_memory_read_nbytes(addr, word_size_bytes/2) ;
-                     break;
-		case 'w':
-		     ret = main_memory_read_nbytes(addr, word_size_bytes) ;
-                     break;
-		case 'd':
-		     ret = main_memory_read_nbytes(addr, word_size_bytes*2) ;
-                     break;
-	}
-
-	return ret ;
-}
-
-function main_memory_write_bytype ( addr, value, type )
-{
-        var ret = 0x0 ;
-
-	switch (type)
-        {
-		case 'b':
-		     ret = main_memory_write_value(addr, value) ;
-                     break;
-		case 'h':
-		     ret = main_memory_write_nbytes(addr, value, word_size_bytes/2) ;
-                     break;
-		case 'w':
-		     ret = main_memory_write_nbytes(addr, value, word_size_bytes) ;
-                     break;
-		case 'd':
-		     ret = main_memory_write_nbytes(addr, value, word_size_bytes*2) ;
-                     break;
-	}
-
-        // datatype
-        main_memory_datatypes[addr] = main_memory_datatypes_packs_foravt(addr, value, type) ;
-
-	return ret ;
-}
-
-//// Read/write (4/4): DATAtype level (byte, ..., integer, space, ...)
+//// Read/write (3/3): DATAtype level (byte, ..., integer, space, ...)
 
 var string_length_limit = 4*1024 ;
 
@@ -2112,6 +2063,56 @@ function create_memory_read_string ( addr )
 	return ret_msg + '... (string length greater than ' + string_length_limit + ' chars)' ;
 }
 
+function main_memory_read_bydatatype ( addr, type )
+{
+        var ret = 0x0 ;
+
+	switch (type)
+        {
+		case 'b':
+                case 'byte':
+		     ret = main_memory_read_value(addr) ;
+                     break;
+
+		case 'h':
+                case 'half_word':
+		     ret = main_memory_read_nbytes(addr, word_size_bytes/2) ;
+                     break;
+
+		case 'w':
+		case 'integer':
+		case 'float':
+                case 'word':
+		     ret = main_memory_read_nbytes(addr, word_size_bytes) ;
+                     break;
+
+		case 'd':
+		case 'double':
+                case 'double_word':
+		     ret = main_memory_read_nbytes(addr, word_size_bytes*2) ;
+                     break;
+
+		case 'string':
+                case 'ascii_null_end':
+                     ret = create_memory_read_string(addr) ;
+                     break;
+
+                case 'ascii_not_null_end':
+                     // TODO
+                     break;
+
+                case 'space':
+                     // TODO
+                     break;
+
+                case 'instruction':
+                     // TODO
+                     break;
+	}
+
+	return ret ;
+}
+
 function main_memory_write_bydatatype ( addr, value, type, value_human )
 {
         var ret = 0x0 ;
@@ -2119,20 +2120,24 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
         // store byte to byte...
 	switch (type)
         {
+		case 'b':
                 case 'byte':
 		     ret = main_memory_write_nbytes(addr, value, 1) ;
                      break;
 
+		case 'h':
                 case 'half_word':
 		     ret = main_memory_write_nbytes(addr, value, word_size_bytes / 2) ;
                      break;
 
+		case 'w':
 		case 'integer':
 		case 'float':
                 case 'word':
 		     ret = main_memory_write_nbytes(addr, value, word_size_bytes) ;
                      break;
 
+		case 'd':
 		case 'double':
                 case 'double_word':
 		     ret = main_memory_write_nbytes(addr, value, word_size_bytes * 2) ;
@@ -2496,9 +2501,9 @@ var memory          = { data_memory: [], instructions_memory: [], stack_memory: 
 function writeMemory ( value, addr, type )
 {
         // NEW
-        // return main_memory_write_bytype(addr, value, type) ; // FUTURE
-        main_memory_write_bytype(addr, value, type) ;
+        main_memory_write_bydatatype(addr, value, type, value) ;
         creator_memory_updaterow(addr);
+        // return ; // FUTURE
 
         // OLD
 	var draw = {
@@ -2871,8 +2876,8 @@ draw.danger.push(executionIndex);
 function readMemory ( addr, type )
 {
         // NEW
-        // return main_memory_read_bytype(addr, type) ; // FUTURE
-        main_memory_read_bytype(addr, type) ;
+        // return main_memory_read_bydatatype(addr, type) ; // FUTURE
+        main_memory_read_bydatatype(addr, type) ;
 
         // OLD
 	var memValue = '';
@@ -3107,8 +3112,8 @@ function crex_sbrk ( new_size )
 function crex_get_string_from_memory ( addr )
 {
         // NEW
-        // return create_memory_read_string(parseInt(addr)) ; // FUTURE
-        create_memory_read_string(parseInt(addr)) ;
+        // return main_memory_read_bydatatype(parseInt(addr), "string") ; // FUTURE
+        main_memory_read_bydatatype(parseInt(addr), "string") ;
 
         // OLD
 	 var index   = 0 ;
