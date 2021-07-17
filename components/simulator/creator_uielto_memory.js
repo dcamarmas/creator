@@ -91,6 +91,16 @@
 						}
 
 						return false;
+					},				
+
+					get_classes ( row )
+                                        {
+						return {
+						          'h6Sm none':            ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
+						          'h6Sm text-secondary':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
+						          'h6Sm text-success':    ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
+						          'h6Sm text-blue-funny': ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller))
+						       }
 					}				
 				},
 	computed:		{
@@ -174,6 +184,26 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Binary)="row">' +
+				'	' +
+/*
+				'             <span class="h6Sm" v-bind:class="get_classes(row)">' +
+				' 		<span v-for="item in row.item.hex">' +
+				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
+				'	          	{{item.byte.toUpperCase()}}' +
+				'	        	</span> ' +
+				'	        	<span v-if="item.tag == null">' +
+				'	          	{{item.byte.toUpperCase()}}' +
+				'	        	</span> ' +
+				'	        	<b-badge pill variant="info" ' +
+				'	          	       class="border border-info shadow binaryTag" ' +
+				'	            	     v-if="item.tag != null">' +
+				'	          	{{item.tag}}' +
+				'	        	</b-badge>' +
+				' 		</span>' +
+				'	      </span>' +
+				' ' +
+*/
+  
 				'             <span class="h6Sm"  v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
 				' 				<span v-for="item in row.item.hex">' +
 				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
@@ -237,6 +267,7 @@
 				'	        	</b-badge>' +
 				' 				</span>' +
 				'	      </span>' +
+
 				' ' +
 				'	      <span class="h6Sm" v-if="(row.item.addr >= app._data.begin_caller)">' + //Antes del llamante
 				' 				<span v-for="item in row.item.hex">' +
