@@ -96,10 +96,11 @@
 					get_classes ( row )
                                         {
 						return {
-						          'h6Sm none':            ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
-						          'h6Sm text-secondary':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
-						          'h6Sm text-success':    ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
-						          'h6Sm text-blue-funny': ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller))
+						          'h6Sm                ':  ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
+						          'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
+						          'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
+						          'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller)),
+						          'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
 						       }
 					}				
 				},
@@ -166,139 +167,41 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Address)="row">' +
-				'	      <span class="h6Sm" v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
-				'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
-				'	      </span>' +
-				'	      <span class="h6Sm text-secondary" v-if="((row.item.addr < app._data.end_callee) && (Math.abs(row.item.addr - app._data.end_callee) < 40))">' + //Llamado
-				'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
-				'	      </span>' +
-				'	      <span class="h6Sm text-success" v-if="((row.item.addr < app._data.begin_callee) && (row.item.addr >= app._data.end_callee))">' + //Llamante
-				'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
-				'	      </span>' +
-				'	      <span class="h6Sm text-blue-funny" v-if="((row.item.addr < app._data.begin_caller) && (row.item.addr >= app._data.end_caller))">' +
-				'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
-				'	      </span>' +
-				'	      <span class="h6Sm" v-if="(row.item.addr >= app._data.begin_caller)">' + //Antes del llamante
+				'             <span class="h6Sm" v-bind:class="get_classes(row)">' +
 				'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
 				'	      </span>' +
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Binary)="row">' +
-				'	' +
-/*
 				'             <span class="h6Sm" v-bind:class="get_classes(row)">' +
 				' 		<span v-for="item in row.item.hex">' +
-				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
+				'' +
 				'	        	<span v-if="item.tag == null">' +
 				'	          	{{item.byte.toUpperCase()}}' +
 				'	        	</span> ' +
+				'' +
 				'	        	<b-badge pill variant="info" ' +
 				'	          	       class="border border-info shadow binaryTag" ' +
-				'	            	     v-if="item.tag != null">' +
+				'	            	       v-if="item.tag != null">' +
 				'	          	{{item.tag}}' +
 				'	        	</b-badge>' +
+				'	        	<br   v-if="item.tag != null">' +
+				'	        	<span v-if="item.tag != null" class="memoryBorder">' +
+				'	          	{{item.byte.toUpperCase()}}' +
+				'	        	</span> ' +
+				'' +
 				' 		</span>' +
 				'	      </span>' +
-				' ' +
-*/
-  
-				'             <span class="h6Sm"  v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
-				' 				<span v-for="item in row.item.hex">' +
-				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<span v-if="item.tag == null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<b-badge pill variant="info" ' +
-				'	          	       class="border border-info shadow binaryTag" ' +
-				'	            	     v-if="item.tag != null">' +
-				'	          	{{item.tag}}' +
-				'	        	</b-badge>' +
-				' 				</span>' +
-				'	      </span>' +
-				' ' +
-				'	      <span class="h6Sm text-secondary" v-if="((row.item.addr < app._data.end_callee) && (Math.abs(row.item.addr - app._data.end_callee) < 40))">' + //Llamado
-				' 				<span v-for="item in row.item.hex">' +
-				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<span v-if="item.tag == null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<b-badge pill variant="info" ' +
-				'	          	       class="border border-info shadow binaryTag" ' +
-				'	            	     v-if="item.tag != null">' +
-				'	          	{{item.tag}}' +
-				'	        	</b-badge>' +
-				' 				</span>' +
-				'	      </span>' +
-				'	' +
-				'	      <span class="h6Sm text-success" v-if="((row.item.addr < app._data.begin_callee) && (row.item.addr >= app._data.end_callee))">' +
-				' 				<span v-for="item in row.item.hex">' +
-				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<span v-if="item.tag == null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<b-badge pill variant="info" ' +
-				'	          	       class="border border-info shadow binaryTag" ' +
-				'	            	     v-if="item.tag != null">' +
-				'	          	{{item.tag}}' +
-				'	        	</b-badge>' +
-				' 				</span>' +
-				'	      </span>' +
-				' ' +
-				'	      <span class="h6Sm text-blue-funny" v-if="((row.item.addr < app._data.begin_caller) && (row.item.addr >= app._data.end_caller))">' +
-				' 				<span v-for="item in row.item.hex">' +
-				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<span v-if="item.tag == null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<b-badge pill variant="info" ' +
-				'	          	       class="border border-info shadow binaryTag" ' +
-				'	            	     v-if="item.tag != null">' +
-				'	          	{{item.tag}}' +
-				'	        	</b-badge>' +
-				' 				</span>' +
-				'	      </span>' +
-
-				' ' +
-				'	      <span class="h6Sm" v-if="(row.item.addr >= app._data.begin_caller)">' + //Antes del llamante
-				' 				<span v-for="item in row.item.hex">' +
-				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<span v-if="item.tag == null">' +
-				'	          	{{item.byte.toUpperCase()}}' +
-				'	        	</span> ' +
-				'	        	<b-badge pill variant="info" ' +
-				'	          	       class="border border-info shadow binaryTag" ' +
-				'	            	     v-if="item.tag != null">' +
-				'	          	{{item.tag}}' +
-				'	        	</b-badge>' +
-				' 				</span>' +
-				'	      </span>' +
-				'	' +
 				'	    </template>' +
+				'	' +
 				'	    <template v-slot:cell(Value)="row">' +
-				'	      <span class="h6Sm" v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
-				'         {{row.item.value}}' +
+				'             <span class="h6Sm" v-bind:class="get_classes(row)">' +
+				'               {{row.item.value}}' +
 				'	        <span class="fas fa-eye memoryValue" ' +
 				'	              v-if="row.item.eye && check_tag_null(row.item.hex)">' +
 				'	        </span>' +
-				'       </span>' +
-				'	      <span class="h6Sm text-secondary"  v-if="((row.item.addr < app._data.end_callee) && (Math.abs(row.item.addr - app._data.end_callee) < 40))">{{row.item.value}}</span>' +
-				'	      <span class="h6Sm text-success"    v-if="((row.item.addr < app._data.begin_callee) && (row.item.addr >= app._data.end_callee))">{{row.item.value}}</span>' +
-				'	      <span class="h6Sm text-blue-funny" v-if="((row.item.addr < app._data.begin_caller) && (row.item.addr >= app._data.end_caller))">{{row.item.value}}</span>' +
-				'	      <span class="h6Sm"                 v-if="(row.item.addr >= app._data.begin_caller)">{{row.item.value}}</span>' +
 				'	    </template>' +
-				'	  </b-table>' +
+				'         </b-table>' +
 				'' +
 				'  </b-col>' +
 				'  </b-row>' +
