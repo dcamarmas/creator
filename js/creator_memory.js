@@ -492,7 +492,7 @@ function creator_memory_alloc ( new_size )
 	return algn.new_addr ;
 }
 
-function main_memory_storedata ( data_address, value, size, dataLabel, DefValue, type )
+function main_memory_storedata ( data_address, value, size, dataLabel, value_human, DefValue, type )
 {
         var algn = creator_memory_alignelto(data_address, size) ;
 
@@ -1449,8 +1449,8 @@ function crex_memory_clear ( )
 function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
         // NEW
-        // return main_memory_storedata(data_address, value, size, dataLabel, DefValue, type) ; // FUTURE
-        main_memory_storedata(data_address, value, size, dataLabel, DefValue, type) ;
+        // return main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ; // FUTURE
+        main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
 
         // OLD
         for (var i = 0; i < (value.length/2); i++)
@@ -1589,12 +1589,8 @@ function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill
 {
         // NEW
         var size = Math.ceil(hex.toString().length / 2) ;
-        var algn = creator_memory_alignelto(auxAddr, size) ;
-        main_memory_write_bydatatype(algn.new_addr, hex, "instruction", value) ;
-        creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
-        // auxAddr = auxAddr + algn.new_size ;
-        main_memory_write_tag(algn.new_addr, label) ;
-	// return auxAddr;
+	main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ;
+	// return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ; // FUTURE
 
         // OLD
 	for(var a = 0; a < hex.length/2; a++)
@@ -1658,8 +1654,8 @@ function creator_memory_stackinit ( stack_address )
 function creator_memory_storestring ( string, string_length, data_address, label, type, align )
 {
         // NEW
-	// return main_memory_storedata(data_address, string, string_length, label, string, type) ; // FUTURE
-	main_memory_storedata(data_address, string, string_length, label, string, type) ;
+	// return main_memory_storedata(data_address, string, string_length, label, string, string, type) ; // FUTURE
+	main_memory_storedata(data_address, string, string_length, label, string, string, type) ;
 
         // OLD
 	var ascii;
