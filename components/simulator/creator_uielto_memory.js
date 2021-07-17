@@ -55,7 +55,7 @@
 							return true;
 						}
 
-						if ((this.memory_segment == "stack_memory") && ((row.addr >= architecture.memory_layout[4].value) && (row.addr <= architecture.memory_layout[5].value))) {
+						if ((this.memory_segment == "stack_memory") && ((row.addr >= architecture.memory_layout[3].value))) {
 							return (Math.abs(row.addr - app._data.end_callee) < 40);
 						}
 					},
