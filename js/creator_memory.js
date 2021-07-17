@@ -591,11 +591,6 @@ function creator_memory_updateall ( )
 	    last_addr = curr_addr ;
 	}
     }
-
-    // update all rows in app._data.main_memory...
-    //app._data.main_memory = Object.entries(app_data_main_memory)
-//		                    .sort((a, b) => a[0] - b[0])
-//		                    .map(a => a[1]) ;
 }
 
 

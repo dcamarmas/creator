@@ -360,9 +360,9 @@ try
       /* 
        * Memory
        */
+      memory:      memory, //TODO: delete
       memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
-      memory: memory, //TODO: delete
-      main_memory: [],
+      main_memory: {},
 
       row_index: null,           //TODO: try to include in a component
       selected_space_view: null, //TODO: try to include in a component
