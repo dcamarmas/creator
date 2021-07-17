@@ -149,7 +149,7 @@ function main_memory_read_nbytes ( addr, n )
 
 function main_memory_write_nbytes ( addr, value, n )
 {
-    var value_str = value.toString(16).padStart(2*n, "0") ;
+        var value_str = value.toString(16).padStart(2*n, "0") ;
 	var chunks    = value_str.match(/.{1,2}/g) ;
 
 	for (var i = 0; i < chunks.length; i++) {
@@ -1184,7 +1184,8 @@ function memory_reset ( )
 function crex_sbrk ( new_size )
 {
         // NEW
-        // return creator_memory_alloc(new_size) ; // FUTURE
+        //var new_addr = creator_memory_alloc(new_size) ; // FUTURE
+ 	//return packExecute(false, '', 'danger', new_addr) ; // FUTURE
         creator_memory_alloc(new_size) ;
 
         // OLD
@@ -1235,7 +1236,8 @@ function crex_sbrk ( new_size )
 function crex_get_string_from_memory ( addr )
 {
         // NEW
-        // return main_memory_read_bydatatype(parseInt(addr), "string") ; // FUTURE
+        //var ret_msg = main_memory_read_bydatatype(parseInt(addr), "string") ; // FUTURE
+ 	//return packExecute(false, 'printed', 'info', ret_msg) ; // FUTURE
         main_memory_read_bydatatype(parseInt(addr), "string") ;
 
         // OLD
@@ -1449,7 +1451,8 @@ function crex_memory_clear ( )
 function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
         // NEW
-        // return main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ; // FUTURE
+        //main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ; // FUTURE
+        //return '' ; // FUTURE
         main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
 
         // OLD
@@ -1654,7 +1657,7 @@ function creator_memory_stackinit ( stack_address )
 function creator_memory_storestring ( string, string_length, data_address, label, type, align )
 {
         // NEW
-	// return main_memory_storedata(data_address, string, string_length, label, string, string, type) ; // FUTURE
+	// return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1; // FUTURE
 	main_memory_storedata(data_address, string, string_length, label, string, string, type) ;
 
         // OLD
