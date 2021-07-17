@@ -25,7 +25,7 @@
 
 	props:     		 {
 					main_memory:   	    { type: Array,  required: true },
-					memory_segment:   	{ type: String, required: true },
+					memory_segment:     { type: String, required: true },
 					track_stack_names:  { type: Array,  required: true }, //TODO: optional
 					callee_subrutine:   { type: String, required: true }, //TODO: optional
 					caller_subrutine:   { type: String, required: true }  //TODO: optional
@@ -96,8 +96,6 @@
 							'<span class="container">' +
 							'  <b-row align-v="start">' +
 							'  <b-col style="min-height:35vh !important;">' +
-							' ' +
-							'<div v-for="item of main_memory_items">{{ item }}</div> ' +
 							' ' +
 							'	  <b-table sticky-header ' +
 							'	           striped ' +
