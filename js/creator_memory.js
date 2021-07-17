@@ -40,14 +40,6 @@ var main_memory_datatypes = {} ;
     //    { "type": type, "address": addr, "value": value, "default": "00" },
     //  }
 
-//var app_data_main_memory = [] ;
-    // [
-    //   0/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   4/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   8/{addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
-    //   ...
-    // ]
-
 
 /********************
  * Internal API     *
@@ -502,7 +494,8 @@ function main_memory_storedata ( data_address, value, size, dataLabel, DefValue,
         return data_address = data_address + algn.new_size ;
 }
 
-// update app._data.main_memory row
+// update an app._data.main_memory row:
+// "000": {addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
 
 function creator_memory_updaterow ( addr )
 {
@@ -591,6 +584,17 @@ function creator_memory_updateall ( )
 	    last_addr = curr_addr ;
 	}
     }
+}
+
+function creator_memory_clearall ( )
+{
+    // skip if app.data does not exit...
+    if ((typeof app == "undefined") || (typeof app._data.main_memory == "undefined") ) {
+        return ;
+    }
+
+    // clear all
+    app._data.main_memory = {} ;
 }
 
 
@@ -1129,9 +1133,9 @@ return 0;
 function memory_reset ( )
 {
         // NEW
-        // return main_memory_reset() ; // FUTURE
         main_memory_reset() ;
-        creator_memory_updateall();
+        creator_memory_updateall() ;
+        // return ; // FUTURE
 
         // OLD
 	for (var i = 0; i < memory[memory_hash[0]].length; i++)
@@ -1420,8 +1424,9 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 function crex_memory_clear ( )
 {
         // NEW
-        // return main_memory_clear() ; // FUTURE
         main_memory_clear() ;
+        creator_memory_clearall() ;
+        // return ; // FUTURE
 
         // OLD
         memory[memory_hash[0]] = [];
