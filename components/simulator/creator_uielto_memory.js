@@ -83,6 +83,13 @@
 												return false;
 											}				
 										},
+				computed: {
+						  main_memory_items () {
+						    return Object.entries(this.main_memory)
+						      .sort((a, b) => a[0] - b[0])
+						      .map(a => a[1])
+						  }
+					  },
 
 				template:   '	<div class="col-lg-12 col-sm-12 px-0">' +
 										'' +
@@ -90,11 +97,13 @@
 										'  <b-row align-v="start">' +
 										'  <b-col style="min-height:35vh !important;">' +
 										' ' +
+										'<div v-for="item of main_memory_items">{{ item }}</div> ' +
+										' ' +
 										'	  <b-table sticky-header ' +
 										'	           striped ' +
 										'	           small ' +
 										'	           hover ' +
-										'	           :items="main_memory" ' +
+										'	           :items="main_memory_items" ' +
 										'	           :fields="memFields" ' +
 										'	           :filter-function=filter ' +
 										'	           filter=" " ' +
