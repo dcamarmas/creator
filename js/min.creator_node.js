@@ -2380,7 +2380,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
 {
         var algn = creator_memory_alignelto(data_address, size) ;
 
-        main_memory_write_bydatatype(algn.new_addr, value, type, value) ;
+        main_memory_write_bydatatype(algn.new_addr, value, type, value_human) ;
         creator_memory_zerofill((algn.new_addr + size), (algn.new_size - size)) ;
 
         if (dataLabel != '') {
