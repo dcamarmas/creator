@@ -2092,11 +2092,13 @@ function main_memory_read_bydatatype ( addr, type )
 		     ret = main_memory_read_nbytes(addr, word_size_bytes*2) ;
                      break;
 
+	        case 'asciiz':
 		case 'string':
                 case 'ascii_null_end':
                      ret = create_memory_read_string(addr) ;
                      break;
 
+	        case 'ascii':
                 case 'ascii_not_null_end':
                      // TODO
                      break;
@@ -2122,12 +2124,15 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
         {
 		case 'b':
                 case 'byte':
-		     ret = main_memory_write_nbytes(addr, value, 1) ;
+                     var value2 = creator_memory_value_by_type(value, type) ;
+		     ret = main_memory_write_nbytes(addr, value2, 1) ;
                      break;
 
 		case 'h':
+                case 'half':
                 case 'half_word':
-		     ret = main_memory_write_nbytes(addr, value, word_size_bytes / 2) ;
+                     var value2 = creator_memory_value_by_type(value, type) ;
+		     ret = main_memory_write_nbytes(addr, value2, word_size_bytes / 2) ;
                      break;
 
 		case 'w':
@@ -2145,15 +2150,17 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
 
 		case 'string':
                 case 'ascii_null_end':
+	        case 'asciiz':
                 case 'ascii_not_null_end':
+	        case 'ascii':
 	             var ch = 0 ;
 		     for (var i=0; i<value.length; i++) {
 			  ch = value.charCodeAt(i);
-			  main_memory_write_value(addr+i, ch) ;
+			  main_memory_write_value(addr+i, ch.toString(16)) ;
 		     }
 
-                     if (type != 'ascii_not_null_end') {
-		         main_memory_write_value(addr+value.length, 0x0) ;
+                     if ( (type != 'ascii') && (type != 'ascii_not_null_end') ) {
+		           main_memory_write_value(addr+value.length, '0x0') ;
                      }
                      break;
 
