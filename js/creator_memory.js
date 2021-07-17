@@ -276,13 +276,13 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
 		     }
 
                      if ( (type != 'ascii') && (type != 'ascii_not_null_end') ) {
-		           main_memory_write_value(addr+value.length, '0x0') ;
+		           main_memory_write_value(addr+value.length, '00') ;
                      }
                      break;
 
                 case 'space':
 		     for (var i=0; i<parseInt(value); i++) {
-		          main_memory_write_value(addr+i, 0x0) ;
+		          main_memory_write_value(addr+i, '00') ;
 		     }
                      break;
 
