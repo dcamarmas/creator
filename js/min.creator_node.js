@@ -2160,13 +2160,13 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
 		     }
 
                      if ( (type != 'ascii') && (type != 'ascii_not_null_end') ) {
-		           main_memory_write_value(addr+value.length, '0x0') ;
+		           main_memory_write_value(addr+value.length, '00') ;
                      }
                      break;
 
                 case 'space':
 		     for (var i=0; i<parseInt(value); i++) {
-		          main_memory_write_value(addr+i, 0x0) ;
+		          main_memory_write_value(addr+i, '00') ;
 		     }
                      break;
 
@@ -5301,7 +5301,7 @@ function data_segment_compiler()
                         break;
                     }
 
-                    data_address = creator_memory_storestring ( string, string.length, data_address, label, "ascii", align );
+                    data_address = creator_memory_storestring(string, string.length, data_address, label, "ascii", align);
 
                     console_log("ascii_not_null_end Terminado");
 
@@ -5361,7 +5361,7 @@ function data_segment_compiler()
 	                	return packCompileError('m17', "", 'error', "danger") ;
 	                }
 
-                    data_address = creator_memory_storestring ( string, string.length, data_address, label, "asciiz", align );
+                    data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align);
 
                     console_log("ascii_null_end Terminado");
 
@@ -5410,8 +5410,7 @@ function data_segment_compiler()
                   }
 
                   var size = parseInt(token) * architecture.directives[j].size;
-
-                  data_address = creator_memory_storestring ( null, size, data_address, label, "space", align );
+                  data_address = creator_memory_storestring(size, size, data_address, label, "space", align);
 
                   next_token();
                   token = get_token();
