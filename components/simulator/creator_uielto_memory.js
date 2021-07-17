@@ -67,14 +67,16 @@
 							return
 						}
 
-						if (this.memory_segment == "data_memory") {
-							if(record.type && check_tag_null(record.hex)){
+						if (this.memory_segment == "data_memory")
+						{
+							if (this.check_tag_null(record.hex)) {
 								app._data.row_index = index; //TODO: vue bidirectional updates
 								app.$refs['space_modal'].show(); //TODO: vue bidirectional updates
 							}
 						}
 
-						if (this.memory_segment == "stack_memory") {
+						if (this.memory_segment == "stack_memory")
+						{
 							app._data.row_index = index;  //TODO: vue bidirectional updates
 							app.$refs['stack_modal'].show(); //TODO: vue bidirectional updates
 						}
@@ -172,7 +174,7 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Binary)="row">' +
-				'       <span class="h6Sm"  v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
+				'             <span class="h6Sm"  v-if="((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value))">' + //text + data
 				' 				<span v-for="item in row.item.hex">' +
 				'	        	<span class="memoryBorder" v-if="item.tag != null">' +
 				'	          	{{item.byte.toUpperCase()}}' +
