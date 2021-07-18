@@ -200,6 +200,7 @@
 				'	        <span class="fas fa-eye memoryValue" ' +
 				'	              v-if="row.item.eye && check_tag_null(row.item.hex)">' +
 				'	        </span>' +
+				'	      </span>' +
 				'	    </template>' +
 				'         </b-table>' +
 				'' +

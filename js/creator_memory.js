@@ -523,7 +523,8 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
 }
 
 // update an app._data.main_memory row:
-// "000": {addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", eye: true},
+//  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", size: 4, eye: true },
+//  ...
 
 function creator_memory_updaterow ( addr )
 {
@@ -537,17 +538,15 @@ function creator_memory_updaterow ( addr )
         addr_base = addr_base - (addr_base % word_size_bytes) ; // get word aligned address
 
     // get_or_create...
-    var elto = {} ;
+    var elto = { addr:0, addr_begin:'', addr_end:'', value:'', size:0, hex:[], eye:false } ;
     if (typeof app._data.main_memory[addr_base] != "undefined")
     { // reuse the existing element...
         elto = app._data.main_memory[addr_base] ;
     }
     else
     { // set a new element, and set the initial values...
-        // app._data.main_memory[addr_base] = elto ;
         Vue.set(app._data.main_memory, addr_base, elto) ;
 
-        elto.hex = [] ;
         for (var i=0; i<word_size_bytes; i++) {
              elto.hex[i] = { byte: "00", tag: null } ;
         }
@@ -557,7 +556,7 @@ function creator_memory_updaterow ( addr )
     elto.addr_begin = "0x" + addr_base.toString(16).padStart(word_size_bytes * 2, "0").toUpperCase() ;
 
     // addr_end
-    var addr_end = addr_base + word_size_bytes - 1 ;
+    var addr_end  = addr_base + word_size_bytes - 1 ;
     elto.addr_end = "0x" + addr_end.toString(16).padStart(word_size_bytes * 2, "0").toUpperCase() ;
 
     // addr
@@ -570,21 +569,16 @@ function creator_memory_updaterow ( addr )
          v1 = main_memory_read(addr_base + i) ;
          elto.hex[i].byte = v1.bin;
          elto.hex[i].tag  = v1.tag;
-
          if (v1.tag == "") {
              elto.hex[i].tag  = null;
          }
     }
 
-    // value
-    elto.value = '' ;
-    if (typeof main_memory_datatypes[addr_base] != "undefined") {
+    // value, size and eye
+    if (typeof main_memory_datatypes[addr_base] != "undefined")
+    {
         elto.value = main_memory_datatypes[addr_base].value ;
-    }
-
-    // eye
-    elto.eye = false ;
-    if (typeof main_memory_datatypes[addr_base] != "undefined") {
+        elto.size  = main_memory_datatypes[addr_base].size ;
         if (main_memory_datatypes[addr_base].type == "space") {
             elto.eye = true ;
         }
