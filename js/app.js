@@ -2749,9 +2749,11 @@ try
             /* update/reset */
             app._data.totalStats   = 0;
             app._data.instructions = instructions;
-            app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-            app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+
+            app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // OLD
+            app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; // OLD
+            app._data.memory[memory_hash[2]] = memory[memory_hash[2]]; // OLD
+
             tokenIndex = 0;
             app.reset(true);
 
@@ -2921,10 +2923,13 @@ try
           if(message == "-1"){
             return;
           }
+
+	  /* // OLD
           if(memory[memory_hash[0]].length != 0){
             show_notification('You can not enter data in a library', 'danger') ;
             return;
           }
+	  */
 
           for (var i = 0; i < instructions_binary.length; i++){
             console_log(instructions_binary[i].Label)
@@ -3301,9 +3306,9 @@ try
 
 
 
-
       /*Convert hexadecimal number to floating point number*/
-      hex2float ( hexvalue ){
+      hex2float ( hexvalue )
+      {
         /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
         var exponent = ((hexvalue >> 23) & 0xff) - 127;
         var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
@@ -3375,12 +3380,14 @@ try
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
+      change_data_view(e, type)
+      {
+        //TODO: 
+        // 1) try to include in the memory component
 
-
-      //TODO: delete when all dependences are remove
-      change_data_view(e, type){
         app._data.data_mode = e;
 
         if(e == "registers"){
@@ -3407,8 +3414,14 @@ try
 	        creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
-      //TODO: try to include in a component
-      change_space_view(){
+      change_space_view()
+      {
+         //TODO:
+         // 1) try to include in the memory component
+         // 2) update code to new memory API (don't use memory abstraction datatype directly)
+
+	/*
+         // OLD
       	if(app._data.selected_space_view == "sig_int"){
     			var hex = "";
     			for (var j = 0; j < 4; j++) {
@@ -3472,15 +3485,24 @@ try
       		i++;
       	}
         app._data.memory = memory;
+	*/
       },
 
-      //TODO: try to include in a component
-      hide_space_modal(){
+      hide_space_modal()
+      {
+        //TODO: 
+        // 1) try to include in the memory component
         app._data.selected_space_view = null;
       },
 
-      //TODO: try to include in a component
-      change_stack_view(){
+      change_stack_view()
+      {
+         //TODO:
+         // 1) try to include in the memory component
+         // 2) update code to new memory API (don't use memory abstraction datatype directly)
+
+	 /*
+	  // OLD
         if(app._data.selected_stack_view == "sig_int"){
           var hex = "";
           for (var j = 0; j < 4; j++) {
@@ -3510,37 +3532,18 @@ try
           memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
         }
         app._data.memory = memory;
+        */
       },
 
-      //TODO: try to include in a component
-      hide_stack_modal(){
+      hide_stack_modal()
+      {
+        //TODO: 
+        // 1) try to include in the memory component
         app._data.selected_stack_view = null;
       },
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
       /*Stop user interface refresh*/

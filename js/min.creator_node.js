@@ -2019,6 +2019,11 @@ function main_memory_write_tag ( addr, tag )
 	main_memory_write (addr, value_obj) ;
 }
 
+function main_memory_read_default_value ( addr )
+{
+	return main_memory_read(addr).def_bin ;
+}
+
 //// Read/write nbytes
 
 function main_memory_read_nbytes ( addr, n )
@@ -8366,6 +8371,21 @@ function get_state ( )
     }
 
     // dump memory
+    /* NEW
+    var addrs = main_memory_get_addresses() ;
+    for (var i=0; i<addrs.length; i++)
+    {
+	 elto_value  = main_memory_read_value(addrs[i]) ;
+	 elto_dvalue = main_memory_read_default_value(addrs[i]) ;
+
+         if (elto_value != elto_dvalue)
+         {
+             elto_string = "0x" + elto_value ;
+             ret.msg = ret.msg + "memory[0x" + addrs[i].toString(16) + "]" + ":" + elto_string + "; ";
+         }
+    }
+    */
+
     for (var i in memory)
     {
         for (var j=0; j<memory[i].length; j++)
