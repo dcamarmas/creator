@@ -197,25 +197,25 @@ function main_memory_read_bydatatype ( addr, type )
         {
 		case 'b':
                 case 'byte':
-		     ret = main_memory_read_value(addr) ;
+		     ret = "0x" + main_memory_read_value(addr) ;
                      break;
 
 		case 'h':
                 case 'half_word':
-		     ret = main_memory_read_nbytes(addr, word_size_bytes/2) ;
+		     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes/2) ;
                      break;
 
 		case 'w':
 		case 'integer':
 		case 'float':
                 case 'word':
-		     ret = main_memory_read_nbytes(addr, word_size_bytes) ;
+		     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes) ;
                      break;
 
 		case 'd':
 		case 'double':
                 case 'double_word':
-		     ret = main_memory_read_nbytes(addr, word_size_bytes*2) ;
+		     ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes*2) ;
                      break;
 
 	        case 'asciiz':
