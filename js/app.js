@@ -2750,9 +2750,15 @@ try
             app._data.totalStats   = 0;
             app._data.instructions = instructions;
 
-            app._data.memory[memory_hash[1]] = memory[memory_hash[1]]; // OLD
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]]; // OLD
-            app._data.memory[memory_hash[2]] = memory[memory_hash[2]]; // OLD
+  if (false == OLD_CODE_ACTIVE)
+  {
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
+            app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
+            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
+            app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+  }
 
             tokenIndex = 0;
             app.reset(true);
@@ -2915,21 +2921,26 @@ try
       },
 
       /*Save a binary in a local file*/
-      library_save(){
-        if(assembly_compiler() == -1){
-          return;
+      library_save ()
+      {
+        if (assembly_compiler() == -1) {
+            return;
         }
         promise.then((message) => {
           if(message == "-1"){
             return;
           }
 
-	  /* // OLD
-          if(memory[memory_hash[0]].length != 0){
-            show_notification('You can not enter data in a library', 'danger') ;
-            return;
+  if (false == OLD_CODE_ACTIVE)
+  {
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
+          if (memory[memory_hash[0]].length != 0) {
+              show_notification('You can not enter data in a library', 'danger') ;
+              return;
           }
-	  */
+  }
 
           for (var i = 0; i < instructions_binary.length; i++){
             console_log(instructions_binary[i].Label)
@@ -3420,8 +3431,11 @@ try
          // 1) try to include in the memory component
          // 2) update code to new memory API (don't use memory abstraction datatype directly)
 
-	/*
-         // OLD
+  if (false == OLD_CODE_ACTIVE)
+  {
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
       	if(app._data.selected_space_view == "sig_int"){
     			var hex = "";
     			for (var j = 0; j < 4; j++) {
@@ -3485,7 +3499,7 @@ try
       		i++;
       	}
         app._data.memory = memory;
-	*/
+  }
       },
 
       hide_space_modal()
@@ -3501,8 +3515,11 @@ try
          // 1) try to include in the memory component
          // 2) update code to new memory API (don't use memory abstraction datatype directly)
 
-	 /*
-	  // OLD
+  if (false == OLD_CODE_ACTIVE)
+  {
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         if(app._data.selected_stack_view == "sig_int"){
           var hex = "";
           for (var j = 0; j < 4; j++) {
@@ -3532,7 +3549,7 @@ try
           memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
         }
         app._data.memory = memory;
-        */
+  }
       },
 
       hide_stack_modal()
