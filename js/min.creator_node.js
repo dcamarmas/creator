@@ -1925,7 +1925,7 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
-var OLD_CODE_ACTIVE = true;
+var OLD_CODE_ACTIVE = false;
 
 
 /********************
@@ -3391,10 +3391,16 @@ function crex_memory_clear ( )
 
 function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
+  var ret = {
+               msg: '',
+               addr: 0
+            } ;
+
   if (false == OLD_CODE_ACTIVE)
   {
-        main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
-        return '' ;
+        ret.addr = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
+        ret.msg  = '' ;
+        return ret ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -3424,7 +3430,8 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
 
           if (data_address % size != 0 && i == 0) {
-              return 'm21' ;
+              ret.msg = 'm21' ;
+              return ret ;
           }
 
           if(data_address % 4 == 0){
@@ -3474,7 +3481,8 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
         }
 
-        return '' ;
+        ret.addr = data_address ;
+        return ret ;
   }
 }
 
@@ -4911,6 +4919,7 @@ function data_segment_compiler()
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("byte Terminado");
@@ -4992,6 +5001,7 @@ function data_segment_compiler()
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("half Terminado");
@@ -5069,6 +5079,8 @@ function data_segment_compiler()
                     if (ret.status != 'ok') {
                         return ret ;
                     }
+
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("word Terminado");
@@ -5148,6 +5160,7 @@ function data_segment_compiler()
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("double word Terminado");
@@ -5236,11 +5249,12 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
+                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
                     if (ret.status != 'ok') {
-                      return ret ;
+                        return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("float Terminado");
@@ -5328,11 +5342,12 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
+                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
                     if (ret.status != 'ok') {
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("double Terminado");
@@ -5571,10 +5586,11 @@ function data_compiler ( value, size, dataLabel, DefValue, type )
         } ;
 
         var r = crex_memory_data_compiler(value, size, dataLabel, DefValue, type) ;
-        if (r != "") {
+        if (r.msg != "") {
             return packCompileError(r, "", 'error', "danger") ;
         }
 
+        ret.addr = r.addr ;
         return ret;
 }
 
