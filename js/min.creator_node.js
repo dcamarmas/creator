@@ -1925,7 +1925,7 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
-var OLD_CODE_ACTIVE = true;
+var OLD_CODE_ACTIVE = false;
 
 
 /********************
