@@ -1925,6 +1925,8 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
+var OLD_CODE_ACTIVE = true;
+
 
 /********************
  * Internal API     *
@@ -2517,10 +2519,16 @@ var memory          = { data_memory: [], instructions_memory: [], stack_memory: 
 /* Write value in memory */
 function writeMemory ( value, addr, type )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        main_memory_write_bydatatype(addr, value, type, value) ;
+        creator_memory_updaterow(addr);
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
         main_memory_write_bydatatype(addr, value, type, value) ;
         creator_memory_updaterow(addr);
-        // return ; // FUTURE
 
         // OLD
 	var draw = {
@@ -2887,13 +2895,19 @@ draw.danger.push(executionIndex);
 			return;
 		}
 	}
+  }
 }
 
 // readMemory
 function readMemory ( addr, type )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        return main_memory_read_bydatatype(addr, type) ; // FUTURE
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-        // return main_memory_read_bydatatype(addr, type) ; // FUTURE
         main_memory_read_bydatatype(addr, type) ;
 
         // OLD
@@ -3034,14 +3048,21 @@ return 0;
 					//return bi_intToBigInt(0,10) ;
 					return 0;
 				}
+  }
 }
 
 function memory_reset ( )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        main_memory_reset() ;
+        creator_memory_updateall() ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
         main_memory_reset() ;
         creator_memory_updateall() ;
-        // return ; // FUTURE
 
         // OLD
 	for (var i = 0; i < memory[memory_hash[0]].length; i++)
@@ -3072,14 +3093,20 @@ function memory_reset ( )
 			}
 		}
 	}
+  }
 }
 
 
 function crex_sbrk ( new_size )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        var new_addr = creator_memory_alloc(new_size) ;
+ 	return packExecute(false, '', 'danger', new_addr) ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-        //var new_addr = creator_memory_alloc(new_size) ; // FUTURE
- 	//return packExecute(false, '', 'danger', new_addr) ; // FUTURE
         creator_memory_alloc(new_size) ;
 
         // OLD
@@ -3125,13 +3152,19 @@ function crex_sbrk ( new_size )
         }
 
 	return packExecute(false, '', 'danger', new_addr) ;
+  }
 }
 
 function crex_get_string_from_memory ( addr )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        var ret_msg = main_memory_read_bydatatype(parseInt(addr), "string") ;
+ 	return packExecute(false, 'printed', 'info', ret_msg) ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-        //var ret_msg = main_memory_read_bydatatype(parseInt(addr), "string") ; // FUTURE
- 	//return packExecute(false, 'printed', 'info', ret_msg) ; // FUTURE
         main_memory_read_bydatatype(parseInt(addr), "string") ;
 
         // OLD
@@ -3186,12 +3219,18 @@ function crex_get_string_from_memory ( addr )
 			}
 		}
 	}
+  }
 }
 
 function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        return main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ; // FUTURE
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-        // return main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ; // FUTURE
         main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ;
 
         // OLD
@@ -3327,26 +3366,39 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 	}
 
 	return ret;
+  }
 }
 
 function crex_memory_clear ( )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        main_memory_clear() ;
+        creator_memory_clearall() ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
         main_memory_clear() ;
         creator_memory_clearall() ;
-        // return ; // FUTURE
 
         // OLD
         memory[memory_hash[0]] = [];
         memory[memory_hash[1]] = [];
         memory[memory_hash[2]] = [];
+  }
 }
 
 function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
+        return '' ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-        //main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ; // FUTURE
-        //return '' ; // FUTURE
         main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
 
         // OLD
@@ -3423,12 +3475,18 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
         }
 
         return '' ;
+  }
 }
 
 function creator_memory_findbytag ( tag )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        return creator_memory_findaddress_bytag(tag) ;  // FUTURE
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-        // return creator_memory_findaddress_bytag(tag) ;  // FUTURE
         creator_memory_findaddress_bytag(tag) ;
 
         // OLD
@@ -3466,28 +3524,35 @@ function creator_memory_findbytag ( tag )
         }
 
         return ret ;
+  }
 }
 
 function creator_memory_copytoapp ( hash_index )
 {
-        // NEW
-        if (typeof app !== "undefined") {
-            //app._data.main_memory          = main_memory ;           // TODO
-            //app._data.main_memory_datatype = main_memory_datatype ;  // TODO
-	}
-
+  if (false == OLD_CODE_ACTIVE)
+  {
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // OLD
         if (typeof app !== "undefined") {
             app._data.memory[memory_hash[hash_index]] = memory[memory_hash[hash_index]] ;
 	}
+  }
 }
 
 function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        var size = Math.ceil(hex.toString().length / 2) ;
+	return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
         var size = Math.ceil(hex.toString().length / 2) ;
 	main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ;
-	// return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ; // FUTURE
 
         // OLD
 	for(var a = 0; a < hex.length/2; a++)
@@ -3532,12 +3597,18 @@ function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill
 	}
 
 	return auxAddr;
+  }
 }
 
 function creator_memory_stackinit ( stack_address )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+        return main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-        // return main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ; // FUTURE
         main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
 
         // OLD
@@ -3546,12 +3617,18 @@ function creator_memory_stackinit ( stack_address )
         for(var i = 0; i<4; i++){
             (memory[memory_hash[2]][memory[memory_hash[2]].length-1].Binary).push({Addr: stack_address + i, DefBin: "00", Bin: "00", Tag: null},);
         }
+  }
 }
 
 function creator_memory_storestring ( string, string_length, data_address, label, type, align )
 {
+  if (false == OLD_CODE_ACTIVE)
+  {
+	return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
         // NEW
-	// return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1; // FUTURE
 	main_memory_storedata(data_address, string, string_length, label, string, string, type) ;
 
         // OLD
@@ -3657,6 +3734,7 @@ function creator_memory_storestring ( string, string_length, data_address, label
 	}
 
 	return data_address;
+  }
 }
 
 /*
