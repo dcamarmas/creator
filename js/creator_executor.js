@@ -600,6 +600,12 @@ function writeStackLimit ( stackLimit )
 			throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
 		}
 		else{
+
+  if (false == OLD_CODE_ACTIVE)
+  {
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
 			var diff = memory[memory_hash[2]][0].Address - stackLimit;
 			var auxStackLimit = stackLimit;
 			var newRow = 0;
@@ -616,6 +622,7 @@ function writeStackLimit ( stackLimit )
 			track_stack_setsp(stackLimit);
 
 			architecture.memory_layout[4].value = stackLimit;
+  }
 		}
 	}
 }

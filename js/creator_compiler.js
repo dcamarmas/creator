@@ -1167,12 +1167,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString)
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "byte")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "byte") ;
+		    if (r.msg != "") {
+		        return packCompileError(r, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("byte Terminado");
@@ -1249,12 +1251,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString)
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "half")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "half") ;
+		    if (r.msg != "") {
+		        return packCompileError(r, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("half Terminado");
@@ -1328,12 +1332,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0, "word")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "word") ;
+		    if (r.msg != "") {
+		        return packCompileError(r, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("word Terminado");
@@ -1408,12 +1414,14 @@ function data_segment_compiler()
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "double_word")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "double_word") ;
+		    if (r.msg != "") {
+		        return packCompileError(r, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("double word Terminado");
@@ -1502,12 +1510,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         token, "float") ;
+		    if (r.msg != "") {
+		        return packCompileError(r, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("float Terminado");
@@ -1595,12 +1605,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         token, "double") ;
+		    if (r.msg != "") {
+		        return packCompileError(r, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("double Terminado");
@@ -1827,27 +1839,7 @@ function data_segment_compiler()
         return ret;
 }
 
-/* Stores a data in data memory */
-function data_compiler ( value, size, dataLabel, DefValue, type )
-{
-	var ret = {
-          errorcode: "",
-          token: "",
-          type: "",
-          update: "",
-          status: "ok"
-        } ;
-
-        var r = crex_memory_data_compiler(value, size, dataLabel, DefValue, type) ;
-        if (r.msg != "") {
-            return packCompileError(r, "", 'error', "danger") ;
-        }
-
-        ret.addr = r.addr ;
-        return ret;
-}
-
-/*Compile text segment*/
+/* Compile text segment */
 function code_segment_compiler()
 {
 	var ret = {
@@ -2144,8 +2136,7 @@ function code_segment_compiler()
         return ret;
 }
 
-
-/*Compile instruction*/
+/* Compile instruction */
 function instruction_compiler ( instruction, userInstruction, label, line,
 				pending, pendingAddress, instInit, instIndex, isPseudo )
 {
