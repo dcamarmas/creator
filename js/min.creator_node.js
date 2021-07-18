@@ -8454,36 +8454,41 @@ function get_state ( )
     }
 
     // dump memory
-    /* NEW
-    var addrs = main_memory_get_addresses() ;
-    for (var i=0; i<addrs.length; i++)
+    if (false == OLD_CODE_ACTIVE)
     {
-	 elto_value  = main_memory_read_value(addrs[i]) ;
-	 elto_dvalue = main_memory_read_default_value(addrs[i]) ;
+            /* NEW */
+	    var addrs = main_memory_get_addresses() ;
+	    for (var i=0; i<addrs.length; i++)
+	    {
+		 elto_value  = main_memory_read_value(addrs[i]) ;
+		 elto_dvalue = main_memory_read_default_value(addrs[i]) ;
 
-         if (elto_value != elto_dvalue)
-         {
-             elto_string = "0x" + elto_value ;
-             ret.msg = ret.msg + "memory[0x" + addrs[i].toString(16) + "]" + ":" + elto_string + "; ";
-         }
+		 if (elto_value != elto_dvalue)
+		 {
+		     elto_string = "0x" + elto_value ;
+		     ret.msg = ret.msg + "memory[0x" + addrs[i].toString(16) + "]" + ":" + elto_string + "; ";
+		 }
+	    }
     }
-    */
-
-    for (var i in memory)
+    else
     {
-        for (var j=0; j<memory[i].length; j++)
-        {
-            elto_value  = memory[i][j].Binary[3].Bin    + memory[i][j].Binary[2].Bin +
-                          memory[i][j].Binary[1].Bin    + memory[i][j].Binary[0].Bin ;
-            elto_dvalue = memory[i][j].Binary[3].DefBin + memory[i][j].Binary[2].DefBin +
-                          memory[i][j].Binary[1].DefBin + memory[i][j].Binary[0].DefBin ;
+            /* OLD */
+	    for (var i in memory)
+	    {
+		for (var j=0; j<memory[i].length; j++)
+		{
+		    elto_value  = memory[i][j].Binary[3].Bin    + memory[i][j].Binary[2].Bin +
+				  memory[i][j].Binary[1].Bin    + memory[i][j].Binary[0].Bin ;
+		    elto_dvalue = memory[i][j].Binary[3].DefBin + memory[i][j].Binary[2].DefBin +
+				  memory[i][j].Binary[1].DefBin + memory[i][j].Binary[0].DefBin ;
 
-            if (elto_value != elto_dvalue)
-            {
-                elto_string = "0x" + elto_value ;
-                ret.msg = ret.msg + "memory[0x" + memory[i][j].Address.toString(16) + "]" + ":" + elto_string + "; ";
-            }
-        }
+		    if (elto_value != elto_dvalue)
+		    {
+			elto_string = "0x" + elto_value ;
+			ret.msg = ret.msg + "memory[0x" + memory[i][j].Address.toString(16) + "]" + ":" + elto_string + "; ";
+		    }
+		}
+	    }
     }
 
     // dump keyboard
