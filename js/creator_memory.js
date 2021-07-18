@@ -41,7 +41,7 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
-var OLD_CODE_ACTIVE = true;
+var OLD_CODE_ACTIVE = false;
 
 
 /********************
@@ -1507,10 +1507,16 @@ function crex_memory_clear ( )
 
 function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 {
+  var ret = {
+               msg: '',
+               addr: 0
+            } ;
+
   if (false == OLD_CODE_ACTIVE)
   {
-        main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
-        return '' ;
+        ret.addr = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
+        ret.msg  = '' ;
+        return ret ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -1540,7 +1546,8 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
 
           if (data_address % size != 0 && i == 0) {
-              return 'm21' ;
+              ret.msg = 'm21' ;
+              return ret ;
           }
 
           if(data_address % 4 == 0){
@@ -1590,7 +1597,8 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
         }
 
-        return '' ;
+        ret.addr = data_address ;
+        return ret ;
   }
 }
 

@@ -1172,6 +1172,7 @@ function data_segment_compiler()
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("byte Terminado");
@@ -1253,6 +1254,7 @@ function data_segment_compiler()
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("half Terminado");
@@ -1330,6 +1332,8 @@ function data_segment_compiler()
                     if (ret.status != 'ok') {
                         return ret ;
                     }
+
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("word Terminado");
@@ -1409,6 +1413,7 @@ function data_segment_compiler()
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("double word Terminado");
@@ -1497,11 +1502,12 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
+                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
                     if (ret.status != 'ok') {
-                      return ret ;
+                        return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("float Terminado");
@@ -1589,11 +1595,12 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
+                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
                     if (ret.status != 'ok') {
                         return ret ;
                     }
 
+                    data_address = ret.addr ;
                     label = null;
 
                     console_log("double Terminado");
@@ -1832,10 +1839,11 @@ function data_compiler ( value, size, dataLabel, DefValue, type )
         } ;
 
         var r = crex_memory_data_compiler(value, size, dataLabel, DefValue, type) ;
-        if (r != "") {
+        if (r.msg != "") {
             return packCompileError(r, "", 'error', "danger") ;
         }
 
+        ret.addr = r.addr ;
         return ret;
 }
 
