@@ -603,6 +603,10 @@ function writeStackLimit ( stackLimit )
 
   if (false == OLD_CODE_ACTIVE)
   {
+  			var diff = architecture.memory_layout[4].value - stackLimit;
+  			if (diff > 0) {
+  				creator_memory_zerofill( stackLimit, diff );
+  			}
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -610,7 +614,7 @@ function writeStackLimit ( stackLimit )
 			var auxStackLimit = stackLimit;
 			var newRow = 0;
 
-			for (var i = 0; i < (diff/4); i++){
+			for (var i = 0; i < (diff/word_size_bytes); i++){
 				memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
 				for (var z = 0; z < 4; z++){
 					(memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
@@ -618,11 +622,11 @@ function writeStackLimit ( stackLimit )
 				}
 				newRow++;
 			}
+  }
 
-			track_stack_setsp(stackLimit);
+  			track_stack_setsp(stackLimit);
 
 			architecture.memory_layout[4].value = stackLimit;
-  }
 		}
 	}
 }

@@ -41,7 +41,7 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
-var OLD_CODE_ACTIVE = true;
+var OLD_CODE_ACTIVE = false;
 
 
 /********************
@@ -331,6 +331,8 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
         // datatype
         main_memory_datatypes[addr] = main_memory_datatypes_packs_foravt(addr, value_human, type, size) ;
 
+        creator_memory_updateall();
+
 	return ret ;
 }
 
@@ -419,12 +421,12 @@ function creator_memory_alignelto ( new_addr, new_size )
                   } ;
 
         // get align address and size
-        for (var i=0; i<word_size_bytes; i++)
+        for (var i=0; i<align; i++)
         {
-             if (((new_addr + i) % word_size_bytes) == 0) {
+             if (((new_addr + i) % align) == 0) {
                  ret.new_addr = new_addr + i ;
              }
-             if (((new_size + i) % word_size_bytes) == 0) {
+             if (((new_size + i) % align) == 0) {
                  ret.new_size = new_size + i ;
              }
         }
@@ -506,6 +508,8 @@ function creator_memory_zerofill ( new_addr, new_size )
              main_memory_write(new_addr+i, value) ;
 	}
 
+        creator_memory_updateall();
+
         // return initial address used
 	return new_addr ;
 }
@@ -520,9 +524,9 @@ function creator_memory_alloc ( new_size )
         creator_memory_zerofill(algn.new_addr, algn.new_size) ;
 
         // new segment limit
-	architecture.memory_layout[3].value = algn.new_addr + algn.new_size ;
+	architecture.memory_layout[3].value = algn.new_addr + new_size ;
 	if (typeof app !== "undefined") {
-	    app.architecture.memory_layout[3].value = algn.new_addr + algn.new_size ;
+	    app.architecture.memory_layout[3].value = algn.new_addr + new_size ;
 	}
 
 	return algn.new_addr ;
@@ -539,7 +543,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
             main_memory_write_tag(algn.new_addr, dataLabel) ;
         }
 
-        return parseInt(data_address) + parseInt(algn.new_size) ;
+        return parseInt(algn.new_addr) + parseInt(size) ;
 }
 
 // update an app._data.main_memory row:
@@ -1536,6 +1540,16 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
 
   if (false == OLD_CODE_ACTIVE)
   {
+        //This is if align changes
+        creator_memory_zerofill( data_address, data_address % align );
+        data_address = data_address + (data_address % align);
+
+        if ((data_address % size != 0) && (data_address % word_size_bytes != 0)) {
+            ret.msg = 'm21' ;
+            ret.data_address = data_address ;
+            return ret ;
+        }
+
         if (dataLabel != null) {
             data_tag.push({tag: dataLabel, addr: data_address});
         }
