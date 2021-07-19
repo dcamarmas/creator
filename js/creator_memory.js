@@ -52,12 +52,30 @@ var OLD_CODE_ACTIVE = true;
 
 function main_memory_get_addresses ( )
 {
-        return Object.keys(main_memory) ;
+	// return Object.keys(main_memory) ;
+
+	return Object.keys(main_memory)
+                     .sort(function (a, b) {
+			     ia = parseInt(a) ;
+			     ib = parseInt(b) ;
+			     if (ia > ib) return -1;
+			     if (ib > ia) return  1;
+			                  return  0;
+		     }) ;
 }
 
 function main_memory_datatype_get_addresses ( )
 {
-        return Object.keys(main_memory_datatypes) ;
+        // return Object.keys(main_memory_datatypes) ;
+
+        return Object.keys(main_memory_datatypes)
+                     .sort(function (a, b) {
+			     ia = parseInt(a) ;
+			     ib = parseInt(b) ;
+			     if (ia > ib) return -1;
+			     if (ib > ia) return  1;
+			                  return  0;
+		     }) ;
 }
 
 // Full value (stored in address)
@@ -525,7 +543,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
 }
 
 // update an app._data.main_memory row:
-//  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", size: 4, eye: true },
+//  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", size: 4, eye: true, hex_packed: "1A000000" },
 //  ...
 
 function creator_memory_updaterow ( addr )
@@ -549,6 +567,7 @@ function creator_memory_updaterow ( addr )
     { // set a new element, and set the initial values...
         Vue.set(app._data.main_memory, addr_base, elto) ;
 
+        elto.hex_packed = "00000000" ;
         for (var i=0; i<word_size_bytes; i++) {
              elto.hex[i] = { byte: "00", tag: null } ;
         }
@@ -566,9 +585,12 @@ function creator_memory_updaterow ( addr )
 
     // hex
     var v1 = {} ;
+    elto.hex_packed = '' ;
     for (var i=0; i<word_size_bytes; i++)
     {
          v1 = main_memory_read(addr_base + i) ;
+
+         elto.hex_packed += v1.bin ;
          elto.hex[i].byte = v1.bin;
          elto.hex[i].tag  = v1.tag;
          if (v1.tag == "") {
@@ -602,7 +624,7 @@ function creator_memory_updateall ( )
     for (var i=0; i<addrs.length; i++)
     {
 	curr_addr = parseInt(addrs[i]) ;
-	if (Math.abs(curr_addr - last_addr) > 3)
+	if (Math.abs(curr_addr - last_addr) > (word_size_bytes - 1)) // if (|curr - last| > 3)
 	{
             creator_memory_updaterow(addrs[i]);
 	    last_addr = curr_addr ;
@@ -1213,7 +1235,7 @@ function memory_reset ( )
 }
 
 
-function crex_sbrk ( new_size )
+function creator_memory_sbrk ( new_size )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -1271,7 +1293,7 @@ function crex_sbrk ( new_size )
   }
 }
 
-function crex_get_string_from_memory ( addr )
+function creator_memory_get_string_from_memory ( addr )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -1338,7 +1360,7 @@ function crex_get_string_from_memory ( addr )
   }
 }
 
-function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
+function creator_memory_store_string ( keystroke, value, addr, valueIndex, auxAddr )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -1485,7 +1507,7 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
   }
 }
 
-function crex_memory_clear ( )
+function creator_memory_clear ( )
 {
   if (false == OLD_CODE_ACTIVE)
   {
