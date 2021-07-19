@@ -946,7 +946,7 @@ function capi_mem_write ( addr, value, type )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-	capi_raise("The memory must be align") ;
+		capi_raise("The memory must be align") ;
 		return;
 	}
 
@@ -955,7 +955,7 @@ function capi_mem_write ( addr, value, type )
 		writeMemory(value, addr, type);
 	} 
 	catch(e) {
-	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
 	}
 }
 
@@ -2405,7 +2405,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
             main_memory_write_tag(algn.new_addr, dataLabel) ;
         }
 
-        return data_address = data_address + algn.new_size ;
+        return parseInt(data_address) + parseInt(algn.new_size) ;
 }
 
 // update an app._data.main_memory row:
@@ -2903,7 +2903,7 @@ function readMemory ( addr, type )
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        return main_memory_read_bydatatype(addr, type) ; // FUTURE
+        return main_memory_read_bydatatype(addr, type) ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -3226,7 +3226,7 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        return main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ; // FUTURE
+        return main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -3389,17 +3389,22 @@ function crex_memory_clear ( )
   }
 }
 
-function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
+function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type )
 {
   var ret = {
                msg: '',
-               addr: 0
+               data_address: 0
             } ;
 
   if (false == OLD_CODE_ACTIVE)
   {
-        ret.addr = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
-        ret.msg  = '' ;
+        if (dataLabel != null) {
+            data_tag.push({tag: dataLabel, addr: data_address});
+        }
+
+        ret.msg = '' ;
+        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
+
         return ret ;
   }
   else // if (true == OLD_CODE_ACTIVE)
@@ -3431,6 +3436,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 
           if (data_address % size != 0 && i == 0) {
               ret.msg = 'm21' ;
+              ret.data_address = data_address ;
               return ret ;
           }
 
@@ -3481,7 +3487,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
         }
 
-        ret.addr = data_address ;
+        ret.data_address = data_address ;
         return ret ;
   }
 }
@@ -3490,7 +3496,7 @@ function creator_memory_findbytag ( tag )
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        return creator_memory_findaddress_bytag(tag) ;  // FUTURE
+        return creator_memory_findaddress_bytag(tag) ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -3632,6 +3638,10 @@ function creator_memory_storestring ( string, string_length, data_address, label
 {
   if (false == OLD_CODE_ACTIVE)
   {
+        if (label != null) {
+    	    data_tag.push({tag: label, addr: data_address});
+        }
+
 	return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
   }
   else // if (true == OLD_CODE_ACTIVE)
@@ -4914,12 +4924,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString)
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "byte")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "byte") ;
+		    if (r.msg != "") {
+		        return packCompileError(r.msg, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("byte Terminado");
@@ -4996,12 +5008,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString)
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "half")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "half") ;
+		    if (r.msg != "") {
+		        return packCompileError(r.msg, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("half Terminado");
@@ -5075,12 +5089,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16)) >> 0, "word")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "word") ;
+		    if (r.msg != "") {
+		        return packCompileError(r.msg, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("word Terminado");
@@ -5155,12 +5171,14 @@ function data_segment_compiler()
                       auxTokenString = auxTokenString.substring(auxTokenString.length-(2*architecture.directives[j].size), auxTokenString.length);
                     }
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, (parseInt(auxTokenString, 16) >> 0), "double_word")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         (parseInt(auxTokenString, 16) >> 0), "double_word") ;
+		    if (r.msg != "") {
+		        return packCompileError(r.msg, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("double word Terminado");
@@ -5249,12 +5267,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "float")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         token, "float") ;
+		    if (r.msg != "") {
+		        return packCompileError(r.msg, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("float Terminado");
@@ -5342,12 +5362,14 @@ function data_segment_compiler()
 
                     console_log(auxTokenString);
 
-                    ret = data_compiler(auxTokenString, architecture.directives[j].size, label, token, "double")
-                    if (ret.status != 'ok') {
-                        return ret ;
-                    }
+                    var r = creator_memory_data_compiler(data_address, auxTokenString, 
+						         architecture.directives[j].size, label, 
+						         token, "double") ;
+		    if (r.msg != "") {
+		        return packCompileError(r.msg, "", 'error', "danger") ;
+		    }
 
-                    data_address = ret.addr ;
+                    data_address = r.data_address ;
                     label = null;
 
                     console_log("double Terminado");
@@ -5574,27 +5596,7 @@ function data_segment_compiler()
         return ret;
 }
 
-/* Stores a data in data memory */
-function data_compiler ( value, size, dataLabel, DefValue, type )
-{
-	var ret = {
-          errorcode: "",
-          token: "",
-          type: "",
-          update: "",
-          status: "ok"
-        } ;
-
-        var r = crex_memory_data_compiler(value, size, dataLabel, DefValue, type) ;
-        if (r.msg != "") {
-            return packCompileError(r, "", 'error', "danger") ;
-        }
-
-        ret.addr = r.addr ;
-        return ret;
-}
-
-/*Compile text segment*/
+/* Compile text segment */
 function code_segment_compiler()
 {
 	var ret = {
@@ -5891,8 +5893,7 @@ function code_segment_compiler()
         return ret;
 }
 
-
-/*Compile instruction*/
+/* Compile instruction */
 function instruction_compiler ( instruction, userInstruction, label, line,
 				pending, pendingAddress, instInit, instIndex, isPseudo )
 {
@@ -7947,6 +7948,12 @@ function writeStackLimit ( stackLimit )
 			throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
 		}
 		else{
+
+  if (false == OLD_CODE_ACTIVE)
+  {
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
 			var diff = memory[memory_hash[2]][0].Address - stackLimit;
 			var auxStackLimit = stackLimit;
 			var newRow = 0;
@@ -7963,6 +7970,7 @@ function writeStackLimit ( stackLimit )
 			track_stack_setsp(stackLimit);
 
 			architecture.memory_layout[4].value = stackLimit;
+  }
 		}
 	}
 }
@@ -8481,8 +8489,9 @@ function get_state ( )
 
 		 if (elto_value != elto_dvalue)
 		 {
+                     addr_string = "0x" + parseInt(addrs[i]).toString(16) ;
 		     elto_string = "0x" + elto_value ;
-		     ret.msg = ret.msg + "memory[0x" + addrs[i].toString(16) + "]" + ":" + elto_string + "; ";
+		     ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
 		 }
 	    }
     }
