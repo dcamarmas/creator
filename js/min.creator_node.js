@@ -1945,11 +1945,7 @@ function main_memory_get_addresses ( )
 			     if (ia > ib) return -1;
 			     if (ib > ia) return  1;
 			                  return  0;
-		     })
-		     .reduce(function (acc, key) {
-		 	 acc.push(key) ;
-			 return acc ;
-		     }, []) ;
+		     }) ;
 }
 
 function main_memory_datatype_get_addresses ( )
@@ -1963,11 +1959,7 @@ function main_memory_datatype_get_addresses ( )
 			     if (ia > ib) return -1;
 			     if (ib > ia) return  1;
 			                  return  0;
-		     })
-		     .reduce(function (acc, key) {
-		 	 acc.push(key) ;
-			 return acc ;
-		     }, []) ;
+		     }) ;
 }
 
 // Full value (stored in address)
@@ -2435,7 +2427,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
 }
 
 // update an app._data.main_memory row:
-//  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", size: 4, eye: true },
+//  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", size: 4, eye: true, hex_packed: "1A000000" },
 //  ...
 
 function creator_memory_updaterow ( addr )
@@ -2459,6 +2451,7 @@ function creator_memory_updaterow ( addr )
     { // set a new element, and set the initial values...
         Vue.set(app._data.main_memory, addr_base, elto) ;
 
+        elto.hex_packed = "00000000" ;
         for (var i=0; i<word_size_bytes; i++) {
              elto.hex[i] = { byte: "00", tag: null } ;
         }
@@ -2476,9 +2469,12 @@ function creator_memory_updaterow ( addr )
 
     // hex
     var v1 = {} ;
+    elto.hex_packed = '' ;
     for (var i=0; i<word_size_bytes; i++)
     {
          v1 = main_memory_read(addr_base + i) ;
+
+         elto.hex_packed += v1.bin ;
          elto.hex[i].byte = v1.bin;
          elto.hex[i].tag  = v1.tag;
          if (v1.tag == "") {
