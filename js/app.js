@@ -3221,7 +3221,7 @@ try
       },
 
       /*Stop program excution*/
-      stopExecution(){
+      stopExecution() {
         app._data.runExecution = true;
       },
 
@@ -3229,7 +3229,10 @@ try
       exception(error)
       {
          show_notification("There has been an exception. Error description: '" + error, 'danger') ;
-         instructions[executionIndex]._rowVariant = 'danger';
+
+         if (executionIndex != -1) {
+             instructions[executionIndex]._rowVariant = 'danger';
+	 }
          executionIndex = -1;
 
          /* Google Analytics */

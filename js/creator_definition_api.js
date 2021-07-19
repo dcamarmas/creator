@@ -66,7 +66,7 @@ function capi_mem_write ( addr, value, type )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-	capi_raise("The memory must be align") ;
+		capi_raise("The memory must be align") ;
 		return;
 	}
 
@@ -75,7 +75,7 @@ function capi_mem_write ( addr, value, type )
 		writeMemory(value, addr, type);
 	} 
 	catch(e) {
-	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
 	}
 }
 
