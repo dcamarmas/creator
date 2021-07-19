@@ -35,4 +35,3 @@ end1:
   li a7 10
   ecall
 
-

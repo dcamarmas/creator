@@ -15,3 +15,4 @@ main:
     sub x10 x7 x8 # 45-33
     mul x11 x8 x8 # 33*33
     div x12 x11 x6 # x6/13
+
