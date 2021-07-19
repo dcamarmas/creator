@@ -2215,6 +2215,7 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
         // datatype
         main_memory_datatypes[addr] = main_memory_datatypes_packs_foravt(addr, value_human, type, size) ;
 
+	// update view
         creator_memory_updateall();
 
 	return ret ;
@@ -2392,6 +2393,7 @@ function creator_memory_zerofill ( new_addr, new_size )
              main_memory_write(new_addr+i, value) ;
 	}
 
+	// update view
         creator_memory_updateall();
 
         // return initial address used
@@ -2431,7 +2433,9 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
 }
 
 // update an app._data.main_memory row:
-//  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", hex:[{byte: "1A", tag: "main"},...], value: "1000", size: 4, eye: true, hex_packed: "1A000000" },
+//  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", 
+//           hex:[{byte: "1A", tag: "main"},...], 
+//           value: "1000", size: 4, eye: true, hex_packed: "1A000000" },
 //  ...
 
 function creator_memory_updaterow ( addr )
@@ -3082,6 +3086,8 @@ function memory_reset ( )
   if (false == OLD_CODE_ACTIVE)
   {
         main_memory_reset() ;
+
+	// update view
         creator_memory_updateall() ;
   }
   else // if (true == OLD_CODE_ACTIVE)
@@ -3424,7 +3430,8 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
 
   if (false == OLD_CODE_ACTIVE)
   {
-        creator_memory_zerofill( data_address, data_address % align ); //This is if align changes
+        //This is if align changes
+        creator_memory_zerofill( data_address, data_address % align );
         data_address = data_address + (data_address % align);
 
         if ((data_address % size != 0) && (data_address % word_size_bytes != 0)) {
@@ -3787,6 +3794,91 @@ function creator_memory_storestring ( string, string_length, data_address, label
 	}
 
 	return data_address;
+  }
+}
+
+function creator_memory_update_row_view ( selected_view, segment_name, row_info )
+{
+  if (false == OLD_CODE_ACTIVE)
+  {
+        if (typeof app._data.main_memory[row_info.addr] != "undefined")
+        {
+            var hex_packed = app._data.main_memory[row_info.addr].hex_packed ;
+            var new_value  = app._data.main_memory[row_info.addr].value ;
+
+            switch (selected_view)
+	    {
+		case "sig_int":
+                     new_value = parseInt(hex_packed, 16) >> 0 ;
+		     break ;
+		case "unsig_int":
+                     new_value = parseInt(hex_packed, 16) >>> 0 ;
+		     break ;
+		case "float":
+                     new_value = hex2float("0x" + hex_packed) ;
+		     break ;
+		case "char":
+                     new_value = hex2char8(hex_packed) ;
+		     break ;
+	    }
+
+            app._data.main_memory[row_info.addr].value = new_value ;
+        }
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
+        var hex = "";
+        for (var j = 0; j < 4; j++) {
+            hex = memory[segment_name][row_info.index].Binary[j].Bin + hex;
+        }
+
+        if (selected_view == "sig_int")
+	{
+            memory[segment_name][row_info.index].Value = parseInt(hex, 16) >> 0;
+        }
+        else if(selected_view == "unsig_int")
+	{
+            memory[segment_name][row_info.index].Value = parseInt(hex, 16) >>> 0;
+        }
+        else if(selected_view == "float")
+	{
+            memory[segment_name][row_info.index].Value = hex2float("0x" + hex);
+        }
+        else if(selected_view == "char")
+	{
+            memory[segment_name][row_info.index].Value = hex2char8(hex);
+        }
+
+        if (typeof app !== "undefined") {
+            app._data.memory = memory;
+	}
+  }
+}
+
+function creator_memory_update_space_view ( selected_view, segment_name, row_info )
+{
+  if (false == OLD_CODE_ACTIVE)
+  {
+	  // TODO !!
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
+        creator_memory_update_row_view(selected_view, segment_name, row_info) ;
+
+      	var i = 1;
+      	while ( (row_info.index + i) < memory[memory_hash[0]].length && 
+		(memory[memory_hash[0]][row_info.index + i].type == "space") && 
+		(memory[memory_hash[0]][row_info.index + i].Binary[0].Tag == null) && 
+	 	(memory[memory_hash[0]][row_info.index + i].Binary[1].Tag == null) && 
+		(memory[memory_hash[0]][row_info.index + i].Binary[2].Tag == null) && 
+		(memory[memory_hash[0]][row_info.index + i].Binary[3].Tag == null) )
+	{
+		row_info.addr ++ ;
+                creator_memory_update_row_view(selected_view, segment_name, row_info) ;
+      		i++;
+      	}
+
+        app._data.memory = memory;
   }
 }
 
@@ -4291,7 +4383,7 @@ function assembly_compiler()
           stats_value[i] = 0;
         }
 
-        align = 0;
+        align = 1;
         var empty = false;
 
         /*Start of compilation*/

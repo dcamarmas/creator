@@ -499,7 +499,7 @@ function assembly_compiler()
           stats_value[i] = 0;
         }
 
-        align = 0;
+        align = 1;
         var empty = false;
 
         /*Start of compilation*/
