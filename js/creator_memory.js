@@ -52,12 +52,38 @@ var OLD_CODE_ACTIVE = true;
 
 function main_memory_get_addresses ( )
 {
-        return Object.keys(main_memory) ;
+	// return Object.keys(main_memory) ;
+
+	return Object.keys(main_memory)
+                     .sort(function (a, b) {
+			     ia = parseInt(a) ;
+			     ib = parseInt(b) ;
+			     if (ia > ib) return -1;
+			     if (ib > ia) return  1;
+			                  return  0;
+		     })
+		     .reduce(function (acc, key) {
+		 	 acc.push(key) ;
+			 return acc ;
+		     }, []) ;
 }
 
 function main_memory_datatype_get_addresses ( )
 {
-        return Object.keys(main_memory_datatypes) ;
+        // return Object.keys(main_memory_datatypes) ;
+
+        return Object.keys(main_memory_datatypes)
+                     .sort(function (a, b) {
+			     ia = parseInt(a) ;
+			     ib = parseInt(b) ;
+			     if (ia > ib) return -1;
+			     if (ib > ia) return  1;
+			                  return  0;
+		     })
+		     .reduce(function (acc, key) {
+		 	 acc.push(key) ;
+			 return acc ;
+		     }, []) ;
 }
 
 // Full value (stored in address)
@@ -602,7 +628,7 @@ function creator_memory_updateall ( )
     for (var i=0; i<addrs.length; i++)
     {
 	curr_addr = parseInt(addrs[i]) ;
-	if (Math.abs(curr_addr - last_addr) > 3)
+	if (Math.abs(curr_addr - last_addr) > (word_size_bytes - 1)) // if (|curr - last| > 3)
 	{
             creator_memory_updaterow(addrs[i]);
 	    last_addr = curr_addr ;
@@ -1213,7 +1239,7 @@ function memory_reset ( )
 }
 
 
-function crex_sbrk ( new_size )
+function creator_memory_sbrk ( new_size )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -1271,7 +1297,7 @@ function crex_sbrk ( new_size )
   }
 }
 
-function crex_get_string_from_memory ( addr )
+function creator_memory_get_string_from_memory ( addr )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -1338,7 +1364,7 @@ function crex_get_string_from_memory ( addr )
   }
 }
 
-function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
+function creator_memory_store_string ( keystroke, value, addr, valueIndex, auxAddr )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -1485,7 +1511,7 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
   }
 }
 
-function crex_memory_clear ( )
+function creator_memory_clear ( )
 {
   if (false == OLD_CODE_ACTIVE)
   {

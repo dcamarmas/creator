@@ -1100,7 +1100,7 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	var ret  = crex_get_string_from_memory(addr) ;
+	var ret  = creator_memory_get_string_from_memory(addr) ;
 	if (ret.error == true) {
 		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
 	}
@@ -1216,7 +1216,7 @@ function capi_sbrk ( value1, value2 )
 
 	/* Request more memory */
 	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
-	var ret = crex_sbrk(new_size) ;
+	var ret = creator_memory_sbrk(new_size) ;
 	if (ret.error == true) {
 		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
 	}
@@ -1936,12 +1936,38 @@ var OLD_CODE_ACTIVE = true;
 
 function main_memory_get_addresses ( )
 {
-        return Object.keys(main_memory) ;
+	// return Object.keys(main_memory) ;
+
+	return Object.keys(main_memory)
+                     .sort(function (a, b) {
+			     ia = parseInt(a) ;
+			     ib = parseInt(b) ;
+			     if (ia > ib) return -1;
+			     if (ib > ia) return  1;
+			                  return  0;
+		     })
+		     .reduce(function (acc, key) {
+		 	 acc.push(key) ;
+			 return acc ;
+		     }, []) ;
 }
 
 function main_memory_datatype_get_addresses ( )
 {
-        return Object.keys(main_memory_datatypes) ;
+        // return Object.keys(main_memory_datatypes) ;
+
+        return Object.keys(main_memory_datatypes)
+                     .sort(function (a, b) {
+			     ia = parseInt(a) ;
+			     ib = parseInt(b) ;
+			     if (ia > ib) return -1;
+			     if (ib > ia) return  1;
+			                  return  0;
+		     })
+		     .reduce(function (acc, key) {
+		 	 acc.push(key) ;
+			 return acc ;
+		     }, []) ;
 }
 
 // Full value (stored in address)
@@ -2486,7 +2512,7 @@ function creator_memory_updateall ( )
     for (var i=0; i<addrs.length; i++)
     {
 	curr_addr = parseInt(addrs[i]) ;
-	if (Math.abs(curr_addr - last_addr) > 3)
+	if (Math.abs(curr_addr - last_addr) > (word_size_bytes - 1)) // if (|curr - last| > 3)
 	{
             creator_memory_updaterow(addrs[i]);
 	    last_addr = curr_addr ;
@@ -3097,7 +3123,7 @@ function memory_reset ( )
 }
 
 
-function crex_sbrk ( new_size )
+function creator_memory_sbrk ( new_size )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -3155,7 +3181,7 @@ function crex_sbrk ( new_size )
   }
 }
 
-function crex_get_string_from_memory ( addr )
+function creator_memory_get_string_from_memory ( addr )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -3222,7 +3248,7 @@ function crex_get_string_from_memory ( addr )
   }
 }
 
-function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxAddr )
+function creator_memory_store_string ( keystroke, value, addr, valueIndex, auxAddr )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -3369,7 +3395,7 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
   }
 }
 
-function crex_memory_clear ( )
+function creator_memory_clear ( )
 {
   if (false == OLD_CODE_ACTIVE)
   {
@@ -4197,7 +4223,7 @@ function assembly_compiler()
         pending_tags = [];
         data_tag = [];
         instructions_binary =[];
-        crex_memory_clear() ;
+        creator_memory_clear() ;
         extern = [];
         data = [];
         executionInit = 1;
@@ -4302,7 +4328,7 @@ function assembly_compiler()
                     instructions_binary = [];
                     data = [];
                     extern = [];
-                    crex_memory_clear() ;
+                    creator_memory_clear() ;
 
                     return ret;
                   }
@@ -4323,7 +4349,7 @@ function assembly_compiler()
                     instructions_binary = [];
                     extern = [];
                     data = [];
-                    crex_memory_clear() ;
+                    creator_memory_clear() ;
 
                     return ret;
                   }
@@ -4497,7 +4523,7 @@ function assembly_compiler()
                   pending_tags = [];
                   data_tag = [];
                   instructions_binary = [];
-                  crex_memory_clear() ;
+                  creator_memory_clear() ;
                   data = [];
                   extern = [];
                   return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -4563,7 +4589,7 @@ function assembly_compiler()
                 pending_tags = [];
                 data_tag = [];
                 instructions_binary = [];
-                crex_memory_clear() ;
+                creator_memory_clear() ;
                 data = [];
                 extern = [];
                 return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -4623,7 +4649,7 @@ function assembly_compiler()
                 pending_tags = [];
                 data_tag = [];
                 instructions_binary = [];
-                crex_memory_clear() ;
+                creator_memory_clear() ;
                 data = [];
                 extern = [];
                 return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -4698,7 +4724,7 @@ function assembly_compiler()
             data_tag = [];
             instructions_binary = [];
             extern = [];
-            crex_memory_clear() ;
+            creator_memory_clear() ;
             data = [];
 
             return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
@@ -4716,7 +4742,7 @@ function assembly_compiler()
             data_tag = [];
             instructions_binary = [];
             extern = [];
-            crex_memory_clear() ;
+            creator_memory_clear() ;
             data = [];
 
             return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
@@ -5804,7 +5830,7 @@ function code_segment_compiler()
                     data_tag = [];
                     instructions_binary = [];
                     extern = [];
-                    crex_memory_clear() ;
+                    creator_memory_clear() ;
                     data = [];
                  // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1,
                  //                        'error', "danger") ;
@@ -5826,7 +5852,7 @@ function code_segment_compiler()
               data_tag = [];
               instructions_binary = [];
               extern = [];
-              crex_memory_clear() ;
+              creator_memory_clear() ;
               data = [];
 
               ret = packCompileError('m2', token, 'error', "danger");
@@ -5846,7 +5872,7 @@ function code_segment_compiler()
               instructions_binary = [];
               extern = [];
               data = [];
-              crex_memory_clear() ;
+              creator_memory_clear() ;
 
               //PRUEBA para dar error con mas detalle
               ret = packCompileError('m2', token, 'error', "danger");
@@ -5865,7 +5891,7 @@ function code_segment_compiler()
               instructions_binary = [];
               extern = [];
               data = [];
-              crex_memory_clear() ;
+              creator_memory_clear() ;
               ret = packCompileError('m24', "", 'error', "danger") ;
               return ret;
             }
@@ -8073,7 +8099,7 @@ function kbd_read_string ( keystroke, params )
 	}
 
 	var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
-	crex_read_string_into_memory(keystroke, value, addr, 0) ;
+	creator_memory_store_string(keystroke, value, addr, 0) ;
 
 	return value ;
 }
