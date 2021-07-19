@@ -946,7 +946,7 @@ function capi_mem_write ( addr, value, type )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-	capi_raise("The memory must be align") ;
+		capi_raise("The memory must be align") ;
 		return;
 	}
 
@@ -955,7 +955,7 @@ function capi_mem_write ( addr, value, type )
 		writeMemory(value, addr, type);
 	} 
 	catch(e) {
-	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
 	}
 }
 
@@ -3402,8 +3402,8 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
             data_tag.push({tag: dataLabel, addr: data_address});
         }
 
-        ret.addr = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
-        ret.data_address  = '' ;
+        ret.msg = '' ;
+        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
 
         return ret ;
   }
@@ -3436,6 +3436,7 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
 
           if (data_address % size != 0 && i == 0) {
               ret.msg = 'm21' ;
+              ret.data_address = data_address ;
               return ret ;
           }
 
@@ -3486,7 +3487,7 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
           }
         }
 
-        ret.addr = data_address ;
+        ret.data_address = data_address ;
         return ret ;
   }
 }
@@ -4927,7 +4928,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "byte") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -5011,7 +5012,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "half") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -5092,7 +5093,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "word") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -5174,7 +5175,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "double_word") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -5270,7 +5271,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         token, "float") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -5365,7 +5366,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         token, "double") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;

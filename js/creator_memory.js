@@ -1518,8 +1518,8 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
             data_tag.push({tag: dataLabel, addr: data_address});
         }
 
-        ret.addr = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
-        ret.data_address  = '' ;
+        ret.msg = '' ;
+        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
 
         return ret ;
   }
@@ -1552,6 +1552,7 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
 
           if (data_address % size != 0 && i == 0) {
               ret.msg = 'm21' ;
+              ret.data_address = data_address ;
               return ret ;
           }
 
@@ -1602,7 +1603,7 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
           }
         }
 
-        ret.addr = data_address ;
+        ret.data_address = data_address ;
         return ret ;
   }
 }

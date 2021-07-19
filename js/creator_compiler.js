@@ -1171,7 +1171,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "byte") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -1255,7 +1255,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "half") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -1336,7 +1336,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "word") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -1418,7 +1418,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         (parseInt(auxTokenString, 16) >> 0), "double_word") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -1514,7 +1514,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         token, "float") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
@@ -1609,7 +1609,7 @@ function data_segment_compiler()
 						         architecture.directives[j].size, label, 
 						         token, "double") ;
 		    if (r.msg != "") {
-		        return packCompileError(r, "", 'error', "danger") ;
+		        return packCompileError(r.msg, "", 'error', "danger") ;
 		    }
 
                     data_address = r.data_address ;
