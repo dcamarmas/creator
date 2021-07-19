@@ -1120,7 +1120,9 @@ function capi_read_int ( value1 )
 	}
 
 	/* Read integer */
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_int, ret1) ;
 }
@@ -1136,7 +1138,9 @@ function capi_read_float ( value1 )
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_float, ret1) ;
 }
@@ -1152,7 +1156,9 @@ function capi_read_double ( value1 )
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_double, ret1) ;
 }
@@ -1168,7 +1174,9 @@ function capi_read_char ( value1 )
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_char, ret1) ;
 }
@@ -1190,7 +1198,9 @@ function capi_read_string ( value1, value2 )
 	}
 
 	/* Read string */
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	ret1.indexComp2 = ret2.indexComp ;
 	ret1.indexElem2 = ret2.indexElem ;
