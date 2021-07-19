@@ -725,7 +725,7 @@ function kbd_read_string ( keystroke, params )
 	}
 
 	var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
-	crex_read_string_into_memory(keystroke, value, addr, 0) ;
+	creator_memory_store_string(keystroke, value, addr, 0) ;
 
 	return value ;
 }

@@ -220,7 +220,7 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	var ret  = crex_get_string_from_memory(addr) ;
+	var ret  = creator_memory_get_string_from_memory(addr) ;
 	if (ret.error == true) {
 		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
 	}
@@ -336,7 +336,7 @@ function capi_sbrk ( value1, value2 )
 
 	/* Request more memory */
 	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
-	var ret = crex_sbrk(new_size) ;
+	var ret = creator_memory_sbrk(new_size) ;
 	if (ret.error == true) {
 		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
 	}
