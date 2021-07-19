@@ -28,6 +28,7 @@ main:
     lh x12 (x7)	      #Memory[x7] -> x12
     lh x13 h1		  #Memory[h1] -> x13
     
-    sw x8 w2 x14 	  #x8 -> Memory[w2]
+    sw  x8 w2 x14 	  #x8 -> Memory[w2]
     sb x10 b2 x14	  #x10 -> Memory[b2]
     sh x12 h2 x14	  #x12 -> Memory[h2]
+
