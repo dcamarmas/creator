@@ -521,7 +521,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
             main_memory_write_tag(algn.new_addr, dataLabel) ;
         }
 
-        return data_address = data_address + algn.new_size ;
+        return parseInt(data_address) + parseInt(algn.new_size) ;
 }
 
 // update an app._data.main_memory row:
@@ -1019,7 +1019,7 @@ function readMemory ( addr, type )
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        return main_memory_read_bydatatype(addr, type) ; // FUTURE
+        return main_memory_read_bydatatype(addr, type) ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -1342,7 +1342,7 @@ function crex_read_string_into_memory ( keystroke, value, addr, valueIndex, auxA
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        return main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ; // FUTURE
+        return main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -1505,17 +1505,22 @@ function crex_memory_clear ( )
   }
 }
 
-function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
+function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type )
 {
   var ret = {
                msg: '',
-               addr: 0
+               data_address: 0
             } ;
 
   if (false == OLD_CODE_ACTIVE)
   {
-        ret.addr = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
-        ret.msg  = '' ;
+        if (dataLabel != null) {
+            data_tag.push({tag: dataLabel, addr: data_address});
+        }
+
+        ret.msg = '' ;
+        ret.data_address = main_memory_storedata(data_address, value, size, dataLabel, DefValue, DefValue, type) ;
+
         return ret ;
   }
   else // if (true == OLD_CODE_ACTIVE)
@@ -1547,6 +1552,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
 
           if (data_address % size != 0 && i == 0) {
               ret.msg = 'm21' ;
+              ret.data_address = data_address ;
               return ret ;
           }
 
@@ -1597,7 +1603,7 @@ function crex_memory_data_compiler ( value, size, dataLabel, DefValue, type )
           }
         }
 
-        ret.addr = data_address ;
+        ret.data_address = data_address ;
         return ret ;
   }
 }
@@ -1606,7 +1612,7 @@ function creator_memory_findbytag ( tag )
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        return creator_memory_findaddress_bytag(tag) ;  // FUTURE
+        return creator_memory_findaddress_bytag(tag) ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -1748,6 +1754,10 @@ function creator_memory_storestring ( string, string_length, data_address, label
 {
   if (false == OLD_CODE_ACTIVE)
   {
+        if (label != null) {
+    	    data_tag.push({tag: label, addr: data_address});
+        }
+
 	return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
   }
   else // if (true == OLD_CODE_ACTIVE)
