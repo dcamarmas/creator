@@ -8489,8 +8489,9 @@ function get_state ( )
 
 		 if (elto_value != elto_dvalue)
 		 {
+                     addr_string = "0x" + parseInt(addrs[i]).toString(16) ;
 		     elto_string = "0x" + elto_value ;
-		     ret.msg = ret.msg + "memory[0x" + addrs[i].toString(16) + "]" + ":" + elto_string + "; ";
+		     ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
 		 }
 	    }
     }
