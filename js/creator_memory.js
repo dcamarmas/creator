@@ -1917,15 +1917,17 @@ function creator_memory_update_row_view ( selected_view, segment_name, row_info 
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        if (typeof app._data.main_memory[row_info.addr] != "undefined")
-        {
-            var hex_packed = app._data.main_memory[row_info.addr].hex_packed ;
-            var new_value  = app._data.main_memory[row_info.addr].value ;
+        if (typeof app._data.main_memory[row_info.addr] == "undefined") {
+            return ;
+        }
 
-            switch (selected_view)
-	    {
+        var hex_packed = app._data.main_memory[row_info.addr].hex_packed ;
+        var new_value  = app._data.main_memory[row_info.addr].value ;
+
+        switch (selected_view)
+	{
 		case "sig_int":
-                     new_value = parseInt(hex_packed, 16) >> 0 ;
+                     new_value = parseInt(hex_packed, 16)  >> 0 ;
 		     break ;
 		case "unsig_int":
                      new_value = parseInt(hex_packed, 16) >>> 0 ;
@@ -1936,10 +1938,9 @@ function creator_memory_update_row_view ( selected_view, segment_name, row_info 
 		case "char":
                      new_value = hex2char8(hex_packed) ;
 		     break ;
-	    }
+	}
 
-            app._data.main_memory[row_info.addr].value = new_value ;
-        }
+        app._data.main_memory[row_info.addr].value = new_value ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
@@ -1989,7 +1990,8 @@ function creator_memory_update_space_view ( selected_view, segment_name, row_inf
 		(memory[memory_hash[0]][row_info.index + i].Binary[2].Tag == null) && 
 		(memory[memory_hash[0]][row_info.index + i].Binary[3].Tag == null) )
 	{
-		row_info.addr ++ ;
+		row_info.addr  ++ ;
+		row_info.index ++ ;
                 creator_memory_update_row_view(selected_view, segment_name, row_info) ;
       		i++;
       	}
