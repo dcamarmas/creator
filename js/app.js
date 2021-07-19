@@ -3396,12 +3396,8 @@ try
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
       change_data_view(e, type)
       {
-        //TODO: 
-        // 1) try to include in the memory component
-
         app._data.data_mode = e;
 
         if(e == "registers"){
@@ -3430,136 +3426,22 @@ try
 
       change_space_view()
       {
-         //TODO:
-         // 1) try to include in the memory component
-         // 2) update code to new memory API (don't use memory abstraction datatype directly)
-
-  if (false == OLD_CODE_ACTIVE)
-  {
-  }
-  else // if (true == OLD_CODE_ACTIVE)
-  {
-      	if(app._data.selected_space_view == "sig_int"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = parseInt(hex, 16) >> 0;
-    		}
-    		else if(app._data.selected_space_view == "unsig_int"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = parseInt(hex, 16) >>> 0;
-    		}
-    		else if(app._data.selected_space_view == "float"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = this.hex2float("0x" + hex);
-    		}
-    		else if(app._data.selected_space_view == "char"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = this.hex2char8(hex);
-    		}
-
-      	var i = 1;
-
-      	while((app._data.row_index + i) < memory[memory_hash[0]].length && memory[memory_hash[0]][app._data.row_index + i].type == "space" && (memory[memory_hash[0]][app._data.row_index + i].Binary[0].Tag == null) && memory[memory_hash[0]][app._data.row_index + i].Binary[1].Tag == null && memory[memory_hash[0]][app._data.row_index + i].Binary[2].Tag == null && memory[memory_hash[0]][app._data.row_index + i].Binary[3].Tag == null){
-      		if(app._data.selected_space_view == "sig_int"){
-      			var hex = "";
-      			for (var j = 0; j < 4; j++) {
-      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-      			}
-      			memory[memory_hash[0]][app._data.row_index + i].Value = parseInt(hex, 16) >> 0;
-      		}
-      		else if(app._data.selected_space_view == "unsig_int"){
-      			var hex = "";
-      			for (var j = 0; j < 4; j++) {
-      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-      			}
-      			memory[memory_hash[0]][app._data.row_index + i].Value = parseInt(hex, 16) >>> 0;
-      		}
-      		else if(app._data.selected_space_view == "float"){
-      			var hex = "";
-      			for (var j = 0; j < 4; j++) {
-      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-      			}
-      			memory[memory_hash[0]][app._data.row_index + i].Value = this.hex2float("0x" + hex);
-      		}
-      		else if(app._data.selected_space_view == "char"){
-	    			var hex = "";
-	    			for (var j = 0; j < 4; j++) {
-	    				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-	    			}
-	    			memory[memory_hash[0]][app._data.row_index + i].Value = this.hex2char8(hex);
-	    		}
-      		i++;
-      	}
-        app._data.memory = memory;
-  }
+         creator_memory_update_space_view(app._data.selected_space_view, memory_hash[0], app._data.row_info) ;
       },
 
       hide_space_modal()
       {
-        //TODO: 
-        // 1) try to include in the memory component
-        app._data.selected_space_view = null;
+          app._data.selected_space_view = null;
       },
 
       change_stack_view()
       {
-         //TODO:
-         // 1) try to include in the memory component
-         // 2) update code to new memory API (don't use memory abstraction datatype directly)
-
-  if (false == OLD_CODE_ACTIVE)
-  {
-  }
-  else // if (true == OLD_CODE_ACTIVE)
-  {
-        if(app._data.selected_stack_view == "sig_int"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = parseInt(hex, 16) >> 0;
-        }
-        else if(app._data.selected_stack_view == "unsig_int"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = parseInt(hex, 16) >>> 0;
-        }
-        else if(app._data.selected_stack_view == "float"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = this.hex2float("0x" + hex);
-        }
-        else if(app._data.selected_stack_view == "char"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
-        }
-        app._data.memory = memory;
-  }
+          creator_memory_update_row_view(app._data.selected_stack_view, memory_hash[2], app._data.row_info) ;
       },
 
       hide_stack_modal()
       {
-        //TODO: 
-        // 1) try to include in the memory component
-        app._data.selected_stack_view = null;
+          app._data.selected_stack_view = null;
       },
 
 
