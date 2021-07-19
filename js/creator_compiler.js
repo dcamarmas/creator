@@ -440,7 +440,7 @@ function assembly_compiler()
         pending_tags = [];
         data_tag = [];
         instructions_binary =[];
-        crex_memory_clear() ;
+        creator_memory_clear() ;
         extern = [];
         data = [];
         executionInit = 1;
@@ -545,7 +545,7 @@ function assembly_compiler()
                     instructions_binary = [];
                     data = [];
                     extern = [];
-                    crex_memory_clear() ;
+                    creator_memory_clear() ;
 
                     return ret;
                   }
@@ -566,7 +566,7 @@ function assembly_compiler()
                     instructions_binary = [];
                     extern = [];
                     data = [];
-                    crex_memory_clear() ;
+                    creator_memory_clear() ;
 
                     return ret;
                   }
@@ -740,7 +740,7 @@ function assembly_compiler()
                   pending_tags = [];
                   data_tag = [];
                   instructions_binary = [];
-                  crex_memory_clear() ;
+                  creator_memory_clear() ;
                   data = [];
                   extern = [];
                   return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -806,7 +806,7 @@ function assembly_compiler()
                 pending_tags = [];
                 data_tag = [];
                 instructions_binary = [];
-                crex_memory_clear() ;
+                creator_memory_clear() ;
                 data = [];
                 extern = [];
                 return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -866,7 +866,7 @@ function assembly_compiler()
                 pending_tags = [];
                 data_tag = [];
                 instructions_binary = [];
-                crex_memory_clear() ;
+                creator_memory_clear() ;
                 data = [];
                 extern = [];
                 return packCompileError('m7', instructionParts[j], "error", "danger");
@@ -941,7 +941,7 @@ function assembly_compiler()
             data_tag = [];
             instructions_binary = [];
             extern = [];
-            crex_memory_clear() ;
+            creator_memory_clear() ;
             data = [];
 
             return packCompileError('m0', 'Data overflow', 'warning', "danger") ;
@@ -959,7 +959,7 @@ function assembly_compiler()
             data_tag = [];
             instructions_binary = [];
             extern = [];
-            crex_memory_clear() ;
+            creator_memory_clear() ;
             data = [];
 
             return packCompileError('m0', 'Instruction overflow', 'warning', "danger");
@@ -2047,7 +2047,7 @@ function code_segment_compiler()
                     data_tag = [];
                     instructions_binary = [];
                     extern = [];
-                    crex_memory_clear() ;
+                    creator_memory_clear() ;
                     data = [];
                  // ret = packCompileError('m26', (textarea_assembly_editor.posFromIndex(tokenIndex).line) + 1,
                  //                        'error', "danger") ;
@@ -2069,7 +2069,7 @@ function code_segment_compiler()
               data_tag = [];
               instructions_binary = [];
               extern = [];
-              crex_memory_clear() ;
+              creator_memory_clear() ;
               data = [];
 
               ret = packCompileError('m2', token, 'error', "danger");
@@ -2089,7 +2089,7 @@ function code_segment_compiler()
               instructions_binary = [];
               extern = [];
               data = [];
-              crex_memory_clear() ;
+              creator_memory_clear() ;
 
               //PRUEBA para dar error con mas detalle
               ret = packCompileError('m2', token, 'error', "danger");
@@ -2108,7 +2108,7 @@ function code_segment_compiler()
               instructions_binary = [];
               extern = [];
               data = [];
-              crex_memory_clear() ;
+              creator_memory_clear() ;
               ret = packCompileError('m24', "", 'error', "danger") ;
               return ret;
             }
