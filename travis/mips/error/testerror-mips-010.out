@@ -1,4 +1,12 @@
 
-0
-cr[PC]:0x28; ir[v0,2]:0x1; keyboard[0x0]:''; display[0x0]:'0'; 
+
+Error at line 11:
+The data must be aligned
+
+  10     .byte 2
+->11 	max: .word 1
+  12 
+
+Not executed
+keyboard[0x0]:''; display[0x0]:''; 
 
