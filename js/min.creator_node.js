@@ -2405,7 +2405,7 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
             main_memory_write_tag(algn.new_addr, dataLabel) ;
         }
 
-        return data_address = data_address + algn.new_size ;
+        return parseInt(data_address) + parseInt(algn.new_size) ;
 }
 
 // update an app._data.main_memory row:
