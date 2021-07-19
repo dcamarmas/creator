@@ -169,13 +169,13 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Address)="row">' +
-				'             <span class="h6Sm" v-bind:class="get_classes(row)">' +
+				'             <span v-bind:class="get_classes(row)">' +
 				'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
 				'	      </span>' +
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Binary)="row">' +
-				'             <span class="h6Sm" v-bind:class="get_classes(row)">' +
+				'             <span v-bind:class="get_classes(row)">' +
 				' 		<span v-for="item in row.item.hex">' +
 				'' +
 				'	        	<span v-if="item.tag == null">' +
@@ -184,6 +184,7 @@
 				'' +
 				'	        	<b-badge pill variant="info" ' +
 				'	          	       class="border border-info shadow binaryTag" ' +
+				'	          	       style="top: 0px !important;" ' +
 				'	            	       v-if="item.tag != null">' +
 				'	          	{{item.tag}}' +
 				'	        	</b-badge>' +
@@ -197,7 +198,7 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Value)="row">' +
-				'             <span class="h6Sm" v-bind:class="get_classes(row)">' +
+				'             <span v-bind:class="get_classes(row)">' +
 				'               {{row.item.value}}' +
 				'	        <span class="fas fa-eye memoryValue" ' +
 				'	              v-if="row.item.eye && check_tag_null(row.item.hex)">' +
