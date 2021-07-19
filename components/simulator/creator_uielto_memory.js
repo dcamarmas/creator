@@ -70,7 +70,7 @@
 						if (this.memory_segment == "data_memory")
 						{
 							if (this.check_tag_null(record.hex)) {
-								app._data.row_info = { "index": index, "addr": record.addr } ;
+								app._data.row_info = { "index": index, "addr": record.addr - 3} ;
 							     // app._data.row_index = index; //TODO: vue bidirectional updates
 								app.$refs['space_modal'].show(); //TODO: vue bidirectional updates
 							}
@@ -78,7 +78,7 @@
 
 						if (this.memory_segment == "stack_memory")
 						{
-								app._data.row_info = { "index": index, "addr": record.addr } ;
+								app._data.row_info = { "index": index, "addr": record.addr - 3} ;
 							     // app._data.row_index = index;  //TODO: vue bidirectional updates
 								app.$refs['stack_modal'].show(); //TODO: vue bidirectional updates
 						}
