@@ -41,7 +41,7 @@ var main_memory_datatypes = {} ;
     //    ...
     //  }
 
-var OLD_CODE_ACTIVE = true;
+var OLD_CODE_ACTIVE = false;
 
 
 /********************
@@ -506,6 +506,8 @@ function creator_memory_zerofill ( new_addr, new_size )
              main_memory_write(new_addr+i, value) ;
 	}
 
+        creator_memory_updateall();
+        
         // return initial address used
 	return new_addr ;
 }
