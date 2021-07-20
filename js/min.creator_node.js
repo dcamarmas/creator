@@ -3912,14 +3912,50 @@ function creator_memory_update_stack_limit ( new_stack_limit )
 		var auxStackLimit = new_stack_limit;
 		var newRow = 0;
 
-		for (var i = 0; i < (diff/word_size_bytes); i++){
+		for (var i = 0; i < (diff/word_size_bytes); i++)
+	        {
 			memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
-			for (var z = 0; z < 4; z++){
+			for (var z = 0; z < 4; z++) {
 				(memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
 				auxStackLimit++;
 			}
+
 			newRow++;
 		}
+  }
+}
+
+function creator_memory_is_address_inside_segment ( segment_name, addr )
+{
+	 var elto_inside_segment = false ;
+
+	 if (segment_name == "instructions_memory") {
+	     elto_inside_segment = ((addr >= architecture.memory_layout[0].value) && (addr <= architecture.memory_layout[1].value)) ;
+	 }
+	 if (segment_name == "data_memory") {
+	     elto_inside_segment = ((addr >= architecture.memory_layout[2].value) && (addr <= architecture.memory_layout[3].value)) ;
+	 }
+	 if (segment_name == "stack_memory") {
+	     elto_inside_segment = (addr >= architecture.memory_layout[3].value) ;
+	 }
+
+	 return elto_inside_segment ;
+}
+
+function creator_memory_is_segment_empty ( segment_name )
+{
+  if (false == OLD_CODE_ACTIVE)
+  {
+          var addrs    = main_memory_get_addresses() ;
+	  var insiders = addrs.filter(function(elto) {
+					 return creator_memory_is_address_inside_segment(segment_name, elto) ;
+		                      }); 
+
+	  return (insiders.length == 0) ;
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
+          return (memory[segment_name].length == 0) ;
   }
 }
 
