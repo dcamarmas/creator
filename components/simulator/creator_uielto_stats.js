@@ -19,32 +19,49 @@
  */
 
 
-        /* jshint esversion: 6 */
+				/* jshint esversion: 6 */
 
-        var uielto_stats = {
+				var uielto_stats = {
 
-			  props:      {
+				props:      {
 											data_mode:   { type: String, required: true },
 											stats: 			 { type: Array,  required: true },
 											stats_value: { type: Number, required: true },
 										},
 
-      	template:   '	<div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == \'stats\'">' +
-										'	  <div class="col-lg-12 col-sm-12">' +
-										'	' +
-										'	    <b-tabs content-class="mt-3">' +
-										'	      <b-tab title="Graphic" active>' +
-										'	        <plot-stats :stats_value="stats_value"></plot-stats> ' +
-										'	      </b-tab>' +
-										'	' +
-										'	      <b-tab title="Table">' +
-										'	        <table-stats :stats="stats"></table-stats>' +
-										'	      </b-tab>' +
-										'	    </b-tabs>' +
-										'	  </div>' +
-										'	</div>'
-		  
+				data: 			function () {
+					return {
+						stat_representation: 'graphic',
+						stat_representation_options:  [
+																						{ text: 'Graphic', value: 'graphic' },
+																						{ text: 'Table', value: 'table' }
+																					]
+					}
+				},
+
+				template:   ' <div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == \'stats\'"> ' +
+										'   <div class="col-lg-12 col-sm-12 px-0"> ' +
+										'     <b-form-group label="Stats view:" v-slot="{ ariaDescribedby }">' +
+										'       <b-form-radio-group' +
+										'         id="btn-radios-1"' +
+										'         class="w-50"' +
+										'         v-model="stat_representation"' +
+										'         :options="stat_representation_options"' +
+										'         button-variant="outline-secondary"' +
+										'         size="sm"' +
+										'         :aria-describedby="ariaDescribedby"' +
+										'         name="radios-btn-default"' +
+										'         buttons' +
+										'       ></b-form-radio-group>' +
+										'     </b-form-group>' +
+										' ' +
+										'     <plot-stats :stats_value="stats_value" v-if="stat_representation == \'graphic\'"></plot-stats>  ' +
+										'     <table-stats :stats="stats" v-if="stat_representation == \'table\'"></table-stats> ' +
+										' ' +
+										'   </div> ' +
+										' </div>'
+			
 				}
 
-        Vue.component('stats', uielto_stats) ;
+				Vue.component('stats', uielto_stats) ;
 
