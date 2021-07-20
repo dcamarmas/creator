@@ -1946,8 +1946,6 @@ var OLD_CODE_ACTIVE = false;
 
 function main_memory_get_addresses ( )
 {
-	// return Object.keys(main_memory) ;
-
 	return Object.keys(main_memory)
                      .sort(function (a, b) {
 			     ia = parseInt(a) ;
@@ -1960,8 +1958,6 @@ function main_memory_get_addresses ( )
 
 function main_memory_datatype_get_addresses ( )
 {
-        // return Object.keys(main_memory_datatypes) ;
-
         return Object.keys(main_memory_datatypes)
                      .sort(function (a, b) {
 			     ia = parseInt(a) ;
@@ -2469,7 +2465,6 @@ function creator_memory_updaterow ( addr )
     { // set a new element, and set the initial values...
         Vue.set(app._data.main_memory, addr_base, elto) ;
 
-        elto.hex_packed = "00000000" ;
         for (var i=0; i<word_size_bytes; i++) {
              elto.hex[i] = { byte: "00", tag: null } ;
         }
@@ -2485,30 +2480,41 @@ function creator_memory_updaterow ( addr )
     // addr
     elto.addr = addr_end ;
 
-    // hex
+    // hex, hex_packed
     var v1 = {} ;
     elto.hex_packed = '' ;
     for (var i=0; i<word_size_bytes; i++)
     {
          v1 = main_memory_read(addr_base + i) ;
 
-         elto.hex_packed += v1.bin ;
          elto.hex[i].byte = v1.bin;
          elto.hex[i].tag  = v1.tag;
          if (v1.tag == "") {
              elto.hex[i].tag  = null;
          }
+
+         elto.hex_packed += v1.bin ;
     }
 
     // value, size and eye
-    if (typeof main_memory_datatypes[addr_base] != "undefined")
+    elto.value = '' ;
+    elto.size  = 0 ;
+    for (var i=0; i<word_size_bytes; i++)
     {
-        elto.value = main_memory_datatypes[addr_base].value ;
-        elto.size  = main_memory_datatypes[addr_base].size ;
-        if (main_memory_datatypes[addr_base].type == "space") {
-            elto.eye = true ;
-            elto.value = '';
-        }
+	 if (typeof main_memory_datatypes[addr_base+i] == "undefined") {
+	     continue ;
+	 }
+
+	 elto.size = elto.size + main_memory_datatypes[addr_base+i].size ;
+	 if (main_memory_datatypes[addr_base+i].type != "space")
+         {
+             if (elto.value != '')
+	         elto.value += ', ' ;
+	     elto.value += main_memory_datatypes[addr_base+i].value ;
+         }
+         else { // (main_memory_datatypes[addr_base+i].type == "space")
+	     elto.eye   = true ;
+	 }
     }
 }
 
@@ -3269,12 +3275,12 @@ function creator_memory_store_string ( keystroke, value, addr, valueIndex, auxAd
 {
   if (false == OLD_CODE_ACTIVE)
   {
-        return main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ;
+        return main_memory_write_bydatatype(parseInt(addr), value, "string", value) ;
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
         // NEW
-        main_memory_write_bydatatype(parseInt(addr), keystroke, "string", keystroke) ;
+        main_memory_write_bydatatype(parseInt(addr), value, "string", value) ;
 
         // OLD
 	var ret = {
