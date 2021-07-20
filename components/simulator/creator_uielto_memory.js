@@ -197,7 +197,7 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Value)="row">' +
-				'             <span v-bind:class="get_classes(row)">' +
+				'             <span v-bind:class="get_classes(row)" style="white-space: pre-wrap;">' +
 				'               {{row.item.value}}' +
 				'	        <span class="fas fa-eye memoryValue" ' +
 				'	              v-if="row.item.eye && check_tag_null(row.item.hex)">' +
