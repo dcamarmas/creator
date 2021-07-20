@@ -23,7 +23,7 @@
 
 	var uielto_memory = {
 
-	props:     		 {
+	props: 		{
 					main_memory:   	    { type: Array,  required: true },
 					memory_segment:     { type: String, required: true },
 					track_stack_names:  { type: Array,  required: true }, // TODO: optional
@@ -31,17 +31,17 @@
 					caller_subrutine:   { type: String, required: true }  // TODO: optional
 				},
 
-	data: 			function () {
+	data: 		function () {
 					return {
 						/*Memory table fields*/
 						memFields: ['Tag', 'Address', 'Binary', 'Value']
 					}
 				},
 
-	methods: 		{
+	methods: 	{
 					/*Filter table*/
 					filter ( row, filter )
-                                        {
+					{
 						if ((this.memory_segment == "instructions_memory") && ((row.addr >= architecture.memory_layout[0].value) && (row.addr <= architecture.memory_layout[1].value))) {
 							if(row.hide == true){
 								return false;
@@ -62,10 +62,10 @@
 
 					// TODO: gereric and include modal
 					select_data_type ( record, index )
-                                        {
+					{
 						app._data.row_info = { "index": index, 
-								       "addr":  record.addr - 3,
-								       "size":  record.size } ;
+											 "addr":  record.addr - 3,
+											 "size":  record.size } ;
 
 						if (this.memory_segment == "instructions_memory") {
 							return
@@ -74,7 +74,7 @@
 						if (this.memory_segment == "data_memory")
 						{
 							if (this.check_tag_null(record.hex)) {
-							    app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
+									app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
 							}
 						}
 
@@ -84,7 +84,7 @@
 					},
 
 					check_tag_null ( record )
-                                        {
+					{
 						for (var i = 0; i < record.length; i++) {
 							if (record[i].tag != null){
 								return true;
@@ -95,26 +95,26 @@
 					},				
 
 					get_classes ( row )
-                                        {
+					{
 						return {
-						          'h6Sm                ':  ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
-						          'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
-						          'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
-						          'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller)),
-						          'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
-						       }
+								'h6Sm                ':  ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
+								'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
+								'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
+								'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller)),
+								'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
+									 }
 					}				
 				},
-	computed:		{
+	computed:	{
 					main_memory_items ()
-                                        {
-					    return Object.entries(this.main_memory)
-					                 .sort((a, b) => a[0] - b[0])
-					                 .map(a => a[1])
+					{
+							return Object.entries(this.main_memory)
+							 .sort((a, b) => a[0] - b[0])
+							 .map(a => a[1])
 					}
-		  		},
+				},
 
-	template:   		'	<div class="col-lg-12 col-sm-12 px-0">' +
+	template: 	'<div class="col-lg-12 col-sm-12 px-0">' +
 				'' +
 				'<span class="container">' +
 				'  <b-row align-v="start">' +
@@ -197,7 +197,7 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Value)="row">' +
-				'             <span v-bind:class="get_classes(row)">' +
+				'             <span v-bind:class="get_classes(row)" style="white-space: pre-wrap;">' +
 				'               {{row.item.value}}' +
 				'	        <span class="fas fa-eye memoryValue" ' +
 				'	              v-if="row.item.eye && check_tag_null(row.item.hex)">' +
