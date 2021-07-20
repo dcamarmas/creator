@@ -3870,7 +3870,10 @@ function creator_memory_update_space_view ( selected_view, segment_name, row_inf
 {
   if (false == OLD_CODE_ACTIVE)
   {
-	  // TODO !!
+          for (var i=0; i<row_info.size; i++) {
+               creator_memory_update_row_view(selected_view, segment_name, row_info) ;
+               row_info.addr ++ ;
+          }
   }
   else // if (true == OLD_CODE_ACTIVE)
   {
