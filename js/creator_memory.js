@@ -2003,3 +2003,29 @@ function creator_memory_update_space_view ( selected_view, segment_name, row_inf
   }
 }
 
+function creator_memory_update_stack_limit ( new_stack_limit )
+{
+  if (false == OLD_CODE_ACTIVE)
+  {
+		var diff = architecture.memory_layout[4].value - new_stack_limit;
+		if (diff > 0) {
+		    creator_memory_zerofill(new_stack_limit, diff) ;
+		}
+  }
+  else // if (true == OLD_CODE_ACTIVE)
+  {
+		var diff = memory[memory_hash[2]][0].Address - new_stack_limit;
+		var auxStackLimit = new_stack_limit;
+		var newRow = 0;
+
+		for (var i = 0; i < (diff/word_size_bytes); i++){
+			memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
+			for (var z = 0; z < 4; z++){
+				(memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
+				auxStackLimit++;
+			}
+			newRow++;
+		}
+  }
+}
+
