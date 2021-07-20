@@ -338,9 +338,6 @@ try
       newValue: '',
 
 
-
-
-
       reg_representation: "signed",
       reg_representation_options: [
           { text: 'Signed', value: 'signed' },
@@ -361,8 +358,14 @@ try
        * Memory
        */
       memory:      memory, //TODO: delete
-      memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
       main_memory: {},
+
+      mem_representation: "data_memory",
+      mem_representation_options: [
+          { text: 'Data', value: 'data_memory' },
+          { text: 'Text', value: 'instructions_memory' },
+          { text: 'Stack', value: 'stack_memory'}
+        ],
 
       row_index: null,           //TODO: try to include in a component
       selected_space_view: null, //TODO: try to include in a component
