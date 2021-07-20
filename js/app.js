@@ -2750,15 +2750,9 @@ try
             app._data.totalStats   = 0;
             app._data.instructions = instructions;
 
-  if (false == OLD_CODE_ACTIVE)
-  {
-  }
-  else // if (true == OLD_CODE_ACTIVE)
-  {
-            app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-            app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
-  }
+	    creator_memory_copytoapp(1) ;
+	    creator_memory_copytoapp(0) ;
+	    creator_memory_copytoapp(2) ;
 
             tokenIndex = 0;
             app.reset(true);
