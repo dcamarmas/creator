@@ -24,13 +24,17 @@
         var uielto_data_view_selector = {
 
         props:      {
-                      name_reg:   { type: String, required: true },
-                      reg_type:   { type: String, required: true }
+                      name_reg:          { type: String, required: true },
+                      reg_type:          { type: String, required: true },
+                      register_file_num: { type: Number, required: true }
                     },
 
         data:       function () {
                       return {
-                        
+                        reg_representation_options: [
+                            { text: 'INT Registers', value: 'int' },
+                            { text: 'FP Registers', value: 'fp' }
+                          ]
                       }
                     },
 
@@ -95,6 +99,24 @@
                     '     </div>' +
                     '   </div>' +
                     ' </div>'
+
+                    //TODO: not found
+                    /*' <div class="col-lg-12 col-sm-12 mb-3 px-0" v-if="register_file_num <= 4">' +
+                    '   <b-form-group v-slot="{ ariaDescribedby }">' +
+                    '     <b-form-radio-group' +
+                    '       id="btn-radios-1"' +
+                    '       class="w-100"' +
+                    '       v-model="reg_type"' +
+                    '       :options="reg_representation_options"' +
+                    '       button-variant="outline-secondary"' +
+                    '       size="sm"' +
+                    '       :aria-describedby="ariaDescribedby"' +
+                    '       name="radios-btn-default"' +
+                    '       buttons' +
+                    '       @click="change_data_view(\'registers\',reg_representation)"' +
+                    '     ></b-form-radio-group>' +
+                    '   </b-form-group>' +
+                    ' </div>'*/
       
         }
 

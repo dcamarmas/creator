@@ -19,87 +19,87 @@
  */
 
 
-        /* jshint esversion: 6 */
+				/* jshint esversion: 6 */
 
-        var uielto_stats_plot = {
+				var uielto_stats_plot = {
 
-        /*Import Graph component*/
-		    components: {
-		      						apexchart: VueApexCharts,
-		    },
+				/*Import Graph component*/
+				components: {
+											apexchart: VueApexCharts,
+				},
 
-			  props:      {
+				props:      {
 											stats_value: { type: Number, required: true }
 										},
 										
 				data: 			function () {
 											return {
 												
-									      /*Stats Graph configure*/
-									      chartOptions: {
-									        colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
-									        chart: {
-									          id: 'graphic',
-									          type: 'donut',
-									        },
-									        labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
-									        dataLabels: {
-									          enabled: true
-									        },
-									        donut: {
-									          labels: {
-									            show: true,
-									            total: {
-									              show: true,
-									              showAlways: true,
-									              label: "Total",
-									            },
-									          },
-									        },
-									        fill: {
-									          type: 'gradient',
-									          gradient: {
-									            shade: 'dark',
-									            type: "horizontal",
-									            shadeIntensity: 0.5,
-									            gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
-									            inverseColors: true,
-									            opacityFrom: 1,
-									            opacityTo: 1,
-									            stops: [0, 50, 100],
-									            colorStops: []
-									          },
-									          colors: ['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
-									        },
-									        legend: {
-									          formatter: function(val, opts) {
-									            return val + " - " + opts.w.globals.series[opts.seriesIndex]
-									          }
-									        },
-									        plotOptions: {
-									          pie: {
-									            donut: {
-									              labels: {
-									                show: true,
-									                total: {
-									                  show: true,
-									                  showAlways: true,
-									                  color: 'black',
-									                  formatter: function (w) {
-									                    return w.globals.seriesTotals.reduce((a, b) => {
-									                      return a + b
-									                    }, 0)
-									                  }
-									                }
-									              }
-									            }
-									          }
-									        },
-									      },
-  										}
-        						},
+												/*Stats Graph configure*/
+												chartOptions: {
+													colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
+													chart: {
+														id: 'graphic',
+														type: 'donut',
+													},
+													labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
+													dataLabels: {
+														enabled: true
+													},
+													donut: {
+														labels: {
+															show: true,
+															total: {
+																show: true,
+																showAlways: true,
+																label: "Total",
+															},
+														},
+													},
+													fill: {
+														type: 'gradient',
+														gradient: {
+															shade: 'dark',
+															type: "horizontal",
+															shadeIntensity: 0.5,
+															gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
+															inverseColors: true,
+															opacityFrom: 1,
+															opacityTo: 1,
+															stops: [0, 50, 100],
+															colorStops: []
+														},
+														colors: ['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
+													},
+													legend: {
+														formatter: function(val, opts) {
+															return val + " - " + opts.w.globals.series[opts.seriesIndex]
+														}
+													},
+													plotOptions: {
+														pie: {
+															donut: {
+																labels: {
+																	show: true,
+																	total: {
+																		show: true,
+																		showAlways: true,
+																		color: 'black',
+																		formatter: function (w) {
+																			return w.globals.seriesTotals.reduce((a, b) => {
+																				return a + b
+																			}, 0)
+																		}
+																	}
+																}
+															}
+														}
+													},
+												},
+											}
+										},
 
-      	template:   ' <div id="chart" class="stats">' +
+				template:   ' <div id="chart" class="stats px-0">' +
 										'		<apexchart id="graphic" ' +
 										'	  		       ref="chart" ' +
 										'	             type="donut" ' +
@@ -108,8 +108,8 @@
 										'	             height="150%" >' +
 										'	  </apexchart>' +
 										'	</div>'
-		  
+			
 				}
 
-        Vue.component('plot-stats', uielto_stats_plot) ;
+				Vue.component('plot-stats', uielto_stats_plot) ;
 
