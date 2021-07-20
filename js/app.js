@@ -2920,28 +2920,24 @@ try
         if (assembly_compiler() == -1) {
             return;
         }
+
         promise.then((message) => {
-          if(message == "-1"){
-            return;
+          if (message == "-1") {
+              return;
           }
 
-  if (false == OLD_CODE_ACTIVE)
-  {
-  }
-  else // if (true == OLD_CODE_ACTIVE)
-  {
-          if (memory[memory_hash[0]].length != 0) {
+          if (creator_memory_is_segment_empty(memory_hash[0]) == false) {
               show_notification('You can not enter data in a library', 'danger') ;
               return;
           }
-  }
 
-          for (var i = 0; i < instructions_binary.length; i++){
-            console_log(instructions_binary[i].Label)
-            if(instructions_binary[i].Label == "main_symbol"){
-              show_notification('You can not use the "main" tag in a library', 'danger') ;
-              return;
-            }
+          for (var i = 0; i < instructions_binary.length; i++)
+	  {
+               console_log(instructions_binary[i].Label)
+               if (instructions_binary[i].Label == "main_symbol") {
+                   show_notification('You can not use the "main" tag in a library', 'danger') ;
+                   return;
+               }
           }
 
           var aux = {instructions_binary: instructions_binary, instructions_tag: instructions_tag};
@@ -2950,11 +2946,11 @@ try
           var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
           var fileNameToSaveAs;
 
-          if(this.name_binary_save == ''){
-            fileNameToSaveAs = "binary.o";
+          if (this.name_binary_save == '') {
+              fileNameToSaveAs = "binary.o";
           }
-          else{
-            fileNameToSaveAs = this.name_binary_save + ".o";
+          else {
+              fileNameToSaveAs = this.name_binary_save + ".o";
           }
 
           var downloadLink = document.createElement("a");
@@ -2981,40 +2977,40 @@ try
         var files = document.getElementById('binary_file').files;
 
         for (var i = 0; i < files.length; i++) {
-          file = files[i];
-          reader = new FileReader();
-          reader.onloadend = onFileLoaded;
-          reader.readAsBinaryString(file);
+             file = files[i];
+             reader = new FileReader();
+             reader.onloadend = onFileLoaded;
+             reader.readAsBinaryString(file);
         }
 
         function onFileLoaded(event) {
-          code_binary = event.currentTarget.result;
+           code_binary = event.currentTarget.result;
         }
       },
 
       library_update(){
-        if(code_binary.length != 0){
-          update_binary = JSON.parse(code_binary);
-          this.update_binary = update_binary;
-          $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-          $("#divTags").attr("class", "col-lg-2 col-sm-12");
-          $("#divTags").show();
-          this.load_binary = true;
-          show_notification("The selected library has been loaded correctly", 'success');
+        if (code_binary.length != 0){
+            update_binary = JSON.parse(code_binary);
+            this.update_binary = update_binary;
+            $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+            $("#divTags").attr("class", "col-lg-2 col-sm-12");
+            $("#divTags").show();
+            this.load_binary = true;
+            show_notification("The selected library has been loaded correctly", 'success');
         }
         else{
-          show_notification("Please select one library", 'danger');
+            show_notification("Please select one library", 'danger');
         }
       },
 
       /*Remove a loaded binary*/
       removeLibrary(){
-        update_binary = "";
-        this.update_binary = update_binary;
-        $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
-        $("#divTags").attr("class", "col-lg-0 col-sm-0");
-        $("#divTags").hide();
-        this.load_binary = false;
+          update_binary = "";
+          this.update_binary = update_binary;
+          $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
+          $("#divTags").attr("class", "col-lg-0 col-sm-0");
+          $("#divTags").hide();
+          this.load_binary = false;
       },
 
       /*Show error message in the compilation*/
