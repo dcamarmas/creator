@@ -23,7 +23,7 @@
 
 	var uielto_memory = {
 
-	props:     		 {
+	props: 		{
 					main_memory:   	    { type: Array,  required: true },
 					memory_segment:     { type: String, required: true },
 					track_stack_names:  { type: Array,  required: true }, // TODO: optional
@@ -31,14 +31,14 @@
 					caller_subrutine:   { type: String, required: true }  // TODO: optional
 				},
 
-	data: 			function () {
+	data: 		function () {
 					return {
 						/*Memory table fields*/
 						memFields: ['Tag', 'Address', 'Binary', 'Value']
 					}
 				},
 
-	methods: 		{
+	methods: 	{
 					/*Filter table*/
 					filter ( row, filter )
 					{
@@ -105,7 +105,7 @@
 									 }
 					}				
 				},
-	computed:		{
+	computed:	{
 					main_memory_items ()
 					{
 							return Object.entries(this.main_memory)
@@ -114,7 +114,7 @@
 					}
 				},
 
-	template:   		'	<div class="col-lg-12 col-sm-12 px-0">' +
+	template: 	'<div class="col-lg-12 col-sm-12 px-0">' +
 				'' +
 				'<span class="container">' +
 				'  <b-row align-v="start">' +
@@ -128,7 +128,7 @@
 				'	           :fields="memFields" ' +
 				'	           :filter-function=filter ' +
 				'	           filter=" " ' +
-				'	           class="memory_table align-items-start px-0" ' +
+				'	           class="memory_table align-items-start" ' +
 				'	           @row-clicked="select_data_type">' +
 				'	' +
 				'	    <template v-slot:head(Tag)="row">' +

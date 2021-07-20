@@ -2507,6 +2507,7 @@ function creator_memory_updaterow ( addr )
         elto.size  = main_memory_datatypes[addr_base].size ;
         if (main_memory_datatypes[addr_base].type == "space") {
             elto.eye = true ;
+            elto.value = '';
         }
     }
 }
