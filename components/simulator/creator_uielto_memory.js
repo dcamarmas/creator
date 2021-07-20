@@ -26,9 +26,9 @@
 	props:     		 {
 					main_memory:   	    { type: Array,  required: true },
 					memory_segment:     { type: String, required: true },
-					track_stack_names:  { type: Array,  required: true }, //TODO: optional
-					callee_subrutine:   { type: String, required: true }, //TODO: optional
-					caller_subrutine:   { type: String, required: true }  //TODO: optional
+					track_stack_names:  { type: Array,  required: true }, // TODO: optional
+					callee_subrutine:   { type: String, required: true }, // TODO: optional
+					caller_subrutine:   { type: String, required: true }  // TODO: optional
 				},
 
 	data: 			function () {
@@ -60,9 +60,13 @@
 						}
 					},
 
-					//TODO: gereric and include modal
+					// TODO: gereric and include modal
 					select_data_type ( record, index )
                                         {
+						app._data.row_info = { "index": index, 
+								       "addr":  record.addr - 3,
+								       "size":  record.size } ;
+
 						if (this.memory_segment == "instructions_memory") {
 							return
 						}
@@ -70,17 +74,12 @@
 						if (this.memory_segment == "data_memory")
 						{
 							if (this.check_tag_null(record.hex)) {
-								app._data.row_info = { "index": index, "addr": record.addr - 3} ;
-							     // app._data.row_index = index; //TODO: vue bidirectional updates
-								app.$refs['space_modal'].show(); //TODO: vue bidirectional updates
+							    app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
 							}
 						}
 
-						if (this.memory_segment == "stack_memory")
-						{
-								app._data.row_info = { "index": index, "addr": record.addr - 3} ;
-							     // app._data.row_index = index;  //TODO: vue bidirectional updates
-								app.$refs['stack_modal'].show(); //TODO: vue bidirectional updates
+						if (this.memory_segment == "stack_memory") {
+							app.$refs['stack_modal'].show(); // TODO: vue bidirectional updates
 						}
 					},
 
@@ -213,7 +212,7 @@
 				'  <b-row align-v="end">' +
 				'  <b-col>' +
 				'' +
-				'  <div class="col-lg-12 col-sm-12 row mx-0 px-2 border" v-if="memory_segment == \'stack_memory\'">' + //TODO: only in stack
+				'  <div class="col-lg-12 col-sm-12 row mx-0 px-2 border" v-if="memory_segment == \'stack_memory\'">' + // TODO: only in stack
 				'  	<span class="col-lg-12 col-sm-12 my-1">' +
 				'       <span>Stack memory keys:</span>' +
 				'  	</span>' +
