@@ -41,7 +41,7 @@
 	methods: 		{
 					/*Filter table*/
 					filter ( row, filter )
-                                        {
+					{
 						if ((this.memory_segment == "instructions_memory") && ((row.addr >= architecture.memory_layout[0].value) && (row.addr <= architecture.memory_layout[1].value))) {
 							if(row.hide == true){
 								return false;
@@ -62,10 +62,10 @@
 
 					// TODO: gereric and include modal
 					select_data_type ( record, index )
-                                        {
+					{
 						app._data.row_info = { "index": index, 
-								       "addr":  record.addr - 3,
-								       "size":  record.size } ;
+											 "addr":  record.addr - 3,
+											 "size":  record.size } ;
 
 						if (this.memory_segment == "instructions_memory") {
 							return
@@ -74,7 +74,7 @@
 						if (this.memory_segment == "data_memory")
 						{
 							if (this.check_tag_null(record.hex)) {
-							    app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
+									app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
 							}
 						}
 
@@ -84,7 +84,7 @@
 					},
 
 					check_tag_null ( record )
-                                        {
+					{
 						for (var i = 0; i < record.length; i++) {
 							if (record[i].tag != null){
 								return true;
@@ -95,24 +95,24 @@
 					},				
 
 					get_classes ( row )
-                                        {
+					{
 						return {
-						          'h6Sm                ':  ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
-						          'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
-						          'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
-						          'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller)),
-						          'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
-						       }
+								'h6Sm                ':  ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
+								'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
+								'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
+								'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller)),
+								'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
+									 }
 					}				
 				},
 	computed:		{
 					main_memory_items ()
-                                        {
-					    return Object.entries(this.main_memory)
-					                 .sort((a, b) => a[0] - b[0])
-					                 .map(a => a[1])
+					{
+							return Object.entries(this.main_memory)
+							 .sort((a, b) => a[0] - b[0])
+							 .map(a => a[1])
 					}
-		  		},
+				},
 
 	template:   		'	<div class="col-lg-12 col-sm-12 px-0">' +
 				'' +
@@ -128,7 +128,7 @@
 				'	           :fields="memFields" ' +
 				'	           :filter-function=filter ' +
 				'	           filter=" " ' +
-				'	           class="memory_table align-items-start" ' +
+				'	           class="memory_table align-items-start px-0" ' +
 				'	           @row-clicked="select_data_type">' +
 				'	' +
 				'	    <template v-slot:head(Tag)="row">' +
