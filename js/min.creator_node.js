@@ -7615,7 +7615,7 @@ function executeInstruction ( )
 			return packExecute(true, 'No instructions in memory', 'danger', null);
 		}
 		if (executionIndex < -1) {
-			return packExecute(true, 'The program has finished', 'danger', null);
+			return packExecute(true, 'The program has finished', 'warning', null);
 		}
 		if (executionIndex == -1) {
 			return packExecute(true, 'The program has finished with errors', 'danger', null);
