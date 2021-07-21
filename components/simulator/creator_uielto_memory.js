@@ -42,7 +42,9 @@
 					/*Filter table*/
 					filter ( row, filter )
 					{
-						if ((this.memory_segment == "instructions_memory") && ((row.addr >= architecture.memory_layout[0].value) && (row.addr <= architecture.memory_layout[1].value))) {
+						var addr = parseInt(row.addr_begin);
+
+						if ((this.memory_segment == "instructions_memory") && ((addr >= architecture.memory_layout[0].value) && (addr <= architecture.memory_layout[1].value))) {
 							if(row.hide == true){
 								return false;
 							}
@@ -51,12 +53,12 @@
 							}
 						}
 
-						if ((this.memory_segment == "data_memory") && ((row.addr >= architecture.memory_layout[2].value) && (row.addr <= architecture.memory_layout[3].value))) {
+						if ((this.memory_segment == "data_memory") && ((addr >= architecture.memory_layout[2].value) && (addr <= architecture.memory_layout[3].value))) {
 							return true;
 						}
 
-						if ((this.memory_segment == "stack_memory") && ((row.addr >= architecture.memory_layout[3].value))) {
-							return (Math.abs(row.addr - app._data.end_callee) < 40);
+						if ((this.memory_segment == "stack_memory") && ((addr >= architecture.memory_layout[3].value))) {
+							return (Math.abs(addr - app._data.end_callee) < 40);
 						}
 					},
 
@@ -168,14 +170,17 @@
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Address)="row">' +
-				'             <span v-bind:class="get_classes(row)">' +
-				'	        {{row.item.addr_begin}} - {{row.item.addr_end}}' +
-				'	      </span>' +
+				'         <div class="pt-3">' +
+				'           <span v-bind:class="get_classes(row)">' +
+				'	          {{row.item.addr_begin}} - {{row.item.addr_end}}' +
+				'	        </span>' +
+				'         </div>' +
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Binary)="row">' +
-				'             <span v-bind:class="get_classes(row)">' +
-				' 		<span v-for="item in row.item.hex">' +
+				'         <div class="pt-3">' +
+				'           <span v-bind:class="get_classes(row)">' +
+				' 		      <span v-for="item in row.item.hex">' +
 				'' +
 				'	        	<span v-if="item.tag == null">' +
 				'	          	{{item.byte.toUpperCase()}}' +
@@ -183,28 +188,30 @@
 				'' +
 				'	        	<b-badge pill variant="info" ' +
 				'	          	       class="border border-info shadow binaryTag" ' +
-				'	          	       style="top: 0px !important;" ' +
+				'	          	       style="top: -2vh !important;" ' +
 				'	            	       v-if="item.tag != null">' +
 				'	          	{{item.tag}}' +
 				'	        	</b-badge>' +
-				'	        	<br   v-if="item.tag != null">' +
 				'	        	<span v-if="item.tag != null" class="memoryBorder">' +
 				'	          	{{item.byte.toUpperCase()}}' +
 				'	        	</span> ' +
 				'' +
-				' 		</span>' +
-				'	      </span>' +
+				' 		      </span>' +
+				'	        </span>' +
+				'         </div>' +
 				'	    </template>' +
 				'	' +
 				'	    <template v-slot:cell(Value)="row">' +
-				'             <span v-bind:class="get_classes(row)" style="white-space: pre-wrap;">' +
-				'               {{row.item.value}}' +
-				'	        <span class="fas fa-eye memoryValue" ' +
-				'	              v-if="row.item.eye && check_tag_null(row.item.hex)">' +
+				'         <div class="pt-3">' +
+				'           <span v-bind:class="get_classes(row)" style="white-space: pre-wrap;">' +
+				'             {{row.item.value}}' +
+				'	          <span class="fas fa-eye memoryValue" ' +
+				'	                v-if="row.item.eye && check_tag_null(row.item.hex)">' +
+				'	          </span>' +
 				'	        </span>' +
-				'	      </span>' +
+				'         </div>' +
 				'	    </template>' +
-				'         </b-table>' +
+				'     </b-table>' +
 				'' +
 				'  </b-col>' +
 				'  </b-row>' +
