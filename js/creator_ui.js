@@ -29,6 +29,7 @@
         solid: true,
         toaster: "b-toaster-top-center",
         autoHideDelay: app._data.notificationTime,
+        noAutoHide: (type == 'danger')
      }) ;
 
      // add notification to the notification summary
