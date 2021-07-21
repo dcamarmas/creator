@@ -338,9 +338,6 @@ try
       newValue: '',
 
 
-
-
-
       reg_representation: "signed",
       reg_representation_options: [
           { text: 'Signed', value: 'signed' },
@@ -357,16 +354,20 @@ try
         ],
 
 
+      /* 
+       * Memory
+       */
+      memory:      memory, //TODO: delete
+      main_memory: {},
 
+      mem_representation: "data_memory",
+      mem_representation_options: [
+          { text: 'Data', value: 'data_memory' },
+          { text: 'Text', value: 'instructions_memory' },
+          { text: 'Stack', value: 'stack_memory'}
+        ],
 
-
-
-
-      /*Memory*/
-      memory_hash: ["data_memory", "instructions_memory", "stack_memory"],
-      memory: memory,
-
-      row_index: null, //TODO: try to include in a component
+      row_index: null,           //TODO: try to include in a component
       selected_space_view: null, //TODO: try to include in a component
       selected_stack_view: null, //TODO: try to include in a component
       
@@ -2751,9 +2752,11 @@ try
             /* update/reset */
             app._data.totalStats   = 0;
             app._data.instructions = instructions;
-            app._data.memory[memory_hash[1]] = memory[memory_hash[1]];
-            app._data.memory[memory_hash[0]] = memory[memory_hash[0]];
-            app._data.memory[memory_hash[2]] = memory[memory_hash[2]];
+
+	    creator_memory_copytoapp(1) ;
+	    creator_memory_copytoapp(0) ;
+	    creator_memory_copytoapp(2) ;
+
             tokenIndex = 0;
             app.reset(true);
 
@@ -2915,25 +2918,29 @@ try
       },
 
       /*Save a binary in a local file*/
-      library_save(){
-        if(assembly_compiler() == -1){
-          return;
+      library_save ()
+      {
+        if (assembly_compiler() == -1) {
+            return;
         }
+
         promise.then((message) => {
-          if(message == "-1"){
-            return;
-          }
-          if(memory[memory_hash[0]].length != 0){
-            show_notification('You can not enter data in a library', 'danger') ;
-            return;
+          if (message == "-1") {
+              return;
           }
 
-          for (var i = 0; i < instructions_binary.length; i++){
-            console_log(instructions_binary[i].Label)
-            if(instructions_binary[i].Label == "main_symbol"){
-              show_notification('You can not use the "main" tag in a library', 'danger') ;
+          if (creator_memory_is_segment_empty(memory_hash[0]) == false) {
+              show_notification('You can not enter data in a library', 'danger') ;
               return;
-            }
+          }
+
+          for (var i = 0; i < instructions_binary.length; i++)
+	  {
+               console_log(instructions_binary[i].Label)
+               if (instructions_binary[i].Label == "main_symbol") {
+                   show_notification('You can not use the "main" tag in a library', 'danger') ;
+                   return;
+               }
           }
 
           var aux = {instructions_binary: instructions_binary, instructions_tag: instructions_tag};
@@ -2942,11 +2949,11 @@ try
           var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
           var fileNameToSaveAs;
 
-          if(this.name_binary_save == ''){
-            fileNameToSaveAs = "binary.o";
+          if (this.name_binary_save == '') {
+              fileNameToSaveAs = "binary.o";
           }
-          else{
-            fileNameToSaveAs = this.name_binary_save + ".o";
+          else {
+              fileNameToSaveAs = this.name_binary_save + ".o";
           }
 
           var downloadLink = document.createElement("a");
@@ -2973,40 +2980,40 @@ try
         var files = document.getElementById('binary_file').files;
 
         for (var i = 0; i < files.length; i++) {
-          file = files[i];
-          reader = new FileReader();
-          reader.onloadend = onFileLoaded;
-          reader.readAsBinaryString(file);
+             file = files[i];
+             reader = new FileReader();
+             reader.onloadend = onFileLoaded;
+             reader.readAsBinaryString(file);
         }
 
         function onFileLoaded(event) {
-          code_binary = event.currentTarget.result;
+           code_binary = event.currentTarget.result;
         }
       },
 
       library_update(){
-        if(code_binary.length != 0){
-          update_binary = JSON.parse(code_binary);
-          this.update_binary = update_binary;
-          $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-          $("#divTags").attr("class", "col-lg-2 col-sm-12");
-          $("#divTags").show();
-          this.load_binary = true;
-          show_notification("The selected library has been loaded correctly", 'success');
+        if (code_binary.length != 0){
+            update_binary = JSON.parse(code_binary);
+            this.update_binary = update_binary;
+            $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+            $("#divTags").attr("class", "col-lg-2 col-sm-12");
+            $("#divTags").show();
+            this.load_binary = true;
+            show_notification("The selected library has been loaded correctly", 'success');
         }
         else{
-          show_notification("Please select one library", 'danger');
+            show_notification("Please select one library", 'danger');
         }
       },
 
       /*Remove a loaded binary*/
       removeLibrary(){
-        update_binary = "";
-        this.update_binary = update_binary;
-        $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
-        $("#divTags").attr("class", "col-lg-0 col-sm-0");
-        $("#divTags").hide();
-        this.load_binary = false;
+          update_binary = "";
+          this.update_binary = update_binary;
+          $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
+          $("#divTags").attr("class", "col-lg-0 col-sm-0");
+          $("#divTags").hide();
+          this.load_binary = false;
       },
 
       /*Show error message in the compilation*/
@@ -3207,7 +3214,7 @@ try
       },
 
       /*Stop program excution*/
-      stopExecution(){
+      stopExecution() {
         app._data.runExecution = true;
       },
 
@@ -3215,7 +3222,10 @@ try
       exception(error)
       {
          show_notification("There has been an exception. Error description: '" + error, 'danger') ;
-         instructions[executionIndex]._rowVariant = 'danger';
+
+         if (executionIndex != -1) {
+             instructions[executionIndex]._rowVariant = 'danger';
+	 }
          executionIndex = -1;
 
          /* Google Analytics */
@@ -3303,9 +3313,9 @@ try
 
 
 
-
       /*Convert hexadecimal number to floating point number*/
-      hex2float ( hexvalue ){
+      hex2float ( hexvalue )
+      {
         /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
         var exponent = ((hexvalue >> 23) & 0xff) - 127;
         var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
@@ -3377,12 +3387,10 @@ try
 
 
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
-
-      //TODO: delete when all dependences are remove
-      change_data_view(e, type){
+      change_data_view(e, type)
+      {
         app._data.data_mode = e;
 
         if(e == "registers"){
@@ -3409,140 +3417,28 @@ try
 	        creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
-      //TODO: try to include in a component
-      change_space_view(){
-      	if(app._data.selected_space_view == "sig_int"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = parseInt(hex, 16) >> 0;
-    		}
-    		else if(app._data.selected_space_view == "unsig_int"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = parseInt(hex, 16) >>> 0;
-    		}
-    		else if(app._data.selected_space_view == "float"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = this.hex2float("0x" + hex);
-    		}
-    		else if(app._data.selected_space_view == "char"){
-    			var hex = "";
-    			for (var j = 0; j < 4; j++) {
-    				hex = memory[memory_hash[0]][app._data.row_index].Binary[j].Bin + hex;
-    			}
-    			memory[memory_hash[0]][app._data.row_index].Value = this.hex2char8(hex);
-    		}
-
-      	var i = 1;
-
-      	while((app._data.row_index + i) < memory[memory_hash[0]].length && memory[memory_hash[0]][app._data.row_index + i].type == "space" && (memory[memory_hash[0]][app._data.row_index + i].Binary[0].Tag == null) && memory[memory_hash[0]][app._data.row_index + i].Binary[1].Tag == null && memory[memory_hash[0]][app._data.row_index + i].Binary[2].Tag == null && memory[memory_hash[0]][app._data.row_index + i].Binary[3].Tag == null){
-      		if(app._data.selected_space_view == "sig_int"){
-      			var hex = "";
-      			for (var j = 0; j < 4; j++) {
-      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-      			}
-      			memory[memory_hash[0]][app._data.row_index + i].Value = parseInt(hex, 16) >> 0;
-      		}
-      		else if(app._data.selected_space_view == "unsig_int"){
-      			var hex = "";
-      			for (var j = 0; j < 4; j++) {
-      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-      			}
-      			memory[memory_hash[0]][app._data.row_index + i].Value = parseInt(hex, 16) >>> 0;
-      		}
-      		else if(app._data.selected_space_view == "float"){
-      			var hex = "";
-      			for (var j = 0; j < 4; j++) {
-      				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-      			}
-      			memory[memory_hash[0]][app._data.row_index + i].Value = this.hex2float("0x" + hex);
-      		}
-      		else if(app._data.selected_space_view == "char"){
-	    			var hex = "";
-	    			for (var j = 0; j < 4; j++) {
-	    				hex = memory[memory_hash[0]][app._data.row_index + i].Binary[j].Bin + hex;
-	    			}
-	    			memory[memory_hash[0]][app._data.row_index + i].Value = this.hex2char8(hex);
-	    		}
-      		i++;
-      	}
-        app._data.memory = memory;
+      change_space_view()
+      {
+         creator_memory_update_space_view(app._data.selected_space_view, memory_hash[0], app._data.row_info) ;
       },
 
-      //TODO: try to include in a component
-      hide_space_modal(){
-        app._data.selected_space_view = null;
+      hide_space_modal()
+      {
+          app._data.selected_space_view = null;
       },
 
-      //TODO: try to include in a component
-      change_stack_view(){
-        if(app._data.selected_stack_view == "sig_int"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = parseInt(hex, 16) >> 0;
-        }
-        else if(app._data.selected_stack_view == "unsig_int"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = parseInt(hex, 16) >>> 0;
-        }
-        else if(app._data.selected_stack_view == "float"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = this.hex2float("0x" + hex);
-        }
-        else if(app._data.selected_stack_view == "char"){
-          var hex = "";
-          for (var j = 0; j < 4; j++) {
-            hex = memory[memory_hash[2]][app._data.row_index].Binary[j].Bin + hex;
-          }
-          memory[memory_hash[2]][app._data.row_index].Value = this.hex2char8(hex);
-        }
-        app._data.memory = memory;
+      change_stack_view()
+      {
+          creator_memory_update_row_view(app._data.selected_stack_view, memory_hash[2], app._data.row_info) ;
       },
 
-      //TODO: try to include in a component
-      hide_stack_modal(){
-        app._data.selected_stack_view = null;
+      hide_stack_modal()
+      {
+          app._data.selected_stack_view = null;
       },
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
       /*Stop user interface refresh*/

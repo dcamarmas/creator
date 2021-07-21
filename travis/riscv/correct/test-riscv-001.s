@@ -15,3 +15,4 @@
  	stringz: 	.string  "This is a string"
  	string:  	.string  "This is another string"
  	space:		.section 32
+
