@@ -19,43 +19,43 @@
  */
 
 
-        /* jshint esversion: 6 */
+				/* jshint esversion: 6 */
 
-        var uielto_stats_table = {
+				var uielto_stats_table = {
 
-			  props:      {
+				props:      {
 											stats: 			 { type: Array,  required: true }
 										},
 										
 				data: 			function () {
 											return {
-          							/*Stats table fields*/
-									      statsFields: {
-									        type: {
-									          label: 'Type',
-									          sortable: true
-									        },
-									        number_instructions: {
-									          label: 'Number of instructions',
-									          sortable: true
-									        },
-									        percentage: {
-									          label: 'Percentage',
-									          sortable: true
-									        }
-									      }
-									    }
-        						},
+												/*Stats table fields*/
+												statsFields: {
+													type: {
+														label: 'Type',
+														sortable: true
+													},
+													number_instructions: {
+														label: 'Number of instructions',
+														sortable: true
+													},
+													percentage: {
+														label: 'Percentage',
+														sortable: true
+													}
+												}
+											}
+										},
 
-      	template:   '	<b-table striped ' +
+				template:   '	<b-table striped ' +
 										'	 small ' +
 										'	 hover ' +
 										'	 :items="stats" ' +
 										'	 :fields="statsFields" ' +
-										'	 class="stats text-center">' +
+										'	 class="stats text-center px-0">' +
 										'	<b-table>'
-		  
+			
 				}
 
-        Vue.component('table-stats', uielto_stats_table) ;
+				Vue.component('table-stats', uielto_stats_table) ;
 

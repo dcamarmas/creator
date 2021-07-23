@@ -56,7 +56,7 @@ function executeInstruction ( )
 			return packExecute(true, 'No instructions in memory', 'danger', null);
 		}
 		if (executionIndex < -1) {
-			return packExecute(true, 'The program has finished', 'danger', null);
+			return packExecute(true, 'The program has finished', 'warning', null);
 		}
 		if (executionIndex == -1) {
 			return packExecute(true, 'The program has finished with errors', 'danger', null);
@@ -587,36 +587,27 @@ function writeStackLimit ( stackLimit )
 		flash: []
 	} ;
 	
-	if (stackLimit != null)
+	if (stackLimit == null) {
+	    return ;
+	}
+
+	if (stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value)
 	{
-		if(stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value){
-			draw.danger.push(executionIndex);
-			executionIndex = -1;
-			throw packExecute(true, 'Segmentation fault. You tried to read in the data segment', 'danger', null);
-		}
-		else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value){
-			draw.danger.push(executionIndex);
-			executionIndex = -1;
-			throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
-		}
-		else{
-			var diff = memory[memory_hash[2]][0].Address - stackLimit;
-			var auxStackLimit = stackLimit;
-			var newRow = 0;
-
-			for (var i = 0; i < (diff/4); i++){
-				memory[memory_hash[2]].splice(newRow, 0,{Address: auxStackLimit, Binary: [], Value: null, DefValue: null, reset: true});
-				for (var z = 0; z < 4; z++){
-					(memory[memory_hash[2]][newRow].Binary).push({Addr: auxStackLimit, DefBin: "00", Bin: "00", Tag: null},);
-					auxStackLimit++;
-				}
-				newRow++;
-			}
-
-			track_stack_setsp(stackLimit);
-
-			architecture.memory_layout[4].value = stackLimit;
-		}
+		draw.danger.push(executionIndex);
+		executionIndex = -1;
+		throw packExecute(true, 'Segmentation fault. You tried to read in the data segment', 'danger', null);
+	}
+	else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value)
+	{
+		draw.danger.push(executionIndex);
+		executionIndex = -1;
+		throw packExecute(true, 'Segmentation fault. You tried to read in the text segment', 'danger', null);
+	}
+	else
+	{
+		creator_memory_update_stack_limit(stackLimit) ;
+		track_stack_setsp(stackLimit);
+		architecture.memory_layout[4].value = stackLimit;
 	}
 }
 
@@ -718,7 +709,7 @@ function kbd_read_string ( keystroke, params )
 	}
 
 	var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
-	crex_read_string_into_memory(keystroke, value, addr, 0) ;
+	creator_memory_store_string(keystroke, value, addr, 0) ;
 
 	return value ;
 }

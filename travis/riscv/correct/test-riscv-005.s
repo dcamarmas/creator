@@ -18,3 +18,4 @@
 
 	end_while: 	li a7 1
 		   		ecall # print_int
+
