@@ -66,7 +66,7 @@ function capi_mem_write ( addr, value, type )
 	// 1) check address is aligned
 	if (capi_bad_align(addr, type))
 	{
-	capi_raise("The memory must be align") ;
+		capi_raise("The memory must be align") ;
 		return;
 	}
 
@@ -75,7 +75,7 @@ function capi_mem_write ( addr, value, type )
 		writeMemory(value, addr, type);
 	} 
 	catch(e) {
-	capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
+		capi_raise("Invalid memory access to address '0x" + addr.toString(16) + "'") ;
 	}
 }
 
@@ -220,7 +220,7 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	var ret  = crex_get_string_from_memory(addr) ;
+	var ret  = creator_memory_get_string_from_memory(addr) ;
 	if (ret.error == true) {
 		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
 	}
@@ -240,7 +240,9 @@ function capi_read_int ( value1 )
 	}
 
 	/* Read integer */
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_int, ret1) ;
 }
@@ -256,7 +258,9 @@ function capi_read_float ( value1 )
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_float, ret1) ;
 }
@@ -272,7 +276,9 @@ function capi_read_double ( value1 )
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_double, ret1) ;
 }
@@ -288,7 +294,9 @@ function capi_read_char ( value1 )
 		throw packExecute(true, "capi_syscall: register " + value1 + " not found", 'danger', null);
 	}
 
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	return keyboard_read(kbd_read_char, ret1) ;
 }
@@ -310,7 +318,9 @@ function capi_read_string ( value1, value2 )
 	}
 
 	/* Read string */
-	document.getElementById('enter_keyboard').scrollIntoView();
+        if (typeof document != "undefined") {
+	    document.getElementById('enter_keyboard').scrollIntoView();
+	}
 
 	ret1.indexComp2 = ret2.indexComp ;
 	ret1.indexElem2 = ret2.indexElem ;
@@ -336,7 +346,7 @@ function capi_sbrk ( value1, value2 )
 
 	/* Request more memory */
 	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
-	var ret = crex_sbrk(new_size) ;
+	var ret = creator_memory_sbrk(new_size) ;
 	if (ret.error == true) {
 		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
 	}
