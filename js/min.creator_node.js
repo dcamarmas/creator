@@ -2230,7 +2230,7 @@ function main_memory_write_bydatatype ( addr, value, type, value_human )
 
 
 /********************
- * Public API (1/2) *
+ * Public API (1/3) *
  ********************/
 
 // Type, size and address...
@@ -2368,27 +2368,6 @@ function creator_memory_findaddress_bytag ( tag )
         return ret ;
 }
 
-// for debugging...
-
-function creator_memory_consolelog ( )
-{
-        var i = 0;
-
-        // show main memory
-        console.log(' ~~~ main memory ~~~~~~~~~~~~~~') ;
-        var addrs = main_memory_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             console.log(JSON.stringify(main_memory[addrs[i]])) ;
-        }
-
-        // show datatypes
-        console.log(' ~~~ datatypes ~~~~~~~~~~~~~~') ;
-        addrs = main_memory_datatype_get_addresses() ;
-        for (i=0; i<addrs.length; i++) {
-             console.log(JSON.stringify(main_memory_datatypes[addrs[i]])) ;
-        }
-}
-
 // memory zerofill and alloc ...
 
 function creator_memory_zerofill ( new_addr, new_size )
@@ -2438,6 +2417,32 @@ function main_memory_storedata ( data_address, value, size, dataLabel, value_hum
 
         return parseInt(algn.new_addr) + parseInt(size) ;
 }
+
+// for debugging...
+
+function creator_memory_consolelog ( )
+{
+        var i = 0;
+
+        // show main memory
+        console.log(' ~~~ main memory ~~~~~~~~~~~~~~') ;
+        var addrs = main_memory_get_addresses() ;
+        for (i=0; i<addrs.length; i++) {
+             console.log(JSON.stringify(main_memory[addrs[i]])) ;
+        }
+
+        // show datatypes
+        console.log(' ~~~ datatypes ~~~~~~~~~~~~~~') ;
+        addrs = main_memory_datatype_get_addresses() ;
+        for (i=0; i<addrs.length; i++) {
+             console.log(JSON.stringify(main_memory_datatypes[addrs[i]])) ;
+        }
+}
+
+
+/********************
+ * Public API (2/3) *
+ ********************/
 
 // update an app._data.main_memory row:
 //  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", 
@@ -2553,9 +2558,45 @@ function creator_memory_clearall ( )
     app._data.main_memory = {} ;
 }
 
+function creator_memory_update_row_view ( selected_view, segment_name, row_info )
+{
+        if (typeof app._data.main_memory[row_info.addr] == "undefined") {
+            return ;
+        }
+
+        var hex_packed = app._data.main_memory[row_info.addr].hex_packed ;
+        var new_value  = app._data.main_memory[row_info.addr].value ;
+
+        switch (selected_view)
+        {
+                case "sig_int":
+                     new_value = parseInt(hex_packed, 16)  >> 0 ;
+                     break ;
+                case "unsig_int":
+                     new_value = parseInt(hex_packed, 16) >>> 0 ;
+                     break ;
+                case "float":
+                     new_value = hex2float("0x" + hex_packed) ;
+                     break ;
+                case "char":
+                     new_value = hex2char8(hex_packed) ;
+                     break ;
+        }
+
+        app._data.main_memory[row_info.addr].value = new_value ;
+}
+
+function creator_memory_update_space_view ( selected_view, segment_name, row_info )
+{
+        for (var i=0; i<row_info.size; i++) {
+             creator_memory_update_row_view(selected_view, segment_name, row_info) ;
+             row_info.addr ++ ;
+        }
+}
+
 
 /********************
- * Public API (2/2) *
+ * Public API (3/3) *
  ********************/
 
 /* Write value in memory */
@@ -2660,42 +2701,6 @@ function creator_memory_storestring ( string, string_length, data_address, label
         }
 
         return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
-}
-
-function creator_memory_update_row_view ( selected_view, segment_name, row_info )
-{
-        if (typeof app._data.main_memory[row_info.addr] == "undefined") {
-            return ;
-        }
-
-        var hex_packed = app._data.main_memory[row_info.addr].hex_packed ;
-        var new_value  = app._data.main_memory[row_info.addr].value ;
-
-        switch (selected_view)
-        {
-                case "sig_int":
-                     new_value = parseInt(hex_packed, 16)  >> 0 ;
-                     break ;
-                case "unsig_int":
-                     new_value = parseInt(hex_packed, 16) >>> 0 ;
-                     break ;
-                case "float":
-                     new_value = hex2float("0x" + hex_packed) ;
-                     break ;
-                case "char":
-                     new_value = hex2char8(hex_packed) ;
-                     break ;
-        }
-
-        app._data.main_memory[row_info.addr].value = new_value ;
-}
-
-function creator_memory_update_space_view ( selected_view, segment_name, row_info )
-{
-        for (var i=0; i<row_info.size; i++) {
-             creator_memory_update_row_view(selected_view, segment_name, row_info) ;
-             row_info.addr ++ ;
-        }
 }
 
 function creator_memory_update_stack_limit ( new_stack_limit )
