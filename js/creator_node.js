@@ -176,9 +176,24 @@ function get_state ( )
     }
 
     // dump memory
+    var addrs = main_memory_get_addresses() ;
+    for (var i=0; i<addrs.length; i++)
+    {
+	 elto_value  = main_memory_read_value(addrs[i]) ;
+	 elto_dvalue = main_memory_read_default_value(addrs[i]) ;
+
+	 if (elto_value != elto_dvalue)
+	 {
+	     addr_string = "0x" + parseInt(addrs[i]).toString(16) ;
+	     elto_string = "0x" + elto_value ;
+	     ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
+	 }
+    }
+
+    /*
     if (false == OLD_CODE_ACTIVE)
     {
-            /* NEW */
+            // NEW
 	    var addrs = main_memory_get_addresses() ;
 	    for (var i=0; i<addrs.length; i++)
 	    {
@@ -195,7 +210,7 @@ function get_state ( )
     }
     else
     {
-            /* OLD */
+            // OLD
 	    for (var i in memory)
 	    {
 		for (var j=0; j<memory[i].length; j++)
@@ -213,6 +228,7 @@ function get_state ( )
 		}
 	    }
     }
+    */
 
     // dump keyboard
     ret.msg = ret.msg + "keyboard[0x0]" + ":'" + encodeURIComponent(keyboard) + "'; ";
