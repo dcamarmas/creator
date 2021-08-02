@@ -1100,12 +1100,8 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	var ret  = creator_memory_get_string_from_memory(addr) ;
-	if (ret.error == true) {
-		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
-	}
-
-	display_print(ret.draw) ;
+        var msg  = readMemory(parseInt(addr), "string") ;
+	display_print(msg) ;
 }
 
 function capi_read_int ( value1 )
@@ -1226,12 +1222,12 @@ function capi_sbrk ( value1, value2 )
 
 	/* Request more memory */
 	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
-	var ret = creator_memory_sbrk(new_size) ;
-	if (ret.error == true) {
-		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
+	if (new_size < 0) {
+		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
-	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = ret.draw ;
+        var new_addr = creator_memory_alloc(new_size) ;
+	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
 }
 
 
@@ -2028,6 +2024,15 @@ function main_memory_write ( addr, value )
         main_memory[addr] = value ;
 }
 
+function main_memory_zerofill ( addr, size )
+{
+        for (var i=0; i<size; i++)
+        {
+             var value = main_memory_packs_forav(addr+i, '00') ;
+             main_memory_write(addr+i, value) ;
+        }
+}
+
 //// Read/write (2/3): byte level (execution)
 
 function main_memory_read_value ( addr )
@@ -2373,11 +2378,7 @@ function creator_memory_findaddress_bytag ( tag )
 function creator_memory_zerofill ( new_addr, new_size )
 {
         // fill memory
-        for (var i=0; i<new_size; i++)
-        {
-             var value = main_memory_packs_forav(new_addr+i, '00') ;
-             main_memory_write(new_addr+i, value) ;
-        }
+        main_memory_zerofill(new_addr, new_size) ;
 
         // update view
         creator_memory_updateall();
@@ -2440,9 +2441,9 @@ function creator_memory_consolelog ( )
 }
 
 
-/********************
- * Public API (2/3) *
- ********************/
+/************************
+ * Public API (2/3): UI *
+ ************************/
 
 // update an app._data.main_memory row:
 //  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", 
@@ -2599,7 +2600,6 @@ function creator_memory_update_space_view ( selected_view, segment_name, row_inf
  * Public API (3/3) *
  ********************/
 
-/* Write value in memory */
 function writeMemory ( value, addr, type )
 {
         main_memory_write_bydatatype(addr, value, type, value) ;
@@ -2608,13 +2608,12 @@ function writeMemory ( value, addr, type )
         creator_memory_updaterow(addr);
 }
 
-// readMemory
 function readMemory ( addr, type )
 {
         return main_memory_read_bydatatype(addr, type) ;
 }
 
-function memory_reset ( )
+function creator_memory_reset ( )
 {
         main_memory_reset() ;
 
@@ -2622,29 +2621,40 @@ function memory_reset ( )
         creator_memory_updateall() ;
 }
 
-
-function creator_memory_sbrk ( new_size )
-{
-        var new_addr = creator_memory_alloc(new_size) ;
-        return packExecute(false, '', 'danger', new_addr) ;
-}
-
-function creator_memory_get_string_from_memory ( addr )
-{
-        var ret_msg = main_memory_read_bydatatype(parseInt(addr), "string") ;
-        return packExecute(false, 'printed', 'info', ret_msg) ;
-}
-
-function creator_memory_store_string ( keystroke, value, addr, valueIndex, auxAddr )
-{
-        return main_memory_write_bydatatype(parseInt(addr), value, "string", value) ;
-}
-
 function creator_memory_clear ( )
 {
         main_memory_clear() ;
         creator_memory_clearall() ;
 }
+
+
+function creator_memory_is_address_inside_segment ( segment_name, addr )
+{
+         var elto_inside_segment = false ;
+
+         if (segment_name == "instructions_memory") {
+             elto_inside_segment = ((addr >= architecture.memory_layout[0].value) && (addr <= architecture.memory_layout[1].value)) ;
+         }
+         if (segment_name == "data_memory") {
+             elto_inside_segment = ((addr >= architecture.memory_layout[2].value) && (addr <= architecture.memory_layout[3].value)) ;
+         }
+         if (segment_name == "stack_memory") {
+             elto_inside_segment = (addr >= architecture.memory_layout[3].value) ;
+         }
+
+         return elto_inside_segment ;
+}
+
+function creator_memory_is_segment_empty ( segment_name )
+{
+          var addrs    = main_memory_get_addresses() ;
+          var insiders = addrs.filter(function(elto) {
+                                         return creator_memory_is_address_inside_segment(segment_name, elto) ;
+                                      }); 
+
+          return (insiders.length == 0) ;
+}
+
 
 function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type )
 {
@@ -2673,25 +2683,10 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
         return ret ;
 }
 
-function creator_memory_findbytag ( tag )
-{
-        return creator_memory_findaddress_bytag(tag) ;
-}
-
-function creator_memory_copytoapp ( hash_index )
-{
-        return ;
-}
-
 function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label )
 {
         var size = Math.ceil(hex.toString().length / 2) ;
         return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ;
-}
-
-function creator_memory_stackinit ( stack_address )
-{
-        return main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
 }
 
 function creator_memory_storestring ( string, string_length, data_address, label, type, align )
@@ -2701,41 +2696,6 @@ function creator_memory_storestring ( string, string_length, data_address, label
         }
 
         return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
-}
-
-function creator_memory_update_stack_limit ( new_stack_limit )
-{
-        var diff = architecture.memory_layout[4].value - new_stack_limit;
-        if (diff > 0) {
-            creator_memory_zerofill(new_stack_limit, diff) ;
-        }
-}
-
-function creator_memory_is_address_inside_segment ( segment_name, addr )
-{
-         var elto_inside_segment = false ;
-
-         if (segment_name == "instructions_memory") {
-             elto_inside_segment = ((addr >= architecture.memory_layout[0].value) && (addr <= architecture.memory_layout[1].value)) ;
-         }
-         if (segment_name == "data_memory") {
-             elto_inside_segment = ((addr >= architecture.memory_layout[2].value) && (addr <= architecture.memory_layout[3].value)) ;
-         }
-         if (segment_name == "stack_memory") {
-             elto_inside_segment = (addr >= architecture.memory_layout[3].value) ;
-         }
-
-         return elto_inside_segment ;
-}
-
-function creator_memory_is_segment_empty ( segment_name )
-{
-          var addrs    = main_memory_get_addresses() ;
-          var insiders = addrs.filter(function(elto) {
-                                         return creator_memory_is_address_inside_segment(segment_name, elto) ;
-                                      }); 
-
-          return (insiders.length == 0) ;
 }
 
 /*
@@ -3430,7 +3390,7 @@ function assembly_compiler()
 
 
 	      // NEW
-	      var ret1 = creator_memory_findbytag(instructionParts[j]);
+	      var ret1 = creator_memory_findaddress_bytag(instructionParts[j]);
 	      if (ret1.exit == 1)
 	      {
                     var addr = ret1.value;
@@ -3644,8 +3604,6 @@ function assembly_compiler()
 
             auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
           }
-	  // update UI (with new instructions)
-          creator_memory_copytoapp(1) ;
         }
 
         /* Enter the compilated instructions in the text segment */
@@ -3662,8 +3620,6 @@ function assembly_compiler()
 
           auxAddr = creator_insert_instruction(auxAddr, instructions[i + binNum].loaded, instructions[i + binNum].loaded, false, hex, "00", label);
         }
-	// update UI (with new instructions)
-        creator_memory_copytoapp(1) ;
 
 
         // Check for overlap
@@ -3754,8 +3710,7 @@ function assembly_compiler()
             app._data.instructions = instructions;
 
         /* Initialize stack */
-        creator_memory_stackinit(stack_address) ;
-        creator_memory_copytoapp(2) ; // CHECK
+        writeMemory("00", parseInt(stack_address), "word") ;
 
         address = architecture.memory_layout[0].value;
         data_address = architecture.memory_layout[2].value;
@@ -4567,7 +4522,6 @@ function data_segment_compiler()
             else if (j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1)
             {
                 creator_memory_prereset() ;
-                creator_memory_copytoapp(0) ;
                 return ret;
             }
 
@@ -4575,7 +4529,6 @@ function data_segment_compiler()
         }
 
         creator_memory_prereset() ;
-        creator_memory_copytoapp(0) ;
         return ret;
 }
 
@@ -4639,7 +4592,7 @@ function code_segment_compiler()
                   return packCompileError('m0', "Empty label", 'error', "danger") ;
               }
 
-	      var ret1 = creator_memory_findbytag(token.substring(0, token.length-1));
+	      var ret1 = creator_memory_findaddress_bytag(token.substring(0, token.length-1));
 	      if (ret1.exit == 1)
 	      {
                   return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
@@ -6209,7 +6162,7 @@ function field ( field, action, type )
       }
       else
       {
-  	  var ret = creator_memory_findbytag(field) ;
+  	  var ret = creator_memory_findaddress_bytag(field) ;
   	  if (ret.exit == 1) {
               var numAux = ret.value ;
               return (numAux.toString(2)).length;
@@ -6241,7 +6194,7 @@ function field ( field, action, type )
 
     if (Number.isInteger(field) == false)
     {
-        var ret = creator_memory_findbytag(field) ;
+        var ret = creator_memory_findaddress_bytag(field) ;
 	if (ret.exit == 1) {
             field = ret.value ;
 	}
@@ -6828,7 +6781,7 @@ function reset ()
 	architecture.memory_layout[3].value = backup_data_address;
 
 	// reset memory
-        memory_reset() ;
+        creator_memory_reset() ;
 
 	//Stack Reset
 	creator_callstack_reset();
@@ -6936,7 +6889,11 @@ function writeStackLimit ( stackLimit )
 	}
 	else
 	{
-		creator_memory_update_stack_limit(stackLimit) ;
+		var diff = architecture.memory_layout[4].value - stackLimit ;
+		if (diff > 0) {
+		    creator_memory_zerofill(stackLimit, diff) ;
+		}
+
 		track_stack_setsp(stackLimit);
 		architecture.memory_layout[4].value = stackLimit;
 	}
@@ -7040,7 +6997,7 @@ function kbd_read_string ( keystroke, params )
 	}
 
 	var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
-	creator_memory_store_string(keystroke, value, addr, 0) ;
+        writeMemory(value, parseInt(addr), "string") ;
 
 	return value ;
 }
@@ -7458,46 +7415,6 @@ function get_state ( )
 	     ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
 	 }
     }
-
-    /*
-    if (false == OLD_CODE_ACTIVE)
-    {
-            // NEW
-	    var addrs = main_memory_get_addresses() ;
-	    for (var i=0; i<addrs.length; i++)
-	    {
-		 elto_value  = main_memory_read_value(addrs[i]) ;
-		 elto_dvalue = main_memory_read_default_value(addrs[i]) ;
-
-		 if (elto_value != elto_dvalue)
-		 {
-                     addr_string = "0x" + parseInt(addrs[i]).toString(16) ;
-		     elto_string = "0x" + elto_value ;
-		     ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
-		 }
-	    }
-    }
-    else
-    {
-            // OLD
-	    for (var i in memory)
-	    {
-		for (var j=0; j<memory[i].length; j++)
-		{
-		    elto_value  = memory[i][j].Binary[3].Bin    + memory[i][j].Binary[2].Bin +
-				  memory[i][j].Binary[1].Bin    + memory[i][j].Binary[0].Bin ;
-		    elto_dvalue = memory[i][j].Binary[3].DefBin + memory[i][j].Binary[2].DefBin +
-				  memory[i][j].Binary[1].DefBin + memory[i][j].Binary[0].DefBin ;
-
-		    if (elto_value != elto_dvalue)
-		    {
-			elto_string = "0x" + elto_value ;
-			ret.msg = ret.msg + "memory[0x" + memory[i][j].Address.toString(16) + "]" + ":" + elto_string + "; ";
-		    }
-		}
-	    }
-    }
-    */
 
     // dump keyboard
     ret.msg = ret.msg + "keyboard[0x0]" + ":'" + encodeURIComponent(keyboard) + "'; ";
