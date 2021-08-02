@@ -2024,6 +2024,15 @@ function main_memory_write ( addr, value )
         main_memory[addr] = value ;
 }
 
+function main_memory_zerofill ( addr, size )
+{
+        for (var i=0; i<size; i++)
+        {
+             var value = main_memory_packs_forav(addr+i, '00') ;
+             main_memory_write(addr+i, value) ;
+        }
+}
+
 //// Read/write (2/3): byte level (execution)
 
 function main_memory_read_value ( addr )
@@ -2369,11 +2378,7 @@ function creator_memory_findaddress_bytag ( tag )
 function creator_memory_zerofill ( new_addr, new_size )
 {
         // fill memory
-        for (var i=0; i<new_size; i++)
-        {
-             var value = main_memory_packs_forav(new_addr+i, '00') ;
-             main_memory_write(new_addr+i, value) ;
-        }
+        main_memory_zerofill(new_addr, new_size) ;
 
         // update view
         creator_memory_updateall();
