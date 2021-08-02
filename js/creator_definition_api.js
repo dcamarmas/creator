@@ -220,12 +220,8 @@ function capi_print_string ( value1 )
 
 	/* Print string */
 	var addr = architecture.components[ret1.indexComp].elements[ret1.indexElem].value;
-	var ret  = creator_memory_get_string_from_memory(addr) ;
-	if (ret.error == true) {
-		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
-	}
-
-	display_print(ret.draw) ;
+        var msg  = readMemory(parseInt(addr), "string") ;
+	display_print(msg) ;
 }
 
 function capi_read_int ( value1 )
@@ -346,12 +342,12 @@ function capi_sbrk ( value1, value2 )
 
 	/* Request more memory */
 	var new_size = parseInt(architecture.components[ret1.indexComp].elements[ret1.indexElem].value) ;
-	var ret = creator_memory_sbrk(new_size) ;
-	if (ret.error == true) {
-		throw packExecute(true, ret.msg, ret.type, ret.draw) ;
+	if (new_size < 0) {
+		throw packExecute(true, "capi_syscall: negative size", 'danger', null) ;
 	}
 
-	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = ret.draw ;
+        var new_addr = creator_memory_alloc(new_size) ;
+	architecture.components[ret2.indexComp].elements[ret2.indexElem].value = new_addr ;
 }
 
 
