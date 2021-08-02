@@ -497,7 +497,7 @@ function reset ()
 	architecture.memory_layout[3].value = backup_data_address;
 
 	// reset memory
-        memory_reset() ;
+        creator_memory_reset() ;
 
 	//Stack Reset
 	creator_callstack_reset();
@@ -605,7 +605,11 @@ function writeStackLimit ( stackLimit )
 	}
 	else
 	{
-		creator_memory_update_stack_limit(stackLimit) ;
+		var diff = architecture.memory_layout[4].value - stackLimit ;
+		if (diff > 0) {
+		    creator_memory_zerofill(stackLimit, diff) ;
+		}
+
 		track_stack_setsp(stackLimit);
 		architecture.memory_layout[4].value = stackLimit;
 	}
@@ -709,7 +713,7 @@ function kbd_read_string ( keystroke, params )
 	}
 
 	var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
-	creator_memory_store_string(keystroke, value, addr, 0) ;
+        writeMemory(value, parseInt(addr), "string") ;
 
 	return value ;
 }
