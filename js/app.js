@@ -357,7 +357,6 @@ try
       /* 
        * Memory
        */
-      memory:      memory, //TODO: delete
       main_memory: {},
 
       mem_representation: "data_memory",
@@ -2752,10 +2751,6 @@ try
             /* update/reset */
             app._data.totalStats   = 0;
             app._data.instructions = instructions;
-
-	    creator_memory_copytoapp(1) ;
-	    creator_memory_copytoapp(0) ;
-	    creator_memory_copytoapp(2) ;
 
             tokenIndex = 0;
             app.reset(true);
