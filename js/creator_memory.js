@@ -546,9 +546,9 @@ function creator_memory_consolelog ( )
 }
 
 
-/********************
- * Public API (2/3) *
- ********************/
+/************************
+ * Public API (2/3): UI *
+ ************************/
 
 // update an app._data.main_memory row:
 //  "000": { addr: 2003, addr_begin: "0x200", addr_end: "0x2003", 
@@ -705,7 +705,6 @@ function creator_memory_update_space_view ( selected_view, segment_name, row_inf
  * Public API (3/3) *
  ********************/
 
-/* Write value in memory */
 function writeMemory ( value, addr, type )
 {
         main_memory_write_bydatatype(addr, value, type, value) ;
@@ -714,13 +713,12 @@ function writeMemory ( value, addr, type )
         creator_memory_updaterow(addr);
 }
 
-// readMemory
 function readMemory ( addr, type )
 {
         return main_memory_read_bydatatype(addr, type) ;
 }
 
-function memory_reset ( )
+function creator_memory_reset ( )
 {
         main_memory_reset() ;
 
@@ -728,29 +726,40 @@ function memory_reset ( )
         creator_memory_updateall() ;
 }
 
-
-function creator_memory_sbrk ( new_size )
-{
-        var new_addr = creator_memory_alloc(new_size) ;
-        return packExecute(false, '', 'danger', new_addr) ;
-}
-
-function creator_memory_get_string_from_memory ( addr )
-{
-        var ret_msg = main_memory_read_bydatatype(parseInt(addr), "string") ;
-        return packExecute(false, 'printed', 'info', ret_msg) ;
-}
-
-function creator_memory_store_string ( keystroke, value, addr, valueIndex, auxAddr )
-{
-        return main_memory_write_bydatatype(parseInt(addr), value, "string", value) ;
-}
-
 function creator_memory_clear ( )
 {
         main_memory_clear() ;
         creator_memory_clearall() ;
 }
+
+
+function creator_memory_is_address_inside_segment ( segment_name, addr )
+{
+         var elto_inside_segment = false ;
+
+         if (segment_name == "instructions_memory") {
+             elto_inside_segment = ((addr >= architecture.memory_layout[0].value) && (addr <= architecture.memory_layout[1].value)) ;
+         }
+         if (segment_name == "data_memory") {
+             elto_inside_segment = ((addr >= architecture.memory_layout[2].value) && (addr <= architecture.memory_layout[3].value)) ;
+         }
+         if (segment_name == "stack_memory") {
+             elto_inside_segment = (addr >= architecture.memory_layout[3].value) ;
+         }
+
+         return elto_inside_segment ;
+}
+
+function creator_memory_is_segment_empty ( segment_name )
+{
+          var addrs    = main_memory_get_addresses() ;
+          var insiders = addrs.filter(function(elto) {
+                                         return creator_memory_is_address_inside_segment(segment_name, elto) ;
+                                      }); 
+
+          return (insiders.length == 0) ;
+}
+
 
 function creator_memory_data_compiler ( data_address, value, size, dataLabel, DefValue, type )
 {
@@ -779,25 +788,10 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
         return ret ;
 }
 
-function creator_memory_findbytag ( tag )
-{
-        return creator_memory_findaddress_bytag(tag) ;
-}
-
-function creator_memory_copytoapp ( hash_index )
-{
-        return ;
-}
-
 function creator_insert_instruction ( auxAddr, value, def_value, hide, hex, fill_hex, label )
 {
         var size = Math.ceil(hex.toString().length / 2) ;
         return main_memory_storedata(auxAddr, hex, size, label, def_value, def_value, "instruction") ;
-}
-
-function creator_memory_stackinit ( stack_address )
-{
-        return main_memory_write_bydatatype(parseInt(stack_address), "00", "word", "00") ;
 }
 
 function creator_memory_storestring ( string, string_length, data_address, label, type, align )
@@ -807,40 +801,5 @@ function creator_memory_storestring ( string, string_length, data_address, label
         }
 
         return main_memory_storedata(data_address, string, string_length, label, string, string, type) + 1;
-}
-
-function creator_memory_update_stack_limit ( new_stack_limit )
-{
-        var diff = architecture.memory_layout[4].value - new_stack_limit;
-        if (diff > 0) {
-            creator_memory_zerofill(new_stack_limit, diff) ;
-        }
-}
-
-function creator_memory_is_address_inside_segment ( segment_name, addr )
-{
-         var elto_inside_segment = false ;
-
-         if (segment_name == "instructions_memory") {
-             elto_inside_segment = ((addr >= architecture.memory_layout[0].value) && (addr <= architecture.memory_layout[1].value)) ;
-         }
-         if (segment_name == "data_memory") {
-             elto_inside_segment = ((addr >= architecture.memory_layout[2].value) && (addr <= architecture.memory_layout[3].value)) ;
-         }
-         if (segment_name == "stack_memory") {
-             elto_inside_segment = (addr >= architecture.memory_layout[3].value) ;
-         }
-
-         return elto_inside_segment ;
-}
-
-function creator_memory_is_segment_empty ( segment_name )
-{
-          var addrs    = main_memory_get_addresses() ;
-          var insiders = addrs.filter(function(elto) {
-                                         return creator_memory_is_address_inside_segment(segment_name, elto) ;
-                                      }); 
-
-          return (insiders.length == 0) ;
 }
 

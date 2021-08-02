@@ -690,7 +690,7 @@ function assembly_compiler()
 
 
 	      // NEW
-	      var ret1 = creator_memory_findbytag(instructionParts[j]);
+	      var ret1 = creator_memory_findaddress_bytag(instructionParts[j]);
 	      if (ret1.exit == 1)
 	      {
                     var addr = ret1.value;
@@ -904,8 +904,6 @@ function assembly_compiler()
 
             auxAddr = creator_insert_instruction(auxAddr, "********", "********", hide, hex, "**", label);
           }
-	  // update UI (with new instructions)
-          creator_memory_copytoapp(1) ;
         }
 
         /* Enter the compilated instructions in the text segment */
@@ -922,8 +920,6 @@ function assembly_compiler()
 
           auxAddr = creator_insert_instruction(auxAddr, instructions[i + binNum].loaded, instructions[i + binNum].loaded, false, hex, "00", label);
         }
-	// update UI (with new instructions)
-        creator_memory_copytoapp(1) ;
 
 
         // Check for overlap
@@ -1014,8 +1010,7 @@ function assembly_compiler()
             app._data.instructions = instructions;
 
         /* Initialize stack */
-        creator_memory_stackinit(stack_address) ;
-        creator_memory_copytoapp(2) ; // CHECK
+        writeMemory("00", parseInt(stack_address), "word") ;
 
         address = architecture.memory_layout[0].value;
         data_address = architecture.memory_layout[2].value;
@@ -1827,7 +1822,6 @@ function data_segment_compiler()
             else if (j== architecture.directives.length-1 && token != architecture.directives[j].name && token != null && token.search(/\:$/) == -1)
             {
                 creator_memory_prereset() ;
-                creator_memory_copytoapp(0) ;
                 return ret;
             }
 
@@ -1835,7 +1829,6 @@ function data_segment_compiler()
         }
 
         creator_memory_prereset() ;
-        creator_memory_copytoapp(0) ;
         return ret;
 }
 
@@ -1899,7 +1892,7 @@ function code_segment_compiler()
                   return packCompileError('m0', "Empty label", 'error', "danger") ;
               }
 
-	      var ret1 = creator_memory_findbytag(token.substring(0, token.length-1));
+	      var ret1 = creator_memory_findaddress_bytag(token.substring(0, token.length-1));
 	      if (ret1.exit == 1)
 	      {
                   return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
@@ -3469,7 +3462,7 @@ function field ( field, action, type )
       }
       else
       {
-  	  var ret = creator_memory_findbytag(field) ;
+  	  var ret = creator_memory_findaddress_bytag(field) ;
   	  if (ret.exit == 1) {
               var numAux = ret.value ;
               return (numAux.toString(2)).length;
@@ -3501,7 +3494,7 @@ function field ( field, action, type )
 
     if (Number.isInteger(field) == false)
     {
-        var ret = creator_memory_findbytag(field) ;
+        var ret = creator_memory_findaddress_bytag(field) ;
 	if (ret.exit == 1) {
             field = ret.value ;
 	}
