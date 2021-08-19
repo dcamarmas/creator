@@ -22,10 +22,10 @@
   function show_notification ( msg, type )
   {
      // show notification
-     app._data.alertMessage = msg ;
-     app._data.type         = type ;
-     app.$bvToast.toast(app._data.alertMessage, {
-        variant: app._data.type,
+     var alertMessage = msg ;
+     var type         = type ;
+     app.$bvToast.toast(alertMessage, {
+        variant: type,
         solid: true,
         toaster: "b-toaster-top-center",
         autoHideDelay: app._data.notificationTime,
@@ -34,8 +34,8 @@
 
      // add notification to the notification summary
      var date = new Date() ;
-     notifications.push({ mess: app._data.alertMessage,
-                          color: app._data.type,
+     notifications.push({ mess: alertMessage,
+                          color: type,
                           time: date.getHours()+":"+date.getMinutes()+":"+date.getSeconds(),
                           date: date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear() }) ;
 
@@ -56,9 +56,9 @@
 
      // after half second show the loading spinner
      toHandler = setTimeout(function(){
- 			       $("#loading").show() ;
-			       toHandler = null ;
-			    }, 500) ;
+             $("#loading").show() ;
+             toHandler = null ;
+          }, 500) ;
   }
 
   function hide_loading ( )
@@ -80,19 +80,19 @@
 
   function btn_glow ( btn_name, post_label )
   {
-	var buttonDec = '#popoverValueContent' + btn_name + post_label ;
-	var buttonHex = '#popoverValueContent' + btn_name;
+  var buttonDec = '#popoverValueContent' + btn_name + post_label ;
+  var buttonHex = '#popoverValueContent' + btn_name;
 
-	        $(buttonDec).attr("style", "background-color:#c2c2c2;");
-	        $(buttonHex).attr("style", "background-color:#c2c2c2;");
-	    //  $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
-	    //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+          $(buttonDec).attr("style", "background-color:#c2c2c2;");
+          $(buttonHex).attr("style", "background-color:#c2c2c2;");
+      //  $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
+      //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm modRegister");
 
-	setTimeout(function() {
-		$(buttonDec).attr("style", "background-color:#f5f5f5;");
-		$(buttonHex).attr("style", "background-color:#f5f5f5;");
-	    //	$(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-	    //	$(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
-	}, 500);
+  setTimeout(function() {
+    $(buttonDec).attr("style", "background-color:#f5f5f5;");
+    $(buttonHex).attr("style", "background-color:#f5f5f5;");
+      //  $(buttonDec).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+      //  $(buttonHex).attr("class", "btn btn-outline-secondary btn-block btn-sm registers");
+  }, 500);
   }
 

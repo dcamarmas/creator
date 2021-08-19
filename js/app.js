@@ -39,12 +39,13 @@ try
     data: {
 
       /*Global*/
-      /*Number Version*/
+
+      /*Version Number*/
       version: '',
       /*View*/
       creator_mode: "load_architecture",
       /*Notification speed*/
-      notificationTime: 1500,
+      notificationTime: 1500, //TODO: general variable?
       /*Auto Scroll*/
       autoscroll: true,
       /*Auto Scroll*/
@@ -53,6 +54,12 @@ try
       c_debug: false,
       /*Dark Mode*/
       dark: false,
+      /*Displayed notifications*/
+      notifications: notifications,
+      /*Accesskey*/
+      browser: "",
+
+
 
       /*Architecture editor*/
 
@@ -287,13 +294,24 @@ try
 
 
 
-      /*Compilator*/
 
-      /*Available examples*/
+
+
+      /************/
+      /* Assembly */
+      /************/
+
+      //
+      //Available examples
+      //
+
       example_available: example_available,
       example_loaded: null,
 
+      //
       //Code error modal
+      //
+
       modalAssemblyError:{
         code1: '',
         code2: '',
@@ -301,74 +319,89 @@ try
         error: '',
       },
 
-      /*Assembly code*/
+      //
+      //Assembly code
+      //
+
       assembly_code: "",
 
 
 
+      /*************/
+      /* Simulator */
+      /*************/
 
+      //
+      // Execution
+      //
 
-      /*Simulator*/
-
-      /*Alert toasts content*/
-      alertMessage: '',
-      type: '',
-      /*Displayed notifications*/
-      notifications: notifications,
-      /*Accesskey*/
-      browser: "",
-      /*Run instructions*/
+      //Run instructions
       instructionsPacked: 20,
-      /*Run button*/
+
+      //Run button
       runExecution: false,
-      /*Reset button*/
+
+      //Reset button
       resetBut: false,
-      /*Instructions memory*/
+
+      //Instructions
       instructions: instructions,
-      /*Registers*/
+
+
+      //
+      //Data view
+      //
+
+      data_mode: 'registers',
+
+
+      //
+      //Registers
+      //
+
+      //Register value representation
+      reg_representation: "signed",
+      reg_representation_options: [
+        { text: 'Signed', value: 'signed' },
+        { text: 'Unsigned', value: 'unsigned' },
+        { text: 'IEEE 754', value: 'decimal'},
+        { text: 'Hexadecimal', value: 'hex' }
+      ],
+
+      //Register name representation
+      reg_name_representation: "logical",
+      reg_name_representation_options: [
+        { text: 'Name', value: 'logical' },
+        { text: 'Alias', value: 'alias' },
+        { text: 'All', value: 'all'}
+      ],
+
+      //Registers
       register_type: 'integer',
       name_tab_Reg: 'Decimal',
       name_reg: 'INT Registers',
       reg_type: 'int',
       register_popover: '',
-      /*Data mode*/
-      data_mode: 'registers',
-      /*Register form*/
+
+      //Register form
       newValue: '',
 
 
-      reg_representation: "signed",
-      reg_representation_options: [
-          { text: 'Signed', value: 'signed' },
-          { text: 'Unsigned', value: 'unsigned' },
-          { text: 'IEEE 754', value: 'decimal'},
-          { text: 'Hexadecimal', value: 'hex' }
-        ],
+      //
+      //Memory
+      //
 
-      reg_name_representation: "logical",
-      reg_name_representation_options: [
-          { text: 'Name', value: 'logical' },
-          { text: 'Alias', value: 'alias' },
-          { text: 'All', value: 'all'}
-        ],
-
-
-      /* 
-       * Memory
-       */
       main_memory: {},
 
+      //Memory view
       mem_representation: "data_memory",
       mem_representation_options: [
-          { text: 'Data', value: 'data_memory' },
-          { text: 'Text', value: 'instructions_memory' },
-          { text: 'Stack', value: 'stack_memory'}
-        ],
+        { text: 'Data', value: 'data_memory' },
+        { text: 'Text', value: 'instructions_memory' },
+        { text: 'Stack', value: 'stack_memory'}
+      ],
 
-      row_index: null,           //TODO: try to include in a component
-      selected_space_view: null, //TODO: try to include in a component
-      selected_stack_view: null, //TODO: try to include in a component
-      
+      //Stack
       track_stack_names: track_stack_names,
       callee_subrutine: "",
       caller_subrutine: "",
@@ -378,24 +411,30 @@ try
       begin_callee: 0,
       end_callee: 0,
 
+      //Space and stack view
+      row_index: null,           //TODO: try to include in a component
+      selected_space_view: null, //TODO: try to include in a component
+      selected_stack_view: null, //TODO: try to include in a component
+      
+      //
+      //Stats
+      //
 
-
-
-
-
-
-
-      /*Stats*/
       totalStats: totalStats,
       stats: stats,
       /*Stats Graph values*/
       stats_value: stats_value,
-      /*Display*/
+
+      //
+      //Display and keyboard
+      //
+
       display: '',
-      /*Keyboard*/
       keyboard: '',
       enter: null,
     },
+
+
 
     /*Created vue instance*/
     created(){
@@ -403,6 +442,8 @@ try
       this.load_arch_available();
       this.detectBrowser();
     },
+
+
 
     /*Mounted vue instance*/
     mounted(){
@@ -415,12 +456,17 @@ try
       creator_preload_fromHash(this, url_hash) ;
     },
 
+
+
     beforeUpdate(){
       this.get_dark_mode();
     },
 
+
+
     /*Vue methods*/
     methods: {
+
       /*Generic*/
 
       load_num_version(){
@@ -428,6 +474,24 @@ try
           creator_information = cfg;
           app._data.version = cfg.version;
         });
+      },
+
+      //Detects the browser being used
+      detectBrowser(){
+        if(navigator.appVersion.indexOf("Mac")!=-1) {
+          this.browser = "Mac";
+          return;
+        }
+
+        if (navigator.userAgent.search("Chrome") >= 0) {
+          this.browser = "Chrome";
+        }
+        else if (navigator.userAgent.search("Firefox") >= 0) {
+          this.browser = "Firefox";
+        }
+        else if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
+          this.browser = "Chrome";
+        }
       },
 
       verifyBrowser() {
@@ -493,10 +557,6 @@ try
           }
         }
       },
-
-      
-
-      
 
       /*Screen change*/
       change_UI_mode(e) {
@@ -2861,17 +2921,17 @@ try
 
             switch (ret.type)
             {
-               case "error":
-                    app.compileError(ret.msg, ret.token, ret.line) ;
-                    break;
+              case "error":
+                   app.compileError(ret.msg, ret.token, ret.line) ;
+                   break;
 
-               case "warning":
-                    show_notification(ret.token, ret.bgcolor) ;
-                    break;
+              case "warning":
+                   show_notification(ret.token, ret.bgcolor) ;
+                   break;
 
-               default:
-                    show_notification('Compilation completed successfully', 'success') ;
-                    break;
+              default:
+                   show_notification('Compilation completed successfully', 'success') ;
+                   break;
             }
 
             // end
@@ -2927,84 +2987,112 @@ try
 
 
 
-
-
-
-
-
-
       /*Simulator*/
 
-      /*Detects the browser being used*/
-      detectBrowser(){
-        if(navigator.appVersion.indexOf("Mac")!=-1) {
-          this.browser = "Mac";
-          return;
-        }
+      /* Reset execution */
+      reset ( reset_graphic )
+      {
+        /* Google Analytics */
+        creator_ga('execute', 'execute.reset', 'execute.reset');
 
-        if (navigator.userAgent.search("Chrome") >= 0) {
-          this.browser = "Chrome";
-        }
-        else if (navigator.userAgent.search("Firefox") >= 0) {
-          this.browser = "Firefox";
-        }
-        else if (navigator.userAgent.search("Safari") >= 0 && navigator.userAgent.search("Chrome") < 0) {
-          this.browser = "Chrome";
-        }
+        show_loading();
+        setTimeout(function() {
+
+          // UI: reset I/O
+          app._data.resetBut = true ;
+          app._data.keyboard = "" ;
+          app._data.display  = "" ;
+          app._data.enter    = null ;
+
+          // UI: reset row color...
+          for (var i = 0; i < instructions.length; i++) {
+               instructions[i]._rowVariant = '' ;
+          }
+
+          reset(reset_graphic) ;
+
+          // UI: set default row color...
+          for (var i = 0; i < instructions.length; i++) {
+               if (instructions[i].Label == "main") {
+                   instructions[i]._rowVariant = 'success' ;
+               }
+          }
+
+          /*Auto-scroll*/
+          if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
+            var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
+            var rowpos = $(id).position();
+            if(rowpos){
+              var pos = rowpos.top - $('.instructions_table').height();
+              $('.instructions_table').animate({scrollTop: (pos)}, 200);
+            }
+          }
+          else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
+            $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
+          }
+
+          /*Reset graphic*/
+          if(reset_graphic == true && app._data.data_mode == "stats"){
+            ApexCharts.exec('graphic', 'updateSeries', stats_value);
+          }
+
+          hide_loading();
+
+        }, 25);
+
       },
 
-      /*Execute one instruction*/
+      //Execute one instruction
       executeInstruction ( )
       {
+        // Google Analytics
+        creator_ga('execute', 'execute.instruction', 'execute.instruction');
 
-         /* Google Analytics */
-         creator_ga('execute', 'execute.instruction', 'execute.instruction');
+        var ret = executeInstruction();
+        // console.log(JSON.stringify(ret,2,null));
 
-         var ret = executeInstruction();
-         // console.log(JSON.stringify(ret,2,null));
+        if (typeof ret === "undefined") {
+          console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
+        }
 
-         if (typeof ret === "undefined") {
-             console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
-         }
+        if (ret.msg != null) {
+          show_notification(ret.msg, ret.type);
+        }
 
-         if (ret.msg != null) {
-             show_notification(ret.msg, ret.type);
-         }
+        if (ret.draw != null)
+        {
+          for (var i=0; i<ret.draw.space.length; i++) {
+            instructions[ret.draw.space[i]]._rowVariant = '';
+          }
+          for (var i=0; i<ret.draw.success.length; i++) {
+            instructions[ret.draw.success[i]]._rowVariant = 'success';
+          }
+          for (var i=0; i<ret.draw.info.length; i++) {
+            instructions[ret.draw.info[i]]._rowVariant = 'info';
+          }
+          for (var i=0; i<ret.draw.danger.length; i++) {
+            instructions[ret.draw.danger[i]]._rowVariant = 'danger';
+          }
 
-         if (ret.draw != null)
-         {
-             for (var i=0; i<ret.draw.space.length; i++) {
-                  instructions[ret.draw.space[i]]._rowVariant = '';
-             }
-             for (var i=0; i<ret.draw.success.length; i++) {
-                  instructions[ret.draw.success[i]]._rowVariant = 'success';
-             }
-             for (var i=0; i<ret.draw.info.length; i++) {
-                  instructions[ret.draw.info[i]]._rowVariant = 'info';
-             }
-             for (var i=0; i<ret.draw.danger.length; i++) {
-                  instructions[ret.draw.danger[i]]._rowVariant = 'danger';
-             }
-
-            /*Auto-scroll*/
-            if(app._data.autoscroll == true && runProgram == false){
-              if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
-                var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
-                var rowpos = $(id).position();
-                if(rowpos){
-                  var pos = rowpos.top - $('.instructions_table').height();
-                  $('.instructions_table').animate({scrollTop: (pos)}, 200);
-                }
-              }
-              else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
-                $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
+          //Auto-scroll
+          if(app._data.autoscroll == true && runProgram == false){
+            if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
+              var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
+              var rowpos = $(id).position();
+              if(rowpos){
+                var pos = rowpos.top - $('.instructions_table').height();
+                $('.instructions_table').animate({scrollTop: (pos)}, 200);
               }
             }
-
-            if(app._data.data_mode == "stats"){
-              ApexCharts.exec('graphic', 'updateSeries', stats_value);
+            else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
+              $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
             }
-            return ;
+          }
+
+          if(app._data.data_mode == "stats"){
+            ApexCharts.exec('graphic', 'updateSeries', stats_value);
+          }
+          return ;
          }
       },
 
@@ -3046,7 +3134,7 @@ try
       programExecutionInst(but)
       {
         for (var i=0; (i<app._data.instructionsPacked) && (executionIndex >= 0); i++)
-  {
+        {
           if(mutexRead == true){
             iter1 = 1;
             $("#stopExecution").hide();
@@ -3103,76 +3191,21 @@ try
       /*Exception Notification*/
       exception(error)
       {
-         show_notification("There has been an exception. Error description: '" + error, 'danger') ;
+        show_notification("There has been an exception. Error description: '" + error, 'danger') ;
 
-         if (executionIndex != -1) {
-             instructions[executionIndex]._rowVariant = 'danger';
-   }
-         executionIndex = -1;
+        if (executionIndex != -1) {
+          instructions[executionIndex]._rowVariant = 'danger';
+        }
+        
+        executionIndex = -1;
 
-         /* Google Analytics */
-   creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
-
-         return;
-      },
-
-      /* Reset execution */
-      reset ( reset_graphic )
-      {
         /* Google Analytics */
-        creator_ga('execute', 'execute.reset', 'execute.reset');
+        creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
 
-        show_loading();
-        setTimeout(function() {
-
-          // UI: reset I/O
-          app._data.resetBut = true ;
-          app._data.keyboard = "" ;
-          app._data.display  = "" ;
-          app._data.enter    = null ;
-
-          // UI: reset row color...
-          for (var i = 0; i < instructions.length; i++) {
-               instructions[i]._rowVariant = '' ;
-          }
-
-          reset(reset_graphic) ;
-
-          // UI: set default row color...
-          for (var i = 0; i < instructions.length; i++) {
-               if (instructions[i].Label == "main") {
-                   instructions[i]._rowVariant = 'success' ;
-               }
-          }
-
-          /*Auto-scroll*/
-          if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
-            var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
-            var rowpos = $(id).position();
-            if(rowpos){
-              var pos = rowpos.top - $('.instructions_table').height();
-              $('.instructions_table').animate({scrollTop: (pos)}, 200);
-            }
-          }
-          else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
-            $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
-          }
-
-          /*Reset graphic*/
-          if(reset_graphic == true && app._data.data_mode == "stats"){
-            ApexCharts.exec('graphic', 'updateSeries', stats_value);
-          }
-
-          hide_loading();
-
-        }, 25);
-
+        return;
       },
 
-
-
-
-
+      
 
 
 
@@ -3188,9 +3221,6 @@ try
         this.keyboard = "";
         this.display = "";
       },
-
-
-
 
 
 

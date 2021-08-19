@@ -99,14 +99,13 @@
                           style="display: none">
         </spinner-loading>
 
+        <!-- TODO: Try to include the modal into the component -->
         <!-- Browser not supported modal -->
         <b-modal  id ="modalBrowser" 
                   title="Browser not supported" 
                   ref="browser" 
                   hide-footer>
-
           <supported-browser></supported-browser>
-
         </b-modal >
 
 
@@ -117,7 +116,9 @@
                           :architecture_name="architecture_name">
           </navbar-creator>
 
+
           <!-- Configuration modal -->
+          <!-- TODO: Try to include the modal into the component -->
           <b-modal  id="configuration" 
                     title="Configuration" 
                     hide-footer>
@@ -131,9 +132,11 @@
 
           </b-modal>
 
+
           <!-- Information modals -->
 
           <!-- Notification modal -->
+          <!-- TODO: Try to include the modal into the component -->
           <b-modal  id="notifications" 
                     title="Notifications" 
                     hide-footer 
@@ -144,6 +147,7 @@
           </b-modal>
           
           <!-- About modal -->
+          <!-- TODO: Try to include the modal into the component -->
           <b-modal  id="about" 
                     title="About us" 
                     hide-footer 
@@ -2930,6 +2934,7 @@
         <!-- Simulator view -->
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
+          <!-- TODO: navbar component -->
           <!-- Navbar -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
