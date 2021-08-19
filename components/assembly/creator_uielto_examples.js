@@ -19,54 +19,60 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_examples = {
+  var uielto_examples = {
 
-        props:      {
-                      example_available:   { type: Array, required: true },
-                      compile:             { type: String, required: true },
-                      modal:               { type: String, required: true }
-                    },
+  props:      {
+                id:                  { type: String, required: true },
+                ref:                 { type: String, required: true },
+                example_available:   { type: Array,  required: true },
+                compile:             { type: String, required: true },
+                modal:               { type: String, required: true }
+              },
 
-        methods:    {
-                      /*Load a selected example*/
-                      load_example(url, compile)
-                      {
-                        this.$root.$emit('bv::hide::modal', this._props.modal, '#closeExample');
+  methods:    {
+                /*Load a selected example*/
+                load_example(url, compile)
+                {
+                  this.$root.$emit('bv::hide::modal', this._props.modal, '#closeExample');
 
-                        $.get(url, function(data) {
-                          code_assembly = data ;
-                          if (compile == "false"){
-                            textarea_assembly_editor.setValue(code_assembly) ;
-                          }
-                          else{
-                            app.assembly_compiler(code_assembly) ;
-                          }
-                          show_notification(' The selected example has been loaded correctly', 'success') ;
+                  $.get(url, function(data) {
+                    code_assembly = data ;
+                    if (compile == "false"){
+                      textarea_assembly_editor.setValue(code_assembly) ;
+                    }
+                    else{
+                      app.assembly_compiler(code_assembly) ;
+                    }
+                    show_notification(' The selected example has been loaded correctly', 'success') ;
 
-                          /* Google Analytics */
-                          creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
-                        });
-                      }           
-                    },
+                    /* Google Analytics */
+                    creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
+                  });
+                }           
+              },
 
-        template:   ' <div>' +
-                    '   <span class="h6" v-if="example_available.length == 0">' +
-                    '     There\'s no examples at the moment' +
-                    '   </span>' +
-                    '   <b-list-group>' +
-                    '     <b-list-group-item button ' +
-                    '                        v-for="item in example_available" ' +
-                    '                        @click="load_example(item.url, compile)" ' +
-                    '                        ref="closeExample">' +
-                    '       {{item.name}}:' +
-                    '       <span v-html="item.description"></span>' +
-                    '     </b-list-group-item>' +
-                    '   </b-list-group>' +
-                    ' </div>'
-      
-        }
+  template:   ' <b-modal  :id="id"' +
+              '           title="Examples"' +
+              '           :ref="ref"' +
+              '           hide-footer' +
+              '           scrollable>' +
+              '   <div>' +
+              '     <span class="h6" v-if="example_available.length == 0">' +
+              '       There\'s no examples at the moment' +
+              '     </span>' +
+              '     <b-list-group>' +
+              '       <b-list-group-item button ' +
+              '                          v-for="item in example_available" ' +
+              '                          @click="load_example(item.url, compile)" ' +
+              '                          ref="closeExample">' +
+              '         {{item.name}}:' +
+              '         <span v-html="item.description"></span>' +
+              '       </b-list-group-item>' +
+              '     </b-list-group>' +
+              '   </div>' +
+              ' </b-modal>'
+  }
 
-        Vue.component('examples', uielto_examples) ;
-
+  Vue.component('examples', uielto_examples) ;

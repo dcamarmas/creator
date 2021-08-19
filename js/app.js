@@ -281,31 +281,30 @@ try
 
 
 
+
+
+
+
+
+
       /*Compilator*/
 
       /*Available examples*/
       example_available: example_available,
       example_loaded: null,
 
-      load_assembly: '',
-      /*Saved file name*/
-      save_assembly: '',
-      /*Code error modal*/
+      //Code error modal
       modalAssemblyError:{
         code1: '',
         code2: '',
         code3: '',
         error: '',
       },
-      /*Binary code loaded*/
-      name_binary_load: '',
-      /*Load binary*/
-      load_binary: false,
-      update_binary: update_binary,
-      /*Saved file name*/
-      name_binary_save: '',
+
       /*Assembly code*/
       assembly_code: "",
+
+
 
 
 
@@ -457,7 +456,7 @@ try
 
       /*loads the configuration values from the last use*/
       get_configuration(){
-      	if(localStorage.getItem("instructionsPacked") != null){
+        if(localStorage.getItem("instructionsPacked") != null){
           this.instructionsPacked = parseInt(localStorage.getItem("instructionsPacked"));
         }
 
@@ -483,15 +482,15 @@ try
           }
         }
         else{
-        	var default_style = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        	if(default_style == true){
-        		document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
-        		app._data.dark = true;
-        	}
-        	else{
-        		document.getElementsByTagName("body")[0].style = "";
-          	app._data.dark = false;
-        	}
+          var default_style = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if(default_style == true){
+            document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
+            app._data.dark = true;
+          }
+          else{
+            document.getElementsByTagName("body")[0].style = "";
+            app._data.dark = false;
+          }
         }
       },
 
@@ -516,38 +515,39 @@ try
           }
 
           app._data.register_popover = '';
-        	// slow transition <any> => "architecture"
-        	if (e == "architecture")
-        	{
-        	    $(".loading").show();
+          // slow transition <any> => "architecture"
+          if (e == "architecture")
+          {
+              $(".loading").show();
               setTimeout(function(){
-        		    app._data.creator_mode = e;
-        			  app.$forceUpdate();
-        	       $(".loading").hide();
-        	     }, 50) ;
-        	    return ;
-        	}
+                app._data.creator_mode = e;
+                app.$forceUpdate();
+                 $(".loading").hide();
+               }, 50) ;
+              return ;
+          }
 
-        	// fast transition <any> => <any> - "architecture"
-        	app._data.creator_mode = e;
+          // fast transition <any> => <any> - "architecture"
+          app._data.creator_mode = e;
 
-        	if(e == "assembly"){
-        	  setTimeout(function(){
-        	    codemirrorStart();
+          if(e == "assembly"){
+            setTimeout(function(){
+              codemirrorStart();
               if (codemirrorHistory != null ){
                 textarea_assembly_editor.setHistory(codemirrorHistory);
                 textarea_assembly_editor.undo();
               }
               textarea_assembly_editor.setValue(code_assembly);
-        	    if(app._data.update_binary != ""){
-        	      $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-        	      $("#divTags").attr("class", "col-lg-2 col-sm-12");
-        	      $("#divTags").show();
-        	    }
-        	  },50);
-        	}
+              //if(app._data.update_binary != ""){
+              if(update_binary != ""){
+                $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
+                $("#divTags").attr("class", "col-lg-2 col-sm-12");
+                $("#divTags").show();
+              }
+            },50);
+          }
 
-        	app.$forceUpdate();
+          app.$forceUpdate();
         }
       },
 
@@ -651,29 +651,29 @@ try
       /*Auxiliar to Load the selected architecture*/
       load_arch_select_aux(ename, cfg, load_associated_examples, e)
       {
-			  var auxArchitecture = cfg;
-			  architecture = register_value_deserialize(auxArchitecture);
-			  app._data.architecture = architecture;
+        var auxArchitecture = cfg;
+        architecture = register_value_deserialize(auxArchitecture);
+        app._data.architecture = architecture;
 
-			  architecture_hash = [];
-			  for (i = 0; i < architecture.components.length; i++){
-			       architecture_hash.push({name: architecture.components[i].name, index: i});
-			       app._data.architecture_hash = architecture_hash;
-			  }
+        architecture_hash = [];
+        for (i = 0; i < architecture.components.length; i++){
+             architecture_hash.push({name: architecture.components[i].name, index: i});
+             app._data.architecture_hash = architecture_hash;
+        }
 
-			  backup_stack_address = architecture.memory_layout[4].value;
-			  backup_data_address  = architecture.memory_layout[3].value;
+        backup_stack_address = architecture.memory_layout[4].value;
+        backup_data_address  = architecture.memory_layout[3].value;
 
-			  app._data.architecture_name = ename;
+        app._data.architecture_name = ename;
 
-			  //$("#architecture_menu").hide();
-			  app.change_UI_mode('simulator');
-			  app.change_data_view('registers', 'int');
-			  app.$forceUpdate();
+        //$("#architecture_menu").hide();
+        app.change_UI_mode('simulator');
+        app.change_data_view('registers', 'int');
+        app.$forceUpdate();
 
-	      if (load_associated_examples && typeof e.examples !== "undefined"){
-		      app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-	      }
+        if (load_associated_examples && typeof e.examples !== "undefined"){
+          app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+        }
       },
 
       load_arch_select(e)
@@ -685,11 +685,11 @@ try
              if (e.name == load_architectures[i].id) {
                  var auxArchitecture = JSON.parse(load_architectures[i].architecture);
                  app.load_arch_select_aux(e.name, auxArchitecture, true, e) ;
-				         hide_loading();
-				         show_notification('The selected architecture has been loaded correctly', 'success') ;
+                 hide_loading();
+                 show_notification('The selected architecture has been loaded correctly', 'success') ;
 
-				         /* Google Analytics */
-					       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
+                 /* Google Analytics */
+                 creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
 
                  return;
              }
@@ -697,16 +697,16 @@ try
 
         $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg) {
           app.load_arch_select_aux(e.name, cfg, true, e) ;
-		      hide_loading();
-		      show_notification('The selected architecture has been loaded correctly', 'success') ;
+          hide_loading();
+          show_notification('The selected architecture has been loaded correctly', 'success') ;
 
-		      /* Google Analytics */
-		      creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
+          /* Google Analytics */
+          creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
 
-	        }).fail(function() {
-	          hide_loading();
-	          show_notification('The selected architecture is not currently available', 'info') ;
-	        });
+          }).fail(function() {
+            hide_loading();
+            show_notification('The selected architecture is not currently available', 'info') ;
+          });
 
       },
 
@@ -816,12 +816,12 @@ try
         var auxObject = jQuery.extend(true, {}, architecture);
         var auxArchitecture = register_value_serialize(auxObject);
 
-      	auxArchitecture.components.forEach((c, i) => {
-      		c.elements.forEach((e, j) => {
-      			if (e.default_value) e.value = e.default_value;
-      			else e.value = "0";
-      		});
-      	});
+        auxArchitecture.components.forEach((c, i) => {
+          c.elements.forEach((e, j) => {
+            if (e.default_value) e.value = e.default_value;
+            else e.value = "0";
+          });
+        });
 
         var textToWrite = JSON.stringify(auxArchitecture, null, 2);
         var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
@@ -1156,11 +1156,11 @@ try
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
             for (var z = 0; z < this.formArchitecture.name.length; z++){
-	            if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
-	                show_notification('The element already exists', 'danger') ;
-	                return;
-	            }
-	          }
+              if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
+                  show_notification('The element already exists', 'danger') ;
+                  return;
+              }
+            }
           }
         }
 
@@ -1270,12 +1270,12 @@ try
       editElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
-          	for (var z = 0; z < this.formArchitecture.name.length; z++){
-	            if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
-	                show_notification('The element already exists', 'danger') ;
-	                return;
-	            }
-	          }
+            for (var z = 0; z < this.formArchitecture.name.length; z++){
+              if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
+                  show_notification('The element already exists', 'danger') ;
+                  return;
+              }
+            }
           }
         }
 
@@ -2114,9 +2114,9 @@ try
         var code = re.exec(definition);
 
         if(code != null)
-	{
+  {
           while(code != null)
-	  {
+    {
             console_log(code)
             var instructions = code[1].split(";");
             if (instructions.length == 1){
@@ -2727,9 +2727,93 @@ try
         }
       },
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Compilator*/
 
-      /*Compile assembly code*/
+      //Empty assembly textarea
+      newAssembly(){
+        textarea_assembly_editor.setValue("");
+      },
+
+      //Load the available examples
+      load_examples_available( set_name ) {
+        this._data.example_loaded = new Promise(function(resolve, reject) {
+
+          $.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
+
+            // current architecture in upperCase
+            var current_architecture = app._data.architecture_name.toUpperCase() ;
+
+            // search for set_name in the example set 'set'
+            for (var i=0; i<set.length; i++)
+            {
+              // if set_name in set[i]...
+              if (set[i].id.toUpperCase() == set_name.toUpperCase())
+              {
+                // if current_architecture active but not the associated with set, skip
+                if  ( (current_architecture != '') &&
+                    (set[i].architecture.toUpperCase() != current_architecture) )
+                    {
+                      continue ;
+                    }
+
+                // if no current_architecture loaded then load the associated
+                if (current_architecture == '') {
+                  $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
+                    app.load_arch_select_aux(set[i].architecture,
+                    cfg, false, null);
+                  }) ;
+                }
+
+                // load the associate example list
+                $.getJSON(set[i].url, function(cfg){
+                  example_available = cfg ;
+                  app._data.example_available = example_available ;
+                  resolve('Example list loaded.') ;
+                });
+
+                return ;
+              }
+            }
+
+            reject('Unavailable example list.') ;
+          });
+        }) ;
+      },
+
+      //Compile assembly code
       assembly_compiler(code)
       {
 
@@ -2738,7 +2822,7 @@ try
 
           setTimeout(function() {
 
-            /* compile */
+            // Compile
             if (typeof(code)!=="undefined") {
                 code_assembly=code;
             }
@@ -2748,14 +2832,14 @@ try
 
             var ret = assembly_compiler() ;
 
-            /* update/reset */
+            //Update/reset
             app._data.totalStats   = 0;
             app._data.instructions = instructions;
 
             tokenIndex = 0;
             app.reset(true);
 
-            /* Save a backup in the cache memory */
+            //Save a backup in the cache memory
             if (typeof(Storage) !== "undefined")
             {
               var auxObject = jQuery.extend(true, {}, architecture);
@@ -2797,221 +2881,7 @@ try
         });
       },
 
-      /*Empty assembly textarea*/
-      newAssembly(){
-        textarea_assembly_editor.setValue("");
-      },
-
-      /*Load external assembly code*/
-      read_assembly(e){
-        show_loading();
-        var file;
-        var reader;
-        var files = document.getElementById('assembly_file').files;
-
-        for (var i = 0; i < files.length; i++){
-          file = files[i];
-          reader = new FileReader();
-          reader.onloadend = onFileLoaded;
-          reader.readAsBinaryString(file);
-        }
-
-        function onFileLoaded(event) {
-          code_assembly = event.currentTarget.result;
-        }
-        hide_loading();
-
-        /* Google Analytics */
-	creator_ga('assembly', 'assebly.load', 'assebly.load');
-      },
-
-      assembly_update(){
-        if(code_assembly != ""){
-          textarea_assembly_editor.setValue(code_assembly);
-          show_notification(' The selected program has been loaded correctly', 'success') ;
-        }
-        else{
-          show_notification("Please select one program", 'danger');
-        }
-      },
-
-      /*Save assembly code in a local file*/
-      assembly_save(){
-        var textToWrite = textarea_assembly_editor.getValue();
-        var textFileAsBlob = new Blob([textToWrite], { type: 'text/plain' });
-        var fileNameToSaveAs;
-
-        if(this.save_assembly == ''){
-          fileNameToSaveAs = "assembly.s";
-        }
-        else{
-          fileNameToSaveAs = this.save_assembly + ".s";
-        }
-
-        var downloadLink = document.createElement("a");
-        downloadLink.download = fileNameToSaveAs;
-        downloadLink.innerHTML = "My Hidden Link";
-
-        window.URL = window.URL || window.webkitURL;
-
-        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-        downloadLink.onclick = destroyClickedElement;
-        downloadLink.style.display = "none";
-        document.body.appendChild(downloadLink);
-
-        downloadLink.click();
-
-        /* Google Analytics */
-	creator_ga('assembly', 'assebly.save', 'assebly.save');
-      },
-
-      /*Load the available examples*/
-      load_examples_available( set_name ) {
-	     this._data.example_loaded = new Promise(function(resolve, reject) {
-
-		$.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
-
-                  // current architecture in upperCase
-		  var current_architecture = app._data.architecture_name.toUpperCase() ;
-
-                  // search for set_name in the example set 'set'
-		  for (var i=0; i<set.length; i++)
-		  {
-			// if set_name in set[i]...
-			if (set[i].id.toUpperCase() == set_name.toUpperCase())
-			{
-			    // if current_architecture active but not the associated with set, skip
-			    if ( (current_architecture != '') &&
-  				 (set[i].architecture.toUpperCase() != current_architecture) )
-		            {
-		                 continue ;
-		            }
-
-			    // if no current_architecture loaded then load the associated
-		            if (current_architecture == '') {
-				    $.getJSON('architecture/'+ set[i].architecture +'.json',
-					       function(cfg) {
-						  app.load_arch_select_aux(set[i].architecture,
-									   cfg, false, null);
-					       }) ;
-			    }
-
-			    // load the associate example list
-			    $.getJSON(set[i].url, function(cfg){
-				    example_available = cfg ;
-				    app._data.example_available = example_available ;
-				    resolve('Example list loaded.') ;
-			    });
-
-	                    return ;
-			}
-		  }
-
-		  reject('Unavailable example list.') ;
-		});
-             }) ;
-      },
-
-      /*Save a binary in a local file*/
-      library_save ()
-      {
-        if (assembly_compiler() == -1) {
-            return;
-        }
-
-        promise.then((message) => {
-          if (message == "-1") {
-              return;
-          }
-
-          if (creator_memory_is_segment_empty(memory_hash[0]) == false) {
-              show_notification('You can not enter data in a library', 'danger') ;
-              return;
-          }
-
-          for (var i = 0; i < instructions_binary.length; i++)
-	  {
-               console_log(instructions_binary[i].Label)
-               if (instructions_binary[i].Label == "main_symbol") {
-                   show_notification('You can not use the "main" tag in a library', 'danger') ;
-                   return;
-               }
-          }
-
-          var aux = {instructions_binary: instructions_binary, instructions_tag: instructions_tag};
-
-          var textToWrite = JSON.stringify(aux, null, 2);
-          var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
-          var fileNameToSaveAs;
-
-          if (this.name_binary_save == '') {
-              fileNameToSaveAs = "binary.o";
-          }
-          else {
-              fileNameToSaveAs = this.name_binary_save + ".o";
-          }
-
-          var downloadLink = document.createElement("a");
-          downloadLink.download = fileNameToSaveAs;
-          downloadLink.innerHTML = "My Hidden Link";
-
-          window.URL = window.URL || window.webkitURL;
-
-          downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-          downloadLink.onclick = destroyClickedElement;
-          downloadLink.style.display = "none";
-          document.body.appendChild(downloadLink);
-
-          downloadLink.click();
-
-          show_notification('Save binary', 'success') ;
-        });
-      },
-
-      /*Load binary file*/
-      library_load(e){
-        var file;
-        var reader;
-        var files = document.getElementById('binary_file').files;
-
-        for (var i = 0; i < files.length; i++) {
-             file = files[i];
-             reader = new FileReader();
-             reader.onloadend = onFileLoaded;
-             reader.readAsBinaryString(file);
-        }
-
-        function onFileLoaded(event) {
-           code_binary = event.currentTarget.result;
-        }
-      },
-
-      library_update(){
-        if (code_binary.length != 0){
-            update_binary = JSON.parse(code_binary);
-            this.update_binary = update_binary;
-            $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
-            $("#divTags").attr("class", "col-lg-2 col-sm-12");
-            $("#divTags").show();
-            this.load_binary = true;
-            show_notification("The selected library has been loaded correctly", 'success');
-        }
-        else{
-            show_notification("Please select one library", 'danger');
-        }
-      },
-
-      /*Remove a loaded binary*/
-      removeLibrary(){
-          update_binary = "";
-          this.update_binary = update_binary;
-          $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
-          $("#divTags").attr("class", "col-lg-0 col-sm-0");
-          $("#divTags").hide();
-          this.load_binary = false;
-      },
-
-      /*Show error message in the compilation*/
+      //Show error message in the compilation
       compileError(msg, token, line)
       {
         var code_assembly_segment = code_assembly.split('\n') ;
@@ -3046,6 +2916,23 @@ try
         },75);
       },
 
+      //Remove a loaded binary
+      removeLibrary(){
+          update_binary = "";
+          load_binary = false;
+          $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
+          $("#divTags").attr("class", "col-lg-0 col-sm-0");
+          $("#divTags").hide();
+      },
+
+
+
+
+
+
+
+
+
       /*Simulator*/
 
       /*Detects the browser being used*/
@@ -3070,8 +2957,8 @@ try
       executeInstruction ( )
       {
 
-      	 /* Google Analytics */
-	       creator_ga('execute', 'execute.instruction', 'execute.instruction');
+         /* Google Analytics */
+         creator_ga('execute', 'execute.instruction', 'execute.instruction');
 
          var ret = executeInstruction();
          // console.log(JSON.stringify(ret,2,null));
@@ -3125,7 +3012,7 @@ try
       executeProgram ( but )
       {
         /* Google Analytics */
-	      creator_ga('execute', 'execute.run', 'execute.run');
+        creator_ga('execute', 'execute.run', 'execute.run');
 
         app._data.runExecution = true;
         app._data.runExecution = false;
@@ -3159,7 +3046,7 @@ try
       programExecutionInst(but)
       {
         for (var i=0; (i<app._data.instructionsPacked) && (executionIndex >= 0); i++)
-	{
+  {
           if(mutexRead == true){
             iter1 = 1;
             $("#stopExecution").hide();
@@ -3220,11 +3107,11 @@ try
 
          if (executionIndex != -1) {
              instructions[executionIndex]._rowVariant = 'danger';
-	 }
+   }
          executionIndex = -1;
 
          /* Google Analytics */
-	 creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
+   creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
 
          return;
       },
@@ -3232,7 +3119,7 @@ try
       /* Reset execution */
       reset ( reset_graphic )
       {
-      	/* Google Analytics */
+        /* Google Analytics */
         creator_ga('execute', 'execute.reset', 'execute.reset');
 
         show_loading();
@@ -3403,13 +3290,13 @@ try
           }
         }
         if(e == "memory"){
-        	app._data.data_mode = e;
+          app._data.data_mode = e;
         }
 
         app.$forceUpdate();
 
           /* Google Analytics */
-	        creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
+          creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
       change_space_view()
