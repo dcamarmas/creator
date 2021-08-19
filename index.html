@@ -99,14 +99,13 @@
                           style="display: none">
         </spinner-loading>
 
+        <!-- TODO: Try to include the modal into the component -->
         <!-- Browser not supported modal -->
         <b-modal  id ="modalBrowser" 
                   title="Browser not supported" 
                   ref="browser" 
                   hide-footer>
-
           <supported-browser></supported-browser>
-
         </b-modal >
 
 
@@ -117,7 +116,9 @@
                           :architecture_name="architecture_name">
           </navbar-creator>
 
+
           <!-- Configuration modal -->
+          <!-- TODO: Try to include the modal into the component -->
           <b-modal  id="configuration" 
                     title="Configuration" 
                     hide-footer>
@@ -131,9 +132,11 @@
 
           </b-modal>
 
+
           <!-- Information modals -->
 
           <!-- Notification modal -->
+          <!-- TODO: Try to include the modal into the component -->
           <b-modal  id="notifications" 
                     title="Notifications" 
                     hide-footer 
@@ -144,6 +147,7 @@
           </b-modal>
           
           <!-- About modal -->
+          <!-- TODO: Try to include the modal into the component -->
           <b-modal  id="about" 
                     title="About us" 
                     hide-footer 
@@ -2817,51 +2821,6 @@
               </div>
             </div>
 
-            <!-- Load assembly form -->
-            <b-modal  id = "load_assembly"
-                      title = "Load Assembly"
-                      ok-title="Load from this File"
-                      @ok="assembly_update">
-              <p> Please select the assembly file to be loaded </p> 
-              <b-form-file v-model="load_assembly"
-                           :state="Boolean(load_assembly)" 
-                           placeholder="Choose a file..." 
-                           accept=".s" 
-                           @change="read_assembly" 
-                           id="assembly_file">
-              </b-form-file>
-            </b-modal>
-
-            <!-- Save assembly form -->
-            <b-modal  id = "save_assembly"
-                      title = "Save Assembly" 
-                      ok-title="Save to File" 
-                      @ok="assembly_save">
-              <p> Please write the file name: </p> 
-              <b-form-input v-on:input="debounce('save_assembly', $event)" 
-                            :value="save_assembly"
-                            type="text"
-                            placeholder="File name where assembly will be saved" 
-                            title="File name">
-              </b-form-input>
-            </b-modal>
-
-
-
-
-
-
-            <!-- Examples modal -->
-            <b-modal id="examples" title="Examples" hide-footer scrollable ref="examples">
-              <examples :example_available="example_available" compile="false" modal="examples"></examples>
-            </b-modal>
-
-
-
-
-
-
-
             <div class="col-lg-2 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -2896,35 +2855,6 @@
               </div>
             </div>
 
-            <!-- Load binary form -->
-            <b-modal  id = "load_binary"
-                      title = "Load Binary" 
-                      ok-title="Load from this File" 
-                      @ok="library_update">
-              <p> Please select the binary file to be loaded </p> 
-              <b-form-file v-model="name_binary_load" 
-                           :state="Boolean(name_binary_load)" 
-                           placeholder="Choose a file..." 
-                           accept=".o" 
-                           @change="library_load" 
-                           id="binary_file">
-              </b-form-file>
-            </b-modal>
-
-            <!-- Save binary form -->
-            <b-modal  id = "save_binary"
-                      title = "Save Binary" 
-                      ok-title="Save to File" 
-                      @ok="library_save">
-              <p> Please write the file name: </p> 
-              <b-form-input v-on:input="debounce('name_binary_save', $event)" 
-                            :value="name_binary_save"
-                            type="text"
-                            placeholder="File name where binary will be saved"
-                            title="File name">
-              </b-form-input>
-            </b-modal>
-
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
@@ -2948,7 +2878,29 @@
             </div>
           </div>
 
+
+
+          <!-- Assembly navbar modals -->
+
+          <!-- Load assembly form -->
+          <load-assembly id="load_assembly"></load-assembly>          
+
+          <!-- Save assembly form -->
+          <save-assembly id="save_assembly"></save-assembly>
+
+          <!-- Examples modal -->
+          <examples id="examples" ref="examples" :example_available="example_available" compile="false" modal="examples"></examples>
+
+          <!-- Load binary form -->
+          <load-library id="load_binary"></load-library>
+
+          <!-- Save binary form -->
+          <save-library id="save_binary"></save-library>
+
+
+          <!-- Information popover -->
           <popover-info target="info_ass" show_instruction_help="true"></popover-info>
+
 
           <!-- Assembly textarea and library tags-->
           <div class="contenedor row">
@@ -2956,10 +2908,9 @@
             <list-libray-tags :instructions_tag="update_binary.instructions_tag"></list-libray-tags>
           </div>
 
-          <!-- Compile error -->
-          <b-modal  id="modalAssemblyError" title="Assembly Code Error" ref="errorAssembly" hide-footer size="lg">
-            <assembly-error :modal_assembly_error="modalAssemblyError"></assembly-error>
-          </b-modal>
+
+          <!-- Compile error modal -->
+          <assembly-error id="modalAssemblyError" ref="errorAssembly" :modal_assembly_error="modalAssemblyError"></assembly-error>
 
         </div>
 
@@ -3094,10 +3045,6 @@
                       Info
                     </b-button>
                   </div>
-
-                  <!-- Information popover -->
-                  <popover-info target="info_sim" show_instruction_help="true"></popover-info>
-
                 </div>
               </div>
             </div>
@@ -3106,26 +3053,18 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
+          <!-- Simulator navbar modals -->
 
           <!-- Examples modal -->
-          <b-modal id="examples2" title="Examples" hide-footer scrollable ref="examples2">
-            <examples :example_available="example_available" compile="true" modal="examples2"></examples>
-          </b-modal>
+          <examples id="examples2" ref="examples2" :example_available="example_available" compile="true" modal="examples2"></examples>
 
           <!-- Calculator -->
-          <b-modal id="calculator" title="Floating Point Calculator" hide-footer size="lg">
-            <calculator></calculator>
-          </b-modal>
+          <calculator id="calculator"></calculator>
+
+
+          <!-- Information popover -->
+          <popover-info target="info_sim" show_instruction_help="true"></popover-info>
+
 
           <!-- Execution instruction -->
           <table-execution :instructions="instructions" :enter="enter"></table-execution>
@@ -3135,6 +3074,14 @@
 
             <!-- View selector -->
             <data-view-selector :name_reg="name_reg" :reg_type="reg_type" :register_file_num="architecture.components.length"></data-view-selector>
+
+
+
+
+
+
+
+
 
 
             <!-- TODO: register file component -->
@@ -3291,12 +3238,8 @@
                 <b-form-radio v-model="selected_stack_view" value="char">Char</b-form-radio>
               </b-modal>
 
-
-
-
-
-
             </div>
+
 
             <!-- Stats--->
             <stats :data_mode="data_mode" :stats="stats" :stats_value="stats_value"></stats>
