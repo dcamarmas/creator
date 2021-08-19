@@ -162,6 +162,7 @@ var data_tag = [];
 /*Binary*/
 var code_binary = '';
 var update_binary = '';
+var load_binary = false;
 /*Stats*/
 var totalStats = 0;
 var stats_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
