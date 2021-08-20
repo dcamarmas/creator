@@ -45,13 +45,11 @@
                   if(e == "registers"){
                     if(type == "int"){
                       app._data.register_type = 'integer'; //TODO: vue bidirectional updates
-                      app._data.name_tab_Reg = "Decimal"; //TODO: vue bidirectional updates
                       app._data.name_reg = 'INT Registers'; //TODO: vue bidirectional updates
                       app._data.reg_type = 'int'; //TODO: vue bidirectional updates
                     }
                     else if(type == "fp"){
                       app._data.register_type = 'floating point'; //TODO: vue bidirectional updates
-                      app._data.name_tab_Reg = "Real"; //TODO: vue bidirectional updates
                       app._data.name_reg = 'FP Registers'; //TODO: vue bidirectional updates
                       app._data.reg_type = 'fp'; //TODO: vue bidirectional updates
                     }
