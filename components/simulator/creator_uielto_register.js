@@ -107,7 +107,8 @@
 
   },
 
-  template:   ' <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" ' +
+  template:   ' <div>' +
+              ' <b-button class="btn btn-outline-secondary btn-block btn-sm registers h-100" ' +
               '           :id="popover_id(register.name)" ' +
               '           onclick="creator_ga(\'data\', \'data.view\', \'data.view.registers_details\');">' +
               '   <span class="text-truncate">{{reg_name(register)}}</span> ' +
@@ -116,10 +117,11 @@
               '   </b-badge>' +
               ' </b-button>' +
               ' ' +
-              ' <popover-register-int :target="popover_id(register.name)" ' +
-              '                       :component="component"' +
-              '                       :register="register">' +
-              ' </popover-register-int>'
+              ' <popover-register :target="popover_id(register.name)" ' +
+              '                   :component="component"' +
+              '                   :register="register">' +
+              ' </popover-register>' +
+              ' </div>'
 
   }
 

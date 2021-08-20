@@ -326,18 +326,18 @@
                     '          hide-footer' +
                     '          size="lg">' +
                     '   <div>' +
-                    '     <div class="col-lg-12 col-12 row nomargin pb-3">' +
+                    '     <div class="col-lg-12 col-12 row m-0 pb-3">' +
                     '       <div class="col-lg-3 col-3"></div>' +
                     '       <div class="col-lg-6 col-6">' +
-                    '         <div class="col-lg-12 col-12 row nomargin nopadding">' +
-                    '           <div class="col-lg-6 col-6 nopadding">' +
+                    '         <div class="col-lg-12 col-12 row m-0 p-0">' +
+                    '           <div class="col-lg-6 col-6 p-0">' +
                     '             <b-button class="btn btn-block btn-sm h-100" ' +
                     '                       :variant = "calculator.variant32" ' +
                     '                       @click="changeBitsCalculator(0)">' +
                     '               32 bit' +
                     '             </b-button>' +
                     '           </div>' +
-                    '           <div class="col-lg-6 col-6 nopadding">' +
+                    '           <div class="col-lg-6 col-6 p-0">' +
                     '             <b-button class="btn btn-block btn-sm h-100" ' +
                     '                       :variant = "calculator.variant64" ' +
                     '                       @click="changeBitsCalculator(1)">' +
@@ -349,7 +349,7 @@
                     '       <div class="col-lg-3 col-3"></div>' +
                     '     </div>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row nomargin pt-3">' +
+                    '     <div class="col-lg-12 col-12 row m-0 pt-3">' +
                     '       <div class="col-lg-2 col-2"></div>' +
                     '       <div class="col-lg-6 col-8">' +
                     '         <b-form-input class="form-control form-control-sm" ' +
@@ -364,7 +364,7 @@
                     '       <div class="col-lg-4"></div>' +
                     '     </div>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row nomargin nopadding">' +
+                    '     <div class="col-lg-12 col-12 row m-0 p-0">' +
                     '       <div class="col-lg-1 col-0"></div>' +
                     '       <div class="col-lg-8 col-12 p-1">' +
                     '         <b-img class="calculatorImg" src="./images/calculator.png" fluid alt="calculator"></b-img>' +
@@ -372,10 +372,10 @@
                     '       <div class="col-lg-3 col-0"></div>' +
                     '     </div>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row nomargin nopadding">' +
+                    '     <div class="col-lg-12 col-12 row m-0 p-0">' +
                     '       <div class="col-lg-1 col-0"></div>' +
-                    '       <div class="col-lg-8 col-12 nopadding">' +
-                    '         <div class="col-lg-12 col-12 row nomargin nopadding">' +
+                    '       <div class="col-lg-8 col-12 p-0">' +
+                    '         <div class="col-lg-12 col-12 row m-0 p-0">' +
                     '           <div class="col-lg-2 col-2 p-1">' +
                     '             <b-form-input class="form-control form-control-sm" ' +
                     '                           v-on:input="debounce(\'calculator.sign\', $event)" ' +
@@ -411,10 +411,10 @@
                     '       <div class="col-lg-3 col-0"></div>' +
                     '     </div>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row nomargin nopadding">' +
+                    '     <div class="col-lg-12 col-12 row m-0 p-0">' +
                     '       <div class="col-lg-1"></div>' +
-                    '       <div class="col-lg-8 col-12 nopadding">' +
-                    '         <div class="col-lg-12 col-12 row nomargin nopadding">' +
+                    '       <div class="col-lg-8 col-12 p-0">' +
+                    '         <div class="col-lg-12 col-12 row m-0 p-0">' +
                     '           <div class="col-lg-2 col-2 center p-1">' +
                     '             <span class="fas fa-long-arrow-alt-down p-1"></span>' +
                     '             <br>' +

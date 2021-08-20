@@ -74,7 +74,7 @@
               '                   right ' +
               '                   :text="name_reg" ' +
               '                   size="sm" ' +
-              '                   class="btn btn-block btn-sm nopadding h-100" ' +
+              '                   class="btn btn-block btn-sm p-0 h-100" ' +
               '                   variant="outline-secondary" ' +
               '                   @click="change_data_view(\'registers\', reg_type)">' +
               '         <b-dropdown-item @click="change_data_view(\'registers\', \'int\')">CPU-INT Registers</b-dropdown-item>' +
