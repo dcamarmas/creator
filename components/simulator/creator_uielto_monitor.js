@@ -27,8 +27,8 @@
                 display:  { type: String, required: true }
               },
 
-template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">' +
-              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">' +
+template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 p-0">' +
+              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 p-0">' +
               '     <div class="col-lg-1 col-sm-1">' +
               '       <span class="fas fa-desktop fa-2x mb-2 consoleIcon"></span>' +
               '     </div>' +

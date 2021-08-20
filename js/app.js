@@ -359,32 +359,9 @@ try
       //Registers
       //
 
-      //Register value representation
-      reg_representation: "signed",
-      reg_representation_options: [
-        { text: 'Signed', value: 'signed' },
-        { text: 'Unsigned', value: 'unsigned' },
-        { text: 'IEEE 754', value: 'decimal'},
-        { text: 'Hexadecimal', value: 'hex' }
-      ],
-
-      //Register name representation
-      reg_name_representation: "logical",
-      reg_name_representation_options: [
-        { text: 'Name', value: 'logical' },
-        { text: 'Alias', value: 'alias' },
-        { text: 'All', value: 'all'}
-      ],
-
-      //Registers
       register_type: 'integer',
-      name_tab_Reg: 'Decimal',
       name_reg: 'INT Registers',
       reg_type: 'int',
-      register_popover: '',
-
-      //Register form
-      newValue: '',
 
 
       //
@@ -574,7 +551,6 @@ try
             textarea_assembly_editor.toTextArea();
           }
 
-          app._data.register_popover = '';
           // slow transition <any> => "architecture"
           if (e == "architecture")
           {
@@ -2819,8 +2795,9 @@ try
 
 
 
-
-      /*Compilator*/
+      /************/
+      /* Assembly */
+      /************/
 
       //Empty assembly textarea
       newAssembly(){
@@ -2987,7 +2964,9 @@ try
 
 
 
-      /*Simulator*/
+      /*************/
+      /* Simulator */
+      /*************/
 
       /* Reset execution */
       reset ( reset_graphic )
@@ -3207,7 +3186,6 @@ try
 
       
 
-      
 
 
 
@@ -3216,77 +3194,42 @@ try
 
 
 
-      /*Convert hexadecimal number to floating point number*/
+
+      //Convert hexadecimal number to floating point number
       hex2float ( hexvalue )
       {
-        /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
-        var exponent = ((hexvalue >> 23) & 0xff) - 127;
-        var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
-
-        var valuef = sign * mantissa * Math.pow(2, exponent);
-        if (-127 == exponent)
-          if (1 == mantissa)
-            valuef = (sign == 1) ? "+0" : "-0";
-          else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
-        if (128 == exponent)
-          if (1 == mantissa)
-            valuef = (sign == 1) ? "+Inf" : "-Inf";
-          else valuef = NaN;
-
-        return valuef ;*/
-        var value = hexvalue.split('x');
-        var value_bit = '';
-
-        for (var i = 0; i < value[1].length; i++){
-          var aux = value[1].charAt(i);
-          aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-          value_bit = value_bit + aux;
-        }
-
-        var buffer = new ArrayBuffer(4);
-        new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
-        return new DataView( buffer ).getFloat32(0, false);
+        return hex2float(hexvalue) ;
       },
 
-      /*Convert hexadecimal number to double floating point number*/
+      //Convert hexadecimal number to double floating point number
       hex2double ( hexvalue ){
           return hex2double(hexvalue) ;
       },
 
-      /*Convert hexadecimal number to char*/
+      //Convert hexadecimal number to char
       hex2char8 ( hexvalue )
       {
           return hex2char8(hexvalue) ;
       },
 
-      /*Convert floating point number to binary*/
+      //Convert floating point number to binary
       float2bin (number)
       {
           return float2bin(number) ;
       },
 
-      /*Convert double floating point number to binary*/
+      //Convert double floating point number to binary
       double2bin(number)
       {
           return double2bin(number) ;
       },
 
-      /*Convert binary number to hexadecimal number*/
+      //Convert binary number to hexadecimal number
       bin2hex(s)
       {
           return bin2hex(s) ;
       },
 
-
-
-
-
-
-      /*TODO: if is posible, include into component*/
-      /*Popover functions*/
-      popoverId(name){
-          return 'popoverValueContent' + name[0];
-      },
 
 
 
@@ -3299,13 +3242,11 @@ try
         if(e == "registers"){
           if(type == "int"){
             app._data.register_type = 'integer';
-            app._data.name_tab_Reg = "Decimal";
             app._data.name_reg = 'INT Registers';
             app._data.reg_type = 'int';
           }
           else if(type == "fp"){
             app._data.register_type = 'floating point';
-            app._data.name_tab_Reg = "Real";
             app._data.name_reg = 'FP Registers';
             app._data.reg_type = 'fp';
           }
@@ -3316,8 +3257,8 @@ try
 
         app.$forceUpdate();
 
-          /* Google Analytics */
-          creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
+        // Google Analytics
+        creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
       },
 
       change_space_view()
