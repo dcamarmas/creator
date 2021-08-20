@@ -173,9 +173,9 @@
           
           <!-- Navbar -->
           <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 nopadding"></div>
-            <div class="col-lg-6 col-sm-12 nopadding"></div>
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0"></div>
+            <div class="col-lg-6 col-sm-12 p-0"></div>
+            <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
@@ -202,7 +202,7 @@
 
           <!-- Architecture menu -->
           <div class="col-lg-12 col-sm-12" id="load_menu_arch">
-            <div class="col-lg-12 col-sm-12 row nopadding nomargin">
+            <div class="col-lg-12 col-sm-12 row p-0 m-0">
 
               <div class="col-lg-1 col-sm-1">
                 
@@ -354,7 +354,7 @@
 
           <!-- Navbar -->
           <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
@@ -377,7 +377,7 @@
               </div>
             </div>
 
-            <div class="col-lg-4 col-sm-12 nopadding">
+            <div class="col-lg-4 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-4 col-sm-4 buttons">
@@ -404,9 +404,9 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 nopadding"></div>
+            <div class="col-lg-2 col-sm-12 p-0"></div>
 
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
@@ -722,7 +722,7 @@
                   </b-modal >
                   
                   <!-- Components table -->
-                  <div class="col-lg-12 col-sm-12 nopadding">
+                  <div class="col-lg-12 col-sm-12 p-0">
                     <br>
                     <div class="col-lg-12 col-sm-12 pl-0" v-for="item in architecture_hash">
 
@@ -889,7 +889,7 @@
                           </b-form-checkbox-group>
                         </b-form-group>
                         <b-form-group label="Simple Floating Points asociate:" v-if="modalNewElement.double_precision == true">
-                          <div class="col-lg-12 col-sm-12 row nomargin">
+                          <div class="col-lg-12 col-sm-12 row m-0">
                             <div class="col-lg-6 col-sm-6">
                               <b-form-select required 
                                              v-model="formArchitecture.simple1" 
@@ -971,7 +971,7 @@
                           </b-form-checkbox-group>
                         </b-form-group>
                         <b-form-group label="Simple Floating Points asociate:" v-if="modalEditElement.double_precision == true">
-                          <div class="col-lg-12 col-sm-12 row nomargin">
+                          <div class="col-lg-12 col-sm-12 row m-0">
                             <div class="col-lg-6 col-sm-6">
                               <b-form-select required 
                                              v-model="formArchitecture.simple1" 
@@ -2755,7 +2755,7 @@
           <!-- Navbar -->
           <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
@@ -2778,12 +2778,12 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <b-dropdown right 
                             text="File" 
                             size="sm" 
-                            class="btn btn-block menuGroup btn-sm nopadding" 
+                            class="btn btn-block menuGroup btn-sm p-0" 
                             variant="outline-secondary">
                   <b-dropdown-item @click="newAssembly">
                     <span class="fas fa-file"></span> 
@@ -2805,7 +2805,7 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-12 col-sm-12 buttons">
@@ -2820,9 +2820,9 @@
               </div>
             </div>
 
-            <div class="col-lg-2 col-sm-12 nopadding">
+            <div class="col-lg-2 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
-                <b-dropdown right text="Library" size="sm" class="btn btn-block menuGroup btn-sm nopadding" variant="outline-secondary">
+                <b-dropdown right text="Library" size="sm" class="btn btn-block menuGroup btn-sm p-0" variant="outline-secondary">
                   <b-dropdown-item v-b-modal.save_binary>
                     <span class="fas fa-plus-square"></span>
                     Create
@@ -2839,7 +2839,7 @@
               </div>
             </div>
 
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
@@ -2907,21 +2907,13 @@
 
 
 
-
-
-
-
-
-
-
-
         <!-- Simulator view -->
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
           <!-- Navbar -->
           <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-6 col-sm-6 buttons">
@@ -2944,8 +2936,8 @@
               </div>
             </div>
 
-            <div class="col-lg-3 col-sm-12 nopadding">
-              <div class="col-lg-12 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0">
+              <div class="col-lg-12 col-sm-12 p-0">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <!-- Execution actions -->
                   <div class="col-lg-12 col-sm-12 py-0 px-1">
@@ -3010,7 +3002,7 @@
               </div>
             </div>
 
-            <div class="col-lg-3 col-sm-12 nopadding">
+            <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12 py-0 px-1">
                 <div class="col-lg-12 col-sm-12 buttons row">
                   <div class="col-lg-7 col-sm-6 buttons">
@@ -3123,12 +3115,6 @@
                               :value_representation="reg_representation">
                     </register>
 
-                    <!--TODO: try to include it in the component-->
-                    <popover-register-int :target="popoverId(item2.name)" 
-                                          :component="item"
-                                          :register="item2">
-                    </popover-register-int>
-
                   </div>
 
                   <div class="col-lg-3 col-sm-4 buttons" 
@@ -3136,7 +3122,7 @@
                        v-if="architecture.components[item.index].type == 'floating point'">
 
                     <!-- Simple floating point registers -->
-                    <div class="col-lg-12 col-sm-12 h-100" 
+                    <div class="col-lg-12 col-sm-12 p-0 h-100" 
                          v-if="architecture.components[item.index].double_precision == false">
 
                       <register :component="item"
@@ -3145,15 +3131,10 @@
                                 :value_representation="reg_representation">
                       </register>
 
-                      <!-- Register popover -->
-                      <popover-register-float :target="popoverId(item2.name)" 
-                                              :component="item"
-                                              :register="item2">
-                      </popover-register-float>
                     </div>
 
                     <!-- Double floating point registers -->
-                    <div class="col-lg-12 col-sm-12 nopadding h-100" 
+                    <div class="col-lg-12 col-sm-12 p-0 h-100" 
                          v-if="architecture.components[item.index].double_precision == true">
 
                       <register :component="item"
@@ -3162,11 +3143,6 @@
                                 :value_representation="reg_representation">
                       </register>
 
-                      <!--TODO: try to include it in the component-->
-                      <popover-register-double :target="popoverId(item2.name)" 
-                                               :component="item"
-                                               :register="item2">
-                      </popover-register-double>
                     </div> 
                   </div>
                 </div>
