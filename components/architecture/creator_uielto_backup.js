@@ -75,7 +75,7 @@
                     '   <span class="h6">A backup is available</span>' +
                     '   <br>' +
                     '   <span class="h6">Date: {{date_copy}}</span>' +
-                    '   <div class="col-lg-12 col-sm-12 row nomargin">' +
+                    '   <div class="col-lg-12 col-sm-12 row m-0">' +
                     '     <div class="col-lg-6 col-sm-6 pb-1">' +
                     '       <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" ' +
                     '                 @click="remove_copy">' +
