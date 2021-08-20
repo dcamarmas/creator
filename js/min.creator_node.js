@@ -199,56 +199,57 @@ function register_value_serialize(object)
 
   function hex2char8 ( hexvalue )
   {
-	var num_char = ((hexvalue.toString().length))/2;
-	var exponent = 0;
-	var pos = 0;
+  var num_char = ((hexvalue.toString().length))/2;
+  var exponent = 0;
+  var pos = 0;
 
-	var valuec = [] ;
+  var valuec = [] ;
 
-	for (var i = 0; i < num_char; i++) {
-	     var auxHex = hexvalue.substring(pos, pos+2);
-	     valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
-	     pos = pos + 2;
-	}
+  for (var i = 0; i < num_char; i++) {
+       var auxHex = hexvalue.substring(pos, pos+2);
+       valuec[i] = String.fromCharCode(parseInt(auxHex, 16));
+       pos = pos + 2;
+  }
 
-	var characters = '';
+  var characters = '';
 
-	for (var i = 0; i < valuec.length; i++){
-	     characters = characters + valuec[i] + ' ';
-	}
+  for (var i = 0; i < valuec.length; i++){
+       characters = characters + valuec[i] + ' ';
+  }
 
-	return  characters;
+  return  characters;
   }
 
   function hex2float ( hexvalue )
   {
-	/*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
-	var exponent = ((hexvalue >> 23) & 0xff) - 127;
-	var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
+    /*var sign     = (hexvalue & 0x80000000) ? -1 : 1;
+    var exponent = ((hexvalue >> 23) & 0xff) - 127;
+    var mantissa = 1 + ((hexvalue & 0x7fffff) / 0x800000);
 
-	var valuef = sign * mantissa * Math.pow(2, exponent);
-	if (-127 == exponent)
-	  if (1 == mantissa)
-	    valuef = (sign == 1) ? "+0" : "-0";
-	  else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
-	if (128 == exponent)
-	  if (1 == mantissa)
-	    valuef = (sign == 1) ? "+Inf" : "-Inf";
-	  else valuef = NaN;
+    var valuef = sign * mantissa * Math.pow(2, exponent);
+    if (-127 == exponent)
+      if (1 == mantissa)
+        valuef = (sign == 1) ? "+0" : "-0";
+      else valuef = sign * ((hexvalue & 0x7fffff) / 0x7fffff) * Math.pow(2, -126);
+    if (128 == exponent)
+      if (1 == mantissa)
+        valuef = (sign == 1) ? "+Inf" : "-Inf";
+      else valuef = NaN;
 
-	return valuef ;*/
-	var value = hexvalue.split('x');
-	var value_bit = '';
+    return valuef ;*/
+    
+    var value = hexvalue.split('x');
+    var value_bit = '';
 
-	for (var i = 0; i < value[1].length; i++){
-	  var aux = value[1].charAt(i);
-	  aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
-	  value_bit = value_bit + aux;
-	}
+    for (var i = 0; i < value[1].length; i++){
+      var aux = value[1].charAt(i);
+      aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
+      value_bit = value_bit + aux;
+    }
 
-	var buffer = new ArrayBuffer(4);
-	new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
-	return new DataView( buffer ).getFloat32(0, false);
+    var buffer = new ArrayBuffer(4);
+    new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
+    return new DataView( buffer ).getFloat32(0, false);
   }
 
   function uint_to_float32 ( value )
@@ -326,7 +327,7 @@ function register_value_serialize(object)
           part = s.substr(i+1-4, 4);
           accum = 0;
           for (k = 0; k < 4; k += 1)
-	  {
+    {
              if (part[k] !== '0' && part[k] !== '1') {
                  return { valid: false };
              }
@@ -344,7 +345,7 @@ function register_value_serialize(object)
       {
           accum = 0;
           for (k = 0; k <= i; k += 1)
-	  {
+    {
              if (s[k] !== '0' && s[k] !== '1') {
                  return { valid: false };
              }
@@ -380,14 +381,14 @@ function register_value_serialize(object)
 
   function clean_string( value, prefix )
   {
-	var value2 = value.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
+  var value2 = value.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '_');
 
-	re = new RegExp("^[0-9]+$");
-	if (value2.search(re) != -1 && prefix != "undefined") {
-		value2 = prefix + value2;
-	}
+  re = new RegExp("^[0-9]+$");
+  if (value2.search(re) != -1 && prefix != "undefined") {
+    value2 = prefix + value2;
+  }
 
-	return value2;
+  return value2;
   }
 
 /*
