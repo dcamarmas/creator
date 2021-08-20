@@ -19,27 +19,26 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_library_tags = {
+  var uielto_library_tags = {
 
-        props:      {
-                      instructions_tag:   { type: Array, required: true }
-                    },
+  props:      {
+                instructions_tag:   { type: Array, required: true }
+              },
 
-        template:   ' <div class="col-lg-0 col-sm-0 d-none" id="divTags">' +
-                    '   <span class="h5">Library tags:</span>' +
-                    '   <b-list-group>' +
-                    '     <b-list-group-item v-for="item in instructions_tag" ' +
-                    '                        v-if="item.globl==true">' +
-                    '       <b-badge pill variant="primary">' +
-                    '         {{item.tag}}' +
-                    '       </b-badge>' +
-                    '     </b-list-group-item>' +
-                    '   </b-list-group>' +
-                    ' </div>'
-      
-        }
+  template:   ' <div class="col-lg-0 col-sm-0 d-none" id="divTags">' +
+              '   <span class="h5">Library tags:</span>' +
+              '   <b-list-group>' +
+              '     <b-list-group-item v-for="item in instructions_tag" ' +
+              '                        v-if="item.globl==true">' +
+              '       <b-badge pill variant="primary">' +
+              '         {{item.tag}}' +
+              '       </b-badge>' +
+              '     </b-list-group-item>' +
+              '   </b-list-group>' +
+              ' </div>'
 
-        Vue.component('list-libray-tags', uielto_library_tags) ;
+  }
 
+  Vue.component('list-libray-tags', uielto_library_tags) ;

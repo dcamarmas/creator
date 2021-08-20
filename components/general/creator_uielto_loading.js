@@ -18,23 +18,21 @@
  *
  */
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_loading = {
+  var uielto_loading = {
 
-              template:   '	<div>' +
-              						'		<div id="spinnerBack" class="spinnerBack" ref="spinnerBack"></div>' +
-													'		<div id="spinner" class="spinner">' +
-													'	  	<div class="spinnerBox">' +
-													'	    	<b-spinner variant="primary" class="spinnerIcon"></b-spinner>' +
-													'	  	</div>' +
-													'	  	<div>' +
-													'	    	<span class="text-primary"><strong>Loading...</strong></span>' +
-													'	  	</div>' +
-													'	  </div>' +
-													'	</div>'
-       	}
+        template:   ' <div>' +
+                    '   <div id="spinnerBack" class="spinnerBack" ref="spinnerBack"></div>' +
+                    '   <div id="spinner" class="spinner">' +
+                    '     <div class="spinnerBox">' +
+                    '       <b-spinner variant="primary" class="spinnerIcon"></b-spinner>' +
+                    '     </div>' +
+                    '     <div>' +
+                    '       <span class="text-primary"><strong>Loading...</strong></span>' +
+                    '     </div>' +
+                    '   </div>' +
+                    ' </div>'
+  }
 
-        Vue.component('spinner-loading', uielto_loading) ;
-
-
+  Vue.component('spinner-loading', uielto_loading) ;

@@ -19,33 +19,31 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_monitor = {
+  var uielto_monitor = {
 
-			  props:      {
-											display:  { type: String, required: true }
-										},
+  props:      {
+                display:  { type: String, required: true }
+              },
 
-        template:   	'	<div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">' +
-											'	  <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">' +
-											'	    <div class="col-lg-1 col-sm-1">' +
-											'	      <span class="fas fa-desktop fa-2x mb-2 consoleIcon"></span>' +
-											'	    </div>' +
-											'	    <div class="col-lg-11 col-sm-11 pr-0">' +
-											'	      <b-form-textarea id="textarea_display" ' +
-											'	                       v-model="display" ' +
-											'	                       rows="5" ' +
-											'	                       disabled ' +
-											'	                       no-resize ' +
-											'	                       title="Display">' +
-											'	      </b-form-textarea>' +
-											'	    </div>' +
-											'	  </div>' +
-											'	</div>'
-		  
-				}
+template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">' +
+              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">' +
+              '     <div class="col-lg-1 col-sm-1">' +
+              '       <span class="fas fa-desktop fa-2x mb-2 consoleIcon"></span>' +
+              '     </div>' +
+              '     <div class="col-lg-11 col-sm-11 pr-0">' +
+              '       <b-form-textarea id="textarea_display" ' +
+              '                        v-model="display" ' +
+              '                        rows="5" ' +
+              '                        disabled ' +
+              '                        no-resize ' +
+              '                        title="Display">' +
+              '       </b-form-textarea>' +
+              '     </div>' +
+              '   </div>' +
+              ' </div>'
 
-        Vue.component('monitor', uielto_monitor) ;
+  }
 
-
+  Vue.component('monitor', uielto_monitor) ;
