@@ -3114,7 +3114,7 @@ try
         }
         if (executionIndex < -1)
         {
-            show_notification('The program has finished', 'danger') ;
+            show_notification('The program has finished', 'warning') ;
             runProgram=false;
             return;
         }
@@ -3207,20 +3207,11 @@ try
 
       
 
+      
 
 
 
-      /*Console mutex*/
-      consoleEnter(){
-        if(this.keyboard != ""){
-          consoleMutex = true;
-        }
-      },
-      /*Empty keyboard and display*/
-      consoleClear(){
-        this.keyboard = "";
-        this.display = "";
-      },
+
 
 
 
