@@ -19,110 +19,119 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_keyboard = {
+  var uielto_keyboard = {
 
-			  props:      {
-											keyboard:  	{ type: String, required: true },
-											enter: 			{ type: String, required: true }
-										},
+  props:      {
+                keyboard:   { type: String, required: true },
+                enter:      { type: String, required: true }
+              },
 
-			  methods: 		{
-			  							/*Empty keyboard and display*/
-								      consoleClear(){
-								        app._data.keyboard = ""; //TODO: vue bidirectional updates
-								        app._data.display = ""; //TODO: vue bidirectional updates
-								      },
+  data:       function () {
+                return {
+                  local_keyboard: keyboard,
+                }
+              },
 
-								      /*Console mutex*/
-								      consoleEnter(){
-								        if(keyboard != ""){
-								          consoleMutex = true;
-								        }
-								      },
+  methods:    {
+                /*Empty keyboard and display*/
+                consoleClear(){
+                  this.local_keyboard = "";
+                  app._data.keyboard = ""; //TODO: vue bidirectional updates
+                  app._data.display = ""; //TODO: vue bidirectional updates
+                },
 
-			  							/*Stop user interface refresh*/
-								      debounce: _.debounce(function (param, e) {
-								        console_log(param);
-								        console_log(e);
+                /*Console mutex*/
+                consoleEnter(){
+                  if(this.local_keyboard != ""){
+                    app._data.keyboard = this.local_keyboard; //TODO: vue bidirectional updates
+                    consoleMutex = true;
+                    this.local_keyboard = "";
+                  }
+                },
 
-								        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-								        var re = new RegExp("'","g");
-								        e = e.replace(re, '"');
-								        re = new RegExp("[\f]","g");
-								        e = e.replace(re, '\\f');
-								        re = new RegExp("[\n\]","g");
-								        e = e.replace(re, '\\n');
-								        re = new RegExp("[\r]","g");
-								        e = e.replace(re, '\\r');
-								        re = new RegExp("[\t]","g");
-								        e = e.replace(re, '\\t');
-								        re = new RegExp("[\v]","g");
-								        e = e.replace(re, '\\v');
+                /*Stop user interface refresh*/
+                debounce: _.debounce(function (param, e) {
+                  console_log(param);
+                  console_log(e);
 
-								        if(e == ""){
-								          this[param] = null;
-								          return;
-								        }
+                  e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                  var re = new RegExp("'","g");
+                  e = e.replace(re, '"');
+                  re = new RegExp("[\f]","g");
+                  e = e.replace(re, '\\f');
+                  re = new RegExp("[\n\]","g");
+                  e = e.replace(re, '\\n');
+                  re = new RegExp("[\r]","g");
+                  e = e.replace(re, '\\r');
+                  re = new RegExp("[\t]","g");
+                  e = e.replace(re, '\\t');
+                  re = new RegExp("[\v]","g");
+                  e = e.replace(re, '\\v');
 
-								        console_log("this." + param + "= '" + e + "'");
+                  if(e == ""){
+                    this[param] = null;
+                    return;
+                  }
 
-								        eval("this." + param + "= '" + e + "'");
+                  console_log("this." + param + "= '" + e + "'");
 
-								        app.$forceUpdate();
-								      }, getDebounceTime())
-											
-			  						},
+                  eval("this." + param + "= '" + e + "'");
 
-        template:   	'	<div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">' +
-											'	  <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">' +
-											'	    <div class="col-lg-1 col-sm-1">' +
-											'	      <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>' +
-											'	    </div>' +
-											'	    <div class="col-lg-11 col-sm-11 pr-0">' +
-											'	      <b-form-textarea id="textarea_keyboard" ' +
-											'	                       v-on:input="debounce(\'keyboard\', $event)" ' +
-											'	                       :value="keyboard" rows="5" ' +
-											'	                       no-resize :state = "enter" ' +
-											'	                       title="Keyboard">' +
-											'	      </b-form-textarea>' +
-											'	    </div>' +
-											'	  </div>' +
-											'	' +
-											'	  <div class="col-lg-12 col-sm-12 row nomargin">' +
-											'	    <div class="col-lg-4 col-sm-4">' +
-											'	     ' +
-											'	    </div>' +
-											'	    <div class="col-lg-4 col-sm-4">' +
-											'	      <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
-											'	                @click="consoleClear">' +
-											'	        <span class="fas fa-broom"></span> ' +
-											'	        Clear' +
-											'	      </b-button>' +
-											'	    </div>' +
-											'	    <div class="col-lg-4 col-sm-4">' +
-											'	      <b-button id="enter_keyboard" ' +
-											'	                class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
-											'	                @click="consoleEnter">' +
-											'	        <span class="fas fa-level-down-alt enterIcon"></span> ' +
-											'	        Enter' +
-											'	      </b-button>' +
-											'	    </div>' +
-											'	' +
-											'	  </div>' +
-											'	</div>'
-		  
-				}
+                  app.$forceUpdate();
+                }, getDebounceTime())
+                
+              },
 
-        Vue.component('keyboard', uielto_keyboard)
+template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">' +
+              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">' +
+              '     <div class="col-lg-1 col-sm-1">' +
+              '       <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>' +
+              '     </div>' +
+              '     <div class="col-lg-11 col-sm-11 pr-0">' +
+              '       <b-form-textarea id="textarea_keyboard" ' +
+              '                        v-on:input="debounce(\'local_keyboard\', $event)" ' +
+              '                        :value="local_keyboard" rows="5" ' +
+              '                        no-resize :state = "enter" ' +
+              '                        title="Keyboard">' +
+              '       </b-form-textarea>' +
+              '     </div>' +
+              '   </div>' +
+              ' ' +
+              '   <div class="col-lg-12 col-sm-12 row nomargin">' +
+              '     <div class="col-lg-4 col-sm-4">' +
+              '      ' +
+              '     </div>' +
+              '     <div class="col-lg-4 col-sm-4">' +
+              '       <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
+              '                 @click="consoleClear">' +
+              '         <span class="fas fa-broom"></span> ' +
+              '         Clear' +
+              '       </b-button>' +
+              '     </div>' +
+              '     <div class="col-lg-4 col-sm-4">' +
+              '       <b-button id="enter_keyboard" ' +
+              '                 class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
+              '                 @click="consoleEnter">' +
+              '         <span class="fas fa-level-down-alt enterIcon"></span> ' +
+              '         Enter' +
+              '       </b-button>' +
+              '     </div>' +
+              ' ' +
+              '   </div>' +
+              ' </div>'
 
-        /*Determines the refresh timeout depending on the device being used*/
-			  function getDebounceTime(){
-			    if(screen.width > 768){
-			      return 500;
-			    }
-			    else{
-			      return 1000;
-			    }
-			  }
+  }
+
+  Vue.component('keyboard', uielto_keyboard)
+
+  /*Determines the refresh timeout depending on the device being used*/
+  function getDebounceTime(){
+    if(screen.width > 768){
+      return 500;
+    }
+    else{
+      return 1000;
+    }
+  }
