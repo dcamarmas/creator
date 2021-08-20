@@ -44,11 +44,15 @@ cat js/creator_bigint.js \
     \
     components/architecture/creator_uielto_backup.js \
     \
+    components/assembly/creator_uielto_load_assembly.js \
+    components/assembly/creator_uielto_save_assembly.js \
     components/assembly/creator_uielto_examples.js \
+    components/assembly/creator_uielto_load_library.js \
+    components/assembly/creator_uielto_save_library.js \
     components/assembly/creator_uielto_textarea_assembly.js \
-    components/assembly/creator_uielto_library_tags.js \
     components/assembly/creator_uielto_shortcuts.js \
     components/assembly/creator_uielto_error.js \
+    components/assembly/creator_uielto_library_tags.js \
     \
     components/simulator/creator_uielto_calculator.js \
     components/simulator/creator_uielto_table_execution.js \
