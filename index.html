@@ -94,13 +94,15 @@
     <div id="app">
       <template>
 
+        <!-- General components -->
+
         <!-- Loading spinner -->
         <spinner-loading  id="loading" 
                           style="display: none">
         </spinner-loading>
 
-        <!-- TODO: Try to include the modal into the component -->
         <!-- Browser not supported modal -->
+        <!-- TODO: Try to include the modal into the component -->
         <b-modal  id ="modalBrowser" 
                   title="Browser not supported" 
                   ref="browser" 
@@ -118,44 +120,25 @@
 
 
           <!-- Configuration modal -->
-          <!-- TODO: Try to include the modal into the component -->
-          <b-modal  id="configuration" 
-                    title="Configuration" 
-                    hide-footer>
-
-            <form-configuration :instructions_packed="instructionsPacked" 
-                                :autoscroll="autoscroll" 
-                                :notification_time="notificationTime" 
-                                :dark="dark" 
-                                :c_debug="c_debug">
-            </form-configuration>
-
-          </b-modal>
+          <form-configuration id="configuration"
+                              :instructions_packed="instructionsPacked" 
+                              :autoscroll="autoscroll" 
+                              :notification_time="notificationTime" 
+                              :dark="dark" 
+                              :c_debug="c_debug">
+          </form-configuration>
 
 
           <!-- Information modals -->
 
           <!-- Notification modal -->
-          <!-- TODO: Try to include the modal into the component -->
-          <b-modal  id="notifications" 
-                    title="Notifications" 
-                    hide-footer 
-                    scrollable>
+          <uielto-notifications id="notifications"
+                                :notifications="notifications">                        
+          </uielto-notifications>
 
-            <uielto-notifications :notifications="notifications"></uielto-notifications>
-
-          </b-modal>
-          
           <!-- About modal -->
-          <!-- TODO: Try to include the modal into the component -->
-          <b-modal  id="about" 
-                    title="About us" 
-                    hide-footer 
-                    scrollable>
+          <uielto-about id="about"></uielto-about>
 
-             <uielto-about></uielto-about>
-
-          </b-modal>
 
           <!-- Instruction Help sidebar -->
           <sidebar-instruction-help id="sidebar_help" :architecture="architecture"></sidebar-instruction-help>
@@ -347,6 +330,7 @@
 
 
             <!-- Backup modal -->
+            <!-- TODO: Try to include the modal into the component -->
             <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
 
               <uielto-backup :date_copy="date_copy"></uielto-backup>
@@ -2768,8 +2752,8 @@
         <!-- Assembly view -->
         <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
-          <!-- TODO: navbar component -->
           <!-- Navbar -->
+          <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12">
@@ -2934,8 +2918,8 @@
         <!-- Simulator view -->
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
-          <!-- TODO: navbar component -->
           <!-- Navbar -->
+          <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 nopadding">
               <div class="col-lg-12 col-sm-12 py-0 px-1">
@@ -3084,8 +3068,8 @@
 
 
 
-            <!-- TODO: register file component -->
             <!-- Registers view -->
+            <!-- TODO: register file component -->
             <div class="col-lg-12 col-sm-12 px-0" id="registers" v-if="data_mode == 'registers'">
               <b-container>
                 <b-row>
@@ -3252,46 +3236,8 @@
             <!-- Monitor -->
             <monitor :display="display"></monitor>
 
-            <!-- Keyboard --> <!--TODO: change to component-->
-            <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">
-              <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">
-                <div class="col-lg-1 col-sm-1">
-                  <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>
-                </div>
-                <div class="col-lg-11 col-sm-11 pr-0">
-                  <b-form-textarea id="textarea_keyboard" 
-                                   v-on:input="debounce('keyboard', $event)" 
-                                   :value="keyboard" rows="5" 
-                                   no-resize :state = "enter" 
-                                   title="Keyboard">
-                  </b-form-textarea>
-                </div>
-              </div>
-
-              <div class="col-lg-12 col-sm-12 row nomargin">
-                <div class="col-lg-4 col-sm-4">
-                 
-                </div>
-                <div class="col-lg-4 col-sm-4">
-                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"
-                            @click="consoleClear">
-                    <span class="fas fa-broom"></span> 
-                    Clear
-                  </b-button>
-                </div>
-                <div class="col-lg-4 col-sm-4">
-                  <b-button id="enter_keyboard" 
-                            class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"
-                            @click="consoleEnter">
-                    <span class="fas fa-level-down-alt enterIcon"></span> 
-                    Enter
-                  </b-button>
-                </div>
-
-              </div>
-            </div>
-
-            <!--<keyboard :keyboard="keyboard" :enter="enter"></keyboard>-->
+            <!-- Keyboard -->
+            <keyboard :keyboard="keyboard" :enter="enter"></keyboard>
 
           <div class="col-lg-6 col-sm-12 my-2 mx-0"></div>
       </template>

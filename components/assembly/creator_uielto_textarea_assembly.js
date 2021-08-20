@@ -19,23 +19,22 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_textarea_assembly = {
+  var uielto_textarea_assembly = {
 
-        props:      {
-                      browser:   { type: String, required: true }
-                    },
+  props:      {
+                browser:   { type: String, required: true }
+              },
 
-        template:   '   <div class="col-lg-12 col-sm-12" id="divAssembly">' +
-                    '     <span id="assemblyInfo" class="fas fa-info-circle"></span> <span class="h5">Assembly:</span>' +
-                    '   ' +
-                    '     <popover-shortcuts target="assemblyInfo" :browser="browser"></popover-shortcuts>' +
-                    '   ' +
-                    '     <textarea id="textarea_assembly" rows="14" class="code-scroll-y d-none" title="Asembly Code"></textarea>' +
-                    '   </div>'
-      
-        }
+  template:   '   <div class="col-lg-12 col-sm-12" id="divAssembly">' +
+              '     <span id="assemblyInfo" class="fas fa-info-circle"></span> <span class="h5">Assembly:</span>' +
+              '   ' +
+              '     <popover-shortcuts target="assemblyInfo" :browser="browser"></popover-shortcuts>' +
+              '   ' +
+              '     <textarea id="textarea_assembly" rows="14" class="code-scroll-y d-none" title="Asembly Code"></textarea>' +
+              '   </div>'
 
-        Vue.component('textarea-assembly', uielto_textarea_assembly) ;
+  }
 
+  Vue.component('textarea-assembly', uielto_textarea_assembly) ;
