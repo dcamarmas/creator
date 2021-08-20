@@ -84,8 +84,8 @@
                 
               },
 
-template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">' +
-              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 nopadding">' +
+template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 p-0">' +
+              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 p-0">' +
               '     <div class="col-lg-1 col-sm-1">' +
               '       <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>' +
               '     </div>' +
@@ -99,7 +99,7 @@ template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 nopadding">' 
               '     </div>' +
               '   </div>' +
               ' ' +
-              '   <div class="col-lg-12 col-sm-12 row nomargin">' +
+              '   <div class="col-lg-12 col-sm-12 row m-0">' +
               '     <div class="col-lg-4 col-sm-4">' +
               '      ' +
               '     </div>' +
