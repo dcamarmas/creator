@@ -102,13 +102,7 @@
         </spinner-loading>
 
         <!-- Browser not supported modal -->
-        <!-- TODO: Try to include the modal into the component -->
-        <b-modal  id ="modalBrowser" 
-                  title="Browser not supported" 
-                  ref="browser" 
-                  hide-footer>
-          <supported-browser></supported-browser>
-        </b-modal >
+        <supported-browser id ="modalBrowser"></supported-browser>
 
 
         <header>
@@ -167,11 +161,14 @@
 
         
 
+        <!----------------------->
+        <!-- Load architecture -->
+        <!----------------------->
 
-        <!-- Load architecture menu -->
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
           
           <!-- Navbar -->
+          <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 p-0"></div>
             <div class="col-lg-6 col-sm-12 p-0"></div>
@@ -198,18 +195,22 @@
             </div>
           </div>
 
+
+          <!-- Information popover -->
           <popover-info target="info_men" show_instruction_help="false"></popover-info>
+
+
 
           <!-- Architecture menu -->
           <div class="col-lg-12 col-sm-12" id="load_menu_arch">
             <div class="col-lg-12 col-sm-12 row p-0 m-0">
 
-              <div class="col-lg-1 col-sm-1">
-                
-              </div>
+              <div class="col-lg-1 col-sm-1"></div>
               <div class="col-lg-10 col-sm-10">
                 <b-list-group>
                   <b-list-group-item>
+
+                    <!-- TODO: preload component -->
                     <b-card no-body class="overflow-hidden arch_card architectureCard" 
                             v-for="(item, index) in arch_available" 
                             @mouseover="change_background(item.name, 1)"
@@ -240,102 +241,39 @@
                       </b-row>
                     </b-card>
 
-                    <!-- Delete architecture modal -->
-                    <b-modal id ="modalDeletArch" 
-                             :title="modalDeletArch.title" 
-                             ok-variant="danger" 
-                             ok-title="Delete" 
-                             @ok="remove_cache_arch(modalDeletArch.index)">
-                      <span class="h6">Are you sure you want to delete the architecture?</span>
-                    </b-modal >
+                    <!-- TODO: v-for not found -->
+                    <!--<preload-architecture :arch_available="arch_available"
+                                          :back_card="back_card">
+                    </preload-architecture>-->
 
-                    <b-card no-body class="overflow-hidden arch_card architectureCard">
-                      <b-row no-gutters @click="new_arch">
-                        <b-col md="3" class="center">
-                          <b-card-img src="./images/new_icon.png" 
-                                      alt="new icon" 
-                                      class="rounded-0 architectureImg">
-                          </b-card-img>
-                        </b-col>
+                    <!-- New architecture card -->
+                    <new-architecture></new-architecture>
 
-                        <b-col md="9">
-                          <b-card-body title="New Architecture" title-tag="h2" >
-                            <b-card-text class="justify">
-                              Allows you to define an architecture from scratch.
-                            </b-card-text>
-                          </b-card-body>
-                        </b-col>
-                      </b-row>
-                    </b-card>
+                    <!-- Load new architecture card -->
+                    <load-architecture></load-architecture>
 
-                    <b-card no-body class="overflow-hidden arch_card architectureCard" 
-                            v-b-modal.load_arch>
-                      <b-row no-gutters>
-                         <b-col md="3" class="center">
-                          <b-card-img src="./images/load_icon.png" 
-                                      alt="load icon" class="rounded-0 architectureImg">
-                          </b-card-img>
-                        </b-col>
-
-                        <b-col md="9">
-                          <b-card-body title="Load Architecture" title-tag="h2">
-                            <b-card-text class="justify">
-                              Allows to load the definition of an already created architecture.
-                            </b-card-text>
-                          </b-card-body>
-                        </b-col>
-                      </b-row>
-
-                      <!-- Load new architecture modal -->
-                      <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
-                        <b-form>
-                          <b-form-input v-on:input="debounce('name_arch', $event)" 
-                                        :value="name_arch" 
-                                        placeholder="Enter the name of the architecture" 
-                                        :state="valid(name_arch)" 
-                                        title="Architecture Name">
-                          </b-form-input>
-                          <br>
-                          <b-form-textarea v-on:input="debounce('description_arch', $event)" 
-                                           :value="description_arch" 
-                                           placeholder="Enter a description of the architecture" 
-                                           rows="3" 
-                                           title="Architecture Description">
-                          </b-form-textarea>
-                          <br>
-                          <b-form-file v-model="load_arch" 
-                                       placeholder="Choose a file..." 
-                                       id="arch_file" 
-                                       accept=".json" 
-                                       :state="valid(load_arch)">
-                          </b-form-file>
-                        </b-form>
-                      </b-modal>
-
-                    </b-card>
                   </b-list-group-item>
                 </b-list-group>
+
+
+                <!-- Architecture selector modals -->
+
+                <!-- Delete architecture modal -->
+                <!-- TODO: include into preload component -->
+                <delete-architecture  id="modalDeletArch"
+                                      :index="modalDeletArchIndex">                      
+                </delete-architecture>
+
               </div>
-              <div class="col-lg-1 col-sm-1">
-                
-              </div>
+
+              <div class="col-lg-1 col-sm-1"></div>
             </div>
             <br>
 
 
-
-
-
-
-
-
             <!-- Backup modal -->
-            <!-- TODO: Try to include the modal into the component -->
-            <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
+            <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
 
-              <uielto-backup :date_copy="date_copy"></uielto-backup>
-
-            </b-modal>
           </div>
 
         </div>
@@ -349,10 +287,26 @@
 
 
 
-        <!-- Architecture editor view -->
+
+
+
+
+
+
+
+
+
+
+
+
+        <!------------------>
+        <!-- Architecture -->
+        <!------------------>
+
         <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
 
           <!-- Navbar -->
+          <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
@@ -427,39 +381,17 @@
                 </div>
               </div>
             </div>
-
-
-
-
-
-
-
-
-
-            <!-- Information popover -->
-            <popover-info target="info_arch" show_instruction_help="true"></popover-info>
-
-
-
-
-
-
-
-
-            <!-- Save architecture form -->
-            <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
-              <span class="h6">Enter the name of the architecture to save:</span>
-              <br>
-              <b-form-input v-on:input="debounce('name_arch_save', $event)" 
-                            :value="name_arch_save" 
-                            type="text" 
-                            placeholder="Enter the name" 
-                            class="form-control form-control-sm fileForm" 
-                            title="Save Architecture"
-                            :state="valid(name_arch_save)">
-              </b-form-input>
-            </b-modal>
           </div>
+
+
+          <!-- Architecture navbar modals -->
+          <save-architecture id="save_architecture"></save-architecture>
+
+
+          <!-- Information popover -->
+          <popover-info target="info_arch" show_instruction_help="true"></popover-info>
+
+
 
           <!-- Instruction set -->
           <div class="contenedor menu row">
@@ -471,177 +403,40 @@
                 <!-- Memory layout -->
                 <b-tab title="Memory Layout" active>
                   
-                  <!-- Memory layout form -->
-                  <div class="col-lg-12 col-sm-12 row memoryLayoutDiv">
-                    <div class="col-lg-12 col-sm-12">
-                      <span class="h6">Memory layout:</span>
-                      <div class="col-lg-12 col-sm-12 row">
-                        <div class="compMenu">
-                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" 
-                                    v-b-modal.change>
-                            <span class="fas fa-exchange-alt"></span> 
-                            Change memory layout
-                          </b-button>
-                        </div>
-                        <div class="compMenu">
-                          <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" 
-                                    id="resetMemory" 
-                                    @click="resetMemModal(architecture_name, $event)"> 
-                            <span class="fas fa-power-off"></span>
-                            Reset memory layout
-                          </b-button>
-                        </div>
-                      </div>
+                  <memory-layout  :memory_layout="architecture.memory_layout">       
+                  </memory-layout>
 
-                      <br>
+                  <!-- Memory layout modals -->
 
-                      <!-- Reset memory layout -->
-                      <b-modal id ="modalResetMem" 
-                               :title="modalResetMem.title"
-                               ok-variant="danger" 
-                               ok-title="Reset" 
-                               @ok="resetMemory(modalResetMem.element)">
-                        <span class="h6">Are you sure you want to reset the mememory layout set?</span>
-                      </b-modal >
+                  <!-- Edit memory layout -->
+                  <memory-layout-form id="change_memory_layout"></memory-layout-form>
 
-                      <!-- Change memory layout -->
-                      <b-modal id ="change" 
-                               title="Change memory layout" 
-                               ok-title="Change" 
-                               @ok="changeMemoryLayout">
-                        <span class="h6">.text Start:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[0]', $event)" 
-                                      :value="memory_layout[0]" 
-                                      required 
-                                      size="sm" 
-                                      title=".text start" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.text End:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[1]', $event)" 
-                                      :value="memory_layout[1]" 
-                                      required 
-                                      size="sm" 
-                                      title=".text end" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.data Start:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[2]', $event)" 
-                                      :value="memory_layout[2]" 
-                                      required 
-                                      size="sm" 
-                                      title=".data tart" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.data End:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[3]', $event)" 
-                                      :value="memory_layout[3]" 
-                                      required 
-                                      size="sm" 
-                                      title=".data end" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.stack End:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[4]', $event)" 
-                                      :value="memory_layout[4]" 
-                                      required 
-                                      size="sm" 
-                                      title=".stack start" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.stack Start:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[5]', $event)" 
-                                      :value="memory_layout[5]"
-                                      required size="sm" 
-                                      title=".stack end" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                      </b-modal >
-                    </div>
+                  <!-- Reset memory layout -->
+                  <memory-layout-reset id="reset_memory_layout"
+                                       :architecture_name="architecture_name">
+                  </memory-layout-reset>
 
-                    <div class="col-lg-3 col-sm-12 ">
-
-                    </div>
-
-                    <!-- Memory layout sketch -->
-                    <div class="col-lg-6 col-sm-12 ">
-                      <b-list-group class="memoryLayout">
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="info" class="memoryLayout">
-                            <br>
-                            .text
-                            <br>
-                          </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder left">
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[0].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                            <br>
-                            <br>
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[1].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder left">
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[2].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                            <br>
-                            <br>
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[3].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="secondary" class="memoryLayout">
-                            <br>
-                            ...
-                            <br>
-                            <br>
-                          </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder">
-                            
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="success" class="memoryLayout">
-                            <br>
-                            stack
-                            <br>
-                          </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder left">
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[4].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                            <br>
-                            <br>
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[5].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                          </b-list-group-item>
-                        </b-list-group>
-                      </b-list-group>
-                    </div>
-
-                    <div class="col-lg-3 col-sm-12 ">
-
-                    </div>
-
-                  </div>
                 </b-tab>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
 
                 <!-- Components -->
                 <b-tab title="Components" :disabled="advanced_mode" v-if="!advanced_mode">
@@ -2571,107 +2366,116 @@
                   </div>
                 </b-tab>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <!-- Directives definition -->
                 <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
-                  <br>
-                  <span class="h6">Directives set:</span>
 
-                  <div class="col-lg-12 col-sm-12 row">
-                    <div class="compMenu">
-                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
-                                id="newDirectiveBtn" 
-                                v-b-modal.new_directive> 
-                        <span class="fas fa-plus-circle"></span>
-                        New directive
-                      </b-button>
+                  <!--<directives :directives="architecture.directives"><directives>-->
+
+                  <div>
+                    <br>
+                    <span class="h6">Directives set:</span>
+
+                    <div class="col-lg-12 col-sm-12 row">
+                      <div class="compMenu">
+                        <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
+                                  id="newDirectiveBtn" 
+                                  v-b-modal.new_directive> 
+                          <span class="fas fa-plus-circle"></span>
+                          New directive
+                        </b-button>
+                      </div>
+
+                      <div class="compMenu">
+                        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" 
+                                  id="resetDirectives" 
+                                  v-b-modal.reset_directives> 
+                          <span class="fas fa-power-off"></span>
+                          Reset directives
+                        </b-button>
+                      </div>
                     </div>
 
-                    <div class="compMenu">
-                      <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" 
-                                id="resetDirectives" 
-                                @click="resetDirModal(architecture_name, $event)"> 
-                        <span class="fas fa-power-off"></span>
-                        Reset directives
-                      </b-button>
+                    <div class="col-lg-12 col-sm-12 mt-3">
+                      <b-table small 
+                               :items="architecture.directives" 
+                               :fields="directivesFields" 
+                               class="text-center" 
+                               sticky-header="60vh">
+                        <template v-slot:cell(actions)="row" class="">
+                          <b-button @click.stop="editDirModal(row.item.name, $event.target)" 
+                                    class="btn btn-outline-secondary btn-sm buttonBackground h-100">
+                            <span class="far fa-edit"></span> 
+                            Edit
+                          </b-button>
+                          <b-button @click.stop="delDirModal(row.item.name, $event.target)"
+                                    class="btn btn-outline-danger btn-sm buttonBackground h-100">
+                            <span class="far fa-trash-alt"></span>
+                            Delete
+                          </b-button> 
+                        </template>
+                      </b-table>
                     </div>
                   </div>
 
-                  <!-- New directive form -->
-                  <b-modal id ="new_directive" 
-                           title = "New Directive"
-                           ok-title="Save"
-                           @ok="newDirVerify($event)"
-                           v-model="showNewDirective"
-                           @hidden="emptyFormDirective">
-                    <b-form>
-                      <b-form-group label="Name:">
-                        <b-form-input type="text"
-                                      :state="valid(formDirective.name)" 
-                                      v-on:input="debounce('formDirective.name', $event)" 
-                                      :value="formDirective.name" 
-                                      required 
-                                      placeholder="Enter name" 
-                                      size="sm" 
-                                      title="Directive name">
-                        </b-form-input>
-                      </b-form-group>
-                      <b-form-group label="action:">
-                        <b-form-select :options="actionTypes" 
-                                       required 
-                                       v-model="formDirective.action" 
-                                       :state="valid(formDirective.action)" 
-                                       size="sm"
-                                       title="Action">
-                        </b-form-select>
-                      </b-form-group>
-                      <b-form-group label="Size:" 
-                                    v-if="formDirective.action != '' && formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
-                        <b-form-input type="number" 
-                                      :state="valid(formDirective.size)" 
-                                      v-on:input="debounce('formDirective.size', $event)" 
-                                      :value="formDirective.size" 
-                                      required 
-                                      placeholder="Enter size" 
-                                      size="sm" 
-                                      min="0" 
-                                      title="Directive size">
-                        </b-form-input>
-                      </b-form-group>
-                    </b-form>
-                  </b-modal >
+
+                  <!-- Directives modals -->
+
+                  <!-- New directive -->
+                  <directives-new id="new_directive"></directives-new>
 
                   <!-- Reset directives -->
-                  <b-modal id ="modalResetDir" 
-                           :title="modalResetDir.title" 
+                  <directives-reset id="reset_directives"
+                                    :architecture_name="architecture_name">
+                  </directives-reset>
+
+                  <!-- Delete directive -->
+                  <!--<directives-delete  id="delete_directive"
+                                      :modalDeletDir="modalDeletDir">
+                  </directives-delete>-->
+
+                  <b-modal id ="delete_directive" 
+                           :title="modalDeletDir.title" 
                            ok-variant="danger" 
-                           ok-title="Reset" 
-                           @ok="resetDirectives(modalResetDir.element)">
-                    <span class="h6">Are you sure you want to reset the directives set?</span>
-                  </b-modal >
+                           ok-title="Delete" 
+                           @ok="delDirective(modalDeletDir.element)">
+                    <span class="h6">Are you sure you want to delete the item?</span>
+                  </b-modal>
 
-                  <!-- Directives set table -->
-                  <div class="col-lg-12 col-sm-12 mt-3">
-                    <b-table small 
-                             :items="architecture.directives" 
-                             :fields="directivesFields" 
-                             class="text-center" 
-                             sticky-header="60vh">
-                      <!-- For each directive -->
-                      <template v-slot:cell(actions)="row" class="">
-                        <b-button @click.stop="editDirModal(row.item.name, $event.target)" 
-                                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">
-                          <span class="far fa-edit"></span> 
-                          Edit
-                        </b-button>
-                        <b-button @click.stop="delDirModal(row.item.name, $event.target)"
-                                  class="btn btn-outline-danger btn-sm buttonBackground h-100">
-                          <span class="far fa-trash-alt"></span>
-                          Delete
-                        </b-button> 
-                      </template>
-                    </b-table>
 
-                    <!-- Edit directive form -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <!-- Edit directive form -->
                     <b-modal id ="modalEditDirective" 
                              :title = "modalEditDirective.title"
                              ok-title="Save" 
@@ -2715,15 +2519,8 @@
                       </b-form>
                     </b-modal >
 
-                    <!-- Delete directive -->
-                    <b-modal id ="modalDeletDir" 
-                             :title="modalDeletDir.title" 
-                             ok-variant="danger" 
-                             ok-title="Delete" 
-                             @ok="delDirective(modalDeletDir.element)">
-                      <span class="h6">Are you sure you want to delete the item?</span>
-                    </b-modal >
-                  </div>
+                    
+
                 </b-tab>
               </b-tabs>
             </div>
@@ -2748,8 +2545,10 @@
 
 
 
-
+        <!------------------->
         <!-- Assembly view -->
+        <!------------------->
+
         <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
           <!-- Navbar -->
@@ -2863,7 +2662,6 @@
           </div>
 
 
-
           <!-- Assembly navbar modals -->
 
           <!-- Load assembly form -->
@@ -2907,7 +2705,10 @@
 
 
 
+        <!-------------------->
         <!-- Simulator view -->
+        <!-------------------->
+
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
           <!-- Navbar -->
@@ -3028,7 +2829,6 @@
           </div>
 
 
-
           <!-- Simulator navbar modals -->
 
           <!-- Examples modal -->
@@ -3089,30 +2889,6 @@
                          :callee_subrutine="callee_subrutine" 
                          :caller_subrutine="caller_subrutine">
               </table-mem>
-
-              <!--TODO: try to include in a component this modal-->
-              <b-modal ref="space_modal" 
-                       size="sm" 
-                       title="Select space view:" 
-                       @hidden="hide_space_modal" 
-                       @ok="change_space_view">
-                <b-form-radio v-model="selected_space_view" value="sig_int">Signed Integer</b-form-radio>
-                <b-form-radio v-model="selected_space_view" value="unsig_int">Unsigned Integer</b-form-radio>
-                <b-form-radio v-model="selected_space_view" value="float">Float</b-form-radio>
-                <b-form-radio v-model="selected_space_view" value="char">Char</b-form-radio>
-              </b-modal>
-
-              <!--TODO: try to include in a component this modal-->
-              <b-modal ref="stack_modal" 
-                       size="sm" 
-                       title="Select stack word view:" 
-                       @hidden="hide_stack_modal" 
-                       @ok="change_stack_view">
-                <b-form-radio v-model="selected_stack_view" value="sig_int">Signed Integer</b-form-radio>
-                <b-form-radio v-model="selected_stack_view" value="unsig_int">Unsigned Integer</b-form-radio>
-                <b-form-radio v-model="selected_stack_view" value="float">Float</b-form-radio>
-                <b-form-radio v-model="selected_stack_view" value="char">Char</b-form-radio>
-              </b-modal>
 
             </div>
 
