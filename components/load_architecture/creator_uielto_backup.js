@@ -24,6 +24,7 @@
         var uielto_backup = {
 
         props:      {
+                      id:          { type: String, required: true },
                       date_copy:   { type: String, required: true }
                     },
 
@@ -67,29 +68,31 @@
                         localStorage.removeItem("architecture_copy");
                         localStorage.removeItem("assembly_copy");
                         localStorage.removeItem("date_copy");
-                        app.$refs.copyRef.hide();
+                        this.$root.$emit('bv::hide::modal', 'copy');
                       },
                     },
 
-        template:   ' <div>' +
-                    '   <span class="h6">A backup is available</span>' +
-                    '   <br>' +
-                    '   <span class="h6">Date: {{date_copy}}</span>' +
-                    '   <div class="col-lg-12 col-sm-12 row m-0">' +
-                    '     <div class="col-lg-6 col-sm-6 pb-1">' +
-                    '       <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" ' +
-                    '                 @click="remove_copy">' +
-                    '         Discard' +
-                    '       </b-button>' +
-                    '     </div>' +
-                    '     <div class="col-lg-6 col-sm-6 pb-1">' +
-                    '       <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" ' +
-                    '                 @click="load_copy">' +
-                    '         Load' +
-                    '       </b-button>' +
-                    '     </div>' +
-                    '   </div>' +
-                    ' </div>'
+        template:   '<b-modal :id="id" hide-footer hide-header size="sm" centered>' +
+                    '  <div>' +
+                    '    <span class="h6">A backup is available</span>' +
+                    '    <br>' +
+                    '    <span class="h6">Date: {{date_copy}}</span>' +
+                    '    <div class="col-lg-12 col-sm-12 row m-0">' +
+                    '      <div class="col-lg-6 col-sm-6 pb-1">' +
+                    '        <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" ' +
+                    '                  @click="remove_copy">' +
+                    '          Discard' +
+                    '        </b-button>' +
+                    '      </div>' +
+                    '      <div class="col-lg-6 col-sm-6 pb-1">' +
+                    '        <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" ' +
+                    '                  @click="load_copy">' +
+                    '          Load' +
+                    '        </b-button>' +
+                    '      </div>' +
+                    '    </div>' +
+                    '  </div>' +
+                    '</b-modal>'
       
         }
 

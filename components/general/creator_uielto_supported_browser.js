@@ -23,43 +23,49 @@
 
   var uielto_browser = {
 
-        template:   ' <div>' +
-                    '   <span class="h6">You are using an unsupported browser, please use one of the following:</span>' +
-                    '   <br>' +
-                    '   <b-list-group>' +
-                    '     <b-list-group-item class="d-flex justify-content-between align-items-center">' +
-                    '       Google Chrome 70+' +
-                    '       <b-badge pill class="browserBadge">' +
-                    '       <b-img src="./images/chrome.png" ' +
-                    '              class="shadow broserIcon" ' +
-                    '              rounded="circle" ' +
-                    '              fluid alt="Responsive image">' +
-                    '       </b-img>' +
-                    '       </b-badge>' +
-                    '     </b-list-group-item>' +
-                    '     <b-list-group-item class="d-flex justify-content-between align-items-center">' +
-                    '       Mozilla Firefox 60+' +
-                    '       <b-badge pill class="browserBadge">' +
-                    '         <b-img src="./images/firefox.png" ' +
+        props:      {
+                      id:          { type: String, required: true }
+                    },
+
+        template:   '<b-modal  :id ="id" title="Browser not supported" hide-footer>' +
+                    '  <div>' +
+                    '    <span class="h6">You are using an unsupported browser, please use one of the following:</span>' +
+                    '    <br>' +
+                    '    <b-list-group>' +
+                    '      <b-list-group-item class="d-flex justify-content-between align-items-center">' +
+                    '        Google Chrome 70+' +
+                    '        <b-badge pill class="browserBadge">' +
+                    '        <b-img src="./images/chrome.png" ' +
                     '               class="shadow broserIcon" ' +
                     '               rounded="circle" ' +
                     '               fluid alt="Responsive image">' +
-                    '                 ' +
-                    '         </b-img>' +
-                    '       </b-badge>' +
-                    '     </b-list-group-item>' +
-                    '     <b-list-group-item class="d-flex justify-content-between align-items-center">' +
-                    '       Apple Safari 12+' +
-                    '       <b-badge pill class="browserBadge">' +
-                    '         <b-img src="./images/safari.png" ' +
-                    '               class="shadow broserIcon" ' +
-                    '               rounded="circle" ' +
-                    '               fluid alt="Responsive image">' +
-                    '         </b-img>' +
-                    '       </b-badge>' +
-                    '     </b-list-group-item>' +
-                    '   </b-list-group>' +
-                    ' </div>'
+                    '        </b-img>' +
+                    '        </b-badge>' +
+                    '      </b-list-group-item>' +
+                    '      <b-list-group-item class="d-flex justify-content-between align-items-center">' +
+                    '        Mozilla Firefox 60+' +
+                    '        <b-badge pill class="browserBadge">' +
+                    '          <b-img src="./images/firefox.png" ' +
+                    '                class="shadow broserIcon" ' +
+                    '                rounded="circle" ' +
+                    '                fluid alt="Responsive image">' +
+                    ' ' +
+                    '          </b-img>' +
+                    '        </b-badge>' +
+                    '      </b-list-group-item>' +
+                    '      <b-list-group-item class="d-flex justify-content-between align-items-center">' +
+                    '        Apple Safari 12+' +
+                    '        <b-badge pill class="browserBadge">' +
+                    '          <b-img src="./images/safari.png" ' +
+                    '                class="shadow broserIcon" ' +
+                    '                rounded="circle"' +
+                    '                fluid alt="Responsive image">' +
+                    '          </b-img>' +
+                    '        </b-badge>' +
+                    '      </b-list-group-item>' +
+                    '    </b-list-group>' +
+                    '  </div>' +
+                    '</b-modal>'
   }
 
   Vue.component('supported-browser', uielto_browser) ;
