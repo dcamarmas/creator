@@ -24,7 +24,6 @@
   var uielto_memory_layout = {
 
         props:      {
-                      architecture_name:              { type: String, required: true },
                       memory_layout:                  { type: Array,  required: true }
                     },
 
@@ -35,36 +34,7 @@
                     },
 
         methods:    {
-                      resetMemory(arch){
-                        show_loading();
-
-                        for (var i = 0; i < load_architectures.length; i++){
-                          if(arch == load_architectures[i].id){
-                            var auxArch = JSON.parse(load_architectures[i].architecture);
-                            var auxArchitecture = register_value_deserialize(auxArch);
-
-                            architecture.memory_layout = auxArchitecture.memory_layout;
-                            app._data.architecture = architecture; //TODO: bidirectional
-
-                            hide_loading();
-                            show_notification('The memory layout has been reset correctly', 'success') ;
-
-                            return;
-                          }
-                        }
-
-                        $.getJSON('architecture/'+arch+'.json', function(cfg){
-                          var auxArchitecture = cfg;
-
-                          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-                          architecture.memory_layout = auxArchitecture2.memory_layout;
-                          app._data.architecture = architecture;
-
-                          hide_loading();
-
-                          show_notification('The memory layout has been reset correctly', 'success') ;
-                        });
-                      }
+                      
                     },
 
         template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv">' +
@@ -81,8 +51,7 @@
                     '      </div>' +
                     '      <div class="compMenu">' +
                     '        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" ' +
-                    '                  id="resetMemory" ' +
-                    '                  v-b-modal.modalResetMem> ' +
+                    '                  v-b-modal.reset_memory_layout> ' +
                     '          <span class="fas fa-power-off"></span>' +
                     '          Reset memory layout' +
                     '        </b-button>' +
@@ -161,14 +130,6 @@
                     '  </div>' +
                     '' +
                     '  <div class="col-lg-3 col-sm-12 "></div>' +
-                    '' +
-                    '  <b-modal id ="modalResetMem" ' +
-                    '           title="Reset memory layout"' +
-                    '           ok-variant="danger" ' +
-                    '           ok-title="Reset" ' +
-                    '           @ok="resetMemory(architecture_name)">' +
-                    '    <span class="h6">Are you sure you want to reset the mememory layout set?</span>' +
-                    '  </b-modal >' +
                     '' +
                     '</div>'
 
