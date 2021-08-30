@@ -42,6 +42,10 @@ cat js/creator_bigint.js \
     components/general/creator_uielto_notifications.js \
     components/general/creator_uielto_instruction_help.js \
     \
+    components/architecture/creator_uielto_preload_architecture.js \
+    components/architecture/creator_uielto_new_architecture.js \
+    components/architecture/creator_uielto_load_architecture.js \
+    components/architecture/creator_uielto_delete_architecture.js \
     components/architecture/creator_uielto_backup.js \
     \
     components/assembly/creator_uielto_load_assembly.js \

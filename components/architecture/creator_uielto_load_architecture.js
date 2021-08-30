@@ -19,82 +19,167 @@
  */
 
 
-        /* jshint esversion: 6 */
+  /* jshint esversion: 6 */
 
-        var uielto_new_architecture = {
+  var uielto_load_architecture = {
 
-        props:      {
-                      date_copy:   { type: String, required: true }
-                    },
+  props:      {
 
-        methods:    {
-                      /*Load backup*/
-                      load_copy(){
-                        app._data.architecture_name = localStorage.getItem("arch_name");
+              },
 
-                        var auxArchitecture = JSON.parse(localStorage.getItem("architecture_copy"));
-                        architecture = register_value_deserialize(auxArchitecture);
+  data:       function () {
+                return {
+                  showLoadArch: false,
+                  name_arch: '',
+                  description_arch: '',
+                  load_arch: ''
+                }
+              },
 
-                        app._data.architecture = architecture;
-                        code_assembly = localStorage.getItem("assembly_copy");
+  methods:    {
+                /*Read the JSON of new architecture*/
+                read_arch(e){
+                  show_loading();
 
-                        for (var i = 0; i < app._data.arch_available.length; i++) {
-                          if(app._data.arch_available[i].name === app._data.architecture_name){
-                            app.load_examples_available(app._data.arch_available[i].examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-                          }
-                        }
+                  e.preventDefault();
+                  if(!this.name_arch || !this.load_arch){
+                    hide_loading();
+                    show_notification('Please complete all fields', 'danger') ;
+                    return;
+                  }
 
-                        architecture_hash = [];
-                        for (var i = 0; i < architecture.components.length; i++){
-                          architecture_hash.push({name: architecture.components[i].name, index: i});
-                          app._data.architecture_hash = architecture_hash;
-                        }
+                  this.showLoadArch = false;
 
-                        backup_stack_address = architecture.memory_layout[4].value;
-                        backup_data_address = architecture.memory_layout[3].value;
+                  var file;
+                  var reader;
+                  var files = document.getElementById('arch_file').files;
 
-                        app.reset(false);
+                  for (var i = 0; i < files.length; i++){
+                    file = files[i];
+                    reader = new FileReader();
+                    reader.onloadend = onFileLoaded(this.name_arch, this.description_arch);
+                    reader.readAsBinaryString(file);
+                  }
 
-                        app.change_UI_mode('simulator');
-                        app.change_data_view('registers' , 'int');
-                        app.$forceUpdate();
+                  this.name_arch = '';
+                  this.description_arch = '';
+                  this.load_arch = '';
 
-                        show_notification('The backup has been loaded correctly', 'success') ;
-                      },
 
-                      /*Delete backup*/
-                      remove_copy(){
-                        localStorage.removeItem("architecture_copy");
-                        localStorage.removeItem("assembly_copy");
-                        localStorage.removeItem("date_copy");
-                        app.$refs.copyRef.hide();
-                      },
-                    },
+                  function onFileLoaded(name_arch, description_arch){
+                    architecture_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
+                    load_architectures_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
+                    back_card.push({name: architecture_available[architecture_available.length-1].name , background: "default"});
+                    load_architectures.push({id: name_arch, architecture: event.currentTarget.result});
 
-        template:   ' <b-form>' +
-                    '   <b-form-input v-on:input="debounce(\'name_arch\', $event)" ' +
-                    '                 :value="name_arch" ' +
-                    '                 placeholder="Enter the name of the architecture" ' +
-                    '                 :state="valid(name_arch)" ' +
-                    '                 title="Architecture Name">' +
-                    '   </b-form-input>' +
-                    '   <br>' +
-                    '   <b-form-textarea v-on:input="debounce(\'description_arch\', $event)" ' +
-                    '                    :value="description_arch" ' +
-                    '                    placeholder="Enter a description of the architecture" ' +
-                    '                    rows="3" ' +
-                    '                    title="Architecture Description">' +
-                    '   </b-form-textarea>' +
-                    '   <br>' +
-                    '   <b-form-file v-model="load_arch" ' +
-                    '                placeholder="Choose a file..." ' +
-                    '                id="arch_file" ' +
-                    '                accept=".json" ' +
-                    '                :state="valid(load_arch)">' +
-                    '   </b-form-file>' +
-                    ' </b-form>'
-      
-        }
+                    if (typeof(Storage) !== "undefined"){
+                      var auxArch = JSON.stringify(load_architectures, null, 2);
+                      localStorage.setItem("load_architectures", auxArch);
 
-        Vue.component('form-new-architecture', uielto_new_architecture) ;
+                      auxArch = JSON.stringify(load_architectures_available, null, 2);
+                      localStorage.setItem("load_architectures_available", auxArch);
+                    }
 
+                    show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+                    hide_loading();
+                  }
+                },
+
+                /*Form validator*/
+                valid(value){
+                  if(parseInt(value) != 0){
+                    if(!value){
+                      return false;
+                    }
+                    else{
+                      return true;
+                    }
+                  }
+                  else{
+                    return true;
+                  }
+                },
+
+                /*Stop user interface refresh*/
+                debounce: _.debounce(function (param, e) {
+                  console_log(param);
+                  console_log(e);
+
+                  e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                  var re = new RegExp("'","g");
+                  e = e.replace(re, '"');
+                  re = new RegExp("[\f]","g");
+                  e = e.replace(re, '\\f');
+                  re = new RegExp("[\n\]","g");
+                  e = e.replace(re, '\\n');
+                  re = new RegExp("[\r]","g");
+                  e = e.replace(re, '\\r');
+                  re = new RegExp("[\t]","g");
+                  e = e.replace(re, '\\t');
+                  re = new RegExp("[\v]","g");
+                  e = e.replace(re, '\\v');
+
+                  if(e == ""){
+                    this[param] = null;
+                    return;
+                  }
+
+                  console_log("this." + param + "= '" + e + "'");
+
+                  eval("this." + param + "= '" + e + "'");
+
+                  //this[param] = e.toString();
+                  //app.$forceUpdate();
+                }, getDebounceTime())
+              },
+
+  template:   ' <div> ' +
+              '   <b-card no-body class="overflow-hidden arch_card architectureCard" ' +
+              '           v-b-modal.load_arch>' +
+              '     <b-row no-gutters>' +
+              '        <b-col md="3" class="center">' +
+              '         <b-card-img src="./images/load_icon.png" ' +
+              '                     alt="load icon" class="rounded-0 architectureImg">' +
+              '         </b-card-img>' +
+              '       </b-col>' +
+              ' ' +
+              '       <b-col md="9">' +
+              '         <b-card-body title="Load Architecture" title-tag="h2">' +
+              '           <b-card-text class="justify">' +
+              '             Allows to load the definition of an already created architecture.' +
+              '           </b-card-text>' +
+              '         </b-card-body>' +
+              '       </b-col>' +
+              '     </b-row>' +
+              '   </b-card>' +
+
+              '   <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">' +
+              '     <b-form>' +
+              '       <b-form-input v-on:input="debounce(\'name_arch\', $event)" ' +
+              '                     :value="name_arch" ' +
+              '                     placeholder="Enter the name of the architecture" ' +
+              '                     :state="valid(name_arch)" ' +
+              '                     title="Architecture Name">' +
+              '       </b-form-input>' +
+              '       <br>' +
+              '       <b-form-textarea v-on:input="debounce(\'description_arch\', $event)" ' +
+              '                        :value="description_arch" ' +
+              '                        placeholder="Enter a description of the architecture" ' +
+              '                        rows="3" ' +
+              '                        title="Architecture Description">' +
+              '       </b-form-textarea>' +
+              '       <br>' +
+              '       <b-form-file v-model="load_arch" ' +
+              '                    placeholder="Choose a file..." ' +
+              '                    id="arch_file" ' +
+              '                    accept=".json" ' +
+              '                    :state="valid(load_arch)">' +
+              '       </b-form-file>' +
+              '     </b-form>' +
+              '   </b-modal>' +
+              ' </div>'
+
+  }
+
+  Vue.component('load-architecture', uielto_load_architecture) ;

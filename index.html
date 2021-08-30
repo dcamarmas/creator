@@ -102,13 +102,7 @@
         </spinner-loading>
 
         <!-- Browser not supported modal -->
-        <!-- TODO: Try to include the modal into the component -->
-        <b-modal  id ="modalBrowser" 
-                  title="Browser not supported" 
-                  ref="browser" 
-                  hide-footer>
-          <supported-browser></supported-browser>
-        </b-modal >
+        <supported-browser id ="modalBrowser"></supported-browser>
 
 
         <header>
@@ -172,6 +166,7 @@
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
           
           <!-- Navbar -->
+          <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 p-0"></div>
             <div class="col-lg-6 col-sm-12 p-0"></div>
@@ -198,18 +193,22 @@
             </div>
           </div>
 
+
+          <!-- Information popover -->
           <popover-info target="info_men" show_instruction_help="false"></popover-info>
+
+
 
           <!-- Architecture menu -->
           <div class="col-lg-12 col-sm-12" id="load_menu_arch">
             <div class="col-lg-12 col-sm-12 row p-0 m-0">
 
-              <div class="col-lg-1 col-sm-1">
-                
-              </div>
+              <div class="col-lg-1 col-sm-1"></div>
               <div class="col-lg-10 col-sm-10">
                 <b-list-group>
                   <b-list-group-item>
+
+
                     <b-card no-body class="overflow-hidden arch_card architectureCard" 
                             v-for="(item, index) in arch_available" 
                             @mouseover="change_background(item.name, 1)"
@@ -240,105 +239,55 @@
                       </b-row>
                     </b-card>
 
-                    <!-- Delete architecture modal -->
-                    <b-modal id ="modalDeletArch" 
-                             :title="modalDeletArch.title" 
-                             ok-variant="danger" 
-                             ok-title="Delete" 
-                             @ok="remove_cache_arch(modalDeletArch.index)">
-                      <span class="h6">Are you sure you want to delete the architecture?</span>
-                    </b-modal >
 
-                    <b-card no-body class="overflow-hidden arch_card architectureCard">
-                      <b-row no-gutters @click="new_arch">
-                        <b-col md="3" class="center">
-                          <b-card-img src="./images/new_icon.png" 
-                                      alt="new icon" 
-                                      class="rounded-0 architectureImg">
-                          </b-card-img>
-                        </b-col>
+                    <!--<preload-architecture :arch_available="arch_available"
+                                          :back_card="back_card">
+                    </preload-architecture>-->
 
-                        <b-col md="9">
-                          <b-card-body title="New Architecture" title-tag="h2" >
-                            <b-card-text class="justify">
-                              Allows you to define an architecture from scratch.
-                            </b-card-text>
-                          </b-card-body>
-                        </b-col>
-                      </b-row>
-                    </b-card>
+                    <!-- New architecture card -->
+                    <new-architecture></new-architecture>
 
-                    <b-card no-body class="overflow-hidden arch_card architectureCard" 
-                            v-b-modal.load_arch>
-                      <b-row no-gutters>
-                         <b-col md="3" class="center">
-                          <b-card-img src="./images/load_icon.png" 
-                                      alt="load icon" class="rounded-0 architectureImg">
-                          </b-card-img>
-                        </b-col>
+                    <!-- Load new architecture card -->
+                    <load-architecture></load-architecture>
 
-                        <b-col md="9">
-                          <b-card-body title="Load Architecture" title-tag="h2">
-                            <b-card-text class="justify">
-                              Allows to load the definition of an already created architecture.
-                            </b-card-text>
-                          </b-card-body>
-                        </b-col>
-                      </b-row>
-
-                      <!-- Load new architecture modal -->
-                      <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">
-                        <b-form>
-                          <b-form-input v-on:input="debounce('name_arch', $event)" 
-                                        :value="name_arch" 
-                                        placeholder="Enter the name of the architecture" 
-                                        :state="valid(name_arch)" 
-                                        title="Architecture Name">
-                          </b-form-input>
-                          <br>
-                          <b-form-textarea v-on:input="debounce('description_arch', $event)" 
-                                           :value="description_arch" 
-                                           placeholder="Enter a description of the architecture" 
-                                           rows="3" 
-                                           title="Architecture Description">
-                          </b-form-textarea>
-                          <br>
-                          <b-form-file v-model="load_arch" 
-                                       placeholder="Choose a file..." 
-                                       id="arch_file" 
-                                       accept=".json" 
-                                       :state="valid(load_arch)">
-                          </b-form-file>
-                        </b-form>
-                      </b-modal>
-
-                    </b-card>
                   </b-list-group-item>
                 </b-list-group>
+
+
+                <!-- Architecture selector modals -->
+
+                <!-- Delete architecture modal -->
+                <!-- TODO: include into preload component -->
+                <delete-architecture  id="modalDeletArch"
+                                      :index="modalDeletArchIndex">                      
+                </delete-architecture>
+
               </div>
-              <div class="col-lg-1 col-sm-1">
-                
-              </div>
+
+              <div class="col-lg-1 col-sm-1"></div>
             </div>
             <br>
 
 
-
-
-
-
-
-
             <!-- Backup modal -->
-            <!-- TODO: Try to include the modal into the component -->
-            <b-modal id="copy" hide-footer hide-header ref="copyRef" size="sm" centered>
+            <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
 
-              <uielto-backup :date_copy="date_copy"></uielto-backup>
-
-            </b-modal>
           </div>
 
         </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -2863,7 +2812,6 @@
           </div>
 
 
-
           <!-- Assembly navbar modals -->
 
           <!-- Load assembly form -->
@@ -3028,7 +2976,6 @@
           </div>
 
 
-
           <!-- Simulator navbar modals -->
 
           <!-- Examples modal -->
@@ -3089,30 +3036,6 @@
                          :callee_subrutine="callee_subrutine" 
                          :caller_subrutine="caller_subrutine">
               </table-mem>
-
-              <!--TODO: try to include in a component this modal-->
-              <b-modal ref="space_modal" 
-                       size="sm" 
-                       title="Select space view:" 
-                       @hidden="hide_space_modal" 
-                       @ok="change_space_view">
-                <b-form-radio v-model="selected_space_view" value="sig_int">Signed Integer</b-form-radio>
-                <b-form-radio v-model="selected_space_view" value="unsig_int">Unsigned Integer</b-form-radio>
-                <b-form-radio v-model="selected_space_view" value="float">Float</b-form-radio>
-                <b-form-radio v-model="selected_space_view" value="char">Char</b-form-radio>
-              </b-modal>
-
-              <!--TODO: try to include in a component this modal-->
-              <b-modal ref="stack_modal" 
-                       size="sm" 
-                       title="Select stack word view:" 
-                       @hidden="hide_stack_modal" 
-                       @ok="change_stack_view">
-                <b-form-radio v-model="selected_stack_view" value="sig_int">Signed Integer</b-form-radio>
-                <b-form-radio v-model="selected_stack_view" value="unsig_int">Unsigned Integer</b-form-radio>
-                <b-form-radio v-model="selected_stack_view" value="float">Float</b-form-radio>
-                <b-form-radio v-model="selected_stack_view" value="char">Char</b-form-radio>
-              </b-modal>
 
             </div>
 
