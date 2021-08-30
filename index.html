@@ -161,8 +161,10 @@
 
         
 
+        <!----------------------->
+        <!-- Load architecture -->
+        <!----------------------->
 
-        <!-- Load architecture menu -->
         <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
           
           <!-- Navbar -->
@@ -297,8 +299,10 @@
 
 
 
+        <!------------------>
+        <!-- Architecture -->
+        <!------------------>
 
-        <!-- Architecture editor view -->
         <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
 
           <!-- Navbar -->
@@ -2362,107 +2366,116 @@
                   </div>
                 </b-tab>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                 <!-- Directives definition -->
                 <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
-                  <br>
-                  <span class="h6">Directives set:</span>
 
-                  <div class="col-lg-12 col-sm-12 row">
-                    <div class="compMenu">
-                      <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
-                                id="newDirectiveBtn" 
-                                v-b-modal.new_directive> 
-                        <span class="fas fa-plus-circle"></span>
-                        New directive
-                      </b-button>
+                  <!--<directives :directives="architecture.directives"><directives>-->
+
+                  <div>
+                    <br>
+                    <span class="h6">Directives set:</span>
+
+                    <div class="col-lg-12 col-sm-12 row">
+                      <div class="compMenu">
+                        <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
+                                  id="newDirectiveBtn" 
+                                  v-b-modal.new_directive> 
+                          <span class="fas fa-plus-circle"></span>
+                          New directive
+                        </b-button>
+                      </div>
+
+                      <div class="compMenu">
+                        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" 
+                                  id="resetDirectives" 
+                                  v-b-modal.reset_directives> 
+                          <span class="fas fa-power-off"></span>
+                          Reset directives
+                        </b-button>
+                      </div>
                     </div>
 
-                    <div class="compMenu">
-                      <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" 
-                                id="resetDirectives" 
-                                @click="resetDirModal(architecture_name, $event)"> 
-                        <span class="fas fa-power-off"></span>
-                        Reset directives
-                      </b-button>
+                    <div class="col-lg-12 col-sm-12 mt-3">
+                      <b-table small 
+                               :items="architecture.directives" 
+                               :fields="directivesFields" 
+                               class="text-center" 
+                               sticky-header="60vh">
+                        <template v-slot:cell(actions)="row" class="">
+                          <b-button @click.stop="editDirModal(row.item.name, $event.target)" 
+                                    class="btn btn-outline-secondary btn-sm buttonBackground h-100">
+                            <span class="far fa-edit"></span> 
+                            Edit
+                          </b-button>
+                          <b-button @click.stop="delDirModal(row.item.name, $event.target)"
+                                    class="btn btn-outline-danger btn-sm buttonBackground h-100">
+                            <span class="far fa-trash-alt"></span>
+                            Delete
+                          </b-button> 
+                        </template>
+                      </b-table>
                     </div>
                   </div>
 
-                  <!-- New directive form -->
-                  <b-modal id ="new_directive" 
-                           title = "New Directive"
-                           ok-title="Save"
-                           @ok="newDirVerify($event)"
-                           v-model="showNewDirective"
-                           @hidden="emptyFormDirective">
-                    <b-form>
-                      <b-form-group label="Name:">
-                        <b-form-input type="text"
-                                      :state="valid(formDirective.name)" 
-                                      v-on:input="debounce('formDirective.name', $event)" 
-                                      :value="formDirective.name" 
-                                      required 
-                                      placeholder="Enter name" 
-                                      size="sm" 
-                                      title="Directive name">
-                        </b-form-input>
-                      </b-form-group>
-                      <b-form-group label="action:">
-                        <b-form-select :options="actionTypes" 
-                                       required 
-                                       v-model="formDirective.action" 
-                                       :state="valid(formDirective.action)" 
-                                       size="sm"
-                                       title="Action">
-                        </b-form-select>
-                      </b-form-group>
-                      <b-form-group label="Size:" 
-                                    v-if="formDirective.action != '' && formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
-                        <b-form-input type="number" 
-                                      :state="valid(formDirective.size)" 
-                                      v-on:input="debounce('formDirective.size', $event)" 
-                                      :value="formDirective.size" 
-                                      required 
-                                      placeholder="Enter size" 
-                                      size="sm" 
-                                      min="0" 
-                                      title="Directive size">
-                        </b-form-input>
-                      </b-form-group>
-                    </b-form>
-                  </b-modal >
+
+                  <!-- Directives modals -->
+
+                  <!-- New directive -->
+                  <directives-new id="new_directive"></directives-new>
 
                   <!-- Reset directives -->
-                  <b-modal id ="modalResetDir" 
-                           :title="modalResetDir.title" 
+                  <directives-reset id="reset_directives"
+                                    :architecture_name="architecture_name">
+                  </directives-reset>
+
+                  <!-- Delete directive -->
+                  <!--<directives-delete  id="delete_directive"
+                                      :modalDeletDir="modalDeletDir">
+                  </directives-delete>-->
+
+                  <b-modal id ="delete_directive" 
+                           :title="modalDeletDir.title" 
                            ok-variant="danger" 
-                           ok-title="Reset" 
-                           @ok="resetDirectives(modalResetDir.element)">
-                    <span class="h6">Are you sure you want to reset the directives set?</span>
-                  </b-modal >
+                           ok-title="Delete" 
+                           @ok="delDirective(modalDeletDir.element)">
+                    <span class="h6">Are you sure you want to delete the item?</span>
+                  </b-modal>
 
-                  <!-- Directives set table -->
-                  <div class="col-lg-12 col-sm-12 mt-3">
-                    <b-table small 
-                             :items="architecture.directives" 
-                             :fields="directivesFields" 
-                             class="text-center" 
-                             sticky-header="60vh">
-                      <!-- For each directive -->
-                      <template v-slot:cell(actions)="row" class="">
-                        <b-button @click.stop="editDirModal(row.item.name, $event.target)" 
-                                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">
-                          <span class="far fa-edit"></span> 
-                          Edit
-                        </b-button>
-                        <b-button @click.stop="delDirModal(row.item.name, $event.target)"
-                                  class="btn btn-outline-danger btn-sm buttonBackground h-100">
-                          <span class="far fa-trash-alt"></span>
-                          Delete
-                        </b-button> 
-                      </template>
-                    </b-table>
 
-                    <!-- Edit directive form -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                  <!-- Edit directive form -->
                     <b-modal id ="modalEditDirective" 
                              :title = "modalEditDirective.title"
                              ok-title="Save" 
@@ -2506,15 +2519,8 @@
                       </b-form>
                     </b-modal >
 
-                    <!-- Delete directive -->
-                    <b-modal id ="modalDeletDir" 
-                             :title="modalDeletDir.title" 
-                             ok-variant="danger" 
-                             ok-title="Delete" 
-                             @ok="delDirective(modalDeletDir.element)">
-                      <span class="h6">Are you sure you want to delete the item?</span>
-                    </b-modal >
-                  </div>
+                    
+
                 </b-tab>
               </b-tabs>
             </div>
@@ -2539,8 +2545,10 @@
 
 
 
-
+        <!------------------->
         <!-- Assembly view -->
+        <!------------------->
+
         <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
 
           <!-- Navbar -->
@@ -2697,7 +2705,10 @@
 
 
 
+        <!-------------------->
         <!-- Simulator view -->
+        <!-------------------->
+
         <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
           <!-- Navbar -->

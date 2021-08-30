@@ -312,6 +312,8 @@ try
         definition: '',
         help: '',
       },
+      /* Allow instruction with fractioned fields */
+      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
 
 
 
@@ -328,18 +330,20 @@ try
 
 
 
-      
       /*Directives table fields*/
       directivesFields: ['name', 'action', 'size', 'actions'],
+
+
+
+
       /*Directives types*/
       actionTypes: actionTypes,
-      /*Directives reset*/
-      modalResetDir: {
-        title: '',
-        element: '',
-      },
+
+
+
+
+
       /*Modals directives*/
-      showNewDirective: false,
       showEditDirective: false,
       /*Edit directive modal*/
       modalEditDirective:{
@@ -357,8 +361,7 @@ try
         action: '',
         size: 0,
       },
-      /* Allow instruction with fractioned fields */
-      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
+      
 
 
 
@@ -2639,78 +2642,76 @@ try
         return this.instructionFormPageLink[pageNum - 1].slice(1)
       },
 
-      /*Show reset directive modal*/
-      resetDirModal(elem, button){
-        this.modalResetDir.title = "Reset " + elem + " directives";
-        this.modalResetDir.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalResetDir', button);
-      },
 
-      /*Reset directives*/
-      resetDirectives(arch){
-        show_loading();
 
-        for (var i = 0; i < load_architectures.length; i++) {
-          if(arch == load_architectures[i].id){
-            var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = register_value_deserialize(auxArch);
 
-            architecture.directives = auxArchitecture.directives;
-            app._data.architecture = architecture;
 
-            hide_loading();
-            show_notification('The directive set has been reset correctly', 'success') ;
-            return;
-          }
-        }
 
-        $.getJSON('architecture/'+arch+'.json', function(cfg){
-          var auxArchitecture = cfg;
 
-          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-          architecture.directives = auxArchitecture2.directives;
 
-          app._data.architecture = architecture;
 
-          hide_loading();
-          show_notification('The directive set has been reset correctly', 'success') ;
-        });
-      },
 
-      /*Verify all fields of new directive*/
-      newDirVerify(evt){
-        evt.preventDefault();
 
-        if (!this.formDirective.name || !this.formDirective.action) {
-          show_notification('Please complete all fields', 'danger') ;
-        }
-        else {
-          if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
-            show_notification('Please complete all fields', 'danger') ;
-          }
-          else{
-            this.newDirective();
-          }
-        }
-      },
 
-      /*Create new directive*/
-      newDirective(){
-        for (var i = 0; i < architecture.directives.length; i++) {
-          if(this.formDirective.name == architecture.directives[i].name){
-            show_notification('The directive already exists', 'danger') ;
-            return;
-          }
-        }
 
-        this.showNewDirective = false;
-        if(this.formDirective.action != 'byte' && this.formDirective.action != 'half_word' && this.formDirective.action != 'word' && this.formDirective.action != 'double_word' && this.formDirective.action != 'float' && this.formDirective.action != 'double' && this.formDirective.action != 'space'){
-          this.formDirective.size = null;
-        }
 
-        var newDir = {name: this.formDirective.name, action: this.formDirective.action, size: this.formDirective.size};
-        architecture.directives.push(newDir);
-      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Show edit directive modal*/
       editDirModal(elem, button){
@@ -2770,11 +2771,21 @@ try
         }
       },
 
+      /*Empty directive form*/
+      emptyFormDirective(){
+        this.formDirective.name = '';
+        this.formDirective.action = '';
+        this.formDirective.size = 0;
+      },
+
+
+
+
       /*Show delete directive modal*/
       delDirModal(elem, button){
         this.modalDeletDir.title = "Delete " + elem;
         this.modalDeletDir.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalDeletDir', button);
+        this.$root.$emit('bv::show::modal', 'delete_directive', button);
       },
 
       /*Delete directive*/
@@ -2786,12 +2797,11 @@ try
         }
       },
 
-      /*Empty directive form*/
-      emptyFormDirective(){
-        this.formDirective.name = '';
-        this.formDirective.action = '';
-        this.formDirective.size = 0;
-      },
+
+      
+
+
+
 
 
 
@@ -2819,37 +2829,7 @@ try
         }
       },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      
 
       /************/
       /* Assembly */
