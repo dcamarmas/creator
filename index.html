@@ -208,7 +208,7 @@
                 <b-list-group>
                   <b-list-group-item>
 
-
+                    <!-- TODO: preload component -->
                     <b-card no-body class="overflow-hidden arch_card architectureCard" 
                             v-for="(item, index) in arch_available" 
                             @mouseover="change_background(item.name, 1)"
@@ -239,7 +239,7 @@
                       </b-row>
                     </b-card>
 
-
+                    <!-- TODO: v-for not found -->
                     <!--<preload-architecture :arch_available="arch_available"
                                           :back_card="back_card">
                     </preload-architecture>-->
@@ -302,6 +302,7 @@
         <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
 
           <!-- Navbar -->
+          <!-- TODO: navbar component -->
           <div class="contenedor menu row my-3">
             <div class="col-lg-3 col-sm-12 p-0">
               <div class="col-lg-12 col-sm-12">
@@ -376,39 +377,17 @@
                 </div>
               </div>
             </div>
-
-
-
-
-
-
-
-
-
-            <!-- Information popover -->
-            <popover-info target="info_arch" show_instruction_help="true"></popover-info>
-
-
-
-
-
-
-
-
-            <!-- Save architecture form -->
-            <b-modal id ="save_architecture" title = "Save Architecture" ok-title="Save to File" @ok="arch_save">
-              <span class="h6">Enter the name of the architecture to save:</span>
-              <br>
-              <b-form-input v-on:input="debounce('name_arch_save', $event)" 
-                            :value="name_arch_save" 
-                            type="text" 
-                            placeholder="Enter the name" 
-                            class="form-control form-control-sm fileForm" 
-                            title="Save Architecture"
-                            :state="valid(name_arch_save)">
-              </b-form-input>
-            </b-modal>
           </div>
+
+
+          <!-- Architecture navbar modals -->
+          <save-architecture id="save_architecture"></save-architecture>
+
+
+          <!-- Information popover -->
+          <popover-info target="info_arch" show_instruction_help="true"></popover-info>
+
+
 
           <!-- Instruction set -->
           <div class="contenedor menu row">
@@ -420,177 +399,34 @@
                 <!-- Memory layout -->
                 <b-tab title="Memory Layout" active>
                   
+                  <memory-layout  :architecture_name="architecture_name"
+                                  :memory_layout="architecture.memory_layout">       
+                  </memory-layout>
+
                   <!-- Memory layout form -->
-                  <div class="col-lg-12 col-sm-12 row memoryLayoutDiv">
-                    <div class="col-lg-12 col-sm-12">
-                      <span class="h6">Memory layout:</span>
-                      <div class="col-lg-12 col-sm-12 row">
-                        <div class="compMenu">
-                          <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" 
-                                    v-b-modal.change>
-                            <span class="fas fa-exchange-alt"></span> 
-                            Change memory layout
-                          </b-button>
-                        </div>
-                        <div class="compMenu">
-                          <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" 
-                                    id="resetMemory" 
-                                    @click="resetMemModal(architecture_name, $event)"> 
-                            <span class="fas fa-power-off"></span>
-                            Reset memory layout
-                          </b-button>
-                        </div>
-                      </div>
+                  <memory-layout-form id="change_memory_layout"></memory-layout-form>
 
-                      <br>
-
-                      <!-- Reset memory layout -->
-                      <b-modal id ="modalResetMem" 
-                               :title="modalResetMem.title"
-                               ok-variant="danger" 
-                               ok-title="Reset" 
-                               @ok="resetMemory(modalResetMem.element)">
-                        <span class="h6">Are you sure you want to reset the mememory layout set?</span>
-                      </b-modal >
-
-                      <!-- Change memory layout -->
-                      <b-modal id ="change" 
-                               title="Change memory layout" 
-                               ok-title="Change" 
-                               @ok="changeMemoryLayout">
-                        <span class="h6">.text Start:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[0]', $event)" 
-                                      :value="memory_layout[0]" 
-                                      required 
-                                      size="sm" 
-                                      title=".text start" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.text End:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[1]', $event)" 
-                                      :value="memory_layout[1]" 
-                                      required 
-                                      size="sm" 
-                                      title=".text end" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.data Start:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[2]', $event)" 
-                                      :value="memory_layout[2]" 
-                                      required 
-                                      size="sm" 
-                                      title=".data tart" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.data End:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[3]', $event)" 
-                                      :value="memory_layout[3]" 
-                                      required 
-                                      size="sm" 
-                                      title=".data end" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.stack End:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[4]', $event)" 
-                                      :value="memory_layout[4]" 
-                                      required 
-                                      size="sm" 
-                                      title=".stack start" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                        <span class="h6">.stack Start:</span>
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('memory_layout[5]', $event)" 
-                                      :value="memory_layout[5]"
-                                      required size="sm" 
-                                      title=".stack end" 
-                                      class="memoryLayoutForm">
-                        </b-form-input>
-                      </b-modal >
-                    </div>
-
-                    <div class="col-lg-3 col-sm-12 ">
-
-                    </div>
-
-                    <!-- Memory layout sketch -->
-                    <div class="col-lg-6 col-sm-12 ">
-                      <b-list-group class="memoryLayout">
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="info" class="memoryLayout">
-                            <br>
-                            .text
-                            <br>
-                          </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder left">
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[0].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                            <br>
-                            <br>
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[1].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder left">
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[2].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                            <br>
-                            <br>
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[3].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="secondary" class="memoryLayout">
-                            <br>
-                            ...
-                            <br>
-                            <br>
-                          </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder">
-                            
-                          </b-list-group-item>
-                        </b-list-group>
-
-                        <b-list-group horizontal>
-                          <b-list-group-item variant="success" class="memoryLayout">
-                            <br>
-                            stack
-                            <br>
-                          </b-list-group-item>
-                          <b-list-group-item class="memoryLayout noBorder left">
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[4].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                            <br>
-                            <br>
-                            <span class="h6" v-if="architecture.memory_layout.length > 0">
-                              0x{{((architecture.memory_layout[5].value).toString(16)).padStart(8, "0").toUpperCase()}}
-                            </span>
-                          </b-list-group-item>
-                        </b-list-group>
-                      </b-list-group>
-                    </div>
-
-                    <div class="col-lg-3 col-sm-12 ">
-
-                    </div>
-
-                  </div>
                 </b-tab>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
 
                 <!-- Components -->
                 <b-tab title="Components" :disabled="advanced_mode" v-if="!advanced_mode">
