@@ -38,46 +38,78 @@ try
     /*Vue data*/
     data: {
 
-      /*Global*/
+      /********************/
+      /* Global Variables */
+      /********************/
 
-      /*Version Number*/
+      //
+      // General information
+      //
+
+      //Version Number
       version: '',
-      /*View*/
+
+      //Architecture name
+      architecture_name: '',
+
+      //Architecture bits
+      number_bits: 32,
+
+
+      //
+      // Current view
+      //
+
       creator_mode: "load_architecture",
-      /*Notification speed*/
-      notificationTime: 1500, //TODO: general variable?
-      /*Auto Scroll*/
-      autoscroll: true,
-      /*Auto Scroll*/
-      fontSize: 15,
-      /*Debug*/
-      c_debug: false,
-      /*Dark Mode*/
-      dark: false,
-      /*Displayed notifications*/
-      notifications: notifications,
-      /*Accesskey*/
+
+
+      //
+      // Configuration
+      //
+
+      //Accesskey
       browser: "",
 
+      //Notification speed
+      notificationTime: 1500, //TODO: general variable?
+      //Displayed notifications
+      notifications: notifications,
 
+      //Auto Scroll
+      autoscroll: true,
 
+      // Font size
+      fontSize: 15,
 
+      //Debug
+      c_debug: false,
 
+      //Dark Mode
+      dark: false,
 
-      /*Architecture editor*/
+      
 
+      /*************************/
+      /* Architecture Selector */
+      /*************************/
+
+      //
       //Available architectures
+      //
+
       arch_available: architecture_available,
+
       //Architectures card background
       back_card: back_card,
+
       //Delete architecture modal //TODO: include into preload component
       modalDeletArchIndex: 0,
 
 
+      //
+      //Backup 
+      //
 
-
-
-      /*Backup date*/
       date_copy: '',
 
 
@@ -96,36 +128,40 @@ try
 
 
 
+      /****************/
+      /* Architecture */
+      /****************/
 
 
-
-
-
-      /*Architecture name*/
-      architecture_name: '',
-      /*Architecture bits*/
-      number_bits: 32,
+      
+      
       /*Load architecture*/
       architecture: architecture,
       architecture_hash: architecture_hash,
-      /*Saved file name*/
-      name_arch_save: '',
+
+
       /*Advanced mode*/
       advanced_mode: true,
-      /*Memory layout form*/
-      memory_layout: ["", "", "", "", "", ""],
-      /*Memory layout reset*/
-      modalResetMem: {
-        title: '',
-        element: '',
-      },
+
+
+
+
+
+
+
+
+
       /*Align memory*/
       align: false,
+
       /*Component table fields*/
       archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
+
       /*Components types*/
       componentsTypes: componentsTypes,
+
       /*Floating point registers*/
+
       simple_reg: [],
       /*Components reset*/
       modalResetArch: {
@@ -415,7 +451,7 @@ try
 
       totalStats: totalStats,
       stats: stats,
-      /*Stats Graph values*/
+      //Stats Graph values
       stats_value: stats_value,
 
       //
@@ -605,9 +641,9 @@ try
 
 
 
-      /***********************/
-      /* Architecture editor */
-      /***********************/
+      /*************************/
+      /* Architecture Selector */
+      /*************************/
 
       //Load the available architectures and check if exists backup
       load_arch_available() {
@@ -813,6 +849,21 @@ try
 
 
 
+      /****************/
+      /* Architecture */
+      /****************/
+
+      //Change the execution mode of architecture editor
+      change_mode(){
+        if(app._data.advanced_mode == false){
+          app._data.advanced_mode = true;
+        }
+        else{
+          app._data.advanced_mode = false;
+        }
+      },
+
+
 
 
 
@@ -855,141 +906,110 @@ try
           app.$forceUpdate();
       },
 
-      /*Save the current architecture in a JSON file*/
-      arch_save(){
-        var auxObject = jQuery.extend(true, {}, architecture);
-        var auxArchitecture = register_value_serialize(auxObject);
 
-        auxArchitecture.components.forEach((c, i) => {
-          c.elements.forEach((e, j) => {
-            if (e.default_value) e.value = e.default_value;
-            else e.value = "0";
-          });
-        });
 
-        var textToWrite = JSON.stringify(auxArchitecture, null, 2);
-        var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
-        var fileNameToSaveAs;
 
-        if(this.name_arch_save == ''){
-          fileNameToSaveAs = "architecture.json";
-        }
-        else{
-          fileNameToSaveAs = this.name_arch_save + ".json";
-        }
 
-        var downloadLink = document.createElement("a");
-        downloadLink.download = fileNameToSaveAs;
-        downloadLink.innerHTML = "My Hidden Link";
 
-        window.URL = window.URL || window.webkitURL;
 
-        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-        downloadLink.onclick = destroyClickedElement;
-        downloadLink.style.display = "none";
-        document.body.appendChild(downloadLink);
 
-        downloadLink.click();
 
-        show_notification('Save architecture', 'success') ;
-      },
 
-      /*Change the execution mode of architecture editor*/
-      change_mode(){
-        if(app._data.advanced_mode == false){
-          app._data.advanced_mode = true;
-        }
-        else{
-          app._data.advanced_mode = false;
-        }
-      },
 
-      /*Show reset modal of memory layout*/
-      resetMemModal(elem, button){
-        this.modalResetMem.title = "Reset memory layout";
-        this.modalResetMem.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalResetMem', button);
-      },
 
-      /*Reset memory layout*/
-      resetMemory(arch){
-        show_loading();
 
-        for (var i = 0; i < load_architectures.length; i++){
-          if(arch == load_architectures[i].id){
-            var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = register_value_deserialize(auxArch);
 
-            architecture.memory_layout = auxArchitecture.memory_layout;
-            app._data.architecture = architecture;
 
-            hide_loading();
-            show_notification('The memory layout has been reset correctly', 'success') ;
 
-            return;
-          }
-        }
 
-        $.getJSON('architecture/'+arch+'.json', function(cfg){
-          var auxArchitecture = cfg;
 
-          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-          architecture.memory_layout = auxArchitecture2.memory_layout;
-          app._data.architecture = architecture;
 
-          hide_loading();
-          show_notification('The memory layout has been reset correctly', 'success') ;
-        });
-      },
 
-      /*Check de memory layout changes*/
-      changeMemoryLayout(){
-        var auxMemoryLayout = jQuery.extend(true, {}, architecture.memory_layout);
 
-        for(var i = 0; i < this.memory_layout.length; i++){
-          if(this.memory_layout[i] != "" && this.memory_layout[i] != null){
-            if(!isNaN(parseInt(this.memory_layout[i]))){
-              auxMemoryLayout[i].value = parseInt(this.memory_layout[i]);
-              if (auxMemoryLayout[i].value < 0) {
-                  show_notification('The value can not be negative', 'danger') ;
-                  return;
-              }
-            }
-            else {
-                  show_notification('The value must be a number', 'danger') ;
-                  return;
-            }
-          }
-        }
 
-        for(var i = 0; i < 6; i++){
-          /*if (i%2 == 0 && auxMemoryLayout[i].value % 4 != 0){
-                show_notification('The memory must be aligned', 'danger') ;
-                return;
-            }*/
 
-          for (var j = i; j < 6; j++) {
-            if (auxMemoryLayout[i].value > auxMemoryLayout[j].value) {
-                show_notification('The segment can not be overlap', 'danger') ;
-                return;
-            }
-          }
-        }
 
-        for(var i = 0; i < 6; i++){
-          architecture.memory_layout[i].value = auxMemoryLayout[i].value;
-        }
 
-        app._data.architecture = architecture;
 
-        backup_stack_address = architecture.memory_layout[4].value;
-        backup_data_address = architecture.memory_layout[3].value;
 
-        for(var i = 0; i < 6; i++){
-          app._data.memory_layout[i] = "";
-        }
-        app.$forceUpdate();
-      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Register ID assigment*/
       element_id(name, type, double){
