@@ -52,6 +52,10 @@ cat js/creator_bigint.js \
     components/architecture/creator_uielto_memory_layout.js \
     components/architecture/creator_uielto_memory_layout_edit.js \
     components/architecture/creator_uielto_memory_layout_reset.js \
+    components/architecture/creator_uielto_directives.js \
+    components/architecture/creator_uielto_directives_new.js \
+    components/architecture/creator_uielto_directives_reset.js \
+    components/architecture/creator_uielto_directives_delete.js \
     \
     components/assembly/creator_uielto_load_assembly.js \
     components/assembly/creator_uielto_save_assembly.js \
