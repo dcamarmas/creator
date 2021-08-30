@@ -61,25 +61,46 @@ try
 
 
 
+
+
+
       /*Architecture editor*/
 
-      /*Available architectures*/
+      //Available architectures
       arch_available: architecture_available,
-      /*Architectures card background*/
+      //Architectures card background
       back_card: back_card,
+      //Delete architecture modal //TODO: include into preload component
+      modalDeletArchIndex: 0,
+
+
+
+
+
       /*Backup date*/
       date_copy: '',
-      /*New architecture modal*/
-      showLoadArch: false,
-      /*New architecture form*/
-      name_arch: '',
-      description_arch: '',
-      load_arch: '',
-      /*Delete architecture modal*/
-      modalDeletArch:{
-        title: '',
-        index: 0,
-      },
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Architecture name*/
       architecture_name: '',
       /*Architecture bits*/
@@ -306,7 +327,7 @@ try
       //
 
       example_available: example_available,
-      example_loaded: null,
+      //example_loaded: null, //TODO
 
       //
       //Code error modal
@@ -388,11 +409,6 @@ try
       begin_callee: 0,
       end_callee: 0,
 
-      //Space and stack view
-      row_index: null,           //TODO: try to include in a component
-      selected_space_view: null, //TODO: try to include in a component
-      selected_stack_view: null, //TODO: try to include in a component
-      
       //
       //Stats
       //
@@ -473,13 +489,13 @@ try
 
       verifyBrowser() {
         if (navigator.userAgent.indexOf("OPR") > -1) {
-          this.$refs.browser.show();
+          this.$root.$emit('bv::show::modal', 'modalBrowser');
         }
         else if (navigator.userAgent.indexOf("MIE") > -1) {
-          this.$refs.browser.show();
+          this.$root.$emit('bv::show::modal', 'modalBrowser');
         }
         else if (navigator.userAgent.indexOf("Edge") > -1) {
-          this.$refs.browser.show();
+          this.$root.$emit('bv::show::modal', 'modalBrowser');
         }
         else if(navigator.userAgent.indexOf("Chrome") > -1) {
           return;
@@ -491,7 +507,7 @@ try
           return
         }
         else{
-          this.$refs.browser.show();
+          this.$root.$emit('bv::show::modal', 'modalBrowser');
         }
       },
 
@@ -588,7 +604,220 @@ try
       },
 
 
-      /*Architecture editor*/
+
+      /***********************/
+      /* Architecture editor */
+      /***********************/
+
+      //Load the available architectures and check if exists backup
+      load_arch_available() {
+        $.getJSON('architecture/available_arch.json' + "?v=" + new Date().getTime(), function(cfg){
+          architecture_available = cfg;
+
+          if (typeof(Storage) !== "undefined"){
+            if(localStorage.getItem("load_architectures_available") != null){
+              var auxArch = localStorage.getItem("load_architectures_available");
+              var aux = JSON.parse(auxArch);
+
+              for (var i = 0; i < aux.length; i++){
+                architecture_available.push(aux[i]);
+                load_architectures_available.push(aux[i]);
+
+                var auxArch2 = localStorage.getItem("load_architectures");
+                var aux2 = JSON.parse(auxArch2);
+                load_architectures.push(aux2[i]);
+              }
+            }
+          }
+
+          app._data.arch_available = architecture_available;
+
+          for (var i = 0; i < architecture_available.length; i++){
+            back_card.push({name: architecture_available[i].name , background: "default"});
+          }
+        });
+      },
+
+
+
+
+
+
+      //TODO: include into component
+      /*Auxiliar to Load the selected architecture*/ 
+      load_arch_select_aux(ename, cfg, load_associated_examples, e)
+      {
+        var auxArchitecture = cfg;
+        architecture = register_value_deserialize(auxArchitecture);
+        app._data.architecture = architecture;
+
+        architecture_hash = [];
+        for (i = 0; i < architecture.components.length; i++){
+             architecture_hash.push({name: architecture.components[i].name, index: i});
+             app._data.architecture_hash = architecture_hash;
+        }
+
+        backup_stack_address = architecture.memory_layout[4].value;
+        backup_data_address  = architecture.memory_layout[3].value;
+
+        app._data.architecture_name = ename;
+
+        //$("#architecture_menu").hide();
+        app.change_UI_mode('simulator');
+        app.change_data_view('registers', 'int');
+        app.$forceUpdate();
+
+        if (load_associated_examples && typeof e.examples !== "undefined"){
+          app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+        }
+      },
+
+
+      /*Change the background of selected achitecture card TODO*/
+      change_background(name, type){
+        if(type == 1){
+          for (var i = 0; i < back_card.length; i++){
+            if(name == back_card[i].name){
+              back_card[i].background = "secondary";
+            }
+            else{
+              back_card[i].background = "default";
+            }
+          }
+        }
+        if(type == 0){
+          for (var i = 0; i < back_card.length; i++){
+            back_card[i].background = "default";
+          }
+        }
+      },
+
+
+      load_arch_select(e)
+      {
+        var i = -1;
+
+        show_loading();
+        for (i = 0; i < load_architectures.length; i++) {
+             if (e.name == load_architectures[i].id) {
+                 var auxArchitecture = JSON.parse(load_architectures[i].architecture);
+                 app.load_arch_select_aux(e.name, auxArchitecture, true, e) ;
+                 hide_loading();
+                 show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+                 creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
+
+                 return;
+             }
+        }
+
+        $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg) {
+          app.load_arch_select_aux(e.name, cfg, true, e) ;
+          hide_loading();
+          show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+          creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
+
+          }).fail(function() {
+            hide_loading();
+            show_notification('The selected architecture is not currently available', 'info') ;
+          });
+      },
+
+      /*Check if it is a new architecture*/
+      default_arch(item){
+        for (var i = 0; i < load_architectures_available.length; i++) {
+          if(load_architectures_available[i].name == item){
+            return true;
+          }
+        }
+        return false;
+      },
+
+      /*Show remove architecture modal TODO*/
+      modal_remove_cache_arch(index, elem, button){
+        this.modalDeletArchIndex = index;
+        this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
+      },
+
+      //Load the available examples // TODO: include into components
+      load_examples_available( set_name ) {
+        this._data.example_loaded = new Promise(function(resolve, reject) {
+
+          $.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
+
+            // current architecture in upperCase
+            var current_architecture = app._data.architecture_name.toUpperCase() ;
+
+            // search for set_name in the example set 'set'
+            for (var i=0; i<set.length; i++)
+            {
+              // if set_name in set[i]...
+              if (set[i].id.toUpperCase() == set_name.toUpperCase())
+              {
+                // if current_architecture active but not the associated with set, skip
+                if  ( (current_architecture != '') &&
+                    (set[i].architecture.toUpperCase() != current_architecture) )
+                    {
+                      continue ;
+                    }
+
+                // if no current_architecture loaded then load the associated
+                if (current_architecture == '') {
+                  $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
+                    app.load_arch_select_aux(set[i].architecture,
+                    cfg, false, null);
+                  }) ;
+                }
+
+                // load the associate example list
+                $.getJSON(set[i].url, function(cfg){
+                  example_available = cfg ;
+                  app._data.example_available = example_available ;
+                  resolve('Example list loaded.') ;
+                });
+
+                return ;
+              }
+            }
+
+            reject('Unavailable example list.') ;
+          });
+        }) ;
+      },
+      //End TODO
+
+
+
+
+
+
+
+      /*Show backup modal*/
+      backupCopyModal(){
+        if (typeof(Storage) !== "undefined"){
+          if(localStorage.getItem("architecture_copy") != null && localStorage.getItem("assembly_copy") != null && localStorage.getItem("date_copy") != null){
+            this.date_copy = localStorage.getItem("date_copy");
+            this.$root.$emit('bv::show::modal', 'copy');
+          }
+        }
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /**
         * method in charge of create the array corresponent to the
@@ -624,227 +853,6 @@ try
             if (this.formInstruction.typeField[pos] == 'co')
                 this.formInstruction.co.pop()
           app.$forceUpdate();
-      },
-
-      /*Load the available architectures and check if exists backup*/
-      load_arch_available() {
-        $.getJSON('architecture/available_arch.json' + "?v=" + new Date().getTime(), function(cfg){
-          architecture_available = cfg;
-
-          if (typeof(Storage) !== "undefined"){
-            if(localStorage.getItem("load_architectures_available") != null){
-              var auxArch = localStorage.getItem("load_architectures_available");
-              var aux = JSON.parse(auxArch);
-
-              for (var i = 0; i < aux.length; i++){
-                architecture_available.push(aux[i]);
-                load_architectures_available.push(aux[i]);
-
-                var auxArch2 = localStorage.getItem("load_architectures");
-                var aux2 = JSON.parse(auxArch2);
-                load_architectures.push(aux2[i]);
-              }
-            }
-          }
-
-          app._data.arch_available = architecture_available;
-
-          for (var i = 0; i < architecture_available.length; i++){
-            back_card.push({name: architecture_available[i].name , background: "default"});
-          }
-        });
-      },
-
-      /*Change the background of selected achitecture card*/
-      change_background(name, type){
-        if(type == 1){
-          for (var i = 0; i < back_card.length; i++){
-            if(name == back_card[i].name){
-              back_card[i].background = "secondary";
-            }
-            else{
-              back_card[i].background = "default";
-            }
-          }
-        }
-        if(type == 0){
-          for (var i = 0; i < back_card.length; i++){
-            back_card[i].background = "default";
-          }
-        }
-      },
-
-      /*Show backup modal*/
-      backupCopyModal(){
-        if (typeof(Storage) !== "undefined"){
-          if(localStorage.getItem("architecture_copy") != null && localStorage.getItem("assembly_copy") != null && localStorage.getItem("date_copy") != null){
-            this.date_copy = localStorage.getItem("date_copy");
-            this.$refs.copyRef.show();
-          }
-        }
-      },
-
-      /*Auxiliar to Load the selected architecture*/
-      load_arch_select_aux(ename, cfg, load_associated_examples, e)
-      {
-        var auxArchitecture = cfg;
-        architecture = register_value_deserialize(auxArchitecture);
-        app._data.architecture = architecture;
-
-        architecture_hash = [];
-        for (i = 0; i < architecture.components.length; i++){
-             architecture_hash.push({name: architecture.components[i].name, index: i});
-             app._data.architecture_hash = architecture_hash;
-        }
-
-        backup_stack_address = architecture.memory_layout[4].value;
-        backup_data_address  = architecture.memory_layout[3].value;
-
-        app._data.architecture_name = ename;
-
-        //$("#architecture_menu").hide();
-        app.change_UI_mode('simulator');
-        app.change_data_view('registers', 'int');
-        app.$forceUpdate();
-
-        if (load_associated_examples && typeof e.examples !== "undefined"){
-          app.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-        }
-      },
-
-      load_arch_select(e)
-      {
-        var i = -1;
-
-        show_loading();
-        for (i = 0; i < load_architectures.length; i++) {
-             if (e.name == load_architectures[i].id) {
-                 var auxArchitecture = JSON.parse(load_architectures[i].architecture);
-                 app.load_arch_select_aux(e.name, auxArchitecture, true, e) ;
-                 hide_loading();
-                 show_notification('The selected architecture has been loaded correctly', 'success') ;
-
-                 /* Google Analytics */
-                 creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
-
-                 return;
-             }
-        }
-
-        $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg) {
-          app.load_arch_select_aux(e.name, cfg, true, e) ;
-          hide_loading();
-          show_notification('The selected architecture has been loaded correctly', 'success') ;
-
-          /* Google Analytics */
-          creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
-
-          }).fail(function() {
-            hide_loading();
-            show_notification('The selected architecture is not currently available', 'info') ;
-          });
-
-      },
-
-      /*Read the JSON of new architecture*/
-      read_arch(e){
-        show_loading();
-
-        e.preventDefault();
-        if(!this.name_arch || !this.load_arch){
-          hide_loading();
-          show_notification('Please complete all fields', 'danger') ;
-          return;
-        }
-
-        this.showLoadArch = false;
-
-        var file;
-        var reader;
-        var files = document.getElementById('arch_file').files;
-
-        for (var i = 0; i < files.length; i++){
-          file = files[i];
-          reader = new FileReader();
-          reader.onloadend = onFileLoaded;
-          reader.readAsBinaryString(file);
-        }
-
-        function onFileLoaded(event){
-          architecture_available.push({name: app._data.name_arch, img: "./images/personalized_logo.png", alt: app._data.name_arch + " logo" , id:"select_conf"+app._data.name_arch , description: app._data.description_arch});
-          load_architectures_available.push({name: app._data.name_arch, img: "./images/personalized_logo.png", alt: app._data.name_arch + " logo" , id:"select_conf"+app._data.name_arch , description: app._data.description_arch});
-          back_card.push({name: architecture_available[architecture_available.length-1].name , background: "default"});
-          load_architectures.push({id: app._data.name_arch, architecture: event.currentTarget.result});
-
-          if (typeof(Storage) !== "undefined"){
-            var auxArch = JSON.stringify(load_architectures, null, 2);
-            localStorage.setItem("load_architectures", auxArch);
-
-            auxArch = JSON.stringify(load_architectures_available, null, 2);
-            localStorage.setItem("load_architectures_available", auxArch);
-          }
-
-          show_notification('The selected architecture has been loaded correctly', 'success') ;
-
-          app._data.name_arch = '';
-          app._data.description_arch = '';
-          app._data.load_arch = '';
-
-          hide_loading();
-        }
-      },
-
-      /*Create a new architecture*/
-      new_arch(){
-        //$("#architecture_menu").hide();
-        app.change_UI_mode('simulator');
-        app.change_data_view('registers' , 'int');
-        app.$forceUpdate();
-        hide_loading();
-      },
-
-      /*Check if it is a new architecture*/
-      default_arch(item){
-        for (var i = 0; i < load_architectures_available.length; i++) {
-          if(load_architectures_available[i].name == item){
-            return true;
-          }
-        }
-        return false;
-      },
-
-      /*Show remove architecture modal*/
-      modal_remove_cache_arch(index, elem, button){
-        this.modalDeletArch.title = "Delete Architecture";
-        this.modalDeletArch.index = index;
-        this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
-      },
-
-      /*Remove architecture*/
-      remove_cache_arch(index){
-        var id = architecture_available[index].name;
-
-        for (var i = 0; i < load_architectures.length; i++){
-          if(load_architectures[i].id == id){
-            load_architectures.splice(i, 1);
-          }
-        }
-
-        for (var i = 0; i < load_architectures_available.length; i++){
-          if(load_architectures_available[i].name == id){
-            load_architectures_available.splice(i, 1);
-          }
-        }
-
-        architecture_available.splice(index, 1);
-
-        var auxArch = JSON.stringify(load_architectures, null, 2);
-        localStorage.setItem("load_architectures", auxArch);
-
-        auxArch = JSON.stringify(load_architectures_available, null, 2);
-        localStorage.setItem("load_architectures_available", auxArch);
-
-        show_notification('Architecture deleted successfully', 'success') ;
       },
 
       /*Save the current architecture in a JSON file*/
@@ -2748,7 +2756,18 @@ try
         this.formDirective.size = 0;
       },
 
-      /*Form validator*/
+
+
+
+
+
+
+
+
+
+
+
+      /*Form validator*/ //TODO:include into components
       valid(value){
         if(parseInt(value) != 0){
           if(!value){
@@ -2802,52 +2821,6 @@ try
       //Empty assembly textarea
       newAssembly(){
         textarea_assembly_editor.setValue("");
-      },
-
-      //Load the available examples
-      load_examples_available( set_name ) {
-        this._data.example_loaded = new Promise(function(resolve, reject) {
-
-          $.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
-
-            // current architecture in upperCase
-            var current_architecture = app._data.architecture_name.toUpperCase() ;
-
-            // search for set_name in the example set 'set'
-            for (var i=0; i<set.length; i++)
-            {
-              // if set_name in set[i]...
-              if (set[i].id.toUpperCase() == set_name.toUpperCase())
-              {
-                // if current_architecture active but not the associated with set, skip
-                if  ( (current_architecture != '') &&
-                    (set[i].architecture.toUpperCase() != current_architecture) )
-                    {
-                      continue ;
-                    }
-
-                // if no current_architecture loaded then load the associated
-                if (current_architecture == '') {
-                  $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
-                    app.load_arch_select_aux(set[i].architecture,
-                    cfg, false, null);
-                  }) ;
-                }
-
-                // load the associate example list
-                $.getJSON(set[i].url, function(cfg){
-                  example_available = cfg ;
-                  app._data.example_available = example_available ;
-                  resolve('Example list loaded.') ;
-                });
-
-                return ;
-              }
-            }
-
-            reject('Unavailable example list.') ;
-          });
-        }) ;
       },
 
       //Compile assembly code
@@ -3259,26 +3232,6 @@ try
 
         // Google Analytics
         creator_ga('data', 'data.view', 'data.view.' + app._data.data_mode);
-      },
-
-      change_space_view()
-      {
-         creator_memory_update_space_view(app._data.selected_space_view, memory_hash[0], app._data.row_info) ;
-      },
-
-      hide_space_modal()
-      {
-          app._data.selected_space_view = null;
-      },
-
-      change_stack_view()
-      {
-          creator_memory_update_row_view(app._data.selected_stack_view, memory_hash[2], app._data.row_info) ;
-      },
-
-      hide_stack_modal()
-      {
-          app._data.selected_stack_view = null;
       },
 
 
