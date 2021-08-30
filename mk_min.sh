@@ -50,7 +50,8 @@ cat js/creator_bigint.js \
     \
     components/architecture/creator_uielto_save_architecture.js \
     components/architecture/creator_uielto_memory_layout.js \
-    components/architecture/creator_uielto_memory_layout_form.js \
+    components/architecture/creator_uielto_memory_layout_edit.js \
+    components/architecture/creator_uielto_memory_layout_reset.js \
     \
     components/assembly/creator_uielto_load_assembly.js \
     components/assembly/creator_uielto_save_assembly.js \

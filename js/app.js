@@ -312,6 +312,23 @@ try
         definition: '',
         help: '',
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      
       /*Directives table fields*/
       directivesFields: ['name', 'action', 'size', 'actions'],
       /*Directives types*/

@@ -399,12 +399,18 @@
                 <!-- Memory layout -->
                 <b-tab title="Memory Layout" active>
                   
-                  <memory-layout  :architecture_name="architecture_name"
-                                  :memory_layout="architecture.memory_layout">       
+                  <memory-layout  :memory_layout="architecture.memory_layout">       
                   </memory-layout>
 
-                  <!-- Memory layout form -->
+                  <!-- Memory layout modals -->
+
+                  <!-- Edit memory layout -->
                   <memory-layout-form id="change_memory_layout"></memory-layout-form>
+
+                  <!-- Reset memory layout -->
+                  <memory-layout-reset id="reset_memory_layout"
+                                       :architecture_name="architecture_name">
+                  </memory-layout-reset>
 
                 </b-tab>
 
