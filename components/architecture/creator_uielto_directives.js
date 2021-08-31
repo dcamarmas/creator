@@ -30,12 +30,32 @@
         data:       function () {
                       return {
                         //Directives table fields
-                        directivesFields: ['name', 'action', 'size', 'actions']
+                        directivesFields: ['name', 'action', 'size', 'actions'],
                       }
                     },
 
         methods:    {
+                      //Show edit directive modal
+                      edit_directive_modal(elem, button){
+                        app._data.modalEditDirective.title = "Edit " + elem;
+                        app._data.modalEditDirective.element = elem;
+
+                        for (var i = 0; i < architecture.directives.length; i++){
+                          if(elem == architecture.directives[i].name){
+                            app._data.formDirective.name = architecture.directives[i].name;
+                            app._data.formDirective.action = architecture.directives[i].action;
+                            app._data.formDirective.size = architecture.directives[i].size;
+                          }
+                        }
+                        this.$root.$emit('bv::show::modal', 'edit_directive', button);
+                      },
                       
+                      //Show delete directive modal
+                      delete_directive_modal(elem, button){
+                        app._data.modalDeletDir.title = "Delete " + elem; //TODO: bidirectional
+                        app._data.modalDeletDir.element = elem; //TODO: bidirectional
+                        this.$root.$emit('bv::show::modal', 'delete_directive', button);
+                      }
                     },
 
         template:   '<div>' +
@@ -69,12 +89,12 @@
                     '             class="text-center" ' +
                     '             sticky-header="60vh">' +
                     '      <template v-slot:cell(actions)="row" class="">' +
-                    '        <b-button @click.stop="editDirModal(row.item.name, $event.target)" ' +
+                    '        <b-button @click.stop="edit_directive_modal(row.item.name, $event.target)" ' +
                     '                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">' +
                     '          <span class="far fa-edit"></span> ' +
                     '          Edit' +
                     '        </b-button>' +
-                    '        <b-button @click.stop="delDirModal(row.item.name, $event.target)"' +
+                    '        <b-button @click.stop="delete_directive_modal(row.item.name, $event.target)"' +
                     '                  class="btn btn-outline-danger btn-sm buttonBackground h-100">' +
                     '          <span class="far fa-trash-alt"></span>' +
                     '          Delete' +
