@@ -25,7 +25,8 @@
 
         props:      {
                       id:                             { type: String, required: true },
-                      modalDeletDir:                  { type: Object, required: true }
+                      title:                          { type: String, required: true },
+                      element:                        { type: String, required: true }
                     }, 
 
         data:       function () {
@@ -45,10 +46,10 @@
                     },
 
         template:   '<b-modal :id ="id" ' +
-                    '         :title="modalDeletDir.title" ' +
+                    '         :title="title" ' +
                     '         ok-variant="danger" ' +
                     '         ok-title="Delete" ' +
-                    '         @ok="delete_directive(modalDeletDir.element)">' +
+                    '         @ok="delete_directive(element)">' +
                     '  <span class="h6">Are you sure you want to delete the item?</span>' +
                     '</b-modal>'
 

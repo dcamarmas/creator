@@ -174,4 +174,4 @@
 
   }
 
-  Vue.component('memory-layout-form', uielto_memory_layout_form) ;
+  Vue.component('memory-layout-edit', uielto_memory_layout_form) ;

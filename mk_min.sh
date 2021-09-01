@@ -55,6 +55,7 @@ cat js/creator_bigint.js \
     components/architecture/creator_uielto_directives.js \
     components/architecture/creator_uielto_directives_new.js \
     components/architecture/creator_uielto_directives_reset.js \
+    components/architecture/creator_uielto_directives_edit.js \
     components/architecture/creator_uielto_directives_delete.js \
     \
     components/assembly/creator_uielto_load_assembly.js \
