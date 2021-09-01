@@ -331,36 +331,24 @@ try
 
 
       /*Directives table fields*/
-      directivesFields: ['name', 'action', 'size', 'actions'],
+      directivesFields: ['name', 'action', 'size', 'actions'], //TODO: include into directives component
 
-
-
-
-      /*Directives types*/
-      actionTypes: actionTypes,
-
-
-
-
-
-      /*Modals directives*/
-      showEditDirective: false,
       /*Edit directive modal*/
-      modalEditDirective:{
+      modalEditDirective:{ //TODO: include into directives component
         title: '',
         element: '',
-      },
-      /*Delete pseudoinstruction modal*/
-      modalDeletDir:{
-        title: '',
-        element: '',
-      },
-      /*Directive form*/
-      formDirective:{
         name: '',
         action: '',
         size: 0,
       },
+
+      /*Delete directive modal*/ //TODO: include into directives component
+      modalDeletDir:{
+        title: '',
+        element: '',
+      },
+
+      
       
 
 
@@ -2668,134 +2656,28 @@ try
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Show edit directive modal*/
+      /*Show edit directive modal*/ //TODO: include into directives component
       editDirModal(elem, button){
-        this.modalEditDirective.title = "Edit " + elem;
-        this.modalEditDirective.element = elem;
+        app._data.modalEditDirective.title = "Edit " + elem;
+        app._data.modalEditDirective.element = elem;
 
         for (var i = 0; i < architecture.directives.length; i++){
           if(elem == architecture.directives[i].name){
-            this.formDirective.name = architecture.directives[i].name;
-            this.formDirective.action = architecture.directives[i].action;
-            this.formDirective.size = architecture.directives[i].size;
+            app._data.modalEditDirective.name = architecture.directives[i].name;
+            app._data.modalEditDirective.action = architecture.directives[i].action;
+            app._data.modalEditDirective.size = architecture.directives[i].size;
           }
         }
-        this.$root.$emit('bv::show::modal', 'modalEditDirective', button);
+        this.$root.$emit('bv::show::modal', 'edit_directive', button);
       },
 
-      /*Verify all fields of modify directive*/
-      editDirVerify(evt, name){
-        evt.preventDefault();
-
-        if (!this.formDirective.name || !this.formDirective.action) {
-          show_notification('Please complete all fields', 'danger') ;
-        }
-        else {
-          if(isNaN(parseInt(this.formDirective.size)) && (this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space')){
-            show_notification('Please complete all fields', 'danger') ;
-          }
-          else{
-            this.editDirective(name);
-          }
-        }
-      },
-
-      /*edit directive*/
-      editDirective(name){
-        for (var i = 0; i < architecture.directives.length; i++) {
-          if((this.formDirective.name == architecture.directives[i].name) && (name != this.formDirective.name)){
-            show_notification('The directive already exists', 'danger') ;
-            return;
-          }
-        }
-
-        this.showEditDirective = false;
-
-        for (var i = 0; i < architecture.directives.length; i++) {
-          if(name == architecture.directives[i].name){
-            architecture.directives[i].name = this.formDirective.name;
-            architecture.directives[i].action = this.formDirective.action;
-            if(this.formDirective.action == 'byte' || this.formDirective.action == 'half_word' || this.formDirective.action == 'word' || this.formDirective.action == 'double_word' || this.formDirective.action == 'float' || this.formDirective.action == 'double' || this.formDirective.action == 'space'){
-              architecture.directives[i].size = this.formDirective.size;
-            }
-            else{
-              architecture.directives[i].size = null;
-            }
-            return;
-          }
-        }
-      },
-
-      /*Empty directive form*/
-      emptyFormDirective(){
-        this.formDirective.name = '';
-        this.formDirective.action = '';
-        this.formDirective.size = 0;
-      },
-
-
-
-
-      /*Show delete directive modal*/
+      /*Show delete directive modal*/ //TODO: include into directives component
       delDirModal(elem, button){
-        this.modalDeletDir.title = "Delete " + elem;
-        this.modalDeletDir.element = elem;
+        app._data.modalDeletDir.title = "Delete " + elem;
+        app._data.modalDeletDir.element = elem;
         this.$root.$emit('bv::show::modal', 'delete_directive', button);
       },
 
-      /*Delete directive*/
-      delDirective(comp){
-        for (var i = 0; i < architecture.directives.length; i++) {
-          if(comp == architecture.directives[i].name){
-            architecture.directives.splice(i,1);
-          }
-        }
-      },
 
 
       

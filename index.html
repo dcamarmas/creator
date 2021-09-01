@@ -409,7 +409,7 @@
                   <!-- Memory layout modals -->
 
                   <!-- Edit memory layout -->
-                  <memory-layout-form id="change_memory_layout"></memory-layout-form>
+                  <memory-layout-edit id="change_memory_layout"></memory-layout-edit>
 
                   <!-- Reset memory layout -->
                   <memory-layout-reset id="reset_memory_layout"
@@ -2447,79 +2447,20 @@
                                     :architecture_name="architecture_name">
                   </directives-reset>
 
+                  <!-- Edit directive -->
+                  <directives-edit  id="edit_directive"
+                                    :title="modalEditDirective.title"
+                                    :element="modalEditDirective.element"
+                                    :name="modalEditDirective.name"
+                                    :action="modalEditDirective.action"
+                                    :size="modalEditDirective.size">
+                  </directives-edit>
+
                   <!-- Delete directive -->
-                  <!--<directives-delete  id="delete_directive"
-                                      :modalDeletDir="modalDeletDir">
-                  </directives-delete>-->
-
-                  <b-modal id ="delete_directive" 
-                           :title="modalDeletDir.title" 
-                           ok-variant="danger" 
-                           ok-title="Delete" 
-                           @ok="delDirective(modalDeletDir.element)">
-                    <span class="h6">Are you sure you want to delete the item?</span>
-                  </b-modal>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                  <!-- Edit directive form -->
-                    <b-modal id ="modalEditDirective" 
-                             :title = "modalEditDirective.title"
-                             ok-title="Save" 
-                             @ok="editDirVerify($event, modalEditDirective.element)" 
-                             v-model="showEditDirective" 
-                             @hidden="emptyFormDirective">
-                      <b-form>
-                        <b-form-group label="Name:">
-                          <b-form-input type="text" 
-                                        :state="valid(formDirective.name)" 
-                                        v-on:input="debounce('formDirective.name', $event)" 
-                                        :value="formDirective.name" 
-                                        required 
-                                        placeholder="Enter name" 
-                                        size="sm" 
-                                        title="Directive name">
-                          </b-form-input>
-                        </b-form-group>
-                        <b-form-group label="action:">
-                          <b-form-select :options="actionTypes" 
-                                         required 
-                                         v-model="formDirective.action" 
-                                         :state="valid(formDirective.action)" 
-                                         size="sm"
-                                         title="Action">
-                          </b-form-select>
-                        </b-form-group>
-                        <b-form-group label="Size:" 
-                                      v-if="formDirective.action != 'data_segment' && formDirective.action != 'code_segment' && formDirective.action != 'main_function' && formDirective.action != 'kmain_function' && formDirective.action != 'global_symbol' && formDirective.action != 'data_size' && formDirective.action != 'ascii_not_null_end' && formDirective.action != 'ascii_null_end' && formDirective.action != 'align'">
-                          <b-form-input type="number" 
-                                        :state="valid(formDirective.size)" 
-                                        v-on:input="debounce('formDirective.size', $event)" 
-                                        :value="formDirective.size" 
-                                        required 
-                                        placeholder="Enter size" 
-                                        size="sm" 
-                                        min="0" 
-                                        title="Directive size">
-                          </b-form-input>
-                        </b-form-group>
-                      </b-form>
-                    </b-modal >
-
-                    
+                  <directives-delete  id="delete_directive"
+                                      :title="modalDeletDir.title"
+                                      :element="modalDeletDir.element">
+                  </directives-delete>
 
                 </b-tab>
               </b-tabs>
@@ -2534,17 +2475,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+        
         <!------------------->
         <!-- Assembly view -->
         <!------------------->
