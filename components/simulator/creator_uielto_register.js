@@ -41,7 +41,13 @@
 
 							      	switch(this.value_representation){
 							      		case "unsigned":
-							      			ret = parseInt(register.value.toString(10)) >>> 0;
+								      		if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+								      			ret = parseInt(register.value.toString(10)) >>> 0;
+								      		}
+								      		else {
+								      			//ret = parseInt(register.value.toString(), 10) >>> 0;
+								      			ret = float2int_v2 (register.value) >>> 0;
+								      		}
 							      			break;
 
 							      		case "signed":
@@ -52,7 +58,8 @@
 								      				ret = (register.value).toString(10);
 								      		}
 								      		else {
-								      			ret = parseInt(register.value.toString(), 10) >> 0;
+								      			//ret = parseInt(register.value.toString(), 10) >> 0;
+								      			ret = float2int_v2 (register.value);
 								      		}
 								      		break;
 
