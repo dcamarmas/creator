@@ -2118,11 +2118,13 @@ function main_memory_read_bydatatype ( addr, type )
         switch (type)
         {
                 case 'b':
+                case 'bu':
                 case 'byte':
                      ret = "0x" + main_memory_read_value(addr) ;
                      break;
 
                 case 'h':
+                case 'hu':
                 case 'half_word':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes/2) ;
                      break;
