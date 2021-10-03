@@ -160,17 +160,17 @@ function register_value_serialize(object)
 
   /**
    * method in chage of map a float number separated in parts and determinte what it.
-   * @param s {Number} the sing of the number
+   * @param s {Number} the sign of the number
    * @param e {Number} the exponent of the number.
    * @param m {Number} the mantinsa of the number
    * @return {number} 2^n with n as
    *      0 -> -infinite
-   *      1 -> -normal number
-   *      2 -> -subnormal number
+   *      1 -> -normalized number
+   *      2 -> -non-normalized number
    *      3 -> -0
    *      4 -> +0
-   *      5 -> +normal number
-   *      6 -> +subnormal number
+   *      5 -> +normalized number
+   *      6 -> +non-normalized number
    *      7 -> +inf
    *      8 -> -NaN
    *      9 -> +NaN
@@ -246,6 +246,8 @@ function register_value_serialize(object)
       aux = (parseInt(aux, 16)).toString(2).padStart(4, "0");
       value_bit = value_bit + aux;
     }
+
+    value_bit = value_bit.padStart(32, "0");
 
     var buffer = new ArrayBuffer(4);
     new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map( binaryStringToInt ) );
@@ -369,9 +371,21 @@ function register_value_serialize(object)
           value_bit = value_bit + aux;
       }
 
+      value_bit = value_bit.padStart(64, "0");
+
       var buffer = new ArrayBuffer(8);
       new Uint8Array( buffer ).set( value_bit.match(/.{8}/g).map(binaryStringToInt ));
       return new DataView( buffer ).getFloat64(0, false);
+  }
+
+  function float2int_v2 ( value )
+  {
+      return parseInt(float2bin(value),2);
+  }
+
+  function int2float_v2 ( value )
+  {
+      return hex2float("0x" + bin2hex(value.toString(2)));
   }
 
 
@@ -2111,11 +2125,13 @@ function main_memory_read_bydatatype ( addr, type )
         switch (type)
         {
                 case 'b':
+                case 'bu':
                 case 'byte':
                      ret = "0x" + main_memory_read_value(addr) ;
                      break;
 
                 case 'h':
+                case 'hu':
                 case 'half_word':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes/2) ;
                      break;
