@@ -2231,7 +2231,7 @@
           "valueField": "100000"
         }
       ],
-      "definition": "fd = parseFloat(fs);"
+      "definition": "fd = parseFloat(float2int_v2(fs));"
     },
     {
       "name": "cvt.w.s",
