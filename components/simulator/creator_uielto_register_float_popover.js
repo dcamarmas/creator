@@ -162,7 +162,8 @@
 											'        <td>Signed</td>' +
 											'        <td>' +
 											'          <b-badge class="registerPopover">' +
-											'            {{parseInt(register.value.toString(), 10) >> 0}}' +
+										     // '            {{parseInt(register.value.toString(), 10) >> 0}}' +
+											'            {{float2int_v2(register.value) >> 0}}' +
 											'          </b-badge>' +
 											'        </td>' +
 											'      </tr>' +
@@ -170,7 +171,8 @@
 											'        <td>Unsig.</td>' +
 											'        <td>' +
 											'          <b-badge class="registerPopover">' +
-											'            {{parseInt(register.value.toString(), 10) >>> 0}}' +
+										     //	'            {{parseInt(register.value.toString(), 10) >>> 0}}' +
+											'            {{float2int_v2(register.value) >>> 0}}' +
 											'          </b-badge>' +
 											'        </td>' +
 											'      </tr>' +
