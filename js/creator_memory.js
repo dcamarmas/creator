@@ -1556,8 +1556,9 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
   if (false == OLD_CODE_ACTIVE)
   {
         //This is if align changes
-        creator_memory_zerofill( data_address, data_address % align );
-        data_address = data_address + (data_address % align);
+        var to_be_filled = align - (data_address % align) ;
+        creator_memory_zerofill( data_address, to_be_filled );
+        data_address = data_address + to_be_filled;
 
         if ((data_address % size != 0) && (data_address % word_size_bytes != 0)) {
             ret.msg = 'm21' ;
