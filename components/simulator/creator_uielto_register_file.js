@@ -40,7 +40,7 @@
                   ],
 
                   //Register name representation
-                  reg_name_representation: "logical",
+                  reg_name_representation: "all",
                   reg_name_representation_options: [
                     { text: 'Name', value: 'logical' },
                     { text: 'Alias', value: 'alias' },
