@@ -633,7 +633,21 @@ function creator_callstack_leave()
 
                 last_elto = stack_call_register[stack_call_register.length - 1];
 
-                if ( (last_elto.register_sm[i][j] != 3) &&
+                /////////////////////////// TEMPORAL SOLUTION ///////////////////////////////////////////////////////////////////
+                //last_index_write = last_elto.register_address_write[i][j].length -1;
+                last_index_read = last_elto.register_address_read[i][j].length -1;
+
+                if ( (last_elto.register_address_write[i][j][0] == last_elto.register_address_read[i][j][last_index_read]) &&
+                     (last_elto.register_sm[i][j] == 45) &&
+                     (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
+                )
+                {
+                    break;
+                }
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                else if ( (last_elto.register_sm[i][j] != 3) &&
                      (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
                 )
                 {
