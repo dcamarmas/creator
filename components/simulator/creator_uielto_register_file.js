@@ -31,7 +31,7 @@
   data:       function () {
                 return {
                   //Register value representation
-                  reg_representation: "signed",
+                  reg_representation: "hex",
                   reg_representation_options: [
                     { text: 'Signed', value: 'signed' },
                     { text: 'Unsigned', value: 'unsigned' },
