@@ -33,6 +33,23 @@ do
    rm   /tmp/e-$I.out
 done
 
+echo ""
+echo " MIPS: passing convention"
+MIPS_TEST="001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 018 019 020 021 022 023 024 025 026 027 028 029 030 031 032"
+for I in $MIPS_TEST;
+do
+   echo -n " * ./travis/mips/sentinel/testsentinel-mips-$I: "
+   ./creator.sh -a ./architecture/MIPS-32-like.json \
+                -s ./travis/mips/sentinel/testsentinel-mips-$I.s -o min > /tmp/e-$I.out
+   diff /tmp/e-$I.out ./travis/mips/sentinel/testsentinel-mips-$I.out
+   if [ $? -ne 0 ]; then
+       echo "Different: Error $I with different outputs...";
+   else
+       echo "Equals";
+   fi
+   rm   /tmp/e-$I.out
+done
+
 
 #
 # RISC-V
