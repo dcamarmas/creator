@@ -34,7 +34,10 @@
   data:     function () {
               return {
                 /*Memory table fields*/
-                memFields: ['Tag', 'Address', 'Binary', 'Value']
+                memFields: ['Tag', 'Address', 'Binary', 'Value'],
+                row_info: null,        
+                selected_space_view: null,
+                selected_stack_view: null,
               }
             },
 
@@ -65,9 +68,9 @@
               // TODO: gereric and include modal
               select_data_type ( record, index )
               {
-                app._data.row_info = { "index": index, 
-                           "addr":  record.addr - 3,
-                           "size":  record.size } ;
+                this.row_info = { "index": index, 
+                                  "addr":  record.addr - 3,
+                                  "size":  record.size } ;
 
                 if (this.memory_segment == "instructions_memory") {
                   return
@@ -76,13 +79,35 @@
                 if (this.memory_segment == "data_memory")
                 {
                   if (this.check_tag_null(record.hex)) {
-                      app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
+                      //app.$refs['space_modal'].show(); // TODO: vue bidirectional updates
+                      this.$root.$emit('bv::show::modal', 'space_modal');
                   }
                 }
 
                 if (this.memory_segment == "stack_memory") {
-                  app.$refs['stack_modal'].show(); // TODO: vue bidirectional updates
+                  //app.$refs['stack_modal'].show(); // TODO: vue bidirectional updates
+                  this.$root.$emit('bv::show::modal', 'stack_modal');
                 }
+              },
+
+              change_space_view()
+              {
+                 creator_memory_update_space_view(this.selected_space_view, memory_hash[0], this.row_info) ;
+              },
+
+              hide_space_modal()
+              {
+                  this.selected_space_view = null;
+              },
+
+              change_stack_view()
+              {
+                  creator_memory_update_row_view(this.selected_stack_view, memory_hash[2], this.row_info) ;
+              },
+
+              hide_stack_modal()
+              {
+                  this.selected_stack_view = null;
               },
 
               check_tag_null ( record )
@@ -99,12 +124,12 @@
               get_classes ( row )
               {
                 return {
-                    'h6Sm                ':  ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
-                    'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
-                    'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
-                    'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller)),
-                    'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
-                       }
+                         'h6Sm                ':  ((row.item.addr >= architecture.memory_layout[0].value) && (row.item.addr <= architecture.memory_layout[3].value)),
+                         'h6Sm text-secondary ':  ((row.item.addr < app._data.end_callee)                 && (Math.abs(row.item.addr - app._data.end_callee) < 40)),
+                         'h6Sm text-success   ':  ((row.item.addr < app._data.begin_callee)               && (row.item.addr >= app._data.end_callee)),
+                         'h6Sm text-blue-funny':  ((row.item.addr < app._data.begin_caller)               && (row.item.addr >= app._data.end_caller)),
+                         'h6Sm                ':  (row.item.addr >= app._data.begin_caller)
+                        }
               }       
             },
   computed: {
@@ -233,6 +258,28 @@
             '       </b-col>' +
             '     </b-row>' +
             '   </span>' +
+            ' ' +
+            '   <b-modal id="space_modal" ' +
+            '            size="sm" ' +
+            '            title="Select space view:" ' +
+            '            @hidden="hide_space_modal" ' +
+            '            @ok="change_space_view">' +
+            '     <b-form-radio v-model="selected_space_view" value="sig_int">Signed Integer</b-form-radio>' +
+            '     <b-form-radio v-model="selected_space_view" value="unsig_int">Unsigned Integer</b-form-radio>' +
+            '     <b-form-radio v-model="selected_space_view" value="float">Float</b-form-radio>' +
+            '     <b-form-radio v-model="selected_space_view" value="char">Char</b-form-radio>' +
+            '   </b-modal>' +
+            ' ' +
+            '   <b-modal id="stack_modal" ' +
+            '            size="sm" ' +
+            '            title="Select stack word view:" ' +
+            '            @hidden="hide_stack_modal" ' +
+            '            @ok="change_stack_view">' +
+            '     <b-form-radio v-model="selected_stack_view" value="sig_int">Signed Integer</b-form-radio>' +
+            '     <b-form-radio v-model="selected_stack_view" value="unsig_int">Unsigned Integer</b-form-radio>' +
+            '     <b-form-radio v-model="selected_stack_view" value="float">Float</b-form-radio>' +
+            '     <b-form-radio v-model="selected_stack_view" value="char">Char</b-form-radio>' +
+            '   </b-modal>' +
             ' ' +
             '  </div>'
   }

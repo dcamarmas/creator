@@ -220,11 +220,13 @@ function main_memory_read_bydatatype ( addr, type )
         switch (type)
         {
                 case 'b':
+                case 'bu':
                 case 'byte':
                      ret = "0x" + main_memory_read_value(addr) ;
                      break;
 
                 case 'h':
+                case 'hu':
                 case 'half_word':
                      ret = "0x" + main_memory_read_nbytes(addr, word_size_bytes/2) ;
                      break;
@@ -774,8 +776,12 @@ function creator_memory_data_compiler ( data_address, value, size, dataLabel, De
 		  } ;
 
         // If align changes then zerofill first...
-        creator_memory_zerofill( data_address, data_address % align );
-        data_address = data_address + (data_address % align);
+	if ((data_address % align) > 0)
+	{
+             var to_be_filled = align - (data_address % align) ;
+             creator_memory_zerofill(data_address, to_be_filled);
+             data_address = data_address + to_be_filled;
+	}
 
         if ((data_address % size != 0) && (data_address % word_size_bytes != 0)) {
             ret.msg = 'm21' ;

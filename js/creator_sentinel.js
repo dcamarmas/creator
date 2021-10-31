@@ -72,14 +72,14 @@
   */
 
  var stack_state_transition = [
-	{ "wm==": 1,  "wm!=": 1,  "rm": 2,  "wr":40,  "rr": 0,  "end": 3  },
-	{ "wm==": 1,  "wm!=": 7,  "rm": 6,  "wr": 5,  "rr": 1,  "end":40  },
-	{ "wm==": 1,  "wm!=": 1,  "rm": 2,  "wr":45,  "rr": 2,  "end": 3  },
-	{ "wm==":-1,  "wm!=":-1,  "rm":-1,  "wr":-1,  "rr":-1,  "end":-1  },
-	{ "wm==":-1,  "wm!=":-1,  "rm":-1,  "wr":-1,  "rr":-1,  "end":-1  },
-	{ "wm==":44,  "wm!=": 5,  "rm": 6,  "wr": 5,  "rr": 5,  "end":43  },
-	{ "wm==":44,  "wm!=": 6,  "rm": 6,  "wr": 0,  "rr": 6,  "end":43  },
-	{ "wm==": 7,  "wm!=": 7,  "rm": 6,  "wr": 5,  "rr": 7,  "end":42  }
+    { "wm==": 1,  "wm!=": 1,  "rm": 2,  "wr":40,  "rr": 0,  "end": 3  },
+    { "wm==": 1,  "wm!=": 7,  "rm": 6,  "wr": 5,  "rr": 1,  "end":40  },
+    { "wm==": 1,  "wm!=": 1,  "rm": 2,  "wr":45,  "rr": 2,  "end": 3  },
+    { "wm==":-1,  "wm!=":-1,  "rm":-1,  "wr":-1,  "rr":-1,  "end":-1  },
+    { "wm==":-1,  "wm!=":-1,  "rm":-1,  "wr":-1,  "rr":-1,  "end":-1  },
+    { "wm==":44,  "wm!=": 5,  "rm": 6,  "wr": 5,  "rr": 5,  "end":43  },
+    { "wm==":44,  "wm!=": 6,  "rm": 6,  "wr": 0,  "rr": 6,  "end":43  },
+    { "wm==": 7,  "wm!=": 7,  "rm": 6,  "wr": 5,  "rr": 7,  "end":42  }
      ];
 
  var stack_call_register = [];
@@ -227,7 +227,21 @@ function creator_callstack_leave()
 
                 last_elto = stack_call_register[stack_call_register.length - 1];
 
-                if ( (last_elto.register_sm[i][j] != 3) &&
+                /////////////////////////// TEMPORAL SOLUTION ///////////////////////////////////////////////////////////////////
+                //last_index_write = last_elto.register_address_write[i][j].length -1;
+                last_index_read = last_elto.register_address_read[i][j].length -1;
+
+                if ( (last_elto.register_address_write[i][j][0] == last_elto.register_address_read[i][j][last_index_read]) &&
+                     (last_elto.register_sm[i][j] == 45) &&
+                     (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
+                )
+                {
+                    break;
+                }
+
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+                else if ( (last_elto.register_sm[i][j] != 3) &&
                      (architecture.components[i].elements[j].properties.includes("saved")) // ...but should be saved
                 )
                 {
@@ -358,7 +372,7 @@ function creator_callstack_setState (indexComponent, indexElement, newState)
     var elto = creator_callstack_getTop();
     if (elto.ok == false) {
         console_log('creator_callstack_setState: ' + elto.msg) ;
-	return '' ;
+    return '' ;
     }
 
     elto.val.register_sm[indexComponent][indexElement] = newState;
@@ -370,7 +384,7 @@ function creator_callstack_getState (indexComponent, indexElement)
     var elto = creator_callstack_getTop();
     if (elto.ok == false) {
         console_log('creator_callstack_getState: ' + elto.msg) ;
-	return '' ;
+    return '' ;
     }
 
     return elto.val.register_sm[indexComponent][indexElement];
@@ -388,7 +402,7 @@ function creator_callstack_newWrite (indexComponent, indexElement, address, leng
     var elto = creator_callstack_getTop();
     if (elto.ok == false) {
         console_log('creator_callstack_newWrite: ' + elto.msg) ;
-	return '' ;
+    return '' ;
     }
 
     elto.val.register_address_write[indexComponent][indexElement].push(address);
@@ -404,7 +418,7 @@ function creator_callstack_newRead (indexComponent, indexElement, address, lengt
     var elto = creator_callstack_getTop();
     if (elto.ok == false) {
         console_log('creator_callstack_newRead: ' + elto.msg) ;
-	return '' ;
+    return '' ;
     }
 
     elto.val.register_address_read[indexComponent][indexElement].push(address);
@@ -460,7 +474,7 @@ function creator_callstack_do_transition ( doAction, indexComponent, indexElemen
         var elto = creator_callstack_getTop();
         if (elto.ok == false) {
             console_log('creator_callstack_do_transition: ' + elto.msg) ;
-	    return '' ;
+        return '' ;
         }
 
         var equal  = elto.val.register_address_write[indexComponent][indexElement].includes(address); 
