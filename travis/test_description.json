@@ -1,0 +1,414 @@
+{
+   "MIPS": {
+      "correct": [
+         {
+            "name": "test-mips-001.s",
+            "description": "Data Storage"
+         },
+         {
+            "name": "test-mips-002.s",
+            "description": "Carga de valores y operaciones de suma, resta, mul y div"
+         },
+         {
+            "name": "test-mips-003.s",
+            "description": "Lectura y escritura de valores en memoria"
+         },
+         {
+            "name": "test-mips-004.s",
+            "description": "Operaciones en coma flotante y almacenamiento en memoria"
+         },
+         {
+            "name": "test-mips-005.s",
+            "description": "Suma de los primeros 10 numeros de 0 a 9"
+         },
+         {
+            "name": "test-mips-006.s",
+            "description": "Uso de saltos condicionales e incondicionales"
+         },
+         {
+            "name": "test-mips-007.s",
+            "description": "Lectura de valores en memoria y bucle de los primeros 5 elementos del array"
+         },
+         {
+            "name": "test-mips-008.s",
+            "description": "Copia de matrices en coma flotante"
+         },
+         {
+            "name": "test-mips-009.s",
+            "description": "Suma de dos valores pasados por consola"
+         },
+         {
+            "name": "test-mips-010.s",
+            "description": "Escritura en consola de un string de longitud pasada por consola"
+         },
+         {
+            "name": "test-mips-011.s",
+            "description": "Uso de funciones para realizar operaciones de suma"
+         },
+         {
+            "name": "test-mips-012.s",
+            "description": "Factorial de 5"
+         },
+         {
+            "name": "test-mips-020.s",
+            "description": "Escritura y lectura de valores en $sp"
+         },
+         {
+            "name": "test-mips-021.s",
+            "description": []
+         },
+         {
+            "name": "test-mips-022.s",
+            "description": "Programa para leer por consola ints"
+         },
+         {
+            "name": "test-mips-023.s",
+            "description": "Escritura en consola de valores enteros"
+         },
+         {
+            "name": "test-mips-024.s",
+            "description": "Escritura en consola de floats"
+         },
+         {
+            "name": "test-mips-025.s",
+            "description": "Escritura en consola de doubles"
+         },
+         {
+            "name": "test-mips-026.s",
+            "description": "Escritura en consola de cadenas de caracteres"
+         },
+         {
+            "name": "test-mips-027.s",
+            "description": "Lectura de consola de float"
+         },
+         {
+            "name": "test-mips-028.s",
+            "description": "Lectura de consola de double"
+         },
+         {
+            "name": "test-mips-029.s",
+            "description": "Lectura de consola de una cadena"
+         },
+         {
+            "name": "test-mips-030.s",
+            "description": "Uso del sbrk"
+         },
+         {
+            "name": "test-mips-031.s",
+            "description": "Uso de syscall introduciendo el valor 10"
+         },
+         {
+            "name": "test-mips-032.s",
+            "description": "Lectura y escritura de caracteres"
+         },
+         {
+            "name": "test-mips-033.s",
+            "description": "Lectura de caracteres, pero lee enteros."
+         }
+      ],
+      "error": [
+         {
+            "name": "testerror-mips-001.s",
+            "description": "Error1: non-open string"
+         },
+         {
+            "name": "testerror-mips-002.s",
+            "description": "Error2: non-closed string"
+         },
+         {
+            "name": "testerror-mips-003.s",
+            "description": "Error3: illegal instruction 1x"
+         },
+         {
+            "name": "testerror-mips-004.s",
+            "description": "Error4: illegal registar t20"
+         },
+         {
+            "name": "testerror-mips-005.s",
+            "description": "Error5: Incorrect syntax --> la t2 max"
+         },
+         {
+            "name": "testerror-mips-006.s",
+            "description": "Error6: Repeated tag --> max"
+         },
+         {
+            "name": "testerror-mips-007.s",
+            "description": "Error7: illegal tag --> max1"
+         },
+         {
+            "name": "testerror-mips-008.s",
+            "description": "Error8: illegal directive --> .bytes"
+         },
+         {
+            "name": "testerror-mips-009.s",
+            "description": "Error9: invalid number --> hello"
+         },
+         {
+            "name": "testerror-mips-010.s",
+            "description": "Error10: data no aligned"
+         },
+         {
+            "name": "testerror-mips-011.s",
+            "description": "Error11: empty directive"
+         },
+         {
+            "name": "testerror-mips-031.s",
+            "description": "Error de tag repetido"
+         },
+         {
+            "name": "testerror-mips-032.s",
+            "description": "Error de instrucción no encontrada"
+         },
+         {
+            "name": "testerror-mips-033.s",
+            "description": "Sintaxis incorrecta en una instrucción"
+         },
+         {
+            "name": "testerror-mips-034.s",
+            "description": "Registro inexistente"
+         },
+         {
+            "name": "testerror-mips-035.s",
+            "description": "Número inmediato demasiado grande"
+         },
+         {
+            "name": "testerror-mips-036.s",
+            "description": "Error de tag errónea"
+         },
+         {
+            "name": "testerror-mips-037.s",
+            "description": "Dirección demasiado grande"
+         },
+         {
+            "name": "testerror-mips-038.s",
+            "description": "Dirección incorrecta"
+         },
+         {
+            "name": "testerror-mips-039.s",
+            "description": "Reserva de espacio demasiado grande"
+         },
+         {
+            "name": "testerror-mips-40.s",
+            "description": "Directiva errónea"
+         },
+         {
+            "name": "testerror-mips-041.s",
+            "description": "Error de valor inválido"
+         },
+         {
+            "name": "testerror-mips-042.s",
+            "description": "Cadena de caracteres sin doble comilla"
+         },
+         {
+            "name": "testerror-mips-043.s",
+            "description": "Cadena de caracteres que tiene comilla simple"
+         },
+         {
+            "name": "testerror-mips-044.s",
+            "description": "Introducir un numero muy grande en .half"
+         },
+         {
+            "name": "testerror-mips-045.s",
+            "description": "Datos no alineados"
+         },
+         {
+            "name": "testerror-mips-046.s",
+            "description": "Directiva vacía"
+         },
+         {
+            "name": "testerror-mips-047.s",
+            "description": "Fichero vacío"
+         },
+         {
+            "name": "testerror-mips-048.s",
+            "description": "Reserva de espacio con valor negativo"
+         },
+         {
+            "name": "testerror-mips-049.s",
+            "description": "Reserva de un valor sin introducir el valor"
+         }
+      ],
+      "sentinel": [
+         {
+            "name": "testsentinel-mips-001.s",
+            "description": "Modificación del registro a0 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-002.s",
+            "description": "Modificación del registro a1 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-003.s",
+            "description": "Modificación del registro a2 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-004.s",
+            "description": "Modificación del registro a3 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-005.s",
+            "description": "Modificación del registro fp dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-006.s",
+            "description": "Modificación del registro gp dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-007.s",
+            "description": "Modificación del registro k0 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-008.s",
+            "description": "Modificación del registro k1 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-009.s",
+            "description": "Modificación del registro ra dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-010.s",
+            "description": "Modificación del registro s0 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-011.s",
+            "description": "Modificación del registro s1 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-012.s",
+            "description": "Modificación del registro s2 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-013.s",
+            "description": "Modificación del registro s3 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-014.s",
+            "description": "Modificación del registro s4 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-015.s",
+            "description": "Modificación del registro s5 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-016.s",
+            "description": "Modificación del registro s6 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-017.s",
+            "description": "Modificación del registro s7 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-018.s",
+            "description": "Modificación del registro sp dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-019.s",
+            "description": "Modificación del registro t0 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-020.s",
+            "description": "Modificación del registro t1 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-021.s",
+            "description": "Modificación del registro t2 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-022.s",
+            "description": "Modificación del registro t3 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-023.s",
+            "description": "Modificación del registro t4 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-024.s",
+            "description": "Modificación del registro t5 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-025.s",
+            "description": "Modificación del registro t6 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-026.s",
+            "description": "Modificación del registro t7 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-027.s",
+            "description": "Modificación del registro t8 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-028.s",
+            "description": "Modificación del registro t9 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-029.s",
+            "description": "Modificación del registro v0 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-030.s",
+            "description": "Modificación del registro v1 dentro de la función test"
+         },
+         {
+            "name": "testsentinel-mips-031.s",
+            "description": "Modificación del registro s0 y s1 dentro de la función test guardando en pila"
+         },
+         {
+            "name": "testsentinel-mips-032.s",
+            "description": "Modificación del registro s0 dentro de la función test guardando en pila"
+         }
+      ]
+   },
+   "RISCV": {
+      "correct": [
+         {
+            "name": "test-riscv-001.s",
+            "description": "Data Storage"
+         },
+         {
+            "name": "test-riscv-002.s",
+            "description": "Carga de valores y operaciones de suma, resta, mul y div"
+         },
+         {
+            "name": "test-riscv-003.s",
+            "description": "Lectura y escritura de valores en memoria"
+         },
+         {
+            "name": "test-riscv-004.s",
+            "description": "Operaciones en coma flotante y almacenamiento en memoria"
+         },
+         {
+            "name": "test-riscv-005.s",
+            "description": "Suma de los primeros 10 numeros de 0 a 9"
+         },
+         {
+            "name": "test-riscv-006.s",
+            "description": "Uso de saltos condicionales e incondicionales"
+         },
+         {
+            "name": "test-riscv-007.s",
+            "description": "Lectura de valores en memoria y bucle de los primeros 5 elementos del array"
+         },
+         {
+            "name": "test-riscv-008.s",
+            "description": "Copia de matrices en coma flotante"
+         },
+         {
+            "name": "test-riscv-009.s",
+            "description": "Suma de dos valores pasados por consola"
+         },
+         {
+            "name": "test-riscv-010.s",
+            "description": "Escritura en consola de un string de longitud pasada por consola"
+         },
+         {
+            "name": "test-riscv-011.s",
+            "description": "Uso de funciones para realizar operaciones de suma"
+         },
+         {
+            "name": "test-riscv-012.s",
+            "description": "Factorial de 5"
+         }
+      ]
+   }
+}
