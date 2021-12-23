@@ -172,20 +172,42 @@ try
 
 
 
-      /*Edit component modal*/
+      //Edit component modal
       modalEditComponent: { //TODO: include into directives component
         title: '',
         element: '',
         name: '',
       },
-      /*Delete component modal*/
+      //Delete component modal
       modalDeletComp:{ //TODO: include into directives component
         title: '',
         element: '',
       },
 
 
-      /*Delete element modal*/
+      //New register modal
+      modalNewElement:{
+        element: '',
+        type: '',
+        double_precision: '',
+        id: '',
+      },
+
+      //Edit register modal
+      modalEditElement:{
+        element: '',
+        type: '',
+        double_precision: '',
+        name: '',
+        id: '',
+        defValue: '',
+        properties: [],
+        precision: '',
+        simple1: '',
+        simple2: '',
+      },
+
+      //Delete element modal
       modalDeletElement:{
         title: '',
         element: '',
@@ -201,64 +223,6 @@ try
 
 
 
-
-
-
-
-      /*Modals elements*/
-      showNewElement: false,
-      showEditElement: false,
-      /*New element modal*/
-      modalNewElement:{
-        title: '',
-        element: '',
-        type: '',
-        double_precision: '',
-        simple1: '',
-        simple2: '',
-      },
-      /*Edit element modal*/
-      modalEditElement:{
-        title: '',
-        element: '',
-        type: '',
-        double_precision: '',
-        simple1: '',
-        simple2: '',
-      },
-
-
-
-
-
-
-
-
-
-
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Element form*/
-      formArchitecture: {
-        name: '',
-        id: '',
-        type: '',
-        defValue: '',
-        properties: [],
-        precision: '',
-      },
 
 
 
@@ -1105,7 +1069,7 @@ try
 
 
 
-      /*Show edit component modal*/ //TODO: include into component
+      //Show edit component modal //TODO: include into component
       editCompModal(comp, index, button){
         app._data.modalEditComponent.title = "Edit Register File";
         app._data.modalEditComponent.element = comp;
@@ -1113,7 +1077,7 @@ try
         this.$root.$emit('bv::show::modal', 'edit_register_file', button);
       },
 
-      /*Show delete component modal*/ //TODO: include into component
+      //Show delete component modal //TODO: include into component
       delCompModal(elem, button){
         app._data.modalDeletComp.title = "Delete Register File";
         app._data.modalDeletComp.element = elem;
@@ -1125,7 +1089,79 @@ try
 
 
 
-      /*Show delete element modal*/
+
+      //Show new element modal
+      newElemModal(comp, index, button){
+        app._data.modalNewElement.element = comp;
+        app._data.modalNewElement.type = architecture.components[index].type;
+        app._data.modalNewElement.double_precision = architecture.components[index].double_precision;
+
+        this.$root.$emit('bv::show::modal', 'new_register', button);
+
+        app._data.simple_reg = [];
+        for (var i = 0; i < architecture_hash.length; i++){
+          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
+            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
+          }
+        }
+
+        var id = 0;
+        for(var i = 0; i < architecture.components.length; i++){
+          for(var j = 0; j < architecture.components[i].elements.length; j++){
+            if(architecture.components[i].name == comp && architecture.components[i].elements.length-1 == j){
+              id++;
+              app._data.modalNewElement.id = id;
+            }
+            if(architecture.components[i].type == architecture.components[index].type && architecture.components[i].double_precision == architecture.components[index].double_precision){
+              id++;
+            }
+          }
+        }
+      },
+
+      //Show edit element modal
+      editElemModal(elem, comp, button){
+        this.modalEditElement.element = elem;
+        this.modalEditElement.type = architecture.components[comp].type;
+        this.modalEditElement.double_precision = architecture.components[comp].double_precision;
+
+        app._data.simple_reg = [];
+        for (var i = 0; i < architecture_hash.length; i++){
+          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
+            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
+          }
+        }
+
+        for(var j=0; j < architecture.components[comp].elements.length; j++){
+          if(elem == architecture.components[comp].elements[j].name){
+            this.modalEditElement.name = elem;
+            this.modalEditElement.properties = architecture.components[comp].elements[j].properties;
+            if(this.modalEditElement.double_precision == true){
+              this.modalEditElement.simple1 = architecture.components[comp].elements[j].simple_reg[0];
+              this.modalEditElement.simple2 = architecture.components[comp].elements[j].simple_reg[1];
+            }
+            else{
+              this.modalEditElement.defValue = (architecture.components[comp].elements[j].default_value).toString();
+            }
+          }
+        }
+
+        var id = 0;
+        for(var i = 0; i < architecture.components.length; i++){
+          for(var j = 0; j < architecture.components[i].elements.length; j++){
+            if(architecture.components[i].elements[j].name == this.modalEditElement.name){
+              this.modalEditElement.id = id;
+            }
+            if(architecture.components[i].type == architecture.components[comp].type && architecture.components[i].double_precision == architecture.components[comp].double_precision){
+              id++;
+            }
+          }
+        }
+
+        this.$root.$emit('bv::show::modal', 'edit_register', button);
+      },
+
+      //Show delete element modal
       delElemModal(elem, button){
         app._data.modalDeletElement.title = "Delete Register";
         app._data.modalDeletElement.element = elem;
@@ -1162,164 +1198,18 @@ try
 
 
 
+      
 
 
 
 
 
 
-      /*Show new element modal*/
-      newElemModal(comp, index, button){
-        this.modalNewElement.title = "New element";
-        this.modalNewElement.element = comp;
-        this.modalNewElement.type = architecture.components[index].type;
-        this.modalNewElement.double_precision = architecture.components[index].double_precision;
-
-        this.$root.$emit('bv::show::modal', 'modalNewElement', button);
-
-        app._data.simple_reg = [];
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
-          }
-        }
-
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].name == comp && architecture.components[i].elements.length-1 == j){
-              id++;
-              this.formArchitecture.id = id;
-            }
-            if(architecture.components[i].type == architecture.components[index].type && architecture.components[i].double_precision == architecture.components[index].double_precision){
-              id++;
-            }
-          }
-        }
-      },
-
-      /*Verify all field of new element*/
-      newElementVerify(evt, comp){
-        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name){
-             show_notification('Please complete all fields', 'danger') ;
-        }
-        else{
-          if (!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
-             show_notification('Please complete all fields', 'danger') ;
-          }
-          else if(isNaN(this.formArchitecture.defValue)){
-             show_notification('The default value must be a number', 'danger') ;
-          }
-          else{
-            this.newElement(comp);
-          }
-        }
-      },
 
 
-      /*Create a new element*/
-      newElement(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length; j++){
-            for (var z = 0; z < this.formArchitecture.name.length; z++){
-              if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
-                  show_notification('The element already exists', 'danger') ;
-                  return;
-              }
-            }
-          }
-        }
-
-        this.showNewElement = false;
-
-        for (var i = 0; i < architecture_hash.length; i++){
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bi_intToBigInt(this.formArchitecture.defValue,10), default_value:bi_intToBigInt(this.formArchitecture.defValue,10), properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "control")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bi_intToBigInt(this.formArchitecture.defValue,10), default_value:bi_intToBigInt(this.formArchitecture.defValue,10), properties: ["read", "write"]};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
-            var aux_new;
-            var aux_value;
-            var aux_sim1;
-            var aux_sim2;
-
-            for (var a = 0; a < architecture_hash.length; a++){
-              for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
-                  aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                }
-                if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
-                  aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                }
-              }
-            }
-
-            aux_value = aux_sim1 + aux_sim2;
-            aux_new = this.hex2double("0x" + aux_value);
-
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: aux_new, properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-        }
-      },
-
-      /*Show edit element modal*/
-      editElemModal(elem, comp, button){
-        this.modalEditElement.title = "Edit Element";
-        this.modalEditElement.element = elem;
-        this.modalEditElement.type = architecture.components[comp].type;
-        this.modalEditElement.double_precision = architecture.components[comp].double_precision;
-
-        app._data.simple_reg = [];
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
-          }
-        }
-
-        for(var j=0; j < architecture.components[comp].elements.length; j++){
-          if(elem == architecture.components[comp].elements[j].name){
-            this.formArchitecture.name = elem;
-            this.formArchitecture.properties = architecture.components[comp].elements[j].properties;
-            if(this.modalEditElement.double_precision == true){
-              this.formArchitecture.simple1 = architecture.components[comp].elements[j].simple_reg[0];
-              this.formArchitecture.simple2 = architecture.components[comp].elements[j].simple_reg[1];
-            }
-            else{
-              this.formArchitecture.defValue = (architecture.components[comp].elements[j].default_value).toString();
-            }
-          }
-        }
-
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].elements[j].name == this.formArchitecture.name){
-              this.formArchitecture.id = id;
-            }
-            if(architecture.components[i].type == architecture.components[comp].type && architecture.components[i].double_precision == architecture.components[comp].double_precision){
-              id++;
-            }
-          }
-        }
-
-        this.$root.$emit('bv::show::modal', 'modalEditElement', button);
-      },
 
       /*Check all field of modified element*/
-      editElementVerify(evt, comp){
+      /*editElementVerify(evt, comp){
         evt.preventDefault();
         if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name || !this.formArchitecture.defValue) {
           show_notification('Please complete all fields', 'danger') ;
@@ -1330,10 +1220,10 @@ try
         else {
           this.editElement(comp);
         }
-      },
+      },*/
 
       /*Modify element*/
-      editElement(comp){
+      /*editElement(comp){
         for (var i = 0; i < architecture_hash.length; i++){
           for (var j = 0; j < architecture.components[i].elements.length; j++){
             for (var z = 0; z < this.formArchitecture.name.length; z++){
@@ -1387,7 +1277,7 @@ try
             }
           }
         }
-      },
+      },*/
 
 
 
@@ -1434,6 +1324,26 @@ try
         this.formArchitecture.properties = [];
         this.formArchitecture.precision = '';
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Show reset instructions modal*/
       resetInstModal(elem, button){

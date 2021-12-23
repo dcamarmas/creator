@@ -58,4 +58,4 @@
 
   }
 
-  Vue.component('register-delete', uielto_register_delete) ;
+  Vue.component('registers-delete', uielto_register_delete) ;
