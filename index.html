@@ -621,100 +621,8 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-                    <!-- New element form -->
-                    <b-modal id ="modalNewElement" 
-                             :title = "modalNewElement.title" 
-                             ok-title="Save" 
-                             @ok="newElementVerify($event, modalNewElement.element)" 
-                             v-model="showNewElement" 
-                             @hidden="emptyFormArch">
-                      <b-form >
-                        <b-form-group label="Name:">
-                          <b-form-tags
-                            v-model="formArchitecture.name"
-                            separator=" ,;"
-                            placeholder="Enter new register name"
-                            no-add-on-enter
-                            required 
-                            size="lg"
-                            tag-variant="primary"
-                            tag-pills 
-                            title="Element name"
-                          ></b-form-tags>
-                        </b-form-group>
-                        <b-form-group label="ID:">
-                          <b-form-input type="text" 
-                                        v-on:input="debounce('formArchitecture.id', $event)" 
-                                        :value="formArchitecture.id" 
-                                        required 
-                                        size="sm" 
-                                        title="Element ID"
-                                        disabled>
-                          </b-form-input>
-                        </b-form-group>
-                        <b-form-group label="Default value:" 
-                                      v-if="modalNewElement.double_precision == false">
-                          <b-form-input type="text" 
-                                        :state="valid(formArchitecture.defValue)" 
-                                        v-on:input="debounce('formArchitecture.defValue', $event)" 
-                                        :value="formArchitecture.defValue" 
-                                        required 
-                                        placeholder="Enter default value" 
-                                        size="sm" 
-                                        title="Default value">
-                          </b-form-input>
-                        </b-form-group>
-                        <b-form-group v-if="modalNewElement.type != 'control'" label="Properties:">
-                          <b-form-checkbox-group v-model="formArchitecture.properties">
-                            <b-form-checkbox value="read">Read</b-form-checkbox>
-                            <b-form-checkbox value="write">Write</b-form-checkbox>
-                            <b-form-checkbox value="ignore_write">Ignore Write</b-form-checkbox>
-                            <b-form-checkbox value="saved">Saved</b-form-checkbox>
-                            <b-form-checkbox value="pointer">Pointer</b-form-checkbox>
-                            <b-form-checkbox value="data">Data</b-form-checkbox>
-                            <b-form-checkbox value="code">Code</b-form-checkbox>
-                            <b-form-checkbox value="stack">Stack</b-form-checkbox>
-                            <b-form-checkbox value="frame">Frame</b-form-checkbox>
-                          </b-form-checkbox-group>
-                        </b-form-group>
-                        <b-form-group label="Simple Floating Points asociate:" v-if="modalNewElement.double_precision == true">
-                          <div class="col-lg-12 col-sm-12 row m-0">
-                            <div class="col-lg-6 col-sm-6">
-                              <b-form-select required 
-                                             v-model="formArchitecture.simple1" 
-                                             :state="valid(formArchitecture.simple1)" 
-                                             size="sm" 
-                                             :options="simple_reg"
-                                             title="First part of double">
-                              </b-form-select>
-                            </div>
-                            <div class="col-lg-6 col-sm-6">
-                              <b-form-select required 
-                                             v-model="formArchitecture.simple2" 
-                                             :state="valid(formArchitecture.simple2)" 
-                                             size="sm" 
-                                             :options="simple_reg"
-                                             title="Second part of double">
-                              </b-form-select>
-                            </div>
-                          </div>
-                        </b-form-group>
-                      </b-form>
-                    </b-modal >
-
                     <!-- Edit element form -->
-                    <b-modal id ="modalEditElement" 
+                    <!--<b-modal id ="modalEditElement" 
                              :title="modalEditElement.title" 
                              ok-title="Save"
                              @ok="editElementVerify($event, modalEditElement.element)" 
@@ -793,7 +701,7 @@
                           </div>
                         </b-form-group>
                       </b-form>
-                    </b-modal >
+                    </b-modal >-->
 
 
 
@@ -836,11 +744,37 @@
 
                     <!-- Registers modals -->
 
-                    <!-- Delete element -->
-                    <register-delete  id="delete_register"
+                    <!-- New register -->
+                    <registers-new id="new_register"
+                                  :element="modalNewElement.element"
+                                  :type="modalNewElement.type"
+                                  :double_precision="modalNewElement.double_precision"
+                                  :reg_id="modalNewElement.id"
+                                  :simple_reg="simple_reg"
+                                  :bits="number_bits">
+                    </registers-new>
+
+                    <!-- Edit register -->
+                    <registers-edit id="edit_register"
+                                    :element="modalEditElement.element"
+                                    :type="modalEditElement.type"
+                                    :double_precision="modalEditElement.double_precision"
+                                    :reg_id="modalEditElement.reg_id"
+                                    :name="modalEditElement.name"
+                                    :defValue="modalEditElement.defValue"
+                                    :properties="modalEditElement.properties"
+                                    :precision="modalEditElement.precision"
+                                    :simple1="modalEditElement.simple1"
+                                    :simple2="modalEditElement.simple2">
+                    </registers-edit>
+
+                    <!-- Delete register -->
+                    <registers-delete  id="delete_register"
                                       :title="modalDeletElement.title"
                                       :element="modalDeletElement.element">
-                    </register-delete>
+                    </registers-delete>
+
+
 
 
 

@@ -56,6 +56,8 @@ cat js/creator_bigint.js \
     components/architecture/register_file/creator_uielto_register_file_reset.js \
     components/architecture/register_file/creator_uielto_register_file_edit.js \
     components/architecture/register_file/creator_uielto_register_file_delete.js \
+    components/architecture/registers/creator_uielto_registers_new.js \
+    components/architecture/registers/creator_uielto_registers_edit.js \
     components/architecture/registers/creator_uielto_registers_delete.js \
     components/architecture/directives/creator_uielto_directives.js \
     components/architecture/directives/creator_uielto_directives_new.js \
