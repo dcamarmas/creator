@@ -185,7 +185,11 @@ try
       },
 
 
-
+      /*Delete element modal*/
+      modalDeletElement:{
+        title: '',
+        element: '',
+      },
 
 
 
@@ -222,11 +226,30 @@ try
         simple1: '',
         simple2: '',
       },
-      /*Delete element modal*/
-      modalDeletElement:{
-        title: '',
-        element: '',
-      },
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Element form*/
       formArchitecture: {
         name: '',
@@ -236,6 +259,16 @@ try
         properties: [],
         precision: '',
       },
+
+
+
+
+
+
+
+
+
+
       /*Instructions table fields*/
       instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Instructions types*/
@@ -1092,6 +1125,12 @@ try
 
 
 
+      /*Show delete element modal*/
+      delElemModal(elem, button){
+        app._data.modalDeletElement.title = "Delete Register";
+        app._data.modalDeletElement.element = elem;
+        this.$root.$emit('bv::show::modal', 'delete_register', button);
+      },
 
 
 
@@ -1350,23 +1389,41 @@ try
         }
       },
 
-      /*Show delete element modal*/
-      delElemModal(elem, button){
-        this.modalDeletElement.title = "Delete Element";
-        this.modalDeletElement.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
-      },
 
-      /*Delete the element*/
-      delElement(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          for(var j=0; j < architecture.components[i].elements.length; j++){
-            if(comp == architecture.components[i].elements[j].name){
-              architecture.components[i].elements.splice(j,1);
-            }
-          }
-        }
-      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Empty form*/
       emptyFormArch(){
