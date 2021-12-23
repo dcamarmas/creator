@@ -557,7 +557,7 @@
                                       :id="'new '+item.name" 
                                       @click="newElemModal(item.name, item.index, $event.target)"> 
                               <span class="fas fa-plus-circle"></span> 
-                              New Element
+                              New Register
                             </b-button>
 
                             <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
@@ -586,28 +586,11 @@
 
 
 
-                    <!-- Register File modals -->
 
-                    <!-- New register file form-->
-                    <register-file-new id="new_register_file"></register-file-new>
 
-                    <!-- Reset Register File -->
-                    <register-file-reset  id="reset_register_file"
-                                          :architecture_name="architecture_name">
-                    </register-file-reset>
 
-                    <!-- Register File edit form-->
-                    <register-file-edit id="edit_register_file"
-                                        :title="modalEditComponent.title"
-                                        :element="modalEditComponent.element"
-                                        :name="modalEditComponent.name">
-                    </register-file-edit>
 
-                    <!-- Delete Register File -->
-                    <register-file-delete id="delete_register_file"
-                                          :title="modalDeletComp.title"
-                                          :element="modalDeletComp.element">
-                    </register-file-delete>
+
 
 
 
@@ -812,14 +795,56 @@
                       </b-form>
                     </b-modal >
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    <!-- Register File modals -->
+
+                    <!-- New register file form-->
+                    <register-file-new id="new_register_file"></register-file-new>
+
+                    <!-- Reset Register File -->
+                    <register-file-reset  id="reset_register_file"
+                                          :architecture_name="architecture_name">
+                    </register-file-reset>
+
+                    <!-- Register File edit form-->
+                    <register-file-edit id="edit_register_file"
+                                        :title="modalEditComponent.title"
+                                        :element="modalEditComponent.element"
+                                        :name="modalEditComponent.name">
+                    </register-file-edit>
+
+                    <!-- Delete Register File -->
+                    <register-file-delete id="delete_register_file"
+                                          :title="modalDeletComp.title"
+                                          :element="modalDeletComp.element">
+                    </register-file-delete>
+
+
+                    <!-- Registers modals -->
+
                     <!-- Delete element -->
-                    <b-modal id ="modalDeletElement" 
-                             :title="modalDeletElement.title" 
-                             ok-variant="danger" 
-                             ok-title="Delete" 
-                             @ok="delElement(modalDeletElement.element)">
-                      <span class="h6">Are you sure you want to delete the item?</span>
-                    </b-modal >
+                    <register-delete  id="delete_register"
+                                      :title="modalDeletElement.title"
+                                      :element="modalDeletElement.element">
+                    </register-delete>
+
+
+
+
                   </div>
                 </b-tab>
 
