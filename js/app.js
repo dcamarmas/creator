@@ -353,7 +353,7 @@ try
       /*Directives table fields*/
       directivesFields: ['name', 'action', 'size', 'actions'], //TODO: include into directives component
 
-      /*Edit directive modal*/
+      //Edit directive modal
       modalEditDirective:{ //TODO: include into directives component
         title: '',
         element: '',
@@ -362,7 +362,7 @@ try
         size: 0,
       },
 
-      /*Delete directive modal*/ //TODO: include into directives component
+      //Delete directive modal //TODO: include into directives component
       modalDeletDir:{
         title: '',
         element: '',
@@ -2611,7 +2611,7 @@ try
 
 
 
-      /*Show edit directive modal*/ //TODO: include into directives component
+      //Show edit directive modal //TODO: include into directives component
       editDirModal(elem, button){
         app._data.modalEditDirective.title = "Edit " + elem;
         app._data.modalEditDirective.element = elem;
@@ -2626,7 +2626,7 @@ try
         this.$root.$emit('bv::show::modal', 'edit_directive', button);
       },
 
-      /*Show delete directive modal*/ //TODO: include into directives component
+      //Show delete directive modal //TODO: include into directives component
       delDirModal(elem, button){
         app._data.modalDeletDir.title = "Delete " + elem;
         app._data.modalDeletDir.element = elem;
