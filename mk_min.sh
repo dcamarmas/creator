@@ -49,18 +49,18 @@ cat js/creator_bigint.js \
     components/load_architecture/creator_uielto_backup.js \
     \
     components/architecture/creator_uielto_save_architecture.js \
-    components/architecture/creator_uielto_memory_layout.js \
-    components/architecture/creator_uielto_memory_layout_edit.js \
-    components/architecture/creator_uielto_memory_layout_reset.js \
-    components/architecture/creator_uielto_register_file_new.js \
-    components/architecture/creator_uielto_register_file_reset.js \
-    components/architecture/creator_uielto_register_file_edit.js \
-    components/architecture/creator_uielto_register_file_delete.js \
-    components/architecture/creator_uielto_directives.js \
-    components/architecture/creator_uielto_directives_new.js \
-    components/architecture/creator_uielto_directives_reset.js \
-    components/architecture/creator_uielto_directives_edit.js \
-    components/architecture/creator_uielto_directives_delete.js \
+    components/architecture/memory_layout/creator_uielto_memory_layout.js \
+    components/architecture/memory_layout/creator_uielto_memory_layout_edit.js \
+    components/architecture/memory_layout/creator_uielto_memory_layout_reset.js \
+    components/architecture/register_file/creator_uielto_register_file_new.js \
+    components/architecture/register_file/creator_uielto_register_file_reset.js \
+    components/architecture/register_file/creator_uielto_register_file_edit.js \
+    components/architecture/register_file/creator_uielto_register_file_delete.js \
+    components/architecture/directives/creator_uielto_directives.js \
+    components/architecture/directives/creator_uielto_directives_new.js \
+    components/architecture/directives/creator_uielto_directives_reset.js \
+    components/architecture/directives/creator_uielto_directives_edit.js \
+    components/architecture/directives/creator_uielto_directives_delete.js \
     \
     components/assembly/creator_uielto_load_assembly.js \
     components/assembly/creator_uielto_save_assembly.js \
