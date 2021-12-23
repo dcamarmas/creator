@@ -157,30 +157,50 @@ try
       /*Component table fields*/
       archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
 
-      /*Components types*/
-      componentsTypes: componentsTypes,
 
       /*Floating point registers*/
-
       simple_reg: [],
-      /*Components reset*/
-      modalResetArch: {
-        title: '',
-        element: '',
-      },
-      /*Modals components*/
-      showNewComponent: false,
-      showEditComponent: false,
+      
+
+
+
+
+
+
+
+
+
+
+
       /*Edit component modal*/
-      modalEditComponent: {
+      modalEditComponent: { //TODO: include into directives component
         title: '',
         element: '',
+        name: '',
       },
       /*Delete component modal*/
-      modalDeletComp:{
+      modalDeletComp:{ //TODO: include into directives component
         title: '',
         element: '',
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Modals elements*/
       showNewElement: false,
       showEditElement: false,
@@ -1034,145 +1054,80 @@ try
         }
       },
 
-      /*Show reset modal of components*/
-      resetArchModal(elem, button){
-        this.modalResetArch.title = "Reset " + elem + " registers";
-        this.modalResetArch.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalResetArch', button);
-      },
 
-      /*Reset components*/
-      resetArchitecture(arch){
-        show_loading();
 
-        for (var i = 0; i < load_architectures.length; i++){
-          if(arch == load_architectures[i].id){
-            var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = register_value_deserialize(auxArch);
 
-            architecture.components = auxArchitecture.components;
-            app._data.architecture = architecture;
 
-            architecture_hash = [];
-            for (var i = 0; i < architecture.components.length; i++) {
-              architecture_hash.push({name: architecture.components[i].name, index: i});
-              app._data.architecture_hash = architecture_hash;
-            }
 
-            hide_loading();
-            show_notification('The registers has been reset correctly', 'success') ;
 
-            return;
-          }
-        }
 
-        $.getJSON('architecture/'+arch+'.json', function(cfg){
-          var auxArchitecture = cfg;
 
-          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-          architecture.components = auxArchitecture2.components;
 
-          app._data.architecture = architecture;
 
-          architecture_hash = [];
-          for (var i = 0; i < architecture.components.length; i++){
-            architecture_hash.push({name: architecture.components[i].name, index: i});
-            app._data.architecture_hash = architecture_hash;
-          }
 
-          hide_loading();
-          show_notification('The registers has been reset correctly', 'success') ;
-        });
-      },
 
-      /*Verify all field of new component*/
-      newComponentVerify(evt){
-        evt.preventDefault();
-        if (!this.formArchitecture.name || !this.formArchitecture.type) {
-            show_notification('Please complete all fields', 'danger') ;
-        }
-        else{
-          this.newComponent();
-        }
-      },
-      /*Create a new component*/
-      newComponent(){
-        for (var i = 0; i < architecture_hash.length; i++) {
-          if (this.formArchitecture.name == architecture_hash[i].name) {
-              show_notification('The component already exists', 'danger') ;
-              return;
-          }
-        }
 
-        this.showNewComponent = false;
 
-        var precision = false;
-        if (this.formArchitecture.precision == "precision"){
-            precision = true;
-        }
 
-        var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
-        architecture.components.push(newComp);
-        var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
-        architecture_hash.push(newComponentHash);
-      },
-      /*Show edit component modal*/
+
+
+
+      /*Show edit component modal*/ //TODO: include into component
       editCompModal(comp, index, button){
-        this.modalEditComponent.title = "Edit Component";
-        this.modalEditComponent.element = comp;
-        this.formArchitecture.name = comp;
-        this.$root.$emit('bv::show::modal', 'modalEditComponent', button);
-      },
-      /*Verify all field of modified component*/
-      editCompVerify(evt, comp){
-        evt.preventDefault();
-        if (!this.formArchitecture.name) {
-            show_notification('Please complete all fields', 'danger') ;
-        }
-        else {
-            this.editComponent(comp);
-        }
+        app._data.modalEditComponent.title = "Edit Register File";
+        app._data.modalEditComponent.element = comp;
+        app._data.modalEditComponent.name = comp;
+        this.$root.$emit('bv::show::modal', 'edit_register_file', button);
       },
 
-      /*Edit the component*/
-      editComponent(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          if ((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
-              show_notification('The component already exists', 'danger') ;
-              return;
-          }
-        }
-
-        this.showEditComponent = false;
-
-        for (var i = 0; i < architecture_hash.length; i++){
-          if(comp == architecture_hash[i].name){
-            architecture_hash[i].name = this.formArchitecture.name;
-            architecture.components[i].name = this.formArchitecture.name;
-          }
-        }
-        this.formArchitecture.name ='';
-      },
-
-      /*Show delete component modal*/
+      /*Show delete component modal*/ //TODO: include into component
       delCompModal(elem, button){
-        this.modalDeletComp.title = "Delete Component";
-        this.modalDeletComp.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalDeletComp', button);
+        app._data.modalDeletComp.title = "Delete Register File";
+        app._data.modalDeletComp.element = elem;
+        this.$root.$emit('bv::show::modal', 'delete_register_file', button);
       },
 
-      /*Delete the component*/
-      delComponent(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          if(comp == architecture_hash[i].name){
-            architecture.components.splice(i,1);
-            architecture_hash.splice(i,1);
-            for (var j = 0; j < architecture_hash.length; j++){
-              architecture_hash[j].index = j;
-            }
-          }
-        }
-      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Show new element modal*/
       newElemModal(comp, index, button){

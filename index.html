@@ -438,27 +438,27 @@
 
                 
 
-                <!-- Components -->
-                <b-tab title="Components" :disabled="advanced_mode" v-if="!advanced_mode">
+                <!-- Register File -->
+                <b-tab title="Register File" :disabled="advanced_mode" v-if="!advanced_mode">
                   <br>
-                  <span class="h6">Components of the architecture:</span>
+                  <span class="h6">Register file of the architecture:</span>
 
                   <div class="col-lg-12 col-sm-12 row">
                     <div class="compMenu">
                       <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
                                 id="newComponentBtn" 
-                                v-b-modal.new_component> 
+                                v-b-modal.new_register_file> 
                         <span class="fas fa-plus-circle"></span> 
-                        New component
+                        New Register File
                       </b-button>
                     </div>
 
                     <div class="compMenu">
                       <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100"
                                 id="resetArchitecture"
-                                @click="resetArchModal(architecture_name, $event)">
+                                v-b-modal.reset_register_file>
                         <span class="fas fa-power-off"></span>
-                        Reset architecture
+                        Reset Register Rile
                       </b-button>
                     </div>
 
@@ -474,48 +474,30 @@
                     </div>
                   </div>
 
-                  <!-- New component form-->
-                  <b-modal id ="new_component" title = "New Component" ok-title="Save" @ok="newComponentVerify" v-model="showNewComponent" @hidden="emptyFormArch">
-                    <b-form>
-                      <b-form-group label="Name:">
-                        <b-form-input type="text" 
-                                      v-on:input="debounce('formArchitecture.name', $event)" 
-                                      :value="formArchitecture.name" 
-                                      required 
-                                      placeholder="Enter name" 
-                                      :state="valid(formArchitecture.name)" 
-                                      size="sm" 
-                                      title="New component name">
-                        </b-form-input>
-                      </b-form-group>
-                      <b-form-group label="Type:">
-                        <b-form-select :options="componentsTypes" 
-                                       required 
-                                       v-model="formArchitecture.type" 
-                                       :state="valid(formArchitecture.type)" 
-                                       size="sm"
-                                       title="Component type">
-                      </b-form-select>
-                      </b-form-group>
-                      <b-form-group v-if="formArchitecture.type == 'floating point'">
-                        <b-form-checkbox-group v-model="formArchitecture.precision">
-                          <b-form-checkbox value="precision">
-                            Double Precision
-                          </b-form-checkbox>
-                        </b-form-checkbox-group>
-                      </b-form-group>
-                    </b-form>
-                  </b-modal >
 
-                  <!-- Reset components -->
-                  <b-modal id ="modalResetArch" 
-                           :title="modalResetArch.title" 
-                           ok-variant="danger" 
-                           ok-title="Reset" 
-                           @ok="resetArchitecture(modalResetArch.element)">
-                    <span class="h6">Are you sure you want to reset the architecture?</span>
-                  </b-modal >
+
+
+
+
+
+
+
+
+
+
+
+
+                 
                   
+
+
+
+
+
+
+
+
+
                   <!-- Components table -->
                   <div class="col-lg-12 col-sm-12 p-0">
                     <br>
@@ -596,36 +578,76 @@
                       </b-card>
                     </div>
 
-                    <!-- Component edit form-->
-                    <b-modal id ="modalEditComponent" 
-                             :title = "modalEditComponent.title" 
-                             ok-title="Save" 
-                             @ok="editCompVerify($event, modalEditComponent.element)" 
-                             v-model="showEditComponent" 
-                             @hidden="emptyFormArch">
-                      <b-form>
-                        <b-form-group label="Name:">
-                          <b-form-input type="text" 
-                                        :state="valid(formArchitecture.name)" 
-                                        v-on:input="debounce('formArchitecture.name', $event)" 
-                                        :value="formArchitecture.name" 
-                                        required 
-                                        placeholder="Enter name" 
-                                        size="sm" 
-                                        title="Name">
-                          </b-form-input>
-                        </b-form-group>
-                      </b-form>
-                    </b-modal >
 
-                    <!-- Delete component -->
-                    <b-modal id ="modalDeletComp" 
-                             :title="modalDeletComp.title" 
-                             ok-variant="danger" 
-                             ok-title="Delete" 
-                             @ok="delComponent(modalDeletComp.element)">
-                      <span class="h6">Are you sure you want to delete the component?</span>
-                    </b-modal >
+
+
+
+
+
+
+
+                    <!-- Register File modals -->
+
+                    <!-- New register file form-->
+                    <register-file-new id="new_register_file"></register-file-new>
+
+                    <!-- Reset Register File -->
+                    <register-file-reset  id="reset_register_file"
+                                          :architecture_name="architecture_name">
+                    </register-file-reset>
+
+                    <!-- Register File edit form-->
+                    <register-file-edit id="edit_register_file"
+                                        :title="modalEditComponent.title"
+                                        :element="modalEditComponent.element"
+                                        :name="modalEditComponent.name">
+                    </register-file-edit>
+
+                    <!-- Delete Register File -->
+                    <register-file-delete id="delete_register_file"
+                                          :title="modalDeletComp.title"
+                                          :element="modalDeletComp.element">
+                    </register-file-delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                     <!-- New element form -->
                     <b-modal id ="modalNewElement" 
@@ -2475,6 +2497,50 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
         <!------------------->
         <!-- Assembly view -->
@@ -2769,6 +2835,7 @@
                     compile="true" 
                     modal="examples2">
           </examples>
+
 
           <!-- Calculator -->
           <calculator id="calculator"></calculator>
