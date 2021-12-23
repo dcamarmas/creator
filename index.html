@@ -498,7 +498,7 @@
 
 
 
-                  <!-- Components table -->
+                  <!-- Register File table -->
                   <div class="col-lg-12 col-sm-12 p-0">
                     <br>
                     <div class="col-lg-12 col-sm-12 pl-0" v-for="item in architecture_hash">
@@ -564,14 +564,14 @@
                                       :id="'edit '+item.name" 
                                       @click="editCompModal(item.name, item.index, $event.target)">
                                       <span class="far fa-edit"></span>
-                              Edit Component
+                              Edit Register File
                             </b-button>
 
                             <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" 
                                       :id="'delete '+item.name"
                                       @click="delCompModal(item.name, $event.target)">
                               <span class="far fa-trash-alt"></span>
-                              Delete Component
+                              Delete Register File
                             </b-button>
                           </b-card-body>
                         </b-collapse>

@@ -1040,7 +1040,7 @@ try
 
 
       /*Register ID assigment*/
-      element_id(name, type, double){
+      element_id(name, type, double){ //TODO: include into component
         var id = 0;
         for(var i = 0; i < architecture.components.length; i++){
           for(var j = 0; j < architecture.components[i].elements.length; j++){
