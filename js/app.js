@@ -154,39 +154,26 @@ try
       /*Align memory*/
       align: false,
 
-      /*Component table fields*/
-      archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
-
 
       /*Floating point registers*/
       simple_reg: [],
       
 
-
-
-
-
-
-
-
-
-
-
       //Edit component modal
-      modalEditComponent: { //TODO: include into directives component
+      modalEditComponent: { //TODO: include into register_file component
         title: '',
         element: '',
         name: '',
       },
       //Delete component modal
-      modalDeletComp:{ //TODO: include into directives component
+      modalDeletComp:{ //TODO: include into register_file component
         title: '',
         element: '',
       },
 
 
       //New register modal
-      modalNewElement:{
+      modalNewElement:{ //TODO: include into register_file component
         element: '',
         type: '',
         double_precision: '',
@@ -194,7 +181,7 @@ try
       },
 
       //Edit register modal
-      modalEditElement:{
+      modalEditElement:{ //TODO: include into register component
         element: '',
         type: '',
         double_precision: '',
@@ -208,7 +195,7 @@ try
       },
 
       //Delete element modal
-      modalDeletElement:{
+      modalDeletElement:{ //TODO: include into register component
         title: '',
         element: '',
       },
@@ -346,9 +333,6 @@ try
 
 
 
-
-      /*Directives table fields*/
-      directivesFields: ['name', 'action', 'size', 'actions'], //TODO: include into directives component
 
       //Edit directive modal
       modalEditDirective:{ //TODO: include into directives component
@@ -963,210 +947,6 @@ try
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Register ID assigment*/
-      element_id(name, type, double){ //TODO: include into component
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].elements[j].name == name){
-              return id;
-            }
-            if(architecture.components[i].type == type && architecture.components[i].double_precision == double){
-              id++;
-            }
-          }
-        }
-      },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      //Show edit component modal //TODO: include into component
-      editCompModal(comp, index, button){
-        app._data.modalEditComponent.title = "Edit Register File";
-        app._data.modalEditComponent.element = comp;
-        app._data.modalEditComponent.name = comp;
-        this.$root.$emit('bv::show::modal', 'edit_register_file', button);
-      },
-
-      //Show delete component modal //TODO: include into component
-      delCompModal(elem, button){
-        app._data.modalDeletComp.title = "Delete Register File";
-        app._data.modalDeletComp.element = elem;
-        this.$root.$emit('bv::show::modal', 'delete_register_file', button);
-      },
-
-
-
-
-
-
-
-      //Show new element modal
-      newElemModal(comp, index, button){
-        app._data.modalNewElement.element = comp;
-        app._data.modalNewElement.type = architecture.components[index].type;
-        app._data.modalNewElement.double_precision = architecture.components[index].double_precision;
-
-        this.$root.$emit('bv::show::modal', 'new_register', button);
-
-        app._data.simple_reg = [];
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
-          }
-        }
-
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].name == comp && architecture.components[i].elements.length-1 == j){
-              id++;
-              app._data.modalNewElement.id = id;
-            }
-            if(architecture.components[i].type == architecture.components[index].type && architecture.components[i].double_precision == architecture.components[index].double_precision){
-              id++;
-            }
-          }
-        }
-      },
-
-      //Show edit element modal
-      editElemModal(elem, comp, button){
-        this.modalEditElement.element = elem;
-        this.modalEditElement.type = architecture.components[comp].type;
-        this.modalEditElement.double_precision = architecture.components[comp].double_precision;
-
-        app._data.simple_reg = [];
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
-          }
-        }
-
-        for(var j=0; j < architecture.components[comp].elements.length; j++){
-          if(elem == architecture.components[comp].elements[j].name){
-            this.modalEditElement.name = elem;
-            this.modalEditElement.properties = architecture.components[comp].elements[j].properties;
-            if(this.modalEditElement.double_precision == true){
-              this.modalEditElement.simple1 = architecture.components[comp].elements[j].simple_reg[0];
-              this.modalEditElement.simple2 = architecture.components[comp].elements[j].simple_reg[1];
-            }
-            else{
-              this.modalEditElement.defValue = (architecture.components[comp].elements[j].default_value).toString();
-            }
-          }
-        }
-
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].elements[j].name == this.modalEditElement.name){
-              this.modalEditElement.id = id;
-            }
-            if(architecture.components[i].type == architecture.components[comp].type && architecture.components[i].double_precision == architecture.components[comp].double_precision){
-              id++;
-            }
-          }
-        }
-
-        this.$root.$emit('bv::show::modal', 'edit_register', button);
-      },
-
-      //Show delete element modal
-      delElemModal(elem, button){
-        app._data.modalDeletElement.title = "Delete Register";
-        app._data.modalDeletElement.element = elem;
-        this.$root.$emit('bv::show::modal', 'delete_register', button);
-      },
 
 
 
@@ -2480,38 +2260,6 @@ try
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-      //Show edit directive modal //TODO: include into directives component
-      editDirModal(elem, button){
-        app._data.modalEditDirective.title = "Edit " + elem;
-        app._data.modalEditDirective.element = elem;
-
-        for (var i = 0; i < architecture.directives.length; i++){
-          if(elem == architecture.directives[i].name){
-            app._data.modalEditDirective.name = architecture.directives[i].name;
-            app._data.modalEditDirective.action = architecture.directives[i].action;
-            app._data.modalEditDirective.size = architecture.directives[i].size;
-          }
-        }
-        this.$root.$emit('bv::show::modal', 'edit_directive', button);
-      },
-
-      //Show delete directive modal //TODO: include into directives component
-      delDirModal(elem, button){
-        app._data.modalDeletDir.title = "Delete " + elem;
-        app._data.modalDeletDir.element = elem;
-        this.$root.$emit('bv::show::modal', 'delete_directive', button);
-      },
 
 
 
