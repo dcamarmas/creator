@@ -30,11 +30,12 @@
                       double_precision:               { type: String, required: true },
                       reg_id:                         { type: Number, required: true },
                       name:                           { type: String, required: true },
-                      def_value:                       { type: String, required: true },
+                      def_value:                      { type: String, required: true },
                       properties:                     { type: Array,  required: true },
                       precision:                      { type: String, required: true },
-                      simple1:                        { type: String, required: true },
-                      simple_2:                        { type: String, required: true }
+                      simple_reg:                     { type: Array,  required: true },
+                      simple_1:                        { type: String, required: true },
+                      simple_2:                       { type: String, required: true }
                       
                     },
 
@@ -95,7 +96,7 @@
 
                                   for (var a = 0; a < architecture_hash.length; a++) {
                                     for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                                      if(architecture.components[a].elements[b].name == this._props.simple1){
+                                      if(architecture.components[a].elements[b].name == this._props.simple_1){
                                         aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].value));
                                       }
                                       if(architecture.components[a].elements[b].name == this._props.simple_2){
@@ -108,7 +109,7 @@
 
                                   architecture.components[i].elements[j].value = hex2double("0x" + aux_value);
 
-                                  architecture.components[i].elements[j].simple_reg[0] = this._props.simple1;
+                                  architecture.components[i].elements[j].simple_reg[0] = this._props.simple_1;
                                   architecture.components[i].elements[j].simple_reg[1] = this._props.simple_2;
                                 }
                               }
@@ -242,8 +243,8 @@
                     '      <div class="col-lg-12 col-sm-12 row m-0">' +
                     '        <div class="col-lg-6 col-sm-6">' +
                     '          <b-form-select required ' +
-                    '                         v-model="simple1" ' +
-                    '                         :state="valid(simple1)" ' +
+                    '                         v-model="simple_1" ' +
+                    '                         :state="valid(simple_1)" ' +
                     '                         size="sm" ' +
                     '                         :options="simple_reg"' +
                     '                         title="First part of double">' +
