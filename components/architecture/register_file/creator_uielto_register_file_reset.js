@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -21,7 +21,7 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_memory_layout_reset = {
+  var uielto_register_file_reset = {
 
         props:      {
                       id:                             { type: String, required: true },
@@ -35,7 +35,8 @@
                     },
 
         methods:    {
-                      resetMemory(arch){
+                      //Reset components
+                      reset_register_file(arch){
                         show_loading();
 
                         for (var i = 0; i < load_architectures.length; i++){
@@ -43,11 +44,17 @@
                             var auxArch = JSON.parse(load_architectures[i].architecture);
                             var auxArchitecture = register_value_deserialize(auxArch);
 
-                            architecture.memory_layout = auxArchitecture.memory_layout;
+                            architecture.components = auxArchitecture.components;
                             app._data.architecture = architecture; //TODO: bidirectional
 
+                            architecture_hash = [];
+                            for (var i = 0; i < architecture.components.length; i++) {
+                              architecture_hash.push({name: architecture.components[i].name, index: i});
+                              app._data.architecture_hash = architecture_hash;
+                            }
+
                             hide_loading();
-                            show_notification('The memory layout has been reset correctly', 'success') ;
+                            show_notification('The register file has been reset correctly', 'success') ;
 
                             return;
                           }
@@ -57,25 +64,32 @@
                           var auxArchitecture = cfg;
 
                           var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-                          architecture.memory_layout = auxArchitecture2.memory_layout;
+                          architecture.components = auxArchitecture2.components;
+
                           app._data.architecture = architecture;
 
-                          hide_loading();
+                          architecture_hash = [];
+                          for (var i = 0; i < architecture.components.length; i++){
+                            architecture_hash.push({name: architecture.components[i].name, index: i});
+                            app._data.architecture_hash = architecture_hash;
+                          }
 
-                          show_notification('The memory layout has been reset correctly', 'success') ;
+                          hide_loading();
+                          show_notification('The registers has been reset correctly', 'success') ;
                         });
-                      }
+                      },
+
+
                     },
 
         template:   '<b-modal :id ="id" ' +
-                    '         title="Reset memory layout"' +
+                    '         title="Reset register file" ' +
                     '         ok-variant="danger" ' +
                     '         ok-title="Reset" ' +
-                    '         @ok="resetMemory(architecture_name)">' +
-                    '  <span class="h6">Are you sure you want to reset the mememory layout set?</span>' +
+                    '         @ok="reset_register_file(architecture_name)">' +
+                    '  <span class="h6">Are you sure you want to reset the architecture?</span>' +
                     '</b-modal >'
-
 
   }
 
-  Vue.component('memory-layout-reset', uielto_memory_layout_reset) ;
+  Vue.component('register-file-reset', uielto_register_file_reset) ;
