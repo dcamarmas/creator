@@ -1208,76 +1208,7 @@ try
 
 
 
-      /*Check all field of modified element*/
-      /*editElementVerify(evt, comp){
-        evt.preventDefault();
-        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name || !this.formArchitecture.defValue) {
-          show_notification('Please complete all fields', 'danger') ;
-        }
-        else if(isNaN(this.formArchitecture.defValue)){
-          show_notification('The default value must be a number', 'danger') ;
-        }
-        else {
-          this.editElement(comp);
-        }
-      },*/
-
-      /*Modify element*/
-      /*editElement(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length; j++){
-            for (var z = 0; z < this.formArchitecture.name.length; z++){
-              if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
-                  show_notification('The element already exists', 'danger') ;
-                  return;
-              }
-            }
-          }
-        }
-
-        this.showEditElement = false;
-
-        for (var i = 0; i < architecture_hash.length; i++){
-          for(var j=0; j < architecture.components[i].elements.length; j++){
-            if(comp == architecture.components[i].elements[j].name){
-              architecture.components[i].elements[j].name = this.formArchitecture.name;
-              if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
-                architecture.components[i].elements[j].default_value = bi_intToBigInt(this.formArchitecture.defValue,10) ;
-              }
-              else{
-                if(architecture.components[i].double_precision == false){
-                  architecture.components[i].elements[j].default_value = parseFloat(this.formArchitecture.defValue, 10);
-                }
-                else{
-
-                  var aux_value;
-                  var aux_sim1;
-                  var aux_sim2;
-
-                  for (var a = 0; a < architecture_hash.length; a++) {
-                    for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
-                        aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].value));
-                      }
-                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
-                        aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].value));
-                      }
-                    }
-                  }
-
-                  aux_value = aux_sim1 + aux_sim2;
-
-                  architecture.components[i].elements[j].value = this.hex2double("0x" + aux_value);
-
-                  architecture.components[i].elements[j].simple_reg[0] = this.formArchitecture.simple1;
-                  architecture.components[i].elements[j].simple_reg[1] = this.formArchitecture.simple2;
-                }
-              }
-              architecture.components[i].elements[j].properties = this.formArchitecture.properties;
-            }
-          }
-        }
-      },*/
+    
 
 
 
@@ -1306,24 +1237,6 @@ try
 
 
 
-
-
-
-
-
-
-
-
-
-      /*Empty form*/
-      emptyFormArch(){
-        this.formArchitecture.name = '';
-        this.formArchitecture.id = '';
-        this.formArchitecture.type = '';
-        this.formArchitecture.defValue = '';
-        this.formArchitecture.properties = [];
-        this.formArchitecture.precision = '';
-      },
 
 
 
