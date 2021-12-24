@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -21,7 +21,7 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_directives_reset = {
+  var uielto_memory_layout_reset = {
 
         props:      {
                       id:                             { type: String, required: true },
@@ -35,20 +35,20 @@
                     },
 
         methods:    {
-                      //Reset directives
-                      reset_directives(arch){
+                      resetMemory(arch){
                         show_loading();
 
-                        for (var i = 0; i < load_architectures.length; i++) {
+                        for (var i = 0; i < load_architectures.length; i++){
                           if(arch == load_architectures[i].id){
                             var auxArch = JSON.parse(load_architectures[i].architecture);
                             var auxArchitecture = register_value_deserialize(auxArch);
 
-                            architecture.directives = auxArchitecture.directives;
+                            architecture.memory_layout = auxArchitecture.memory_layout;
                             app._data.architecture = architecture; //TODO: bidirectional
 
                             hide_loading();
-                            show_notification('The directive set has been reset correctly', 'success') ;
+                            show_notification('The memory layout has been reset correctly', 'success') ;
+
                             return;
                           }
                         }
@@ -57,24 +57,25 @@
                           var auxArchitecture = cfg;
 
                           var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-                          architecture.directives = auxArchitecture2.directives;
-
+                          architecture.memory_layout = auxArchitecture2.memory_layout;
                           app._data.architecture = architecture;
 
                           hide_loading();
-                          show_notification('The directive set has been reset correctly', 'success') ;
+
+                          show_notification('The memory layout has been reset correctly', 'success') ;
                         });
                       }
                     },
 
         template:   '<b-modal :id ="id" ' +
-                    '         title="Reset directives" ' +
+                    '         title="Reset memory layout"' +
                     '         ok-variant="danger" ' +
                     '         ok-title="Reset" ' +
-                    '         @ok="reset_directives(architecture_name)">' +
-                    '  <span class="h6">Are you sure you want to reset the directives set?</span>' +
-                    '</b-modal>'
+                    '         @ok="resetMemory(architecture_name)">' +
+                    '  <span class="h6">Are you sure you want to reset the mememory layout set?</span>' +
+                    '</b-modal >'
+
 
   }
 
-  Vue.component('directives-reset', uielto_directives_reset) ;
+  Vue.component('memory-layout-reset', uielto_memory_layout_reset) ;
