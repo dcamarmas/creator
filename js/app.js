@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Alejandro Calderon Mateos, Diego Camarmas Alonso
  *
  *  This file is part of CREATOR.
  *
@@ -154,68 +154,72 @@ try
       /*Align memory*/
       align: false,
 
-      /*Component table fields*/
-      archFields: ['name', 'ID', 'nbits', 'default_value', 'properties', 'actions'],
-
-      /*Components types*/
-      componentsTypes: componentsTypes,
 
       /*Floating point registers*/
-
       simple_reg: [],
-      /*Components reset*/
-      modalResetArch: {
+      
+
+      //Edit component modal
+      modalEditComponent: { //TODO: include into register_file component
+        title: '',
+        element: '',
+        name: '',
+      },
+      //Delete component modal
+      modalDeletComp:{ //TODO: include into register_file component
         title: '',
         element: '',
       },
-      /*Modals components*/
-      showNewComponent: false,
-      showEditComponent: false,
-      /*Edit component modal*/
-      modalEditComponent: {
-        title: '',
-        element: '',
-      },
-      /*Delete component modal*/
-      modalDeletComp:{
-        title: '',
-        element: '',
-      },
-      /*Modals elements*/
-      showNewElement: false,
-      showEditElement: false,
-      /*New element modal*/
-      modalNewElement:{
-        title: '',
+
+
+      //New register modal
+      modalNewElement:{ //TODO: include into register_file component
         element: '',
         type: '',
         double_precision: '',
-        simple1: '',
-        simple2: '',
+        id: '',
       },
-      /*Edit element modal*/
-      modalEditElement:{
-        title: '',
+
+      //Edit register modal
+      modalEditElement:{ //TODO: include into register component
         element: '',
         type: '',
         double_precision: '',
-        simple1: '',
-        simple2: '',
-      },
-      /*Delete element modal*/
-      modalDeletElement:{
-        title: '',
-        element: '',
-      },
-      /*Element form*/
-      formArchitecture: {
         name: '',
         id: '',
-        type: '',
         defValue: '',
         properties: [],
         precision: '',
+        simple1: '',
+        simple2: '',
       },
+
+      //Delete element modal
+      modalDeletElement:{ //TODO: include into register component
+        title: '',
+        element: '',
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Instructions table fields*/
       instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Instructions types*/
@@ -330,10 +334,7 @@ try
 
 
 
-      /*Directives table fields*/
-      directivesFields: ['name', 'action', 'size', 'actions'], //TODO: include into directives component
-
-      /*Edit directive modal*/
+      //Edit directive modal
       modalEditDirective:{ //TODO: include into directives component
         title: '',
         element: '',
@@ -342,7 +343,7 @@ try
         size: 0,
       },
 
-      /*Delete directive modal*/ //TODO: include into directives component
+      //Delete directive modal //TODO: include into directives component
       modalDeletDir:{
         title: '',
         element: '',
@@ -977,6 +978,7 @@ try
 
 
 
+      
 
 
 
@@ -986,6 +988,7 @@ try
 
 
 
+    
 
 
 
@@ -1019,409 +1022,21 @@ try
 
 
 
-      /*Register ID assigment*/
-      element_id(name, type, double){
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].elements[j].name == name){
-              return id;
-            }
-            if(architecture.components[i].type == type && architecture.components[i].double_precision == double){
-              id++;
-            }
-          }
-        }
-      },
 
-      /*Show reset modal of components*/
-      resetArchModal(elem, button){
-        this.modalResetArch.title = "Reset " + elem + " registers";
-        this.modalResetArch.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalResetArch', button);
-      },
 
-      /*Reset components*/
-      resetArchitecture(arch){
-        show_loading();
 
-        for (var i = 0; i < load_architectures.length; i++){
-          if(arch == load_architectures[i].id){
-            var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = register_value_deserialize(auxArch);
 
-            architecture.components = auxArchitecture.components;
-            app._data.architecture = architecture;
 
-            architecture_hash = [];
-            for (var i = 0; i < architecture.components.length; i++) {
-              architecture_hash.push({name: architecture.components[i].name, index: i});
-              app._data.architecture_hash = architecture_hash;
-            }
 
-            hide_loading();
-            show_notification('The registers has been reset correctly', 'success') ;
 
-            return;
-          }
-        }
 
-        $.getJSON('architecture/'+arch+'.json', function(cfg){
-          var auxArchitecture = cfg;
 
-          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-          architecture.components = auxArchitecture2.components;
 
-          app._data.architecture = architecture;
 
-          architecture_hash = [];
-          for (var i = 0; i < architecture.components.length; i++){
-            architecture_hash.push({name: architecture.components[i].name, index: i});
-            app._data.architecture_hash = architecture_hash;
-          }
-
-          hide_loading();
-          show_notification('The registers has been reset correctly', 'success') ;
-        });
-      },
-
-      /*Verify all field of new component*/
-      newComponentVerify(evt){
-        evt.preventDefault();
-        if (!this.formArchitecture.name || !this.formArchitecture.type) {
-            show_notification('Please complete all fields', 'danger') ;
-        }
-        else{
-          this.newComponent();
-        }
-      },
-      /*Create a new component*/
-      newComponent(){
-        for (var i = 0; i < architecture_hash.length; i++) {
-          if (this.formArchitecture.name == architecture_hash[i].name) {
-              show_notification('The component already exists', 'danger') ;
-              return;
-          }
-        }
-
-        this.showNewComponent = false;
-
-        var precision = false;
-        if (this.formArchitecture.precision == "precision"){
-            precision = true;
-        }
-
-        var newComp = {name: this.formArchitecture.name, type: this.formArchitecture.type, double_precision: precision ,elements:[]};
-        architecture.components.push(newComp);
-        var newComponentHash = {name: this.formArchitecture.name, index: architecture_hash.length};
-        architecture_hash.push(newComponentHash);
-      },
-      /*Show edit component modal*/
-      editCompModal(comp, index, button){
-        this.modalEditComponent.title = "Edit Component";
-        this.modalEditComponent.element = comp;
-        this.formArchitecture.name = comp;
-        this.$root.$emit('bv::show::modal', 'modalEditComponent', button);
-      },
-      /*Verify all field of modified component*/
-      editCompVerify(evt, comp){
-        evt.preventDefault();
-        if (!this.formArchitecture.name) {
-            show_notification('Please complete all fields', 'danger') ;
-        }
-        else {
-            this.editComponent(comp);
-        }
-      },
-
-      /*Edit the component*/
-      editComponent(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          if ((this.formArchitecture.name == architecture_hash[i].name) && (comp != this.formArchitecture.name)){
-              show_notification('The component already exists', 'danger') ;
-              return;
-          }
-        }
-
-        this.showEditComponent = false;
-
-        for (var i = 0; i < architecture_hash.length; i++){
-          if(comp == architecture_hash[i].name){
-            architecture_hash[i].name = this.formArchitecture.name;
-            architecture.components[i].name = this.formArchitecture.name;
-          }
-        }
-        this.formArchitecture.name ='';
-      },
-
-      /*Show delete component modal*/
-      delCompModal(elem, button){
-        this.modalDeletComp.title = "Delete Component";
-        this.modalDeletComp.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalDeletComp', button);
-      },
-
-      /*Delete the component*/
-      delComponent(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          if(comp == architecture_hash[i].name){
-            architecture.components.splice(i,1);
-            architecture_hash.splice(i,1);
-            for (var j = 0; j < architecture_hash.length; j++){
-              architecture_hash[j].index = j;
-            }
-          }
-        }
-      },
-
-      /*Show new element modal*/
-      newElemModal(comp, index, button){
-        this.modalNewElement.title = "New element";
-        this.modalNewElement.element = comp;
-        this.modalNewElement.type = architecture.components[index].type;
-        this.modalNewElement.double_precision = architecture.components[index].double_precision;
-
-        this.$root.$emit('bv::show::modal', 'modalNewElement', button);
-
-        app._data.simple_reg = [];
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
-          }
-        }
-
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].name == comp && architecture.components[i].elements.length-1 == j){
-              id++;
-              this.formArchitecture.id = id;
-            }
-            if(architecture.components[i].type == architecture.components[index].type && architecture.components[i].double_precision == architecture.components[index].double_precision){
-              id++;
-            }
-          }
-        }
-      },
-
-      /*Verify all field of new element*/
-      newElementVerify(evt, comp){
-        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name){
-             show_notification('Please complete all fields', 'danger') ;
-        }
-        else{
-          if (!this.formArchitecture.defValue && this.formArchitecture.double_precision == false){
-             show_notification('Please complete all fields', 'danger') ;
-          }
-          else if(isNaN(this.formArchitecture.defValue)){
-             show_notification('The default value must be a number', 'danger') ;
-          }
-          else{
-            this.newElement(comp);
-          }
-        }
-      },
-
-
-      /*Create a new element*/
-      newElement(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length; j++){
-            for (var z = 0; z < this.formArchitecture.name.length; z++){
-              if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
-                  show_notification('The element already exists', 'danger') ;
-                  return;
-              }
-            }
-          }
-        }
-
-        this.showNewElement = false;
-
-        for (var i = 0; i < architecture_hash.length; i++){
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "integer")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bi_intToBigInt(this.formArchitecture.defValue,10), default_value:bi_intToBigInt(this.formArchitecture.defValue,10), properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "control")){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: bi_intToBigInt(this.formArchitecture.defValue,10), default_value:bi_intToBigInt(this.formArchitecture.defValue,10), properties: ["read", "write"]};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == false)){
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits, value: parseFloat(this.formArchitecture.defValue), default_value:parseFloat(this.formArchitecture.defValue), properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-          if((comp == architecture_hash[i].name)&&(architecture.components[i].type == "floating point")&&(architecture.components[i].double_precision == true)){
-            var aux_new;
-            var aux_value;
-            var aux_sim1;
-            var aux_sim2;
-
-            for (var a = 0; a < architecture_hash.length; a++){
-              for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
-                  aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                }
-                if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
-                  aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].default_value));
-                }
-              }
-            }
-
-            aux_value = aux_sim1 + aux_sim2;
-            aux_new = this.hex2double("0x" + aux_value);
-
-            var newElement = {name:this.formArchitecture.name, nbits: this.number_bits*2, value: aux_new, properties: this.formArchitecture.properties};
-            architecture.components[i].elements.push(newElement);
-            break;
-          }
-        }
-      },
-
-      /*Show edit element modal*/
-      editElemModal(elem, comp, button){
-        this.modalEditElement.title = "Edit Element";
-        this.modalEditElement.element = elem;
-        this.modalEditElement.type = architecture.components[comp].type;
-        this.modalEditElement.double_precision = architecture.components[comp].double_precision;
-
-        app._data.simple_reg = [];
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
-            app._data.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
-          }
-        }
-
-        for(var j=0; j < architecture.components[comp].elements.length; j++){
-          if(elem == architecture.components[comp].elements[j].name){
-            this.formArchitecture.name = elem;
-            this.formArchitecture.properties = architecture.components[comp].elements[j].properties;
-            if(this.modalEditElement.double_precision == true){
-              this.formArchitecture.simple1 = architecture.components[comp].elements[j].simple_reg[0];
-              this.formArchitecture.simple2 = architecture.components[comp].elements[j].simple_reg[1];
-            }
-            else{
-              this.formArchitecture.defValue = (architecture.components[comp].elements[j].default_value).toString();
-            }
-          }
-        }
-
-        var id = 0;
-        for(var i = 0; i < architecture.components.length; i++){
-          for(var j = 0; j < architecture.components[i].elements.length; j++){
-            if(architecture.components[i].elements[j].name == this.formArchitecture.name){
-              this.formArchitecture.id = id;
-            }
-            if(architecture.components[i].type == architecture.components[comp].type && architecture.components[i].double_precision == architecture.components[comp].double_precision){
-              id++;
-            }
-          }
-        }
-
-        this.$root.$emit('bv::show::modal', 'modalEditElement', button);
-      },
-
-      /*Check all field of modified element*/
-      editElementVerify(evt, comp){
-        evt.preventDefault();
-        if (this.formArchitecture.name.length == 0 || !this.formArchitecture.name || !this.formArchitecture.defValue) {
-          show_notification('Please complete all fields', 'danger') ;
-        }
-        else if(isNaN(this.formArchitecture.defValue)){
-          show_notification('The default value must be a number', 'danger') ;
-        }
-        else {
-          this.editElement(comp);
-        }
-      },
-
-      /*Modify element*/
-      editElement(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          for (var j = 0; j < architecture.components[i].elements.length; j++){
-            for (var z = 0; z < this.formArchitecture.name.length; z++){
-              if ((architecture.components[i].elements[j].name.includes(this.formArchitecture.name[z]) != false) && (comp != this.formArchitecture.name)){
-                  show_notification('The element already exists', 'danger') ;
-                  return;
-              }
-            }
-          }
-        }
-
-        this.showEditElement = false;
-
-        for (var i = 0; i < architecture_hash.length; i++){
-          for(var j=0; j < architecture.components[i].elements.length; j++){
-            if(comp == architecture.components[i].elements[j].name){
-              architecture.components[i].elements[j].name = this.formArchitecture.name;
-              if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
-                architecture.components[i].elements[j].default_value = bi_intToBigInt(this.formArchitecture.defValue,10) ;
-              }
-              else{
-                if(architecture.components[i].double_precision == false){
-                  architecture.components[i].elements[j].default_value = parseFloat(this.formArchitecture.defValue, 10);
-                }
-                else{
-
-                  var aux_value;
-                  var aux_sim1;
-                  var aux_sim2;
-
-                  for (var a = 0; a < architecture_hash.length; a++) {
-                    for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple1){
-                        aux_sim1 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].value));
-                      }
-                      if(architecture.components[a].elements[b].name == this.formArchitecture.simple2){
-                        aux_sim2 = this.bin2hex(this.float2bin(architecture.components[a].elements[b].value));
-                      }
-                    }
-                  }
-
-                  aux_value = aux_sim1 + aux_sim2;
-
-                  architecture.components[i].elements[j].value = this.hex2double("0x" + aux_value);
-
-                  architecture.components[i].elements[j].simple_reg[0] = this.formArchitecture.simple1;
-                  architecture.components[i].elements[j].simple_reg[1] = this.formArchitecture.simple2;
-                }
-              }
-              architecture.components[i].elements[j].properties = this.formArchitecture.properties;
-            }
-          }
-        }
-      },
-
-      /*Show delete element modal*/
-      delElemModal(elem, button){
-        this.modalDeletElement.title = "Delete Element";
-        this.modalDeletElement.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalDeletElement', button);
-      },
-
-      /*Delete the element*/
-      delElement(comp){
-        for (var i = 0; i < architecture_hash.length; i++){
-          for(var j=0; j < architecture.components[i].elements.length; j++){
-            if(comp == architecture.components[i].elements[j].name){
-              architecture.components[i].elements.splice(j,1);
-            }
-          }
-        }
-      },
-
-      /*Empty form*/
-      emptyFormArch(){
-        this.formArchitecture.name = '';
-        this.formArchitecture.id = '';
-        this.formArchitecture.type = '';
-        this.formArchitecture.defValue = '';
-        this.formArchitecture.properties = [];
-        this.formArchitecture.precision = '';
-      },
+
+
+
+
 
       /*Show reset instructions modal*/
       resetInstModal(elem, button){
@@ -2645,38 +2260,6 @@ try
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-      /*Show edit directive modal*/ //TODO: include into directives component
-      editDirModal(elem, button){
-        app._data.modalEditDirective.title = "Edit " + elem;
-        app._data.modalEditDirective.element = elem;
-
-        for (var i = 0; i < architecture.directives.length; i++){
-          if(elem == architecture.directives[i].name){
-            app._data.modalEditDirective.name = architecture.directives[i].name;
-            app._data.modalEditDirective.action = architecture.directives[i].action;
-            app._data.modalEditDirective.size = architecture.directives[i].size;
-          }
-        }
-        this.$root.$emit('bv::show::modal', 'edit_directive', button);
-      },
-
-      /*Show delete directive modal*/ //TODO: include into directives component
-      delDirModal(elem, button){
-        app._data.modalDeletDir.title = "Delete " + elem;
-        app._data.modalDeletDir.element = elem;
-        this.$root.$emit('bv::show::modal', 'delete_directive', button);
-      },
 
 
 
