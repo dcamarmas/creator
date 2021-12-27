@@ -151,10 +151,6 @@ try
 
 
 
-      /*Align memory*/
-      align: false,
-
-
       /*Floating point registers*/
       simple_reg: [],
       
@@ -224,6 +220,8 @@ try
       instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Instructions types*/
       instructionsTypes: instructionsTypes,
+
+
       /*Instructions fields*/
       modalViewFields:{
         title: '',
@@ -231,17 +229,24 @@ try
         co: '',
         cop: '',
       },
-      /*Instructions reset*/
-      modalResetInst:{
-        title: '',
-        element: '',
-      },
+
       /*Modals instructions*/
-      showNewInstruction: false,
+      //showNewInstruction: false,
       showEditInstruction: false,
+
+
+
+
       /*Modal pagination*/
-      instructionFormPage: 1,
-      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'],
+      instructionFormPage: 1, //TODO
+      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'], //TODO
+
+
+
+
+
+
+
       /*Edit instruction modal*/
       modalEditInst:{
         title: '',
@@ -249,14 +254,26 @@ try
         co: '',
         cop: '',
       },
+
+
+
+
+
       /*Delete instruction modal*/
       modalDeletInst:{
-        title: '',
-        element: '',
         index: 0,
       },
+
+
+
+
+
+
+
+
+
       /*Instruction form*/
-      formInstruction: {
+      formInstruction: { //TODO
         name: '',
         type: '',
         co: '',
@@ -278,6 +295,29 @@ try
         signature_definition: '',
         definition: '',
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Pseudoinstructions table fields*/
       pseudoinstFields: ['name', 'nwords', 'signatureRaw', 'fields', 'definition', 'actions'],
       /*Pseudoinstructions reset*/
@@ -317,7 +357,7 @@ try
         help: '',
       },
       /* Allow instruction with fractioned fields */
-      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"],
+      fragmentData:["inm-signed", "inm-unsigned", "address", "offset_bytes", "offset_words"], //TODO
 
 
 
@@ -879,57 +919,46 @@ try
 
 
 
-      /**
-        * method in charge of create the array corresponent to the
-        * current position of start bit and end bit
-       */
 
-      changeToSeparateValue( val, pos ) {
-          if (val) {
-            this.formInstruction.startBitField[pos] = [0];
-            this.formInstruction.stopBitField[pos] =[0];
-              if (this.formInstruction.typeField[pos] == 'co')
-                  this.formInstruction.co = ['0'];
-          } else {
-            this.formInstruction.startBitField[pos] = 0;
-            this.formInstruction.stopBitField[pos] =0;
-              if (this.formInstruction.typeField[pos] == 'co')
-                  this.formInstruction.co = '0';
-          }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+      /*Show delete instruction modal*/
+      delInstModal(elem, index, button){
+        app._data.modalDeletInst.index = index;
+        this.$root.$emit('bv::show::modal', 'delete_instructions', button);
       },
-
-      addMoreFieldsToSeparateValues(event, pos) {
-        this.formInstruction.startBitField[pos].push(0);
-        this.formInstruction.stopBitField[pos].push(0);
-          if (this.formInstruction.typeField[pos] == 'co')
-              this.formInstruction.co.push('0')
-        app.$forceUpdate();
-      },
-
-
-      lessFieldsToSeparateValues(event, pos) {
-          this.formInstruction.startBitField[pos].pop();
-          this.formInstruction.stopBitField[pos].pop();
-            if (this.formInstruction.typeField[pos] == 'co')
-                this.formInstruction.co.pop()
-          app.$forceUpdate();
-      },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1038,47 +1067,58 @@ try
 
 
 
-      /*Show reset instructions modal*/
-      resetInstModal(elem, button){
-        this.modalResetInst.title = "Reset " + elem + " instructions";
-        this.modalResetInst.element = elem;
-        this.$root.$emit('bv::show::modal', 'modalResetInst', button);
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+      /**
+        * method in charge of create the array corresponent to the
+        * current position of start bit and end bit
+       */
+
+      changeToSeparateValue( val, pos ) { //TODO
+          if (val) {
+            this.formInstruction.startBitField[pos] = [0];
+            this.formInstruction.stopBitField[pos] =[0];
+              if (this.formInstruction.typeField[pos] == 'co')
+                  this.formInstruction.co = ['0'];
+          } else {
+            this.formInstruction.startBitField[pos] = 0;
+            this.formInstruction.stopBitField[pos] =0;
+              if (this.formInstruction.typeField[pos] == 'co')
+                  this.formInstruction.co = '0';
+          }
       },
 
-      /*Reset instructions*/
-      resetInstructions(arch){
-        show_loading();
+      addMoreFieldsToSeparateValues(event, pos) { //TODO
+        this.formInstruction.startBitField[pos].push(0);
+        this.formInstruction.stopBitField[pos].push(0);
+          if (this.formInstruction.typeField[pos] == 'co')
+              this.formInstruction.co.push('0')
+        app.$forceUpdate();
+      },
 
-        for (var i = 0; i < load_architectures.length; i++){
-          if(arch == load_architectures[i].id){
-            var auxArch = JSON.parse(load_architectures[i].architecture);
-            var auxArchitecture = register_value_deserialize(auxArch);
 
-            architecture.instructions = auxArchitecture.instructions;
-            app._data.architecture = architecture;
-
-            hide_loading();
-            show_notification('The instruction set has been reset correctly', 'success') ;
-
-            return;
-          }
-        }
-
-        $.getJSON('architecture/'+arch+'.json', function(cfg){
-          var auxArchitecture = cfg;
-
-          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-          architecture.instructions = auxArchitecture2.instructions;
-
-          app._data.architecture = architecture;
-
-          hide_loading();
-          show_notification('The instruction set has been reset correctly', 'success') ;
-        });
+      lessFieldsToSeparateValues(event, pos) { //TODO
+          this.formInstruction.startBitField[pos].pop();
+          this.formInstruction.stopBitField[pos].pop();
+            if (this.formInstruction.typeField[pos] == 'co')
+                this.formInstruction.co.pop()
+          app.$forceUpdate();
       },
 
       /*Verify new number of fields*/
-      changeNumfield(type){
+      changeNumfield(type){ //TODO
         if(type == 0){
           if(this.formInstruction.numfields > (this.formInstruction.nwords * 32)){
             this.formInstruction.numfieldsAux = (this.formInstruction.nwords * 32);
@@ -1107,170 +1147,122 @@ try
         }
       },
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Show instruction fields modal*/
       viewFielsInst(elem, co, cop, button){
-        this.modalViewFields.title = "Fields of " + elem;
-        this.modalViewFields.element = elem;
+        app._data.modalViewFields.title = "Fields of " + elem;
         for (var i = 0; i < architecture.instructions.length; i++){
           if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
-            this.formInstruction.name = architecture.instructions[i].name;
-            this.formInstruction.cop = architecture.instructions[i].cop;
-            this.formInstruction.co = architecture.instructions[i].co;
-            app._data.modalViewFields.co = architecture.instructions[i].co;
-            app._data.modalViewFields.cop = architecture.instructions[i].cop;
-            this.formInstruction.numfields = architecture.instructions[i].fields.length;
-            this.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
+            app._data.formInstruction.name = architecture.instructions[i].name;
+            app._data.formInstruction.cop = architecture.instructions[i].cop;
+            app._data.formInstruction.co = architecture.instructions[i].co;
+            app._data.formInstruction.numfields = architecture.instructions[i].fields.length;
+            app._data.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
 
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
-              this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
-              this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
-              this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-              this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-              this.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
+              app._data.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
+              app._data.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
+              app._data.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+              app._data.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+              app._data.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
             }
           }
         }
-        this.$root.$emit('bv::show::modal', 'modalViewFields', button);
+        this.$root.$emit('bv::show::modal', 'fields_instructions', button);
       },
 
-      /*Verify all fields of new instructions*/
-      newInstVerify(evt){
-        evt.preventDefault();
 
-        for (var i = 0; i < this.formInstruction.nameField.length; i++){
-          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
-            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
-                show_notification('Field name repeated', 'danger') ;
-                return;
-            }
-          }
-        }
 
-        var empty = 0;
-        var auxCop = "";
 
-        for (var z = 1; z < this.formInstruction.numfields; z++){
-          if(this.formInstruction.typeField[z] == 'cop'){
-            if(!this.formInstruction.valueField[z]){
-              empty = 1;
-            }
-            else{
-              if((this.formInstruction.valueField[z]).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-                show_notification('The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers', 'danger') ;
-                return;
-              }
 
-              for (var i = 0; i < this.formInstruction.valueField[z].length; i++){
-                if (this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
-                    show_notification('The value of cop must be binary', 'danger') ;
-                    return;
-                }
-              }
-              auxCop = auxCop + this.formInstruction.valueField[z];
-            }
-          }
-        }
 
-        this.formInstruction.cop = auxCop;
 
-          if (typeof(this.formInstruction.co) != 'object')
-            for (var i = 0; i < this.formInstruction.co.length; i++){
-              if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-                  show_notification('The value of co must be binary', 'danger') ;
-                  return;
-              }
-            }
-        else {
-            for (let val in this.formInstruction.co)
-                if (!/[01]+/.test(val)) {
-                  show_notification('The value of co must be binary', 'danger') ;
-                  return;
-                }
-        }
 
-        for (var i = 0; i < this.formInstruction.numfields; i++){
-          if(this.formInstruction.nameField.length <  this.formInstruction.numfields || this.formInstruction.typeField.length <  this.formInstruction.numfields || this.formInstruction.startBitField.length <  this.formInstruction.numfields || this.formInstruction.stopBitField.length <  this.formInstruction.numfields){
-            empty = 1;
-          }
-        }
 
-        if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-            show_notification('Please complete all fields', 'danger') ;
-        }
-        else if (typeof(this.formInstruction.co) != 'object' && isNaN(this.formInstruction.co)){
-                 show_notification('The field co must be numbers', 'danger') ;
-        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some(val => isNaN(val)))
-                 show_notification('The field co must be numbers', 'danger') ;
-        else if(isNaN(this.formInstruction.cop)){
-                 show_notification('The field cop must be numbers', 'danger') ;
-        }
-        else if(typeof(this.formInstruction.co) != 'object' && (this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-                 show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
-        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some((val, ind) => val.length !== app.formInstruction.startBitField[0][ind] - app.formInstruction.stopBitField[0][ind] +1))
-                 show_notification('The length of co don\'t match with the desription', 'danger');
-        else {
-          this.newInstruction();
-        }
-      },
 
-      /*Create a new instruction*/
-      newInstruction(){
-        for (var i = 0; i < architecture.instructions.length; i++){
-          if  (this.formInstruction.co == architecture.instructions[i].co){
-            if  ((!this.formInstruction.cop)){
-                 show_notification('The instruction already exists', 'danger') ;
-                 return;
-            }
-          }
-        }
 
-        let auxcop = (() => this.formInstruction.co instanceof Array ? this.formInstrucion.co.join("") : this.formInstruction.co)() + this.formInstruction.cop;
 
-        for (var i = 0; i < architecture.instructions.length; i++){
-          if ((auxcop == architecture.instructions[i].cop) && (!auxcop == false)){
-               show_notification('The instruction already exists', 'danger') ;
-               return;
-          }
-        }
 
-        this.showNewInstruction = false;
 
-        //var cop = false;
 
-        this.generateSignatureInst();
 
-        var signature = this.formInstruction.signature;
-        var signatureRaw = this.formInstruction.signatureRaw;
 
-        /*if(cop == false){
-          this.formInstruction.cop='';
-        }*/
 
-        var newInstruction = {
-          name: this.formInstruction.name,
-          type: this.formInstruction.type,
-          signature_definition: this.formInstruction.signature_definition,
-          signature: signature, signatureRaw: signatureRaw,
-          co: this.formInstruction.co,
-          cop: this.formInstruction.cop,
-          nwords: this.formInstruction.nwords,
-          properties: this.formInstruction.properties,
-          help: this.formInstruction.help,
-          fields: [],
-          definition: this.formInstruction.definition,
-          separated:[]
-        };
-        newInstruction.separated = this.formInstruction.startBitField.map((e, i) => this.formInstruction.separated[i] || false)
-        architecture.instructions.push(newInstruction);
-        for (var i = 0; i < this.formInstruction.numfields; i++){
-          var newField = { name: this.formInstruction.nameField[i], type: this.formInstruction.typeField[i],
-                           startbit: !this.formInstruction.separated[i] ? parseInt(this.formInstruction.startBitField[i]) : this.formInstruction.startBitField[i].map(val => parseInt(val)),
-                           stopbit: !this.formInstruction.separated[i] ? parseInt(this.formInstruction.stopBitField[i]) : this.formInstruction.stopBitField[i].map(val => parseInt(val)),
-                           valueField: this.formInstruction.valueField[i]
-                        };
-          architecture.instructions[architecture.instructions.length-1].fields.push(newField);
-        }
-      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Show edit instruction modal*/
       editInstModal(elem, co, cop, button){
@@ -1479,21 +1471,49 @@ try
         show_notification('The instruction has been modified, please check the definition of the pseudoinstructions', 'info') ;
       },
 
-      /*Show delete instruction modal*/
-      delInstModal(elem, index, button){
-        this.modalDeletInst.title = "Delete Instruction";
-        this.modalDeletInst.element = elem;
-        this.modalDeletInst.index = index;
-        this.$root.$emit('bv::show::modal', 'modalDeletInst', button);
-      },
 
-      /*Delete the instruction*/
-      delInstruction(index){
-        architecture.instructions.splice(index,1);
-      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Generate the instruction signature*/
-      generateSignatureInst(){
+      generateSignatureInst(){ //TODO
         var signature = this.formInstruction.signature_definition;
 
         var re = new RegExp("^ +");
@@ -1539,8 +1559,29 @@ try
         this.formInstruction.signatureRaw = signatureRaw;
       },
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*Empty instruction form*/
-      emptyFormInst(){
+      emptyFormInst(){ //TODO
         this.formInstruction.name = '';
         this.formInstruction.type = '';
         this.formInstruction.co = '';
@@ -1563,6 +1604,32 @@ try
         this.instructionFormPage = 1;
         this.formInstruction.help = '';
       },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /*Show pseudoinstruction fields modal*/
       viewFielsPseudo(elem, index, button){
@@ -2237,11 +2304,11 @@ try
       },
 
       /*Pagination bar names*/
-      linkGen (pageNum) {
+      linkGen (pageNum) { //TODO
         return this.instructionFormPageLink[pageNum - 1]
       },
 
-      pageGen (pageNum) {
+      pageGen (pageNum) { //TODO
         return this.instructionFormPageLink[pageNum - 1].slice(1)
       },
 
