@@ -486,138 +486,10 @@
                 </b-tab>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 <!-- Instruction definition -->
                 <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
-                  <br>
-                  <span class="h6">Instruction set:</span>
-                  <br>
-                  <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100" 
-                            id="newInstructionBtn" 
-                            v-b-modal.new_instructions> 
-                    <span class="fas fa-plus-circle"></span>
-                    New instruction
-                  </b-button>
-
-                  <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" 
-                            id="resetInstructions" 
-                            v-b-modal.reset_instructions> 
-                    <span class="fas fa-power-off"></span> 
-                    Reset Instructions
-                  </b-button>
-
-                  <!-- Instruction set table -->
-                  <div class="col-lg-12 col-sm-12 mt-3">
-                    <b-table small :items="architecture.instructions" 
-                             :fields="instFields" 
-                             class="text-center" 
-                             sticky-header="60vh"> 
-
-                      <!-- Change the title of each column -->
-                      <template v-slot:head(cop)="row">
-                        Extended CO
-                      </template>
-
-                      <template v-slot:head(signatureRaw)="row">
-                        Instruction syntax
-                      </template>
-
-                      <!-- For each instruction -->
-
-                      <template v-slot:cell(properties)="row">
-                        <b-badge class="m-1" v-for="propertie in row.item.properties" pill variant="primary">{{propertie}}</b-badge>
-                      </template>
-
-                      <template v-slot:cell(signatureRaw)="row">
-                          {{row.item.signatureRaw}}
-                          <br>
-                          {{row.item.signature}}
-                      </template>
-
-                      <template v-slot:cell(fields)="row">
-                        <b-button @click.stop="viewFielsInst(row.item.name, row.item.co, row.item.cop, $event.target)" 
-                                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">
-                          View Fields
-                        </b-button>
-                      </template>
-
-                      <template v-slot:cell(definition)="row">
-                        <b-form-textarea v-model="row.item.definition" 
-                                         disabled 
-                                         no-resize 
-                                         rows="1" 
-                                         max-rows="4"
-                                         title="Instruction Definition">
-                        </b-form-textarea>
-                      </template>
-
-                      <template v-slot:cell(actions)="row">
-                        <b-button @click.stop="editInstModal(row.item.name, row.item.co, row.item.cop, $event.target)" 
-                                  class="btn btn-outline-secondary btn-sm buttonBackground h-100">
-                          <span class="far fa-edit"></span>
-                          Edit
-                        </b-button>
-                        <b-button @click.stop="delInstModal(row.item.name, row.index, $event.target)" 
-                                  class="btn btn-outline-danger btn-sm buttonBackground h-100">
-                          <span class="far fa-trash-alt"></span>
-                          Delete
-                        </b-button> 
-                      </template>
-                    </b-table>
-                  </div> 
-
-
-
-
-
-
-
-
-
-
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                  
+                  <instructions :instructions="architecture.instructions"></instructions>
 
                   <!-- Instructions modals -->
 
@@ -645,8 +517,6 @@
                   <instructions-delete  id="delete_instructions"
                                         :intruction="modalDeletInst.index">
                   </instructions-delete>
-
-
 
                 </b-tab>
 
