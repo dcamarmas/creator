@@ -216,9 +216,7 @@ try
 
 
 
-      /*Instructions table fields*/
-      instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
-
+    
 
 
 
@@ -928,159 +926,6 @@ try
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      //Show instruction fields modal
-      viewFielsInst(elem, co, cop, button){
-        app._data.modalViewFields.title = "Fields of " + elem;
-        for (var i = 0; i < architecture.instructions.length; i++){
-          if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
-            app._data.formInstruction.name = architecture.instructions[i].name;
-            app._data.formInstruction.cop = architecture.instructions[i].cop;
-            app._data.formInstruction.co = architecture.instructions[i].co;
-            app._data.formInstruction.numfields = architecture.instructions[i].fields.length;
-            app._data.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
-
-            for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
-              app._data.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
-              app._data.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
-              app._data.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-              app._data.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-              app._data.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
-            }
-          }
-        }
-        this.$root.$emit('bv::show::modal', 'fields_instructions', button);
-      },
-
-      //Show delete instruction modal
-      delInstModal(elem, index, button){
-        app._data.modalDeletInst.index = index;
-        this.$root.$emit('bv::show::modal', 'delete_instructions', button);
-      },
-
-      /*Show edit instruction modal*/
-      editInstModal(elem, co, cop, button){
-        app._data.modalEditInst.element = elem;
-        for (var i = 0; i < architecture.instructions.length; i++) {
-          if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
-            app._data.formInstruction.name = architecture.instructions[i].name;
-            app._data.formInstruction.type = architecture.instructions[i].type;
-            app._data.formInstruction.cop = architecture.instructions[i].cop;
-            app._data.formInstruction.co = architecture.instructions[i].co;
-            app._data.modalEditInst.co = architecture.instructions[i].co;
-            app._data.modalEditInst.cop = architecture.instructions[i].cop;
-            app._data.formInstruction.nwords = architecture.instructions[i].nwords;
-            app._data.formInstruction.numfields = architecture.instructions[i].fields.length;
-            app._data.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
-            app._data.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
-            app._data.formInstruction.definition = architecture.instructions[i].definition;
-            app._data.formInstruction.help = architecture.instructions[i].help;
-            app._data.formInstruction.separated = [];
-            app._data.formInstruction.properties = architecture.instructions[i].properties;
-
-            for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
-              app._data.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
-              app._data.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
-              //app._data.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-              //app._data.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-              if (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) {
-                app._data.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-                app._data.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-                app._data.formInstruction.separated.push(false);
-              }
-              else {
-                app._data.formInstruction.startBitField[j] = [...architecture.instructions[i].fields[j].startbit];
-                app._data.formInstruction.stopBitField[j] =  [...architecture.instructions[i].fields[j].stopbit];
-                app._data.formInstruction.separated.push(true);
-              }
-              app._data.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
-            }
-            this.generateSignatureInst();
-            break;
-          }
-        }
-        this.$root.$emit('bv::show::modal', 'edit_instructions', button);
-      },
-
-      /*Generate the instruction signature*/
-      generateSignatureInst(){ //TODO
-        var signature = this.formInstruction.signature_definition;
-
-        var re = new RegExp("^ +");
-        this.formInstruction.signature_definition= this.formInstruction.signature_definition.replace(re, "");
-
-        re = new RegExp(" +", "g");
-        this.formInstruction.signature_definition = this.formInstruction.signature_definition.replace(re, " ");
-
-        re = new RegExp("^ +");
-        signature= signature.replace(re, "");
-
-        re = new RegExp(" +", "g");
-        signature = signature.replace(re, " ");
-
-        for (var z = 0; z < this.formInstruction.numfields; z++){
-          re = new RegExp("[Ff]"+z, "g");
-
-          if(z == 0){
-            signature = signature.replace(re, this.formInstruction.name);
-          }
-          else{
-            signature = signature.replace(re, this.formInstruction.typeField[z]);
-          }
-        }
-
-        re = new RegExp(" ", "g");
-        signature = signature.replace(re , ",");
-
-        var signatureRaw = this.formInstruction.signature_definition;
-
-        re = new RegExp("^ +");
-        signatureRaw= signatureRaw.replace(re, "");
-
-        re = new RegExp(" +", "g");
-        signatureRaw = signatureRaw.replace(re, " ");
-
-        for (var z = 0; z < this.formInstruction.numfields; z++){
-          re = new RegExp("[Ff]"+z, "g");
-          signatureRaw = signatureRaw.replace(re, this.formInstruction.nameField[z]);
-        }
-
-        this.formInstruction.signature = signature;
-        this.formInstruction.signatureRaw = signatureRaw;
-      },
 
 
 
@@ -1867,6 +1712,52 @@ try
       },
 
       
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
       /************/
       /* Assembly */
