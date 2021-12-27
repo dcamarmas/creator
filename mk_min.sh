@@ -61,6 +61,12 @@ cat js/creator_bigint.js \
     components/architecture/registers/creator_uielto_registers_new.js \
     components/architecture/registers/creator_uielto_registers_edit.js \
     components/architecture/registers/creator_uielto_registers_delete.js \
+    components/architecture/instructions/creator_uielto_instructions.js \
+    components/architecture/instructions/creator_uielto_instructions_fields.js \
+    components/architecture/instructions/creator_uielto_instructions_new.js \
+    components/architecture/instructions/creator_uielto_instructions_reset.js \
+    components/architecture/instructions/creator_uielto_instructions_edit.js \
+    components/architecture/instructions/creator_uielto_instructions_delete.js \
     components/architecture/directives/creator_uielto_directives.js \
     components/architecture/directives/creator_uielto_directives_new.js \
     components/architecture/directives/creator_uielto_directives_reset.js \
