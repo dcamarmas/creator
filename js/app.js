@@ -218,61 +218,12 @@ try
 
       /*Instructions table fields*/
       instFields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
-      /*Instructions types*/
-      instructionsTypes: instructionsTypes,
-
-
-      /*Instructions fields*/
-      modalViewFields:{
-        title: '',
-        element: '',
-        co: '',
-        cop: '',
-      },
-
-      /*Modals instructions*/
-      //showNewInstruction: false,
-      showEditInstruction: false,
-
-
-
-
-      /*Modal pagination*/
-      instructionFormPage: 1, //TODO
-      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'], //TODO
 
 
 
 
 
-
-
-      /*Edit instruction modal*/
-      modalEditInst:{
-        title: '',
-        element: '',
-        co: '',
-        cop: '',
-      },
-
-
-
-
-
-      /*Delete instruction modal*/
-      modalDeletInst:{
-        index: 0,
-      },
-
-
-
-
-
-
-
-
-
-      /*Instruction form*/
+      //Instruction form
       formInstruction: { //TODO
         name: '',
         type: '',
@@ -295,6 +246,67 @@ try
         signature_definition: '',
         definition: '',
       },
+
+      /*Instructions fields*/
+      modalViewFields:{ //TODO: include into instruction component
+        title: '',
+        element: '',
+        co: '',
+        cop: '',
+      },
+
+      /*Edit instruction modal*/
+      modalEditInst:{ //TODO: include into instruction component
+        title: '',
+        element: '',
+        co: '',
+        cop: '',
+      },
+
+      /*Delete instruction modal*/
+      modalDeletInst:{ //TODO: include into instruction component
+        index: 0,
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+
+      /*Modal pagination*/
+      instructionFormPage: 1, //TODO
+      instructionFormPageLink: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'], //TODO
+
+
+
+
+
+
+
+      
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+      
 
 
 
@@ -950,234 +962,7 @@ try
 
 
 
-
-
-
-
-      /*Show delete instruction modal*/
-      delInstModal(elem, index, button){
-        app._data.modalDeletInst.index = index;
-        this.$root.$emit('bv::show::modal', 'delete_instructions', button);
-      },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-      /**
-        * method in charge of create the array corresponent to the
-        * current position of start bit and end bit
-       */
-
-      changeToSeparateValue( val, pos ) { //TODO
-          if (val) {
-            this.formInstruction.startBitField[pos] = [0];
-            this.formInstruction.stopBitField[pos] =[0];
-              if (this.formInstruction.typeField[pos] == 'co')
-                  this.formInstruction.co = ['0'];
-          } else {
-            this.formInstruction.startBitField[pos] = 0;
-            this.formInstruction.stopBitField[pos] =0;
-              if (this.formInstruction.typeField[pos] == 'co')
-                  this.formInstruction.co = '0';
-          }
-      },
-
-      addMoreFieldsToSeparateValues(event, pos) { //TODO
-        this.formInstruction.startBitField[pos].push(0);
-        this.formInstruction.stopBitField[pos].push(0);
-          if (this.formInstruction.typeField[pos] == 'co')
-              this.formInstruction.co.push('0')
-        app.$forceUpdate();
-      },
-
-
-      lessFieldsToSeparateValues(event, pos) { //TODO
-          this.formInstruction.startBitField[pos].pop();
-          this.formInstruction.stopBitField[pos].pop();
-            if (this.formInstruction.typeField[pos] == 'co')
-                this.formInstruction.co.pop()
-          app.$forceUpdate();
-      },
-
-      /*Verify new number of fields*/
-      changeNumfield(type){ //TODO
-        if(type == 0){
-          if(this.formInstruction.numfields > (this.formInstruction.nwords * 32)){
-            this.formInstruction.numfieldsAux = (this.formInstruction.nwords * 32);
-            this.formInstruction.numfields = (this.formInstruction.nwords * 32);
-          }
-          else if(this.formInstruction.numfields < 1){
-            this.formInstruction.numfieldsAux = 1;
-            this.formInstruction.numfields = 1;
-          }
-          else{
-            this.formInstruction.numfieldsAux = this.formInstruction.numfields;
-          }
-        }
-        if(type == 1){
-          if(this.formPseudoinstruction.numfields > (this.formPseudoinstruction.nwords * 32)){
-            this.formPseudoinstruction.numfieldsAux = (this.formPseudoinstruction.nwords * 32);
-            this.formPseudoinstruction.numfields = (this.formPseudoinstruction.nwords * 32);
-          }
-          else if(this.formPseudoinstruction.numfields < 0){
-            this.formPseudoinstruction.numfieldsAux = 0;
-            this.formPseudoinstruction.numfields = 0;
-          }
-          else{
-            this.formPseudoinstruction.numfieldsAux = this.formPseudoinstruction.numfields;
-          }
-        }
-      },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Show instruction fields modal*/
+      //Show instruction fields modal
       viewFielsInst(elem, co, cop, button){
         app._data.modalViewFields.title = "Fields of " + elem;
         for (var i = 0; i < architecture.instructions.length; i++){
@@ -1200,317 +985,55 @@ try
         this.$root.$emit('bv::show::modal', 'fields_instructions', button);
       },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      //Show delete instruction modal
+      delInstModal(elem, index, button){
+        app._data.modalDeletInst.index = index;
+        this.$root.$emit('bv::show::modal', 'delete_instructions', button);
+      },
 
       /*Show edit instruction modal*/
       editInstModal(elem, co, cop, button){
-        this.modalEditInst.title = "Edit Instruction";
-        this.modalEditInst.element = elem;
+        app._data.modalEditInst.element = elem;
         for (var i = 0; i < architecture.instructions.length; i++) {
           if(elem == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
-            this.formInstruction.name = architecture.instructions[i].name;
-            this.formInstruction.type = architecture.instructions[i].type;
-            this.formInstruction.cop = architecture.instructions[i].cop;
-            this.formInstruction.co = architecture.instructions[i].co;
+            app._data.formInstruction.name = architecture.instructions[i].name;
+            app._data.formInstruction.type = architecture.instructions[i].type;
+            app._data.formInstruction.cop = architecture.instructions[i].cop;
+            app._data.formInstruction.co = architecture.instructions[i].co;
             app._data.modalEditInst.co = architecture.instructions[i].co;
             app._data.modalEditInst.cop = architecture.instructions[i].cop;
-            this.formInstruction.nwords = architecture.instructions[i].nwords;
-            this.formInstruction.numfields = architecture.instructions[i].fields.length;
-            this.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
-            this.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
-            this.formInstruction.definition = architecture.instructions[i].definition;
-            this.formInstruction.help = architecture.instructions[i].help;
-            this.formInstruction.separated = [];
-            this.formInstruction.properties = architecture.instructions[i].properties;
+            app._data.formInstruction.nwords = architecture.instructions[i].nwords;
+            app._data.formInstruction.numfields = architecture.instructions[i].fields.length;
+            app._data.formInstruction.numfieldsAux = architecture.instructions[i].fields.length;
+            app._data.formInstruction.signature_definition= architecture.instructions[i].signature_definition;
+            app._data.formInstruction.definition = architecture.instructions[i].definition;
+            app._data.formInstruction.help = architecture.instructions[i].help;
+            app._data.formInstruction.separated = [];
+            app._data.formInstruction.properties = architecture.instructions[i].properties;
 
             for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
-              this.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
-              this.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
-              //this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-              //this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+              app._data.formInstruction.nameField [j]= architecture.instructions[i].fields[j].name;
+              app._data.formInstruction.typeField[j] = architecture.instructions[i].fields[j].type;
+              //app._data.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+              //app._data.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
               if (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) {
-                this.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-                this.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-                this.formInstruction.separated.push(false);
+                app._data.formInstruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
+                app._data.formInstruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
+                app._data.formInstruction.separated.push(false);
               }
               else {
-                this.formInstruction.startBitField[j] = [...architecture.instructions[i].fields[j].startbit];
-                this.formInstruction.stopBitField[j] =  [...architecture.instructions[i].fields[j].stopbit];
-                this.formInstruction.separated.push(true);
+                app._data.formInstruction.startBitField[j] = [...architecture.instructions[i].fields[j].startbit];
+                app._data.formInstruction.stopBitField[j] =  [...architecture.instructions[i].fields[j].stopbit];
+                app._data.formInstruction.separated.push(true);
               }
-              this.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
+              app._data.formInstruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
             }
             this.generateSignatureInst();
             break;
           }
         }
-        this.$root.$emit('bv::show::modal', 'modalEditInst', button);
+        this.$root.$emit('bv::show::modal', 'edit_instructions', button);
       },
-
-      /*Check all fields of modify instruction*/
-      editInstVerify(evt, inst, co, cop){
-        evt.preventDefault();
-
-        for (var i = 0; i < this.formInstruction.nameField.length; i++){
-          for (var j = i + 1; j < this.formInstruction.nameField.length; j++){
-            if (this.formInstruction.nameField[i] == this.formInstruction.nameField[j]){
-              show_notification('Field name repeated', 'danger') ;
-              return;
-            }
-          }
-        }
-
-        var empty = 0;
-        var auxCop = "";
-
-        for (var z = 1; z < this.formInstruction.numfields; z++){
-          if (this.formInstruction.typeField[z] == 'cop'){
-            if (!this.formInstruction.valueField[z]){
-                empty = 1;
-            }
-            else {
-              if ((this.formInstruction.valueField[z]).length != (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1)){
-                 show_notification('The length of cop should be ' + (this.formInstruction.startBitField[z] - this.formInstruction.stopBitField[z] + 1) + ' binary numbers', 'danger') ;
-                 return;
-              }
-
-              for (var i = 0; i < this.formInstruction.valueField[z].length; i++){
-                if (this.formInstruction.valueField[z].charAt(i) != "0" && this.formInstruction.valueField[z].charAt(i) != "1"){
-                   show_notification('The value of cop must be binary', 'danger') ;
-                   return;
-                }
-              }
-            }
-            auxCop = auxCop + this.formInstruction.valueField[z];
-          }
-        }
-
-        this.formInstruction.cop = auxCop;
-
-          if (typeof(this.formInstruction.co) !== 'object')
-            for (var i = 0; i < this.formInstruction.co.length; i++){
-              if (this.formInstruction.co.charAt(i) != "0" && this.formInstruction.co.charAt(i) != "1"){
-                  show_notification('The value of co must be binary', 'danger') ;
-                  return;
-              }
-            }
-          else {
-              for (let val in this.formInstruction.co) {
-                  if (!/^[01]+$/.test(val)) {
-                      show_notification('The value of co must be binary', 'danger') ;
-                      return;
-                  }
-              }
-          }
-
-        for (var i = 0; i < this.formInstruction.numfields; i++){
-          if(!this.formInstruction.nameField[i] || !this.formInstruction.typeField[i] || (!this.formInstruction.startBitField[i] && this.formInstruction.startBitField[i] != 0) || (!this.formInstruction.stopBitField[i] && this.formInstruction.stopBitField[i] != 0)){
-            empty = 1;
-          }
-        }
-        if (!this.formInstruction.name || !this.formInstruction.type || !this.formInstruction.co || !this.formInstruction.nwords || !this.formInstruction.numfields || !this.formInstruction.signature_definition || !this.formInstruction.definition || empty == 1) {
-          show_notification('Please complete all fields', 'danger') ;
-        }
-        if ((typeof(this.formInstruction.co) != 'object' && isNaN(this.formInstruction.co)) || (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some(val => isNaN(val))))
-                 show_notification('The field co must be numbers', 'danger') ;
-        else if(isNaN(this.formInstruction.cop)){
-          show_notification('The field cop must be numbers', 'danger') ;
-        }
-        else if(typeof(this.formInstruction.co) != 'object' && (this.formInstruction.co).length != (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1)){
-                 show_notification('The length of co should be ' + (this.formInstruction.startBitField[0] - this.formInstruction.stopBitField[0] + 1) + ' binary numbers', 'danger');
-        } else if (typeof(this.formInstruction.co) === 'object' && this.formInstruction.co.some((val, ind) => val.length !== app.formInstruction.startBitField[0][ind] - app.formInstruction.stopBitField[0][ind] +1))
-                 show_notification('The length of co don\'t match with the desription', 'danger');
-        else {
-          this.editInstruction(inst, co, cop);
-        }
-      },
-
-      /*Edit the instruction*/
-      editInstruction(comp, co, cop)
-      {
-        var exCop = false;
-
-        for (var z = 1; z < this.formInstruction.numfields; z++){
-          if (this.formInstruction.typeField[z] == 'cop'){
-              exCop = true;
-          }
-        }
-
-        for (var i = 0; i < architecture.instructions.length; i++){
-          if ((this.formInstruction.co == architecture.instructions[i].co) && (this.formInstruction.co != co) && (exCop == false)){
-            if (((!this.formInstruction.cop) || (exCop != true))){
-                show_notification('The instruction already exists', 'danger') ;
-                return;
-            }
-          }
-        }
-
-
-        let auxcop = (() => this.formInstruction.co instanceof Array ? this.formInstrucion.co.join("") : this.formInstruction.co)() + this.formInstruction.cop;
-
-        for (var i = 0; i < architecture.instructions.length && exCop == true ; i++){
-          if ((auxcop == architecture.instructions[i].cop) && (!auxcop == false) && (auxcop != cop)){
-               show_notification('The instruction already exists', 'danger') ;
-               return;
-          }
-        }
-
-        this.showEditInstruction = false;
-
-        for (var i = 0; i < architecture.instructions.length; i++){
-          if (architecture.instructions[i].name == comp && architecture.instructions[i].co == co && architecture.instructions[i].cop == cop) {
-            architecture.instructions[i].name = this.formInstruction.name;
-            architecture.instructions[i].type = this.formInstruction.type;
-            architecture.instructions[i].co = this.formInstruction.co;
-            architecture.instructions[i].cop = this.formInstruction.cop;
-            architecture.instructions[i].nwords = this.formInstruction.nwords;
-            architecture.instructions[i].help = this.formInstruction.help;
-            architecture.instructions[i].signature_definition = this.formInstruction.signature_definition;
-            architecture.instructions[i].definition = this.formInstruction.definition;
-            architecture.instructions[i].properties = this.formInstruction.properties;
-            if (!architecture.instructions[i].separated)
-                architecture.instructions[i].separated =Array(this.formInstruction.numfields).fill(false);
-
-            for (var j = 0; j < this.formInstruction.numfields; j++) {
-              if (j < architecture.instructions[i].fields.length) {
-                architecture.instructions[i].fields[j].name = this.formInstruction.nameField[j];
-                architecture.instructions[i].fields[j].type = this.formInstruction.typeField[j];
-                architecture.instructions[i].fields[j].startbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.startBitField[j]) : this.formInstruction.startBitField[j].map(val => parseInt(val));
-                architecture.instructions[i].fields[j].stopbit = !this.formInstruction.separated[j] ? parseInt(this.formInstruction.stopBitField[j]): this.formInstruction.stopBitField[j].map(val => parseInt(val));
-                architecture.instructions[i].fields[j].valueField = this.formInstruction.valueField[j];
-                /*add data to store if the field is fragmented or not.*/
-                architecture.instructions[i].separated[j] = this.formInstruction.separated[j];
-              }
-              else{
-                var newField = {name: this.formInstruction.nameField[j], type: this.formInstruction.typeField[j], startbit: this.formInstruction.startBitField[j], stopbit: this.formInstruction.stopBitField[j], valueField: this.formInstruction.valueField[j]};
-                architecture.instructions[i].fields.push(newField);
-              }
-            }
-
-            this.generateSignatureInst();
-
-            var signature = this.formInstruction.signature;
-            var signatureRaw = this.formInstruction.signatureRaw;
-
-            if(exCop == false){
-              architecture.instructions[i].cop='';
-            }
-
-            architecture.instructions[i].signature = signature;
-            architecture.instructions[i].signatureRaw = signatureRaw;
-
-            if(architecture.instructions[i].fields.length > this.formInstruction.numfields){
-              architecture.instructions[i].fields.splice(this.formInstruction.numfields, (architecture.instructions[i].fields.length - this.formInstruction.numfields));
-            }
-            break;
-          }
-        }
-
-        show_notification('The instruction has been modified, please check the definition of the pseudoinstructions', 'info') ;
-      },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
       /*Generate the instruction signature*/
       generateSignatureInst(){ //TODO
@@ -1580,30 +1103,12 @@ try
 
 
 
-      /*Empty instruction form*/
-      emptyFormInst(){ //TODO
-        this.formInstruction.name = '';
-        this.formInstruction.type = '';
-        this.formInstruction.co = '';
-        this.formInstruction.cop = '';
-        this.formInstruction.nwords = 1;
-        this.formInstruction.numfields = "1";
-        this.formInstruction.numfieldsAux = "1";
-        this.formInstruction.nameField = [];
-        this.formInstruction.properties = [];
-        this.formInstruction.typeField = [];
-        this.formInstruction.startBitField = [];
-        this.formInstruction.stopBitField = [];
-        this.formInstruction.valueField = [];
-        this.formInstruction.separated = [];
-        this.formInstruction.assignedCop = false;
-        this.formInstruction.signature ='';
-        this.formInstruction.signatureRaw = '';
-        this.formInstruction.signature_definition = '';
-        this.formInstruction.definition = '';
-        this.instructionFormPage = 1;
-        this.formInstruction.help = '';
-      },
+
+
+
+
+
+      
 
 
 
