@@ -32,7 +32,7 @@
                         //Modal pagination
                         instruction_page: 1,
                         instruction_page_link: ['#Principal', '#Fields', '#Syntax', '#Definition', '#Help'],
-                        //Sohw Modal
+                        //Show Modal
                         show_modal: false,
                         //Intructions form
                         instruction_field: {
