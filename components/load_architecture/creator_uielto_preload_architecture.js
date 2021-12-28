@@ -32,7 +32,6 @@
                 return {
                   architecture_name: '',
                   example_loaded: null,
-                  modalDeletArchIndex: 0
                 }
               },
 
@@ -45,7 +44,7 @@
                   for (i = 0; i < load_architectures.length; i++) {
                        if (e.name == load_architectures[i].id) {
                            var auxArchitecture = JSON.parse(load_architectures[i].architecture);
-                           load_arch_select_aux(e.name, auxArchitecture, true, e) ;
+                           uielto_preload_architecture.methods.load_arch_select_aux(e.name, auxArchitecture, true, e) ;
                            hide_loading();
                            show_notification('The selected architecture has been loaded correctly', 'success') ;
 
@@ -57,7 +56,7 @@
                   }
 
                   $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg) {
-                    load_arch_select_aux(e.name, cfg, true, e) ;
+                    uielto_preload_architecture.methods.load_arch_select_aux(e.name, cfg, true, e) ;
                     hide_loading();
                     show_notification('The selected architecture has been loaded correctly', 'success') ;
 
@@ -85,7 +84,7 @@
                   backup_stack_address = architecture.memory_layout[4].value;
                   backup_data_address  = architecture.memory_layout[3].value;
 
-                  this.architecture_name = ename;
+                  uielto_preload_architecture.data.architecture_name = ename;
                   app._data.architecture_name = ename; //TODO: bidirectional
 
                   app.change_UI_mode('simulator');
@@ -93,7 +92,7 @@
                   app.$forceUpdate();
 
                   if (load_associated_examples && typeof e.examples !== "undefined"){
-                    load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+                    this.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
                   }
                 },
 
@@ -104,7 +103,7 @@
                     $.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
 
                       // current architecture in upperCase
-                      var current_architecture = this.architecture_name.toUpperCase() ;
+                      var current_architecture = uielto_preload_architecture.data.architecture_name.toUpperCase() ;
 
                       // search for set_name in the example set 'set'
                       for (var i=0; i<set.length; i++)
@@ -122,8 +121,7 @@
                           // if no current_architecture loaded then load the associated
                           if (current_architecture == '') {
                             $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
-                              load_arch_select_aux(set[i].architecture,
-                              cfg, false, null);
+                              uielto_preload_architecture.methods.load_arch_select_aux(set[i].architecture,cfg, false, null);
                             }) ;
                           }
 
@@ -164,7 +162,7 @@
 
                 //Show remove architecture modal
                 modal_remove_cache_arch(index, elem, button){
-                  this.modalDeletArchIndex = index;
+                  app._data.modalDeletArchIndex = index;
                   this.$root.$emit('bv::show::modal', 'modalDeletArch', button);
                 },
 
@@ -179,36 +177,37 @@
                 }
               },
 
-              /*v-for not found*/
-  template:   '<b-card no-body class="overflow-hidden arch_card architectureCard" ' +
-              '        v-for="(item, index) in arch_available" ' +
-              '        @mouseover="change_background(item.name, 1)"' +
-              '        @mouseout="change_background(item.name, 0)" ' +
-              '        :border-variant=back_card[index].background>' +
-              '  <b-row no-gutters>' +
-              '    <b-col md="3" @click="load_arch_select(item)">' +
-              '      <b-card-img :src=item.img :alt=item.alt thumbnail fluid class="rounded-0"></b-card-img>' +
-              '    </b-col>' +
+  template:   '<div>' +
+              ' <b-card no-body class="overflow-hidden arch_card architectureCard" ' +
+              '                 v-for="(item, index) in arch_available" ' +
+              '                 @mouseover="change_background(item.name, 1)"' +
+              '                 @mouseout="change_background(item.name, 0)" ' +
+              '                 :border-variant=back_card[index].background>' +
+              '   <b-row no-gutters>' +
+              '      <b-col md="3" @click="load_arch_select(item)">' +
+              '        <b-card-img :src=item.img :alt=item.alt thumbnail fluid class="rounded-0"></b-card-img>' +
+              '     </b-col>' +
               '' +
-              '    <b-col md="7" @click="load_arch_select(item)">' +
-              '      <b-card-body :title=item.name title-tag="h2">' +
-              '        <b-card-text class="justify">' +
-              '          {{item.description}}' +
-              '        </b-card-text>' +
-              '      </b-card-body>' +
-              '    </b-col>' +
+              '     <b-col md="7" @click="load_arch_select(item)">' +
+              '        <b-card-body :title=item.name title-tag="h2">' +
+              '          <b-card-text class="justify">' +
+              '            {{item.description}}' +
+              '         </b-card-text>' +
+              '        </b-card-body>' +
+              '     </b-col>' +
               '' +
-              '    <b-col md="2" >' +
-              '      <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" ' +
-              '                @click.stop="modal_remove_cache_arch(index, item.name, $event.target)"' +
-              '                v-if="default_arch(item.name) == true" ' +
-              '                :id="\'delete_\'+item.name">' +
-              '        <span class="far fa-trash-alt"></span>' +
-              '        Delete' +
-              '      </b-button>' +
-              '    </b-col>' +
-              '  </b-row>' +
-              '</b-card>'
+              '      <b-col md="2" >' +
+              '        <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" ' +
+              '                  @click.stop="modal_remove_cache_arch(index, item.name, $event.target)"' +
+              '                  v-if="default_arch(item.name) == true" ' +
+              '                  :id="\'delete_\'+item.name">' +
+              '         <span class="far fa-trash-alt"></span>' +
+              '          Delete' +
+              '        </b-button>' +
+              '     </b-col>' +
+              '    </b-row>' +
+              ' </b-card>' +
+              '</div>'
 
   }
 
