@@ -103,19 +103,19 @@
 
                         this.instruction_field.cop = auxCop;
 
-                          if (typeof(this.instruction_field.co) != 'object')
-                            for (var i = 0; i < this.instruction_field.co.length; i++){
-                              if (this.instruction_field.co.charAt(i) != "0" && this.instruction_field.co.charAt(i) != "1"){
-                                  show_notification('The value of co must be binary', 'danger') ;
-                                  return;
-                              }
+                        if (typeof(this.instruction_field.co) != 'object')
+                          for (var i = 0; i < this.instruction_field.co.length; i++){
+                            if (this.instruction_field.co.charAt(i) != "0" && this.instruction_field.co.charAt(i) != "1"){
+                                show_notification('The value of co must be binary', 'danger') ;
+                                return;
                             }
+                          }
                         else {
-                            for (let val in this.instruction_field.co)
-                                if (!/[01]+/.test(val)) {
-                                  show_notification('The value of co must be binary', 'danger') ;
-                                  return;
-                                }
+                          for (let val in this.instruction_field.co)
+                              if (!/[01]+/.test(val)) {
+                                show_notification('The value of co must be binary', 'danger') ;
+                                return;
+                              }
                         }
 
                         for (var i = 0; i < this.instruction_field.numfields; i++){
