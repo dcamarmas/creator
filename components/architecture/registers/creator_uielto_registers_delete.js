@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -21,7 +21,7 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_directives_delete = {
+  var uielto_register_delete = {
 
         props:      {
                       id:                             { type: String, required: true },
@@ -36,23 +36,26 @@
                     },
 
         methods:    {
-                      delete_directive(comp){
-                        for (var i = 0; i < architecture.directives.length; i++) {
-                          if(comp == architecture.directives[i].name){
-                            architecture.directives.splice(i,1);
+                      //Delete the element
+                      delete_register(comp){
+                        for (var i = 0; i < architecture_hash.length; i++){
+                          for(var j=0; j < architecture.components[i].elements.length; j++){
+                            if(comp == architecture.components[i].elements[j].name){
+                              architecture.components[i].elements.splice(j,1);
+                            }
                           }
                         }
-                      }
+                      },
                     },
 
         template:   '<b-modal :id ="id" ' +
                     '         :title="title" ' +
                     '         ok-variant="danger" ' +
                     '         ok-title="Delete" ' +
-                    '         @ok="delete_directive(element)">' +
+                    '         @ok="delete_register(element)">' +
                     '  <span class="h6">Are you sure you want to delete the item?</span>' +
-                    '</b-modal>'
+                    '</b-modal >'
 
   }
 
-  Vue.component('directives-delete', uielto_directives_delete) ;
+  Vue.component('registers-delete', uielto_register_delete) ;
