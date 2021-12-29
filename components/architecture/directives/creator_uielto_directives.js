@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018-2021 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
+ *  Copyright 2018-2022 Felix Garcia Carballeira, Diego Camarmas Alonso, Alejandro Calderon Mateos
  *
  *  This file is part of CREATOR.
  *
@@ -42,9 +42,9 @@
 
                         for (var i = 0; i < architecture.directives.length; i++){
                           if(elem == architecture.directives[i].name){
-                            app._data.formDirective.name = architecture.directives[i].name;
-                            app._data.formDirective.action = architecture.directives[i].action;
-                            app._data.formDirective.size = architecture.directives[i].size;
+                            app._data.modalEditDirective.name = architecture.directives[i].name;
+                            app._data.modalEditDirective.action = architecture.directives[i].action;
+                            app._data.modalEditDirective.size = architecture.directives[i].size;
                           }
                         }
                         this.$root.$emit('bv::show::modal', 'edit_directive', button);
