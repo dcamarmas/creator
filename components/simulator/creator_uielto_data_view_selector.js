@@ -32,9 +32,9 @@
   data:       function () {
                 return {
                   reg_representation_options: [
-                      { text: 'INT Registers', value: 'int' },
-                      { text: 'FP Registers', value: 'fp' }
-                    ]
+                                                { text: 'INT Registers', value: 'int' },
+                                                { text: 'FP Registers',  value: 'fp'  }
+                                              ]
                 }
               },
 
