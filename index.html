@@ -708,50 +708,58 @@
         <!-- Simulator view -->
         <!-------------------->
 
-        <div class="contenedor row" id="simulator" v-if="creator_mode == 'simulator'">
 
-          <!-- Navbar -->
-          <!-- TODO: navbar component -->
-          <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12 py-0 px-1">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" 
-                              id="arch_btn_sim"
-                              @click="change_UI_mode('architecture')">
-                      <span class="fas fa-sitemap"></span>
-                      Architecture
-                    </b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn h-100"
-                              id="assembly_btn_sim"
-                              @click="change_UI_mode('assembly')">
-                      <span class="fas fa-hashtag"></span>
-                      Assembly
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <b-container fluid align-h="center" id="simulator" v-if="creator_mode == 'simulator'">
+          <b-row>
+            <b-col>
 
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12 p-0">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <!-- Execution actions -->
-                  <div class="col-lg-12 col-sm-12 py-0 px-1">
-                    <div class="col-lg-12 col-sm-12 buttons row">
-                      <div class="col-lg-4 col-sm-4 buttons">
+
+
+              <!--<uielto-toolbar components="[,btn_architecture,btn_assembly,],|,[,btn_reset,btn_instruction,btn_run,btn_stop,],|,[,btn_examples,btn_calculator,],|,[,btn_configuration,btn_information,]">
+              </uielto-toolbar>-->
+
+
+
+
+
+
+
+              <b-container fluid align-h="center" class="menu my-3 mx-0">
+                <b-row>
+
+                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
+                    <b-container fluid>
+                      <b-row>
+                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm arch_btn h-100 mr-1 text-truncate" 
+                                  id="arch_btn_sim"
+                                  @click="change_UI_mode('architecture')">
+                          <span class="fas fa-sitemap"></span>
+                          Architecture
+                        </b-button>
+
+                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm assembly_btn h-100 text-truncate"
+                                  id="assembly_btn_sim"
+                                  @click="change_UI_mode('assembly')">
+                          <span class="fas fa-hashtag"></span>
+                          Assembly
+                        </b-button>
+                      </b-row>
+                    </b-container>
+                  </div>
+
+                  <div class="w-100 d-block d-sm-none"></div>
+
+                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
+                    <b-container fluid>
+                      <b-row>
                         <b-button @click="reset(true)" 
-                                  class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100">
+                                  class="col btn btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate">
                           <span class="fas fa-power-off"></span>
                           Reset
                         </b-button>
-                      </div>
-                      <div class="col-lg-4 col-sm-4 buttons">
+
                         <b-button accesskey="a" 
-                                  class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" 
+                                  class="col btn btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate" 
                                   @click="executeInstruction" id="inst">
                           <span class="fas fa-fast-forward"></span>
                           Inst.
@@ -759,159 +767,202 @@
                         <b-tooltip target="inst" title="Press [Alt] + A" v-if="browser=='Chrome'"></b-tooltip>
                         <b-tooltip target="inst" title="Press [Alt] [Shift] + A" v-if="browser=='Firefox'"></b-tooltip>
                         <b-tooltip target="inst" title="Press [Control] [Alt/Option] + A" v-if="browser=='Mac'"></b-tooltip>
-                      </div>
-                      <div class="col-lg-4 col-sm-4 buttons" id="playExecution" >
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" 
+
+                        <b-button class="col btn btn-outline-secondary actionsGroup btn-sm h-100 mr-1" 
                                   @click="executeProgram(true)" 
                                   v-if="runExecution == false" 
-                                  id="run">
+                                  id="playExecution">
                           <span class="fas fa-play"></span>
                           Run
                         </b-button>
-                      </div>
-                      <div class="col-lg-4 col-sm-4 buttons" id="stopExecution" style="display: none">
-                        <b-button class="btn btn-outline-secondary btn-block actionsGroup btn-sm h-100" 
+
+                        <b-button class="col btn btn-outline-secondary actionsGroup btn-sm h-100 text-truncate" 
                                   @click="stopExecution" 
-                                  id="stop">
+                                  id="stopExecution"
+                                  style="display: none">
                           <span class="fas fa-stop"></span>
                           Stop
                         </b-button>
-                      </div>
+                      </b-row>
+                    </b-container>
+                  </div>
+
+                  <div class="w-100 d-block d-sm-none"></div>
+
+                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
+                    <b-container fluid>
+                      <b-row>
+                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate"
+                                  v-b-modal.examples2>
+                          <span class="fas fa-file-alt"></span>
+                          Examples
+                        </b-button>
+
+                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm h-100 text-truncate"
+                                  v-b-modal.calculator>
+                          <span class="fas fa-calculator"></span>
+                          Calculator
+                        </b-button>
+                      </b-row>
+                    </b-container>
+                  </div>
+
+                  <div class="w-100 d-block d-sm-none"></div>
+
+                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
+                    <b-container fluid>
+                      <b-row>
+                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate" 
+                                  id="conf_btn_sim" 
+                                  v-b-modal.configuration>
+                          <span class="fa fa-cogs"></span>
+                          Configuration
+                        </b-button>
+
+                        <b-button class="col btn btn-outline-secondary btn-sm h-100 infoButton text-truncate"
+                                  id="info_sim">
+                          <span class="fas fa-info-circle"></span> 
+                          Info
+                        </b-button>
+                      </b-row>
+                    </b-container>
+                  </div>
+
+                </b-row>
+              </b-container>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <!-- Simulator navbar modals -->
+
+              <!-- Examples modal -->
+              <examples id="examples2" 
+                        ref="examples2" 
+                        :example_available="example_available" 
+                        compile="true" 
+                        modal="examples2">
+              </examples>
+
+
+              <!-- Calculator -->
+              <calculator id="calculator"></calculator>
+
+
+              <!-- Information popover -->
+              <popover-info target="info_sim" show_instruction_help="true"></popover-info>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+              <b-container fluid align-h="center" class="mx-0">
+                <b-row>
+
+                  <!-- Execution instruction -->
+                  <table-execution :instructions="instructions" :enter="enter"></table-execution>
+
+                  <!-- Execution data -->
+                  <div class="col-rt-4 col-xl-5 col-lg-6 col-sm-12">
+
+                    <!-- View selector -->
+                    <data-view-selector :name_reg="name_reg" 
+                                        :reg_type="reg_type" 
+                                        :register_file_num="architecture.components.length"> 
+                    </data-view-selector>
+
+
+                    <!-- Registers view -->
+                    <register-file  :data_mode="data_mode"
+                                    :register_type="register_type">                  
+                    </register-file>
+
+
+                    <!-- Memory view-->
+                    <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
+
+                      <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >
+                        <b-form-radio-group
+                          id="btn-radios-1"
+                          class="w-50"
+                          v-model="mem_representation"
+                          :options="mem_representation_options"
+                          button-variant="outline-secondary"
+                          size="sm"
+                          :aria-describedby="ariaDescribedby"
+                          name="radios-btn-default"
+                          buttons
+                        ></b-form-radio-group>
+                      </b-form-group>
+
+                      <table-mem :main_memory="main_memory"
+                                 :memory_segment="mem_representation"
+                                 :track_stack_names="track_stack_names" 
+                                 :callee_subrutine="callee_subrutine" 
+                                 :caller_subrutine="caller_subrutine">
+                      </table-mem>
+
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div class="col-lg-3 col-sm-12 py-0 px-1">
-              <div class="col-lg-12 col-sm-12 buttons row">
-                <div class="col-lg-6 col-sm-6 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"
-                            v-b-modal.examples2>
-                    <span class="fas fa-file-alt"></span>
-                    Examples
-                  </b-button>
-                </div>
-                <div class="col-lg-6 col-sm-6 buttons">
-                  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"
-                            v-b-modal.calculator>
-                    <span class="fas fa-calculator"></span>
-                    Calculator
-                  </b-button>
-                </div>
-              </div>
-            </div>
 
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12 py-0 px-1">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-7 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
-                              id="conf_btn_sim" 
-                              v-b-modal.configuration>
-                      <span class="fa fa-cogs"></span>
-                      Configuration
-                    </b-button>
+                    <!-- Stats view--->
+                    <stats  :data_mode="data_mode" 
+                            :stats="stats" 
+                            :stats_value="stats_value">  
+                    </stats>
+
                   </div>
 
-                  <div class="col-lg-5 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
-                              id="info_sim">
-                      <span class="fas fa-info-circle"></span> 
-                      Info
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-          </div>
+                  <!-- Monitor & keyboard -->
+                  <div class="col-rt-4 col-xl-12 col-lg-12 col-sm-12 row pr-0">
 
+                    <!-- Monitor -->
+                    <monitor :display="display"></monitor>
 
-          <!-- Simulator navbar modals -->
+                    <!-- Keyboard -->
+                    <keyboard :keyboard="keyboard" :enter="enter"></keyboard>
 
-          <!-- Examples modal -->
-          <examples id="examples2" 
-                    ref="examples2" 
-                    :example_available="example_available" 
-                    compile="true" 
-                    modal="examples2">
-          </examples>
+                  <div class="col-lg-6 col-sm-12 my-2 mx-0"></div>
+
+                </b-row>
+              </b-container>
 
 
-          <!-- Calculator -->
-          <calculator id="calculator"></calculator>
 
 
-          <!-- Information popover -->
-          <popover-info target="info_sim" show_instruction_help="true"></popover-info>
-
-
-          <!-- Execution instruction -->
-          <table-execution :instructions="instructions" :enter="enter"></table-execution>
-
-          <!-- Execution data -->
-          <div class="col-rt-4 col-xl-5 col-lg-6 col-sm-12">
-
-            <!-- View selector -->
-            <data-view-selector :name_reg="name_reg" 
-                                :reg_type="reg_type" 
-                                :register_file_num="architecture.components.length"> 
-            </data-view-selector>
-
-
-            <!-- Registers view -->
-            <register-file  :data_mode="data_mode"
-                            :register_type="register_type">                  
-            </register-file>
-
-
-            <!-- Memory view-->
-            <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
-
-              <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >
-                <b-form-radio-group
-                  id="btn-radios-1"
-                  class="w-50"
-                  v-model="mem_representation"
-                  :options="mem_representation_options"
-                  button-variant="outline-secondary"
-                  size="sm"
-                  :aria-describedby="ariaDescribedby"
-                  name="radios-btn-default"
-                  buttons
-                ></b-form-radio-group>
-              </b-form-group>
-
-              <table-mem :main_memory="main_memory"
-                         :memory_segment="mem_representation"
-                         :track_stack_names="track_stack_names" 
-                         :callee_subrutine="callee_subrutine" 
-                         :caller_subrutine="caller_subrutine">
-              </table-mem>
-
-            </div>
-
-
-            <!-- Stats view--->
-            <stats  :data_mode="data_mode" 
-                    :stats="stats" 
-                    :stats_value="stats_value">  
-            </stats>
-
-          </div>
-
-
-          <!-- Monitor & keyboard -->
-          <div class="col-rt-4 col-xl-12 col-lg-12 col-sm-12 row pr-0">
-
-            <!-- Monitor -->
-            <monitor :display="display"></monitor>
-
-            <!-- Keyboard -->
-            <keyboard :keyboard="keyboard" :enter="enter"></keyboard>
-
-          <div class="col-lg-6 col-sm-12 my-2 mx-0"></div>
+            <b-col>
+          <b-row>
+        </b-container>
 
       </template>
     </div>
