@@ -52,20 +52,26 @@
 
 
   var translate = {
-                    "[":                    begin_button_group,
-                    "]":                    end_button_group,
-                    "btn_architecture":     button_architecture,
-                    "btn_assembly":         button_assembly,
-                    "btn_simulator":        button_simulator,
-                    "btn_reset":            button_reset,
-                    "btn_instruction":      button_instruction,
-                    "btn_run":              button_run,
-                    "btn_stop":             button_stop,
-                    "btn_examples":         button_examples,
-                    "btn_calculator":       button_calculator,
-                    "btn_configuration":    button_configuration,
-                    "btn_information":      button_information,
-                    "|":                    separator
+                    "[":                              begin_button_group,
+                    "]":                              end_button_group,
+                    "btn_architecture":               button_architecture,
+                    "btn_assembly":                   button_assembly,
+                    "btn_simulator":                  button_simulator,
+                    "btn_save_architecture":          button_save_architecture,
+                    "btn_advanced_mode_deactivated":  button_advanced_mode_deactivated,
+                    "btn_advanced_mode_activated":    button_advanced_mode_activated,
+                    "dropdown_assembly_file":         dropdown_assembly_file,
+                    "btn_compile":                    button_compile,
+                    "dropdown_library":               dropdown_library,
+                    "btn_reset":                      button_reset,
+                    "btn_instruction":                button_instruction,
+                    "btn_run":                        button_run,
+                    "btn_stop":                       button_stop,
+                    "btn_examples":                   button_examples,
+                    "btn_calculator":                 button_calculator,
+                    "btn_configuration":              button_configuration,
+                    "btn_information":                button_information,
+                    "|":                              separator
                   };
 
   function render(components){
@@ -117,7 +123,88 @@
   }
 
   function button_simulator(){
-    return ''
+    return  '<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch h-100"' +
+            '          id="sim_btn_arch"' +
+            '          @click="change_UI_mode(\'simulator\')">' +
+            '  <span class="fas fa-cogs"></span>' +
+            '  Simulator' +
+            '</b-button>'
+  }
+
+  function button_save_architecture(){
+    return  '<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" ' +
+            '          id="save_btn_arch" ' +
+            '          v-b-modal.save_architecture> ' +
+            '  <span class="fas fa-download"></span> ' +
+            '  Save' +
+            '</b-button>'
+  }
+
+  function button_advanced_mode_deactivated(){
+    return  '<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"' +
+            '          id="advanced_mode1" ' +
+            '          v-if="advanced_mode == true">' +
+            '  Advanced Mode: deactivated' +
+            '</b-button>'
+  }
+
+  function button_advanced_mode_activated(){
+    return  '<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  ' +
+            '          id="advanced_mode2" ' +
+            '          v-if="advanced_mode == false">' +
+            '  Advanced Mode: activate' +
+            '</b-button>'
+  }
+
+  function dropdown_assembly_file(){
+    return  '<b-dropdown right ' +
+            '            text="File" ' +
+            '            size="sm" ' +
+            '            class="btn btn-block menuGroup btn-sm p-0" ' +
+            '            variant="outline-secondary">' +
+            '  <b-dropdown-item @click="newAssembly">' +
+            '    <span class="fas fa-file"></span> ' +
+            '    New' +
+            '  </b-dropdown-item>' +
+            '  <b-dropdown-item v-b-modal.load_assembly>' +
+            '    <span class="fas fa-upload"></span>' +
+            '    Load' +
+            '  </b-dropdown-item>' +
+            '  <b-dropdown-item v-b-modal.save_assembly>' +
+            '    <span class="fas fa-download"></span>' +
+            '    Save' +
+            '  </b-dropdown-item>' +
+            '  <b-dropdown-item v-b-modal.examples>' +
+            '    <span class="far fa-file-alt"></span>' +
+            '    Examples' +
+            '  </b-dropdown-item>' +
+            '</b-dropdown>'
+  }
+
+  function button_compile(){
+    return  '<b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" ' +
+            '          id="compile_assembly" ' +
+            '          @click="assembly_compiler()">' +
+            '  <span class="fas fa-sign-in-alt"></span>' +
+            '  Compile/Linked' +
+            '</b-button>'
+  }
+
+  function dropdown_library(){
+    return  '<b-dropdown right text="Library" size="sm" class="btn btn-block menuGroup btn-sm p-0" variant="outline-secondary">' +
+            '  <b-dropdown-item v-b-modal.save_binary>' +
+            '    <span class="fas fa-plus-square"></span>' +
+            '    Create' +
+            '  </b-dropdown-item>' +
+            '  <b-dropdown-item v-b-modal.load_binary>' +
+            '    <span class="fas fa-upload"></span>' +
+            '    Load Library' +
+            '  </b-dropdown-item>' +
+            '  <b-dropdown-item @click="removeLibrary">' +
+            '    <span class="far fa-trash-alt"></span>' +
+            '    Remove' +
+            '  </b-dropdown-item>' +
+            '</b-dropdown>'
   }
 
   function button_reset(){
