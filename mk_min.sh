@@ -35,6 +35,7 @@ cat js/creator_bigint.js \
     components/general/creator_uielto_supported_browser.js \
     \
     components/general/creator_uielto_navbar.js \
+    components/general/creator_uielto_toolbar.js \
     components/general/creator_uielto_configuration.js \
     components/general/creator_uielto_info.js \
     components/general/creator_uielto_about.js \
