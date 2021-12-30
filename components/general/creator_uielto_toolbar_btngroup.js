@@ -594,8 +594,11 @@
 
   function button_information(){
     return  '<b-button v-if="item==\'btn_information\'" class="btn btn-block btn-outline-secondary btn-sm h-100 infoButton text-truncate"' +
-            '          id="info_sim">' +
+            '          id="info">' +
             '  <span class="fas fa-info-circle"></span> ' +
             '  Info' +
-            '</b-button>'
+            '</b-button>' + 
+            ' ' +
+            '<!-- Information popover -->' +
+            '<popover-info target="info" show_instruction_help="true"></popover-info>'
   }
