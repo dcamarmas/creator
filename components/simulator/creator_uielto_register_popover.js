@@ -273,23 +273,28 @@ template:     '<b-popover :target="target" ' +
               '    </tbody>' +
               '  </table>' +
               '' +
-              '  <div class="col-lg-12 col-sm-12 row mx-0">' +
-              '    <div class="col-lg-6 col-sm-6 popoverFooter">' +
-              '      <b-form-input v-on:input="debounce(\'newValue\', $event)" ' +
-              '                    :value="newValue" ' +
-              '                    type="text" ' +
-              '                    size="sm" ' +
-              '                    title="New Register Value" ' +
-              '                    placeholder="Enter new value">' +
-              '      </b-form-input>' +
-              '    </div>' +
-              '    <div class="col-lg-6 col-sm-6 popoverFooter">' +
-              '      <b-button class="btn btn-primary btn-block btn-sm" ' +
-              '                @click="updateReg(component.index, register.name, architecture.components[component.index].type, architecture.components[component.index].double_precision)">' +
-              '        Update' +
-              '      </b-button>' +
-              '    </div>' +
-              '  </div>' +
+              '   <b-container fluid align-h="center" class="mx-0">' +
+              '     <b-row align-h="center" cols="2">' +
+              ' ' +
+              '       <b-col class="popoverFooter">' +
+              '         <b-form-input v-on:input="debounce(\'newValue\', $event)" ' +
+              '                       :value="newValue" ' +
+              '                       type="text" ' +
+              '                       size="sm" ' +
+              '                       title="New Register Value" ' +
+              '                       placeholder="Enter new value">' +
+              '         </b-form-input>' +
+              '       </b-col>' +
+              ' ' +
+              '       <b-col>' +
+              '         <b-button class="btn btn-primary btn-sm w-100" ' +
+              '                   @click="updateReg(component.index, register.name, architecture.components[component.index].type, architecture.components[component.index].double_precision)">' +
+              '           Update' +
+              '          </b-button>' +
+              '       </b-col>' +
+              ' ' +
+              '     </b-row>' +
+              '   </b-container>' +
               '</b-popover>'
 
   }
