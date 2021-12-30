@@ -901,7 +901,7 @@ try
       {
         app._data.data_mode = e;
 
-        if(e == "registers"){
+        if(e == "registers" && type != ''){
           if(type == "int"){
             app._data.register_type = 'integer';
             app._data.name_reg = 'INT Registers';
@@ -914,9 +914,14 @@ try
           }
         }
         if(e == "memory"){
-          app._data.data_mode = e;
+          app._data.data_mode = e; //TODO: vue bidirectional updates
+          app._data.reg_type = '';
         }
-
+        if(e == "stat"){
+          app._data.data_mode = e; //TODO: vue bidirectional updates
+          app._data.reg_type = ''; 
+        }
+        
         app.$forceUpdate();
 
         // Google Analytics
