@@ -55,7 +55,7 @@
               },
 
   template:   ' <div class="col-lg-12 col-sm-12 px-0" id="register_file" v-if="data_mode == \'registers\'">' +
-              '   <b-container>' +
+              '   <b-container fluid align-h="center">' +
               '     <b-row>' +
               '       <b-col cols="auto">' +
               '         <b-form-group label="Register value representation:" v-slot="{ ariaDescribedby }">' +
@@ -92,23 +92,25 @@
               '   </b-container>' +
               '   ' +
               ' ' +
-              '   <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">' +
-              '     <div class="col-lg-12 col-sm-12 buttons row mb-2" ' +
-              '           v-if="(register_type == architecture.components[item.index].type) || (register_type == \'integer\' && architecture.components[item.index].type == \'control\')">' +
-              '       ' +
-              '       <div class="col-lg-3 col-sm-4 buttons" ' +
-              '            v-for="item2 in architecture.components[item.index].elements">' +
+              '   <b-container fluid align-h="center">' +
+              '     <b-row align-h="center" cols="1">' +
+              '       <b-cols v-for="item in architecture_hash">' +
+              '         <b-container fluid align-h="center" class="px-0 mx-0 mb-2" v-if="(register_type == architecture.components[item.index].type) || (register_type == \'integer\' && architecture.components[item.index].type == \'control\')">' +
+              '           <b-row align-h="start" cols-xl="4" cols-lg="4" cols-md="4" cols-sm="3" cols-xs="3" cols="3">' +
+              '             <b-col class="p-1 mx-0" v-for="(item2, index) in architecture.components[item.index].elements">' +
               ' ' +
-              '         <register :component="item"' +
-              '                   :register="item2"' +
-              '                   :name_representation="reg_name_representation"' +
-              '                   :value_representation="reg_representation">' +
-              '         </register>' +
+              '               <register :component="item"' +
+              '                         :register="item2"' +
+              '                         :name_representation="reg_name_representation"' +
+              '                         :value_representation="reg_representation">' +
+              '               </register>' +
               ' ' +
-              '       </div>' +
-              ' ' +
-              '     </div>' +
-              '   </div>' +
+              '            </b-col>' +
+              '           </b-row>' +
+              '         </b-container>' +
+              '       </b-cols>' +
+              '     </b-row>' +
+              '   </b-container>' +
               ' </div>'
 
   }
