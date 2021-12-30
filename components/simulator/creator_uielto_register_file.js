@@ -91,9 +91,9 @@
               '   </b-container>' +
               '   ' +
               ' ' +
-              '   <b-container fluid align-h="center">' +
+              '   <b-container fluid align-h="center" class="mx-0 px-0">' +
               '     <b-row align-h="center" cols="1">' +
-              '       <b-cols v-for="item in architecture_hash">' +
+              '       <b-col v-for="item in architecture_hash">' +
               '         <b-container fluid align-h="center" class="px-0 mx-0 mb-2" v-if="(register_type == architecture.components[item.index].type) || (register_type == \'integer\' && architecture.components[item.index].type == \'control\')">' +
               '           <b-row align-h="start" cols-xl="4" cols-lg="4" cols-md="4" cols-sm="3" cols-xs="3" cols="3">' +
               '             <b-col class="p-1 mx-0" v-for="(item2, index) in architecture.components[item.index].elements">' +
@@ -107,7 +107,7 @@
               '            </b-col>' +
               '           </b-row>' +
               '         </b-container>' +
-              '       </b-cols>' +
+              '       </b-col>' +
               '     </b-row>' +
               '   </b-container>' +
               ' </div>'
