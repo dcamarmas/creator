@@ -566,12 +566,12 @@
 
 
                     <!-- Memory view-->
-                    <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
+                    <div class="col-lg-12 col-sm-12 mx-0 px-0" id="memory" v-if="data_mode == 'memory'">
 
                       <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >
                         <b-form-radio-group
                           id="btn-radios-1"
-                          class="w-50"
+                          class="w-50 px-0"
                           v-model="mem_representation"
                           :options="mem_representation_options"
                           button-variant="outline-secondary"
