@@ -162,10 +162,6 @@
               <uielto-toolbar id="navbar_load_architecture" components=" | | | btn_configuration,btn_information">
               </uielto-toolbar>
           
-              <!-- Information popover -->
-              <popover-info target="info_men" show_instruction_help="false"></popover-info>
-
-
 
               <!-- Architecture menu -->
               <div class="col-lg-12 col-sm-12" id="load_menu_arch">
@@ -237,9 +233,6 @@
               <!-- Architecture navbar modals -->
               <save-architecture id="save_architecture"></save-architecture>
 
-
-              <!-- Information popover -->
-              <popover-info target="info_arch" show_instruction_help="true"></popover-info>
 
 
 
@@ -484,9 +477,6 @@
               <save-library id="save_binary"></save-library>
 
 
-              <!-- Information popover -->
-              <popover-info target="info_ass" show_instruction_help="true"></popover-info>
-
 
               <!-- Assembly textarea and library tags-->
               <div class="contenedor row">
@@ -538,9 +528,6 @@
               <!-- Calculator -->
               <calculator id="calculator"></calculator>
 
-              <!-- Information popover -->
-              <popover-info target="info_sim" show_instruction_help="true"></popover-info>
-
 
 
               <b-container fluid align-h="center" class="mx-0">
@@ -566,12 +553,12 @@
 
 
                     <!-- Memory view-->
-                    <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
+                    <div class="col-lg-12 col-sm-12 mx-0 px-0" id="memory" v-if="data_mode == 'memory'">
 
                       <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >
                         <b-form-radio-group
                           id="btn-radios-1"
-                          class="w-50"
+                          class="w-50 px-0"
                           v-model="mem_representation"
                           :options="mem_representation_options"
                           button-variant="outline-secondary"
