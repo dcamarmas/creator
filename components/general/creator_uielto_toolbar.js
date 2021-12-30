@@ -39,15 +39,14 @@
                     },
 
         template: '<b-container :id="id" fluid align-h="center" class="menu my-3 mx-0">' +
-                  ' <b-row>' +
-                  '   <span class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1"' +
+                  ' <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">' +
+                  '   <b-cols class="px-2 py-1"' +
                   '         v-for="(item, index) in components_array">' +
                   '     <toolbar-btngroup :group="item.split(\',\')">' +
                   '     </toolbar-btngroup>' +
                   ' ' +
                   '     <div class="w-100 d-block d-sm-none"></div>' +
-                  '   </span>' +
-                  ' ' +
+                  '   </b-cols>' +
                   ' </b-row>' +
                   '</b-container>'
   }
