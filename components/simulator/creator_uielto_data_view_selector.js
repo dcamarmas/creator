@@ -72,7 +72,7 @@
 
   template:   ' <div class="col-lg-12 col-sm-12 my-1 px-0">' +
               '   <b-container fluid align-h="center" class="mx-0 px-0">' +
-              '     <b-row cols="3" >' +
+              '     <b-row cols-xl="3" cols-lg="3" cols-md="3" cols-sm="3" cols-xs="1" cols="1" >' +
               '       <b-col align-h="start" class="px-1">' +
               '         <b-dropdown split ' +
               '                     v-if="register_file_num > 4"' +
