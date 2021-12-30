@@ -39,26 +39,30 @@
     }
   },
 
-  template:   ' <div class="col-lg-12 col-sm-12" id="stats" v-if="data_mode == \'stats\'"> ' +
-              '   <div class="col-lg-12 col-sm-12 px-0"> ' +
-              '     <b-form-group label="Stats view:" v-slot="{ ariaDescribedby }">' +
-              '       <b-form-radio-group' +
-              '         id="btn-radios-1"' +
-              '         class="w-50"' +
-              '         v-model="stat_representation"' +
-              '         :options="stat_representation_options"' +
-              '         button-variant="outline-secondary"' +
-              '         size="sm"' +
-              '         :aria-describedby="ariaDescribedby"' +
-              '         name="radios-btn-default"' +
-              '         buttons' +
-              '       ></b-form-radio-group>' +
-              '     </b-form-group>' +
+  template:   ' <div class="col-lg-12 col-sm-12 px-1" id="stats" v-if="data_mode == \'stats\'"> ' +
+              '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+              '     <b-row cols="1" >' +
+              '       <b-col align-h="center" class="px-0">' +
+              '         <b-form-group label="Stats view:" v-slot="{ ariaDescribedby }">' +
+              '           <b-form-radio-group' +
+              '             id="btn-radios-1"' +
+              '             class="w-50"' +
+              '             v-model="stat_representation"' +
+              '             :options="stat_representation_options"' +
+              '             button-variant="outline-secondary"' +
+              '             size="sm"' +
+              '             :aria-describedby="ariaDescribedby"' +
+              '             name="radios-btn-default"' +
+              '             buttons' +
+              '           ></b-form-radio-group>' +
+              '         </b-form-group>' +
               ' ' +
-              '     <plot-stats :stats_value="stats_value" v-if="stat_representation == \'graphic\'"></plot-stats>  ' +
-              '     <table-stats :stats="stats" v-if="stat_representation == \'table\'"></table-stats> ' +
+              '         <plot-stats :stats_value="stats_value" v-if="stat_representation == \'graphic\'"></plot-stats>  ' +
+              '         <table-stats :stats="stats" v-if="stat_representation == \'table\'"></table-stats> ' +
               ' ' +
-              '   </div> ' +
+              '       </b-col>' +
+              '     </b-row>' +
+              '   </b-container>' +
               ' </div>'
 
   }
