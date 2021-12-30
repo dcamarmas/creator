@@ -33,31 +33,30 @@
                   //Register value representation
                   reg_representation: "hex",
                   reg_representation_options: [
-                    { text: 'Signed', value: 'signed' },
-                    { text: 'Unsigned', value: 'unsigned' },
+                    { text: 'Signed',   value: 'signed' },
+                    { text: 'Unsig.',   value: 'unsigned' },
                     { text: 'IEEE 754', value: 'decimal'},
-                    { text: 'Hexadecimal', value: 'hex' }
+                    { text: 'Hex.',     value: 'hex' }
                   ],
 
                   //Register name representation
                   reg_name_representation: "all",
                   reg_name_representation_options: [
-                    { text: 'Name', value: 'logical' },
+                    { text: 'Name',  value: 'logical' },
                     { text: 'Alias', value: 'alias' },
-                    { text: 'All', value: 'all'}
+                    { text: 'All',   value: 'all'}
                   ]
                 }
               },
-
 
   methods:    {
               
               },
 
   template:   ' <div class="col-lg-12 col-sm-12 px-0" id="register_file" v-if="data_mode == \'registers\'">' +
-              '   <b-container fluid align-h="center">' +
-              '     <b-row>' +
-              '       <b-col cols="auto">' +
+              '   <b-container fluid align-h="between" class="mx-0 px-0">' +
+              '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1" >' +
+              '       <b-col align-h="start" class="px-1">' +
               '         <b-form-group label="Register value representation:" v-slot="{ ariaDescribedby }">' +
               '           <b-form-radio-group' +
               '             id="btn-radios-1"' +
@@ -73,7 +72,7 @@
               '         </b-form-group>' +
               '       </b-col>' +
               ' ' +
-              '       <b-col cols="auto" align-h="end">' +
+              '       <b-col align-h="end" class="px-1">' +
               '         <b-form-group label="Register name representation:" v-slot="{ ariaDescribedby }">' +
               '           <b-form-radio-group' +
               '             id="btn-radios-2"' +
