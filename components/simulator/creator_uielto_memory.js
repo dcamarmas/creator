@@ -143,9 +143,9 @@
 
   template: ' <div class="col-lg-12 col-sm-12 px-0">' +
             ' ' +
-            '   <span class="container">' +
-            '     <b-row align-v="start">' +
-            '       <b-col style="min-height:35vh !important;">' +
+            '   <b-container fluid align-h="between" class="mx-0 px-0">' +
+            '     <b-row align-v="start" cols="1">' +
+            '       <b-col class="mx-0 px-0" style="min-height:35vh !important;">' +
             ' ' +
             '         <b-table sticky-header ' +
             '                 striped ' +
@@ -257,7 +257,7 @@
             ' ' +
             '       </b-col>' +
             '     </b-row>' +
-            '   </span>' +
+            '   </b-container>' +
             ' ' +
             '   <b-modal id="space_modal" ' +
             '            size="sm" ' +
