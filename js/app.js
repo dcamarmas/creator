@@ -502,7 +502,19 @@ try
         }
       },
 
-      /*Screen change*/
+
+
+
+
+
+
+
+
+
+
+
+
+      /*Screen change*/ //TODO
       change_UI_mode(e) {
         if(app._data.creator_mode != e){
 
@@ -556,6 +568,33 @@ try
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       /*************************/
       /* Architecture Selector */
       /*************************/
@@ -606,15 +645,6 @@ try
       /* Architecture */
       /****************/
 
-      //Change the execution mode of architecture editor
-      change_mode(){
-        if(app._data.advanced_mode == false){
-          app._data.advanced_mode = true;
-        }
-        else{
-          app._data.advanced_mode = false;
-        }
-      },
 
 
 
@@ -695,6 +725,17 @@ try
         });
       },
 
+
+
+
+
+
+
+
+
+
+
+
       //Show error message in the compilation
       compileError(msg, token, line)
       {
@@ -730,6 +771,10 @@ try
         },75);
       },
 
+
+
+
+
       //Remove a loaded binary
       removeLibrary(){
           update_binary = "";
@@ -745,10 +790,9 @@ try
       /* Simulator */
       /*************/
 
-      /* Reset execution */
+      // Reset execution //TODO: include into navbar component
       reset ( reset_graphic )
       {
-        /* Google Analytics */
         creator_ga('execute', 'execute.reset', 'execute.reset');
 
         show_loading();
@@ -774,7 +818,6 @@ try
                }
           }
 
-          /*Auto-scroll*/
           if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
             var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
             var rowpos = $(id).position();
@@ -787,7 +830,6 @@ try
             $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
           }
 
-          /*Reset graphic*/
           if(reset_graphic == true && app._data.data_mode == "stats"){
             ApexCharts.exec('graphic', 'updateSeries', stats_value);
           }
@@ -798,153 +840,7 @@ try
 
       },
 
-      //Execute one instruction
-      executeInstruction ( )
-      {
-        // Google Analytics
-        creator_ga('execute', 'execute.instruction', 'execute.instruction');
-
-        var ret = executeInstruction();
-        // console.log(JSON.stringify(ret,2,null));
-
-        if (typeof ret === "undefined") {
-          console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
-        }
-
-        if (ret.msg != null) {
-          show_notification(ret.msg, ret.type);
-        }
-
-        if (ret.draw != null)
-        {
-          for (var i=0; i<ret.draw.space.length; i++) {
-            instructions[ret.draw.space[i]]._rowVariant = '';
-          }
-          for (var i=0; i<ret.draw.success.length; i++) {
-            instructions[ret.draw.success[i]]._rowVariant = 'success';
-          }
-          for (var i=0; i<ret.draw.info.length; i++) {
-            instructions[ret.draw.info[i]]._rowVariant = 'info';
-          }
-          for (var i=0; i<ret.draw.danger.length; i++) {
-            instructions[ret.draw.danger[i]]._rowVariant = 'danger';
-          }
-
-          //Auto-scroll
-          if(app._data.autoscroll == true && runProgram == false){
-            if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
-              var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
-              var rowpos = $(id).position();
-              if(rowpos){
-                var pos = rowpos.top - $('.instructions_table').height();
-                $('.instructions_table').animate({scrollTop: (pos)}, 200);
-              }
-            }
-            else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
-              $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
-            }
-          }
-
-          if(app._data.data_mode == "stats"){
-            ApexCharts.exec('graphic', 'updateSeries', stats_value);
-          }
-          return ;
-         }
-      },
-
-      /*Execute all program*/
-      executeProgram ( but )
-      {
-        /* Google Analytics */
-        creator_ga('execute', 'execute.run', 'execute.run');
-
-        app._data.runExecution = true;
-        app._data.runExecution = false;
-        runProgram=true;
-
-        if (instructions.length == 0)
-        {
-            show_notification('No instructions in memory', 'danger') ;
-            runProgram=false;
-            return;
-        }
-        if (executionIndex < -1)
-        {
-            show_notification('The program has finished', 'warning') ;
-            runProgram=false;
-            return;
-        }
-        if (executionIndex == -1)
-        {
-            show_notification('The program has finished with errors', 'danger') ;
-            runProgram=false;
-            return;
-        }
-
-        $("#stopExecution").show();
-        $("#playExecution").hide();
-
-        this.programExecutionInst(but);
-      },
-
-      programExecutionInst(but)
-      {
-        for (var i=0; (i<app._data.instructionsPacked) && (executionIndex >= 0); i++)
-        {
-          if(mutexRead == true){
-            iter1 = 1;
-            $("#stopExecution").hide();
-            $("#playExecution").show();
-            runProgram=false;
-            return;
-          }
-          else if(instructions[executionIndex].Break == true && iter1 == 0){
-            iter1 = 1;
-            $("#stopExecution").hide();
-            $("#playExecution").show();
-            runProgram=false;
-            return;
-          }
-          else if(this.runExecution == true){
-            app._data.runExecution = false;
-            iter1 = 1;
-            $("#stopExecution").hide();
-            $("#playExecution").show();
-            runProgram=false;
-            return;
-          }
-          else if(but == true && i == 0){
-            app._data.resetBut = false;
-          }
-          else if(this.resetBut == true){
-            app._data.resetBut = false;
-
-            $("#stopExecution").hide();
-            $("#playExecution").show();
-            runProgram=false;
-            return;
-          }
-          else{
-            this.executeInstruction();
-            iter1 = 0;
-          }
-        }
-
-        if(executionIndex >= 0){
-          setTimeout(this.programExecutionInst, 15);
-        }
-        else{
-          $("#stopExecution").hide();
-          $("#playExecution").show();
-        }
-      },
-
-      /*Stop program excution*/
-      stopExecution() {
-        app._data.runExecution = true;
-      },
-
-      /*Exception Notification*/
+      //Exception Notification
       exception(error)
       {
         show_notification("There has been an exception. Error description: '" + error, 'danger') ;
@@ -960,17 +856,6 @@ try
 
         return;
       },
-
-      
-
-
-
-
-
-
-
-
-
 
       //Convert hexadecimal number to floating point number
       hex2float ( hexvalue )
@@ -1016,7 +901,7 @@ try
       {
         app._data.data_mode = e;
 
-        if(e == "registers"){
+        if(e == "registers" && type != ''){
           if(type == "int"){
             app._data.register_type = 'integer';
             app._data.name_reg = 'INT Registers';
@@ -1029,9 +914,14 @@ try
           }
         }
         if(e == "memory"){
-          app._data.data_mode = e;
+          app._data.data_mode = e; //TODO: vue bidirectional updates
+          app._data.reg_type = '';
         }
-
+        if(e == "stat"){
+          app._data.data_mode = e; //TODO: vue bidirectional updates
+          app._data.reg_type = ''; 
+        }
+        
         app.$forceUpdate();
 
         // Google Analytics

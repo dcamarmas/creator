@@ -33,31 +33,30 @@
                   //Register value representation
                   reg_representation: "hex",
                   reg_representation_options: [
-                    { text: 'Signed', value: 'signed' },
-                    { text: 'Unsigned', value: 'unsigned' },
+                    { text: 'Signed',   value: 'signed' },
+                    { text: 'Unsig.',   value: 'unsigned' },
                     { text: 'IEEE 754', value: 'decimal'},
-                    { text: 'Hexadecimal', value: 'hex' }
+                    { text: 'Hex.',     value: 'hex' }
                   ],
 
                   //Register name representation
                   reg_name_representation: "all",
                   reg_name_representation_options: [
-                    { text: 'Name', value: 'logical' },
+                    { text: 'Name',  value: 'logical' },
                     { text: 'Alias', value: 'alias' },
-                    { text: 'All', value: 'all'}
+                    { text: 'All',   value: 'all'}
                   ]
                 }
               },
-
 
   methods:    {
               
               },
 
   template:   ' <div class="col-lg-12 col-sm-12 px-0" id="register_file" v-if="data_mode == \'registers\'">' +
-              '   <b-container>' +
-              '     <b-row>' +
-              '       <b-col cols="auto">' +
+              '   <b-container fluid align-h="between" class="mx-0 px-0">' +
+              '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1" >' +
+              '       <b-col align-h="start" class="px-1">' +
               '         <b-form-group label="Register value representation:" v-slot="{ ariaDescribedby }">' +
               '           <b-form-radio-group' +
               '             id="btn-radios-1"' +
@@ -73,7 +72,7 @@
               '         </b-form-group>' +
               '       </b-col>' +
               ' ' +
-              '       <b-col cols="auto" align-h="end">' +
+              '       <b-col align-h="end" class="px-1">' +
               '         <b-form-group label="Register name representation:" v-slot="{ ariaDescribedby }">' +
               '           <b-form-radio-group' +
               '             id="btn-radios-2"' +
@@ -92,23 +91,25 @@
               '   </b-container>' +
               '   ' +
               ' ' +
-              '   <div class="col-lg-12 col-sm-12" v-for="item in architecture_hash">' +
-              '     <div class="col-lg-12 col-sm-12 buttons row mb-2" ' +
-              '           v-if="(register_type == architecture.components[item.index].type) || (register_type == \'integer\' && architecture.components[item.index].type == \'control\')">' +
-              '       ' +
-              '       <div class="col-lg-3 col-sm-4 buttons" ' +
-              '            v-for="item2 in architecture.components[item.index].elements">' +
+              '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+              '     <b-row align-h="center" cols="1">' +
+              '       <b-col v-for="item in architecture_hash">' +
+              '         <b-container fluid align-h="center" class="px-0 mx-0 mb-2" v-if="(register_type == architecture.components[item.index].type) || (register_type == \'integer\' && architecture.components[item.index].type == \'control\')">' +
+              '           <b-row align-h="start" cols-xl="4" cols-lg="4" cols-md="4" cols-sm="3" cols-xs="3" cols="3">' +
+              '             <b-col class="p-1 mx-0" v-for="(item2, index) in architecture.components[item.index].elements">' +
               ' ' +
-              '         <register :component="item"' +
-              '                   :register="item2"' +
-              '                   :name_representation="reg_name_representation"' +
-              '                   :value_representation="reg_representation">' +
-              '         </register>' +
+              '               <register :component="item"' +
+              '                         :register="item2"' +
+              '                         :name_representation="reg_name_representation"' +
+              '                         :value_representation="reg_representation">' +
+              '               </register>' +
               ' ' +
-              '       </div>' +
-              ' ' +
-              '     </div>' +
-              '   </div>' +
+              '            </b-col>' +
+              '           </b-row>' +
+              '         </b-container>' +
+              '       </b-col>' +
+              '     </b-row>' +
+              '   </b-container>' +
               ' </div>'
 
   }
