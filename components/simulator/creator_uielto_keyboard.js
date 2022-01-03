@@ -85,41 +85,41 @@
               },
 
 template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 p-0">' +
-              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 p-0">' +
-              '     <div class="col-lg-1 col-sm-1">' +
-              '       <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>' +
-              '     </div>' +
-              '     <div class="col-lg-11 col-sm-11 pr-0">' +
-              '       <b-form-textarea id="textarea_keyboard" ' +
-              '                        v-on:input="debounce(\'local_keyboard\', $event)" ' +
-              '                        :value="local_keyboard" rows="5" ' +
-              '                        no-resize :state = "enter" ' +
-              '                        title="Keyboard">' +
-              '       </b-form-textarea>' +
-              '     </div>' +
-              '   </div>' +
+              '   <b-container fluid align-h="start">' +
+              '     <b-row cols="2" align-h="start">' +
+              '       <b-col cols="1">' +
+              '         <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>' +
+              '       </b-col>' +
+              '       <b-col lg="11" cols="12" class="pr-0">' +
+              '         <b-form-textarea id="textarea_keyboard" ' +
+              '                          v-on:input="debounce(\'local_keyboard\', $event)" ' +
+              '                          :value="local_keyboard" rows="5" ' +
+              '                          no-resize :state = "enter" ' +
+              '                          title="Keyboard">' +
+              '         </b-form-textarea>' +
+              '       </b-col>' +
+              '     </b-row>' +
+              '   </b-container>' +
               ' ' +
-              '   <div class="col-lg-12 col-sm-12 row m-0">' +
-              '     <div class="col-lg-4 col-sm-4">' +
-              '      ' +
-              '     </div>' +
-              '     <div class="col-lg-4 col-sm-4">' +
-              '       <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
-              '                 @click="consoleClear">' +
-              '         <span class="fas fa-broom"></span> ' +
-              '         Clear' +
-              '       </b-button>' +
-              '     </div>' +
-              '     <div class="col-lg-4 col-sm-4">' +
-              '       <b-button id="enter_keyboard" ' +
-              '                 class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
-              '                 @click="consoleEnter">' +
-              '         <span class="fas fa-level-down-alt enterIcon"></span> ' +
-              '         Enter' +
-              '       </b-button>' +
-              '     </div>' +
-              ' ' +
-              '   </div>' +
+              '   <b-container fluid align-h="end">' +
+              '     <b-row cols="3" align-h="end">' +
+              '       <b-col>' +
+              '         <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
+              '                   @click="consoleClear">' +
+              '           <span class="fas fa-broom"></span> ' +
+              '           Clear' +
+              '         </b-button>' +
+              '       </b-col>' +
+              '       <b-col>' +
+              '         <b-button id="enter_keyboard" ' +
+              '                   class="btn btn-outline-secondary btn-block menuGroup btn-sm keyboardButton"' +
+              '                   @click="consoleEnter">' +
+              '           <span class="fas fa-level-down-alt enterIcon"></span> ' +
+              '           Enter' +
+              '         </b-button>' +
+              '       </b-col>' +
+              '     </b-row>' +
+              '   </b-container>' +
               ' </div>'
 
   }

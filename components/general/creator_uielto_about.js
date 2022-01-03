@@ -33,7 +33,6 @@
                     '           hide-footer>' +
                     ' ' +
                     '   <b-card-group>' +
-                    '' +
                     '     <card-author ' +
                     '       author_img="/creator/images/author_fgarcia.png" ' +
                     '       author_alt="author_fgarcia" ' +
@@ -60,7 +59,6 @@
                     '       author_href_rgate="https://www.researchgate.net/profile/Diego-Camarmas-Alonso" ' +
                     '       author_href_github="https://github.com/dcamarmas" ' +
                     '     ></card-author>' +
-                    '' +
                     '   </b-card-group>' +
                     ' ' +
                     ' </b-modal>'
