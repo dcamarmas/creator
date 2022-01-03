@@ -131,6 +131,7 @@
                     '          title = "Save Binary" ' +
                     '          ok-title="Save to File" ' +
                     '          @ok="library_save">' +
+                    ' ' +
                     '  <p> Please write the file name: </p> ' +
                     '  <b-form-input v-on:input="debounce(\'name_binary_save\', $event)" ' +
                     '                :value="name_binary_save"' +

@@ -104,6 +104,7 @@
                     '           title = "Save Assembly" ' +
                     '           ok-title="Save to File" ' +
                     '           @ok="assembly_save">' +
+                    ' ' +
                     '   <p> Please write the file name: </p> ' +
                     '   <b-form-input v-on:input="debounce(\'save_assembly\', $event)" ' +
                     '                 :value="save_assembly"' +

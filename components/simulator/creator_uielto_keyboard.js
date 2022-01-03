@@ -84,13 +84,13 @@
                 
               },
 
-template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 p-0">' +
+template:     ' <div>' +
               '   <b-container fluid align-h="start">' +
               '     <b-row cols="2" align-h="start">' +
               '       <b-col cols="1">' +
               '         <span class="fa fa-keyboard fa-2x mb-2 consoleIcon"></span>' +
               '       </b-col>' +
-              '       <b-col lg="11" cols="12" class="pr-0">' +
+              '       <b-col lg="11" cols="12">' +
               '         <b-form-textarea id="textarea_keyboard" ' +
               '                          v-on:input="debounce(\'local_keyboard\', $event)" ' +
               '                          :value="local_keyboard" rows="5" ' +

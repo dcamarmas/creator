@@ -342,14 +342,6 @@ try
 
       main_memory: {},
 
-      //Memory view
-      mem_representation: "data_memory",
-      mem_representation_options: [
-        { text: 'Data', value: 'data_memory' },
-        { text: 'Text', value: 'instructions_memory' },
-        { text: 'Stack', value: 'stack_memory'}
-      ],
-
       //Stack
       track_stack_names: track_stack_names,
       callee_subrutine: "",
