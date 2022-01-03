@@ -138,13 +138,13 @@
               '   <b-card no-body class="overflow-hidden arch_card architectureCard" ' +
               '           v-b-modal.load_arch>' +
               '     <b-row no-gutters>' +
-              '        <b-col md="3" class="center">' +
+              '        <b-col sm="3" class="center">' +
               '         <b-card-img src="./images/load_icon.png" ' +
               '                     alt="load icon" class="rounded-0 architectureImg">' +
               '         </b-card-img>' +
               '       </b-col>' +
               ' ' +
-              '       <b-col md="9">' +
+              '       <b-col sm="9">' +
               '         <b-card-body title="Load Architecture" title-tag="h2">' +
               '           <b-card-text class="justify">' +
               '             Allows to load the definition of an already created architecture.' +
@@ -153,7 +153,7 @@
               '       </b-col>' +
               '     </b-row>' +
               '   </b-card>' +
-
+              ' ' +
               '   <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">' +
               '     <b-form>' +
               '       <b-form-input v-on:input="debounce(\'name_arch\', $event)" ' +

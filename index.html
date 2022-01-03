@@ -158,20 +158,21 @@
           <b-row>
             <b-col>
 
+
               <!-- Navbar -->
               <uielto-toolbar id="navbar_load_architecture" components=" | | | btn_configuration,btn_information">
               </uielto-toolbar>
           
 
               <!-- Architecture menu -->
-              <div class="col-lg-12 col-sm-12" id="load_menu_arch">
-                <div class="col-lg-12 col-sm-12 row p-0 m-0">
+              <b-container fluid align-h="center" class="mx-0 px-1" id="load_menu_arch">
+                <b-row>
+                  <b-col>
 
-                  <div class="col-lg-1 col-sm-1"></div>
-                  <div class="col-lg-10 col-sm-10">
                     <b-list-group>
                       <b-list-group-item>
 
+                        <!-- Preload architecture card -->
                         <preload-architecture :arch_available="arch_available"
                                               :back_card="back_card">
                         </preload-architecture>
@@ -185,26 +186,21 @@
                       </b-list-group-item>
                     </b-list-group>
 
-
-                    <!-- Architecture selector modals -->
-
-                    <!-- Delete architecture modal -->
-                    <delete-architecture  id="modalDeletArch"
-                                          :index="modalDeletArchIndex">                      
-                    </delete-architecture>
-
-                  </div>
-
-                  <div class="col-lg-1 col-sm-1"></div>
-                </div>
-                <br>
+                  </b-col>
+                </b-row>
+              </b-container>
 
 
-                <!-- Backup modal -->
-                <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
+              <!-- Architecture selector modals -->
 
-              </div>
-              
+              <!-- Delete architecture modal -->
+              <delete-architecture  id="modalDeletArch"
+                                    :index="modalDeletArchIndex">                      
+              </delete-architecture>
+
+              <!-- Backup modal -->
+              <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
+
             </b-col>
           </b-row>
         </b-container>
