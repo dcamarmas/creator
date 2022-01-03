@@ -178,35 +178,43 @@
               },
 
   template:   '<div>' +
-              ' <b-card no-body class="overflow-hidden arch_card architectureCard" ' +
-              '                 v-for="(item, index) in arch_available" ' +
-              '                 @mouseover="change_background(item.name, 1)"' +
-              '                 @mouseout="change_background(item.name, 0)" ' +
-              '                 :border-variant=back_card[index].background>' +
-              '   <b-row no-gutters>' +
-              '      <b-col md="3" @click="load_arch_select(item)">' +
+              '  <b-card no-body class="overflow-hidden arch_card architectureCard" ' +
+              '                  v-for="(item, index) in arch_available" ' +
+              '                  @mouseover="change_background(item.name, 1)"' +
+              '                  @mouseout="change_background(item.name, 0)" ' +
+              '                  :border-variant=back_card[index].background>' +
+              '    <b-row no-gutters>' +
+              '      <b-col sm="3" @click="load_arch_select(item)">' +
               '        <b-card-img :src=item.img :alt=item.alt thumbnail fluid class="rounded-0"></b-card-img>' +
-              '     </b-col>' +
-              '' +
-              '     <b-col md="7" @click="load_arch_select(item)">' +
+              '      </b-col>' +
+              ' ' + 
+              '      <b-col sm="9" @click="load_arch_select(item)" v-if="default_arch(item.name) == false">' +
               '        <b-card-body :title=item.name title-tag="h2">' +
               '          <b-card-text class="justify">' +
               '            {{item.description}}' +
-              '         </b-card-text>' +
+              '          </b-card-text>' +
               '        </b-card-body>' +
-              '     </b-col>' +
-              '' +
-              '      <b-col md="2" >' +
+              '      </b-col>' +
+              ' ' +
+              '      <b-col sm="7" @click="load_arch_select(item)" v-if="default_arch(item.name) == true">' +
+              '        <b-card-body :title=item.name title-tag="h2">' +
+              '          <b-card-text class="justify">' +
+              '            {{item.description}}' +
+              '          </b-card-text>' +
+              '        </b-card-body>' +
+              '      </b-col>' +
+              ' ' +
+              '      <b-col sm="2" v-if="default_arch(item.name) == true">' +
               '        <b-button class="btn btn-outline-danger btn-sm btn-block buttonBackground arch_delete" ' +
               '                  @click.stop="modal_remove_cache_arch(index, item.name, $event.target)"' +
               '                  v-if="default_arch(item.name) == true" ' +
               '                  :id="\'delete_\'+item.name">' +
-              '         <span class="far fa-trash-alt"></span>' +
+              '          <span class="far fa-trash-alt"></span>' +
               '          Delete' +
               '        </b-button>' +
-              '     </b-col>' +
+              '      </b-col>' +
               '    </b-row>' +
-              ' </b-card>' +
+              '  </b-card>' +
               '</div>'
 
   }

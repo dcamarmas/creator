@@ -27,12 +27,12 @@
                 display:  { type: String, required: true }
               },
 
-template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 p-0">' +
-              '   <div class="row col-lg-12 col-sm-12 mx-0 pl-0 p-0">' +
-              '     <div class="col-lg-1 col-sm-1">' +
+template:     ' <b-container fluid align-h="start">' +
+              '   <b-row cols="2" align-h="start">' +
+              '     <b-col cols="1">' +
               '       <span class="fas fa-desktop fa-2x mb-2 consoleIcon"></span>' +
-              '     </div>' +
-              '     <div class="col-lg-11 col-sm-11 pr-0">' +
+              '     </b-col>' +
+              '     <b-col lg="11" cols="12">' +
               '       <b-form-textarea id="textarea_display" ' +
               '                        v-model="display" ' +
               '                        rows="5" ' +
@@ -40,9 +40,9 @@ template:     ' <div class="col-rt-12 col-lg-6 col-sm-12 my-2 mx-0 p-0">' +
               '                        no-resize ' +
               '                        title="Display">' +
               '       </b-form-textarea>' +
-              '     </div>' +
-              '   </div>' +
-              ' </div>'
+              '     </b-col>' +
+              '   </b-row>' +
+              ' </b-container>'
 
   }
 
