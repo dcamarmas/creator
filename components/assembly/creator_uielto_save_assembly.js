@@ -104,6 +104,7 @@
                     '           title = "Save Assembly" ' +
                     '           ok-title="Save to File" ' +
                     '           @ok="assembly_save">' +
+                    ' ' +
                     '   <p> Please write the file name: </p> ' +
                     '   <b-form-input v-on:input="debounce(\'save_assembly\', $event)" ' +
                     '                 :value="save_assembly"' +
@@ -115,3 +116,13 @@
   }
 
   Vue.component('save-assembly', uielto_save_assembly) ;
+
+  /*Determines the refresh timeout depending on the device being used*/
+  function getDebounceTime(){
+    if(screen.width > 768){
+      return 500;
+    }
+    else{
+      return 1000;
+    }
+  }

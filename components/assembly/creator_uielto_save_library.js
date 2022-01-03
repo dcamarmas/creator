@@ -131,6 +131,7 @@
                     '          title = "Save Binary" ' +
                     '          ok-title="Save to File" ' +
                     '          @ok="library_save">' +
+                    ' ' +
                     '  <p> Please write the file name: </p> ' +
                     '  <b-form-input v-on:input="debounce(\'name_binary_save\', $event)" ' +
                     '                :value="name_binary_save"' +
@@ -142,3 +143,13 @@
   }
 
   Vue.component('save-library', uielto_save_library) ;
+
+  /*Determines the refresh timeout depending on the device being used*/
+  function getDebounceTime(){
+    if(screen.width > 768){
+      return 500;
+    }
+    else{
+      return 1000;
+    }
+  }
