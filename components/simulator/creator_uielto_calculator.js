@@ -28,6 +28,12 @@
 
         data:         function () {
                         return {
+                          bits: 32,
+                          bits_options: [
+                            { text: '32 Bits',  value: 32 },
+                            { text: '64 Bits',  value: 64 }
+                          ],
+
                           calculator: {
                             bits: 32,
                             hexadecimal: "",
@@ -49,8 +55,8 @@
 
         methods:    {
                       /*Change bits of calculator*/
-                      changeBitsCalculator(index){
-                        if(index == 0){
+                      changeBitsCalculator(){
+                        if(this.bits == 32){
                           this.calculator.bits = 32;
                           this.calculator.variant32 = "primary";
                           this.calculator.variant64 = "outline-primary";
@@ -59,7 +65,7 @@
                           this.calculator.lengthExponent = 8;
                           this.calculator.lengthMantissa = 23;
                         }
-                        if(index == 1){
+                        if(this.bits == 64){
                           this.calculator.bits = 64;
                           this.calculator.variant64 = "primary";
                           this.calculator.variant32 = "outline-primary";
@@ -325,33 +331,30 @@
                     '          title="Floating Point Calculator"' +
                     '          hide-footer' +
                     '          size="lg">' +
-                    '   <div>' +
-                    '     <div class="col-lg-12 col-12 row m-0 pb-3">' +
-                    '       <div class="col-lg-3 col-3"></div>' +
-                    '       <div class="col-lg-6 col-6">' +
-                    '         <div class="col-lg-12 col-12 row m-0 p-0">' +
-                    '           <div class="col-lg-6 col-6 p-0">' +
-                    '             <b-button class="btn btn-block btn-sm h-100" ' +
-                    '                       :variant = "calculator.variant32" ' +
-                    '                       @click="changeBitsCalculator(0)">' +
-                    '               32 bit' +
-                    '             </b-button>' +
-                    '           </div>' +
-                    '           <div class="col-lg-6 col-6 p-0">' +
-                    '             <b-button class="btn btn-block btn-sm h-100" ' +
-                    '                       :variant = "calculator.variant64" ' +
-                    '                       @click="changeBitsCalculator(1)">' +
-                    '               64 bit' +
-                    '             </b-button>' +
-                    '           </div>' +
-                    '         </div>' +
-                    '       </div>' +
-                    '       <div class="col-lg-3 col-3"></div>' +
-                    '     </div>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row m-0 pt-3">' +
-                    '       <div class="col-lg-2 col-2"></div>' +
-                    '       <div class="col-lg-6 col-8">' +
+                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '     <b-row cols-xl="2" cols-lg="2" cols-md="1" cols-sm="1" cols-xs="1" cols="1" align-h="center">' +
+                    '       <b-col>' +
+                    '         <b-form-group v-slot="{ ariaDescribedby }">' +
+                    '           <b-form-radio-group' +
+                    '             class="w-100"' +
+                    '             v-model="bits"' +
+                    '             :options="bits_options"' +
+                    '             button-variant="outline-primary"' +
+                    '             size="sm"' +
+                    '             :aria-describedby="ariaDescribedby"' +
+                    '             name="radios-btn-default"' +
+                    '             buttons' +
+                    '             @input="changeBitsCalculator"' +
+                    '           ></b-form-radio-group>' +
+                    '         </b-form-group>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
+                    ' ' +
+                    '   <b-container fluid align-h="start" class="mx-0 px-0">' +
+                    '     <b-row cols="1" align-h="start">' +
+                    '       <b-col lg="6" offset-lg="2" class="pt-3">' +
                     '         <b-form-input class="form-control form-control-sm" ' +
                     '                       v-on:input="debounce(\'calculator.hexadecimal\', $event)" ' +
                     '                       :value="calculator.hexadecimal" ' +
@@ -360,88 +363,80 @@
                     '                       :maxlength="calculator.lengthHexadecimal" ' +
                     '                       title="Hexadecimal">' +
                     '         </b-form-input>' +
-                    '       </div>' +
-                    '       <div class="col-lg-4"></div>' +
-                    '     </div>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row m-0 p-0">' +
-                    '       <div class="col-lg-1 col-0"></div>' +
-                    '       <div class="col-lg-8 col-12 p-1">' +
+                    '   <b-container fluid align-h="start" class="mx-0 px-0">' +
+                    '     <b-row cols="1" align-h="start">' +
+                    '       <b-col lg="8" offset-lg="1" class="p-1">' +
                     '         <b-img class="calculatorImg" src="./images/calculator.png" fluid alt="calculator"></b-img>' +
-                    '       </div>' +
-                    '       <div class="col-lg-3 col-0"></div>' +
-                    '     </div>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row m-0 p-0">' +
-                    '       <div class="col-lg-1 col-0"></div>' +
-                    '       <div class="col-lg-8 col-12 p-0">' +
-                    '         <div class="col-lg-12 col-12 row m-0 p-0">' +
-                    '           <div class="col-lg-2 col-2 p-1">' +
-                    '             <b-form-input class="form-control form-control-sm" ' +
-                    '                           v-on:input="debounce(\'calculator.sign\', $event)" ' +
-                    '                           :value="calculator.sign" ' +
-                    '                           @change="calculatorFunct(1)" ' +
-                    '                           placeholder="Enter sign" ' +
-                    '                           :maxlength="calculator.lengthSign" ' +
-                    '                           title="Sign">' +
-                    '             </b-form-input>' +
-                    '           </div>' +
-                    '           <div class="col-lg-4 col-4 p-1">' +
-                    '             <b-form-input class="form-control form-control-sm" ' +
-                    '                           v-on:input="debounce(\'calculator.exponent\', $event)" ' +
-                    '                           :value="calculator.exponent" ' +
-                    '                           @change="calculatorFunct(1)" ' +
-                    '                           placeholder="Enter exponent" ' +
-                    '                           :maxlength="calculator.lengthExponent" ' +
-                    '                           title="Exponent">' +
-                    '             </b-form-input>' +
-                    '           </div>' +
-                    '           <div class="col-lg-6 col-6 p-1">' +
-                    '             <b-form-input class="form-control form-control-sm" ' +
-                    '                           v-on:input="debounce(\'calculator.mantissa\', $event)" ' +
-                    '                           :value="calculator.mantissa" ' +
-                    '                           @change="calculatorFunct(1)" ' +
-                    '                           placeholder="Enter mantissa" ' +
-                    '                           :maxlength="calculator.lengthMantissa" ' +
-                    '                           title="Mantisa">' +
-                    '             </b-form-input>' +
-                    '           </div>' +
-                    '         </div>' +
-                    '       </div>' +
-                    '       <div class="col-lg-3 col-0"></div>' +
-                    '     </div>' +
+                    '   <b-container fluid align-h="start" class="mx-0 px-0">' +
+                    '     <b-row cols="3" align-h="start">' +
+                    '       <b-col lg="1" cols="2" offset-lg="1" class="p-1">' +
+                    '         <b-form-input class="form-control form-control-sm" ' +
+                    '                       v-on:input="debounce(\'calculator.sign\', $event)" ' +
+                    '                       :value="calculator.sign" ' +
+                    '                       @change="calculatorFunct(1)" ' +
+                    '                       placeholder="Enter sign" ' +
+                    '                       :maxlength="calculator.lengthSign" ' +
+                    '                       title="Sign">' +
+                    '         </b-form-input>' +
+                    '       </b-col>' +
+                    '       <b-col lg="3" cols="4" class="p-1">' +
+                    '         <b-form-input class="form-control form-control-sm" ' +
+                    '                       v-on:input="debounce(\'calculator.exponent\', $event)" ' +
+                    '                       :value="calculator.exponent" ' +
+                    '                       @change="calculatorFunct(1)" ' +
+                    '                       placeholder="Enter exponent" ' +
+                    '                       :maxlength="calculator.lengthExponent" ' +
+                    '                       title="Exponent">' +
+                    '         </b-form-input>' +
+                    '       </b-col>' +
+                    '       <b-col lg="4" cols="6" class="p-1">' +
+                    '         <b-form-input class="form-control form-control-sm" ' +
+                    '                       v-on:input="debounce(\'calculator.mantissa\', $event)" ' +
+                    '                       :value="calculator.mantissa" ' +
+                    '                       @change="calculatorFunct(1)" ' +
+                    '                       placeholder="Enter mantissa" ' +
+                    '                       :maxlength="calculator.lengthMantissa" ' +
+                    '                       title="Mantisa">' +
+                    '         </b-form-input>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 row m-0 p-0">' +
-                    '       <div class="col-lg-1"></div>' +
-                    '       <div class="col-lg-8 col-12 p-0">' +
-                    '         <div class="col-lg-12 col-12 row m-0 p-0">' +
-                    '           <div class="col-lg-2 col-2 center p-1">' +
-                    '             <span class="fas fa-long-arrow-alt-down p-1"></span>' +
-                    '             <br>' +
-                    '             <span class="h5">' +
-                    '               -1<sup>{{calculator.sign}}</sup>   * ' +
-                    '             </span>' +
-                    '           </div>' +
-                    '           <div class="col-lg-4 col-4 center p-1">' +
-                    '             <span class="fas fa-long-arrow-alt-down p-1"></span>' +
-                    '             <br>' +
-                    '             <span class="h5" v-if="calculator.bits == 32">' +
-                    '               2<sup>{{calculator.exponentDec}}-127</sup>   * ' +
-                    '             </span>' +
-                    '             <span class="h5" v-if="calculator.bits == 64">' +
-                    '               2<sup>{{calculator.exponentDec}}-1023</sup>   * ' +
-                    '             </span>' +
-                    '           </div>' +
-                    '           <div class="col-lg-6 col-6 center p-1">' +
-                    '             <span class="fas fa-long-arrow-alt-down p-1"></span>' +
-                    '             <br>' +
-                    '             <span class="h5">' +
-                    '             {{calculator.mantissaDec}} = ' +
-                    '           </span>' +
-                    '           </div>' +
-                    '         </div>' +
-                    '       </div>' +
-                    '       <div class="col-lg-3 pt-3">' +
+                    '   <b-container fluid align-h="start" class="mx-0 px-0 text-center">' +
+                    '     <b-row cols="4" align-h="start">' +
+                    '       <b-col lg="1" cols="2" offset-lg="1" class="p-1">' +
+                    '         <span class="fas fa-long-arrow-alt-down p-1"></span>' +
+                    '         <br>' +
+                    '         <span class="h5">' +
+                    '           -1<sup>{{calculator.sign}}</sup>   * ' +
+                    '         </span>' +
+                    '       </b-col>' +
+                    '       <b-col lg="3" cols="4" class="p-1">' +
+                    '         <span class="fas fa-long-arrow-alt-down p-1"></span>' +
+                    '         <br>' +
+                    '         <span class="h5" v-if="calculator.bits == 32">' +
+                    '           2<sup>{{calculator.exponentDec}}-127</sup>   * ' +
+                    '         </span>' +
+                    '         <span class="h5" v-if="calculator.bits == 64">' +
+                    '           2<sup>{{calculator.exponentDec}}-1023</sup>   * ' +
+                    '         </span>' +
+                    '       </b-col>' +
+                    '       <b-col lg="4" cols="6" class="p-1">' +
+                    '         <span class="fas fa-long-arrow-alt-down p-1"></span>' +
+                    '         <br>' +
+                    '         <span class="h5">' +
+                    '           {{calculator.mantissaDec}} = ' +
+                    '         </span>' +
+                    '       </b-col>' +
+                    '       <b-col lg="3" cols="12" class="pt-3">' +
                     '         <b-form-input class="form-control form-control-sm" ' +
                     '                       v-on:input="debounce(\'calculator.decimal\', $event)" ' +
                     '                       :value="calculator.decimal" ' +
@@ -449,13 +444,17 @@
                     '                       placeholder="Enter decimal number" ' +
                     '                       title="Decimal">' +
                     '         </b-form-input>' +
-                    '       </div>' +
-                    '     </div>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
                     ' ' +
-                    '     <div class="col-lg-12 col-12 pt-2">' +
-                    '       <b-button class="btn btn-sm btn-block" variant="primary">Convert</b-button>' +
-                    '     </div>' +
-                    '   </div>' +
+                    '   <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '     <b-row cols="1" align-h="center">' +
+                    '       <b-col class="pt-2">' +
+                    '         <b-button class="btn btn-sm btn-block" variant="primary">Convert</b-button>' +
+                    '       </b-col>' +
+                    '     </b-row>' +
+                    '   </b-container>' +
                     ' </b-modal>'
   
   }

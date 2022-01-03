@@ -150,20 +150,20 @@
                 ' ' +
                 '   <b-list-group>' +
                 '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
-                '        <label for="range-1">Execution Speed:</label>' +
+                '       <label for="range-1">Execution Speed:</label>' +
                 '       <b-input-group>' +
                 '         <b-input-group-prepend>' +
                 '           <b-btn variant="outline-secondary" @click="change_execution_speed(-5)">-</b-btn>' +
                 '         </b-input-group-prepend>' +
-                '          <b-form-input id="range-1"' +
-                '                        v-model="instructions_packed" ' +
-                '                        @change="change_execution_speed(0)" ' +
-                '                        type="range" ' +
-                '                        min="1" ' +
-                '                        max="101" ' +
-                '                        step="5" ' +
-                '                        title="Execution Speed">' +
-                '          </b-form-input>' +
+                '         <b-form-input id="range-1"' +
+                '                       v-model="instructions_packed" ' +
+                '                       @change="change_execution_speed(0)" ' +
+                '                       type="range" ' +
+                '                       min="1" ' +
+                '                       max="101" ' +
+                '                       step="5" ' +
+                '                       title="Execution Speed">' +
+                '         </b-form-input>' +
                 '         <b-input-group-append>' +
                 '           <b-btn variant="outline-secondary" @click="change_execution_speed(5)">+</b-btn>' +
                 '         </b-input-group-append>' +
@@ -171,76 +171,76 @@
                 '     </b-list-group-item>' +
                 ' ' +
                 '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
-                '        <label for="range-2">Execution Autoscroll:</label>' +
-                '        <b-form-checkbox id="range-2"' +
-                '                         v-model="autoscroll" ' +
-                '                         name="check-button" ' +
-                '                         switch ' +
-                '                         size="lg" ' +
-                '                         @change="change_autoscroll">' +
-                '        </b-form-checkbox>' +
+                '       <label for="range-2">Execution Autoscroll:</label>' +
+                '       <b-form-checkbox id="range-2"' +
+                '                        v-model="autoscroll" ' +
+                '                        name="check-button" ' +
+                '                        switch ' +
+                '                        size="lg" ' +
+                '                        @change="change_autoscroll">' +
+                '       </b-form-checkbox>' +
                 '     </b-list-group-item>' +
                 ' ' +
                 '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
-                '        <label for="range-3">Notification Time:</label>' +
+                '       <label for="range-3">Notification Time:</label>' +
                 '       <b-input-group>' +
-                '          <b-input-group-prepend>' +
-                '            <b-btn variant="outline-secondary" @click="change_notification_time(-20)">-</b-btn>' +
-                '          </b-input-group-prepend>' +
-                '          <b-form-input id="range-3"' +
-                '                        v-model="notification_time" ' +
-                '                        @change="change_notification_time(0)" ' +
-                '                        type="range" ' +
-                '                        min="1000" ' +
-                '                        max="3500" ' +
-                '                        step="10" ' +
-                '                        title="Notification Time">' +
-                '          </b-form-input>' +
-                '          <b-input-group-append>' +
-                '            <b-btn variant="outline-secondary" @click="change_notification_time(20)">+</b-btn>' +
-                '          </b-input-group-append>' +
+                '         <b-input-group-prepend>' +
+                '           <b-btn variant="outline-secondary" @click="change_notification_time(-20)">-</b-btn>' +
+                '         </b-input-group-prepend>' +
+                '         <b-form-input id="range-3"' +
+                '                       v-model="notification_time" ' +
+                '                       @change="change_notification_time(0)" ' +
+                '                       type="range" ' +
+                '                       min="1000" ' +
+                '                       max="3500" ' +
+                '                       step="10" ' +
+                '                       title="Notification Time">' +
+                '         </b-form-input>' +
+                '         <b-input-group-append>' +
+                '           <b-btn variant="outline-secondary" @click="change_notification_time(20)">+</b-btn>' +
+                '         </b-input-group-append>' +
                 '       </b-input-group>' +
                 '     </b-list-group-item>' +
                 ' ' +
-                '      <!--<b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
-                '        <label for="range-4">Font Size:</label>' +
-                '        <b-input-group>' +
-                '          <b-input-group-prepend>' +
-                '            <b-btn variant="outline-secondary" @click="change_font_size(-1)">-</b-btn>' +
-                '          </b-input-group-prepend>' +
-                '          <b-form-input id="range-4"' +
-                '                        v-model="fontSize" ' +
-                '                        @change="change_font_size(0)" ' +
-                '                        type="range" ' +
-                '                        min="8" ' +
-                '                        max="48" ' +
-                '                        step="1" ' +
-                '                        title="Font Size"> ' +
-                '          </b-form-input>' +
-                '          <b-input-group-append>' +
-                '            <b-btn variant="outline-secondary" @click="change_font_size(1)">+</b-btn>' +
-                '          </b-input-group-append>' +
-                '        </b-input-group>' +
-                '      </b-list-group-item>-->' +
+                /*'     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                '       <label for="range-4">Font Size:</label>' +
+                '       <b-input-group>' +
+                '         <b-input-group-prepend>' +
+                '           <b-btn variant="outline-secondary" @click="change_font_size(-1)">-</b-btn>' +
+                '         </b-input-group-prepend>' +
+                '         <b-form-input id="range-4"' +
+                '                       v-model="fontSize" ' +
+                '                       @change="change_font_size(0)" ' +
+                '                       type="range" ' +
+                '                       min="8" ' +
+                '                       max="48" ' +
+                '                       step="1" ' +
+                '                       title="Font Size"> ' +
+                '         </b-form-input>' +
+                '         <b-input-group-append>' +
+                '           <b-btn variant="outline-secondary" @click="change_font_size(1)">+</b-btn>' +
+                '         </b-input-group-append>' +
+                '       </b-input-group>' +
+                '     </b-list-group-item>' +*/
                 ' ' +
                 '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
-                '        <label for="range-5">Dark Mode:</label>' +
-                '        <b-form-checkbox id="range-5"' +
-                '                         name="check-button"' +
-                '                         switch size="lg"' +
-                '                         v-model="dark" ' +
-                '                         @change="change_dark_mode">' +
-                '        </b-form-checkbox>' + //TODO: vue bidirectional updates' +
+                '       <label for="range-5">Dark Mode:</label>' +
+                '       <b-form-checkbox id="range-5"' +
+                '                        name="check-button"' +
+                '                        switch size="lg"' +
+                '                        v-model="dark" ' +
+                '                        @change="change_dark_mode">' +
+                '       </b-form-checkbox>' + //TODO: vue bidirectional updates' +
                 '     </b-list-group-item>' +
                 ' ' +
                 '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
-                '        <label for="range-6">Debug:</label>' +
-                '        <b-form-checkbox id="range-6"' +
-                '                         v-model="c_debug"' +
-                '                         name="check-button"' +
-                '                         switch size="lg"' +
-                '                         @change="change_debug_mode">' +
-                '        </b-form-checkbox>' + //TODO: vue bidirectional updates' +
+                '       <label for="range-6">Debug:</label>' +
+                '       <b-form-checkbox id="range-6"' +
+                '                        v-model="c_debug"' +
+                '                        name="check-button"' +
+                '                        switch size="lg"' +
+                '                        @change="change_debug_mode">' +
+                '       </b-form-checkbox>' + //TODO: vue bidirectional updates' +
                 '     </b-list-group-item>' +
                 '   </b-list-group>' +
                 ' ' +

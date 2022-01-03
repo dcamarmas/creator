@@ -158,20 +158,21 @@
           <b-row>
             <b-col>
 
+
               <!-- Navbar -->
               <uielto-toolbar id="navbar_load_architecture" components=" | | | btn_configuration,btn_information">
               </uielto-toolbar>
           
 
               <!-- Architecture menu -->
-              <div class="col-lg-12 col-sm-12" id="load_menu_arch">
-                <div class="col-lg-12 col-sm-12 row p-0 m-0">
+              <b-container fluid align-h="center" class="mx-0 px-1" id="load_menu_arch">
+                <b-row>
+                  <b-col>
 
-                  <div class="col-lg-1 col-sm-1"></div>
-                  <div class="col-lg-10 col-sm-10">
                     <b-list-group>
                       <b-list-group-item>
 
+                        <!-- Preload architecture card -->
                         <preload-architecture :arch_available="arch_available"
                                               :back_card="back_card">
                         </preload-architecture>
@@ -185,26 +186,21 @@
                       </b-list-group-item>
                     </b-list-group>
 
-
-                    <!-- Architecture selector modals -->
-
-                    <!-- Delete architecture modal -->
-                    <delete-architecture  id="modalDeletArch"
-                                          :index="modalDeletArchIndex">                      
-                    </delete-architecture>
-
-                  </div>
-
-                  <div class="col-lg-1 col-sm-1"></div>
-                </div>
-                <br>
+                  </b-col>
+                </b-row>
+              </b-container>
 
 
-                <!-- Backup modal -->
-                <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
+              <!-- Architecture selector modals -->
 
-              </div>
-              
+              <!-- Delete architecture modal -->
+              <delete-architecture  id="modalDeletArch"
+                                    :index="modalDeletArchIndex">                      
+              </delete-architecture>
+
+              <!-- Backup modal -->
+              <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
+
             </b-col>
           </b-row>
         </b-container>
@@ -237,202 +233,204 @@
 
 
               <!-- Architecture information -->
-              <div class="contenedor menu row">
+              <b-container fluid align-h="center" class="mx-0 px-0">
+                <b-row>
+                  <b-col class="menu" id="view_components">
 
-                <!-- Architecture components -->
-                <div class="col-lg-12 col-sm-12" id="view_components">
-                  <b-tabs>
+                    <b-tabs>
 
-                    <!-- Memory layout -->
-                    <b-tab title="Memory Layout" active>
-                      
-                      <memory-layout  :memory_layout="architecture.memory_layout">       
-                      </memory-layout>
+                      <!-- Memory layout -->
+                      <b-tab title="Memory Layout" active>
+                        
+                        <memory-layout  :memory_layout="architecture.memory_layout">       
+                        </memory-layout>
 
-                      <!-- Memory layout modals -->
+                        <!-- Memory layout modals -->
 
-                      <!-- Edit memory layout -->
-                      <memory-layout-edit id="change_memory_layout"></memory-layout-edit>
+                        <!-- Edit memory layout -->
+                        <memory-layout-edit id="change_memory_layout"></memory-layout-edit>
 
-                      <!-- Reset memory layout -->
-                      <memory-layout-reset id="reset_memory_layout"
-                                           :architecture_name="architecture_name">
-                      </memory-layout-reset>
+                        <!-- Reset memory layout -->
+                        <memory-layout-reset id="reset_memory_layout"
+                                             :architecture_name="architecture_name">
+                        </memory-layout-reset>
 
-                    </b-tab>
-
-
-                    <!-- Register File -->
-                    <b-tab title="Register File" :disabled="advanced_mode" v-if="!advanced_mode">
-
-                      <register-file-arch   :register_file="architecture.components"
-                                            :bits="number_bits">
-                      </register-file-arch>
-
-                      <!-- Register File modals -->
-
-                      <!-- New register file form-->
-                      <register-file-new id="new_register_file"></register-file-new>
-
-                      <!-- Reset Register File -->
-                      <register-file-reset  id="reset_register_file"
-                                            :architecture_name="architecture_name">
-                      </register-file-reset>
-
-                      <!-- Register File edit form-->
-                      <register-file-edit id="edit_register_file"
-                                          :title="modalEditComponent.title"
-                                          :element="modalEditComponent.element"
-                                          :name="modalEditComponent.name">
-                      </register-file-edit>
-
-                      <!-- Delete Register File -->
-                      <register-file-delete id="delete_register_file"
-                                            :title="modalDeletComp.title"
-                                            :element="modalDeletComp.element">
-                      </register-file-delete>
+                      </b-tab>
 
 
-                      <!-- Registers modals -->
+                      <!-- Register File -->
+                      <b-tab title="Register File" :disabled="advanced_mode" v-if="!advanced_mode">
 
-                      <!-- New register -->
-                      <registers-new id="new_register"
-                                    :element="modalNewElement.element"
-                                    :type="modalNewElement.type"
-                                    :double_precision="modalNewElement.double_precision"
-                                    :reg_id="modalNewElement.id"
-                                    :simple_reg="simple_reg"
-                                    :bits="number_bits">
-                      </registers-new>
+                        <register-file-arch   :register_file="architecture.components"
+                                              :bits="number_bits">
+                        </register-file-arch>
 
-                      <!-- Edit register -->
-                      <registers-edit id="edit_register"
-                                      :element="modalEditElement.element"
-                                      :type="modalEditElement.type"
-                                      :double_precision="modalEditElement.double_precision"
-                                      :reg_id="modalEditElement.reg_id"
-                                      :name="modalEditElement.name"
-                                      :def_value="modalEditElement.defValue"
-                                      :properties="modalEditElement.properties"
-                                      :precision="modalEditElement.precision"
+                        <!-- Register File modals -->
+
+                        <!-- New register file form-->
+                        <register-file-new id="new_register_file"></register-file-new>
+
+                        <!-- Reset Register File -->
+                        <register-file-reset  id="reset_register_file"
+                                              :architecture_name="architecture_name">
+                        </register-file-reset>
+
+                        <!-- Register File edit form-->
+                        <register-file-edit id="edit_register_file"
+                                            :title="modalEditComponent.title"
+                                            :element="modalEditComponent.element"
+                                            :name="modalEditComponent.name">
+                        </register-file-edit>
+
+                        <!-- Delete Register File -->
+                        <register-file-delete id="delete_register_file"
+                                              :title="modalDeletComp.title"
+                                              :element="modalDeletComp.element">
+                        </register-file-delete>
+
+
+                        <!-- Registers modals -->
+
+                        <!-- New register -->
+                        <registers-new id="new_register"
+                                      :element="modalNewElement.element"
+                                      :type="modalNewElement.type"
+                                      :double_precision="modalNewElement.double_precision"
+                                      :reg_id="modalNewElement.id"
                                       :simple_reg="simple_reg"
-                                      :simple_1="modalEditElement.simple1"
-                                      :simple_2="modalEditElement.simple2">
-                      </registers-edit>
+                                      :bits="number_bits">
+                        </registers-new>
 
-                      <!-- Delete register -->
-                      <registers-delete  id="delete_register"
-                                        :title="modalDeletElement.title"
-                                        :element="modalDeletElement.element">
-                      </registers-delete>
+                        <!-- Edit register -->
+                        <registers-edit id="edit_register"
+                                        :element="modalEditElement.element"
+                                        :type="modalEditElement.type"
+                                        :double_precision="modalEditElement.double_precision"
+                                        :reg_id="modalEditElement.reg_id"
+                                        :name="modalEditElement.name"
+                                        :def_value="modalEditElement.defValue"
+                                        :properties="modalEditElement.properties"
+                                        :precision="modalEditElement.precision"
+                                        :simple_reg="simple_reg"
+                                        :simple_1="modalEditElement.simple1"
+                                        :simple_2="modalEditElement.simple2">
+                        </registers-edit>
 
-                    </b-tab>
+                        <!-- Delete register -->
+                        <registers-delete  id="delete_register"
+                                          :title="modalDeletElement.title"
+                                          :element="modalDeletElement.element">
+                        </registers-delete>
+
+                      </b-tab>
 
 
-                    <!-- Instruction definition -->
-                    <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
-                      
-                      <instructions :instructions="architecture.instructions"></instructions>
+                      <!-- Instruction definition -->
+                      <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                        
+                        <instructions :instructions="architecture.instructions"></instructions>
 
-                      <!-- Instructions modals -->
+                        <!-- Instructions modals -->
 
-                      <!-- Intruction fields-->
-                      <instructions-fields  id="fields_instructions"
-                                            :title="modalViewFields.title"
+                        <!-- Intruction fields-->
+                        <instructions-fields  id="fields_instructions"
+                                              :title="modalViewFields.title"
+                                              :instruction="formInstruction">
+                        </instructions-fields>
+
+                        <!-- New Intruction -->
+                        <instructions-new id="new_instructions"></instructions-new>
+
+                        <!-- Reset Intructions -->
+                        <instructions-reset id="reset_instructions"
+                                            :architecture_name="architecture_name">
+                        </instructions-reset>
+
+                        <!-- Edit Intructions -->
+                        <instructions-edit  id="edit_instructions"
+                                            :element="modalEditInst"
                                             :instruction="formInstruction">
-                      </instructions-fields>
+                        </instructions-edit>
 
-                      <!-- New Intruction -->
-                      <instructions-new id="new_instructions"></instructions-new>
+                        <!-- Delete instruction -->
+                        <instructions-delete  id="delete_instructions"
+                                              :intruction="modalDeletInst.index">
+                        </instructions-delete>
 
-                      <!-- Reset Intructions -->
-                      <instructions-reset id="reset_instructions"
-                                          :architecture_name="architecture_name">
-                      </instructions-reset>
-
-                      <!-- Edit Intructions -->
-                      <instructions-edit  id="edit_instructions"
-                                          :element="modalEditInst"
-                                          :instruction="formInstruction">
-                      </instructions-edit>
-
-                      <!-- Delete instruction -->
-                      <instructions-delete  id="delete_instructions"
-                                            :intruction="modalDeletInst.index">
-                      </instructions-delete>
-
-                    </b-tab>
+                      </b-tab>
 
 
-                    <!-- Pseudoinstruction definition -->
-                    <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
-                      
-                      <pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions"></pseudoinstructions>
+                      <!-- Pseudoinstruction definition -->
+                      <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                        
+                        <pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions"></pseudoinstructions>
 
-                      <!-- Pseudoinstructions modals -->
+                        <!-- Pseudoinstructions modals -->
 
-                      <!-- Pseudontruction fields-->
-                      <pseudoinstructions-fields  id="fields_pseudoinstructions"
-                                                  :title="modalViewPseudoFields.title"
+                        <!-- Pseudontruction fields-->
+                        <pseudoinstructions-fields  id="fields_pseudoinstructions"
+                                                    :title="modalViewPseudoFields.title"
+                                                    :pseudoinstruction="formPseudoinstruction">
+                        </pseudoinstructions-fields>
+
+                        <!-- New Pseudontruction -->
+                        <pseudoinstructions-new id="new_pseudoinstructions"></pseudoinstructions-new>
+
+                        <!-- Reset Pseudointructions -->
+                        <pseudoinstructions-reset id="reset_pseudoinstructions"
+                                                  :architecture_name="architecture_name">
+                        </pseudoinstructions-reset>
+
+                        <!-- Edit Pseudointructions -->
+                        <pseudoinstructions-edit  id="edit_pseudoinstructions"
+                                                  :element="modalEditPseudoinst"
                                                   :pseudoinstruction="formPseudoinstruction">
-                      </pseudoinstructions-fields>
+                        </pseudoinstructions-edit>
 
-                      <!-- New Pseudontruction -->
-                      <pseudoinstructions-new id="new_pseudoinstructions"></pseudoinstructions-new>
+                        <!-- Delete Pseudoinstruction -->
+                        <pseudoinstructions-delete  id="delete_pseudoinstructions"
+                                                    :pseudoinstruction="modalDeletPseudoinst.index">
+                        </pseudoinstructions-delete>
 
-                      <!-- Reset Pseudointructions -->
-                      <pseudoinstructions-reset id="reset_pseudoinstructions"
-                                                :architecture_name="architecture_name">
-                      </pseudoinstructions-reset>
-
-                      <!-- Edit Pseudointructions -->
-                      <pseudoinstructions-edit  id="edit_pseudoinstructions"
-                                                :element="modalEditPseudoinst"
-                                                :pseudoinstruction="formPseudoinstruction">
-                      </pseudoinstructions-edit>
-
-                      <!-- Delete Pseudoinstruction -->
-                      <pseudoinstructions-delete  id="delete_pseudoinstructions"
-                                                  :pseudoinstruction="modalDeletPseudoinst.index">
-                      </pseudoinstructions-delete>
-
-                    </b-tab>
+                      </b-tab>
 
 
-                    <!-- Directives definition -->
-                    <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                      <!-- Directives definition -->
+                      <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
 
-                      <directives :directives="architecture.directives"></directives>
+                        <directives :directives="architecture.directives"></directives>
 
-                      <!-- Directives modals -->
+                        <!-- Directives modals -->
 
-                      <!-- New directive -->
-                      <directives-new id="new_directive"></directives-new>
+                        <!-- New directive -->
+                        <directives-new id="new_directive"></directives-new>
 
-                      <!-- Reset directives -->
-                      <directives-reset id="reset_directives"
-                                        :architecture_name="architecture_name">
-                      </directives-reset>
+                        <!-- Reset directives -->
+                        <directives-reset id="reset_directives"
+                                          :architecture_name="architecture_name">
+                        </directives-reset>
 
-                      <!-- Edit directive -->
-                      <directives-edit  id="edit_directive"
-                                        :title="modalEditDirective.title"
-                                        :element="modalEditDirective.element"
-                                        :name="modalEditDirective.name"
-                                        :action="modalEditDirective.action"
-                                        :size="modalEditDirective.size">
-                      </directives-edit>
+                        <!-- Edit directive -->
+                        <directives-edit  id="edit_directive"
+                                          :title="modalEditDirective.title"
+                                          :element="modalEditDirective.element"
+                                          :name="modalEditDirective.name"
+                                          :action="modalEditDirective.action"
+                                          :size="modalEditDirective.size">
+                        </directives-edit>
 
-                      <!-- Delete directive -->
-                      <directives-delete  id="delete_directive"
-                                          :title="modalDeletDir.title"
-                                          :element="modalDeletDir.element">
-                      </directives-delete>
+                        <!-- Delete directive -->
+                        <directives-delete  id="delete_directive"
+                                            :title="modalDeletDir.title"
+                                            :element="modalDeletDir.element">
+                        </directives-delete>
 
-                    </b-tab>
-                  </b-tabs>
-                </div>
-              </div>
+                      </b-tab>
+                    </b-tabs>
+
+                  </b-col>
+                </b-row>
+              </b-container>
 
             </b-col>
           </b-row>
@@ -477,12 +475,23 @@
               <save-library id="save_binary"></save-library>
 
 
+              <b-container fluid align-h="center" class="mx-0 px-0">
+                <b-row cols="2">
+                  <b-col cols="12" id="divAssembly">
 
-              <!-- Assembly textarea and library tags-->
-              <div class="contenedor row">
-                <textarea-assembly :browser="browser"></textarea-assembly>
-                <list-libray-tags :instructions_tag="update_binary.instructions_tag"></list-libray-tags>
-              </div>
+                    <!-- Assembly textarea-->
+                    <textarea-assembly :browser="browser"></textarea-assembly>
+
+                  </b-col>
+
+                  <b-col cols="0" id="divTags" class="d-none">
+
+                    <!-- Library tags-->
+                    <list-libray-tags :instructions_tag="update_binary.instructions_tag"></list-libray-tags>
+
+                  </b-col>
+                </b-row>
+              </b-container>
 
 
               <!-- Compile error modal -->
@@ -530,14 +539,18 @@
 
 
 
-              <b-container fluid align-h="center" class="mx-0">
-                <b-row>
+              <b-container fluid align-h="center" class="mx-0 px-0">
+                <b-row align-h="center">
 
                   <!-- Execution instruction -->
-                  <table-execution :instructions="instructions" :enter="enter"></table-execution>
+                  <b-col lg="7" cols="12">
+
+                    <table-execution :instructions="instructions" :enter="enter"></table-execution>
+
+                  </b-col>
 
                   <!-- Execution data -->
-                  <div class="col-rt-4 col-xl-5 col-lg-6 col-sm-12">
+                  <b-col lg="5" cols="12">
 
                     <!-- View selector -->
                     <data-view-selector :name_reg="name_reg" 
@@ -547,63 +560,59 @@
 
 
                     <!-- Registers view -->
-                    <register-file  :data_mode="data_mode"
-                                    :register_type="register_type">                  
+                    <register-file  id="register_file"
+                                    :data_mode="data_mode"
+                                    :register_type="register_type"
+                                    v-if="data_mode == 'registers'">                  
                     </register-file>
 
 
                     <!-- Memory view-->
-                    <div class="col-lg-12 col-sm-12 mx-0 px-0" id="memory" v-if="data_mode == 'memory'">
-
-                      <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >
-                        <b-form-radio-group
-                          id="btn-radios-1"
-                          class="w-50 px-0"
-                          v-model="mem_representation"
-                          :options="mem_representation_options"
-                          button-variant="outline-secondary"
-                          size="sm"
-                          :aria-describedby="ariaDescribedby"
-                          name="radios-btn-default"
-                          buttons
-                        ></b-form-radio-group>
-                      </b-form-group>
-
-                      <table-mem :main_memory="main_memory"
-                                 :memory_segment="mem_representation"
-                                 :track_stack_names="track_stack_names" 
-                                 :callee_subrutine="callee_subrutine" 
-                                 :caller_subrutine="caller_subrutine">
-                      </table-mem>
-
-                    </div>
+                    <memory id="memory"
+                            :main_memory="main_memory"
+                            :track_stack_names="track_stack_names" 
+                            :callee_subrutine="callee_subrutine" 
+                            :caller_subrutine="caller_subrutine"
+                            v-if="data_mode == 'memory'">
+                    </memory>
 
 
                     <!-- Stats view--->
-                    <stats  :data_mode="data_mode" 
+                    <stats  id="stats" 
+                            :data_mode="data_mode" 
                             :stats="stats" 
-                            :stats_value="stats_value">  
+                            :stats_value="stats_value"
+                            v-if="data_mode == 'stats'">  
                     </stats>
 
-                  </div>
+                  </b-col>
 
 
                   <!-- Monitor & keyboard -->
-                  <div class="col-rt-4 col-xl-12 col-lg-12 col-sm-12 row pr-0">
+                  <b-col lg="12" cols="12">
 
-                    <!-- Monitor -->
-                    <monitor :display="display"></monitor>
+                    <b-container fluid align-h="center" class="mx-0 px-0" id="simulator" v-if="creator_mode == 'simulator'">
+                      <b-row cols-xl="2" cols-lg="2" cols-md="1" cols-sm="1" cols-xs="1" cols="1">
+                        <b-col>
+                          <!-- Monitor -->
+                          <monitor :display="display"></monitor>
+                        </b-col>
 
-                    <!-- Keyboard -->
-                    <keyboard :keyboard="keyboard" :enter="enter"></keyboard>
-
-                  <div class="col-lg-6 col-sm-12 my-2 mx-0"></div>
+                        <b-col>
+                          <!-- Keyboard -->
+                          <keyboard :keyboard="keyboard" :enter="enter"></keyboard>
+                        </b-col>
+            
+                      </b-col>
+                    </b-row>
+                  </b-container>
 
                 </b-row>
               </b-container>
 
-            <b-col>
-          <b-row>
+
+            </b-col>
+          </b-row>
         </b-container>
 
       </template>

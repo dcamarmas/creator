@@ -73,25 +73,27 @@
                     },
 
         template:   '<b-modal :id="id" hide-footer hide-header size="sm" centered>' +
-                    '  <div>' +
-                    '    <span class="h6">A backup is available</span>' +
-                    '    <br>' +
-                    '    <span class="h6">Date: {{date_copy}}</span>' +
-                    '    <div class="col-lg-12 col-sm-12 row m-0">' +
-                    '      <div class="col-lg-6 col-sm-6 pb-1">' +
+                    '  <span class="h6">A backup is available</span>' +
+                    '  <br>' +
+                    '  <span class="h6">Date: {{date_copy}}</span>' +
+                    ' ' +
+                    '  <b-container fluid align-h="center" class="mx-0 px-0">' +
+                    '    <b-row cols-xl="2" cols-lg="2" cols-md="2" cols-sm="1" cols-xs="1" cols="1" align-h="center">' +
+                    '      <b-col>' +
                     '        <b-button class="btn btn-outline-danger btn-block btn-sm buttonBackground" ' +
                     '                  @click="remove_copy">' +
                     '          Discard' +
                     '        </b-button>' +
-                    '      </div>' +
-                    '      <div class="col-lg-6 col-sm-6 pb-1">' +
+                    '      </b-col>' +
+                    ' ' +
+                    '      <b-col>' +
                     '        <b-button class="btn btn-outline-primary btn-block btn-sm buttonBackground" ' +
                     '                  @click="load_copy">' +
                     '          Load' +
                     '        </b-button>' +
-                    '      </div>' +
-                    '    </div>' +
-                    '  </div>' +
+                    '      </b-col>' +
+                    '    </b-row>' +
+                    '  </b-container>' +
                     '</b-modal>'
       
         }

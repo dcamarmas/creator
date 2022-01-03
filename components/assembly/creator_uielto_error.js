@@ -34,46 +34,50 @@
                     '          :ref="ref"' +
                     '          hide-footer' +
                     '          size="lg">' +
-                    '   <div>' +
-                    '     <span class="h6 font-weight-light">Code fragment:</span>' +
-                    '     <div class="errorAssembly">' +
-                    '       <span class="h6 text-monospace" label="Code fragment:">' +
-                    '         <b-container>' +
-                    '         <b-row>' +
-                    '         <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '         <b-col class="px-2"         >...</b-col>' +
-                    '         <b-col class="pl-2" cols="10">&nbsp;</b-col>' +
-                    '         </b-row>' +
-                    '         <b-row>' +
-                    '         <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '         <b-col class="px-2"         >{{modal_assembly_error.line1}}</b-col>' +
-                    '         <b-col class="pl-2" cols="10">{{modal_assembly_error.code1}}</b-col>' +
-                    '         </b-row>' +
-                    '         <b-row>' +
-                    '         <b-col class="px-0"         >*</b-col>' +
-                    '         <b-col class="px-2"         >{{modal_assembly_error.line2}}</b-col>' +
-                    '         <b-col class="pl-2" cols="10">{{modal_assembly_error.code2}}</b-col>' +
-                    '         </b-row>' +
-                    '         <b-row>' +
-                    '         <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '         <b-col class="px-2"         >{{modal_assembly_error.line3}}</b-col>' +
-                    '         <b-col class="pl-2" cols="10">{{modal_assembly_error.code3}}</b-col>' +
-                    '         </b-row>' +
-                    '         <b-row>' +
-                    '         <b-col class="px-0"         >&nbsp;</b-col>' +
-                    '         <b-col class="px-2"         >...</b-col>' +
-                    '         <b-col class="pl-2" cols="10">&nbsp;</b-col>' +
-                    '         </b-row>' +
-                    '         </b-container>' +
-                    '       </span>' +
-                    '     </div>' +
-                    '     <br>' +
                     ' ' +
-                    '     <span class="h6 font-weight-light">Error description:</span>' +
-                    '     <br>' +
-                    '     <span class="h6">{{modal_assembly_error.error}}</span>' +
-                    '     <br>' +
+                    '   <span class="h6 font-weight-light">Code fragment:</span>' +
+                    ' ' +
+                    '   <div class="errorAssembly">' +
+                    '     <span class="h6 text-monospace" label="Code fragment:">' +
+                    '       <b-container>' +
+                    '         <b-row>' +
+                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
+                    '           <b-col class="px-2"         >...</b-col>' +
+                    '           <b-col class="pl-2" cols="10">&nbsp;</b-col>' +
+                    '         </b-row>' +
+                    ' ' +
+                    '         <b-row>' +
+                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
+                    '           <b-col class="px-2"         >{{modal_assembly_error.line1}}</b-col>' +
+                    '           <b-col class="pl-2" cols="10">{{modal_assembly_error.code1}}</b-col>' +
+                    '         </b-row>' +
+                    ' ' +
+                    '         <b-row>' +
+                    '           <b-col class="px-0"         >*</b-col>' +
+                    '           <b-col class="px-2"         >{{modal_assembly_error.line2}}</b-col>' +
+                    '           <b-col class="pl-2" cols="10">{{modal_assembly_error.code2}}</b-col>' +
+                    '         </b-row>' +
+                    ' ' +
+                    '         <b-row>' +
+                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
+                    '           <b-col class="px-2"         >{{modal_assembly_error.line3}}</b-col>' +
+                    '           <b-col class="pl-2" cols="10">{{modal_assembly_error.code3}}</b-col>' +
+                    '         </b-row>' +
+                    ' ' +
+                    '         <b-row>' +
+                    '           <b-col class="px-0"         >&nbsp;</b-col>' +
+                    '           <b-col class="px-2"         >...</b-col>' +
+                    '           <b-col class="pl-2" cols="10">&nbsp;</b-col>' +
+                    '         </b-row>' +
+                    '       </b-container>' +
+                    '     </span>' +
                     '   </div>' +
+                    '   <br>' +
+                    ' ' +
+                    '   <span class="h6 font-weight-light">Error description:</span>' +
+                    '   <br>' +
+                    '   <span class="h6">{{modal_assembly_error.error}}</span>' +
+                    '   <br>' +
                     ' </b-modal>'
   }
 

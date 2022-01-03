@@ -71,95 +71,94 @@
                 
               },
 
-  template:   ' <div class="col-rt-4 col-xl-7 col-lg-6 col-sm-12 px-0">' +
-              '   <b-container fluid align-h="between" class="mx-0 px-1">' +
-              '     <b-row cols="1" >' +
-              '       <b-col align-h="center">' +
+  template:   
+              ' <b-container fluid align-h="between" class="mx-0 px-1">' +
+              '   <b-row cols="1" >' +
+              '     <b-col align-h="center">' +
               ' ' +
-              '         <b-table id="inst_table" ' +
-              '                  sticky-header ' +
-              '                  striped ' +
-              '                  small ' +
-              '                  hover ' +
-              '                  :items="instructions" ' +
-              '                  :fields="archInstructions" ' +
-              '                  class="instructions_table responsive" ' +
-              '                  @row-clicked="breakPoint" ' +
-              '                  :filter-function=filter ' +
-              '                  filter=" " ' +
-              '                  primary-key="Address">' +
+              '       <b-table id="inst_table" ' +
+              '                sticky-header ' +
+              '                striped ' +
+              '                small ' +
+              '                hover ' +
+              '                :items="instructions" ' +
+              '                :fields="archInstructions" ' +
+              '                class="instructions_table responsive" ' +
+              '                @row-clicked="breakPoint" ' +
+              '                :filter-function=filter ' +
+              '                filter=" " ' +
+              '                primary-key="Address">' +
               ' ' +
-              '          <!-- Change the title of each column -->' +
-              '           <template v-slot:head(userInstructions)="row">' +
-              '             User Instruction' +
-              '          </template>' +
+              '         <!-- Change the title of each column -->' +
+              '         <template v-slot:head(userInstructions)="row">' +
+              '           User Instruction' +
+              '         </template>' +
               ' ' +
-              '           <template v-slot:head(loadedInstructions)="row">' +
-              '             Loaded Instructions' +
-              '          </template>' +
+              '         <template v-slot:head(loadedInstructions)="row">' +
+              '           Loaded Instructions' +
+              '         </template>' +
               ' ' +
-              '           <template v-slot:head(tag)="row">' +
-              '            &nbsp;' +
-              '           </template>' +
+              '         <template v-slot:head(tag)="row">' +
+              '          &nbsp;' +
+              '         </template>' +
               ' ' +
-              '           <!-- For each instruction -->' +
-              '          <template v-slot:cell(Break)="row">' +
-              '             <div class="break" :id="row.index">' +
-              '               <br v-if="row.item.Break == null">' +
-              '              <b-img alt="Break" ' +
-              '                      src="./images/stop_classic.gif" ' +
-              '                      class="shadow breakPoint" ' +
-              '                     rounded="circle" ' +
-              '                      v-if="row.item.Break == true">' +
-              '               </b-img>' +
-              '             </div>' +
-              '          </template>' +
+              '         <!-- For each instruction -->' +
+              '         <template v-slot:cell(Break)="row">' +
+              '           <div class="break" :id="row.index">' +
+              '             <br v-if="row.item.Break == null">' +
+              '             <b-img alt="Break" ' +
+              '                    src="./images/stop_classic.gif" ' +
+              '                    class="shadow breakPoint" ' +
+              '                    rounded="circle" ' +
+              '                    v-if="row.item.Break == true">' +
+              '             </b-img>' +
+              '           </div>' +
+              '         </template>' +
               ' ' +
-              '           <template v-slot:cell(Address)="row">' +
-              '             <span class="h6">{{row.item.Address}}</span>' +
-              '           </template>' +
+              '         <template v-slot:cell(Address)="row">' +
+              '           <span class="h6">{{row.item.Address}}</span>' +
+              '         </template>' +
               ' ' +
-              '           <template v-slot:cell(Label)="row">' +
-              '             <b-badge pill variant="info">{{row.item.Label}}</b-badge>' +
-              '          </template>' +
+              '         <template v-slot:cell(Label)="row">' +
+              '           <b-badge pill variant="info">{{row.item.Label}}</b-badge>' +
+              '         </template>' +
               ' ' +
-              '          <template v-slot:cell(userInstructions)="row">' +
-              '            <span class="h6" v-if="row.item.visible == true">{{row.item.user}}</span>' +
-              '             <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
-              '           </template>' +
+              '         <template v-slot:cell(userInstructions)="row">' +
+              '           <span class="h6" v-if="row.item.visible == true">{{row.item.user}}</span>' +
+              '           <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
+              '         </template>' +
               ' ' +
-              '          <template v-slot:cell(loadedInstructions)="row">' +
-              '             <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
-              '             <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
-              '           </template> ' +
+              '         <template v-slot:cell(loadedInstructions)="row">' +
+              '           <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
+              '           <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
+              '         </template> ' +
               ' ' +
-              '           <template v-slot:cell(tag)="row">' +
-              '            <b-badge variant="info" ' +
-              '                      class="border border-info shadow executionTag" ' +
-              '                      v-if="row.item._rowVariant==\'info\' && enter == false">' +
-              '               Current-Keyboard' +
-              '            </b-badge>' +
-              '             <b-badge variant="success" ' +
-              '                     class="border border-success shadow executionTag" ' +
-              '                      v-if="row.item._rowVariant==\'success\'">' +
-              '                 Next' +
-              '             </b-badge>' +
-              '             <b-badge variant="info" class="border border-info shadow executionTag" ' +
-              '                      v-if="row.item._rowVariant==\'info\' && enter == null">' +
-              '               Current' +
-              '             </b-badge>' +
+              '         <template v-slot:cell(tag)="row">' +
+              '           <b-badge variant="info" ' +
+              '                    class="border border-info shadow executionTag" ' +
+              '                    v-if="row.item._rowVariant==\'info\' && enter == false">' +
+              '             Current-Keyboard' +
+              '           </b-badge>' +
+              '           <b-badge variant="success" ' +
+              '                    class="border border-success shadow executionTag" ' +
+              '                    v-if="row.item._rowVariant==\'success\'">' +
+              '             Next' +
+              '           </b-badge>' +
+              '           <b-badge variant="info" class="border border-info shadow executionTag" ' +
+              '                    v-if="row.item._rowVariant==\'info\' && enter == null">' +
+              '             Current' +
+              '           </b-badge>' +
               ' ' +
-              '           </template> ' +
+              '         </template> ' +
               ' ' +
-              '           <template slot-scope="row">' +
-              '             <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
-              '             <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
-              '           </template> ' +
-              '         </b-table>' +
-              '       </b-col>' +
-              '     </b-row>' +
-              '   </b-container>' +
-              ' </div>'
+              '         <template slot-scope="row">' +
+              '           <span class="h6" v-if="row.item.visible == true">{{row.item.loaded}}</span>' +
+              '           <span class="h6" v-if="row.item.visible == false">&lt;&lt;Hidden&gt;&gt;</span>' +
+              '         </template> ' +
+              '       </b-table>' +
+              '     </b-col>' +
+              '   </b-row>' +
+              ' </b-container>'
 
   }
 
