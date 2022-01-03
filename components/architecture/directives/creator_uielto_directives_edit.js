@@ -179,3 +179,13 @@
   }
 
   Vue.component('directives-edit', uielto_directives_edit) ;
+
+  /*Determines the refresh timeout depending on the device being used*/
+  function getDebounceTime(){
+    if(screen.width > 768){
+      return 500;
+    }
+    else{
+      return 1000;
+    }
+  }
