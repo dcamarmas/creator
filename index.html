@@ -154,85 +154,60 @@
         <!-- Load architecture -->
         <!----------------------->
 
-        <div class="contenedor row menu_cards" id="load_menu" v-if="creator_mode == 'load_architecture'">
+        <b-container fluid align-h="center" id="load_menu" v-if="creator_mode == 'load_architecture'">
+          <b-row>
+            <b-col>
+
+              <!-- Navbar -->
+              <uielto-toolbar id="navbar_load_architecture" components=" | | | btn_configuration,btn_information">
+              </uielto-toolbar>
           
-          <!-- Navbar -->
-          <!-- TODO: navbar component -->
-          <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 p-0"></div>
-            <div class="col-lg-6 col-sm-12 p-0"></div>
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"
-                              id="conf_btn_men"
-                              v-b-modal.configuration>
-                      <span class="fa fa-cogs"></span> 
-                      Configuration
-                    </b-button>
+
+              <!-- Architecture menu -->
+              <div class="col-lg-12 col-sm-12" id="load_menu_arch">
+                <div class="col-lg-12 col-sm-12 row p-0 m-0">
+
+                  <div class="col-lg-1 col-sm-1"></div>
+                  <div class="col-lg-10 col-sm-10">
+                    <b-list-group>
+                      <b-list-group-item>
+
+                        <preload-architecture :arch_available="arch_available"
+                                              :back_card="back_card">
+                        </preload-architecture>
+
+                        <!-- Load new architecture card -->
+                        <load-architecture></load-architecture>
+
+                        <!-- New architecture card -->
+                        <new-architecture></new-architecture>
+
+                      </b-list-group-item>
+                    </b-list-group>
+
+
+                    <!-- Architecture selector modals -->
+
+                    <!-- Delete architecture modal -->
+                    <delete-architecture  id="modalDeletArch"
+                                          :index="modalDeletArchIndex">                      
+                    </delete-architecture>
+
                   </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" 
-                              id="info_men">
-                      <span class="fas fa-info-circle"></span> 
-                      Info
-                    </b-button>
-                  </div>
+
+                  <div class="col-lg-1 col-sm-1"></div>
                 </div>
-              </div>
-            </div>
-          </div>
+                <br>
 
 
-          <!-- Information popover -->
-          <popover-info target="info_men" show_instruction_help="false"></popover-info>
-
-
-
-          <!-- Architecture menu -->
-          <div class="col-lg-12 col-sm-12" id="load_menu_arch">
-            <div class="col-lg-12 col-sm-12 row p-0 m-0">
-
-              <div class="col-lg-1 col-sm-1"></div>
-              <div class="col-lg-10 col-sm-10">
-                <b-list-group>
-                  <b-list-group-item>
-
-                    <preload-architecture :arch_available="arch_available"
-                                          :back_card="back_card">
-                    </preload-architecture>
-
-                    <!-- Load new architecture card -->
-                    <load-architecture></load-architecture>
-
-                    <!-- New architecture card -->
-                    <new-architecture></new-architecture>
-
-                  </b-list-group-item>
-                </b-list-group>
-
-
-                <!-- Architecture selector modals -->
-
-                <!-- Delete architecture modal -->
-                <delete-architecture  id="modalDeletArch"
-                                      :index="modalDeletArchIndex">                      
-                </delete-architecture>
+                <!-- Backup modal -->
+                <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
 
               </div>
-
-              <div class="col-lg-1 col-sm-1"></div>
-            </div>
-            <br>
-
-
-            <!-- Backup modal -->
-            <uielto-backup id="copy" :date_copy="date_copy"></uielto-backup>
-
-          </div>
-
-        </div>
+              
+            </b-col>
+          </b-row>
+        </b-container>
 
 
 
@@ -246,294 +221,222 @@
         <!-- Architecture -->
         <!------------------>
 
-        <div class="contenedor row menu_cards" id="architecture_menu" v-if="creator_mode == 'architecture'">
+        <b-container fluid align-h="center" id="architecture_menu" v-if="creator_mode == 'architecture'">
+          <b-row>
+            <b-col>
 
-          <!-- Navbar -->
-          <!-- TODO: navbar component -->
-          <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm assembly_btn btn_arch h-100" 
-                              id="assembly_btn_arch" 
-                              @click="change_UI_mode('assembly')">
-                      <span class="fas fa-hashtag"></span>
-                      Assembly
-                    </b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn btn_arch h-100"
-                              id="sim_btn_arch"
-                              @click="change_UI_mode('simulator')">
-                      <span class="fas fa-cogs"></span> 
-                      Simulator
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
+              <!-- Navbar -->
+              <uielto-toolbar id="navbar_architecture" components="btn_assembly,btn_simulator|btn_save_architecture|btn_advanced_mode|btn_configuration,btn_information">
+              </uielto-toolbar>
 
-            <div class="col-lg-4 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-4 col-sm-4 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
-                              id="save_btn_arch" 
-                              v-b-modal.save_architecture>
-                      <span class="fas fa-download"></span> 
-                      Save
-                    </b-button>
-                  </div>
-                  <div class="col-lg-8 col-sm-4 buttons" @click="change_mode">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"
-                              id="advanced_mode1" 
-                              v-if="advanced_mode == true">
-                      Advanced Mode: deactivated
-                    </b-button>
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"  
-                              id="advanced_mode2" 
-                              v-if="advanced_mode == false">
-                      Advanced Mode: activate
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-2 col-sm-12 p-0"></div>
-
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
-                              id="conf_btn_arch" 
-                              v-b-modal.configuration>
-                      <span class="fa fa-cogs"></span> 
-                      Configuration
-                    </b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" 
-                              id="info_arch">
-                      <span class="fas fa-info-circle"></span> 
-                      Info
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <!-- Architecture navbar modals -->
-          <save-architecture id="save_architecture"></save-architecture>
-
-
-          <!-- Information popover -->
-          <popover-info target="info_arch" show_instruction_help="true"></popover-info>
+              
+              <!-- Architecture navbar modals -->
+              <save-architecture id="save_architecture"></save-architecture>
 
 
 
-          <!-- Architecture information -->
-          <div class="contenedor menu row">
 
-            <!-- Architecture components -->
-            <div class="col-lg-12 col-sm-12" id="view_components">
-              <b-tabs>
+              <!-- Architecture information -->
+              <div class="contenedor menu row">
 
-                <!-- Memory layout -->
-                <b-tab title="Memory Layout" active>
-                  
-                  <memory-layout  :memory_layout="architecture.memory_layout">       
-                  </memory-layout>
+                <!-- Architecture components -->
+                <div class="col-lg-12 col-sm-12" id="view_components">
+                  <b-tabs>
 
-                  <!-- Memory layout modals -->
+                    <!-- Memory layout -->
+                    <b-tab title="Memory Layout" active>
+                      
+                      <memory-layout  :memory_layout="architecture.memory_layout">       
+                      </memory-layout>
 
-                  <!-- Edit memory layout -->
-                  <memory-layout-edit id="change_memory_layout"></memory-layout-edit>
+                      <!-- Memory layout modals -->
 
-                  <!-- Reset memory layout -->
-                  <memory-layout-reset id="reset_memory_layout"
-                                       :architecture_name="architecture_name">
-                  </memory-layout-reset>
+                      <!-- Edit memory layout -->
+                      <memory-layout-edit id="change_memory_layout"></memory-layout-edit>
 
-                </b-tab>
+                      <!-- Reset memory layout -->
+                      <memory-layout-reset id="reset_memory_layout"
+                                           :architecture_name="architecture_name">
+                      </memory-layout-reset>
 
-
-                <!-- Register File -->
-                <b-tab title="Register File" :disabled="advanced_mode" v-if="!advanced_mode">
-
-                  <register-file-arch   :register_file="architecture.components"
-                                        :bits="number_bits">
-                  </register-file-arch>
-
-                  <!-- Register File modals -->
-
-                  <!-- New register file form-->
-                  <register-file-new id="new_register_file"></register-file-new>
-
-                  <!-- Reset Register File -->
-                  <register-file-reset  id="reset_register_file"
-                                        :architecture_name="architecture_name">
-                  </register-file-reset>
-
-                  <!-- Register File edit form-->
-                  <register-file-edit id="edit_register_file"
-                                      :title="modalEditComponent.title"
-                                      :element="modalEditComponent.element"
-                                      :name="modalEditComponent.name">
-                  </register-file-edit>
-
-                  <!-- Delete Register File -->
-                  <register-file-delete id="delete_register_file"
-                                        :title="modalDeletComp.title"
-                                        :element="modalDeletComp.element">
-                  </register-file-delete>
+                    </b-tab>
 
 
-                  <!-- Registers modals -->
+                    <!-- Register File -->
+                    <b-tab title="Register File" :disabled="advanced_mode" v-if="!advanced_mode">
 
-                  <!-- New register -->
-                  <registers-new id="new_register"
-                                :element="modalNewElement.element"
-                                :type="modalNewElement.type"
-                                :double_precision="modalNewElement.double_precision"
-                                :reg_id="modalNewElement.id"
-                                :simple_reg="simple_reg"
-                                :bits="number_bits">
-                  </registers-new>
+                      <register-file-arch   :register_file="architecture.components"
+                                            :bits="number_bits">
+                      </register-file-arch>
 
-                  <!-- Edit register -->
-                  <registers-edit id="edit_register"
-                                  :element="modalEditElement.element"
-                                  :type="modalEditElement.type"
-                                  :double_precision="modalEditElement.double_precision"
-                                  :reg_id="modalEditElement.reg_id"
-                                  :name="modalEditElement.name"
-                                  :def_value="modalEditElement.defValue"
-                                  :properties="modalEditElement.properties"
-                                  :precision="modalEditElement.precision"
-                                  :simple_reg="simple_reg"
-                                  :simple_1="modalEditElement.simple1"
-                                  :simple_2="modalEditElement.simple2">
-                  </registers-edit>
+                      <!-- Register File modals -->
 
-                  <!-- Delete register -->
-                  <registers-delete  id="delete_register"
-                                    :title="modalDeletElement.title"
-                                    :element="modalDeletElement.element">
-                  </registers-delete>
+                      <!-- New register file form-->
+                      <register-file-new id="new_register_file"></register-file-new>
 
-                </b-tab>
-
-
-                <!-- Instruction definition -->
-                <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
-                  
-                  <instructions :instructions="architecture.instructions"></instructions>
-
-                  <!-- Instructions modals -->
-
-                  <!-- Intruction fields-->
-                  <instructions-fields  id="fields_instructions"
-                                        :title="modalViewFields.title"
-                                        :instruction="formInstruction">
-                  </instructions-fields>
-
-                  <!-- New Intruction -->
-                  <instructions-new id="new_instructions"></instructions-new>
-
-                  <!-- Reset Intructions -->
-                  <instructions-reset id="reset_instructions"
-                                      :architecture_name="architecture_name">
-                  </instructions-reset>
-
-                  <!-- Edit Intructions -->
-                  <instructions-edit  id="edit_instructions"
-                                      :element="modalEditInst"
-                                      :instruction="formInstruction">
-                  </instructions-edit>
-
-                  <!-- Delete instruction -->
-                  <instructions-delete  id="delete_instructions"
-                                        :intruction="modalDeletInst.index">
-                  </instructions-delete>
-
-                </b-tab>
-
-
-                <!-- Pseudoinstruction definition -->
-                <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
-                  
-                  <pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions"></pseudoinstructions>
-
-                  <!-- Pseudoinstructions modals -->
-
-                  <!-- Pseudontruction fields-->
-                  <pseudoinstructions-fields  id="fields_pseudoinstructions"
-                                              :title="modalViewPseudoFields.title"
-                                              :pseudoinstruction="formPseudoinstruction">
-                  </pseudoinstructions-fields>
-
-                  <!-- New Pseudontruction -->
-                  <pseudoinstructions-new id="new_pseudoinstructions"></pseudoinstructions-new>
-
-                  <!-- Reset Pseudointructions -->
-                  <pseudoinstructions-reset id="reset_pseudoinstructions"
+                      <!-- Reset Register File -->
+                      <register-file-reset  id="reset_register_file"
                                             :architecture_name="architecture_name">
-                  </pseudoinstructions-reset>
+                      </register-file-reset>
 
-                  <!-- Edit Pseudointructions -->
-                  <pseudoinstructions-edit  id="edit_pseudoinstructions"
-                                            :element="modalEditPseudoinst"
-                                            :pseudoinstruction="formPseudoinstruction">
-                  </pseudoinstructions-edit>
+                      <!-- Register File edit form-->
+                      <register-file-edit id="edit_register_file"
+                                          :title="modalEditComponent.title"
+                                          :element="modalEditComponent.element"
+                                          :name="modalEditComponent.name">
+                      </register-file-edit>
 
-                  <!-- Delete Pseudoinstruction -->
-                  <pseudoinstructions-delete  id="delete_pseudoinstructions"
-                                              :pseudoinstruction="modalDeletPseudoinst.index">
-                  </pseudoinstructions-delete>
+                      <!-- Delete Register File -->
+                      <register-file-delete id="delete_register_file"
+                                            :title="modalDeletComp.title"
+                                            :element="modalDeletComp.element">
+                      </register-file-delete>
 
-                </b-tab>
+
+                      <!-- Registers modals -->
+
+                      <!-- New register -->
+                      <registers-new id="new_register"
+                                    :element="modalNewElement.element"
+                                    :type="modalNewElement.type"
+                                    :double_precision="modalNewElement.double_precision"
+                                    :reg_id="modalNewElement.id"
+                                    :simple_reg="simple_reg"
+                                    :bits="number_bits">
+                      </registers-new>
+
+                      <!-- Edit register -->
+                      <registers-edit id="edit_register"
+                                      :element="modalEditElement.element"
+                                      :type="modalEditElement.type"
+                                      :double_precision="modalEditElement.double_precision"
+                                      :reg_id="modalEditElement.reg_id"
+                                      :name="modalEditElement.name"
+                                      :def_value="modalEditElement.defValue"
+                                      :properties="modalEditElement.properties"
+                                      :precision="modalEditElement.precision"
+                                      :simple_reg="simple_reg"
+                                      :simple_1="modalEditElement.simple1"
+                                      :simple_2="modalEditElement.simple2">
+                      </registers-edit>
+
+                      <!-- Delete register -->
+                      <registers-delete  id="delete_register"
+                                        :title="modalDeletElement.title"
+                                        :element="modalDeletElement.element">
+                      </registers-delete>
+
+                    </b-tab>
 
 
-                <!-- Directives definition -->
-                <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                    <!-- Instruction definition -->
+                    <b-tab title="Instructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                      
+                      <instructions :instructions="architecture.instructions"></instructions>
 
-                  <directives :directives="architecture.directives"></directives>
+                      <!-- Instructions modals -->
 
-                  <!-- Directives modals -->
+                      <!-- Intruction fields-->
+                      <instructions-fields  id="fields_instructions"
+                                            :title="modalViewFields.title"
+                                            :instruction="formInstruction">
+                      </instructions-fields>
 
-                  <!-- New directive -->
-                  <directives-new id="new_directive"></directives-new>
+                      <!-- New Intruction -->
+                      <instructions-new id="new_instructions"></instructions-new>
 
-                  <!-- Reset directives -->
-                  <directives-reset id="reset_directives"
-                                    :architecture_name="architecture_name">
-                  </directives-reset>
+                      <!-- Reset Intructions -->
+                      <instructions-reset id="reset_instructions"
+                                          :architecture_name="architecture_name">
+                      </instructions-reset>
 
-                  <!-- Edit directive -->
-                  <directives-edit  id="edit_directive"
-                                    :title="modalEditDirective.title"
-                                    :element="modalEditDirective.element"
-                                    :name="modalEditDirective.name"
-                                    :action="modalEditDirective.action"
-                                    :size="modalEditDirective.size">
-                  </directives-edit>
+                      <!-- Edit Intructions -->
+                      <instructions-edit  id="edit_instructions"
+                                          :element="modalEditInst"
+                                          :instruction="formInstruction">
+                      </instructions-edit>
 
-                  <!-- Delete directive -->
-                  <directives-delete  id="delete_directive"
-                                      :title="modalDeletDir.title"
-                                      :element="modalDeletDir.element">
-                  </directives-delete>
+                      <!-- Delete instruction -->
+                      <instructions-delete  id="delete_instructions"
+                                            :intruction="modalDeletInst.index">
+                      </instructions-delete>
 
-                </b-tab>
-              </b-tabs>
-            </div>
-          </div>
-        </div>
+                    </b-tab>
+
+
+                    <!-- Pseudoinstruction definition -->
+                    <b-tab title="Pseudoinstructions Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+                      
+                      <pseudoinstructions :pseudoinstructions="architecture.pseudoinstructions"></pseudoinstructions>
+
+                      <!-- Pseudoinstructions modals -->
+
+                      <!-- Pseudontruction fields-->
+                      <pseudoinstructions-fields  id="fields_pseudoinstructions"
+                                                  :title="modalViewPseudoFields.title"
+                                                  :pseudoinstruction="formPseudoinstruction">
+                      </pseudoinstructions-fields>
+
+                      <!-- New Pseudontruction -->
+                      <pseudoinstructions-new id="new_pseudoinstructions"></pseudoinstructions-new>
+
+                      <!-- Reset Pseudointructions -->
+                      <pseudoinstructions-reset id="reset_pseudoinstructions"
+                                                :architecture_name="architecture_name">
+                      </pseudoinstructions-reset>
+
+                      <!-- Edit Pseudointructions -->
+                      <pseudoinstructions-edit  id="edit_pseudoinstructions"
+                                                :element="modalEditPseudoinst"
+                                                :pseudoinstruction="formPseudoinstruction">
+                      </pseudoinstructions-edit>
+
+                      <!-- Delete Pseudoinstruction -->
+                      <pseudoinstructions-delete  id="delete_pseudoinstructions"
+                                                  :pseudoinstruction="modalDeletPseudoinst.index">
+                      </pseudoinstructions-delete>
+
+                    </b-tab>
+
+
+                    <!-- Directives definition -->
+                    <b-tab title="Directives Definition" :disabled="advanced_mode" v-if="!advanced_mode">
+
+                      <directives :directives="architecture.directives"></directives>
+
+                      <!-- Directives modals -->
+
+                      <!-- New directive -->
+                      <directives-new id="new_directive"></directives-new>
+
+                      <!-- Reset directives -->
+                      <directives-reset id="reset_directives"
+                                        :architecture_name="architecture_name">
+                      </directives-reset>
+
+                      <!-- Edit directive -->
+                      <directives-edit  id="edit_directive"
+                                        :title="modalEditDirective.title"
+                                        :element="modalEditDirective.element"
+                                        :name="modalEditDirective.name"
+                                        :action="modalEditDirective.action"
+                                        :size="modalEditDirective.size">
+                      </directives-edit>
+
+                      <!-- Delete directive -->
+                      <directives-delete  id="delete_directive"
+                                          :title="modalDeletDir.title"
+                                          :element="modalDeletDir.element">
+                      </directives-delete>
+
+                    </b-tab>
+                  </b-tabs>
+                </div>
+              </div>
+
+            </b-col>
+          </b-row>
+        </b-container>
 
 
 
@@ -548,152 +451,46 @@
         <!-- Assembly view -->
         <!------------------->
 
-        <div class="contenedor row" id="assembly" v-if="creator_mode == 'assembly'">
+        <b-container fluid align-h="center" id="assembly" v-if="creator_mode == 'assembly'">
+          <b-row>
+            <b-col>
 
-          <!-- Navbar -->
-          <!-- TODO: navbar component -->
-          <div class="contenedor menu row my-3">
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm arch_btn h-100" 
-                              id="arch_btn_assembly"
-                              @click="change_UI_mode('architecture')">
-                      <span class="fas fa-sitemap"></span>
-                      Architecture
-                    </b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm simulator_btn h-100" 
-                              id="simulator_btn_assembly" 
-                              @click="change_UI_mode('simulator')">
-                      <span class="fas fa-cogs"></span>
-                      Simulator
-                    </b-button>
-                  </div>
-                </div>
+              <!-- Navbar -->
+              <uielto-toolbar id="navbar_assembly" components="btn_architecture,btn_simulator|dropdown_assembly_file,dropdown_library|btn_compile|btn_configuration,btn_information">
+              </uielto-toolbar>
+
+              <!-- Assembly navbar modals -->
+
+              <!-- Load assembly form -->
+              <load-assembly id="load_assembly"></load-assembly>          
+
+              <!-- Save assembly form -->
+              <save-assembly id="save_assembly"></save-assembly>
+
+              <!-- Examples modal -->
+              <examples id="examples" ref="examples" :example_available="example_available" compile="false" modal="examples"></examples>
+
+              <!-- Load binary form -->
+              <load-library id="load_binary"></load-library>
+
+              <!-- Save binary form -->
+              <save-library id="save_binary"></save-library>
+
+
+
+              <!-- Assembly textarea and library tags-->
+              <div class="contenedor row">
+                <textarea-assembly :browser="browser"></textarea-assembly>
+                <list-libray-tags :instructions_tag="update_binary.instructions_tag"></list-libray-tags>
               </div>
-            </div>
-
-            <div class="col-lg-2 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <b-dropdown right 
-                            text="File" 
-                            size="sm" 
-                            class="btn btn-block menuGroup btn-sm p-0" 
-                            variant="outline-secondary">
-                  <b-dropdown-item @click="newAssembly">
-                    <span class="fas fa-file"></span> 
-                    New
-                  </b-dropdown-item>
-                  <b-dropdown-item v-b-modal.load_assembly>
-                    <span class="fas fa-upload"></span>
-                    Load
-                  </b-dropdown-item>
-                  <b-dropdown-item v-b-modal.save_assembly>
-                    <span class="fas fa-download"></span>
-                    Save
-                  </b-dropdown-item>
-                  <b-dropdown-item v-b-modal.examples>
-                    <span class="far fa-file-alt"></span>
-                    Examples
-                  </b-dropdown-item>
-                </b-dropdown>
-              </div>
-            </div>
-
-            <div class="col-lg-2 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-12 col-sm-12 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
-                              id="compile_assembly" 
-                              @click="assembly_compiler()">
-                      <span class="fas fa-sign-in-alt"></span>
-                      Compile/Linked
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="col-lg-2 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <b-dropdown right text="Library" size="sm" class="btn btn-block menuGroup btn-sm p-0" variant="outline-secondary">
-                  <b-dropdown-item v-b-modal.save_binary>
-                    <span class="fas fa-plus-square"></span>
-                    Create
-                  </b-dropdown-item>
-                  <b-dropdown-item v-b-modal.load_binary>
-                    <span class="fas fa-upload"></span>
-                    Load Library
-                  </b-dropdown-item>
-                  <b-dropdown-item @click="removeLibrary">
-                    <span class="far fa-trash-alt"></span>
-                    Remove
-                  </b-dropdown-item>
-                </b-dropdown>
-              </div>
-            </div>
-
-            <div class="col-lg-3 col-sm-12 p-0">
-              <div class="col-lg-12 col-sm-12">
-                <div class="col-lg-12 col-sm-12 buttons row">
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100" 
-                              id="conf_btn_ass" 
-                              v-b-modal.configuration>
-                      <span class="fa fa-cogs"></span>
-                      Configuration
-                    </b-button>
-                  </div>
-                  <div class="col-lg-6 col-sm-6 buttons">
-                    <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton"
-                              id="info_ass">
-                      <span class="fas fa-info-circle"></span>
-                      Info
-                    </b-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
 
-          <!-- Assembly navbar modals -->
+              <!-- Compile error modal -->
+              <assembly-error id="modalAssemblyError" ref="errorAssembly" :modal_assembly_error="modalAssemblyError"></assembly-error>
 
-          <!-- Load assembly form -->
-          <load-assembly id="load_assembly"></load-assembly>          
-
-          <!-- Save assembly form -->
-          <save-assembly id="save_assembly"></save-assembly>
-
-          <!-- Examples modal -->
-          <examples id="examples" ref="examples" :example_available="example_available" compile="false" modal="examples"></examples>
-
-          <!-- Load binary form -->
-          <load-library id="load_binary"></load-library>
-
-          <!-- Save binary form -->
-          <save-library id="save_binary"></save-library>
-
-
-          <!-- Information popover -->
-          <popover-info target="info_ass" show_instruction_help="true"></popover-info>
-
-
-          <!-- Assembly textarea and library tags-->
-          <div class="contenedor row">
-            <textarea-assembly :browser="browser"></textarea-assembly>
-            <list-libray-tags :instructions_tag="update_binary.instructions_tag"></list-libray-tags>
-          </div>
-
-
-          <!-- Compile error modal -->
-          <assembly-error id="modalAssemblyError" ref="errorAssembly" :modal_assembly_error="modalAssemblyError"></assembly-error>
-
-        </div>
+            </b-col>
+          </b-row>
+        </b-container>
 
 
 
@@ -713,145 +510,9 @@
           <b-row>
             <b-col>
 
-
-
-              <!--<uielto-toolbar components="[,btn_architecture,btn_assembly,],|,[,btn_reset,btn_instruction,btn_run,btn_stop,],|,[,btn_examples,btn_calculator,],|,[,btn_configuration,btn_information,]">
-              </uielto-toolbar>-->
-
-
-
-
-
-
-
-              <b-container fluid align-h="center" class="menu my-3 mx-0">
-                <b-row>
-
-                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
-                    <b-container fluid>
-                      <b-row>
-                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm arch_btn h-100 mr-1 text-truncate" 
-                                  id="arch_btn_sim"
-                                  @click="change_UI_mode('architecture')">
-                          <span class="fas fa-sitemap"></span>
-                          Architecture
-                        </b-button>
-
-                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm assembly_btn h-100 text-truncate"
-                                  id="assembly_btn_sim"
-                                  @click="change_UI_mode('assembly')">
-                          <span class="fas fa-hashtag"></span>
-                          Assembly
-                        </b-button>
-                      </b-row>
-                    </b-container>
-                  </div>
-
-                  <div class="w-100 d-block d-sm-none"></div>
-
-                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
-                    <b-container fluid>
-                      <b-row>
-                        <b-button @click="reset(true)" 
-                                  class="col btn btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate">
-                          <span class="fas fa-power-off"></span>
-                          Reset
-                        </b-button>
-
-                        <b-button accesskey="a" 
-                                  class="col btn btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate" 
-                                  @click="executeInstruction" id="inst">
-                          <span class="fas fa-fast-forward"></span>
-                          Inst.
-                        </b-button>
-                        <b-tooltip target="inst" title="Press [Alt] + A" v-if="browser=='Chrome'"></b-tooltip>
-                        <b-tooltip target="inst" title="Press [Alt] [Shift] + A" v-if="browser=='Firefox'"></b-tooltip>
-                        <b-tooltip target="inst" title="Press [Control] [Alt/Option] + A" v-if="browser=='Mac'"></b-tooltip>
-
-                        <b-button class="col btn btn-outline-secondary actionsGroup btn-sm h-100 mr-1" 
-                                  @click="executeProgram(true)" 
-                                  v-if="runExecution == false" 
-                                  id="playExecution">
-                          <span class="fas fa-play"></span>
-                          Run
-                        </b-button>
-
-                        <b-button class="col btn btn-outline-secondary actionsGroup btn-sm h-100 text-truncate" 
-                                  @click="stopExecution" 
-                                  id="stopExecution"
-                                  style="display: none">
-                          <span class="fas fa-stop"></span>
-                          Stop
-                        </b-button>
-                      </b-row>
-                    </b-container>
-                  </div>
-
-                  <div class="w-100 d-block d-sm-none"></div>
-
-                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
-                    <b-container fluid>
-                      <b-row>
-                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate"
-                                  v-b-modal.examples2>
-                          <span class="fas fa-file-alt"></span>
-                          Examples
-                        </b-button>
-
-                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm h-100 text-truncate"
-                                  v-b-modal.calculator>
-                          <span class="fas fa-calculator"></span>
-                          Calculator
-                        </b-button>
-                      </b-row>
-                    </b-container>
-                  </div>
-
-                  <div class="w-100 d-block d-sm-none"></div>
-
-                  <div class="col-xl-3 col-lg-4 col-md-4 col-sm-6 col-xs-12 px-2 py-1">
-                    <b-container fluid>
-                      <b-row>
-                        <b-button class="col btn btn-outline-secondary menuGroup btn-sm h-100 mr-1 text-truncate" 
-                                  id="conf_btn_sim" 
-                                  v-b-modal.configuration>
-                          <span class="fa fa-cogs"></span>
-                          Configuration
-                        </b-button>
-
-                        <b-button class="col btn btn-outline-secondary btn-sm h-100 infoButton text-truncate"
-                                  id="info_sim">
-                          <span class="fas fa-info-circle"></span> 
-                          Info
-                        </b-button>
-                      </b-row>
-                    </b-container>
-                  </div>
-
-                </b-row>
-              </b-container>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+              <!-- Navbar -->
+              <uielto-toolbar id="navbar_simulator" components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information">
+              </uielto-toolbar>
 
 
               <!-- Simulator navbar modals -->
@@ -864,24 +525,8 @@
                         modal="examples2">
               </examples>
 
-
               <!-- Calculator -->
               <calculator id="calculator"></calculator>
-
-
-              <!-- Information popover -->
-              <popover-info target="info_sim" show_instruction_help="true"></popover-info>
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -908,12 +553,12 @@
 
 
                     <!-- Memory view-->
-                    <div class="col-lg-12 col-sm-12" id="memory" v-if="data_mode == 'memory'">
+                    <div class="col-lg-12 col-sm-12 mx-0 px-0" id="memory" v-if="data_mode == 'memory'">
 
                       <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >
                         <b-form-radio-group
                           id="btn-radios-1"
-                          class="w-50"
+                          class="w-50 px-0"
                           v-model="mem_representation"
                           :options="mem_representation_options"
                           button-variant="outline-secondary"
@@ -956,9 +601,6 @@
 
                 </b-row>
               </b-container>
-
-
-
 
             <b-col>
           <b-row>
