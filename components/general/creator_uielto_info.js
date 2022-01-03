@@ -42,31 +42,32 @@
                     '     <br>' +
                     '   </template>' +
                     ' ' +
-                    '   <div class="col-lg-12 col-sm-12">' +
-                    '     <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" ' +
+                    '   <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" ' +
                     '             href=\'https://creatorsim.github.io/\' ' +
                     '             target="_blank" ' +
                     '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.general_help\', \'help.general_help\');">' +
-                    '       <span class="fas fa-question-circle" ></span> ' +
-                    '       Help' +
-                    '     </b-button>' +
-                    '     <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_instruction_help==\'true\'"' +
-                    '               id="inst_ass" v-b-toggle.sidebar_help' +
-                    '               onclick="creator_ga(\'send\', \'event\', \'help\', \'help.instruction_help\', \'help.instruction_help\');">' +
-                    '         <span class="fas fa-book"></span>' +
-                    '         Instruction Help' +
-                    '     </b-button>' +
-                    '     <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" ' +
-                    '               v-b-modal.notifications>' +
-                    '       <span class="fas fa-bell"></span> ' +
-                    '       Show Notifications' +
-                    '     </b-button>' +
-                    '     <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
-                    '               v-b-modal.about>' +
-                    '       <span class="fas fa-address-card"></span> ' +
-                    '         About us' +
-                    '     </b-button>' +
-                    '   </div>' +
+                    '     <span class="fas fa-question-circle" ></span> ' +
+                    '     Help' +
+                    '   </b-button>' +
+                    ' ' +
+                    '   <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_instruction_help==\'true\'"' +
+                    '             id="inst_ass" v-b-toggle.sidebar_help' +
+                    '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.instruction_help\', \'help.instruction_help\');">' +
+                    '     <span class="fas fa-book"></span>' +
+                    '     Instruction Help' +
+                    '   </b-button>' +
+                    ' ' +
+                    '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" ' +
+                    '             v-b-modal.notifications>' +
+                    '     <span class="fas fa-bell"></span> ' +
+                    '     Show Notifications' +
+                    '   </b-button>' +
+                    ' ' +
+                    '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
+                    '             v-b-modal.about>' +
+                    '     <span class="fas fa-address-card"></span> ' +
+                    '     About us' +
+                    '   </b-button>' +
                     ' </b-popover>'
   }
 

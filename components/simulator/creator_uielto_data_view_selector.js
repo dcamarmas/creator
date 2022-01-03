@@ -70,59 +70,57 @@
                 }               
               },
 
-  template:   ' <div class="col-lg-12 col-sm-12 my-1 px-0">' +
-              '   <b-container fluid align-h="center" class="mx-0 px-0">' +
-              '     <b-row cols-xl="3" cols-lg="3" cols-md="3" cols-sm="3" cols-xs="1" cols="1" >' +
-              '       <b-col align-h="start" class="px-1">' +
-              '         <b-dropdown split ' +
-              '                     v-if="register_file_num > 4"' +
-              '                     right ' +
-              '                     :text="name_reg" ' +
-              '                     size="sm" ' +
-              '                     class="btn btn-block btn-sm p-0 h-100" ' +
-              '                     variant="outline-secondary" ' +
-              '                     @click="change_data_view(\'registers\', reg_type)">' +
-              '           <b-dropdown-item @click="change_data_view(\'registers\', \'int\')">CPU-INT Registers</b-dropdown-item>' +
-              '           <b-dropdown-item @click="change_data_view(\'registers\', \'fp\')">CPU-FP Registers</b-dropdown-item>' +
-              '         </b-dropdown>' +
+  template:   ' <b-container fluid align-h="center" class="mx-0 px-0">' +
+              '   <b-row cols-xl="3" cols-lg="3" cols-md="3" cols-sm="3" cols-xs="1" cols="1" >' +
+              '     <b-col align-h="start" class="px-1">' +
+              '       <b-dropdown split ' +
+              '                   v-if="register_file_num > 4"' +
+              '                   right ' +
+              '                   :text="name_reg" ' +
+              '                   size="sm" ' +
+              '                   class="btn btn-block btn-sm p-0 h-100" ' +
+              '                   variant="outline-secondary" ' +
+              '                   @click="change_data_view(\'registers\', reg_type)">' +
+              '         <b-dropdown-item @click="change_data_view(\'registers\', \'int\')">CPU-INT Registers</b-dropdown-item>' +
+              '         <b-dropdown-item @click="change_data_view(\'registers\', \'fp\')">CPU-FP Registers</b-dropdown-item>' +
+              '       </b-dropdown>' +
               ' ' +
-              '         <b-form-group v-slot="{ ariaDescribedby }" v-if="register_file_num <= 4">' +
-              '           <b-form-radio-group' +
-              '             id="btn-radios-1"' +
-              '             class="w-100"' +
-              '             v-model="reg_type"' +
-              '             :options="reg_representation_options"' +
-              '             button-variant="outline-secondary"' +
-              '             size="sm"' +
-              '             :aria-describedby="ariaDescribedby"' +
-              '             name="radios-btn-default"' +
-              '             buttons' +
-              '             @input="change_data_view(\'registers\',reg_type)"' +
-              '           ></b-form-radio-group>' +
-              '         </b-form-group>' +
-              '       </b-col>' +
+              '       <b-form-group v-slot="{ ariaDescribedby }" v-if="register_file_num <= 4">' +
+              '         <b-form-radio-group' +
+              '           id="btn-radios-1"' +
+              '           class="w-100"' +
+              '           v-model="reg_type"' +
+              '           :options="reg_representation_options"' +
+              '           button-variant="outline-secondary"' +
+              '           size="sm"' +
+              '           :aria-describedby="ariaDescribedby"' +
+              '           name="radios-btn-default"' +
+              '           buttons' +
+              '           @input="change_data_view(\'registers\',reg_type)"' +
+              '         ></b-form-radio-group>' +
+              '       </b-form-group>' +
+              '     </b-col>' +
               ' ' +
-              '       <b-col align-h="start" class="px-1">' +
-              '         <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" ' +
-              '                   id="memory_btn" ' +
-              '                   @click="change_data_view(\'memory\', \'\')">' +
-              '           <span class="fas fa-memory"></span>' +
-              '           Memory ' +
-              '         </b-button>' +
-              '       </b-col>' +
+              '     <b-col align-h="start" class="px-1">' +
+              '       <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" ' +
+              '                 id="memory_btn" ' +
+              '                 @click="change_data_view(\'memory\', \'\')">' +
+              '         <span class="fas fa-memory"></span>' +
+              '         Memory ' +
+              '       </b-button>' +
+              '     </b-col>' +
               ' ' +
-              '       <b-col align-h="start" class="px-1">' +
-              '         <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" ' +
-              '                   id="stats_btn" ' +
-              '                   @click="change_data_view(\'stats\', \'\')">' +
-              '           <span class=" fas fa-chart-bar"></span>' +
-              '           Stats' +
-              '         </b-button>' +
-              '       </b-col>' +
+              '     <b-col align-h="start" class="px-1">' +
+              '       <b-button class="btn btn-outline-secondary btn-block opcionsGroup btn-sm" ' +
+              '                 id="stats_btn" ' +
+              '                 @click="change_data_view(\'stats\', \'\')">' +
+              '         <span class=" fas fa-chart-bar"></span>' +
+              '         Stats' +
+              '       </b-button>' +
+              '     </b-col>' +
               ' ' +
-              '     </b-row>' +
-              '   </b-container>' +
-              ' </div>'
+              '   </b-row>' +
+              ' </b-container>'
 
   }
 
