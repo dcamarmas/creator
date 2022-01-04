@@ -29,7 +29,7 @@
                     },
 
         methods:    {
-                      /*Load backup*/
+                      //Load backup
                       load_copy(){
                         app._data.architecture_name = localStorage.getItem("arch_name");
 
@@ -63,13 +63,13 @@
                         show_notification('The backup has been loaded correctly', 'success') ;
                       },
 
-                      /*Delete backup*/
+                      //Delete backup
                       remove_copy(){
                         localStorage.removeItem("architecture_copy");
                         localStorage.removeItem("assembly_copy");
                         localStorage.removeItem("date_copy");
                         this.$root.$emit('bv::hide::modal', 'copy');
-                      },
+                      }
                     },
 
         template:   '<b-modal :id="id" hide-footer hide-header size="sm" centered>' +

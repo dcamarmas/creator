@@ -57,33 +57,34 @@
                   for (var i = 0; i < files.length; i++){
                     file = files[i];
                     reader = new FileReader();
-                    reader.onloadend = onFileLoaded(this.name_arch, this.description_arch);
+
+                    reader.onloadend = (function(name_arch, description_arch){
+                      return function(e){
+                        architecture_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
+                        load_architectures_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
+                        back_card.push({name: architecture_available[architecture_available.length-1].name , background: "default"});
+                        load_architectures.push({id: name_arch, architecture: event.currentTarget.result});
+
+                        if (typeof(Storage) !== "undefined"){
+                          var auxArch = JSON.stringify(load_architectures, null, 2);
+                          localStorage.setItem("load_architectures", auxArch);
+
+                          auxArch = JSON.stringify(load_architectures_available, null, 2);
+                          localStorage.setItem("load_architectures_available", auxArch);
+                        }
+
+                        show_notification('The selected architecture has been loaded correctly', 'success') ;
+
+                        hide_loading();
+                      }
+                    })(this.name_arch, this.description_arch)
+
                     reader.readAsBinaryString(file);
                   }
 
                   this.name_arch = '';
                   this.description_arch = '';
                   this.load_arch = '';
-
-
-                  function onFileLoaded(name_arch, description_arch){
-                    architecture_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
-                    load_architectures_available.push({name: name_arch, img: "./images/personalized_logo.png", alt: name_arch + " logo" , id:"select_conf"+name_arch , description: description_arch});
-                    back_card.push({name: architecture_available[architecture_available.length-1].name , background: "default"});
-                    load_architectures.push({id: name_arch, architecture: event.currentTarget.result});
-
-                    if (typeof(Storage) !== "undefined"){
-                      var auxArch = JSON.stringify(load_architectures, null, 2);
-                      localStorage.setItem("load_architectures", auxArch);
-
-                      auxArch = JSON.stringify(load_architectures_available, null, 2);
-                      localStorage.setItem("load_architectures_available", auxArch);
-                    }
-
-                    show_notification('The selected architecture has been loaded correctly', 'success') ;
-
-                    hide_loading();
-                  }
                 },
 
                 /*Form validator*/
