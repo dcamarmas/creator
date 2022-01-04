@@ -24,11 +24,19 @@
   var uielto_examples = {
 
   props:      {
-                id:                  { type: String, required: true },
-                ref:                 { type: String, required: true },
-                example_available:   { type: Array,  required: true },
-                compile:             { type: String, required: true },
-                modal:               { type: String, required: true }
+                id:                       { type: String, required: true },
+                ref:                      { type: String, required: true },
+                example_set_available:    { type: Array,  required: true },
+                example_available:        { type: Array,  required: true },
+                compile:                  { type: String, required: true },
+                modal:                    { type: String, required: true }
+              },
+
+  data:       function () {
+                return {
+                  example_set: 0,
+                  example_set_name: ""
+                }
               },
 
   methods:    {
@@ -50,7 +58,12 @@
                     /* Google Analytics */
                     creator_ga('send', 'event', 'example', 'example.loading', 'example.loading.' + url);
                   });
-                }           
+                },
+
+                //Change exmaple set variable
+                change_example_set(value){
+                  this.example_set = value;
+                }         
               },
 
   template:   ' <b-modal  :id="id"' +
@@ -59,13 +72,39 @@
               '           hide-footer' +
               '           scrollable>' +
               ' ' +
-              '   <span class="h6" v-if="example_available.length == 0">' +
+              '   <b-form-group label="Examples set available:" v-if="example_set_available.length > 1" v-slot="{ ariaDescribedby }">' +
+              '     <b-form-radio-group' +
+              '       v-if="example_set_available.length <= 2"' +
+              '       id="btn-radios-1"' +
+              '       class="w-100"' +
+              '       v-model="example_set"' +
+              '       :options="example_set_available"' +
+              '       button-variant="outline-secondary"' +
+              '       size="sm"' +
+              '       :aria-describedby="ariaDescribedby"' +
+              '       name="radios-btn-default"' +
+              '       buttons' +
+              '     ></b-form-radio-group>' +
+              '   </b-form-group>' +
+              ' ' +
+              '   <b-dropdown id="examples_dropdown"' +
+              '               class="w-100 mb-3"' +
+              '               size="sm"' +
+              '               text="Examples set available"' +
+              '               v-if="example_set_available.length > 2">' +
+              '     <b-dropdown-item v-for="item in example_set_available"' +
+              '                      @click="change_example_set(item.value)">' +
+              '       {{item.text}}' +
+              '     </b-dropdown-item>' +
+              '   </b-dropdown>' +
+              ' ' +
+              '   <span class="h6" v-if="example_available[example_set].length == 0">' +
               '     There\'s no examples at the moment' +
               '   </span>' +
               ' ' +
               '   <b-list-group>' +
               '     <b-list-group-item button ' +
-              '                        v-for="item in example_available" ' +
+              '                        v-for="item in example_available[example_set]" ' +
               '                        @click="load_example(item.url, compile)" ' +
               '                        ref="closeExample">' +
               '       {{item.name}}:' +
