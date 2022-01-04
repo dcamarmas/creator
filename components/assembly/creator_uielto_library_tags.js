@@ -27,7 +27,7 @@
                 instructions_tag:   { type: Array, required: true }
               },
 
-  template:   ' <div class="col-lg-0 col-sm-0 d-none" id="divTags">' +
+  template:   ' <div>' +
               '   <span class="h5">Library tags:</span>' +
               '   <b-list-group>' +
               '     <b-list-group-item v-for="item in instructions_tag" ' +

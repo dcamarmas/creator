@@ -342,14 +342,6 @@ try
 
       main_memory: {},
 
-      //Memory view
-      mem_representation: "data_memory",
-      mem_representation_options: [
-        { text: 'Data', value: 'data_memory' },
-        { text: 'Text', value: 'instructions_memory' },
-        { text: 'Stack', value: 'stack_memory'}
-      ],
-
       //Stack
       track_stack_names: track_stack_names,
       callee_subrutine: "",
@@ -932,38 +924,6 @@ try
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-      /*Stop user interface refresh*/
-      debounce: _.debounce(function (param, e) {
-        console_log(param);
-        console_log(e);
-
-        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-        var re = new RegExp("'","g");
-        e = e.replace(re, '"');
-        re = new RegExp("[\f]","g");
-        e = e.replace(re, '\\f');
-        re = new RegExp("[\n\]","g");
-        e = e.replace(re, '\\n');
-        re = new RegExp("[\r]","g");
-        e = e.replace(re, '\\r');
-        re = new RegExp("[\t]","g");
-        e = e.replace(re, '\\t');
-        re = new RegExp("[\v]","g");
-        e = e.replace(re, '\\v');
-
-        if(e == ""){
-          this[param] = null;
-          return;
-        }
-
-        console_log("this." + param + "= '" + e + "'");
-
-        eval("this." + param + "= '" + e + "'");
-
-        //this[param] = e.toString();
-        app.$forceUpdate();
-      }, getDebounceTime())
-
     },
   });
 
@@ -986,16 +946,6 @@ try
   window.onbeforeunload = confirmExit;
   function confirmExit(){
     return "He's tried to get off this page. Changes may not be saved.";
-  }
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
   }
 
   /*Stop the transmission of events to children*/

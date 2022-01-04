@@ -25,7 +25,8 @@
 
         props:      {
                       id:                           { type: String,  required: true },
-                      components:                   { type: String,  required: true }
+                      components:                   { type: String,  required: true },
+                      browser:                      { type: String,  required: true }
                     },
 
         computed:   {
@@ -42,7 +43,8 @@
                   ' <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">' +
                   '   <b-cols class="px-2 py-1"' +
                   '         v-for="(item, index) in components_array">' +
-                  '     <toolbar-btngroup :group="item.split(\',\')">' +
+                  '     <toolbar-btngroup :group="item.split(\',\')"' +
+                  '                       :browser="browser">' +
                   '     </toolbar-btngroup>' +
                   ' ' +
                   '     <div class="w-100 d-block d-sm-none"></div>' +

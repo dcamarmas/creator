@@ -58,20 +58,20 @@
               '           :ref="ref"' +
               '           hide-footer' +
               '           scrollable>' +
-              '   <div>' +
-              '     <span class="h6" v-if="example_available.length == 0">' +
-              '       There\'s no examples at the moment' +
-              '     </span>' +
-              '     <b-list-group>' +
-              '       <b-list-group-item button ' +
-              '                          v-for="item in example_available" ' +
-              '                          @click="load_example(item.url, compile)" ' +
-              '                          ref="closeExample">' +
-              '         {{item.name}}:' +
-              '         <span v-html="item.description"></span>' +
-              '       </b-list-group-item>' +
-              '     </b-list-group>' +
-              '   </div>' +
+              ' ' +
+              '   <span class="h6" v-if="example_available.length == 0">' +
+              '     There\'s no examples at the moment' +
+              '   </span>' +
+              ' ' +
+              '   <b-list-group>' +
+              '     <b-list-group-item button ' +
+              '                        v-for="item in example_available" ' +
+              '                        @click="load_example(item.url, compile)" ' +
+              '                        ref="closeExample">' +
+              '       {{item.name}}:' +
+              '       <span v-html="item.description"></span>' +
+              '     </b-list-group-item>' +
+              '   </b-list-group>' +
               ' </b-modal>'
   }
 
