@@ -24,12 +24,13 @@
   var uielto_configuration = {
 
   props:      {
-                id:                   { type: String,  required: true },
-                instructions_packed:  { type: Number,  required: true },
-                autoscroll:           { type: Boolean, required: true },
-                notification_time:    { type: Number,  required: true },
-                dark:                 { type: Boolean, required: true },
-                c_debug:              { type: Boolean, required: true }
+                id:                     { type: String,  required: true },
+                instructions_packed:    { type: Number,  required: true },
+                autoscroll:             { type: Boolean, required: true },
+                notification_time:      { type: Number,  required: true },
+                instruction_help_size:  { type: Number,  required: true },
+                dark:                   { type: Boolean, required: true },
+                c_debug:                { type: Boolean, required: true }
               },
 
   methods:    {
@@ -95,6 +96,31 @@
              
                   //Google Analytics
                   creator_ga('configuration', 'configuration.notification_time', 'configuration.notification_time.less_time_' + (prevNotificationTime > this._props.notificationTime).toString());
+                },
+
+                //change instruction help size
+                change_instruction_help_size(value){
+                  var prevInstruction_help_size = this._props.instruction_help_size;
+              
+                  if (value) {
+                    this._props.instruction_help_size = this._props.instruction_help_size + value;
+                    if (this._props.instruction_help_size < 15){
+                      this._props.instruction_help_size = 15;
+                    }
+                    if (this._props.instruction_help_size > 65) {
+                      this._props.instruction_help_size = 65;
+                    }
+                  }
+                  else {
+                    this._props.instruction_help_size = parseInt(this._props.instruction_help_size);
+                  }
+
+                  app._data.instruction_help_size = this._props.instruction_help_size; //TODO: vue bidirectional updates
+             
+                  localStorage.setItem("instruction_help_size", this._props.instruction_help_size);
+             
+                  //Google Analytics
+                  creator_ga('configuration', 'configuration.instruction_help_size', 'configuration.instruction_help_size.less_size_' + (prevInstruction_help_size > this._props.instruction_help_size).toString());
                 },
               
                 //change the font size
@@ -198,6 +224,27 @@
                 '         </b-form-input>' +
                 '         <b-input-group-append>' +
                 '           <b-btn variant="outline-secondary" @click="change_notification_time(20)">+</b-btn>' +
+                '         </b-input-group-append>' +
+                '       </b-input-group>' +
+                '     </b-list-group-item>' +
+                ' ' +
+                '     <b-list-group-item class="d-flex justify-content-between align-items-center m-1">' +
+                '       <label for="range-3">Instruction Help Size:</label>' +
+                '       <b-input-group>' +
+                '         <b-input-group-prepend>' +
+                '           <b-btn variant="outline-secondary" @click="change_instruction_help_size(-2)">-</b-btn>' +
+                '         </b-input-group-prepend>' +
+                '         <b-form-input id="range-3"' +
+                '                       v-model="instruction_help_size" ' +
+                '                       @change="change_instruction_help_size(0)" ' +
+                '                       type="range" ' +
+                '                       min="15" ' +
+                '                       max="65" ' +
+                '                       step="2" ' +
+                '                       title="Instruction Help Size">' +
+                '         </b-form-input>' +
+                '         <b-input-group-append>' +
+                '           <b-btn variant="outline-secondary" @click="change_instruction_help_size(2)">+</b-btn>' +
                 '         </b-input-group-append>' +
                 '       </b-input-group>' +
                 '     </b-list-group-item>' +

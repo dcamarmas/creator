@@ -75,6 +75,9 @@ try
       //Displayed notifications
       notifications: notifications,
 
+      // Instruction help size
+      instruction_help_size: 33,
+
       //Auto Scroll
       autoscroll: true,
 
@@ -277,6 +280,7 @@ try
       //Available examples
       //
 
+      example_set_available: example_set_available,
       example_available: example_available,
       //example_loaded: null, //TODO
 
@@ -466,7 +470,10 @@ try
 
         if(localStorage.getItem("notificationTime") != null){
           this.notificationTime = parseInt(localStorage.getItem("notificationTime"));
+        }
 
+        if(localStorage.getItem("instruction_help_size") != null){
+          this.instruction_help_size = parseInt(localStorage.getItem("instruction_help_size"));
         }
       },
 
