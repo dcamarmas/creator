@@ -118,7 +118,8 @@
           <!-- Configuration modal -->
           <form-configuration id="configuration"
                               :instructions_packed="instructionsPacked" 
-                              :autoscroll="autoscroll" 
+                              :autoscroll="autoscroll"
+                              :instruction_help_size="instruction_help_size"
                               :notification_time="notificationTime" 
                               :dark="dark" 
                               :c_debug="c_debug">
@@ -137,7 +138,10 @@
 
 
           <!-- Instruction Help sidebar -->
-          <sidebar-instruction-help id="sidebar_help" :architecture="architecture"></sidebar-instruction-help>
+          <sidebar-instruction-help id="sidebar_help" 
+                                    :architecture="architecture"
+                                    :instruction_help_size="instruction_help_size">
+          </sidebar-instruction-help>
 
         </header>
 
@@ -472,7 +476,13 @@
               <save-assembly id="save_assembly"></save-assembly>
 
               <!-- Examples modal -->
-              <examples id="examples" ref="examples" :example_available="example_available" compile="false" modal="examples"></examples>
+              <examples id="examples" 
+                        ref="examples"
+                        :example_set_available="example_set_available" 
+                        :example_available="example_available" 
+                        compile="false" 
+                        modal="examples">     
+              </examples>
 
               <!-- Load binary form -->
               <load-library id="load_binary"></load-library>
@@ -536,10 +546,11 @@
 
               <!-- Examples modal -->
               <examples id="examples2" 
-                        ref="examples2" 
+                        ref="examples2"
+                        :example_set_available="example_set_available" 
                         :example_available="example_available" 
                         compile="true" 
-                        modal="examples2">
+                        modal="examples2">     
               </examples>
 
               <!-- Calculator -->
