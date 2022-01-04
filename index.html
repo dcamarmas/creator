@@ -160,7 +160,9 @@
 
 
               <!-- Navbar -->
-              <uielto-toolbar id="navbar_load_architecture" components=" | | | btn_configuration,btn_information">
+              <uielto-toolbar id="navbar_load_architecture" 
+                              components=" | | |btn_configuration,btn_information" 
+                              :browser="browser">
               </uielto-toolbar>
           
 
@@ -222,7 +224,9 @@
             <b-col>
 
               <!-- Navbar -->
-              <uielto-toolbar id="navbar_architecture" components="btn_assembly,btn_simulator|btn_save_architecture|btn_advanced_mode|btn_configuration,btn_information">
+              <uielto-toolbar id="navbar_architecture" 
+                              components="btn_assembly,btn_simulator|btn_save_architecture|btn_advanced_mode|btn_configuration,btn_information" 
+                              :browser="browser">
               </uielto-toolbar>
 
               
@@ -454,7 +458,9 @@
             <b-col>
 
               <!-- Navbar -->
-              <uielto-toolbar id="navbar_assembly" components="btn_architecture,btn_simulator|dropdown_assembly_file,dropdown_library|btn_compile|btn_configuration,btn_information">
+              <uielto-toolbar id="navbar_assembly" 
+                              components="btn_architecture,btn_simulator|dropdown_assembly_file,dropdown_library|btn_compile|btn_configuration,btn_information" 
+                              :browser="browser">
               </uielto-toolbar>
 
               <!-- Assembly navbar modals -->
@@ -520,7 +526,9 @@
             <b-col>
 
               <!-- Navbar -->
-              <uielto-toolbar id="navbar_simulator" components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information">
+              <uielto-toolbar id="navbar_simulator" 
+                              components="btn_architecture,btn_assembly|btn_reset,btn_instruction,btn_run,btn_stop|btn_examples,btn_calculator|btn_configuration,btn_information" 
+                              :browser="browser">
               </uielto-toolbar>
 
 
