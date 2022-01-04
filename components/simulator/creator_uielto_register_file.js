@@ -53,7 +53,7 @@
               
               },
 
-  template:   ' <div class="col-lg-12 col-sm-12 px-0" id="register_file" v-if="data_mode == \'registers\'">' +
+  template:   ' <div>' +
               '   <b-container fluid align-h="between" class="mx-0 px-0">' +
               '     <b-row cols-xl="2" cols-lg="1" cols-md="2" cols-sm="1" cols-xs="1" cols="1" >' +
               '       <b-col align-h="start" class="px-1">' +

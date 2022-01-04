@@ -74,6 +74,7 @@
                     '           title = "Load Assembly"' +
                     '           ok-title="Load from this File"' +
                     '           @ok="assembly_update">' +
+                    ' ' +
                     '   <p> Please select the assembly file to be loaded </p> ' +
                     '   <b-form-file v-model="load_assembly"' +
                     '                :state="Boolean(load_assembly)" ' +

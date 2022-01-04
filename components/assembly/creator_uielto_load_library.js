@@ -72,6 +72,7 @@
                     '           title = "Load Binary" ' +
                     '           ok-title="Load from this File" ' +
                     '           @ok="library_update">' +
+                    ' ' +
                     '   <p> Please select the binary file to be loaded </p> ' +
                     '   <b-form-file v-model="name_binary_load" ' +
                     '                :state="Boolean(name_binary_load)" ' +
