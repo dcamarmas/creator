@@ -87,56 +87,65 @@
                   uielto_preload_architecture.data.architecture_name = ename;
                   app._data.architecture_name = ename; //TODO: bidirectional
 
+                  if (load_associated_examples && typeof e.examples !== "undefined"){
+                    this.load_examples_available();
+                  }
+
                   app.change_UI_mode('simulator');
                   app.change_data_view('registers', 'int');
                   app.$forceUpdate();
-
-                  if (load_associated_examples && typeof e.examples !== "undefined"){
-                    this.load_examples_available(e.examples[0]); //TODO if e.examples.length > 1 -> View example set selector
-                  }
                 },
 
                 //Load the available examples
-                load_examples_available( set_name ) {
+                load_examples_available( ) {
                   this.example_loaded = new Promise(function(resolve, reject) {
+
+                    //Synchronous json read
+                    $.ajaxSetup({
+                        async: false
+                    });
 
                     $.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
 
                       // current architecture in upperCase
                       var current_architecture = uielto_preload_architecture.data.architecture_name.toUpperCase() ;
 
-                      // search for set_name in the example set 'set'
+                      // search for architecture name in the example set 'set'
                       for (var i=0; i<set.length; i++)
                       {
-                        // if set_name in set[i]...
-                        if (set[i].id.toUpperCase() == set_name.toUpperCase())
-                        {
-                          // if current_architecture active but not the associated with set, skip
-                          if  ( (current_architecture != '') &&
-                              (set[i].architecture.toUpperCase() != current_architecture) )
-                              {
-                                continue ;
-                              }
 
-                          // if no current_architecture loaded then load the associated
-                          if (current_architecture == '') {
-                            $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
-                              uielto_preload_architecture.methods.load_arch_select_aux(set[i].architecture,cfg, false, null);
-                            }) ;
-                          }
+                        // if current_architecture active but not the associated with set, skip
+                        if  ( (current_architecture != '') &&
+                            (set[i].architecture.toUpperCase() != current_architecture) )
+                            {
+                              continue ;
+                            }
 
-                          // load the associate example list
-                          $.getJSON(set[i].url, function(cfg){
-                            example_available = cfg ;
-                            app._data.example_available = example_available ; //TODO: bidirectional
-                            resolve('Example list loaded.') ;
-                          });
-
-                          return ;
+                        example_set_available.push({text: set[i].id, value: example_set_available.length}) ;
+                        
+                        // if no current_architecture loaded then load the associated
+                        if (current_architecture == '') {
+                          $.getJSON('architecture/'+ set[i].architecture +'.json', function(cfg) {
+                            uielto_preload_architecture.methods.load_arch_select_aux(set[i].architecture,cfg, false, null);
+                          }) ;
                         }
+
+                        // load the associate example list
+                        $.getJSON(set[i].url, function(cfg){
+                          example_available[example_available.length] = cfg
+                          resolve('Example list loaded.') ;
+                        });
+
                       }
 
-                      reject('Unavailable example list.') ;
+                      app._data.example_set_available = example_set_available
+                      app._data.example_available = example_available ; //TODO: bidirectional
+
+                      if (example_set_available.length == 0)
+                      {
+                        reject('Unavailable example list.') ;
+                      }
+
                     });
                   }) ;
                 },

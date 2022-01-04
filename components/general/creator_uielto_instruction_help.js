@@ -23,21 +23,28 @@
 
   var uielto_instruction_help = {
         props:      {
-                      id:              { type: String, required: true },
-                      architecture:    { type: Object, required: true }
+                      id:                       { type: String, required: true },
+                      architecture:             { type: Object, required: true },
+                      instruction_help_size:    { type: Object, required: true }
                        
                     },
 
         data:       function () {
                       return {
-                        /*Help Filter*/
+                        //Help Filter
                         instHelpFilter: null,
-                        /*Help table*/
+                        //Help table
                         insHelpFields: ['name']
                       }
                     },
 
-        template:   '<b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" title="Instruction Help" right shadow width="33vw">' +
+        methods:   {
+                      get_width(){
+                        return this._props.instruction_help_size + "vw"
+                      }
+                    },
+
+        template:   '<b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" title="Instruction Help" right shadow :width="get_width()">' +
                     ' ' +
                     ' <b-form-input' +
                     '   id="filter-input"' +
