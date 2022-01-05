@@ -40,6 +40,10 @@
               },
 
   methods:    {
+                get_example_set(){
+                  return this.example_set;
+                },
+
                 /*Load a selected example*/
                 load_example(url, compile)
                 {
@@ -75,7 +79,7 @@
               '   <b-form-group label="Examples set available:" v-if="example_set_available.length > 1" v-slot="{ ariaDescribedby }">' +
               '     <b-form-radio-group' +
               '       v-if="example_set_available.length <= 2"' +
-              '       id="btn-radios-1"' +
+              '       id="example_set"' +
               '       class="w-100"' +
               '       v-model="example_set"' +
               '       :options="example_set_available"' +
