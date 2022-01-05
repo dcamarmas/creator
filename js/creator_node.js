@@ -179,15 +179,19 @@ function get_state ( )
     var addrs = main_memory_get_addresses() ;
     for (var i=0; i<addrs.length; i++)
     {
-     elto_value  = main_memory_read_value(addrs[i]) ;
-     elto_dvalue = main_memory_read_default_value(addrs[i]) ;
+      if(addrs[i] >= architecture.memory_layout[3].value){
+        continue;
+      }
 
-     if (elto_value != elto_dvalue)
-     {
+      elto_value  = main_memory_read_value(addrs[i]) ;
+      elto_dvalue = main_memory_read_default_value(addrs[i]) ;
+
+      if (elto_value != elto_dvalue)
+      {
         addr_string = "0x" + parseInt(addrs[i]).toString(16) ;
         elto_string = "0x" + elto_value ;
         ret.msg = ret.msg + "memory[" + addr_string + "]" + ":" + elto_string + "; ";
-     }
+      }
     }
     
 
