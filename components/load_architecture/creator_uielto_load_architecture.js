@@ -135,52 +135,51 @@
                 }, getDebounceTime())
               },
 
-  template:   ' <div> ' +
-              '   <b-card no-body class="overflow-hidden arch_card architectureCard" ' +
-              '           v-b-modal.load_arch>' +
-              '     <b-row no-gutters>' +
-              '        <b-col sm="3" class="center">' +
-              '         <b-card-img src="./images/load_icon.png" ' +
-              '                     alt="load icon" class="rounded-0 architectureImg">' +
-              '         </b-card-img>' +
-              '       </b-col>' +
+  template:   '<b-card no-body class="overflow-hidden arch_card architectureCard" ' +
+              '        v-b-modal.load_arch>' +
+              '  <b-row no-gutters>' +
+              '    <b-col sm="12" class="center w-100 my-2">' +
+              '      <b-card-img src="./images/load_icon.png" ' +
+              '                  alt="load icon"' +
+              '                  class="w-75 rounded-0 architectureImg">' +
+              '      </b-card-img>' +
+              '    </b-col>' +
               ' ' +
-              '       <b-col sm="9">' +
-              '         <b-card-body title="Load Architecture" title-tag="h2">' +
-              '           <b-card-text class="justify">' +
-              '             Allows to load the definition of an already created architecture.' +
-              '           </b-card-text>' +
-              '         </b-card-body>' +
-              '       </b-col>' +
-              '     </b-row>' +
-              '   </b-card>' +
+              '    <b-col sm="12">' +
+              '      <b-card-body title="Load Architecture" title-tag="h2">' +
+              '        <b-card-text class="justify">' +
+              '          Allows to load the definition of an already created architecture.' +
+              '        </b-card-text>' +
+              '      </b-card-body>' +
+              '    </b-col>' +
+              '  </b-row>' +
               ' ' +
-              '   <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">' +
-              '     <b-form>' +
-              '       <b-form-input v-on:input="debounce(\'name_arch\', $event)" ' +
-              '                     :value="name_arch" ' +
-              '                     placeholder="Enter the name of the architecture" ' +
-              '                     :state="valid(name_arch)" ' +
-              '                     title="Architecture Name">' +
-              '       </b-form-input>' +
-              '       <br>' +
-              '       <b-form-textarea v-on:input="debounce(\'description_arch\', $event)" ' +
-              '                        :value="description_arch" ' +
-              '                        placeholder="Enter a description of the architecture" ' +
-              '                        rows="3" ' +
-              '                        title="Architecture Description">' +
-              '       </b-form-textarea>' +
-              '       <br>' +
-              '       <b-form-file v-model="load_arch" ' +
-              '                    placeholder="Choose a file..." ' +
-              '                    id="arch_file" ' +
-              '                    accept=".json" ' +
-              '                    :state="valid(load_arch)">' +
-              '       </b-form-file>' +
-              '     </b-form>' +
-              '   </b-modal>' +
-              ' </div>'
-
+              '  <b-modal id="load_arch" title="Load Architecture" v-model="showLoadArch" @ok="read_arch">' +
+              '    <b-form>' +
+              '      <b-form-input v-on:input="debounce(\'name_arch\', $event)" ' +
+              '                    :value="name_arch" ' +
+              '                    placeholder="Enter the name of the architecture" ' +
+              '                    :state="valid(name_arch)" ' +
+              '                    title="Architecture Name">' +
+              '      </b-form-input>' +
+              '      <br>' +
+              '      <b-form-textarea v-on:input="debounce(\'description_arch\', $event)" ' +
+              '                       :value="description_arch" ' +
+              '                       placeholder="Enter a description of the architecture" ' +
+              '                       rows="3" ' +
+              '                       title="Architecture Description">' +
+              '      </b-form-textarea>' +
+              '      <br>' +
+              '      <b-form-file v-model="load_arch" ' +
+              '                   placeholder="Choose a file..." ' +
+              '                   id="arch_file" ' +
+              '                   accept=".json" ' +
+              '                   :state="valid(load_arch)">' +
+              '      </b-form-file>' +
+              '    </b-form>' +
+              '  </b-modal>' +
+              ' ' +
+              '</b-card>'
   }
 
   Vue.component('load-architecture', uielto_load_architecture) ;
