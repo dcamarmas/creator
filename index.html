@@ -175,12 +175,14 @@
                 <b-row>
                   <b-col>
 
-                    <b-list-group>
-                      <b-list-group-item>
+                    <b-card-group deck>
 
                         <!-- Preload architecture card -->
-                        <preload-architecture :arch_available="arch_available"
-                                              :back_card="back_card">
+                        <preload-architecture v-for="(item, index) in arch_available" 
+                                              :arch_available="arch_available"
+                                              :back_card="back_card"
+                                              :item="item"
+                                              :index="index">
                         </preload-architecture>
 
                         <!-- Load new architecture card -->
@@ -189,8 +191,7 @@
                         <!-- New architecture card -->
                         <new-architecture></new-architecture>
 
-                      </b-list-group-item>
-                    </b-list-group>
+                    </b-card-group>
 
                   </b-col>
                 </b-row>

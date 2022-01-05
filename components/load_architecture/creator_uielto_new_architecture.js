@@ -45,14 +45,15 @@
 
   template:   '<b-card no-body class="overflow-hidden arch_card architectureCard">' +
               '  <b-row no-gutters @click="new_arch">' +
-              '    <b-col sm="3" class="center">' +
+              '    <b-col sm="12" class="center w-100 my-2">' +
               '      <b-card-img src="./images/new_icon.png" ' +
               '                  alt="new icon" ' +
-              '                  class="rounded-0 architectureImg">' +
+              '                  thumbnail fluid'+ 
+              '                  class="w-75 rounded-0 architectureImg">' +
               '      </b-card-img>' +
               '    </b-col>' +
               '' +
-              '    <b-col sm="9">' +
+              '    <b-col sm="12">' +
               '      <b-card-body title="New Architecture" title-tag="h2" >' +
               '        <b-card-text class="justify">' +
               '          Allows you to define an architecture from scratch.' +
