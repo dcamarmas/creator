@@ -98,6 +98,7 @@ cat js/creator_bigint.js \
     components/simulator/creator_uielto_register.js \
     components/simulator/creator_uielto_register_popover.js \
     components/simulator/creator_uielto_memory.js \
+    components/simulator/creator_uielto_memory_table.js \
     components/simulator/creator_uielto_stats.js \
     components/simulator/creator_uielto_stats_plot.js \
     components/simulator/creator_uielto_stats_table.js \

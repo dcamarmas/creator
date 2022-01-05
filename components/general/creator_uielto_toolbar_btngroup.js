@@ -24,7 +24,8 @@
   var uielto_toolbar_btngroup = {
 
         props:      {
-                      group:                        { type: Array,  required: true }
+                      group:                        { type: Array,   required: true },
+                      browser:                      { type: String,  required: true }
                     },
 
         data:       function () {
@@ -543,9 +544,9 @@
             '  <span class="fas fa-fast-forward"></span>' +
             '  Inst.' +
             '</b-button>' +
-            '<b-tooltip v-if="item==\'btn_instruction\'" target="inst" title="Press [Alt] + A" v-if="app._data.browser==\'Chrome\'"></b-tooltip>' +
-            '<b-tooltip v-if="item==\'btn_instruction\'" target="inst" title="Press [Alt] [Shift] + A" v-if="app._data.browser==\'Firefox\'"></b-tooltip>' +
-            '<b-tooltip v-if="item==\'btn_instruction\'" target="inst" title="Press [Control] [Alt/Option] + A" v-if="app._data.browser==\'Mac\'"></b-tooltip>'
+            '<b-tooltip v-if="item==\'btn_instruction\'" target="inst" title="Press [Alt] + A" v-if="browser==\'Chrome\'"></b-tooltip>' +
+            '<b-tooltip v-if="item==\'btn_instruction\'" target="inst" title="Press [Alt] [Shift] + A" v-if="browser==\'Firefox\'"></b-tooltip>' +
+            '<b-tooltip v-if="item==\'btn_instruction\'" target="inst" title="Press [Control] [Alt/Option] + A" v-if="browser==\'Mac\'"></b-tooltip>'
   }
 
   function button_run(){
