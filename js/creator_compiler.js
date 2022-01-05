@@ -140,6 +140,7 @@ let promise;
 /*Displayed notifications*/
 var notifications = [];
 /*Available examples*/
+var example_set_available = [];
 var example_available = [];
 /*Execution*/
 var executionIndex = 0;

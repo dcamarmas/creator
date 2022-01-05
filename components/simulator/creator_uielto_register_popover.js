@@ -300,3 +300,13 @@ template:     '<b-popover :target="target" ' +
   }
 
   Vue.component('popover-register', uielto_register_popover)
+
+  /*Determines the refresh timeout depending on the device being used*/
+  function getDebounceTime(){
+    if(screen.width > 768){
+      return 500;
+    }
+    else{
+      return 1000;
+    }
+  }

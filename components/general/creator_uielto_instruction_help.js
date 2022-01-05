@@ -23,48 +23,54 @@
 
   var uielto_instruction_help = {
         props:      {
-                       architecture:    { type: Object, required: true },
-                       id:              { type: String, required: true }
+                      id:                       { type: String, required: true },
+                      architecture:             { type: Object, required: true },
+                      instruction_help_size:    { type: Object, required: true }
+                       
                     },
 
         data:       function () {
                       return {
-                        /*Help Filter*/
+                        //Help Filter
                         instHelpFilter: null,
-                        /*Help table*/
+                        //Help table
                         insHelpFields: ['name']
                       }
                     },
 
-        template:   '<b-sidebar :id="id" sidebar-class="border-left border-info" title="Instruction Help" right shadow width="33vw">' +
-                    ' <div class="px-3 py-2">' +
+        methods:   {
+                      get_width(){
+                        return this._props.instruction_help_size + "vw"
+                      }
+                    },
+
+        template:   '<b-sidebar :id="id" sidebar-class="border-left border-info px-3 py-2" title="Instruction Help" right shadow :width="get_width()">' +
                     ' ' +
-                    '               <b-form-input' +
-                    '                 id="filter-input"' +
-                    '                 v-model="instHelpFilter"' +
-                    '                 type="search"' +
-                    '                 placeholder="Search instruction"' +
-                    '                 size=sm' +
-                    '               ></b-form-input>' +
+                    ' <b-form-input' +
+                    '   id="filter-input"' +
+                    '   v-model="instHelpFilter"' +
+                    '   type="search"' +
+                    '   placeholder="Search instruction"' +
+                    '   size=sm' +
+                    ' ></b-form-input>' +
                     ' ' +
-                    '               <br>' +
+                    ' <br>' +
                     ' ' +
-                    '               <b-table small :items="architecture.instructions" ' +
-                    '                              :fields="insHelpFields" ' +
-                    '                              class="text-left help-scroll-y"' +
-                    '                              :filter="instHelpFilter"' +
-                    '                              thead-class="d-none">' +
+                    ' <b-table small :items="architecture.instructions" ' +
+                    '                :fields="insHelpFields" ' +
+                    '                class="text-left help-scroll-y"' +
+                    '                :filter="instHelpFilter"' +
+                    '                thead-class="d-none">' +
                     ' ' +
-                    '                 <template v-slot:cell(name)="row">' +
-                    '                   <h4>{{row.item.name}}</h4>' +
-                    '                   <em>{{row.item.signatureRaw}}</em>' +
-                    '                   <br>' +
-                    '                   {{row.item.help}}' +
-                    '                 </template>' +
+                    '   <template v-slot:cell(name)="row">' +
+                    '     <h4>{{row.item.name}}</h4>' +
+                    '     <em>{{row.item.signatureRaw}}</em>' +
+                    '     <br>' +
+                    '     {{row.item.help}}' +
+                    '   </template>' +
                     ' ' +
-                    '               </b-table>' +
+                    ' </b-table>' +
                     ' ' +
-                    '             </div>'+
                     '</b-sidebar'
   }
 
