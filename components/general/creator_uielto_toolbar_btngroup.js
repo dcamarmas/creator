@@ -331,8 +331,8 @@
                             return;
                         }
 
-                        $("#stopExecution").show();
-                        $("#playExecution").hide();
+                        //$("#stopExecution").show();
+                        //$("#playExecution").hide();
 
                         this.programExecutionInst(but);
                       },
@@ -343,23 +343,23 @@
                         {
                           if(mutexRead == true){
                             iter1 = 1;
-                            $("#stopExecution").hide();
-                            $("#playExecution").show();
+                            //$("#stopExecution").hide();
+                            //$("#playExecution").show();
                             runProgram=false;
                             return;
                           }
                           else if(instructions[executionIndex].Break == true && iter1 == 0){
                             iter1 = 1;
-                            $("#stopExecution").hide();
-                            $("#playExecution").show();
+                            //$("#stopExecution").hide();
+                            //$("#playExecution").show();
                             runProgram=false;
                             return;
                           }
                           else if(this.runExecution == true){
                             app._data.runExecution = false;
                             iter1 = 1;
-                            $("#stopExecution").hide();
-                            $("#playExecution").show();
+                            //$("#stopExecution").hide();
+                            //$("#playExecution").show();
                             runProgram=false;
                             return;
                           }
@@ -369,8 +369,8 @@
                           else if(this.resetBut == true){
                             app._data.resetBut = false;
 
-                            $("#stopExecution").hide();
-                            $("#playExecution").show();
+                            //$("#stopExecution").hide();
+                            //$("#playExecution").show();
                             runProgram=false;
                             return;
                           }
@@ -384,8 +384,8 @@
                           setTimeout(this.programExecutionInst, 15);
                         }
                         else{
-                          $("#stopExecution").hide();
-                          $("#playExecution").show();
+                          //$("#stopExecution").hide();
+                          //$("#playExecution").show();
                         }
                       },
 
