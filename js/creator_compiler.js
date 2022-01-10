@@ -103,33 +103,33 @@ var pending_tags = [];
 var extern = [];
 /*Error code messages*/
 var compileError = {
-	 'm0': function(ret) { return ""                                   + ret.token + "" },
-	 'm1': function(ret) { return "Repeated tag: "                     + ret.token + "" },
-	 'm2': function(ret) { return "Instruction '"                      + ret.token + "' not found" },
-	 'm3': function(ret) { return "Incorrect instruction syntax for '" + ret.token + "'" },
-	 'm4': function(ret) { return "Register '"                         + ret.token + "' not found" },
-	 'm5': function(ret) { return "Immediate number '"                 + ret.token + "' is too big" },
-	 'm6': function(ret) { return "Immediate number '"                 + ret.token + "' is not valid" },
-	 'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
-	 'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
-	 'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
+   'm0': function(ret) { return ""                                   + ret.token + "" },
+   'm1': function(ret) { return "Repeated tag: "                     + ret.token + "" },
+   'm2': function(ret) { return "Instruction '"                      + ret.token + "' not found" },
+   'm3': function(ret) { return "Incorrect instruction syntax for '" + ret.token + "'" },
+   'm4': function(ret) { return "Register '"                         + ret.token + "' not found" },
+   'm5': function(ret) { return "Immediate number '"                 + ret.token + "' is too big" },
+   'm6': function(ret) { return "Immediate number '"                 + ret.token + "' is not valid" },
+   'm7': function(ret) { return "Tag '"                              + ret.token + "' is not valid" },
+   'm8': function(ret) { return "Address '"                          + ret.token + "' is too big" },
+   'm9': function(ret) { return "Address '"                          + ret.token + "' is not valid" },
     'm10': function(ret) { return ".space value out of range ("        + ret.token + " is greater than 50MiB)" },
       //'m11': function(ret) { return "This field '"                       + ret.token + "' must end with ')'" },
-	'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
-	'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
-	'm14': function(ret) { return "Invalid directive: "                        + ret.token + "" },
-	'm15': function(ret) { return "Invalid value '"                            + ret.token + "' as number." },
-	'm16': function(ret) { return 'The string of characters must start with "' + ret.token + "" },
-	'm17': function(ret) { return 'The string of characters must end with "'   + ret.token + "" },
-	'm18': function(ret) { return "Number '"                                   + ret.token + "' is too big" },
-	'm19': function(ret) { return "Number '"                                   + ret.token + "' is empty" },
+  'm12': function(ret) { return "This field is too small to encode in binary '" + ret.token + "" },
+  'm13': function(ret) { return "Incorrect pseudoinstruction definition "    + ret.token + "" },
+  'm14': function(ret) { return "Invalid directive: "                        + ret.token + "" },
+  'm15': function(ret) { return "Invalid value '"                            + ret.token + "' as number." },
+  'm16': function(ret) { return 'The string of characters must start with "' + ret.token + "" },
+  'm17': function(ret) { return 'The string of characters must end with "'   + ret.token + "" },
+  'm18': function(ret) { return "Number '"                                   + ret.token + "' is too big" },
+  'm19': function(ret) { return "Number '"                                   + ret.token + "' is empty" },
       //'m20': function(ret) { return "The text segment should start with '"       + ret.token + "'" },
-	'm21': function(ret) { return "The data must be aligned"                   + ret.token + "" },
-	'm22': function(ret) { return "The number should be positive '"            + ret.token + "'" },
-	'm23': function(ret) { return "Empty directive"                            + ret.token + "" },
-	'm24': function(ret) { return "After the comma you should go a blank --> " + ret.token + "" },
-	//'m25': function(ret) { return "Incorrect syntax "                          + ret.token + "" },
-	'm26': function(ret) { return "Syntax error near line: "                   + ret.token + "" }
+  'm21': function(ret) { return "The data must be aligned"                   + ret.token + "" },
+  'm22': function(ret) { return "The number should be positive '"            + ret.token + "'" },
+  'm23': function(ret) { return "Empty directive"                            + ret.token + "" },
+  'm24': function(ret) { return "After the comma you should go a blank --> " + ret.token + "" },
+  //'m25': function(ret) { return "Incorrect syntax "                          + ret.token + "" },
+  'm26': function(ret) { return "Syntax error near line: "                   + ret.token + "" }
 } ;
 /*Promise*/
 let promise;
@@ -197,7 +197,7 @@ var display = '' ;
 
 function load_arch_select ( cfg )
 {
-	    var ret = {
+      var ret = {
                         errorcode: "",
                         token: "",
                         type: "",
@@ -205,20 +205,20 @@ function load_arch_select ( cfg )
                         status: "ok"
                       } ;
 
-	    var auxArchitecture = cfg;
-	    architecture = register_value_deserialize(auxArchitecture);
+      var auxArchitecture = cfg;
+      architecture = register_value_deserialize(auxArchitecture);
 
-	    architecture_hash = [];
-	    for (var i = 0; i < architecture.components.length; i++) {
-	         architecture_hash.push({name: architecture.components[i].name, index: i});
-	    }
+      architecture_hash = [];
+      for (var i = 0; i < architecture.components.length; i++) {
+           architecture_hash.push({name: architecture.components[i].name, index: i});
+      }
 
-	    backup_stack_address = architecture.memory_layout[4].value;
-	    backup_data_address  = architecture.memory_layout[3].value;
+      backup_stack_address = architecture.memory_layout[4].value;
+      backup_data_address  = architecture.memory_layout[3].value;
 
-	    ret.token = "The selected architecture has been loaded correctly";
-	    ret.type  = "success";
-	    return ret;
+      ret.token = "The selected architecture has been loaded correctly";
+      ret.type  = "success";
+      return ret;
 }
 
 
@@ -230,9 +230,9 @@ var creator_debug = false ;
 
 function console_log ( msg )
 {
-	if (creator_debug) {
-	    console.log(msg) ;
-	}
+  if (creator_debug) {
+      console.log(msg) ;
+  }
 }
 
 
@@ -424,7 +424,7 @@ function next_token()
 /*Compile assembly code*/
 function assembly_compiler()
 {
-	var ret = {
+  var ret = {
           errorcode: "",
           token: "",
           type: "",
@@ -434,7 +434,7 @@ function assembly_compiler()
 
         /* Google Analytics */
         creator_ga('compile', 'compile.assembly');
-      	
+        
         instructions = [];
         instructions_tag = [];
         tag_instructions = {};
@@ -633,7 +633,7 @@ function assembly_compiler()
 
         /*Check pending instructions*/
         for (var i = 0; i < pending_instructions.length; i++)
-	{
+  {
           var exit = 0;
           var signatureParts    = pending_instructions[i].signature;
           var signatureRawParts = pending_instructions[i].signatureRaw;
@@ -641,14 +641,14 @@ function assembly_compiler()
           console_log(instructionParts);
 
           for (var j = 0; j < signatureParts.length && exit == 0; j++)
-	  {
+    {
             if (signatureParts[j] == "inm-signed" || signatureParts[j] == "inm-unsigned" || signatureParts[j] == "address")
             {
 
               for (var z = 0; z < instructions.length && exit == 0; z++)
-	      {
+        {
                 if (instructions[z].Label == instructionParts[j])
-		{
+    {
                   var addr = instructions[z].Address;
                   var bin  = parseInt(addr, 16).toString(2);
                   var startbit = pending_instructions[i].startBit;
@@ -657,7 +657,7 @@ function assembly_compiler()
                   instructionParts[j] = addr;
                   var newInstruction  = "";
                   for (var w=0; w < instructionParts.length; w++)
-	          {
+            {
                       newInstruction = newInstruction + instructionParts[w];
                       if (w != instructionParts.length-1) {
                           newInstruction = newInstruction + " ";
@@ -665,7 +665,7 @@ function assembly_compiler()
                   }
 
                   for (var w=0; w < instructions.length && exit == 0; w++)
-		  {
+      {
                        var aux = "0x" + (pending_instructions[i].address).toString(16);
                        if (aux == instructions[w].Address) {
                            instructions[w].loaded = newInstruction;
@@ -673,16 +673,16 @@ function assembly_compiler()
                   }
 
                   for (var w=0; w < instructions.length && exit == 0; w++)
-	          {
+            {
                        var aux = "0x" + (pending_instructions[i].address).toString(16);
                        if (aux == instructions[w].Address)
-		       {
+           {
                            instructions[w].loaded = newInstruction;
                            var fieldsLength = startbit - stopbit + 1;
                            console_log(w)
                            console_log(numBinaries)
                            console_log(w - numBinaries)
-	                   var iload =  instructions_binary[w - numBinaries].loaded;
+                     var iload =  instructions_binary[w - numBinaries].loaded;
                            instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
                            exit = 1;
                        }
@@ -691,10 +691,10 @@ function assembly_compiler()
               }
 
 
-	      // NEW
-	      var ret1 = creator_memory_findaddress_bytag(instructionParts[j]);
-	      if (ret1.exit == 1)
-	      {
+        // NEW
+        var ret1 = creator_memory_findaddress_bytag(instructionParts[j]);
+        if (ret1.exit == 1)
+        {
                     var addr = ret1.value;
                     var bin  = parseInt(addr, 16).toString(2);
                     var startbit = pending_instructions[i].startBit;
@@ -703,14 +703,14 @@ function assembly_compiler()
                     instructionParts[j] = "0x" + addr.toString(16);
                     var newInstruction = "";
                     for (var w=0; w < instructionParts.length; w++)
-	            {
+              {
                          newInstruction = newInstruction + instructionParts[w];
                          if (w != instructionParts.length-1){
                              newInstruction = newInstruction + " ";
                          }
                     }
                     for (var w=0; w < instructions.length; w++)
-		    {
+        {
                          var aux = "0x" + (pending_instructions[i].address).toString(16);
                          if (aux == instructions[w].Address) {
                              instructions[w].loaded = newInstruction;
@@ -718,21 +718,21 @@ function assembly_compiler()
                     }
 
                     for (var w=0; w < instructions.length && exit == 0; w++)
-		    {
+        {
                          var aux = "0x" + (pending_instructions[i].address).toString(16);
                          if (aux == instructions[w].Address)
-			 {
+       {
                              instructions[w].loaded = newInstruction;
                              var fieldsLength = startbit - stopbit + 1;
-	                     var iload        = instructions_binary[w - numBinaries].loaded;
+                       var iload        = instructions_binary[w - numBinaries].loaded;
                              instructions_binary[w - numBinaries].loaded = iload.substring(0, iload.length - (startbit + 1)) + bin.padStart(fieldsLength, "0") + iload.substring(iload.length - stopbit, iload.length);
                              exit = 1;
                          }
                     }
-	      }
+        }
 
               if (exit == 0 && isNaN(instructionParts[j]) == true)
-	      {
+        {
                 //tokenIndex = 0;
                 //nEnters = 0 ;
                 //tokenIndex=pending_instructions[i].line;
@@ -1018,7 +1018,7 @@ function assembly_compiler()
         data_address = architecture.memory_layout[2].value;
         stack_address = architecture.memory_layout[4].value;
 
-	// save current value as default values for reset()...
+  // save current value as default values for reset()...
         creator_memory_prereset() ;
 
         return ret;
@@ -1027,7 +1027,7 @@ function assembly_compiler()
 /*Compile data segment*/
 function data_segment_compiler()
 {
-	var ret = {
+  var ret = {
           errorcode: "",
           token: "",
           type: "",
@@ -1039,7 +1039,7 @@ function data_segment_compiler()
 
         next_token();
         while(existsData)
-	{
+  {
           token = get_token();
           console_log("token: " + token);
 
@@ -1067,7 +1067,7 @@ function data_segment_compiler()
               }
 
               for (var i = 0; i < instructions.length; i++)
-	      {
+        {
                    if (instructions[i].Label == token.substring(0,token.length-1)) {
                        return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
                    }
@@ -1079,11 +1079,11 @@ function data_segment_compiler()
           }
 
           for (var j = 0; j < architecture.directives.length; j++)
-	  {
+    {
             if (token == architecture.directives[j].name)
-	    {
+      {
               switch (architecture.directives[j].action)
-	      {
+        {
                 case "byte":
                   var isByte = true;
 
@@ -1165,11 +1165,11 @@ function data_segment_compiler()
                     console_log(auxTokenString)
 
                     var r = creator_memory_data_compiler(data_address, auxTokenString, 
-						         architecture.directives[j].size, label, 
-						         (parseInt(auxTokenString, 16) >> 0), "byte") ;
-		    if (r.msg != "") {
-		        return packCompileError(r.msg, "", 'error', "danger") ;
-		    }
+                     architecture.directives[j].size, label, 
+                     (parseInt(auxTokenString, 16) >> 0), "byte") ;
+        if (r.msg != "") {
+            return packCompileError(r.msg, "", 'error', "danger") ;
+        }
 
                     data_address = r.data_address ;
                     label = null;
@@ -1249,11 +1249,11 @@ function data_segment_compiler()
                     console_log(auxTokenString)
 
                     var r = creator_memory_data_compiler(data_address, auxTokenString, 
-						         architecture.directives[j].size, label, 
-						         (parseInt(auxTokenString, 16) >> 0), "half") ;
-		    if (r.msg != "") {
-		        return packCompileError(r.msg, "", 'error', "danger") ;
-		    }
+                     architecture.directives[j].size, label, 
+                     (parseInt(auxTokenString, 16) >> 0), "half") ;
+        if (r.msg != "") {
+            return packCompileError(r.msg, "", 'error', "danger") ;
+        }
 
                     data_address = r.data_address ;
                     label = null;
@@ -1330,11 +1330,11 @@ function data_segment_compiler()
                     console_log(auxTokenString);
 
                     var r = creator_memory_data_compiler(data_address, auxTokenString, 
-						         architecture.directives[j].size, label, 
-						         (parseInt(auxTokenString, 16) >> 0), "word") ;
-		    if (r.msg != "") {
-		        return packCompileError(r.msg, "", 'error', "danger") ;
-		    }
+                     architecture.directives[j].size, label, 
+                     (parseInt(auxTokenString, 16) >> 0), "word") ;
+        if (r.msg != "") {
+            return packCompileError(r.msg, "", 'error', "danger") ;
+        }
 
                     data_address = r.data_address ;
                     label = null;
@@ -1412,11 +1412,11 @@ function data_segment_compiler()
                     }
 
                     var r = creator_memory_data_compiler(data_address, auxTokenString, 
-						         architecture.directives[j].size, label, 
-						         (parseInt(auxTokenString, 16) >> 0), "double_word") ;
-		    if (r.msg != "") {
-		        return packCompileError(r.msg, "", 'error', "danger") ;
-		    }
+                     architecture.directives[j].size, label, 
+                     (parseInt(auxTokenString, 16) >> 0), "double_word") ;
+        if (r.msg != "") {
+            return packCompileError(r.msg, "", 'error', "danger") ;
+        }
 
                     data_address = r.data_address ;
                     label = null;
@@ -1508,11 +1508,11 @@ function data_segment_compiler()
                     console_log(auxTokenString);
 
                     var r = creator_memory_data_compiler(data_address, auxTokenString, 
-						         architecture.directives[j].size, label, 
-						         token, "float") ;
-		    if (r.msg != "") {
-		        return packCompileError(r.msg, "", 'error', "danger") ;
-		    }
+                     architecture.directives[j].size, label, 
+                     token, "float") ;
+        if (r.msg != "") {
+            return packCompileError(r.msg, "", 'error', "danger") ;
+        }
 
                     data_address = r.data_address ;
                     label = null;
@@ -1603,11 +1603,11 @@ function data_segment_compiler()
                     console_log(auxTokenString);
 
                     var r = creator_memory_data_compiler(data_address, auxTokenString, 
-						         architecture.directives[j].size, label, 
-						         token, "double") ;
-		    if (r.msg != "") {
-		        return packCompileError(r.msg, "", 'error', "danger") ;
-		    }
+                     architecture.directives[j].size, label, 
+                     token, "double") ;
+        if (r.msg != "") {
+            return packCompileError(r.msg, "", 'error', "danger") ;
+        }
 
                     data_address = r.data_address ;
                     label = null;
@@ -1637,7 +1637,7 @@ function data_segment_compiler()
 
                   next_token();
                   while(isAscii)
-		  {
+      {
                     token = get_token();
                     console_log("token: " + token);
 
@@ -1645,21 +1645,21 @@ function data_segment_compiler()
 
                     re = new RegExp('^"');
                     if (string.search(re) != -1){
-	                string = string.replace(re, "");
-	                console_log(string);
-		    }
-		    else {
-			return packCompileError('m16', "", 'error', "danger") ;
-		    }
+                  string = string.replace(re, "");
+                  console_log(string);
+        }
+        else {
+      return packCompileError('m16', "", 'error', "danger") ;
+        }
 
                     re = new RegExp('"$');
                     if (string.search(re) != -1){
-	                    string = string.replace(re, "");
-	                    console_log(string);
-		    }
-		    else{
-		    	return packCompileError('m17', "", 'error', "danger") ;
-		    }
+                      string = string.replace(re, "");
+                      console_log(string);
+        }
+        else{
+          return packCompileError('m17', "", 'error', "danger") ;
+        }
 
                     if (token == null) {
                         break;
@@ -1696,7 +1696,7 @@ function data_segment_compiler()
                   next_token();
 
                   while(isAscii)
-		  {
+      {
                     console_log("ascii_null_end")
 
                     token = get_token();
@@ -1710,20 +1710,20 @@ function data_segment_compiler()
 
                     re = new RegExp('^"');
                     if(string.search(re) != -1){
-	                    string = string.replace(re, "");
-	                    console_log(string);
-	                }
-	                else{
-	                	return packCompileError('m16', "", 'error', "danger") ;
-	                }
+                      string = string.replace(re, "");
+                      console_log(string);
+                  }
+                  else{
+                    return packCompileError('m16', "", 'error', "danger") ;
+                  }
                     re = new RegExp('"$');
                     if(string.search(re) != -1){
-	                    string = string.replace(re, "");
-	                    console_log(string);
-	                }
-	                else{
-	                	return packCompileError('m17', "", 'error', "danger") ;
-	                }
+                      string = string.replace(re, "");
+                      console_log(string);
+                  }
+                  else{
+                    return packCompileError('m17', "", 'error', "danger") ;
+                  }
 
                     data_address = creator_memory_storestring(string, string.length, data_address, label, "asciiz", align);
 
@@ -1837,7 +1837,7 @@ function data_segment_compiler()
 /* Compile text segment */
 function code_segment_compiler()
 {
-	var ret = {
+  var ret = {
           errorcode: "",
           token: "",
           type: "",
@@ -1894,11 +1894,11 @@ function code_segment_compiler()
                   return packCompileError('m0', "Empty label", 'error', "danger") ;
               }
 
-	      var ret1 = creator_memory_findaddress_bytag(token.substring(0, token.length-1));
-	      if (ret1.exit == 1)
-	      {
+        var ret1 = creator_memory_findaddress_bytag(token.substring(0, token.length-1));
+        if (ret1.exit == 1)
+        {
                   return packCompileError('m1', token.substring(0,token.length-1), 'error', "danger") ;
-	      }
+        }
 
               for (var i = 0; i < instructions.length; i++) {
                    if (instructions[i].Label == token.substring(0,token.length-1)) {
@@ -1912,12 +1912,12 @@ function code_segment_compiler()
               token = get_token();
 
               if (token != null)
-	      {
+        {
                   var re = new RegExp(",+$");
                   token = token.replace(re, "");
               }
               else
-	      {
+        {
                   var instIndex;
                   for (var i = 0; i < architecture.instructions.length; i++) {
                     if (architecture.instructions[i].name == "nop") {
@@ -2133,7 +2133,7 @@ function code_segment_compiler()
 
 /* Compile instruction */
 function instruction_compiler ( instruction, userInstruction, label, line,
-				pending, pendingAddress, instInit, instIndex, isPseudo )
+        pending, pendingAddress, instInit, instIndex, isPseudo )
 {
   var ret = {
           errorcode: "",
@@ -3464,11 +3464,11 @@ function field ( field, action, type )
       }
       else
       {
-  	  var ret = creator_memory_findaddress_bytag(field) ;
-  	  if (ret.exit == 1) {
+      var ret = creator_memory_findaddress_bytag(field) ;
+      if (ret.exit == 1) {
               var numAux = ret.value ;
               return (numAux.toString(2)).length;
-	  }
+    }
       }
   }
 
@@ -3496,10 +3496,10 @@ function field ( field, action, type )
 
     if (Number.isInteger(field) == false)
     {
-        var ret = creator_memory_findaddress_bytag(field) ;
-	if (ret.exit == 1) {
-            field = ret.value ;
-	}
+      var ret = creator_memory_findaddress_bytag(field) ;
+      if (ret.exit == 1) {
+        field = ret.value ;
+      }
     }
 
     if(type == "int"){
@@ -3539,14 +3539,14 @@ function field ( field, action, type )
 function getFieldLength(separated, startbit, stopbit,a)
 {
     if (startbit == stopbit) console_log("Warning: startbit equal to stopBit, please check the achitecture definitions");
-	let fieldsLength;
-	if (!separated || !separated[a])
-		fieldsLength = startbit - stopbit + 1;
-	else
-		fieldsLength = startbit
-		  .map((b, i) => b - stopbit[i]+1)
-		  .reduce((old, newV) => old+newV);
-	return fieldsLength;
+  let fieldsLength;
+  if (!separated || !separated[a])
+    fieldsLength = startbit - stopbit + 1;
+  else
+    fieldsLength = startbit
+      .map((b, i) => b - stopbit[i]+1)
+      .reduce((old, newV) => old+newV);
+  return fieldsLength;
 }
 
 /**
@@ -3555,28 +3555,28 @@ function getFieldLength(separated, startbit, stopbit,a)
 */
 function generateBinary(separated, startbit, stopbit, binary, inm,fieldsLenght, a)
 {
-	if (!separated ||!separated[a])
-	    binary = binary.substring(0, binary.length - (startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (stopbit ), binary.length);
-	else {
-	    // check if the value fit on the first segment
-	    let myInm = inm;
-	    for (let i = startbit.length-1; i >= 0;  i--) {
-		let sb = startbit[i],
-		    stb = stopbit[i],
-		    diff = sb - stb+1;
-		if (myInm.length <= diff) {
-		    binary = binary.substring(0, binary.length - (sb+1)) +
-			myInm.padStart(diff, "0") +
-			binary.substring((binary.length - stb), binary.length);
-		    break;
-		} else {
-		    let tmpinm = inm.substring(myInm.length - diff, myInm.length);
-		    binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
-		    myInm = myInm.substring(0,(myInm.length-diff));
-		}
-	    }
-	}
-	return binary;
+  if (!separated ||!separated[a])
+      binary = binary.substring(0, binary.length - (startbit + 1)) + inm.padStart(fieldsLength, "0") + binary.substring(binary.length - (stopbit ), binary.length);
+  else {
+      // check if the value fit on the first segment
+      let myInm = inm;
+      for (let i = startbit.length-1; i >= 0;  i--) {
+    let sb = startbit[i],
+        stb = stopbit[i],
+        diff = sb - stb+1;
+    if (myInm.length <= diff) {
+        binary = binary.substring(0, binary.length - (sb+1)) +
+      myInm.padStart(diff, "0") +
+      binary.substring((binary.length - stb), binary.length);
+        break;
+    } else {
+        let tmpinm = inm.substring(myInm.length - diff, myInm.length);
+        binary = binary.substring(0, binary.length - (sb+1)) + tmpinm.padStart(diff, "0") + binary.substring(binary.length - stb, binary.length);
+        myInm = myInm.substring(0,(myInm.length-diff));
+    }
+      }
+  }
+  return binary;
 }
 
 

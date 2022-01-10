@@ -25,204 +25,206 @@
 
 function crex_findReg ( value1 )
 {
-	var ret = {} ;
+  var ret = {} ;
 
-	ret.match = 0;
-	ret.indexComp = null;
-	ret.indexElem = null;
+  ret.match = 0;
+  ret.indexComp = null;
+  ret.indexElem = null;
 
-	if (value1 == "") {
-		return ret;
-	}
+  if (value1 == "") {
+    return ret;
+  }
 
-	for (var i = 0; i < architecture.components.length; i++)
-	{
-		 for (var j = 0; j < architecture.components[i].elements.length; j++)
-		 {
-			  if (architecture.components[i].elements[j].name.includes(value1) != false)
-			  {
-				  ret.match = 1;
-				  ret.indexComp = i;
-				  ret.indexElem = j;
-				  break ;
-			  }
-		 }
-	}
+  for (var i = 0; i < architecture.components.length; i++)
+  {
+     for (var j = 0; j < architecture.components[i].elements.length; j++)
+     {
+        if (architecture.components[i].elements[j].name.includes(value1) != false)
+        {
+          ret.match = 1;
+          ret.indexComp = i;
+          ret.indexElem = j;
+          break ;
+        }
+     }
+  }
 
-	return ret ;
+  return ret ;
 }
 
 /*Modifies double precision registers according to simple precision registers*/
 function updateDouble(comp, elem)
 {
-	for (var j = 0; j < architecture.components.length; j++)
-		{
-		for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
-				{
-			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
-				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
-				var newDouble = simple + double;
+  for (var j = 0; j < architecture.components.length; j++)
+    {
+    for (var z = 0; z < architecture.components[j].elements.length && architecture.components[j].double_precision == true; z++)
+        {
+      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[0]) != false){
+        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(8, 15);
+        var newDouble = simple + double;
 
-				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-			}
-			if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
-				var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
-				var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
-				var newDouble = double + simple;
+        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+      }
+      if (architecture.components[comp].elements[elem].name.includes(architecture.components[j].elements[z].simple_reg[1]) != false){
+        var simple = bin2hex(float2bin(architecture.components[comp].elements[elem].value));
+        var double = bin2hex(double2bin(architecture.components[j].elements[z].value)).substr(0, 8);
+        var newDouble = double + simple;
 
-				architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
-			}
-		}
-	}
+        architecture.components[j].elements[z].value = hex2double("0x"+newDouble);
+      }
+    }
+  }
 }
 
 /*Modifies single precision registers according to double precision registers*/
 function updateSimple ( comp, elem )
 {
-	var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
-	var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
+  var part1 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(0, 8);
+  var part2 = bin2hex(double2bin(architecture.components[comp].elements[elem].value)).substr(8, 15);
 
-	for (var j = 0; j < architecture.components.length; j++)
-		{
-		for (var z = 0; z < architecture.components[j].elements.length; z++)
-				{
-			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
-				architecture.components[j].elements[z].value = hex2float("0x"+part1);
-			}
-			if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
-				architecture.components[j].elements[z].value = hex2float("0x"+part2);
-			}
-		}
-	}
+  for (var j = 0; j < architecture.components.length; j++)
+    {
+    for (var z = 0; z < architecture.components[j].elements.length; z++)
+        {
+      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[0]) != false) {
+        architecture.components[j].elements[z].value = hex2float("0x"+part1);
+      }
+      if (architecture.components[j].elements[z].name.includes(architecture.components[comp].elements[elem].simple_reg[1]) != false) {
+        architecture.components[j].elements[z].value = hex2float("0x"+part2);
+      }
+    }
+  }
 }
 
 function readRegister ( indexComp, indexElem )
 {
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
+  var draw = {
+    space: [] ,
+    info: [] ,
+    success: [] ,
+    danger: [],
+    flash: []
+  } ;
 
-	if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") != true))
-	{
-		for (var i = 0; i < instructions.length; i++) {
-			draw.space.push(i);
-		}
-		draw.danger.push(executionIndex);
-		executionIndex = -1;
+  if ((architecture.components[indexComp].elements[indexElem].properties.includes("read") != true))
+  {
+    for (var i = 0; i < instructions.length; i++) {
+      draw.space.push(i);
+    }
+    draw.danger.push(executionIndex);
 
-		throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', draw);
-	}
+    throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', null);
+  }
 
-	if ((architecture.components[indexComp].type == "control") ||
-			(architecture.components[indexComp].type == "integer"))
-	{
-		console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
-		return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
-	}
+  if ((architecture.components[indexComp].type == "control") ||
+      (architecture.components[indexComp].type == "integer"))
+  {
+    console_log(parseInt((architecture.components[indexComp].elements[indexElem].value).toString()));
+    return parseInt((architecture.components[indexComp].elements[indexElem].value).toString());
+  }
 
-	if (architecture.components[indexComp].type == "floating point")
-	{
-		return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString());
-	}
+  if (architecture.components[indexComp].type == "floating point")
+  {
+    return parseFloat((architecture.components[indexComp].elements[indexElem].value).toString());
+  }
 }
 
 function writeRegister ( value, indexComp, indexElem )
 {
-	var draw = {
-		space: [] ,
-		info: [] ,
-		success: [] ,
-		danger: [],
-		flash: []
-	} ;
+  var draw = {
+    space: [] ,
+    info: [] ,
+    success: [] ,
+    danger: [],
+    flash: []
+  } ;
 
-	if (value == null) {
-		return;
-	}
+  if (value == null) {
+    return;
+  }
 
-	if ((architecture.components[indexComp].type == "integer") ||
-			(architecture.components[indexComp].type == "control"))
-	{
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
-			{
-				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
-					return;
-				}
+  if ((architecture.components[indexComp].type == "integer") ||
+      (architecture.components[indexComp].type == "control"))
+  {
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+      {
+        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+          return;
+        }
 
-				for (var i = 0; i < instructions.length; i++) {
-					 draw.space.push(i);
-				}
-				draw.danger.push(executionIndex);
+        for (var i = 0; i < instructions.length; i++) {
+           draw.space.push(i);
+        }
+        draw.danger.push(executionIndex);
 
-				executionIndex = -1;
-				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', draw);
-			}
+        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
+      }
 
-			architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
-			creator_callstack_writeRegister(indexComp, indexElem);
+      architecture.components[indexComp].elements[indexElem].value = bi_intToBigInt(value,10);
+      creator_callstack_writeRegister(indexComp, indexElem);
 
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
-					(architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
-					(value != architecture.memory_layout[4].value)) {
-						writeStackLimit(parseInt(bi_intToBigInt(value,10)));
-			}
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
+          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+          (value != architecture.memory_layout[4].value)) {
+            writeStackLimit(parseInt(bi_intToBigInt(value,10)));
+      }
 
-			if (typeof window !== "undefined") {
-							btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
-			}
-	}
+      if (typeof window !== "undefined") {
+              btn_glow(architecture.components[indexComp].elements[indexElem].name, "Int") ;
+      }
+  }
 
-	else if (architecture.components[indexComp].type =="floating point")
-	{
-		if (architecture.components[indexComp].double_precision == false)
-		{
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
-			{
-				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
-					return;
-				}
-				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
-			}
+  else if (architecture.components[indexComp].type =="floating point")
+  {
+    if (architecture.components[indexComp].double_precision == false)
+    {
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+      {
+        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+          return;
+        }
+        draw.danger.push(executionIndex);
 
-			architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
-			creator_callstack_writeRegister(indexComp, indexElem);
+        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
+      }
 
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
-					(architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
-					(value != architecture.memory_layout[4].value)) {
-						writeStackLimit(parseFloat(value));
-			}
+      architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+      creator_callstack_writeRegister(indexComp, indexElem);
 
-			updateDouble(indexComp, indexElem);
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
+          (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
+          (value != architecture.memory_layout[4].value)) {
+            writeStackLimit(parseFloat(value));
+      }
 
-			if (typeof window !== "undefined") {
-							btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
-			}
-		}
+      updateDouble(indexComp, indexElem);
 
-		else if (architecture.components[indexComp].double_precision == true)
-		{
-			if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
-			{
-				if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
-					return;
-				}
-				throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
-			}
+      if (typeof window !== "undefined") {
+              btn_glow(architecture.components[indexComp].elements[indexElem].name, "FP") ;
+      }
+    }
 
-			architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
-			updateSimple(indexComp, indexElem);
-			creator_callstack_writeRegister(indexComp, indexElem);
+    else if (architecture.components[indexComp].double_precision == true)
+    {
+      if ((architecture.components[indexComp].elements[indexElem].properties.includes('write') != true))
+      {
+        if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
+          return;
+        }
+        draw.danger.push(executionIndex);
 
-			if (typeof window !== "undefined") {
-							btn_glow(architecture.components[indexComp].elements[indexElem].name, "DFP") ;
-					}
-		}
-	}
+        throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
+      }
+
+      architecture.components[indexComp].elements[indexElem].value = parseFloat(value);
+      updateSimple(indexComp, indexElem);
+      creator_callstack_writeRegister(indexComp, indexElem);
+
+      if (typeof window !== "undefined") {
+        btn_glow(architecture.components[indexComp].elements[indexElem].name, "DFP") ;
+      }
+    }
+  }
 }
 
