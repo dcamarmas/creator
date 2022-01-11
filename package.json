@@ -9,7 +9,7 @@
     "build-creator-node": "./mk_min.sh"
   },
   "dependencies": {
-    "colors": "^1.4.2",
+    "colors": "^1.4.0",
     "jshint": "^2.13.3",
     "readline-sync": "^1.4.10",
     "terser": "^5.10.0",
