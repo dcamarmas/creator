@@ -1,4 +1,34 @@
 {
+  "arch_conf": [
+    {
+      "name": "Name",
+      "value": "RISC-V"
+    },
+    {
+      "name": "Bits",
+      "value": "32"
+    },
+    {
+      "name": "Data Format",
+      "value": "big_endian"
+    },
+    {
+      "name": "Memory Alignment",
+      "value": "1"
+    },
+    {
+      "name": "Main Function",
+      "value": "main"
+    },
+    {
+      "name": "Passing Convention",
+      "value": "1"
+    },
+    {
+      "name": "Sensitive Register Name",
+      "value": "1"
+    }
+  ],
   "components": [
     {
       "name": "Control registers",

@@ -91,8 +91,8 @@
                   backup_stack_address = architecture.memory_layout[4].value;
                   backup_data_address  = architecture.memory_layout[3].value;
 
-                  uielto_preload_architecture.data.architecture_name = ename;
-                  app._data.architecture_name = ename; //TODO: bidirectional
+                  uielto_preload_architecture.data.architecture_name = architecture.arch_conf[0].value;
+                  app._data.architecture_name = architecture.arch_conf[0].value; //TODO: bidirectional
 
                   if (load_associated_examples && typeof e.examples !== "undefined"){
                     uielto_preload_architecture.methods.load_examples_available();
