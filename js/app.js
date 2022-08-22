@@ -52,9 +52,6 @@ try
       //Architecture name
       architecture_name: '',
 
-      //Architecture bits
-      number_bits: 32,
-
 
       //
       // Current view
@@ -134,6 +131,19 @@ try
 
       //Floating point registers
       simple_reg: [],
+
+      //Edit architecture field modal
+      modalEditArchField: { //TODO: include into arch_conf component
+        title: '',
+        field: '',
+        value: '',
+        index: '',
+      },
+      //Reset architecture field modal
+      modalResetArchField:{ //TODO: include into arch_conf component
+        title: '',
+        index: '',
+      },
       
 
       //Edit component modal

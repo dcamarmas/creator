@@ -1268,7 +1268,12 @@ function capi_callconv_begin ( addr )
 {
 	var function_name = "" ;
 
-	// 1.- get function name
+	// 1) Passing Convection enable?
+	if (architecture.arch_conf[5].value == 0) {
+		return;
+	}
+
+	// 2) get function name
 	if (typeof architecture.components[0] !== "undefined")
 	{
 		if (typeof tag_instructions[addr] == "undefined")
@@ -1276,21 +1281,26 @@ function capi_callconv_begin ( addr )
 		else function_name = tag_instructions[addr] ;
 	}
 
-	// 2.- callstack_enter
+	// 3) callstack_enter
 	creator_callstack_enter(function_name) ;
 }
 
 function capi_callconv_end ()
 {
-	// 1.- callstack_leave
+	// 1) Passing Convection enable?
+	if (architecture.arch_conf[5].value == 0) {
+		return;
+	}
+
+	// 2) Callstack_leave
 	var ret = creator_callstack_leave();
 
-	// 2) If everything is ok, just return 
+	// 3) If everything is ok, just return 
 	if (ret.ok) {
 		return;
 	}
 
-	// 3) Othewise report some warning...
+	// 4) Othewise report some warning...
 	// Google Analytics
 	creator_ga('execute', 'execute.exception', 'execute.exception.protection_jrra' + ret.msg);
 
@@ -6392,7 +6402,7 @@ function executeInstruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
             {
-        if (instructions[i].Label == "main") {
+        if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(executionIndex) ;
           architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
           executionInit = 0;
@@ -6400,7 +6410,7 @@ function executeInstruction ( )
         }
         else if (i == instructions.length-1) {
           executionIndex = -1;
-          return packExecute(true, 'Label "main" not found', 'danger', null);
+          return packExecute(true, 'Label "'+ architecture.arch_conf[4].value +'" not found', 'danger', null);
         }
       }
     }

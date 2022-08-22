@@ -24,8 +24,7 @@
   var uielto_register_file = {
 
         props:      {
-                      register_file:                     { type: Array,    required: true },
-                      bits:                              { type: Number,   required: true }
+                      register_file:                     { type: Array,    required: true }
                     },
 
         data:       function () {
@@ -140,16 +139,6 @@
                     '      </b-button>' +
                     '    </div>' +
                     '' +
-                    '    <div class="compMenu">' +
-                    '      <b-form-input v-on:input="debounce(\'bits\', $event)" ' +
-                    '                    :value="bits" ' +
-                    '                    type="number" ' +
-                    '                    min="0" ' +
-                    '                    placeholder="Enter bits of architecture" ' +
-                    '                    title="Architecture bits" ' +
-                    '                    size="sm">' +
-                    '      </b-form-input>' +
-                    '    </div>' +
                     '  </div>' +
                     '' +
                     '' +

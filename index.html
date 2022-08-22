@@ -248,11 +248,44 @@
 
                     <b-tabs>
 
-                      <!-- Memory layout -->
-                      <b-tab title="Memory Layout" active>
+                      <!-- Architecture configuration -->
+                      <b-tab title="Architecture Info" active>
                         
-                        <memory-layout  :memory_layout="architecture.memory_layout">       
-                        </memory-layout>
+                        <arch-conf :arch_conf="architecture.arch_conf"></arch-conf>
+
+                        <!-- Architecture configuration modals -->
+
+                        <!-- Edit Architecture configuration -->
+                        <arch-conf-edit id="edit_arch_field"
+                                        :title="modalEditArchField.title"
+                                        :arch_field="modalEditArchField.field"
+                                        :arch_field_value="modalEditArchField.value"
+                                        :arch_field_index="modalResetArchField.index">
+                        </arch-conf-edit>
+
+                        <!-- Reset Architecture configuration -->
+                        <arch-conf-reset  id="reset_arch_field"
+                                          :title="modalResetArchField.title"
+                                          :arch_field_index="modalResetArchField.index"
+                                          :architecture_name="architecture_name">
+                        </arch-conf-reset>
+
+                      </b-tab>
+
+
+
+
+
+
+
+
+
+
+
+                      <!-- Memory layout -->
+                      <b-tab title="Memory Layout">
+                        
+                        <memory-layout  :memory_layout="architecture.memory_layout"></memory-layout>
 
                         <!-- Memory layout modals -->
 
@@ -270,9 +303,7 @@
                       <!-- Register File -->
                       <b-tab title="Register File" :disabled="advanced_mode" v-if="!advanced_mode">
 
-                        <register-file-arch   :register_file="architecture.components"
-                                              :bits="number_bits">
-                        </register-file-arch>
+                        <register-file-arch   :register_file="architecture.components"></register-file-arch>
 
                         <!-- Register File modals -->
 
@@ -307,7 +338,7 @@
                                       :double_precision="modalNewElement.double_precision"
                                       :reg_id="modalNewElement.id"
                                       :simple_reg="simple_reg"
-                                      :bits="number_bits">
+                                      :bits="architecture.arch_conf.bits">
                         </registers-new>
 
                         <!-- Edit register -->
