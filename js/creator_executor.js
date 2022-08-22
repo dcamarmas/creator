@@ -70,7 +70,7 @@ function executeInstruction ( )
     {
       for (var i = 0; i < instructions.length; i++)
             {
-        if (instructions[i].Label == "main") {
+        if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(executionIndex) ;
           architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
           executionInit = 0;
@@ -78,7 +78,7 @@ function executeInstruction ( )
         }
         else if (i == instructions.length-1) {
           executionIndex = -1;
-          return packExecute(true, 'Label "main" not found', 'danger', null);
+          return packExecute(true, 'Label "'+ architecture.arch_conf[4].value +'" not found', 'danger', null);
         }
       }
     }

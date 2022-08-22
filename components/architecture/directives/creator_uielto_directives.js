@@ -68,7 +68,7 @@
                     '                id="newDirectiveBtn" ' +
                     '                v-b-modal.new_directive> ' +
                     '        <span class="fas fa-plus-circle"></span>' +
-                    '        New directive' +
+                    '        New Directive' +
                     '      </b-button>' +
                     '    </div>' +
                     '' +
@@ -77,7 +77,7 @@
                     '                id="resetDirectives" ' +
                     '                v-b-modal.reset_directives> ' +
                     '        <span class="fas fa-power-off"></span>' +
-                    '        Reset directives' +
+                    '        Reset Directives' +
                     '      </b-button>' +
                     '    </div>' +
                     '  </div>' +
