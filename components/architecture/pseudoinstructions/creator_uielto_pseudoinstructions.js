@@ -137,14 +137,14 @@
                     '            id="newPseudoinstructionsBtn" ' +
                     '            v-b-modal.new_pseudoinstructions> ' +
                     '    <span class="fas fa-plus-circle"></span> ' +
-                    '    New pseudoinstructions' +
+                    '    New Pseudoinstructions' +
                     '  </b-button>' +
                     '' +
                     '  <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100" ' +
                     '            id="resetPseudoinstructions"' +
                     '            v-b-modal.reset_pseudoinstructions> ' +
                     '    <span class="fas fa-power-off"></span> ' +
-                    '    Reset pseudoinstructions' +
+                    '    Reset Pseudoinstructions' +
                     '  </b-button>' +
                     '' +
                     '  <!-- Pseudoinstruction set table -->' +

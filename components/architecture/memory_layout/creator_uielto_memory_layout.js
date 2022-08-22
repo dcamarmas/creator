@@ -46,14 +46,14 @@
                     '        <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" ' +
                     '                  v-b-modal.change_memory_layout>' +
                     '          <span class="fas fa-exchange-alt"></span> ' +
-                    '          Change memory layout' +
+                    '          Change Memory Layout' +
                     '        </b-button>' +
                     '      </div>' +
                     '      <div class="compMenu">' +
                     '        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" ' +
                     '                  v-b-modal.reset_memory_layout> ' +
                     '          <span class="fas fa-power-off"></span>' +
-                    '          Reset memory layout' +
+                    '          Reset Memory Layout' +
                     '        </b-button>' +
                     '      </div>' +
                     '    </div>' +
