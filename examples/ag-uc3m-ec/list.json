@@ -118,5 +118,47 @@
     "name":        "e20",
     "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s85.txt",
     "description": ""
+  },
+  {
+    "id":          "e21",
+    "name":        "e21",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s86.txt",
+    "description": ""
+  },
+  {
+    "id":          "e22",
+    "name":        "e22",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s87.txt",
+    "description": ""
+  },
+  {
+    "id":          "e23",
+    "name":        "e23",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s90.txt",
+    "description": ""
+  },
+  {
+    "id":          "e24",
+    "name":        "e24",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s91.txt",
+    "description": ""
+  },
+  {
+    "id":          "e25",
+    "name":        "e25",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s93.txt",
+    "description": ""
+  },
+  {
+    "id":          "e26",
+    "name":        "e26",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s101.txt",
+    "description": ""
+  },
+  {
+    "id":          "e27",
+    "name":        "e27",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s102.txt",
+    "description": ""
   }
 ]

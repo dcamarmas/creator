@@ -14,13 +14,13 @@
        # }
 
 .data
-     .align  2  #siguiente dato alineado a 4
-     vec: .space 20   #5 elem.*4 bytes
+  .align  2       # siguiente dato alineado a 4
+  vec: .space 20  # 5 elem. * 4 bytes
 
 .text
- main:  
-     la t1 vec
-     li t2  8      
-     sw t2 16(t1)    	 
-     # ...
+ main:
+	 li t2  8
+	 li t1  16
+	 sw t2 vec(t1)    	 
+         # ...
 
