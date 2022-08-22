@@ -290,7 +290,9 @@
                         <!-- Memory layout modals -->
 
                         <!-- Edit memory layout -->
-                        <memory-layout-edit id="change_memory_layout"></memory-layout-edit>
+                        <memory-layout-edit id="change_memory_layout"
+                                            :memory_layout="architecture.memory_layout">
+                        </memory-layout-edit>
 
                         <!-- Reset memory layout -->
                         <memory-layout-reset id="reset_memory_layout"

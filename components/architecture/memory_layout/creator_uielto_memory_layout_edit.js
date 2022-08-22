@@ -24,14 +24,15 @@
   var uielto_memory_layout_form = {
 
         props:      {
-                      id:                             { type: String, required: true }
+                      id:                             { type: String, required: true },
+                      memory_layout:                  { type: Array , required: true }
                       
                     },
 
         data:       function () {
                       return {
                         //Memory layout form
-                        memory_layout: ["", "", "", "", "", ""],
+                        //memory_layout: ["", "", "", "", "", ""],
                       }
                     },
 
@@ -40,10 +41,10 @@
                       changeMemoryLayout(){
                         var auxMemoryLayout = jQuery.extend(true, {}, architecture.memory_layout);
 
-                        for(var i = 0; i < this.memory_layout.length; i++){
-                          if(this.memory_layout[i] != "" && this.memory_layout[i] != null){
-                            if(!isNaN(parseInt(this.memory_layout[i]))){
-                              auxMemoryLayout[i].value = parseInt(this.memory_layout[i]);
+                        for(var i = 0; i < this._props.memory_layout.length; i++){
+                          if(this._props.memory_layout[i].value != "" && this._props.memory_layout[i].value != null){
+                            if(!isNaN(parseInt(this._props.memory_layout[i].value))){
+                              auxMemoryLayout[i].value = parseInt(this._props.memory_layout[i].value);
                               if (auxMemoryLayout[i].value < 0) {
                                   show_notification('The value can not be negative', 'danger') ;
                                   return;
@@ -58,7 +59,7 @@
 
                         for(var i = 0; i < 6; i++){
                           for (var j = i; j < 6; j++) {
-                            if (auxMemoryLayout[i].value > auxMemoryLayout[j].value) {
+                            if (auxMemoryLayout[i].value >= auxMemoryLayout[j].value) {
                                 show_notification('The segment can not be overlap', 'danger') ;
                                 return;
                             }
@@ -74,9 +75,6 @@
                         backup_stack_address = architecture.memory_layout[4].value;
                         backup_data_address = architecture.memory_layout[3].value;
 
-                        for(var i = 0; i < 6; i++){
-                          this.memory_layout[i] = "";
-                        }
                         app.$forceUpdate();
                       },
 
@@ -119,8 +117,8 @@
                     '         @ok="changeMemoryLayout">' +
                     '  <span class="h6">.text Start:</span>' +
                     '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[0]\', $event)" ' +
-                    '                :value="memory_layout[0]" ' +
+                    '                v-on:input="debounce(\'memory_layout[0].value\', $event)" ' +
+                    '                :value="memory_layout[0].value" ' +
                     '                required ' +
                     '                size="sm" ' +
                     '                title=".text start" ' +
@@ -128,8 +126,8 @@
                     '  </b-form-input>' +
                     '  <span class="h6">.text End:</span>' +
                     '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[1]\', $event)" ' +
-                    '                :value="memory_layout[1]" ' +
+                    '                v-on:input="debounce(\'memory_layout[1].value\', $event)" ' +
+                    '                :value="memory_layout[1].value" ' +
                     '                required ' +
                     '                size="sm" ' +
                     '                title=".text end" ' +
@@ -137,8 +135,8 @@
                     '  </b-form-input>' +
                     '  <span class="h6">.data Start:</span>' +
                     '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[2]\', $event)" ' +
-                    '                :value="memory_layout[2]" ' +
+                    '                v-on:input="debounce(\'memory_layout[2].value\', $event)" ' +
+                    '                :value="memory_layout[2].value" ' +
                     '                required ' +
                     '                size="sm" ' +
                     '                title=".data tart" ' +
@@ -146,8 +144,8 @@
                     '  </b-form-input>' +
                     '  <span class="h6">.data End:</span>' +
                     '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[3]\', $event)" ' +
-                    '                :value="memory_layout[3]" ' +
+                    '                v-on:input="debounce(\'memory_layout[3].value\', $event)" ' +
+                    '                :value="memory_layout[3].value" ' +
                     '                required ' +
                     '                size="sm" ' +
                     '                title=".data end" ' +
@@ -155,8 +153,8 @@
                     '  </b-form-input>' +
                     '  <span class="h6">.stack End:</span>' +
                     '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[4]\', $event)" ' +
-                    '                :value="memory_layout[4]" ' +
+                    '                v-on:input="debounce(\'memory_layout[4].value\', $event)" ' +
+                    '                :value="memory_layout[4].value" ' +
                     '                required ' +
                     '                size="sm" ' +
                     '                title=".stack start" ' +
@@ -164,8 +162,8 @@
                     '  </b-form-input>' +
                     '  <span class="h6">.stack Start:</span>' +
                     '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[5]\', $event)" ' +
-                    '                :value="memory_layout[5]"' +
+                    '                v-on:input="debounce(\'memory_layout[5].value\', $event)" ' +
+                    '                :value="memory_layout[5].value"' +
                     '                required size="sm" ' +
                     '                title=".stack end" ' +
                     '                class="memoryLayoutForm">' +

@@ -144,6 +144,12 @@ try
         title: '',
         index: '',
       },
+
+
+      //Edit memory layout modal
+      modalEditMemoryLayout: { //TODO: include into memory_layout component
+        memory_layout: ''
+      },
       
 
       //Edit component modal
