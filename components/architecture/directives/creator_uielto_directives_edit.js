@@ -70,7 +70,7 @@
                         }
 
                         this.show_modal = false;
-                        console_log(name)
+
                         for (var i = 0; i < architecture.directives.length; i++) {
                           if(name == architecture.directives[i].name){
                             architecture.directives[i].name = this._props.name;
