@@ -58,10 +58,6 @@
                         this.$root.$emit('bv::show::modal', 'edit_arch_field', button);
                       },
 
-
-
-
-
                       //Show reset architecture field
                       reset_arch_field_modal(field, index, button){
                         app._data.modalResetArchField.title = "Reset " + field; //TODO: bidirectional

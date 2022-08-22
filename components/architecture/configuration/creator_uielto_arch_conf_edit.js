@@ -39,53 +39,39 @@
                                         { value: "big_endian", text: 'Big Endian' },
                                         { value: "little_endian", text: 'Little Endian' }
                                       ],
-                        //Modals directives
+                        //Modals architecture field
                         show_modal: false
                       }
                     },
 
         methods:    {
-                      //Verify all fields of modify directive
-                      verify_edit_arch_field(evt, name){
+                      //Verify all fields of modify architecture field
+                      verify_edit_arch_field(evt, index){
                         evt.preventDefault();
-
-                        if (!this._props.name || !this._props.action) {
-                          show_notification('Please complete all fields', 'danger') ;
+                        if (!this._props.arch_field_value) {
+                          show_notification('Please complete the fields', 'danger') ;
                         }
                         else {
-                          if(isNaN(parseInt(this._props.size)) && (this._props.action == 'byte' || this._props.action == 'half_word' || this._props.action == 'word' || this._props.action == 'double_word' || this._props.action == 'float' || this._props.action == 'double' || this._props.action == 'space')){
-                            show_notification('Please complete all fields', 'danger') ;
-                          }
-                          else{
-                            this.edit_directive(name);
-                          }
+                          this.edit_arch_field(index);
                         }
                       },
 
-                      //Edit directive
-                      edit_directive(name){
-                        for (var i = 0; i < architecture.directives.length; i++) {
-                          if((this._props.name == architecture.directives[i].name) && (name != this._props.name)){
-                            show_notification('The directive already exists', 'danger') ;
-                            return;
-                          }
-                        }
+
+
+
+
+                      //Edit architecture field
+                      edit_arch_field(index){ //TODO
 
                         this.show_modal = false;
-                        console_log(name)
-                        for (var i = 0; i < architecture.directives.length; i++) {
-                          if(name == architecture.directives[i].name){
-                            architecture.directives[i].name = this._props.name;
-                            architecture.directives[i].action = this._props.action;
-                            if(this._props.action == 'byte' || this._props.action == 'half_word' || this._props.action == 'word' || this._props.action == 'double_word' || this._props.action == 'float' || this._props.action == 'double' || this._props.action == 'space'){
-                              architecture.directives[i].size = this._props.size;
-                            }
-                            else{
-                              architecture.directives[i].size = null;
-                            }
-                            return;
-                          }
+
+                        architecture.arch_conf[index].value = this._props.arch_field_value;
+
+                        if (index == 0) {
+                          app._data.architecture_name = architecture.arch_conf[index].value;
                         }
+
+                        return;
                       },
 
                       //Form validator
@@ -139,15 +125,17 @@
         template:   '<b-modal :id ="id" ' +
                     '         :title = "title"' +
                     '         ok-title="Save" ' +
-                    '         @ok="verify_edit_arch_field($event, element)" ' +
+                    '         @ok="verify_edit_arch_field($event, arch_field_index)" ' +
                     '         v-model="show_modal"> ' +
                     '  <b-form>' +
 
 
 
 
-                    '    <b-form-group label="Value:" ' +
+                    '' +
+                    '    <b-form-group' +
                     '                  v-if="arch_field == \'Name\' || arch_field == \'Main Function\'">' +
+                    '      <span>{{arch_field}}:</span>' +
                     '      <b-form-input type="text" ' +
                     '                    :state="valid(arch_field_value)" ' +
                     '                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
@@ -156,51 +144,52 @@
                     '                    placeholder="Enter the new value" ' +
                     '                    size="sm">' +
                     '      </b-form-input>' +
+                    '' +
                     '    </b-form-group>' +
-
-
-
-                    '    <b-form-group label="Value:" ' +
-                    '                  v-if="arch_field == \'Data Format\'">' +
-                    '      <b-form-select :options="actionTypes" ' +
-                    '                     required ' +
-                    '                     v-model="arch_field_value" ' +
-                    '                     :state="valid(arch_field_value)" ' +
-                    '                     size="sm">' +
-                    '      </b-form-select>' +
-                    '    </b-form-group>' +
-
-
-
-                    /*'    <b-form-group label="Value:" ' +
-                    '                  v-if="arch_field == \'Memory Aligment\' || arch_field == \'Passing Convention\' || arch_field == \'Sensitive Register Name\'>' +
-                    '      <b-form-checkbox' +
-                    '                    :state="valid(size)" ' +
-                    '                    v-on:input="debounce(\'size\', $event)" ' +
-                    '                    :value="size" ' +
+                    '    <b-form-group' +
+                    '                  v-if="arch_field == \'Bits\'">' +
+                    '      <span>{{arch_field}}:</span>' +
+                    '      <b-form-input type="number" ' +
+                    '                    :state="valid(arch_field_value)" ' +
+                    '                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
+                    '                    :value="arch_field_value" ' +
                     '                    required ' +
-                    '                    placeholder="Enter size" ' +
+                    '                    placeholder="Enter bits" ' +
                     '                    size="sm" ' +
                     '                    min="0">' +
                     '      </b-form-input>' +
                     '    </b-form-group>' +
 
 
-                    '    <b-form-group label="Value:" ' +
-                    '                  v-if="arch_field == \'Bits\'">' +
-                    '      <b-form-input type="number" ' +
-                    '                    :state="valid(size)" ' +
-                    '                    v-on:input="debounce(\'size\', $event)" ' +
-                    '                    :value="size" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter size" ' +
-                    '                    size="sm" ' +
-                    '                    min="0" ' +
-                    '                    title="Directive size">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +*/
 
 
+
+
+
+
+
+                    '' +
+                    '    <b-form-group' +
+                    '                  v-if="arch_field == \'Data Format\'">' +
+                    '      <span>{{arch_field}}:</span>' +
+                    '      <b-form-select :options="actionTypes" ' +
+                    '                     required ' +
+                    '                     v-model="arch_field_value" ' +
+                    '                     size="sm">' +
+                    '      </b-form-select>' +
+                    '    </b-form-group>' +
+                    '' +
+                    '    <b-form-group' +
+                    '                  v-if="arch_field == \'Memory Alignment\' || arch_field == \'Passing Convention\' || arch_field == \'Sensitive Register Name\'">' +
+                    '      <span>{{arch_field}}:</span>' +
+                    '      <b-form-checkbox' +
+                    '                  required ' +
+                    '                  v-model="arch_field_value"' +
+                    '                  value="1"' +
+                    '                  unchecked-value="0">' +
+                    '      </b-form-checkbox>' +
+                    '    </b-form-group>' +
+                    '' +
                     '  </b-form>' +
                     '</b-modal>'
 
