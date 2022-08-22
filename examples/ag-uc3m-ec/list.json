@@ -1,0 +1,122 @@
+[
+  {
+    "id":          "e1",
+    "name":        "e1",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s32.txt",
+    "description": ""
+  },
+  {
+    "id":          "e2",
+    "name":        "e2",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s34.txt",
+    "description": ""
+  },
+  {
+    "id":          "e3",
+    "name":        "e3",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s37.txt",
+    "description": ""
+  },
+  {
+    "id":          "e4",
+    "name":        "e4",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s44.txt",
+    "description": ""
+  },
+  {
+    "id":          "e5",
+    "name":        "e5",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s54.txt",
+    "description": ""
+  },
+  {
+    "id":          "e6",
+    "name":        "e6",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s60.txt",
+    "description": ""
+  },
+  {
+    "id":          "e7",
+    "name":        "e7",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s61.txt",
+    "description": ""
+  },
+  {
+    "id":          "e8",
+    "name":        "e8",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s62.txt",
+    "description": ""
+  },
+  {
+    "id":          "e9",
+    "name":        "e9",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_s64.txt",
+    "description": ""
+  },
+  {
+    "id":          "e10",
+    "name":        "e10",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t66.txt",
+    "description": ""
+  },
+  {
+    "id":          "e11",
+    "name":        "e11",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t70.txt",
+    "description": ""
+  },
+  {
+    "id":          "e12",
+    "name":        "e12",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3a_t74.txt",
+    "description": ""
+  },
+  {
+    "id":          "e13",
+    "name":        "e13",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s15.txt",
+    "description": ""
+  },
+  {
+    "id":          "e14",
+    "name":        "e14",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s25.txt",
+    "description": ""
+  },
+  {
+    "id":          "e15",
+    "name":        "e15",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s77.txt",
+    "description": ""
+  },
+  {
+    "id":          "e16",
+    "name":        "e16",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s78.txt",
+    "description": ""
+  },
+  {
+    "id":          "e17",
+    "name":        "e17",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s79.txt",
+    "description": ""
+  },
+  {
+    "id":          "e18",
+    "name":        "e18",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s82.txt",
+    "description": ""
+  },
+  {
+    "id":          "e19",
+    "name":        "e19",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s83.txt",
+    "description": ""
+  },
+  {
+    "id":          "e20",
+    "name":        "e20",
+    "url":         "examples/ag-uc3m-ec/asm-rv32_l3b_s85.txt",
+    "description": ""
+  }
+]
