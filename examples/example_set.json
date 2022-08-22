@@ -23,7 +23,7 @@
   {
     "name": "RISC-V from UC3M-AG",
     "id": "uc3m-ec-ag",
-    "architecture":"RISC-V-like",
+    "architecture":"RISC-V",
     "url":"examples/ag-uc3m-ec/list.json",
     "description": "RISC-V examples for Aula Global at UC3M"
   }
