@@ -752,7 +752,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
      show_notification('The data has been uploaded', 'info') ;
 
      if (runProgram == false){
-       app.$options.components["toolbar-btngroup"].options.methods.executeProgram();
+       uielto_toolbar_btngroup.methods.executeProgram();
      }
 
      return;

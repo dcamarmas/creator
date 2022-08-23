@@ -6240,11 +6240,15 @@ function field ( field, action, type )
       return hexNum;
     }
 
-    if (Number.isInteger(field) == false)
+    //if (Number.isInteger(field) == false)
+    if (isNaN(field) == true)
     {
       var ret = creator_memory_findaddress_bytag(field) ;
       if (ret.exit == 1) {
         field = ret.value ;
+      }
+      if (ret.exit == 0) {
+        return -1;
       }
     }
 
@@ -7084,7 +7088,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
      show_notification('The data has been uploaded', 'info') ;
 
      if (runProgram == false){
-       app.$options.components["toolbar-btngroup"].options.methods.executeProgram();
+       uielto_toolbar_btngroup.methods.executeProgram();
      }
 
      return;
