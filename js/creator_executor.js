@@ -204,7 +204,8 @@ function executeInstruction ( )
 
     /*Increase PC*/
     //TODO: other register
-    architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * 4,10) ;
+    word_size = parseInt(architecture.arch_conf[1].value) / 8;
+    architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ;
     console_log(auxDef);
 
 
