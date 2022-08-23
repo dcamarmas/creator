@@ -97,7 +97,6 @@
                     '      <span>{{arch_field}}:</span>' +
                     '      <b-form-input type="text" ' +
                     '                    :state="valid(arch_field_value)" ' +
-                    //'                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
                     '                    v-model="arch_field_value" ' +
                     '                    required ' +
                     '                    placeholder="Enter the new value" ' +
@@ -110,7 +109,6 @@
                     '      <span>{{arch_field}}:</span>' +
                     '      <b-form-input type="number" ' +
                     '                    :state="valid(arch_field_value)" ' +
-                    //'                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
                     '                    v-model="arch_field_value" ' +
                     '                    required ' +
                     '                    placeholder="Enter bits" ' +
