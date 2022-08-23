@@ -56,13 +56,8 @@
                         }
                       },
 
-
-
-
-
                       //Edit architecture field
-                      edit_arch_field(index){ //TODO
-
+                      edit_arch_field(index){ 
                         this.show_modal = false;
 
                         architecture.arch_conf[index].value = this._props.arch_field_value;
@@ -128,18 +123,14 @@
                     '         @ok="verify_edit_arch_field($event, arch_field_index)" ' +
                     '         v-model="show_modal"> ' +
                     '  <b-form>' +
-
-
-
-
                     '' +
                     '    <b-form-group' +
                     '                  v-if="arch_field == \'Name\' || arch_field == \'Main Function\'">' +
                     '      <span>{{arch_field}}:</span>' +
                     '      <b-form-input type="text" ' +
                     '                    :state="valid(arch_field_value)" ' +
-                    '                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
-                    '                    :value="arch_field_value" ' +
+                    //'                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
+                    '                    v-model="arch_field_value" ' +
                     '                    required ' +
                     '                    placeholder="Enter the new value" ' +
                     '                    size="sm">' +
@@ -151,23 +142,14 @@
                     '      <span>{{arch_field}}:</span>' +
                     '      <b-form-input type="number" ' +
                     '                    :state="valid(arch_field_value)" ' +
-                    '                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
-                    '                    :value="arch_field_value" ' +
+                    //'                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
+                    '                    v-model="arch_field_value" ' +
                     '                    required ' +
                     '                    placeholder="Enter bits" ' +
                     '                    size="sm" ' +
                     '                    min="0">' +
                     '      </b-form-input>' +
                     '    </b-form-group>' +
-
-
-
-
-
-
-
-
-
                     '' +
                     '    <b-form-group' +
                     '                  v-if="arch_field == \'Data Format\'">' +
