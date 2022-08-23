@@ -148,7 +148,7 @@ try
 
       //Edit memory layout modal
       modalEditMemoryLayout: { //TODO: include into memory_layout component
-        memory_layout: ''
+        memory_layout: ["", "", "", "", "", ""],
       },
       
 
