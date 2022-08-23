@@ -65,11 +65,11 @@ function executeInstruction ( )
       return packExecute(false, '', 'info', null);
     }
 
-    /*Search a main tag*/
+    //Search a main tag
     if (executionInit == 1)
     {
       for (var i = 0; i < instructions.length; i++)
-            {
+      {
         if (instructions[i].Label == architecture.arch_conf[4].value) {
           //draw.success.push(executionIndex) ;
           architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
@@ -88,22 +88,23 @@ function executeInstruction ( )
 
     for (var i = 0; i < instructions.length; i++)
     {
-      if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
-          executionIndex = i;
+      if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) 
+      {
+        executionIndex = i;
 
-          console_log(instructions[executionIndex].hide);
-          console_log(executionIndex);
-          console_log(instructions[i].Address);
+        console_log(instructions[executionIndex].hide);
+        console_log(executionIndex);
+        console_log(instructions[i].Address);
 
-          if (instructions[executionIndex].hide == false) {
-            draw.info.push(executionIndex);
-          }
+        if (instructions[executionIndex].hide == false) {
+          draw.info.push(executionIndex);
         }
-        else{
-          if (instructions[executionIndex].hide == false) {
-            draw.space.push(i);
-          }
+      }
+      else{
+        if (instructions[executionIndex].hide == false) {
+          draw.space.push(i);
         }
+      }
     }
 
     var instructionExec = instructions[executionIndex].loaded;
@@ -166,7 +167,7 @@ function executeInstruction ( )
       }
 
       if (architecture.instructions[i].name == instructionExecParts[0] && instructionExecParts.length == auxSig.length)
-            {
+      {
         type = architecture.instructions[i].type;
         signatureDef = architecture.instructions[i].signature_definition;
 
@@ -202,7 +203,7 @@ function executeInstruction ( )
     }
     //END TODO
 
-    /*Increase PC*/
+    //Increase PC
     //TODO: other register
     word_size = parseInt(architecture.arch_conf[1].value) / 8;
     architecture.components[0].elements[0].value = architecture.components[0].elements[0].value + bi_intToBigInt(nwords * word_size,10) ;
@@ -260,7 +261,7 @@ function executeInstruction ( )
                   //Write register only if value is diferent
                   else{
                     var_writings_definitions[signatureRawParts[i]]  = "if(" + signatureRawParts[i] + " != " + signatureRawParts[i] + "_prev)" +
-                                            " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
+                                                                      " { writeRegister("+ signatureRawParts[i]+" ,"+j+" ,"+z+"); }\n";
                   }
 
                 }
@@ -286,7 +287,7 @@ function executeInstruction ( )
         }
       }
 
-      /* writeRegister and readRegister direcly named include into the definition */
+      // writeRegister and readRegister direcly named include into the definition
       for (var i = 0; i < architecture.components.length; i++)
       {
         for (var j = architecture.components[i].elements.length-1; j >= 0; j--)
@@ -307,35 +308,35 @@ function executeInstruction ( )
         }
       }
 
-      auxDef = "\n/* Read all instruction fields */\n" +
-          readings_description +
-           "\n/* Original instruction definition */\n" +
-            auxDef +
-           "\n\n/* Modify values */\n" +
-            writings_description;
+      auxDef =  "\n/* Read all instruction fields */\n" +
+                 readings_description +
+                "\n/* Original instruction definition */\n" +
+                 auxDef +
+                "\n\n/* Modify values */\n" +
+                 writings_description;
 
       // DEBUG
       console_log(" ................................. " +
-            "instructions[" + executionIndex + "]:\n" +
-            auxDef + "\n" +
-            " ................................. ");
+                  "instructions[" + executionIndex + "]:\n" +
+                   auxDef + "\n" +
+                  " ................................. ");
 
       // preload instruction
       eval("instructions[" + executionIndex + "].preload = function(elto) { " +
-         "   try {\n" +
-           auxDef.replace(/this./g,"elto.") + "\n" +
-         "   }\n" +
-         "   catch(e){\n" +
-         "     throw e;\n" +
-         "   }\n" +
-         "}; ") ;
+           "   try {\n" +
+               auxDef.replace(/this./g,"elto.") + "\n" +
+           "   }\n" +
+           "   catch(e){\n" +
+           "     throw e;\n" +
+           "   }\n" +
+           "}; ") ;
     }
 
 
     try {
       var result = instructions[executionIndex].preload(this);
       if ( (typeof result != "undefined") && (result.error) ) {
-          return result;
+        return result;
       }
     }
     catch ( e )
@@ -353,31 +354,31 @@ function executeInstruction ( )
       return packExecute(true, msg, 'danger', draw) ;
     }
 
-      /* Refresh stats */
-        stats_update(type) ;
+    // Refresh stats
+    stats_update(type) ;
 
-    /* Execution error */
+    // Execution error
     if (executionIndex == -1){
        error = 1;
        return packExecute(false, '', 'info', null); //CHECK
     }
 
-    /* Next instruction to execute */
+    // Next instruction to execute
     if (error != 1 && executionIndex < instructions.length)
     {
       for (var i = 0; i < instructions.length; i++)
-            {
+      {
         if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
           executionIndex = i;
           draw.success.push(executionIndex) ;
           break;
         }
         else if (i == instructions.length-1 && mutexRead == true){
-           executionIndex = instructions.length+1;
+          executionIndex = instructions.length+1;
         }
         else if (i == instructions.length-1){
-           draw.space.push(executionIndex) ;
-           executionIndex = instructions.length+1;
+          draw.space.push(executionIndex) ;
+          executionIndex = instructions.length+1;
         }
       }
     }
@@ -393,7 +394,7 @@ function executeInstruction ( )
     else if(executionIndex >= instructions.length && mutexRead == false)
     {
       for (var i = 0; i < instructions.length; i++){
-         draw.space.push(i) ;
+        draw.space.push(i) ;
       }
       draw.info=[];
       executionIndex = -2;
@@ -415,20 +416,20 @@ function executeProgramOneShot ( limit_n_instructions )
 {
   var ret = null;
 
-  /* Google Analytics */
+  // Google Analytics
   creator_ga('execute', 'execute.run');
 
   // execute program
   for (var i=0; i<limit_n_instructions; i++)
   {
-     ret = executeInstruction();
+    ret = executeInstruction();
 
-     if (ret.error == true){
-       return ret;
-     }
-     if (executionIndex < -1) {
-       return ret;
-     }
+    if (ret.error == true){
+      return ret;
+    }
+    if (executionIndex < -1) {
+      return ret;
+    }
   }
 
   return packExecute(true, '"ERROR:" number of instruction limit reached :-(', null, null) ;
@@ -436,36 +437,36 @@ function executeProgramOneShot ( limit_n_instructions )
 
 function creator_executor_exit ( )
 {
-  /* Google Analytics */
+  // Google Analytics
   creator_ga('execute', 'execute.exit');
 
   // executionIndex = -1; // REASON: line 360 said that if executionIndex == -1 then throw error... :-(
-        executionIndex = instructions.length + 1;
+  executionIndex = instructions.length + 1;
 }
 
 function reset ()
 {
-  /* Google Analytics */
+  // Google Analytics
   creator_ga('execute', 'execute.reset');
 
   executionIndex = 0;
   executionInit = 1;
 
-  /* Reset stats */
+  // Reset stats
     stats_reset() ;
 
-  /* Reset console */
+  // Reset console
   mutexRead    = false ;
   newExecution = true ;
   keyboard = '' ;
   display  = '' ;
 
   for (var i = 0; i < architecture_hash.length; i++)
-    {
+  {
     for (var j = 0; j < architecture.components[i].elements.length; j++)
-        {
+    {
       if (architecture.components[i].double_precision == false)
-            {
+      {
         architecture.components[i].elements[j].value = architecture.components[i].elements[j].default_value;
       }
 
@@ -475,9 +476,9 @@ function reset ()
         var aux_sim2;
 
         for (var a = 0; a < architecture_hash.length; a++)
-                {
+        {
           for (var b = 0; b < architecture.components[a].elements.length; b++)
-                    {
+          {
             if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
               aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
             }
@@ -497,7 +498,7 @@ function reset ()
   architecture.memory_layout[3].value = backup_data_address;
 
   // reset memory
-        creator_memory_reset() ;
+  creator_memory_reset() ;
 
   //Stack Reset
   creator_callstack_reset();
@@ -514,7 +515,7 @@ function reset ()
 function crex_show_notification ( msg, level )
 {
   if (typeof window !== "undefined")
-     show_notification(msg, level);
+    show_notification(msg, level);
   else console.log(level.toUpperCase() + ": " + msg);
 }
 
@@ -523,10 +524,11 @@ function crex_replace_magic ( auxDef )
   // Before replace...
   console_log("Before replace: \n" + auxDef + "\n");
 
-  /* Write in memory */
+  // Write in memory
   var index = 0;
   re = /MP.([whbd]).\[(.*?)\] *=/;
-  while (auxDef.search(re) != -1){
+  while (auxDef.search(re) != -1)
+  {
     index++;
     var match = re.exec(auxDef);
     var auxDir;
@@ -541,7 +543,8 @@ function crex_replace_magic ( auxDef )
   }
 
   re = new RegExp("MP.([whbd]).(.*?) *=");
-  while (auxDef.search(re) != -1){
+  while (auxDef.search(re) != -1)
+  {
     index++;
     var match = re.exec(auxDef);
     re = new RegExp("MP."+match[1]+"."+match[2]+" *=");
@@ -553,7 +556,8 @@ function crex_replace_magic ( auxDef )
   }
 
   re = /MP.([whbd]).\[(.*?)\]/;
-  while (auxDef.search(re) != -1){
+  while (auxDef.search(re) != -1)
+  {
     var match = re.exec(auxDef);
     var auxDir;
     //eval("auxDir="+match[2]);
@@ -563,20 +567,21 @@ function crex_replace_magic ( auxDef )
   }
 
   re = new RegExp("MP.([whbd]).([0-9]*[a-z]*[0-9]*)");
-  while (auxDef.search(re) != -1){
+  while (auxDef.search(re) != -1)
+  {
     var match = re.exec(auxDef);
     re = new RegExp("MP."+match[1]+"."+match[2]);
     auxDef = auxDef.replace(re, "readMemory("+match[2]+",'"+match[1]+"')");
     re = new RegExp("MP.([whb]).([0-9]*[a-z]*[0-9]*)");
   }
 
-  /* After replace... */
+  // After replace...
   console_log("After replace: \n" + auxDef + "\n");
 
   return auxDef ;
 }
 
-/* Modify the stack limit */
+// Modify the stack limit
 function writeStackLimit ( stackLimit )
 {
   var draw = {
@@ -604,7 +609,7 @@ function writeStackLimit ( stackLimit )
   {
     var diff = architecture.memory_layout[4].value - stackLimit ;
     if (diff > 0) {
-        creator_memory_zerofill(stackLimit, diff) ;
+      creator_memory_zerofill(stackLimit, diff) ;
     }
 
     track_stack_setsp(stackLimit);
@@ -629,12 +634,12 @@ function stats_update ( type )
       totalStats++;
       if (typeof app !== "undefined") {
         app._data.totalStats++;
-            }
+      }
     }
   }
 
   for (var i = 0; i < stats.length; i++){
-     stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
+    stats[i].percentage = ((stats[i].number_instructions/totalStats)*100).toFixed(2);
   }
 }
 
@@ -643,10 +648,10 @@ function stats_reset ( )
   totalStats = 0 ;
   if (typeof app !== "undefined") {
     app._data.totalStats = 0 ;
-    }
+  }
 
   for (var i = 0; i < stats.length; i++)
-    {
+  {
     stats[i].percentage = 0;
 
     stats[i].number_instructions = 0;
@@ -662,7 +667,7 @@ function stats_reset ( )
 function display_print ( info )
 {
   if (typeof app !== "undefined")
-       app._data.display += info ;
+    app._data.display += info ;
   else process.stdout.write(info + '\n') ;
 
   display += info ;
@@ -671,7 +676,7 @@ function display_print ( info )
 
 function kbd_read_char ( keystroke, params )
 {
-    var value = keystroke.charCodeAt(0);
+  var value = keystroke.charCodeAt(0);
   writeRegister(value, params.indexComp, params.indexElem);
 
   return value ;
@@ -706,11 +711,11 @@ function kbd_read_string ( keystroke, params )
   var value = "";
   var neltos = architecture.components[params.indexComp2].elements[params.indexElem2].value ;
   for (var i = 0; (i < neltos) && (i < keystroke.length); i++) {
-     value = value + keystroke.charAt(i);
+    value = value + keystroke.charAt(i);
   }
 
   var addr = architecture.components[params.indexComp].elements[params.indexElem].value ;
-        writeMemory(value, parseInt(addr), "string") ;
+  writeMemory(value, parseInt(addr), "string") ;
 
   return value ;
 }
@@ -729,13 +734,13 @@ function keyboard_read ( fn_post_read, fn_post_params )
   // CL
   if (typeof app === "undefined")
   {
-     var readlineSync = require('readline-sync') ;
-     var keystroke    = readlineSync.question(' > ') ;
+    var readlineSync = require('readline-sync') ;
+    var keystroke    = readlineSync.question(' > ') ;
 
-     var value = fn_post_read(keystroke, fn_post_params) ;
-       keyboard = keyboard + " " + value;
+    var value = fn_post_read(keystroke, fn_post_params) ;
+    keyboard = keyboard + " " + value;
 
-       return packExecute(false, 'The data has been uploaded', 'danger', null);
+    return packExecute(false, 'The data has been uploaded', 'danger', null);
   }
 
   // UI
@@ -744,20 +749,20 @@ function keyboard_read ( fn_post_read, fn_post_params )
   console_log(mutexRead);
 
   if (newExecution == true)
-    {
-     app._data.keyboard = "";
-     consoleMutex    = false;
-     mutexRead       = false;
-     app._data.enter = null;
+  {
+    app._data.keyboard = "";
+    consoleMutex    = false;
+    mutexRead       = false;
+    app._data.enter = null;
 
-     show_notification('The data has been uploaded', 'info') ;
+    show_notification('The data has been uploaded', 'info') ;
 
-     if (runProgram == false){
-       uielto_toolbar_btngroup.methods.executeProgram();
-     }
+    if (runProgram == false){
+      uielto_toolbar_btngroup.methods.executeProgram();
+    }
 
-     return;
-   }
+    return;
+  }
 
   if (consoleMutex == false) {
     setTimeout(keyboard_read, 1000, fn_post_read, fn_post_params);
@@ -778,7 +783,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
   if (executionIndex >= instructions.length)
   {
     for (var i = 0; i < instructions.length; i++){
-       draw.space.push(i) ;
+      draw.space.push(i) ;
     }
 
     executionIndex = -2;
@@ -799,7 +804,8 @@ function execute_binary ( index, instructionExecParts, auxDef )
 {
   console_log("Binary");
 
-  for (var j = 0; j < architecture.instructions[index].fields.length; j++){
+  for (var j = 0; j < architecture.instructions[index].fields.length; j++)
+  {
     console_log(instructionExecParts[0]);
     console_log(architecture.instructions[index].fields.length);
     if(architecture.instructions[index].fields[j].type == "INT-Reg" || architecture.instructions[index].fields[j].type == "SFP-Reg" || architecture.instructions[index].fields[j].type == "DFP-Reg" || architecture.instructions[index].fields[j].type == "Ctrl-Reg") {
