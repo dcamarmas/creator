@@ -31,33 +31,36 @@
 
         data:       function () {
                       return {
-
+                        //Modals memory layout
+                        show_modal: false,
                       }
                     },
 
         methods:    {
                       //Check de memory layout changes
-                      changeMemoryLayout(){
-                        var auxMemoryLayout = jQuery.extend(true, {}, architecture.memory_layout);
+                      verify_edit_memory_layout(evt){
+                        evt.preventDefault();
 
                         for(var i = 0; i < this._props.memory_layout.length; i++){
+                          if (!this._props.memory_layout[i]) {
+                            show_notification('Please complete all fields', 'danger') ;
+                            return;
+                          }
+
                           if(this._props.memory_layout[i] != "" && this._props.memory_layout[i] != null){
                             if(!isNaN(parseInt(this._props.memory_layout[i]))){
-                              //auxMemoryLayout[i].value = parseInt(this._props.memory_layout[i]);
                               if (parseInt(this._props.memory_layout[i]) < 0) {
-                                  show_notification('The value can not be negative', 'danger') ;
-                                  return;
+                                show_notification('The value can not be negative', 'danger') ;
+                                return;
                               }
                             }
                             else {
-                                  show_notification('The value must be a number', 'danger') ;
-                                  return;
+                              show_notification('The value must be a number', 'danger') ;
+                              return;
                             }
                           }
-                        }
 
-                        for(var i = 0; i < 6; i++){
-                          for (var j = i+1; j < 6; j++) {
+                          for (var j = i+1; j < this._props.memory_layout.length; j++) {
                             if (parseInt(this._props.memory_layout[i]) >= parseInt(this._props.memory_layout[j])) {
                                 show_notification('The segment can not be overlap', 'danger') ;
                                 return;
@@ -65,7 +68,15 @@
                           }
                         }
 
-                        for(var i = 0; i < 6; i++){
+                        this.edit_memory_layout(name);
+                      },
+
+                      //Edit memory layout
+                      edit_memory_layout(){
+
+                        this.show_modal = false;
+
+                        for(var i = 0; i < this._props.memory_layout.length; i++){
                           architecture.memory_layout[i].value = parseInt(this._props.memory_layout[i]);
                         }
 
@@ -75,8 +86,6 @@
                         backup_data_address = architecture.memory_layout[3].value;
 
                         show_notification('Memory layout correctly modified', 'success') ;
-
-                        app.$forceUpdate();
                       },
 
                       //Form validator
@@ -93,115 +102,70 @@
                           return true;
                         }
                       },
-
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
-
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
-
-                        if(e == ""){
-                          this[param] = null;
-                          return;
-                        }
-
-                        console_log("this." + param + "= '" + e + "'");
-
-                        eval("this." + param + "= '" + e + "'");
-
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
                     },
 
         template:   '<b-modal :id ="id" ' +
                     '         title="Change memory layout" ' +
                     '         ok-title="Change" ' +
-                    '         @ok="changeMemoryLayout">' +
-                    '  <span class="h6">.text Start:</span>' +
-                    '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[0]\', $event)" ' +
-                    '                :value="memory_layout[0]" ' +
+                    '         @ok="verify_edit_memory_layout($event)"' +
+                    '         v-model="show_modal"> ' +
+                    '  <b-form>' +
+                    '    <b-form-group label=".text Start:">' +
+                    '      <b-form-input type="text" ' +
+                    '                v-model="memory_layout[0]" ' +
                     '                :state="valid(memory_layout[0])" ' +
                     '                required ' +
                     '                size="sm" ' +
-                    '                title=".text start" ' +
                     '                class="memoryLayoutForm">' +
-                    '  </b-form-input>' +
-                    '  <span class="h6">.text End:</span>' +
-                    '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[1]\', $event)" ' +
-                    '                :value="memory_layout[1]" ' +
+                    '      </b-form-input>' +
+                    '    </b-form-group>' +
+                    '    <b-form-group label=".text End:">' +
+                    '      <b-form-input type="text" ' +
+                    '                v-model="memory_layout[1]" ' +
                     '                :state="valid(memory_layout[1])" ' +
                     '                required ' +
                     '                size="sm" ' +
-                    '                title=".text end" ' +
                     '                class="memoryLayoutForm">' +
-                    '  </b-form-input>' +
-                    '  <span class="h6">.data Start:</span>' +
-                    '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[2]\', $event)" ' +
-                    '                :value="memory_layout[2]" ' +
+                    '      </b-form-input>' +
+                    '    </b-form-group>' +
+                    '    <b-form-group label=".data Start:">' +
+                    '      <b-form-input type="text" ' +
+                    '                v-model="memory_layout[2]" ' +
                     '                :state="valid(memory_layout[2])" ' +
                     '                required ' +
                     '                size="sm" ' +
-                    '                title=".data tart" ' +
                     '                class="memoryLayoutForm">' +
-                    '  </b-form-input>' +
-                    '  <span class="h6">.data End:</span>' +
-                    '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[3]\', $event)" ' +
-                    '                :value="memory_layout[3]" ' +
+                    '      </b-form-input>' +
+                    '    </b-form-group>' +
+                    '    <b-form-group label=".data End:">' +
+                    '      <b-form-input type="text" ' +
+                    '                v-model="memory_layout[3]" ' +
                     '                :state="valid(memory_layout[3])" ' +
                     '                required ' +
                     '                size="sm" ' +
-                    '                title=".data end" ' +
                     '                class="memoryLayoutForm">' +
-                    '  </b-form-input>' +
-                    '  <span class="h6">.stack End:</span>' +
-                    '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[4]\', $event)" ' +
-                    '                :value="memory_layout[4]" ' +
+                    '      </b-form-input>' +
+                    '    </b-form-group>' +
+                    '    <b-form-group label=".stack End:">' +
+                    '      <b-form-input type="text" ' +
+                    '                v-model="memory_layout[4]" ' +
                     '                :state="valid(memory_layout[4])" ' +
                     '                required ' +
                     '                size="sm" ' +
-                    '                title=".stack start" ' +
                     '                class="memoryLayoutForm">' +
-                    '  </b-form-input>' +
-                    '  <span class="h6">.stack Start:</span>' +
-                    '  <b-form-input type="text" ' +
-                    '                v-on:input="debounce(\'memory_layout[5]\', $event)" ' +
-                    '                :value="memory_layout[5]"' +
+                    '      </b-form-input>' +
+                    '    </b-form-group>' +
+                    '    <b-form-group label=".stack Start:">' +
+                    '      <b-form-input type="text" ' +
+                    '                v-model="memory_layout[5]"' +
                     '                :state="valid(memory_layout[5])" ' +
                     '                required size="sm" ' +
-                    '                title=".stack end" ' +
                     '                class="memoryLayoutForm">' +
-                    '  </b-form-input>' +
+                    '      </b-form-input>' +
+                    '    </b-form-group>' +
+                    '  </b-form>' +
                     '</b-modal>'
 
   }
 
   Vue.component('memory-layout-edit', uielto_memory_layout_form) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }
