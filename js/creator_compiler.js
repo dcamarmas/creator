@@ -3494,11 +3494,15 @@ function field ( field, action, type )
       return hexNum;
     }
 
-    if (Number.isInteger(field) == false)
+    //if (Number.isInteger(field) == false)
+    if (isNaN(field) == true)
     {
       var ret = creator_memory_findaddress_bytag(field) ;
       if (ret.exit == 1) {
         field = ret.value ;
+      }
+      if (ret.exit == 0) {
+        return -1;
       }
     }
 

@@ -41,7 +41,8 @@
 
                         for (var i = 0; i < app._data.arch_available.length; i++) {
                           if(app._data.arch_available[i].name === app._data.architecture_name){
-                            app.load_examples_available(app._data.arch_available[i].examples[0]); //TODO if e.examples.length > 1 -> View example set selector
+                            //app.load_examples_available(app._data.arch_available[i].examples[0]);
+                            uielto_preload_architecture.methods.load_examples_available(app._data.arch_available[i].examples[0]);
                           }
                         }
 

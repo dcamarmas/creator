@@ -87,6 +87,8 @@
                             },50);
                           }
 
+                          // Close all toast and refresh
+                          app.$bvToast.hide()
                           app.$forceUpdate();
                         }
                       },
@@ -179,6 +181,9 @@
 
                           }, 25);
                         });
+
+                        // Close all toast
+                        app.$bvToast.hide()
                       },
 
                       //Remove a loaded binary
@@ -245,6 +250,9 @@
                           hide_loading();
 
                         }, 25);
+
+                        // Close all toast
+                        app.$bvToast.hide()
 
                       },
 
