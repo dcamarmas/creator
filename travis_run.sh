@@ -11,7 +11,7 @@ MIPS_TEST="002 003 004 005 006 007 008 011 012 020 021 023 024 025 026 030 031"
 for I in $MIPS_TEST;
 do
    echo -n " * ./travis/mips/correct/test-mips-$I: "
-   ./creator.sh -a ./architecture/MIPS-32-like.json \
+   ./creator.sh -a ./architecture/MIPS-32.json \
                 -s ./travis/mips/correct/test-mips-$I.s \
                 -r ./travis/mips/correct/test-mips-$I.out -o min | tail -1
 done
@@ -22,7 +22,7 @@ MIPS_TEST="001 002 003 004 005 006 007 008 009 010 011 031 032 033 034 035 037 0
 for I in $MIPS_TEST;
 do
    echo -n " * ./travis/mips/error/testerror-mips-$I: "
-   ./creator.sh -a ./architecture/MIPS-32-like.json \
+   ./creator.sh -a ./architecture/MIPS-32.json \
                 -s ./travis/mips/error/testerror-mips-$I.s -o min > /tmp/e-$I.out
    diff /tmp/e-$I.out ./travis/mips/error/testerror-mips-$I.out
    if [ $? -ne 0 ]; then
@@ -39,7 +39,7 @@ MIPS_TEST="001 002 003 004 005 006 007 008 009 010 011 012 013 014 015 016 017 0
 for I in $MIPS_TEST;
 do
    echo -n " * ./travis/mips/sentinel/testsentinel-mips-$I: "
-   ./creator.sh -a ./architecture/MIPS-32-like.json \
+   ./creator.sh -a ./architecture/MIPS-32.json \
                 -s ./travis/mips/sentinel/testsentinel-mips-$I.s -o min > /tmp/e-$I.out
    diff /tmp/e-$I.out ./travis/mips/sentinel/testsentinel-mips-$I.out
    if [ $? -ne 0 ]; then
@@ -61,7 +61,7 @@ RV_TEST="002 003 004 005 006 007 008 011 012"
 for I in $RV_TEST;
 do
   echo -n " * ./travis/riscv/correct/test-riscv-$I: "
-  ./creator.sh -a ./architecture/RISC-V-like.json \
+  ./creator.sh -a ./architecture/RISC-V.json \
                -s ./travis/riscv/correct/test-riscv-$I.s \
                -r ./travis/riscv/correct/test-riscv-$I.out -o min | tail -1
 done
