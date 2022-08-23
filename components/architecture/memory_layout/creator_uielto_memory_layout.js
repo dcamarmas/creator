@@ -34,7 +34,14 @@
                     },
 
         methods:    {
-                      
+                      //Show edit directive modal
+                      edit_memory_layout_modal(button){
+                        for (var i = 0; i < this._props.memory_layout.length; i++) {
+                          app._data.modalEditMemoryLayout.memory_layout[i] = "0x" + ((this._props.memory_layout[i].value).toString(16)).padStart(8, "0").toUpperCase();
+                        }
+
+                        this.$root.$emit('bv::show::modal', 'change_memory_layout', button);
+                      }
                     },
 
         template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv">' +
@@ -44,7 +51,7 @@
                     '    <div class="col-lg-12 col-sm-12 row">' +
                     '      <div class="compMenu">' +
                     '        <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" ' +
-                    '                  v-b-modal.change_memory_layout>' +
+                    '                  @click.stop="edit_memory_layout_modal($event.target)">' +
                     '          <span class="fas fa-exchange-alt"></span> ' +
                     '          Change Memory Layout' +
                     '        </b-button>' +

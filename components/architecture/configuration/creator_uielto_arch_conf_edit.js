@@ -56,13 +56,8 @@
                         }
                       },
 
-
-
-
-
                       //Edit architecture field
-                      edit_arch_field(index){ //TODO
-
+                      edit_arch_field(index){ 
                         this.show_modal = false;
 
                         architecture.arch_conf[index].value = this._props.arch_field_value;
@@ -87,39 +82,7 @@
                         else{
                           return true;
                         }
-                      },
-
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
-
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
-
-                        if(e == ""){
-                          this[param] = null;
-                          return;
-                        }
-
-                        console_log("this." + param + "= '" + e + "'");
-
-                        eval("this." + param + "= '" + e + "'");
-
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
+                      }
                     },
 
         template:   '<b-modal :id ="id" ' +
@@ -128,18 +91,14 @@
                     '         @ok="verify_edit_arch_field($event, arch_field_index)" ' +
                     '         v-model="show_modal"> ' +
                     '  <b-form>' +
-
-
-
-
                     '' +
                     '    <b-form-group' +
                     '                  v-if="arch_field == \'Name\' || arch_field == \'Main Function\'">' +
                     '      <span>{{arch_field}}:</span>' +
                     '      <b-form-input type="text" ' +
                     '                    :state="valid(arch_field_value)" ' +
-                    '                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
-                    '                    :value="arch_field_value" ' +
+                    //'                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
+                    '                    v-model="arch_field_value" ' +
                     '                    required ' +
                     '                    placeholder="Enter the new value" ' +
                     '                    size="sm">' +
@@ -151,23 +110,14 @@
                     '      <span>{{arch_field}}:</span>' +
                     '      <b-form-input type="number" ' +
                     '                    :state="valid(arch_field_value)" ' +
-                    '                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
-                    '                    :value="arch_field_value" ' +
+                    //'                    v-on:input="debounce(\'arch_field_value\', $event)" ' +
+                    '                    v-model="arch_field_value" ' +
                     '                    required ' +
                     '                    placeholder="Enter bits" ' +
                     '                    size="sm" ' +
                     '                    min="0">' +
                     '      </b-form-input>' +
                     '    </b-form-group>' +
-
-
-
-
-
-
-
-
-
                     '' +
                     '    <b-form-group' +
                     '                  v-if="arch_field == \'Data Format\'">' +
@@ -196,13 +146,3 @@
   }
 
   Vue.component('arch-conf-edit', uielto_arch_conf_edit) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }

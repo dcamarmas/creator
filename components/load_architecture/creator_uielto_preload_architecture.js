@@ -119,7 +119,12 @@
                     $.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
 
                       // current architecture in upperCase
-                      var current_architecture = uielto_preload_architecture.data.architecture_name.toUpperCase() ;
+                      if (typeof uielto_preload_architecture.data.architecture_name === 'undefined'){
+                        var current_architecture = architecture.arch_conf[0].value.toUpperCase() ;
+                      }
+                      else{
+                        var current_architecture = uielto_preload_architecture.data.architecture_name.toUpperCase() ;
+                      }
 
                       // search for architecture name in the example set 'set'
                       for (var i=0; i<set.length; i++)
