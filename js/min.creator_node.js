@@ -7084,7 +7084,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
      show_notification('The data has been uploaded', 'info') ;
 
      if (runProgram == false){
-       app.executeProgram();
+       app.$options.components["toolbar-btngroup"].options.methods.executeProgram();
      }
 
      return;
@@ -7117,7 +7117,7 @@ function keyboard_read ( fn_post_read, fn_post_params )
   }
 
   if (runProgram == false) {
-    app.executeProgram();
+    app.$options.components["toolbar-btngroup"].options.methods.executeProgram();
   }
 }
 
