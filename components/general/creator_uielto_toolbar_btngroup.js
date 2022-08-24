@@ -139,7 +139,7 @@
                             app._data.instructions = instructions;
 
                             tokenIndex = 0;
-                            app.reset(true);
+                            uielto_toolbar_btngroup.methods.reset(true);
 
                             //Save a backup in the cache memory
                             if (typeof(Storage) !== "undefined")
@@ -164,7 +164,7 @@
                             switch (ret.type)
                             {
                               case "error":
-                                   app.compileError(ret.msg, ret.token, ret.line) ;
+                                   app.compile_error(ret.msg, ret.token, ret.line) ;
                                    break;
 
                               case "warning":
@@ -184,6 +184,40 @@
 
                         // Close all toast
                         app.$bvToast.hide()
+                      },
+
+                      //Show error message in the compilation
+                      compile_error(msg, token, line)
+                      {
+                        var code_assembly_segment = code_assembly.split('\n') ;
+                        uielto_toolbar_btngroup.methods.change_UI_mode('assembly');
+
+                        setTimeout(function() {
+                          app.$root.$emit('bv::show::modal', 'modalAssemblyError') ;
+
+                          // line 1
+                          app.modalAssemblyError.line1 = "" ;
+                          app.modalAssemblyError.code1 = "" ;
+                          if (line > 0) {
+                              app.modalAssemblyError.line1 = line ;
+                              app.modalAssemblyError.code1 = code_assembly_segment[line - 1] ;
+                          }
+
+                          // line 2
+                          app.modalAssemblyError.line2 = line + 1 ;
+                          app.modalAssemblyError.code2 = code_assembly_segment[line] ;
+
+                          // line 3
+                          app.modalAssemblyError.line3 = "" ;
+                          app.modalAssemblyError.code3 = ""  ;
+                          if (line < code_assembly_segment.length - 1) {
+                              app.modalAssemblyError.line3 = line + 2 ;
+                              app.modalAssemblyError.code3 = code_assembly_segment[line + 1] ;
+                          }
+
+                          app.modalAssemblyError.error = msg ;
+
+                        },75);
                       },
 
                       //Remove a loaded binary

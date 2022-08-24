@@ -23,46 +23,48 @@
 
   var uielto_new_architecture = {
 
-  props:      {
+    props:      {
 
-              },
+                },
 
-  data:       function () {
-                return {
-                  
-                }
-              },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-  methods:    {
-                /*Create a new architecture*/
-                new_arch(){
-                  app.change_UI_mode('simulator');
-                  app.change_data_view('registers' , 'int');
-                  app.$forceUpdate();
-                  hide_loading();
-                }
-              },
+    methods:    {
+                  //Create a new architecture
+                  new_arch(){
+                    //Refresh UI
+                    uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
+                    uielto_data_view_selector.methods.change_data_view('registers', 'int');
+                    app.$forceUpdate();
+                    hide_loading();
+                  }
+                },
 
-  template:   '<b-card no-body class="overflow-hidden arch_card architectureCard">' +
-              '  <b-row no-gutters @click="new_arch">' +
-              '    <b-col sm="12" class="center w-100 my-2">' +
-              '      <b-card-img src="./images/new_icon.png" ' +
-              '                  alt="new icon" ' +
-              '                  thumbnail fluid'+ 
-              '                  class="w-75 rounded-0 architectureImg">' +
-              '      </b-card-img>' +
-              '    </b-col>' +
-              '' +
-              '    <b-col sm="12">' +
-              '      <b-card-body title="New Architecture" title-tag="h2" >' +
-              '        <b-card-text class="justify">' +
-              '          Allows you to define an architecture from scratch.' +
-              '        </b-card-text>' +
-              '      </b-card-body>' +
-              '    </b-col>' +
-              '  </b-row>' +
-              '</b-card>'
-
+    template:   '<b-card no-body class="overflow-hidden arch_card architectureCard">' +
+                '  <b-row no-gutters' +
+                '         @click="new_arch">' +
+                '    <b-col sm="12" class="center w-100 my-2">' +
+                '      <b-card-img src="./images/new_icon.png" ' +
+                '                  alt="new icon" ' +
+                '                  thumbnail fluid'+ 
+                '                  class="w-75 rounded-0 architectureImg">' +
+                '      </b-card-img>' +
+                '    </b-col>' +
+                '' +
+                '    <b-col sm="12">' +
+                '      <b-card-body title="New Architecture"' +
+                '                   title-tag="h2" >' +
+                '        <b-card-text class="justify">' +
+                '          Allows you to define an architecture from scratch.' +
+                '        </b-card-text>' +
+                '      </b-card-body>' +
+                '    </b-col>' +
+                '  </b-row>' +
+                '</b-card>'
   }
 
   Vue.component('new-architecture', uielto_new_architecture) ;

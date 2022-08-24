@@ -55,7 +55,7 @@
                       textarea_assembly_editor.setValue(code_assembly) ;
                     }
                     else{
-                      app.assembly_compiler(code_assembly) ;
+                      uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly);
                     }
                     show_notification(' The selected example has been loaded correctly', 'success') ;
 
@@ -102,7 +102,7 @@
               '     </b-dropdown-item>' +
               '   </b-dropdown>' +
               ' ' +
-              '   <span class="h6" v-if="example_available[example_set].length == 0">' +
+              '   <span class="h6" v-if="example_available.length == 0 || example_available[example_set].length == 0">' +
               '     There\'s no examples at the moment' +
               '   </span>' +
               ' ' +
