@@ -27,6 +27,16 @@
                       id:          { type: String, required: true }
                     },
 
+        data:       function () {
+                      return {
+
+                      }
+                    },
+
+        methods:    {
+
+                    },
+
         template:   '<b-modal  :id ="id" title="Browser not supported" hide-footer>' +
                     '  <span class="h6">You are using an unsupported browser, please use one of the following:</span>' +
                     '  <br>' +
@@ -63,7 +73,7 @@
                     '        </b-img>' +
                     '      </b-badge>' +
                     '    </b-list-group-item>' +
-                    '  < /b-list-group>' +
+                    '  </b-list-group>' +
                     '</b-modal>'
   }
 

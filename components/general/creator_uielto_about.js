@@ -37,7 +37,7 @@
                     '       author_img="/creator/images/author_fgarcia.png" ' +
                     '       author_alt="author_fgarcia" ' +
                     '       author_full_name="Félix García Carballeira" ' +
-                    '       author_href_linked="" ' +
+                    '       author_href_linked="https://es.linkedin.com/in/f%C3%A9lix-garc%C3%ADa-carballeira-4ab48a14" ' +
                     '       author_href_rgate="https://www.researchgate.net/profile/Felix_Garcia-Carballeira" ' +
                     '       author_href_github="" ' +
                     '     ></card-author>' +

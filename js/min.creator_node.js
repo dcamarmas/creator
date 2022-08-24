@@ -6816,16 +6816,16 @@ function reset ()
           for (var b = 0; b < architecture.components[a].elements.length; b++)
           {
             if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[0]) != false){
-              aux_sim1 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+              aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
             }
             if (architecture.components[a].elements[b].name.includes(architecture.components[i].elements[j].simple_reg[1]) != false){
-              aux_sim2 = app.bin2hex(app.float2bin(architecture.components[a].elements[b].default_value));
+              aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
             }
           }
         }
 
         aux_value = aux_sim1 + aux_sim2;
-        architecture.components[i].elements[j].value = app.hex2double("0x" + aux_value);
+        architecture.components[i].elements[j].value = hex2double("0x" + aux_value);
       }
     }
   }
