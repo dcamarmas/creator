@@ -34,6 +34,50 @@
               },
 
   methods:    {
+                //Loads the configuration values from cache
+                get_configuration(){
+                  if(localStorage.getItem("instructions_packed") != null){
+                    app._data.instructions_packed = parseInt(localStorage.getItem("instructions_packed"));
+                  }
+
+                  if(localStorage.getItem("autoscroll") != null){
+                    app._data.autoscroll = (localStorage.getItem("autoscroll") === "true");
+                  }
+
+                  if(localStorage.getItem("notification_time") != null){
+                    app._data.notification_time = parseInt(localStorage.getItem("notification_time"));
+                  }
+
+                  if(localStorage.getItem("instruction_help_size") != null){
+                    app._data.instruction_help_size = parseInt(localStorage.getItem("instruction_help_size"));
+                  }
+                },
+
+
+                //Verify if dark mode was activated from cache
+                get_dark_mode(){
+                  if(localStorage.getItem("dark_mode") != null){
+                    document.getElementsByTagName("body")[0].style = localStorage.getItem("dark_mode");
+                    if(localStorage.getItem("dark_mode") == ""){
+                      app._data.dark = false;
+                    }
+                    else{
+                      app._data.dark = true;
+                    }
+                  }
+                  else{
+                    var default_style = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                    if(default_style == true){
+                      document.getElementsByTagName("body")[0].style = "filter: invert(88%) hue-rotate(160deg) !important; background-color: #111 !important;";
+                      app._data.dark = true;
+                    }
+                    else{
+                      document.getElementsByTagName("body")[0].style = "";
+                      app._data.dark = false;
+                    }
+                  }
+                },
+
 
                 //Change the execution speed
                 change_execution_speed(value) {
@@ -53,12 +97,12 @@
                     this._props.instructions_packed = parseInt(this._props.instructions_packed);
                   }
 
-                  app._data.instructionsPacked = this._props.instructions_packed; //TODO: vue bidirectional updates
+                  app._data.instructions_packed = this._props.instructions_packed; //TODO: vue bidirectional updates
                    
-                  localStorage.setItem("instructionsPacked", this._props.instructions_packed);
+                  localStorage.setItem("instructions_packed", this._props.instructions_packed);
              
                   //Google Analytics
-                  creator_ga('configuration', 'configuration.execution_speed', 'configuration.execution_speed.less_speed_' + (prevInstructionPacked > this._props.instructionsPacked).toString()) ;
+                  creator_ga('configuration', 'configuration.execution_speed', 'configuration.execution_speed.less_speed_' + (prevInstructionPacked > this._props.instructions_packed).toString()) ;
                 },
 
                 //Change autoscroll mode
@@ -75,7 +119,7 @@
              
                 //change the time a notification is displayed
                 change_notification_time(value){
-                  var prevNotificationTime = this._props.notification_time;
+                  var prevnotification_time = this._props.notification_time;
               
                   if (value) {
                     this._props.notification_time = this._props.notification_time + value;
@@ -90,12 +134,12 @@
                     this._props.notification_time = parseInt(this._props.notification_time);
                   }
 
-                  app._data.notificationTime = this._props.notification_time; //TODO: vue bidirectional updates
+                  app._data.notification_time = this._props.notification_time; //TODO: vue bidirectional updates
              
-                  localStorage.setItem("notificationTime", this._props.notification_time);
+                  localStorage.setItem("notification_time", this._props.notification_time);
              
                   //Google Analytics
-                  creator_ga('configuration', 'configuration.notification_time', 'configuration.notification_time.less_time_' + (prevNotificationTime > this._props.notificationTime).toString());
+                  creator_ga('configuration', 'configuration.notification_time', 'configuration.notification_time.less_time_' + (prevnotification_time > this._props.notification_time).toString());
                 },
 
                 //change instruction help size

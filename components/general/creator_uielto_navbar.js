@@ -27,6 +27,22 @@
                        architecture_name: { type: String, required: true }
                     },
 
+        data:       function () {
+                      return {
+                        
+                      }
+                    },
+
+        methods:    {
+                      //Load CREATOR version from package JSON
+                      load_num_version(){
+                        $.getJSON('package.json', function(cfg){
+                          creator_information = cfg;
+                          app._data.version = cfg.version;
+                        });
+                      }
+                    },
+
         template:   ' <b-navbar toggleable="sm" class="header my-0 mx-1 py-0 px-2">' +
                     '   <b-navbar-brand class="p-0 m-0" href=".">' +
                     '       <b-container fluid align-h="center" class="mx-0 px-0">' +

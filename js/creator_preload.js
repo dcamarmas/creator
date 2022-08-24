@@ -26,7 +26,7 @@
     function preload_load_example ( data , url )
     {
         code_assembly = data ;
-        app.assembly_compiler(code_assembly) ;
+        uielto_toolbar_btngroup.methods.assembly_compiler(code_assembly)
 
         // show notification
         show_notification(' The selected example has been loaded.', 'success') ;

@@ -23,48 +23,52 @@
 
   var uielto_delete_architecture = {
 
-  props:      {
-                id:             { type: String,  required: true },
-                index:          { type: Number,  required: true }
-              },
+    props:      {
+                  id:             { type: String,  required: true },
+                  index:          { type: Number,  required: true }
+                },
 
-  methods:    {
-                /*Remove architecture*/
-                remove_cache_arch(index){
-                  var id = architecture_available[index].name;
+    methods:    {
+                  //Remove architecture
+                  remove_cache_arch(index){
+                    //Get architecture name
+                    var id = architecture_available[index].name;
 
-                  for (var i = 0; i < load_architectures.length; i++){
-                    if(load_architectures[i].id == id){
-                      load_architectures.splice(i, 1);
+                    //Delete architecture on CREATOR
+                    for (var i = 0; i < load_architectures.length; i++){
+                      if(load_architectures[i].id == id){
+                        load_architectures.splice(i, 1);
+                      }
                     }
-                  }
 
-                  for (var i = 0; i < load_architectures_available.length; i++){
-                    if(load_architectures_available[i].name == id){
-                      load_architectures_available.splice(i, 1);
+                    for (var i = 0; i < load_architectures_available.length; i++){
+                      if(load_architectures_available[i].name == id){
+                        load_architectures_available.splice(i, 1);
+                      }
                     }
+
+                    architecture_available.splice(index, 1);
+
+                    // Reload cache values
+                    var aux_arch = JSON.stringify(load_architectures, null, 2);
+                    localStorage.setItem("load_architectures", aux_arch);
+
+                    aux_arch = JSON.stringify(load_architectures_available, null, 2);
+                    localStorage.setItem("load_architectures_available", aux_arch);
+
+                    show_notification('Architecture deleted successfully', 'success') ;
                   }
+                },
 
-                  architecture_available.splice(index, 1);
-
-                  var auxArch = JSON.stringify(load_architectures, null, 2);
-                  localStorage.setItem("load_architectures", auxArch);
-
-                  auxArch = JSON.stringify(load_architectures_available, null, 2);
-                  localStorage.setItem("load_architectures_available", auxArch);
-
-                  show_notification('Architecture deleted successfully', 'success') ;
-                }
-              },
-
-  template:   ' <b-modal :id ="id" ' +
-              '          title="Delete Architecture" ' +
-              '          ok-variant="danger" ' +
-              '          ok-title="Delete" ' +
-              '          @ok="remove_cache_arch(index)">' +
-              '   <span class="h6">Are you sure you want to delete the architecture?</span>' +
-              ' </b-modal >'
-
+    template:   ' <b-modal :id ="id" ' +
+                '          title="Delete Architecture" ' +
+                '          ok-variant="danger" ' +
+                '          ok-title="Delete" ' +
+                '          @ok="remove_cache_arch(index)">' +
+                '   <span class="h6">' +
+                '     Are you sure you want to delete the architecture?' +
+                '   </span>' +
+                ' </b-modal >'
   }
 
   Vue.component('delete-architecture', uielto_delete_architecture) ;

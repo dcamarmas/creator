@@ -117,10 +117,10 @@
 
           <!-- Configuration modal -->
           <form-configuration id="configuration"
-                              :instructions_packed="instructionsPacked" 
+                              :instructions_packed="instructions_packed" 
                               :autoscroll="autoscroll"
                               :instruction_help_size="instruction_help_size"
-                              :notification_time="notificationTime" 
+                              :notification_time="notification_time" 
                               :dark="dark" 
                               :c_debug="c_debug">
           </form-configuration>
@@ -202,7 +202,7 @@
 
               <!-- Delete architecture modal -->
               <delete-architecture  id="modalDeletArch"
-                                    :index="modalDeletArchIndex">                      
+                                    :index="modal_delete_arch_index">                      
               </delete-architecture>
 
               <!-- Backup modal -->

@@ -53,8 +53,10 @@
                       app._data.reg_type = 'int'; //TODO: vue bidirectional updates
 
                       //Change button backgroun
-                      this.reg_representation_options[0].pressed = true;
-                      this.reg_representation_options[1].pressed = false;
+                      if (typeof this.reg_representation_options !== "undefined") {
+                        this.reg_representation_options[0].pressed = true;
+                        this.reg_representation_options[1].pressed = false;
+                      }
                     }
                     else if(type == "fp"){
                       app._data.register_type = 'floating point'; //TODO: vue bidirectional updates
@@ -62,8 +64,10 @@
                       app._data.reg_type = 'fp'; //TODO: vue bidirectional updates
 
                       //Change button backgroun
-                      this.reg_representation_options[0].pressed = false;
-                      this.reg_representation_options[1].pressed = true;
+                      if (typeof this.reg_representation_options !== "undefined") {
+                        this.reg_representation_options[0].pressed = false;
+                        this.reg_representation_options[1].pressed = true;
+                      }
                     }
 
                     //Change button backgroun
