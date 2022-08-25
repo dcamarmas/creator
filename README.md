@@ -29,7 +29,6 @@
 | GitHub Repository | Source Code                             | Creator                                | 
 |-------------------|-----------------------------------------|----------------------------------------| 
 | Diego             | https://github.com/dcamarmas/creator/   |  https://dcamarmas.github.io/creator/  | 
-| Lucas             | https://github.com/luck5941/creator/    |  https://luck5941.github.io/creator/   | 
 | Alejandro         | https://github.com/acaldero/creator/    |  https://acaldero.github.io/creator/   | 
 
 
