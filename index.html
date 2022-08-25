@@ -310,15 +310,15 @@
 
                         <!-- Register File edit form-->
                         <register-file-edit id="edit_register_file"
-                                            :title="modalEditComponent.title"
-                                            :element="modalEditComponent.element"
-                                            :name="modalEditComponent.name">
+                                            :title="modal_edit_register_file.title"
+                                            :name="modal_edit_register_file.name"
+                                            :index="modal_edit_register_file.index">
                         </register-file-edit>
 
                         <!-- Delete Register File -->
                         <register-file-delete id="delete_register_file"
-                                              :title="modalDeletComp.title"
-                                              :element="modalDeletComp.element">
+                                              :title="modal_delete_register_file.title"
+                                              :index="modal_delete_register_file.index">
                         </register-file-delete>
 
 
@@ -326,12 +326,13 @@
 
                         <!-- New register -->
                         <registers-new id="new_register"
-                                      :element="modalNewElement.element"
-                                      :type="modalNewElement.type"
-                                      :double_precision="modalNewElement.double_precision"
-                                      :reg_id="modalNewElement.id"
-                                      :simple_reg="simple_reg"
-                                      :bits="architecture.arch_conf.bits">
+                                      :register_file="modal_new_register.register_file"
+                                      :type="modal_new_register.type"
+                                      :double_precision="modal_new_register.double_precision"
+                                      :reg_id="modal_new_register.id"
+                                      :bits="modal_new_register.bits"
+                                      :simple_reg="modal_new_register.simple_reg">
+                                      
                         </registers-new>
 
                         <!-- Edit register -->

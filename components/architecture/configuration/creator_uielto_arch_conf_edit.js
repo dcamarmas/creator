@@ -67,7 +67,7 @@
                       app._data.architecture_name = architecture.arch_conf[index].value;
                     }
 
-                    return;
+                    show_notification('Architecture field correctly modified', 'success') ;
                   },
 
                   //Form validator

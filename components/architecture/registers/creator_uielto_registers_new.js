@@ -25,7 +25,7 @@
 
         props:      {
                       id:                             { type: String, required: true },
-                      element:                        { type: String, required: true },
+                      register_file:                  { type: String, required: true },
                       type:                           { type: String, required: true },
                       double_precision:               { type: String, required: true },
                       reg_id:                         { type: Number, required: true },
@@ -205,7 +205,7 @@
         template:   '<b-modal :id ="id" ' +
                     '         title = "New Register" ' +
                     '         ok-title="Save" ' +
-                    '         @ok="new_register_verify($event, element)" ' +
+                    '         @ok="new_register_verify($event, register_file)" ' +
                     '         v-model="show_modal" ' +
                     '         @hidden="clean_form">' +
                     '  <b-form >' +

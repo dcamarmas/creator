@@ -35,12 +35,7 @@ var back_card = [];
 /*Load architecture*/
 var architecture = {components:[], instructions:[], directives:[], memory_layout:[]};
 var architecture_hash = [];
-/*Components form select*/
-var componentsTypes = [
-  { text: 'Integer', value: 'integer' },
-  { text: 'Floating point', value: 'floating point' },
-  { text: 'Control', value: 'control' },
-];
+
 /*Intructions form select*/
 var instructionsTypes = [
   { text: 'Arithmetic integer', value: 'Arithmetic integer' },
