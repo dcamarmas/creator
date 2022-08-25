@@ -25,12 +25,16 @@
 
     props:      {
                   id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+
+                  register_file_index:            { type: Number, required: true },
+                  register_index:                 { type: Number, required: true },
+
                   name:                           { type: String, required: true },
                   type:                           { type: String, required: true },
                   double_precision:               { type: String, required: true },
                   reg_id:                         { type: Number, required: true },
-                  name:                           { type: String, required: true },
-                  def_value:                      { type: String, required: true },
+                  default_value:                  { type: String, required: true },
                   properties:                     { type: Array,  required: true },
                   precision:                      { type: String, required: true },
                   simple_reg:                     { type: Array,  required: true },
@@ -49,74 +53,70 @@
     methods:    {
                   
                   //Check all field of modified register
-                  edit_register_verify(evt, comp){
+                  edit_register_verify(evt){
                     evt.preventDefault();
-                    if (this._props.name.length == 0 || !this._props.name || !this._props.def_value) {
+                    if (this._props.name.length == 0 || !this._props.name || !this._props.default_value) {
                       show_notification('Please complete all fields', 'danger') ;
                     }
-                    else if(isNaN(this._props.def_value)){
+                    else if(isNaN(this._props.default_value)){
                       show_notification('The default value must be a number', 'danger') ;
                     }
                     else {
-                      this.edit_register(comp);
+                      for (var i = 0; i < architecture_hash.length; i++){
+                        for (var j = 0; j < architecture.components[i].elements.length; j++){
+                          for (var z = 0; z < this._props.name.length; z++){
+                            if ((architecture.components[i].elements[j].name.includes(this._props.name[z]) != false) && (this._props.register_file_index != i || this._props.register_index != j)){
+                                show_notification('The element already exists', 'danger') ;
+                                return;
+                            }
+                          }
+                        }
+                      }
+
+                      this.edit_register();
                     }
                   },
 
-                  //Modify register //TODO: split in two functions
-                  edit_register(comp){
-                    for (var i = 0; i < architecture_hash.length; i++){
-                      for (var j = 0; j < architecture.components[i].elements.length; j++){
-                        for (var z = 0; z < this._props.name.length; z++){
-                          if ((architecture.components[i].elements[j].name.includes(this._props.name[z]) != false) && (comp != this._props.name)){
-                              show_notification('The element already exists', 'danger') ;
-                              return;
-                          }
-                        }
-                      }
-                    }
-
+                  //Modify register
+                  edit_register(){
                     this.show_modal = false;
 
-                    for (var i = 0; i < architecture_hash.length; i++){
-                      for(var j=0; j < architecture.components[i].elements.length; j++){
-                        if(comp == architecture.components[i].elements[j].name){
-                          architecture.components[i].elements[j].name = this._props.name;
-                          if(architecture.components[i].type == "control" || architecture.components[i].type == "integer"){
-                            architecture.components[i].elements[j].default_value = bi_intToBigInt(this._props.def_value,10) ;
-                          }
-                          else{
-                            if(architecture.components[i].double_precision == false){
-                              architecture.components[i].elements[j].default_value = parseFloat(this._props.def_value, 10);
+                    //Modify the register into the register file
+                    architecture.components[this._props.register_file_index].elements[this._props.register_index].name = this._props.name;
+                    if(architecture.components[this._props.register_file_index].type == "control" || architecture.components[this._props.register_file_index].type == "integer"){
+                      architecture.components[this._props.register_file_index].elements[this._props.register_index].default_value = bi_intToBigInt(this._props.default_value,10) ;
+                    }
+                    else{
+                      if(architecture.components[this._props.register_file_index].double_precision == false){
+                        architecture.components[this._props.register_file_index].elements[this._props.register_index].default_value = parseFloat(this._props.default_value, 10);
+                      }
+                      else{
+
+                        var aux_value;
+                        var aux_sim1;
+                        var aux_sim2;
+
+                        for (var a = 0; a < architecture_hash.length; a++) {
+                          for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                            if(architecture.components[a].elements[b].name == this._props.simple_1){
+                              aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].value));
                             }
-                            else{
-
-                              var aux_value;
-                              var aux_sim1;
-                              var aux_sim2;
-
-                              for (var a = 0; a < architecture_hash.length; a++) {
-                                for (var b = 0; b < architecture.components[a].elements.length; b++) {
-                                  if(architecture.components[a].elements[b].name == this._props.simple_1){
-                                    aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].value));
-                                  }
-                                  if(architecture.components[a].elements[b].name == this._props.simple_2){
-                                    aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].value));
-                                  }
-                                }
-                              }
-
-                              aux_value = aux_sim1 + aux_sim2;
-
-                              architecture.components[i].elements[j].value = hex2double("0x" + aux_value);
-
-                              architecture.components[i].elements[j].simple_reg[0] = this._props.simple_1;
-                              architecture.components[i].elements[j].simple_reg[1] = this._props.simple_2;
+                            if(architecture.components[a].elements[b].name == this._props.simple_2){
+                              aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].value));
                             }
                           }
-                          architecture.components[i].elements[j].properties = this._props.properties;
                         }
+
+                        aux_value = aux_sim1 + aux_sim2;
+
+                        architecture.components[this._props.register_file_index].elements[this._props.register_index].value = hex2double("0x" + aux_value);
+
+                        architecture.components[this._props.register_file_index].elements[this._props.register_index].simple_reg[0] = this._props.simple_1;
+                        architecture.components[this._props.register_file_index].elements[this._props.register_index].simple_reg[1] = this._props.simple_2;
                       }
                     }
+                    architecture.components[this._props.register_file_index].elements[this._props.register_index].properties = this._props.properties;
+
 
                     show_notification('Register file correctly modified', 'success') ;
                   },
@@ -157,7 +157,7 @@
     template:   '<b-modal :id ="id" ' +
                 '         title="Edit register" ' +
                 '         ok-title="Save"' +
-                '         @ok="edit_register_verify($event, element)" ' +
+                '         @ok="edit_register_verify($event)" ' +
                 '         v-model="show_modal">' +
                 '  <b-form>' +
                 '    <b-form-group label="Name:">' +
@@ -186,10 +186,10 @@
                 '    <b-form-group label="Default value:" ' +
                 '                  v-if="double_precision == false">' +
                 '      <b-form-input type="text" ' +
-                '                    v-model="def_value" ' +
+                '                    v-model="default_value" ' +
                 '                    required ' +
                 '                    placeholder="Enter default value" ' +
-                '                    :state="valid(def_value)" ' +
+                '                    :state="valid(default_value)" ' +
                 '                    size="sm" ' +
                 '                    title="Default value">' +
                 '      </b-form-input>' +
