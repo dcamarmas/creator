@@ -137,9 +137,6 @@ try
       advanced_mode: true,
 
 
-      //Floating point registers
-      simple_reg: [], //TODO: delete
-
       //Edit architecture field modal
       modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
         title: '',
@@ -175,11 +172,10 @@ try
 
       //New register modal
       modal_new_register:{ //TODO: include into register_file component - modal info
-        register_file: '',
+        register_file_index: null,
         type: '',
         double_precision: '',
         id: '',
-        bits: null,
         simple_reg: []
       },
 
@@ -188,8 +184,12 @@ try
 
 
       //Edit register modal
-      modalEditElement:{ //TODO: include into register component - modal info
-        element: '',
+      modal_edit_register:{ //TODO: include into register component - modal info
+        title: '',
+        register_file_index: null,
+        register_index: null,
+
+        name: '',
         type: '',
         double_precision: '',
         name: '',
@@ -197,15 +197,29 @@ try
         defValue: '',
         properties: [],
         precision: '',
+        simple_reg: [],
         simple1: '',
         simple2: '',
       },
 
-      //Delete element modal
-      modalDeletElement:{ //TODO: include into register component - modal info
+
+
+
+
+
+      //Delete register modal
+      modal_delete_register:{ //TODO: include into register component - modal info
         title: '',
-        element: '',
+        register_file_index: null,
+        register_index: null
       },
+
+
+
+
+
+
+
 
 
       //Instruction form

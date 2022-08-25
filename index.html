@@ -326,34 +326,34 @@
 
                         <!-- New register -->
                         <registers-new id="new_register"
-                                      :register_file="modal_new_register.register_file"
+                                      :register_file_index="modal_new_register.register_file_index"
                                       :type="modal_new_register.type"
                                       :double_precision="modal_new_register.double_precision"
                                       :reg_id="modal_new_register.id"
-                                      :bits="modal_new_register.bits"
                                       :simple_reg="modal_new_register.simple_reg">
                                       
                         </registers-new>
 
                         <!-- Edit register -->
                         <registers-edit id="edit_register"
-                                        :element="modalEditElement.element"
-                                        :type="modalEditElement.type"
-                                        :double_precision="modalEditElement.double_precision"
-                                        :reg_id="modalEditElement.reg_id"
-                                        :name="modalEditElement.name"
-                                        :def_value="modalEditElement.defValue"
-                                        :properties="modalEditElement.properties"
-                                        :precision="modalEditElement.precision"
-                                        :simple_reg="simple_reg"
-                                        :simple_1="modalEditElement.simple1"
-                                        :simple_2="modalEditElement.simple2">
+                                        :name="modal_edit_register.name"
+                                        :type="modal_edit_register.type"
+                                        :double_precision="modal_edit_register.double_precision"
+                                        :reg_id="modal_edit_register.reg_id"
+                                        :name="modal_edit_register.name"
+                                        :def_value="modal_edit_register.defValue"
+                                        :properties="modal_edit_register.properties"
+                                        :precision="modal_edit_register.precision"
+                                        :simple_reg="modal_edit_register.simple_reg"
+                                        :simple_1="modal_edit_register.simple1"
+                                        :simple_2="modal_edit_register.simple2">
                         </registers-edit>
 
                         <!-- Delete register -->
                         <registers-delete  id="delete_register"
-                                          :title="modalDeletElement.title"
-                                          :element="modalDeletElement.element">
+                                          :title="modal_delete_register.title"
+                                          :register_file_index="modal_delete_register.register_file_index"
+                                          :register_index="modal_delete_register.register_index">
                         </registers-delete>
 
                       </b-tab>

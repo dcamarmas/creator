@@ -53,13 +53,10 @@
 
                   //Show new register modal
                   new_register_modal(name, index, button){
-                    app._data.modal_new_register.register_file    = name;
-                    app._data.modal_new_register.type             = architecture.components[index].type;
-                    app._data.modal_new_register.double_precision = architecture.components[index].double_precision;
-                    app._data.modal_new_register.bits             = parseInt(architecture.arch_conf[1].value);
-
-                    this.$root.$emit('bv::show::modal', 'new_register', button);
-
+                    app._data.modal_new_register.register_file_index = index;
+                    app._data.modal_new_register.type                = architecture.components[index].type;
+                    app._data.modal_new_register.double_precision    = architecture.components[index].double_precision;
+                    
                     //Load all simple precision registers //TODO: improve the search
                     app._data.modal_new_register.simple_reg = [];
                     for (var i = 0; i < architecture_hash.length; i++){
@@ -81,6 +78,8 @@
                         }
                       }
                     }
+
+                    this.$root.$emit('bv::show::modal', 'new_register', button);
                   },
                 },
 
@@ -132,7 +131,7 @@
                 '' +
                 '' +
                 '            <registers  :registers="architecture.components[index].elements"' +
-                '                        :register_file="index">' +
+                '                        :register_file_index="index">' +
                 '            </registers>' +
                 '' +
                 '' +
