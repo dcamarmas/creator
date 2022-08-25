@@ -35,7 +35,7 @@
                     load_arch: '',
 
                     //Show modal
-                    show_modal: false,
+                    show_modal: false
                   }
                 },
 
@@ -48,7 +48,7 @@
                     //Verify all form fields
                     if(!this.name_arch || !this.load_arch){
                       hide_loading();
-                      show_notification('Please complete all fields', 'danger') ;
+                      show_notification('Please complete all fields', 'danger');
                       return;
                     }
 
@@ -81,7 +81,7 @@
                             localStorage.setItem("load_architectures_available", auxArch);
                           }
 
-                          show_notification('The selected architecture has been loaded correctly', 'success') ;
+                          show_notification('The selected architecture has been loaded correctly', 'success');
                           hide_loading();
                         }
                       })(this.name_arch, this.description_arch)
