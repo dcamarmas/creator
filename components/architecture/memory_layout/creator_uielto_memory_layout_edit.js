@@ -77,7 +77,7 @@
                         this.show_modal = false;
 
                         for(var i = 0; i < this._props.memory_layout.length; i++){
-                          architecture.memory_layout[i].value = parseInt(this._props.memory_layout[i]);
+                          architecture.memory_layout[i].value = this._props.memory_layout[i];
                         }
 
                         app._data.architecture = architecture; //TODO: bidirectional

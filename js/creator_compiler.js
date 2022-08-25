@@ -195,7 +195,7 @@ var display = '' ;
 
 // Load architecture
 
-function load_arch_select ( cfg )
+function load_arch_select ( cfg ) //TODO: repeated?
 {
       var ret = {
                         errorcode: "",
@@ -1014,9 +1014,9 @@ function assembly_compiler()
         /* Initialize stack */
         writeMemory("00", parseInt(stack_address), "word") ;
 
-        address = architecture.memory_layout[0].value;
-        data_address = architecture.memory_layout[2].value;
-        stack_address = architecture.memory_layout[4].value;
+        address = parseInt(architecture.memory_layout[0].value);
+        data_address = parseInt(architecture.memory_layout[2].value);
+        stack_address = parseInt(architecture.memory_layout[4].value);
 
   // save current value as default values for reset()...
         creator_memory_prereset() ;
