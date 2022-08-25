@@ -99,7 +99,7 @@ function capi_mem_read ( addr, type )
 
 	// 2) check address is into text segment
 	var addr_16 = parseInt(addr, 16);
-	if((addr_16 >= architecture.memory_layout[0].value) && (addr_16 <= architecture.memory_layout[1].value))
+	if((addr_16 >= parseInt(architecture.memory_layout[0].value)) && (addr_16 <= parseInt(architecture.memory_layout[1].value)))
     {
         creator_executor_exit();
         capi_raise('Segmentation fault. You tried to read in the text segment');

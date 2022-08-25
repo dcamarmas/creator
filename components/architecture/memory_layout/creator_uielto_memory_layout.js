@@ -37,7 +37,7 @@
                       //Show edit directive modal
                       edit_memory_layout_modal(button){
                         for (var i = 0; i < this._props.memory_layout.length; i++) {
-                          app._data.modalEditMemoryLayout.memory_layout[i] = "0x" + ((this._props.memory_layout[i].value).toString(16)).padStart(8, "0").toUpperCase();
+                          app._data.modalEditMemoryLayout.memory_layout[i] = this._props.memory_layout[i].value;
                         }
 
                         this.$root.$emit('bv::show::modal', 'change_memory_layout', button);
@@ -80,12 +80,12 @@
                     '        </b-list-group-item>' +
                     '        <b-list-group-item class="memoryLayout noBorder left">' +
                     '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[0].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
+                    '            {{memory_layout[0].value}}' +
                     '          </span>' +
                     '          <br>' +
                     '          <br>' +
                     '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[1].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
+                    '            {{memory_layout[1].value}}' +
                     '          </span>' +
                     '        </b-list-group-item>' +
                     '      </b-list-group>' +
@@ -94,12 +94,12 @@
                     '        <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>' +
                     '        <b-list-group-item class="memoryLayout noBorder left">' +
                     '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[2].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
+                    '            {{memory_layout[2].value}}' +
                     '          </span>' +
                     '          <br>' +
                     '          <br>' +
                     '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[3].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
+                    '            {{memory_layout[3].value}}' +
                     '          </span>' +
                     '        </b-list-group-item>' +
                     '      </b-list-group>' +
@@ -124,12 +124,12 @@
                     '        </b-list-group-item>' +
                     '        <b-list-group-item class="memoryLayout noBorder left">' +
                     '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[4].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
+                    '            {{memory_layout[4].value}}' +
                     '          </span>' +
                     '          <br>' +
                     '          <br>' +
                     '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[5].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
+                    '            {{memory_layout[5].value}}' +
                     '          </span>' +
                     '        </b-list-group-item>' +
                     '      </b-list-group>' +
