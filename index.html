@@ -257,16 +257,16 @@
 
                         <!-- Edit Architecture configuration -->
                         <arch-conf-edit id="edit_arch_field"
-                                        :title="modalEditArchField.title"
-                                        :arch_field="modalEditArchField.field"
-                                        :arch_field_value="modalEditArchField.value"
-                                        :arch_field_index="modalEditArchField.index">
+                                        :title="modal_edit_arch_field.title"
+                                        :arch_field="modal_edit_arch_field.field"
+                                        :arch_field_value="modal_edit_arch_field.value"
+                                        :arch_field_index="modal_edit_arch_field.index">
                         </arch-conf-edit>
 
                         <!-- Reset Architecture configuration -->
                         <arch-conf-reset  id="reset_arch_field"
-                                          :title="modalResetArchField.title"
-                                          :arch_field_index="modalResetArchField.index"
+                                          :title="modal_reset_arch_field.title"
+                                          :arch_field_index="modal_reset_arch_field.index"
                                           :architecture_name="architecture_name">
                         </arch-conf-reset>
 
@@ -282,7 +282,7 @@
 
                         <!-- Edit memory layout -->
                         <memory-layout-edit id="change_memory_layout"
-                                            :memory_layout="modalEditMemoryLayout.memory_layout">
+                                            :memory_layout="modal_edit_memory_layout.memory_layout">
                         </memory-layout-edit>
 
                         <!-- Reset memory layout -->

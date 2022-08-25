@@ -31,7 +31,7 @@
     data:       function () {
                   return {
                     //Show modal
-                    show_modal: false,
+                    show_modal: false
                   }
                 },
 

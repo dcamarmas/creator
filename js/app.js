@@ -87,7 +87,7 @@ try
       autoscroll: true,
 
       // Font size
-      fontSize: 15,
+      font_size: 15,
 
       //Debug
       c_debug: false,
@@ -105,10 +105,10 @@ try
       //Available architectures
       //
 
-      arch_available: architecture_available, //TODO: copy?
+      arch_available: architecture_available, //TODO: copy or only in app?
 
       //Architectures card background
-      back_card: back_card, //TODO: copy?
+      back_card: back_card, //TODO: copy or only in app?
 
       //Delete architecture modal 
       modal_delete_arch_index: 0, //TODO: include into delete architecture component - modal info
@@ -141,21 +141,21 @@ try
       simple_reg: [],
 
       //Edit architecture field modal
-      modalEditArchField: { //TODO: include into arch_conf component - modal info
+      modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
         title: '',
         field: '',
         value: '',
         index: '',
       },
       //Reset architecture field modal
-      modalResetArchField:{ //TODO: include into arch_conf component - modal info
+      modal_reset_arch_field:{ //TODO: include into arch_conf component - modal info
         title: '',
         index: '',
       },
 
 
       //Edit memory layout modal
-      modalEditMemoryLayout: { //TODO: include into memory_layout component - modal info
+      modal_edit_memory_layout: { //TODO: include into memory_layout component - modal info
         memory_layout: ["", "", "", "", "", ""],
       },
       
