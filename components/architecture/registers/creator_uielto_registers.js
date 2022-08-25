@@ -55,7 +55,7 @@
                     for(var i = 0; i < architecture.components.length; i++){
                       for(var j = 0; j < architecture.components[i].elements.length; j++){
                         if(architecture.components[i].elements[j].name == app._data.modal_edit_register.name){
-                          app._data.modal_edit_register.id = id;
+                          app._data.modal_edit_register.reg_id = id;
                         }
                         if(architecture.components[i].type == architecture.components[this._props.register_file_index].type && architecture.components[i].double_precision == architecture.components[this._props.register_file_index].double_precision){
                           id++;
@@ -73,7 +73,7 @@
                       app._data.modal_edit_register.simple2  = architecture.components[this._props.register_file_index].elements[this._props.register_file_index].simple_reg[1];
                     }
                     else{
-                      app._data.modal_edit_register.defValue = (architecture.components[this._props.register_file_index].elements[this._props.register_file_index].default_value).toString();
+                      app._data.modal_edit_register.default_value = (architecture.components[this._props.register_file_index].elements[this._props.register_file_index].default_value).toString();
                     }
 
                     app._data.modal_edit_register.properties = architecture.components[this._props.register_file_index].elements[j].properties;

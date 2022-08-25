@@ -336,12 +336,15 @@
 
                         <!-- Edit register -->
                         <registers-edit id="edit_register"
+                                        :title="modal_edit_register.title"
+                                        :register_file_index="modal_edit_register.register_file_index"
+                                        :register_index="modal_edit_register.register_index"
                                         :name="modal_edit_register.name"
                                         :type="modal_edit_register.type"
                                         :double_precision="modal_edit_register.double_precision"
                                         :reg_id="modal_edit_register.reg_id"
                                         :name="modal_edit_register.name"
-                                        :def_value="modal_edit_register.defValue"
+                                        :default_value="modal_edit_register.default_value"
                                         :properties="modal_edit_register.properties"
                                         :precision="modal_edit_register.precision"
                                         :simple_reg="modal_edit_register.simple_reg"
