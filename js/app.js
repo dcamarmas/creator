@@ -138,19 +138,19 @@ try
 
 
       //Floating point registers
-      simple_reg: [],
+      simple_reg: [], //TODO: delete
 
       //Edit architecture field modal
       modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
         title: '',
         field: '',
         value: '',
-        index: '',
+        index: ''
       },
       //Reset architecture field modal
       modal_reset_arch_field:{ //TODO: include into arch_conf component - modal info
         title: '',
-        index: '',
+        index: ''
       },
 
 
@@ -160,26 +160,32 @@ try
       },
       
 
-      //Edit component modal
-      modalEditComponent: { //TODO: include into register_file component - modal info
+      //Edit register file modal
+      modal_edit_register_file: { //TODO: include into register_file component - modal info
         title: '',
-        element: '',
         name: '',
+        index: null
       },
-      //Delete component modal
-      modalDeletComp:{ //TODO: include into register_file component - modal info
+      //Delete register file modal
+      modal_delete_register_file:{ //TODO: include into register_file component - modal info
         title: '',
-        element: '',
+        index: null
       },
 
 
       //New register modal
-      modalNewElement:{ //TODO: include into register_file component - modal info
-        element: '',
+      modal_new_register:{ //TODO: include into register_file component - modal info
+        register_file: '',
         type: '',
         double_precision: '',
         id: '',
+        bits: null,
+        simple_reg: []
       },
+
+
+
+
 
       //Edit register modal
       modalEditElement:{ //TODO: include into register component - modal info
