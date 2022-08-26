@@ -51,10 +51,10 @@
                 },
 
     methods:    {
-                  
                   //Check all field of modified register
                   edit_register_verify(evt){
                     evt.preventDefault();
+
                     if (this._props.name.length == 0 || !this._props.name || !this._props.default_value) {
                       show_notification('Please complete all fields', 'danger') ;
                     }
@@ -91,7 +91,6 @@
                         architecture.components[this._props.register_file_index].elements[this._props.register_index].default_value = parseFloat(this._props.default_value, 10);
                       }
                       else{
-
                         var aux_value;
                         var aux_sim1;
                         var aux_sim2;
@@ -110,13 +109,11 @@
                         aux_value = aux_sim1 + aux_sim2;
 
                         architecture.components[this._props.register_file_index].elements[this._props.register_index].value = hex2double("0x" + aux_value);
-
                         architecture.components[this._props.register_file_index].elements[this._props.register_index].simple_reg[0] = this._props.simple_1;
                         architecture.components[this._props.register_file_index].elements[this._props.register_index].simple_reg[1] = this._props.simple_2;
                       }
                     }
                     architecture.components[this._props.register_file_index].elements[this._props.register_index].properties = this._props.properties;
-
 
                     show_notification('Register file correctly modified', 'success') ;
                   },
@@ -172,8 +169,8 @@
                 '        tag-pills ' +
                 '        title="Element name"' +
                 '      ></b-form-tags>' +
-                '' +
                 '    </b-form-group>' +
+                '' +
                 '    <b-form-group label="ID:">' +
                 '      <b-form-input type="text" ' +
                 '                    v-model="reg_id" ' +
@@ -183,6 +180,7 @@
                 '                    disabled>' +
                 '      </b-form-input>' +
                 '    </b-form-group>' +
+                '' +
                 '    <b-form-group label="Default value:" ' +
                 '                  v-if="double_precision == false">' +
                 '      <b-form-input type="text" ' +
@@ -194,6 +192,7 @@
                 '                    title="Default value">' +
                 '      </b-form-input>' +
                 '    </b-form-group>' +
+                '' +
                 '    <b-form-group label="Properties:" v-if="type != \'control\'">' +
                 '      <b-form-checkbox-group v-model="properties">' +
                 '        <b-form-checkbox value="read">Read</b-form-checkbox>' +
@@ -207,6 +206,7 @@
                 '        <b-form-checkbox value="frame">Frame</b-form-checkbox>' +
                 '      </b-form-checkbox-group>' +
                 '    </b-form-group>' +
+                '' +
                 '    <b-form-group label="Simple Floating Points asociate:" v-if="double_precision == true">' +
                 '      <div class="col-lg-12 col-sm-12 row m-0">' +
                 '        <div class="col-lg-6 col-sm-6">' +

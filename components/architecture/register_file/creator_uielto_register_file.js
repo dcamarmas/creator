@@ -37,7 +37,7 @@
                   //Show edit component modal
                   edit_register_file_modal(name, index, button){
                     app._data.modal_edit_register_file.title = "Edit " + name;
-                    app._data.modal_edit_register_file.name = name;
+                    app._data.modal_edit_register_file.name  = name;
                     app._data.modal_edit_register_file.index = index;
 
                     this.$root.$emit('bv::show::modal', 'edit_register_file', button);
@@ -57,7 +57,7 @@
                     app._data.modal_new_register.type                = architecture.components[index].type;
                     app._data.modal_new_register.double_precision    = architecture.components[index].double_precision;
                     
-                    //Load all simple precision registers //TODO: improve the search
+                    //Load all simple precision registers at the moment //TODO: improve the search
                     app._data.modal_new_register.simple_reg = [];
                     for (var i = 0; i < architecture_hash.length; i++){
                       for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){

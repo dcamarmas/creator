@@ -33,7 +33,7 @@
 
     data:       function () {
                   return {
-                    //Modals directives
+                    //Modal register file
                     show_modal: false,
                   }
                 },
@@ -53,6 +53,7 @@
                             return;
                         }
                       }
+                      
                       this.edit_register_file();
                     }
                   },
