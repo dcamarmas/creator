@@ -39,10 +39,7 @@
                   edit_directive_modal(name, index, button){
                     app._data.modal_edit_directive.title = "Edit " + name;
                     app._data.modal_edit_directive.index = index;
-
-                    app._data.modal_edit_directive.name   = architecture.directives[index].name;
-                    app._data.modal_edit_directive.action = architecture.directives[index].action;
-                    app._data.modal_edit_directive.size   = architecture.directives[index].size;
+                    app._data.modal_edit_directive.directive = Object.assign({}, architecture.directives[index]);
 
                     this.$root.$emit('bv::show::modal', 'edit_directive', button);
                   },

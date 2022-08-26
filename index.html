@@ -371,9 +371,28 @@
 
                         <!-- Intruction fields-->
                         <instructions-fields  id="fields_instructions"
-                                              :title="modalViewFields.title"
-                                              :instruction="formInstruction">
+                                              :title="modal_field_instruction.title"
+                                              :index="modal_field_instruction.index"
+                                              :instruction="modal_field_instruction.instruction">
                         </instructions-fields>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                         <!-- New Intruction -->
                         <instructions-new id="new_instructions"></instructions-new>
@@ -385,13 +404,16 @@
 
                         <!-- Edit Intructions -->
                         <instructions-edit  id="edit_instructions"
-                                            :element="modalEditInst"
-                                            :instruction="formInstruction">
+                                            :title="modal_edit_instruction.title"
+                                            :index="modal_edit_instruction.index"
+                                            :instruction="modal_edit_instruction.instruction"
+                                            :numfields="modal_edit_instruction.numfields">
                         </instructions-edit>
 
                         <!-- Delete instruction -->
                         <instructions-delete  id="delete_instructions"
-                                              :intruction="modalDeletInst.index">
+                                              :title="modal_delete_instruction.title"
+                                              :index="modal_delete_instruction.index">
                         </instructions-delete>
 
                       </b-tab>
@@ -451,9 +473,7 @@
                         <directives-edit  id="edit_directive"
                                           :title="modal_edit_directive.title"
                                           :index="modal_edit_directive.index"
-                                          :name="modal_edit_directive.name"
-                                          :action="modal_edit_directive.action"
-                                          :size="modal_edit_directive.size">
+                                          :directive="modal_edit_directive.directive">
                         </directives-edit>
 
                         <!-- Delete directive -->

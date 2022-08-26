@@ -151,7 +151,7 @@ try
 
       //Edit memory layout modal
       modal_edit_memory_layout: { //TODO: include into memory_layout component - modal info
-        memory_layout: ["", "", "", "", "", ""],
+        memory_layout: ["", "", "", "", "", ""]
       },
       
 
@@ -190,7 +190,7 @@ try
         precision: '',
         simple_reg: [],
         simple1: '',
-        simple2: '',
+        simple2: ''
       },
       //Delete register modal
       modal_delete_register:{ //TODO: include into register component - modal info
@@ -207,8 +207,42 @@ try
 
 
 
-      //Instruction form
-      formInstruction: { //TODO - modal info
+
+
+
+
+
+      /*Instructions fields*/
+      modal_field_instruction:{ //TODO: include into instruction component - modal info
+        title: '',
+        index: null,
+        instruction: {}
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+      /*Edit instruction modal*/
+      modal_edit_instruction:{ //TODO: include into instruction component - modal info
+        title: '',
+        index: null,
+        instruction: {},
+        numfields: null
+
+
+
+
+        /*element: '',
+        co: '',
+        cop: '',
         name: '',
         type: '',
         co: '',
@@ -228,26 +262,29 @@ try
         signature: '',
         signatureRaw: '',
         signature_definition: '',
-        definition: '',
+        definition: '',*/
       },
 
-      /*Instructions fields*/
-      modalViewFields:{ //TODO: include into instruction component - modal info
-        title: '',
-      },
 
-      /*Edit instruction modal*/
-      modalEditInst:{ //TODO: include into instruction component - modal info
-        title: '',
-        element: '',
-        co: '',
-        cop: '',
-      },
+
+
+
+
 
       /*Delete instruction modal*/
-      modalDeletInst:{ //TODO: include into instruction component - modal info
-        index: 0,
+      modal_delete_instruction:{ //TODO: include into instruction component - modal info
+        title: '',
+        index: null,
       },
+
+
+
+
+
+
+
+
+
 
 
       //Pseudoinstruction form
@@ -296,23 +333,17 @@ try
 
 
 
-
-
-
-
       //Edit directive modal
       modal_edit_directive:{ //TODO: include into directives component - modal info
         title: '',
         index: null,
-        name: '',
-        action: '',
-        size: 0,
+        directive: {}
       },
 
       //Delete directive modal //TODO: include into directives component - modal info
       modal_delete_directive:{
         title: '',
-        index: null,
+        index: null
       },
 
       
