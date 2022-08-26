@@ -2798,23 +2798,7 @@ var instructionsTypes = [
   { text: 'Unconditional bifurcation', value: 'Unconditional bifurcation' },
   { text: 'Other', value: 'Other' },
 ];
-/*Directives form select*/
-var actionTypes = [
-  { text: 'Data Segment', value: 'data_segment' },
-  { text: 'Code Segment', value: 'code_segment' },
-  { text: 'Global Symbol', value: 'global_symbol' },
-  { text: 'Byte', value: 'byte' },
-  { text: 'Half Word', value: 'half_word' },
-  { text: 'Word', value: 'word' },
-  { text: 'Double Word', value: 'double_word' },
-  { text: 'Float', value: 'float' },
-  { text: 'Double', value: 'double' },
-  { text: 'Space', value: 'space' },
-  { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
-  { text: 'ASCII finished in null', value: 'ascii_null_end' },
-  { text: 'Align', value: 'align' },
-  { text: 'Balign', value: 'balign'},
-];
+
 
 
 /*Compilator*/

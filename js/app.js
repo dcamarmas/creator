@@ -284,19 +284,35 @@ try
       },
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       //Edit directive modal
-      modalEditDirective:{ //TODO: include into directives component - modal info
+      modal_edit_directive:{ //TODO: include into directives component - modal info
         title: '',
-        element: '',
+        index: null,
         name: '',
         action: '',
         size: 0,
       },
 
       //Delete directive modal //TODO: include into directives component - modal info
-      modalDeletDir:{
+      modal_delete_directive:{
         title: '',
-        element: '',
+        index: null,
       },
 
       
