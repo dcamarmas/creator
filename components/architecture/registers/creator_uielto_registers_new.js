@@ -52,6 +52,8 @@
     methods:    {
                   //Verify all field of new register
                   new_register_verify(evt){
+                    evt.preventDefault();
+                    
                     if (this.registers_fields.name.length == 0 || !this.registers_fields.name){
                          show_notification('Please complete all fields', 'danger') ;
                     }
@@ -99,21 +101,21 @@
                     if((this._props.type == "floating point")&&(this._props.double_precision == true)){
                       var aux_new;
                       var aux_value;
-                      var aux_sim1;
-                      var aux_sim2;
+                      var aux_sim_1;
+                      var aux_sim_2;
 
                       for (var a = 0; a < architecture_hash.length; a++){ //TODO: improve the search
                         for (var b = 0; b < architecture.components[a].elements.length; b++) {
                           if(architecture.components[a].elements[b].name == this.registers_fields.simple1){
-                            aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                            aux_sim_1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
                           }
                           if(architecture.components[a].elements[b].name == this.registers_fields.simple2){
-                            aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
+                            aux_sim_2 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
                           }
                         }
                       }
 
-                      aux_value = aux_sim1 + aux_sim2;
+                      aux_value = aux_sim_1 + aux_sim_2;
                       aux_new = hex2double("0x" + aux_value);
 
                       var new_element = {name:this.registers_fields.name, nbits: parseInt(architecture.arch_conf[1].value)*2, value: aux_new, properties: this.registers_fields.properties};

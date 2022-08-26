@@ -38,11 +38,11 @@
     methods:    {
                   //Show edit register modal
                   edit_register_modal(name, index, button){
-                    app._data.modal_edit_register.title = "Edit " + name;
+                    app._data.modal_edit_register.title               = "Edit " + name;
                     app._data.modal_edit_register.register_file_index = this._props.register_file_index;
-                    app._data.modal_edit_register.register_index = index;
+                    app._data.modal_edit_register.register_index      = index;
 
-                    //Load all simple precision registers //TODO: improve the search
+                    //Load all simple precision registers at the moment //TODO: improve the search
                     app._data.modal_edit_register.simple_reg = [];
                     for (var i = 0; i < architecture_hash.length; i++){
                       for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
@@ -69,40 +69,23 @@
                     app._data.modal_edit_register.double_precision = architecture.components[this._props.register_file_index].double_precision;
 
                     if(app._data.modal_edit_register.double_precision == true){
-                      app._data.modal_edit_register.simple1  = architecture.components[this._props.register_file_index].elements[this._props.register_file_index].simple_reg[0];
-                      app._data.modal_edit_register.simple2  = architecture.components[this._props.register_file_index].elements[this._props.register_file_index].simple_reg[1];
+                      app._data.modal_edit_register.simple1  = architecture.components[this._props.register_file_index].elements[index].simple_reg[0];
+                      app._data.modal_edit_register.simple2  = architecture.components[this._props.register_file_index].elements[index].simple_reg[1];
                     }
                     else{
-                      app._data.modal_edit_register.default_value = (architecture.components[this._props.register_file_index].elements[this._props.register_file_index].default_value).toString();
+                      app._data.modal_edit_register.default_value = (architecture.components[this._props.register_file_index].elements[index].default_value).toString();
                     }
 
-                    app._data.modal_edit_register.properties = architecture.components[this._props.register_file_index].elements[j].properties;
+                    app._data.modal_edit_register.properties = architecture.components[this._props.register_file_index].elements[index].properties;
 
                     this.$root.$emit('bv::show::modal', 'edit_register', button);
                   },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                   //Show delete register modal
                   delete_register_modal(name, register_index, button){
-                    app._data.modal_delete_register.title = "Delete " + name;
+                    app._data.modal_delete_register.title               = "Delete " + name;
                     app._data.modal_delete_register.register_file_index = this._props.register_file_index;
-                    app._data.modal_delete_register.register_index = register_index;
+                    app._data.modal_delete_register.register_index      = register_index;
 
                     this.$root.$emit('bv::show::modal', 'delete_register', button);
                   },
@@ -121,9 +104,6 @@
                       }
                     }
                   },
-
-
-
                 },
 
     template:   '<b-table  :items="registers" ' +

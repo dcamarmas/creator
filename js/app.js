@@ -126,8 +126,6 @@ try
       /* Architecture */
       /****************/
 
-
-      
       //Load architecture
       architecture: architecture,
       architecture_hash: architecture_hash,
@@ -178,17 +176,11 @@ try
         id: '',
         simple_reg: []
       },
-
-
-
-
-
       //Edit register modal
       modal_edit_register:{ //TODO: include into register component - modal info
         title: '',
         register_file_index: null,
         register_index: null,
-
         name: '',
         type: '',
         double_precision: '',
@@ -200,12 +192,6 @@ try
         simple1: '',
         simple2: '',
       },
-
-
-
-
-
-
       //Delete register modal
       modal_delete_register:{ //TODO: include into register component - modal info
         title: '',

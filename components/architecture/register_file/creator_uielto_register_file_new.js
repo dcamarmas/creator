@@ -54,13 +54,13 @@
                     evt.preventDefault();
 
                     if (!this.register_file_fields.name || !this.register_file_fields.type) {
-                        show_notification('Please complete all fields', 'danger') ;
+                      show_notification('Please complete all fields', 'danger') ;
                     }
                     else{
                       for (var i = 0; i < architecture_hash.length; i++) {
                         if (this.register_file_fields.name == architecture_hash[i].name) {
-                            show_notification('The component already exists', 'danger') ;
-                            return;
+                          show_notification('The component already exists', 'danger') ;
+                          return;
                         }
                       }
 
@@ -74,7 +74,7 @@
 
                     var precision = false;
                     if (this.register_file_fields.precision == "precision"){
-                        precision = true;
+                      precision = true;
                     }
 
                     var new_register_file = {name: this.register_file_fields.name, type: this.register_file_fields.type, double_precision: precision ,elements:[]};
@@ -125,6 +125,7 @@
                 '                    title="New register file name">' +
                 '      </b-form-input>' +
                 '    </b-form-group>' +
+                '' +
                 '    <b-form-group label="Type:">' +
                 '      <b-form-select :options="register_file_types" ' +
                 '                     required ' +
@@ -134,6 +135,7 @@
                 '                     title="Register file type">' +
                 '    </b-form-select>' +
                 '    </b-form-group>' +
+                '' +
                 '    <b-form-group v-if="register_file_fields.type == \'floating point\'">' +
                 '      <b-form-checkbox-group v-model="register_file_fields.precision">' +
                 '        <b-form-checkbox value="register_file_fields.precision">' +
