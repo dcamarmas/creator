@@ -23,129 +23,79 @@
 
   var uielto_save_architecture = {
 
-        props:      {
-                      id:                  { type: String, required: true }
-                    },
+    props:      {
+                  id:                  { type: String, required: true }
+                },
 
-        data:       function () {
-                      return {
-                        //Saved file name
-                        name_arch_save: ''
-                      }
-                    },
+    data:       function () {
+                  return {
+                    //Saved file name
+                    name_arch_save: ''
+                  }
+                },
 
-        methods:    {
-                      arch_save(){
-                        var auxObject = jQuery.extend(true, {}, architecture);
-                        var auxArchitecture = register_value_serialize(auxObject);
+    methods:    {
+                  //Download the architecture
+                  arch_save(){
+                    //Generate architecture JSON
+                    var aux_object = jQuery.extend(true, {}, architecture);
+                    var aux_architecture = register_value_serialize(aux_object);
 
-                        auxArchitecture.components.forEach((c, i) => {
-                          c.elements.forEach((e, j) => {
-                            if (e.default_value) e.value = e.default_value;
-                            else e.value = "0";
-                          });
-                        });
+                    aux_architecture.components.forEach((c, i) => {
+                      c.elements.forEach((e, j) => {
+                        if (e.default_value) e.value = e.default_value;
+                        else e.value = "0";
+                      });
+                    });
 
-                        var textToWrite = JSON.stringify(auxArchitecture, null, 2);
-                        var textFileAsBlob = new Blob([textToWrite], { type: 'text/json' });
-                        var fileNameToSaveAs;
+                    var text_2_write = JSON.stringify(aux_architecture, null, 2);
+                    var textFileAsBlob = new Blob([text_2_write], { type: 'text/json' });
+                    var file_name;
 
-                        if(this.name_arch_save == ''){
-                          fileNameToSaveAs = "architecture.json";
-                        }
-                        else{
-                          fileNameToSaveAs = this.name_arch_save + ".json";
-                        }
+                    if(this.name_arch_save == ''){
+                      file_name = "architecture.json";
+                    }
+                    else{
+                      file_name = this.name_arch_save + ".json";
+                    }
 
-                        var downloadLink = document.createElement("a");
-                        downloadLink.download = fileNameToSaveAs;
-                        downloadLink.innerHTML = "My Hidden Link";
+                    //Download the JSON file
+                    var download_link = document.createElement("a");
+                    download_link.download = file_name;
+                    download_link.innerHTML = "My Hidden Link";
 
-                        window.URL = window.URL || window.webkitURL;
+                    window.URL = window.URL || window.webkitURL;
 
-                        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-                        downloadLink.onclick = destroyClickedElement;
-                        downloadLink.style.display = "none";
-                        document.body.appendChild(downloadLink);
+                    download_link.href = window.URL.createObjectURL(textFileAsBlob);
+                    download_link.onclick = destroyClickedElement;
+                    download_link.style.display = "none";
+                    document.body.appendChild(download_link);
 
-                        downloadLink.click();
+                    download_link.click();
 
-                        show_notification('Save architecture', 'success') ;
-                      },
+                    show_notification('Save architecture', 'success') ;
+                  },
 
-                      // Form validator
-                      valid(value){
-                        if(parseInt(value) != 0){
-                          if(!value){
-                            return false;
-                          }
-                          else{
-                            return true;
-                          }
-                        }
-                        else{
-                          return true;
-                        }
-                      },
+                  //Clean save architecture form
+                  clean_form(){
+                    this.name_arch_save = '';
+                  },
+                },
 
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
-
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
-
-                        if(e == ""){
-                          this[param] = null;
-                          return;
-                        }
-
-                        console_log("this." + param + "= '" + e + "'");
-
-                        eval("this." + param + "= '" + e + "'");
-
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
-                    },
-
-        template:   '<b-modal  :id ="id" ' +
-                    '          title = "Save Architecture" ' +
-                    '          ok-title="Save to File" ' +
-                    '          @ok="arch_save">' +
-                    '  <span class="h6">Enter the name of the architecture to save:</span>' +
-                    '  <br>' +
-                    '  <b-form-input v-on:input="debounce(\'name_arch_save\', $event)" ' +
-                    '                :value="name_arch_save" ' +
-                    '                type="text" ' +
-                    '                placeholder="Enter the name" ' +
-                    '                class="form-control form-control-sm fileForm" ' +
-                    '                title="Save Architecture"' +
-                    '                :state="valid(name_arch_save)">' +
-                    '  </b-form-input>' +
-                    '</b-modal>'
+    template:   '<b-modal  :id ="id" ' +
+                '          title = "Save Architecture" ' +
+                '          ok-title="Save to File" ' +
+                '          @ok="arch_save"' +
+                '          @hidden="clean_form">' +
+                '  <span class="h6">Enter the name of the architecture to save:</span>' +
+                '  <br>' +
+                '  <b-form-input v-model="name_arch_save" ' +
+                '                type="text" ' +
+                '                placeholder="Enter the name" ' +
+                '                class="form-control form-control-sm fileForm" ' +
+                '                title="Save Architecture">' +
+                '  </b-form-input>' +
+                '</b-modal>'
   }
 
   Vue.component('save-architecture', uielto_save_architecture) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }
