@@ -23,35 +23,32 @@
 
   var uielto_directives_delete = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      title:                          { type: String, required: true },
-                      element:                        { type: String, required: true }
-                    }, 
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  index:                          { type: Number, required: true }
+                }, 
 
-        data:       function () {
-                      return {
-                        
-                      }
-                    },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-        methods:    {
-                      delete_directive(comp){
-                        for (var i = 0; i < architecture.directives.length; i++) {
-                          if(comp == architecture.directives[i].name){
-                            architecture.directives.splice(i,1);
-                          }
-                        }
-                      }
-                    },
+    methods:    {
+                  delete_directive(){
+                    architecture.directives.splice(this._props.index,1);
+                    show_notification('Directive correctly deleted', 'success');
+                  }
+                },
 
-        template:   '<b-modal :id ="id" ' +
-                    '         :title="title" ' +
-                    '         ok-variant="danger" ' +
-                    '         ok-title="Delete" ' +
-                    '         @ok="delete_directive(element)">' +
-                    '  <span class="h6">Are you sure you want to delete the item?</span>' +
-                    '</b-modal>'
+    template:   '<b-modal :id ="id" ' +
+                '         :title="title" ' +
+                '         ok-variant="danger" ' +
+                '         ok-title="Delete" ' +
+                '         @ok="delete_directive">' +
+                '  <span class="h6">Are you sure you want to delete the item?</span>' +
+                '</b-modal>'
 
   }
 

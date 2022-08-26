@@ -23,45 +23,55 @@
 
   var uielto_directives_new = {
 
-        props:      {
-                      id:                             { type: String, required: true } 
+    props:      {
+                  id:                             { type: String, required: true } 
+                },
+
+    data:       function () {
+                  return {
+                    //Directives types
+                    actionTypes:  [
+                                    { text: 'Data Segment',  value: 'data_segment' },
+                                    { text: 'Code Segment',  value: 'code_segment' },
+                                    { text: 'Global Symbol', value: 'global_symbol' },
+                                    { text: 'Byte',          value: 'byte' },
+                                    { text: 'Half Word',     value: 'half_word' },
+                                    { text: 'Word',          value: 'word' },
+                                    { text: 'Double Word',   value: 'double_word' },
+                                    { text: 'Float',         value: 'float' },
+                                    { text: 'Double',        value: 'double' },
+                                    { text: 'Space',         value: 'space' },
+                                    { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
+                                    { text: 'ASCII finished in null',     value: 'ascii_null_end' },
+                                    { text: 'Align',         value: 'align' },
+                                    { text: 'Balign',        value: 'balign'},
+                                  ],
+
+                    //Directive form
+                    directive_fields:{
+                      name: '',
+                      action: '',
+                      size: null,
                     },
 
-        data:       function () {
-                      return {
-                        //Directives types
-                        actionTypes: actionTypes,
-                        //Modals directives
-                        show_modal: false,
-                        //Directive form
-                        directive_fields:{
-                          name: '',
-                          action: '',
-                          size: 0,
-                        },
+                    //Modals directives
+                    show_modal: false,
+                  }
+                },
+
+    methods:    {
+                  //Verify all fields of new directive
+                  verify_new_directive(evt){
+                    evt.preventDefault();
+
+                    if (!this.directive_fields.name || !this.directive_fields.action) {
+                      show_notification('Please complete all fields', 'danger') ;
+                    }
+                    else {
+                      if(isNaN(parseInt(this.directive_fields.size)) && (this.directive_fields.action == 'byte' || this.directive_fields.action == 'half_word' || this.directive_fields.action == 'word' || this.directive_fields.action == 'double_word' || this.directive_fields.action == 'float' || this.directive_fields.action == 'double' || this.directive_fields.action == 'space')){
+                        show_notification('Please complete all fields', 'danger') ;
                       }
-                    },
-
-        methods:    {
-                      //Verify all fields of new directive
-                      verify_new_directive(evt){
-                        evt.preventDefault();
-
-                        if (!this.directive_fields.name || !this.directive_fields.action) {
-                          show_notification('Please complete all fields', 'danger') ;
-                        }
-                        else {
-                          if(isNaN(parseInt(this.directive_fields.size)) && (this.directive_fields.action == 'byte' || this.directive_fields.action == 'half_word' || this.directive_fields.action == 'word' || this.directive_fields.action == 'double_word' || this.directive_fields.action == 'float' || this.directive_fields.action == 'double' || this.directive_fields.action == 'space')){
-                            show_notification('Please complete all fields', 'danger') ;
-                          }
-                          else{
-                            this.add_new_directive();
-                          }
-                        }
-                      },
-
-                      //Create new directive
-                      add_new_directive(){
+                      else{
                         for (var i = 0; i < architecture.directives.length; i++) {
                           if(this.directive_fields.name == architecture.directives[i].name){
                             show_notification('The directive already exists', 'danger') ;
@@ -69,124 +79,87 @@
                           }
                         }
 
-                        this.show_modal = false;
+                        this.add_new_directive();
+                      }
+                    }
+                  },
 
-                        if(this.directive_fields.action != 'byte' && this.directive_fields.action != 'half_word' && this.directive_fields.action != 'word' && this.directive_fields.action != 'double_word' && this.directive_fields.action != 'float' && this.directive_fields.action != 'double' && this.directive_fields.action != 'space'){
-                          this.directive_fields.size = null;
-                        }
+                  //Create new directive
+                  add_new_directive(){
+                    this.show_modal = false;
 
-                        var newDir = {name: this.directive_fields.name, action: this.directive_fields.action, size: this.directive_fields.size};
-                        architecture.directives.push(newDir);
-                      },
+                    var new_directive = {name: this.directive_fields.name, action: this.directive_fields.action, size: this.directive_fields.size};
+                    architecture.directives.push(new_directive);
 
-                      //Clean directive form
-                      clean_form(){
-                        this.directive_fields.name = '';
-                        this.directive_fields.action = '';
-                        this.directive_fields.size = 0;
-                      },
+                    show_notification('Directive correctly created', 'success') ;
+                  },
 
-                      //Form validator
-                      valid(value){
-                        if(parseInt(value) != 0){
-                          if(!value){
-                            return false;
-                          }
-                          else{
-                            return true;
-                          }
-                        }
-                        else{
-                          return true;
-                        }
-                      },
+                  //Clean directive form
+                  clean_form(){
+                    this.directive_fields.name = '';
+                    this.directive_fields.action = '';
+                    this.directive_fields.size = null;
+                  },
 
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
+                  //Form validator
+                  valid(value){
+                    if(parseInt(value) != 0){
+                      if(!value){
+                        return false;
+                      }
+                      else{
+                        return true;
+                      }
+                    }
+                    else{
+                      return true;
+                    }
+                  },
+                },
 
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
-
-                        if(e == ""){
-                          this[param] = null;
-                          return;
-                        }
-
-                        console_log("this." + param + "= '" + e + "'");
-
-                        eval("this." + param + "= '" + e + "'");
-
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
-                    },
-
-        template:   '<b-modal :id ="id" ' +
-                    '         title = "New Directive"' +
-                    '         ok-title="Save"' +
-                    '         @ok="verify_new_directive($event)"' +
-                    '         v-model="show_modal"' +
-                    '         @hidden="clean_form">' +
-                    '  <b-form>' +
-                    '    <b-form-group label="Name:">' +
-                    '      <b-form-input type="text"' +
-                    '                    :state="valid(directive_fields.name)" ' +
-                    '                    v-on:input="debounce(\'directive_fields.name\', $event)" ' +
-                    '                    :value="directive_fields.name" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter name" ' +
-                    '                    size="sm" ' +
-                    '                    title="Directive name">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +
-                    '    <b-form-group label="action:">' +
-                    '      <b-form-select :options="actionTypes" ' +
-                    '                     required ' +
-                    '                     v-model="directive_fields.action" ' +
-                    '                     :state="valid(directive_fields.action)" ' +
-                    '                     size="sm"' +
-                    '                     title="Action">' +
-                    '      </b-form-select>' +
-                    '    </b-form-group>' +
-                    '    <b-form-group label="Size:" ' +
-                    '                  v-if="directive_fields.action != \'\' && directive_fields.action != \'data_segment\' && directive_fields.action != \'code_segment\' && directive_fields.action != \'main_function\' && directive_fields.action != \'kmain_function\' && directive_fields.action != \'global_symbol\' && directive_fields.action != \'data_size\' && directive_fields.action != \'ascii_not_null_end\' && directive_fields.action != \'ascii_null_end\' && directive_fields.action != \'align\'">' +
-                    '      <b-form-input type="number" ' +
-                    '                    :state="valid(directive_fields.size)" ' +
-                    '                    v-on:input="debounce(\'directive_fields.size\', $event)" ' +
-                    '                    :value="directive_fields.size" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter size" ' +
-                    '                    size="sm" ' +
-                    '                    min="0" ' +
-                    '                    title="Directive size">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +
-                    '  </b-form>' +
-                    '</b-modal>'
+    template:   '<b-modal :id ="id" ' +
+                '         title = "New Directive"' +
+                '         ok-title="Save"' +
+                '         @ok="verify_new_directive($event)"' +
+                '         v-model="show_modal"' +
+                '         @hidden="clean_form">' +
+                '  <b-form>' +
+                '    <b-form-group label="Name:">' +
+                '      <b-form-input type="text"' +
+                '                    :state="valid(directive_fields.name)" ' +
+                '                    v-model="directive_fields.name" ' +
+                '                    required ' +
+                '                    placeholder="Enter name" ' +
+                '                    size="sm" ' +
+                '                    title="Directive name">' +
+                '      </b-form-input>' +
+                '    </b-form-group>' +
+                '' +
+                '    <b-form-group label="action:">' +
+                '      <b-form-select :options="actionTypes" ' +
+                '                     required ' +
+                '                     v-model="directive_fields.action" ' +
+                '                     :state="valid(directive_fields.action)" ' +
+                '                     size="sm"' +
+                '                     title="Action">' +
+                '      </b-form-select>' +
+                '    </b-form-group>' +
+                '' +
+                '    <b-form-group label="Size:" ' +
+                '                  v-if="directive_fields.action != \'\' && directive_fields.action != \'data_segment\' && directive_fields.action != \'code_segment\' && directive_fields.action != \'main_function\' && directive_fields.action != \'kmain_function\' && directive_fields.action != \'global_symbol\' && directive_fields.action != \'data_size\' && directive_fields.action != \'ascii_not_null_end\' && directive_fields.action != \'ascii_null_end\' && directive_fields.action != \'align\'">' +
+                '      <b-form-input type="number" ' +
+                '                    :state="valid(directive_fields.size)" ' +
+                '                    v-model="directive_fields.size" ' +
+                '                    required ' +
+                '                    placeholder="Enter size" ' +
+                '                    size="sm" ' +
+                '                    min="0" ' +
+                '                    title="Directive size">' +
+                '      </b-form-input>' +
+                '    </b-form-group>' +
+                '  </b-form>' +
+                '</b-modal>'
 
   }
 
   Vue.component('directives-new', uielto_directives_new) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }
