@@ -37,20 +37,20 @@
                   return {
                     //Directives types
                     actionTypes:  [
-                                    { text: 'Data Segment', value: 'data_segment' },
-                                    { text: 'Code Segment', value: 'code_segment' },
+                                    { text: 'Data Segment',  value: 'data_segment' },
+                                    { text: 'Code Segment',  value: 'code_segment' },
                                     { text: 'Global Symbol', value: 'global_symbol' },
-                                    { text: 'Byte', value: 'byte' },
-                                    { text: 'Half Word', value: 'half_word' },
-                                    { text: 'Word', value: 'word' },
-                                    { text: 'Double Word', value: 'double_word' },
-                                    { text: 'Float', value: 'float' },
-                                    { text: 'Double', value: 'double' },
-                                    { text: 'Space', value: 'space' },
+                                    { text: 'Byte',          value: 'byte' },
+                                    { text: 'Half Word',     value: 'half_word' },
+                                    { text: 'Word',          value: 'word' },
+                                    { text: 'Double Word',   value: 'double_word' },
+                                    { text: 'Float',         value: 'float' },
+                                    { text: 'Double',        value: 'double' },
+                                    { text: 'Space',         value: 'space' },
                                     { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
-                                    { text: 'ASCII finished in null', value: 'ascii_null_end' },
-                                    { text: 'Align', value: 'align' },
-                                    { text: 'Balign', value: 'balign'},
+                                    { text: 'ASCII finished in null',     value: 'ascii_null_end' },
+                                    { text: 'Align',         value: 'align' },
+                                    { text: 'Balign',        value: 'balign'},
                                   ],
 
                     //Modals directives
@@ -87,8 +87,9 @@
                   edit_directive(){
                     this.show_modal = false;
 
-                    architecture.directives[this._props.index].name = this._props.name;
+                    architecture.directives[this._props.index].name   = this._props.name;
                     architecture.directives[this._props.index].action = this._props.action;
+
                     if(this._props.action == 'byte' || this._props.action == 'half_word' || this._props.action == 'word' || this._props.action == 'double_word' || this._props.action == 'float' || this._props.action == 'double' || this._props.action == 'space'){
                       architecture.directives[this._props.index].size = this._props.size;
                     }
@@ -141,7 +142,7 @@
                 '      </b-form-select>' +
                 '    </b-form-group>' +
                 '    <b-form-group label="Size:" ' +
-                '                  v-if="action != \'data_segment\' && action != \'code_segment\' && action != \'main_function\' && action != \'kmain_function\' && action != \'global_symbol\' && action != \'data_size\' && action != \'ascii_not_null_end\' && action != \'ascii_null_end\' && action != \'align\'">' +
+                '                  v-if="action != \'data_segment\' && action != \'code_segment\' && action != \'main_function\' && action != \'kmain_function\' && action != \'global_symbol\' && action != \'data_size\' && action != \'ascii_not_null_end\' && action != \'ascii_null_end\' && action != \'align\' && action != \'balign\'">' +
                 '      <b-form-input type="number" ' +
                 '                    :state="valid(size)" ' +
                 '                    v-model="size" ' +
