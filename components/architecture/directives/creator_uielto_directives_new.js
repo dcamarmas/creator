@@ -146,7 +146,7 @@
                 '    </b-form-group>' +
                 '' +
                 '    <b-form-group label="Size:" ' +
-                '                  v-if="directive_fields.action != \'\' && directive_fields.action != \'data_segment\' && directive_fields.action != \'code_segment\' && directive_fields.action != \'main_function\' && directive_fields.action != \'kmain_function\' && directive_fields.action != \'global_symbol\' && directive_fields.action != \'data_size\' && directive_fields.action != \'ascii_not_null_end\' && directive_fields.action != \'ascii_null_end\' && directive_fields.action != \'align\'">' +
+                '                  v-if="directive_fields.action != \'\' && directive_fields.action != \'data_segment\' && directive_fields.action != \'code_segment\' && directive_fields.action != \'main_function\' && directive_fields.action != \'kmain_function\' && directive_fields.action != \'global_symbol\' && directive_fields.action != \'data_size\' && directive_fields.action != \'ascii_not_null_end\' && directive_fields.action != \'ascii_null_end\' && directive_fields.action != \'align\' && directive_fields.action != \'balign\'">' +
                 '      <b-form-input type="number" ' +
                 '                    :state="valid(directive_fields.size)" ' +
                 '                    v-model="directive_fields.size" ' +
