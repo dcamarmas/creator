@@ -111,6 +111,8 @@
                     }
                     architecture.components[this._props.register_file_index].elements[this._props.register_index].properties = this._props.register.properties;
 
+                    //architecture.components[this._props.register_file_index].elements[this._props.register_index] = Object.assign({}, this._props.register); //TODO
+
                     show_notification('Register file correctly modified', 'success') ;
                   },
 
