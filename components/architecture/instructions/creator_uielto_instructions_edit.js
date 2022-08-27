@@ -401,7 +401,7 @@
                 '    <div id="editInstForm1" v-if="instruction_page == 1">' +
                 '      <b-form-group label="Name:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.name" ' +
+                '                      v-model="instruction.name" ' +
                 '                      required ' +
                 '                      placeholder="Enter name" ' +
                 '                      :state="valid(instruction.name)" ' +
@@ -410,7 +410,7 @@
                 '        </b-form-input>' +
                 '      </b-form-group>' +
                 '      <b-form-group label="Type:">' +
-                '        <b-form-select :value="instruction.type" ' +
+                '        <b-form-select v-model="instruction.type" ' +
                 '                       :options="instructions_types" ' +
                 '                       :state="valid(instruction.type)" ' +
                 '                       size="sm"' +
@@ -420,7 +420,7 @@
                 '      <b-form-group label="Number of Words:">' +
                 '        <b-form-input type="number"' +
                 '                      min="1" ' +
-                '                      :value="instruction.nwords" ' +
+                '                      v-model="instruction.nwords" ' +
                 '                      required ' +
                 '                      placeholder="Enter nwords" ' +
                 '                      :state="valid(instruction.nwords)" ' +
@@ -432,7 +432,7 @@
                 '        <b-form-input type="text" ' +
                 '                      min="1" ' +
                 '                      :max="32 * instruction.nwords" ' +
-                '                      :value="numfields" ' +
+                '                      v-model="numfields" ' +
                 '                      required ' +
                 '                      placeholder="Enter number of fields" ' +
                 '                      :state="valid(numfields)" ' +
@@ -491,7 +491,7 @@
                 '            <div class="col-lg-2 col-2 fields">' +
                 '              <b-form-group>' +
                 '                <b-form-input type="text" ' +
-                '                              :value="instruction.fields[i-1].name" ' +
+                '                              v-model="instruction.fields[i-1].name" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.fields[i-1].name)" ' +
                 '                              size="sm" ' +
@@ -499,7 +499,7 @@
                 '                              title="Field name">' +
                 '                </b-form-input>' +
                 '                <b-form-input type="text" ' +
-                '                              v-model="instruction.fields[i-1]=instruction.name.name" ' +
+                '                              v-model="instruction.fields[i-1]=instruction.name" ' +
                 '                              required ' +
                 '                              size="sm" ' +
                 '                              v-if="(i-1) == 0" ' +
@@ -508,7 +508,7 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
-                /*'            <div class="col-lg-2 col-2 fields">' +
+                '            <div class="col-lg-2 col-2 fields">' +
                 '              <b-form-group>' +
                 '                <b-form-select v-model="instruction.fields[i-1].type" ' +
                 '                               required ' +
@@ -525,7 +525,7 @@
                 '                  <option value="address">address</option>' +
                 '                  <option value="offset_bytes">Offset Bytes</option>' +
                 '                  <option value="offset_words">Offset Words</option>' +
-                //'                  <option value="cop" :disabled="instruction.assignedCop!=false">cop</option>' +
+                '                  <option value="cop" :disabled="instruction.cop!=\'\'">cop</option>' +
                 '                </b-form-select>' +
                 '                <b-form-input type="text" ' +
                 '                              v-model="instruction.fields[i-1].type=\'co\'"' +
@@ -538,7 +538,7 @@
                 '            </div>' +
                 '            <div class="col-lg-1 col-1 fields">' +
                 '              <b-form-checkbox :id="\'fragment-\'+ i"' +
-                '                               :value="true"' +
+                '                               v-model="true"' +
                 '                               v-model="instruction.separated[i-1]"' +
                 '                               @change="changeToSeparateValue($event, i-1)"' +
                 '                               v-if="fragmet_data.indexOf(instruction.fields[i-1].type) !== -1"' +
@@ -549,19 +549,19 @@
                 '                <b-form-input type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1" ' +
-                '                              :value="instruction.fields[i-1].startbit" ' +
+                '                              v-model="instruction.fields[i-1].startbit" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.fields[i-1].startbit)" ' +
                 '                              size="sm" ' +
                 '                              v-if="typeof(instruction.fields[i-1].statbit) !== \'object\'" ' +
                 '                              title="Field start bit">' +
                 '                </b-form-input>' +
-                '                <b-form-input v-else ' +
+                '                <b-form-input v-if="typeof(instruction.fields[i-1].statbit) === \'object\'"' +
                 '                              v-for="(j, ind) in instruction.fields[i-1].startbit"' +
                 '                              type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1"' +
-                '                              :value="instruction.fields[i-1].startbit[ind]" ' +
+                '                              v-model="instruction.fields[i-1].startbit[ind]" ' +
                 '                              required' +
                 '                              :state="valid(j)" ' +
                 '                              size="sm"' +
@@ -575,19 +575,19 @@
                 '                <b-form-input type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1" ' +
-                '                              :value="instruction.fields[i-1].stopbit" ' +
+                '                              v-model="instruction.fields[i-1].stopbit" ' +
                 '                              required ' +
-                '                              :state="valid(instruction.field[i-1].stopbit)" ' +
+                '                              :state="valid(instruction.fields[i-1].stopbit)" ' +
                 '                              size="sm"' +
-                '                              v-if="typeof(instruction.field[i-1].stopbit) !== \'object\'"' +
+                '                              v-if="typeof(instruction.fields[i-1].stopbit) !== \'object\'"' +
                 '                              title="Field end bit">' +
                 '                </b-form-input>' +
-                '                <b-form-input v-else ' +
-                '                              v-for="(j, ind) in instruction.field[i-1].stopbit"' +
+                '                <b-form-input v-if="typeof(instruction.fields[i-1].statbit) === \'object\'"' +
+                '                              v-for="(j, ind) in instruction.fields[i-1].stopbit"' +
                 '                              type="number" ' +
                 '                              min="0" ' +
                 '                              :max="32 * instruction.nwords - 1"' +
-                '                              :value="instruction.field[i-1].stopbit[ind]" ' +
+                '                              v-model="instruction.fields[i-1].stopbit[ind]" ' +
                 '                              required' +
                 '                              :state="valid(j)" ' +
                 '                              size="sm"' +
@@ -596,27 +596,29 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
-                '            <div class="col-lg-2 col-2 fields" v-if="instruction.field[i-1].type == \'co\'">' +
-                '              <b-form-group v-if="typeof(instruction.field[i-1].stopbit) !== \'object\'">' +
-                '                <b-form-input type="text" ' +
-                '                              :value="instruction.co" ' +
+                '            <div class="col-lg-2 col-2 fields" v-if="instruction.fields[i-1].type == \'co\'">' +
+                '              <b-form-group>' +
+                '                <b-form-input v-if="typeof(instruction.fields[i-1].statbit) !== \'object\'"' + 
+                '                              type="text" ' +
+                '                              v-model="instruction.co" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.co)" ' +
                 '                              size="sm" ' +
                 '                              title="Instruction CO">' +
                 '                </b-form-input>' +
                 '              </b-form-group>' +
-                '              <!--<b-form-group else v-for="(j, ind) in instruction.field[i-1].stopbit">' +
+                '              <b-form-group v-if="typeof(instruction.fields[i-1].statbit) === \'object\'"' + 
+                '                            v-for="(j, ind) in instruction.fields[i-1].stopbit">' +
                 '                <b-form-input type="text" ' +
-                '                              :value="instruction.co[ind]" required ' +
+                '                              v-model="instruction.co[ind]" required ' +
                 '                              :state="valid(instruction.co[ind])" ' +
                 '                              size="sm">' +
-                '                </b-form-input>-->' +
+                '                </b-form-input>' +
                 '            </div>' +
-                '            <div class="col-lg-2 col-2 fields" v-if="instruction.field[i-1].stopbit == \'cop\'">' +
+                '            <div class="col-lg-2 col-2 fields" v-if="instruction.fields[i-1].type == \'cop\'">' +
                 '              <b-form-group>' +
                 '                <b-form-input type="text" ' +
-                '                              :value="instruction.fields[i-1].valueField" ' +
+                '                              v-model="instruction.fields[i-1].valueField" ' +
                 '                              required ' +
                 '                              :state="valid(instruction.fields[i-1].valueField)" ' +
                 '                              size="sm" ' +
@@ -624,7 +626,7 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
-                '            <div class="col-lg-2 col-2 fields" v-if="instruction.separated[i-1]">' +
+                /*'            <div class="col-lg-2 col-2 fields" v-if="instruction.separated[i-1]">' +
                 '                <b-button variant="primary" ' +
                 '                          @click="addMoreFieldsToSeparateValues($event, i-1)" ' +
                 '                          size="sm">' +
@@ -646,7 +648,7 @@
                 '    <div id="editInstForm3" v-if="instruction_page == 3">' +
                 '      <b-form-group label="Instruction Syntax Definition:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.signature_definition" ' +
+                '                      v-model="instruction.signature_definition" ' +
                 '                      placeholder="Example: F0 F2 F1 (F3)" ' +
                 '                      required ' +
                 '                      :state="valid(instruction.signature_definition)" ' +
@@ -657,7 +659,7 @@
                 '      </b-form-group>' +
                 '      <b-form-group label="Detailed Syntax:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.signature" ' +
+                '                      v-model="instruction.signature" ' +
                 '                      disabled ' +
                 '                      required ' +
                 '                      size="sm" ' +
@@ -666,7 +668,7 @@
                 '      </b-form-group>' +
                 '      <b-form-group label="Instruction Syntax:">' +
                 '        <b-form-input type="text" ' +
-                '                      :value="instruction.signatureRaw" ' +
+                '                      v-model="instruction.signatureRaw" ' +
                 '                      disabled ' +
                 '                      size="sm" ' +
                 '                      title="Instruction syntax">' +
@@ -677,7 +679,7 @@
                 '    <!-- Page 4 -->' +
                 '    <div id="editInstForm4" v-if="instruction_page == 4">' +
                 '      <b-form-group label="Assembly Definition:">' +
-                '        <b-form-textarea :value="instruction.definition" ' +
+                '        <b-form-textarea v-model="instruction.definition" ' +
                 '                         placeholder="Example: reg1=reg2+reg3" ' +
                 '                         :state="valid(instruction.definition)" ' +
                 '                         :rows="4" ' +
@@ -689,7 +691,7 @@
                 '    <!-- Page 5 -->' +
                 '    <div id="editInstForm5" v-if="instruction_page == 5">' +
                 '      <b-form-group label="Assembly help:">' +
-                '        <b-form-textarea :value="instruction.help" ' +
+                '        <b-form-textarea v-model="instruction.help" ' +
                 '                          placeholder="Example: reg1=reg2+reg3" ' +
                 '                          :rows="4" ' +
                 '                          title="Instruction help">' +
