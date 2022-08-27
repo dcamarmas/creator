@@ -87,7 +87,7 @@ try
       autoscroll: true,
 
       // Font size
-      fontSize: 15,
+      font_size: 15,
 
       //Debug
       c_debug: false,
@@ -105,10 +105,10 @@ try
       //Available architectures
       //
 
-      arch_available: architecture_available, //TODO: copy?
+      arch_available: architecture_available, //TODO: copy or only in app?
 
       //Architectures card background
-      back_card: back_card, //TODO: copy?
+      back_card: back_card, //TODO: copy or only in app?
 
       //Delete architecture modal 
       modal_delete_arch_index: 0, //TODO: include into delete architecture component - modal info
@@ -126,8 +126,6 @@ try
       /* Architecture */
       /****************/
 
-
-      
       //Load architecture
       architecture: architecture,
       architecture_hash: architecture_hash,
@@ -137,73 +135,114 @@ try
       advanced_mode: true,
 
 
-      //Floating point registers
-      simple_reg: [],
-
       //Edit architecture field modal
-      modalEditArchField: { //TODO: include into arch_conf component - modal info
+      modal_edit_arch_field: { //TODO: include into arch_conf component - modal info
         title: '',
         field: '',
         value: '',
-        index: '',
+        index: ''
       },
       //Reset architecture field modal
-      modalResetArchField:{ //TODO: include into arch_conf component - modal info
+      modal_reset_arch_field:{ //TODO: include into arch_conf component - modal info
         title: '',
-        index: '',
+        index: ''
       },
 
 
       //Edit memory layout modal
-      modalEditMemoryLayout: { //TODO: include into memory_layout component - modal info
-        memory_layout: ["", "", "", "", "", ""],
+      modal_edit_memory_layout: { //TODO: include into memory_layout component - modal info
+        memory_layout: ["", "", "", "", "", ""]
       },
       
 
-      //Edit component modal
-      modalEditComponent: { //TODO: include into register_file component - modal info
+      //Edit register file modal
+      modal_edit_register_file: { //TODO: include into register_file component - modal info
         title: '',
-        element: '',
         name: '',
+        index: null
       },
-      //Delete component modal
-      modalDeletComp:{ //TODO: include into register_file component - modal info
+      //Delete register file modal
+      modal_delete_register_file:{ //TODO: include into register_file component - modal info
         title: '',
-        element: '',
+        index: null
       },
 
 
       //New register modal
-      modalNewElement:{ //TODO: include into register_file component - modal info
-        element: '',
+      modal_new_register:{ //TODO: include into register_file component - modal info
+        register_file_index: null,
         type: '',
         double_precision: '',
         id: '',
+        simple_reg: []
       },
-
       //Edit register modal
-      modalEditElement:{ //TODO: include into register component - modal info
-        element: '',
+      modal_edit_register:{ //TODO: include into register component - modal info
+        title: '',
+        register_file_index: null,
+        register_index: null,
+        name: '',
         type: '',
         double_precision: '',
-        name: '',
-        id: '',
-        defValue: '',
+        reg_id: '',
+        default_value: '',
         properties: [],
         precision: '',
+        simple_reg: [],
         simple1: '',
-        simple2: '',
+        simple2: ''
       },
-
-      //Delete element modal
-      modalDeletElement:{ //TODO: include into register component - modal info
+      //Delete register modal
+      modal_delete_register:{ //TODO: include into register component - modal info
         title: '',
-        element: '',
+        register_file_index: null,
+        register_index: null
       },
 
 
-      //Instruction form
-      formInstruction: { //TODO - modal info
+
+
+
+
+
+
+
+
+
+
+
+
+      /*Instructions fields*/
+      modal_field_instruction:{ //TODO: include into instruction component - modal info
+        title: '',
+        index: null,
+        instruction: {}
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+      /*Edit instruction modal*/
+      modal_edit_instruction:{ //TODO: include into instruction component - modal info
+        title: '',
+        index: null,
+        instruction: {},
+        numfields: null
+
+
+
+
+        /*element: '',
+        co: '',
+        cop: '',
         name: '',
         type: '',
         co: '',
@@ -223,26 +262,29 @@ try
         signature: '',
         signatureRaw: '',
         signature_definition: '',
-        definition: '',
+        definition: '',*/
       },
 
-      /*Instructions fields*/
-      modalViewFields:{ //TODO: include into instruction component - modal info
-        title: '',
-      },
 
-      /*Edit instruction modal*/
-      modalEditInst:{ //TODO: include into instruction component - modal info
-        title: '',
-        element: '',
-        co: '',
-        cop: '',
-      },
+
+
+
+
 
       /*Delete instruction modal*/
-      modalDeletInst:{ //TODO: include into instruction component - modal info
-        index: 0,
+      modal_delete_instruction:{ //TODO: include into instruction component - modal info
+        title: '',
+        index: null,
       },
+
+
+
+
+
+
+
+
+
 
 
       //Pseudoinstruction form
@@ -279,19 +321,29 @@ try
       },
 
 
+
+
+
+
+
+
+
+
+
+
+
+
       //Edit directive modal
-      modalEditDirective:{ //TODO: include into directives component - modal info
+      modal_edit_directive:{ //TODO: include into directives component - modal info
         title: '',
-        element: '',
-        name: '',
-        action: '',
-        size: 0,
+        index: null,
+        directive: {}
       },
 
       //Delete directive modal //TODO: include into directives component - modal info
-      modalDeletDir:{
+      modal_delete_directive:{
         title: '',
-        element: '',
+        index: null
       },
 
       

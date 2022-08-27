@@ -23,123 +23,120 @@
 
   var uielto_arch_conf_edit = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      title:                          { type: String, required: true },
-                      arch_field:                     { type: String, required: true },
-                      arch_field_value:               { type: String, required: true },
-                      arch_field_index:               { type: Number, required: true }
-                      
-                    },
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  arch_field:                     { type: String, required: true },
+                  arch_field_value:               { type: String, required: true },
+                  arch_field_index:               { type: Number, required: true }
+                  
+                },
 
-        data:       function () {
-                      return {
-                        //Data Format types
-                        actionTypes:  [
-                                        { value: "big_endian", text: 'Big Endian' },
-                                        { value: "little_endian", text: 'Little Endian' }
-                                      ],
-                        //Modals architecture field
-                        show_modal: false
+    data:       function () {
+                  return {
+                    //Data Format types
+                    actionTypes:  [
+                                    { value: "big_endian", text: 'Big Endian' },
+                                    { value: "little_endian", text: 'Little Endian' }
+                                  ],
+
+                    //Modals architecture field
+                    show_modal: false
+                  }
+                },
+
+    methods:    {
+                  //Verify all fields of modify architecture field
+                  verify_edit_arch_field(evt, index){
+                    evt.preventDefault();
+                    if (!this._props.arch_field_value) {
+                      show_notification('Please complete the fields', 'danger') ;
+                    }
+                    else {
+                      this.edit_arch_field(index);
+                    }
+                  },
+
+                  //Edit architecture field
+                  edit_arch_field(index){ 
+                    this.show_modal = false;
+
+                    architecture.arch_conf[index].value = this._props.arch_field_value;
+
+                    if (index == 0) {
+                      app._data.architecture_name = architecture.arch_conf[index].value;
+                    }
+
+                    show_notification('Architecture field correctly modified', 'success') ;
+                  },
+
+                  //Form validator
+                  valid(value){
+                    if(parseInt(value) != 0){
+                      if(!value){
+                        return false;
                       }
-                    },
-
-        methods:    {
-                      //Verify all fields of modify architecture field
-                      verify_edit_arch_field(evt, index){
-                        evt.preventDefault();
-                        if (!this._props.arch_field_value) {
-                          show_notification('Please complete the fields', 'danger') ;
-                        }
-                        else {
-                          this.edit_arch_field(index);
-                        }
-                      },
-
-                      //Edit architecture field
-                      edit_arch_field(index){ 
-                        this.show_modal = false;
-
-                        architecture.arch_conf[index].value = this._props.arch_field_value;
-
-                        if (index == 0) {
-                          app._data.architecture_name = architecture.arch_conf[index].value;
-                        }
-
-                        return;
-                      },
-
-                      //Form validator
-                      valid(value){
-                        if(parseInt(value) != 0){
-                          if(!value){
-                            return false;
-                          }
-                          else{
-                            return true;
-                          }
-                        }
-                        else{
-                          return true;
-                        }
+                      else{
+                        return true;
                       }
-                    },
+                    }
+                    else{
+                      return true;
+                    }
+                  }
+                },
 
-        template:   '<b-modal :id ="id" ' +
-                    '         :title = "title"' +
-                    '         ok-title="Save" ' +
-                    '         @ok="verify_edit_arch_field($event, arch_field_index)" ' +
-                    '         v-model="show_modal"> ' +
-                    '  <b-form>' +
-                    '' +
-                    '    <b-form-group' +
-                    '                  v-if="arch_field == \'Name\' || arch_field == \'Main Function\'">' +
-                    '      <span>{{arch_field}}:</span>' +
-                    '      <b-form-input type="text" ' +
-                    '                    :state="valid(arch_field_value)" ' +
-                    '                    v-model="arch_field_value" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter the new value" ' +
-                    '                    size="sm">' +
-                    '      </b-form-input>' +
-                    '' +
-                    '    </b-form-group>' +
-                    '    <b-form-group' +
-                    '                  v-if="arch_field == \'Bits\'">' +
-                    '      <span>{{arch_field}}:</span>' +
-                    '      <b-form-input type="number" ' +
-                    '                    :state="valid(arch_field_value)" ' +
-                    '                    v-model="arch_field_value" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter bits" ' +
-                    '                    size="sm" ' +
-                    '                    min="0">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +
-                    '' +
-                    '    <b-form-group' +
-                    '                  v-if="arch_field == \'Data Format\'">' +
-                    '      <span>{{arch_field}}:</span>' +
-                    '      <b-form-select :options="actionTypes" ' +
-                    '                     required ' +
-                    '                     v-model="arch_field_value" ' +
-                    '                     size="sm">' +
-                    '      </b-form-select>' +
-                    '    </b-form-group>' +
-                    '' +
-                    '    <b-form-group' +
-                    '                  v-if="arch_field == \'Memory Alignment\' || arch_field == \'Passing Convention\' || arch_field == \'Sensitive Register Name\'">' +
-                    '      <span>{{arch_field}}:</span>' +
-                    '      <b-form-checkbox' +
-                    '                  required ' +
-                    '                  v-model="arch_field_value"' +
-                    '                  value="1"' +
-                    '                  unchecked-value="0">' +
-                    '      </b-form-checkbox>' +
-                    '    </b-form-group>' +
-                    '' +
-                    '  </b-form>' +
-                    '</b-modal>'
+    template:   '<b-modal :id ="id" ' +
+                '         :title = "title"' +
+                '         ok-title="Save" ' +
+                '         @ok="verify_edit_arch_field($event, arch_field_index)" ' +
+                '         v-model="show_modal"> ' +
+                '  <b-form>' +
+                '' +
+                '    <b-form-group v-if="arch_field == \'Name\' || arch_field == \'Main Function\'">' +
+                '      <span>{{arch_field}}:</span>' +
+                '      <b-form-input type="text" ' +
+                '                    :state="valid(arch_field_value)" ' +
+                '                    v-model="arch_field_value" ' +
+                '                    required ' +
+                '                    placeholder="Enter the new value" ' +
+                '                    size="sm">' +
+                '      </b-form-input>' +
+                '' +
+                '    </b-form-group>' +
+                '    <b-form-group v-if="arch_field == \'Bits\'">' +
+                '      <span>{{arch_field}}:</span>' +
+                '      <b-form-input type="number" ' +
+                '                    :state="valid(arch_field_value)" ' +
+                '                    v-model="arch_field_value" ' +
+                '                    required ' +
+                '                    placeholder="Enter bits" ' +
+                '                    size="sm" ' +
+                '                    min="0">' +
+                '      </b-form-input>' +
+                '    </b-form-group>' +
+                '' +
+                '    <b-form-group v-if="arch_field == \'Data Format\'">' +
+                '      <span>{{arch_field}}:</span>' +
+                '      <b-form-select :options="actionTypes" ' +
+                '                     required ' +
+                '                     v-model="arch_field_value" ' +
+                '                     size="sm">' +
+                '      </b-form-select>' +
+                '    </b-form-group>' +
+                '' +
+                '    <b-form-group v-if="arch_field == \'Memory Alignment\' || arch_field == \'Passing Convention\' || arch_field == \'Sensitive Register Name\'">' +
+                '      <span>{{arch_field}}:</span>' +
+                '      <b-form-checkbox' +
+                '                  required ' +
+                '                  v-model="arch_field_value"' +
+                '                  value="1"' +
+                '                  unchecked-value="0">' +
+                '      </b-form-checkbox>' +
+                '    </b-form-group>' +
+                '' +
+                '  </b-form>' +
+                '</b-modal>'
 
   }
 

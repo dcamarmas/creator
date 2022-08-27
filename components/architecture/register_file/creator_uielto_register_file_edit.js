@@ -23,131 +23,86 @@
 
   var uielto_register_file_edit = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      title:                          { type: String, required: true },
-                      element:                        { type: String, required: true },
-                      name:                           { type: String, required: true }
-                      
-                    },
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  name:                           { type: String, required: true },
+                  index:                          { type: Number, required: true }
+                  
+                },
 
-        data:       function () {
-                      return {
-                        //Modals directives
-                        show_modal: false,
+    data:       function () {
+                  return {
+                    //Modal register file
+                    show_modal: false,
+                  }
+                },
+
+    methods:    {
+                  //Verify all field of modified register file
+                  verify_edit_register_file(evt){
+                    evt.preventDefault();
+
+                    if (!this._props.name) {
+                      show_notification('Please complete all fields', 'danger') ;
+                    }
+                    else {
+                      for (var i = 0; i < architecture_hash.length; i++){
+                        if ((this._props.name == architecture_hash[i].name) && (this._props.index != i)){
+                            show_notification('The component already exists', 'danger') ;
+                            return;
+                        }
                       }
-                    },
+                      
+                      this.edit_register_file();
+                    }
+                  },
 
-        methods:    {
-                      //Verify all field of modified register file
-                      verify_edit_register_file(evt, comp){
-                        evt.preventDefault();
+                  //Edit the register file
+                  edit_register_file(){ 
+                    this.show_modal = false;
 
-                        if (!this._props.name) {
-                            show_notification('Please complete all fields', 'danger') ;
-                        }
-                        else {
-                            this.edit_register_file(comp);
-                        }
-                      },
+                    architecture_hash[this._props.index].name       = this._props.name;
+                    architecture.components[this._props.index].name = this._props.name;
 
-                      //Edit the register file
-                      edit_register_file(comp){
-                        for (var i = 0; i < architecture_hash.length; i++){
-                          if ((this._props.name == architecture_hash[i].name) && (comp != this._props.name)){
-                              show_notification('The component already exists', 'danger') ;
-                              return;
-                          }
-                        }
+                    show_notification('Register file correctly modified', 'success') ;
+                  },
 
-                        this.show_modal = false;
+                  //Form validator
+                  valid(value){
+                    if(parseInt(value) != 0){
+                      if(!value){
+                        return false;
+                      }
+                      else{
+                        return true;
+                      }
+                    }
+                    else{
+                      return true;
+                    }
+                  },
+                },
 
-                        for (var i = 0; i < architecture_hash.length; i++){
-                          if(comp == architecture_hash[i].name){
-                            architecture_hash[i].name = this._props.name;
-                            architecture.components[i].name = this._props.name;
-                          }
-                        }
-                      },
-
-                      //Form validator
-                      valid(value){
-                        if(parseInt(value) != 0){
-                          if(!value){
-                            return false;
-                          }
-                          else{
-                            return true;
-                          }
-                        }
-                        else{
-                          return true;
-                        }
-                      },
-
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
-
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
-
-                        if(e == ""){
-                          this[param] = null;
-                          return;
-                        }
-
-                        console_log("this." + param + "= '" + e + "'");
-
-                        eval("this." + param + "= '" + e + "'");
-
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
-                    },
-
-        template:   '<b-modal :id ="id" ' +
-                    '         :title = "title" ' +
-                    '         ok-title="Save" ' +
-                    '         @ok="verify_edit_register_file($event, element)" ' +
-                    '         v-model="show_modal">' +
-                    '  <b-form>' +
-                    '    <b-form-group label="Name:">' +
-                    '      <b-form-input type="text" ' +
-                    '                    :state="valid(name)" ' +
-                    '                    v-on:input="debounce(\'name\', $event)" ' +
-                    '                    :value="name" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter name" ' +
-                    '                    size="sm" ' +
-                    '                    title="Name">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +
-                    '  </b-form>' +
-                    '</b-modal >'
+    template:   '<b-modal :id ="id" ' +
+                '         :title = "title" ' +
+                '         ok-title="Save" ' +
+                '         @ok="verify_edit_register_file($event)" ' +
+                '         v-model="show_modal">' +
+                '  <b-form>' +
+                '    <b-form-group label="Name:">' +
+                '      <b-form-input type="text" ' +
+                '                    :state="valid(name)" ' +
+                '                    v-model="name" ' +
+                '                    required ' +
+                '                    placeholder="Enter name" ' +
+                '                    size="sm" ' +
+                '                    title="Name">' +
+                '      </b-form-input>' +
+                '    </b-form-group>' +
+                '  </b-form>' +
+                '</b-modal >'
 
   }
 
   Vue.component('register-file-edit', uielto_register_file_edit) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }

@@ -23,57 +23,57 @@
 
   var uielto_directives_reset = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      architecture_name:              { type: String, required: true }
-                    },
+    props:      {
+                  id:                             { type: String, required: true },
+                  architecture_name:              { type: String, required: true }
+                },
 
-        data:       function () {
-                      return {
-                        
+    data:       function () {
+                  return {
+                    
+                  }
+                },
+
+    methods:    {
+                  //Reset directives
+                  reset_directives(){
+                    show_loading();
+
+                    //Read original value from JSON
+                    for (var i = 0; i < load_architectures.length; i++) {
+                      if(this._props.architecture_name == load_architectures[i].id){
+                        var aux_arch = JSON.parse(load_architectures[i].architecture);
+                        var aux_architecture = register_value_deserialize(aux_arch);
+
+                        architecture.directives = aux_architecture.directives;
+                        app._data.architecture = architecture;
+
+                        hide_loading();
+                        show_notification('The directive set has been reset correctly', 'success') ;
+                        return;
                       }
-                    },
+                    }
 
-        methods:    {
-                      //Reset directives
-                      reset_directives(arch){
-                        show_loading();
+                    $.getJSON('architecture/' + this._props.architecture_name + '.json', function(cfg){
+                      var aux_architecture = cfg;
 
-                        for (var i = 0; i < load_architectures.length; i++) {
-                          if(arch == load_architectures[i].id){
-                            var auxArch = JSON.parse(load_architectures[i].architecture);
-                            var auxArchitecture = register_value_deserialize(auxArch);
+                      var aux_architecture_2 = register_value_deserialize(aux_architecture);
+                      architecture.directives = aux_architecture_2.directives;
+                      app._data.architecture = architecture;
 
-                            architecture.directives = auxArchitecture.directives;
-                            app._data.architecture = architecture; //TODO: bidirectional
+                      hide_loading();
+                      show_notification('The directive set has been reset correctly', 'success') ;
+                    });
+                  }
+                },
 
-                            hide_loading();
-                            show_notification('The directive set has been reset correctly', 'success') ;
-                            return;
-                          }
-                        }
-
-                        $.getJSON('architecture/'+arch+'.json', function(cfg){
-                          var auxArchitecture = cfg;
-
-                          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-                          architecture.directives = auxArchitecture2.directives;
-
-                          app._data.architecture = architecture;
-
-                          hide_loading();
-                          show_notification('The directive set has been reset correctly', 'success') ;
-                        });
-                      }
-                    },
-
-        template:   '<b-modal :id ="id" ' +
-                    '         title="Reset directives" ' +
-                    '         ok-variant="danger" ' +
-                    '         ok-title="Reset" ' +
-                    '         @ok="reset_directives(architecture_name)">' +
-                    '  <span class="h6">Are you sure you want to reset the directives set?</span>' +
-                    '</b-modal>'
+    template:   '<b-modal :id ="id" ' +
+                '         title="Reset directives" ' +
+                '         ok-variant="danger" ' +
+                '         ok-title="Reset" ' +
+                '         @ok="reset_directives">' +
+                '  <span class="h6">Are you sure you want to reset the directives set?</span>' +
+                '</b-modal>'
 
   }
 

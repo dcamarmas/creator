@@ -23,169 +23,137 @@
 
   var uielto_directives_edit = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      title:                          { type: String, required: true },
-                      element:                        { type: String, required: true },
-                      name:                           { type: String, required: true },
-                      action:                         { type: String, required: true },
-                      size:                           { type: Number, required: true }
-                      
-                    },
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  index:                          { type: Number, required: true },
+                  directive:                      { type: Object, required: true }
+                },
 
-        data:       function () {
-                      return {
-                        //Directives types
-                        actionTypes: actionTypes,
-                        //Modals directives
-                        show_modal: false,
+    data:       function () {
+                  return {
+                    //Directives types
+                    actionTypes:  [
+                                    { text: 'Data Segment',  value: 'data_segment' },
+                                    { text: 'Code Segment',  value: 'code_segment' },
+                                    { text: 'Global Symbol', value: 'global_symbol' },
+                                    { text: 'Byte',          value: 'byte' },
+                                    { text: 'Half Word',     value: 'half_word' },
+                                    { text: 'Word',          value: 'word' },
+                                    { text: 'Double Word',   value: 'double_word' },
+                                    { text: 'Float',         value: 'float' },
+                                    { text: 'Double',        value: 'double' },
+                                    { text: 'Space',         value: 'space' },
+                                    { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
+                                    { text: 'ASCII finished in null',     value: 'ascii_null_end' },
+                                    { text: 'Align',         value: 'align' },
+                                    { text: 'Balign',        value: 'balign'},
+                                  ],
+
+                    //Modals directives
+                    show_modal: false,
+                  }
+                },
+
+    methods:    {
+                  //Verify all fields of modify directive
+                  verify_edit_directive(evt){
+                    evt.preventDefault();
+
+                    if (!this._props.directive.name || !this._props.directive.action) {
+                      show_notification('Please complete all fields', 'danger') ;
+                    }
+                    else {
+                      if(isNaN(parseInt(this._props.directive.size)) && (this._props.directive.action == 'byte' || this._props.directive.action == 'half_word' || this._props.directive.action == 'word' || this._props.directive.action == 'double_word' || this._props.directive.action == 'float' || this._props.directive.action == 'double' || this._props.directive.action == 'space')){
+                        show_notification('Please complete all fields', 'danger') ;
                       }
-                    },
-
-        methods:    {
-                      //Verify all fields of modify directive
-                      verify_edit_directive(evt, name){
-                        evt.preventDefault();
-
-                        if (!this._props.name || !this._props.action) {
-                          show_notification('Please complete all fields', 'danger') ;
-                        }
-                        else {
-                          if(isNaN(parseInt(this._props.size)) && (this._props.action == 'byte' || this._props.action == 'half_word' || this._props.action == 'word' || this._props.action == 'double_word' || this._props.action == 'float' || this._props.action == 'double' || this._props.action == 'space')){
-                            show_notification('Please complete all fields', 'danger') ;
-                          }
-                          else{
-                            this.edit_directive(name);
-                          }
-                        }
-                      },
-
-                      //Edit directive
-                      edit_directive(name){
+                      else{
+                        console.log(this._props.index);
                         for (var i = 0; i < architecture.directives.length; i++) {
-                          if((this._props.name == architecture.directives[i].name) && (name != this._props.name)){
+                          if((this._props.directive.name == architecture.directives[i].name) && (this._props.index != i)){
                             show_notification('The directive already exists', 'danger') ;
                             return;
                           }
                         }
 
-                        this.show_modal = false;
+                        this.edit_directive();
+                      }
+                    }
+                  },
 
-                        for (var i = 0; i < architecture.directives.length; i++) {
-                          if(name == architecture.directives[i].name){
-                            architecture.directives[i].name = this._props.name;
-                            architecture.directives[i].action = this._props.action;
-                            if(this._props.action == 'byte' || this._props.action == 'half_word' || this._props.action == 'word' || this._props.action == 'double_word' || this._props.action == 'float' || this._props.action == 'double' || this._props.action == 'space'){
-                              architecture.directives[i].size = this._props.size;
-                            }
-                            else{
-                              architecture.directives[i].size = null;
-                            }
-                            return;
-                          }
-                        }
-                      },
+                  //Edit directive
+                  edit_directive(){
+                    this.show_modal = false;
 
-                      //Form validator
-                      valid(value){
-                        if(parseInt(value) != 0){
-                          if(!value){
-                            return false;
-                          }
-                          else{
-                            return true;
-                          }
-                        }
-                        else{
-                          return true;
-                        }
-                      },
+                    architecture.directives[this._props.index].name   = this._props.directive.name;
+                    architecture.directives[this._props.index].action = this._props.directive.action;
 
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
+                    if(this._props.directive.action == 'byte' || this._props.directive.action == 'half_word' || this._props.directive.action == 'word' || this._props.directive.action == 'double_word' || this._props.directive.action == 'float' || this._props.directive.action == 'double' || this._props.directive.action == 'space'){
+                      architecture.directives[this._props.index].size = this._props.directive.size;
+                    }
+                    else{
+                      architecture.directives[this._props.index].size = null;
+                    }
 
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
+                    show_notification('Directive correctly modified', 'success') ;
+                  },
 
-                        if(e == ""){
-                          this[param] = null;
-                          return;
-                        }
+                  //Form validator
+                  valid(value){
+                    if(parseInt(value) != 0){
+                      if(!value){
+                        return false;
+                      }
+                      else{
+                        return true;
+                      }
+                    }
+                    else{
+                      return true;
+                    }
+                  },
+                },
 
-                        console_log("this." + param + "= '" + e + "'");
-
-                        eval("this." + param + "= '" + e + "'");
-
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
-                    },
-
-        template:   '<b-modal :id ="id" ' +
-                    '         :title = "title"' +
-                    '         ok-title="Save" ' +
-                    '         @ok="verify_edit_directive($event, element)" ' +
-                    '         v-model="show_modal"> ' +
-                    '  <b-form>' +
-                    '    <b-form-group label="Name:">' +
-                    '      <b-form-input type="text" ' +
-                    '                    :state="valid(name)" ' +
-                    '                    v-on:input="debounce(\'name\', $event)" ' +
-                    '                    :value="name" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter name" ' +
-                    '                    size="sm" ' +
-                    '                    title="Directive name">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +
-                    '    <b-form-group label="action:">' +
-                    '      <b-form-select :options="actionTypes" ' +
-                    '                     required ' +
-                    '                     v-model="action" ' +
-                    '                     :state="valid(action)" ' +
-                    '                     size="sm"' +
-                    '                     title="Action">' +
-                    '      </b-form-select>' +
-                    '    </b-form-group>' +
-                    '    <b-form-group label="Size:" ' +
-                    '                  v-if="action != \'data_segment\' && action != \'code_segment\' && action != \'main_function\' && action != \'kmain_function\' && action != \'global_symbol\' && action != \'data_size\' && action != \'ascii_not_null_end\' && action != \'ascii_null_end\' && action != \'align\'">' +
-                    '      <b-form-input type="number" ' +
-                    '                    :state="valid(size)" ' +
-                    '                    v-on:input="debounce(\'size\', $event)" ' +
-                    '                    :value="size" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter size" ' +
-                    '                    size="sm" ' +
-                    '                    min="0" ' +
-                    '                    title="Directive size">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +
-                    '  </b-form>' +
-                    '</b-modal>'
+    template:   '<b-modal :id ="id" ' +
+                '         :title = "title"' +
+                '         ok-title="Save" ' +
+                '         @ok="verify_edit_directive($event)" ' +
+                '         v-model="show_modal"> ' +
+                '  <b-form>' +
+                '    <b-form-group label="Name:">' +
+                '      <b-form-input type="text" ' +
+                '                    :state="valid(directive.name)" ' +
+                '                    v-model="directive.name" ' +
+                '                    required ' +
+                '                    placeholder="Enter name" ' +
+                '                    size="sm" ' +
+                '                    title="Directive name">' +
+                '      </b-form-input>' +
+                '    </b-form-group>' +
+                '    <b-form-group label="action:">' +
+                '      <b-form-select :options="actionTypes" ' +
+                '                     required ' +
+                '                     v-model="directive.action" ' +
+                '                     :state="valid(directive.action)" ' +
+                '                     size="sm"' +
+                '                     title="Action">' +
+                '      </b-form-select>' +
+                '    </b-form-group>' +
+                '    <b-form-group label="Size:" ' +
+                '                  v-if="directive.action != \'data_segment\' && directive.action != \'code_segment\' && directive.action != \'main_function\' && directive.action != \'kmain_function\' && directive.action != \'global_symbol\' && directive.action != \'data_size\' && directive.action != \'ascii_not_null_end\' && directive.action != \'ascii_null_end\' && directive.action != \'align\' && directive.action != \'balign\'">' +
+                '      <b-form-input type="number" ' +
+                '                    :state="valid(directive.size)" ' +
+                '                    v-model="directive.size" ' +
+                '                    required ' +
+                '                    placeholder="Enter size" ' +
+                '                    size="sm" ' +
+                '                    min="0" ' +
+                '                    title="Directive size">' +
+                '      </b-form-input>' +
+                '    </b-form-group>' +
+                '  </b-form>' +
+                '</b-modal>'
 
   }
 
   Vue.component('directives-edit', uielto_directives_edit) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }

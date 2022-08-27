@@ -23,38 +23,34 @@
 
   var uielto_register_delete = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      title:                          { type: String, required: true },
-                      element:                        { type: String, required: true }
-                    }, 
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  register_file_index:            { type: Number, required: true },
+                  register_index:                 { type: Number, required: true }
+                }, 
 
-        data:       function () {
-                      return {
-                        
-                      }
-                    },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-        methods:    {
-                      //Delete the element
-                      delete_register(comp){
-                        for (var i = 0; i < architecture_hash.length; i++){
-                          for(var j=0; j < architecture.components[i].elements.length; j++){
-                            if(comp == architecture.components[i].elements[j].name){
-                              architecture.components[i].elements.splice(j,1);
-                            }
-                          }
-                        }
-                      },
-                    },
+    methods:    {
+                  //Delete the register
+                  delete_register(){
+                    architecture.components[this._props.register_file_index].elements.splice(this._props.register_index,1);
+                    show_notification('Register correctly deleted', 'success') ;
+                  },
+                },
 
-        template:   '<b-modal :id ="id" ' +
-                    '         :title="title" ' +
-                    '         ok-variant="danger" ' +
-                    '         ok-title="Delete" ' +
-                    '         @ok="delete_register(element)">' +
-                    '  <span class="h6">Are you sure you want to delete the item?</span>' +
-                    '</b-modal >'
+    template:   '<b-modal :id ="id" ' +
+                '         :title="title" ' +
+                '         ok-variant="danger" ' +
+                '         ok-title="Delete" ' +
+                '         @ok="delete_register()">' +
+                '  <span class="h6">Are you sure you want to delete the item?</span>' +
+                '</b-modal >'
 
   }
 

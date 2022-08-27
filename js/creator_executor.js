@@ -595,25 +595,25 @@ function writeStackLimit ( stackLimit )
   if (stackLimit == null) {
       return ;
   }
-  if (stackLimit <= architecture.memory_layout[3].value && stackLimit >= architecture.memory_layout[2].value)
+  if (stackLimit <= parseInt(architecture.memory_layout[3].value) && stackLimit >= parseInt(parseInt(architecture.memory_layout[2].value)))
   {
     draw.danger.push(executionIndex);
     throw packExecute(true, 'Stack pointer cannot be placed in the data segment', 'danger', null);
   }
-  else if(stackLimit <= architecture.memory_layout[1].value && stackLimit >= architecture.memory_layout[0].value)
+  else if(stackLimit <= parseInt(architecture.memory_layout[1].value) && stackLimit >= parseInt(architecture.memory_layout[0].value))
   {
     draw.danger.push(executionIndex);
     throw packExecute(true, 'Stack pointer cannot be placed in the text segment', 'danger', null);
   }
   else
   {
-    var diff = architecture.memory_layout[4].value - stackLimit ;
+    var diff = parseInt(architecture.memory_layout[4].value) - stackLimit ;
     if (diff > 0) {
       creator_memory_zerofill(stackLimit, diff) ;
     }
 
     track_stack_setsp(stackLimit);
-    architecture.memory_layout[4].value = stackLimit;
+    architecture.memory_layout[4].value = "0x" + (stackLimit.toString(16)).padStart(8, "0").toUpperCase();
   }
 }
 

@@ -502,16 +502,16 @@ function creator_memory_zerofill ( new_addr, new_size )
 function creator_memory_alloc ( new_size )
 {
         // get align address
-        var new_addr = architecture.memory_layout[3].value + 1 ;
+        var new_addr = parseInt(architecture.memory_layout[3].value) + 1 ;
         var algn = creator_memory_alignelto(new_addr, new_size) ;
 
         // fill memory
         creator_memory_zerofill(algn.new_addr, algn.new_size) ;
 
         // new segment limit
-        architecture.memory_layout[3].value = algn.new_addr + new_size ;
+        architecture.memory_layout[3].value ="0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
         if (typeof app !== "undefined") {
-            app.architecture.memory_layout[3].value = algn.new_addr + new_size ;
+            app.architecture.memory_layout[3].value = "0x" + ((algn.new_addr + new_size).toString(16)).padStart(8, "0").toUpperCase();
         }
 
         return algn.new_addr ;
@@ -745,13 +745,13 @@ function creator_memory_is_address_inside_segment ( segment_name, addr )
          var elto_inside_segment = false ;
 
          if (segment_name == "instructions_memory") {
-             elto_inside_segment = ((addr >= architecture.memory_layout[0].value) && (addr <= architecture.memory_layout[1].value)) ;
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[0].value)) && (addr <= parseInt(architecture.memory_layout[1].value))) ;
          }
          if (segment_name == "data_memory") {
-             elto_inside_segment = ((addr >= architecture.memory_layout[2].value) && (addr <= architecture.memory_layout[3].value)) ;
+             elto_inside_segment = ((addr >= parseInt(architecture.memory_layout[2].value)) && (addr <= parseInt(architecture.memory_layout[3].value))) ;
          }
          if (segment_name == "stack_memory") {
-             elto_inside_segment = (addr >= architecture.memory_layout[3].value) ;
+             elto_inside_segment = (addr >= parseInt(architecture.memory_layout[3].value)) ;
          }
 
          return elto_inside_segment ;

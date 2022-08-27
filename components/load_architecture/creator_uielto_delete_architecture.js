@@ -28,6 +28,12 @@
                   index:          { type: Number,  required: true }
                 },
 
+    data:       function () {
+                  return {
+
+                  }
+                },
+
     methods:    {
                   //Remove architecture
                   remove_cache_arch(index){
