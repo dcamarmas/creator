@@ -95,6 +95,8 @@
                       architecture.directives[this._props.index].size = null;
                     }
 
+                    //architecture.directives[this._props.index] = Object.assign({}, this._props.directive); //TODO
+
                     show_notification('Directive correctly modified', 'success') ;
                   },
 

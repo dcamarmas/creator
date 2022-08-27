@@ -195,78 +195,20 @@ try
       },
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Instructions fields*/
+      //Instructions fields
       modal_field_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
         instruction: {}
       },
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Edit instruction modal*/
+      //Edit instruction modal
       modal_edit_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
         instruction: {},
         numfields: null
-
-
-
-
-        /*element: '',
-        co: '',
-        cop: '',
-        name: '',
-        type: '',
-        co: '',
-        cop: '',
-        nwords: 1,
-        help: '',
-        properties: [],
-        numfields: "1",
-        numfieldsAux: "1",
-        nameField: [],
-        typeField: [],
-        separated: [],
-        startBitField: [],
-        stopBitField: [],
-        valueField: [],
-        assignedCop: false,
-        signature: '',
-        signatureRaw: '',
-        signature_definition: '',
-        definition: '',*/
       },
-
-
-
-
-
-
-
-      /*Delete instruction modal*/
+      //Delete instruction modal
       modal_delete_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,

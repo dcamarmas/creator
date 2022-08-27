@@ -88,7 +88,7 @@
                 '                              title="Field name">' +
                 '                </b-form-input>' +
                 '                <b-form-input type="text" ' +
-                '                              v-model="instruction.fields[field_index].name=instruction.name" ' +
+                '                              v-model="instruction.fields[field_index].name = instruction.name" ' +
                 '                              required ' +
                 '                              size="sm" ' +
                 '                              v-if="(field_index) == 0"  ' +
@@ -97,6 +97,7 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
+                '' +
                 '            <div class="col-lg-2 col-2 fields">' +
                 '              <b-form-group>' +
                 '                <b-form-input type="text" ' +
@@ -116,6 +117,7 @@
                 '                                 class="ml-3"' +
                 '                                 disabled>' +
                 '            </div>' +
+                '' +
                 '            <!-- start bit description -->' +
                 '            <div class="col-lg-2 col-2 fields">' +
                 '              <b-form-group>' +
@@ -142,6 +144,7 @@
                 '                              title="Field start bit">' +
                 '              </b-form-group>' +
                 '            </div>' +
+                '' +
                 '            <!-- stop bit description -->' +
                 '            <div class="col-lg-2 col-2 fields">' +
                 '              <b-form-group>' +
@@ -166,6 +169,7 @@
                 '                ' +
                 '              </b-form-group>' +
                 '            </div>' +
+                '' +
                 '            <div class="col-lg-2 col-2 fields" v-if="instruction.fields[field_index].type == \'co\'">' +
                 '              <b-form-group>' +
                 '                <b-form-input type="text" ' +
