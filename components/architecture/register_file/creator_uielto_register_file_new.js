@@ -23,162 +23,129 @@
 
   var uielto_register_file_new = {
 
-        props:      {
-                      id:                             { type: String, required: true } 
+    props:      {
+                  id:                             { type: String, required: true } 
+                },
+
+    data:       function () {
+                  return {
+                    //Register file types
+                    register_file_types:  [
+                                            { text: 'Integer', value: 'integer' },
+                                            { text: 'Floating point', value: 'floating point' },
+                                            { text: 'Control', value: 'control' }
+                                          ],
+
+                    //Directive form
+                    register_file_fields: {
+                      name: '',
+                      type: '',
+                      precision: '',
                     },
 
-        data:       function () {
-                      return {
-                        //Register file types
-                        register_file_types: componentsTypes,
-                        //Modals directives
-                        show_modal: false,
-                        //Directive form
-                        register_file_fields: {
-                          name: '',
-                          type: '',
-                          precision: '',
-                        },
-                      }
-                    },
+                    //Modals directives
+                    show_modal: false,
+                  }
+                },
 
-        methods:    {
-                      //Verify all field of new register file
-                      verify_new_register_file(evt){
-                        evt.preventDefault();
+    methods:    {
+                  //Verify all field of new register file
+                  verify_new_register_file(evt){
+                    evt.preventDefault();
 
-                        if (!this.register_file_fields.name || !this.register_file_fields.type) {
-                            show_notification('Please complete all fields', 'danger') ;
-                        }
-                        else{
-                          this.new_register_file();
-                        }
-                      },
-
-                      //Create a new register file
-                      new_register_file(){
-                        for (var i = 0; i < architecture_hash.length; i++) {
-                          if (this.register_file_fields.name == architecture_hash[i].name) {
-                              show_notification('The component already exists', 'danger') ;
-                              return;
-                          }
-                        }
-
-                        this.show_modal = false;
-
-                        var precision = false;
-                        if (this.register_file_fields.precision == "precision"){
-                            precision = true;
-                        }
-
-                        var newComp = {name: this.register_file_fields.name, type: this.register_file_fields.type, double_precision: precision ,elements:[]};
-                        architecture.components.push(newComp);
-                        var newComponentHash = {name: this.register_file_fields.name, index: architecture_hash.length};
-                        architecture_hash.push(newComponentHash);
-                      },
-
-                      //Clean register file form
-                      clean_form(){
-                        this.register_file_fields.name = '';
-                        this.register_file_fields.type = '';
-                        this.register_file_fields.precision = '';
-                      },
-
-                      //Form validator
-                      valid(value){
-                        if(parseInt(value) != 0){
-                          if(!value){
-                            return false;
-                          }
-                          else{
-                            return true;
-                          }
-                        }
-                        else{
-                          return true;
-                        }
-                      },
-
-                      //Stop user interface refresh
-                      debounce: _.debounce(function (param, e) {
-                        console_log(param);
-                        console_log(e);
-
-                        e.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                        var re = new RegExp("'","g");
-                        e = e.replace(re, '"');
-                        re = new RegExp("[\f]","g");
-                        e = e.replace(re, '\\f');
-                        re = new RegExp("[\n\]","g");
-                        e = e.replace(re, '\\n');
-                        re = new RegExp("[\r]","g");
-                        e = e.replace(re, '\\r');
-                        re = new RegExp("[\t]","g");
-                        e = e.replace(re, '\\t');
-                        re = new RegExp("[\v]","g");
-                        e = e.replace(re, '\\v');
-
-                        if(e == ""){
-                          this[param] = null;
+                    if (!this.register_file_fields.name || !this.register_file_fields.type) {
+                      show_notification('Please complete all fields', 'danger') ;
+                    }
+                    else{
+                      for (var i = 0; i < architecture_hash.length; i++) {
+                        if (this.register_file_fields.name == architecture_hash[i].name) {
+                          show_notification('The component already exists', 'danger') ;
                           return;
                         }
+                      }
 
-                        console_log("this." + param + "= '" + e + "'");
+                      this.new_register_file();
+                    }
+                  },
 
-                        eval("this." + param + "= '" + e + "'");
+                  //Create a new register file
+                  new_register_file(){
+                    this.show_modal = false;
 
-                        //this[param] = e.toString();
-                        app.$forceUpdate();
-                      }, getDebounceTime())
-                    },
+                    var precision = false;
+                    if (this.register_file_fields.precision == "precision"){
+                      precision = true;
+                    }
 
-        template:   '<b-modal  :id ="id" ' +
-                    '          title = "New Register File"' +
-                    '          ok-title="Save" ' +
-                    '          @ok="verify_new_register_file" ' +
-                    '          v-model="show_modal" ' +
-                    '          @hidden="clean_form">' +
-                    '  <b-form>' +
-                    '    <b-form-group label="Name:">' +
-                    '      <b-form-input type="text" ' +
-                    '                    v-on:input="debounce(\'register_file_fields.name\', $event)" ' +
-                    '                    :value="register_file_fields.name" ' +
-                    '                    required ' +
-                    '                    placeholder="Enter name" ' +
-                    '                    :state="valid(register_file_fields.name)" ' +
-                    '                    size="sm" ' +
-                    '                    title="New register file name">' +
-                    '      </b-form-input>' +
-                    '    </b-form-group>' +
-                    '    <b-form-group label="Type:">' +
-                    '      <b-form-select :options="register_file_types" ' +
-                    '                     required ' +
-                    '                     v-model="register_file_fields.type" ' +
-                    '                     :state="valid(register_file_fields.type)" ' +
-                    '                     size="sm"' +
-                    '                     title="Register file type">' +
-                    '    </b-form-select>' +
-                    '    </b-form-group>' +
-                    '    <b-form-group v-if="register_file_fields.type == \'floating point\'">' +
-                    '      <b-form-checkbox-group v-model="register_file_fields.precision">' +
-                    '        <b-form-checkbox value="register_file_fields.precision">' +
-                    '          Double Precision' +
-                    '        </b-form-checkbox>' +
-                    '      </b-form-checkbox-group>' +
-                    '    </b-form-group>' +
-                    '  </b-form>' +
-                    '</b-modal >'
+                    var new_register_file = {name: this.register_file_fields.name, type: this.register_file_fields.type, double_precision: precision ,elements:[]};
+                    architecture.components.push(new_register_file);
+                    var new_register_file_hash = {name: this.register_file_fields.name, index: architecture_hash.length};
+                    architecture_hash.push(new_register_file_hash);
+
+                    show_notification('Register file correctly created', 'success') ;
+                  },
+
+                  //Clean register file form
+                  clean_form(){
+                    this.register_file_fields.name = '';
+                    this.register_file_fields.type = '';
+                    this.register_file_fields.precision = '';
+                  },
+
+                  //Form validator
+                  valid(value){
+                    if(parseInt(value) != 0){
+                      if(!value){
+                        return false;
+                      }
+                      else{
+                        return true;
+                      }
+                    }
+                    else{
+                      return true;
+                    }
+                  },
+                },
+
+    template:   '<b-modal  :id ="id" ' +
+                '          title = "New Register File"' +
+                '          ok-title="Save" ' +
+                '          @ok="verify_new_register_file" ' +
+                '          v-model="show_modal" ' +
+                '          @hidden="clean_form">' +
+                '  <b-form>' +
+                '    <b-form-group label="Name:">' +
+                '      <b-form-input type="text" ' +
+                '                    v-model="register_file_fields.name" ' +
+                '                    required ' +
+                '                    placeholder="Enter name" ' +
+                '                    :state="valid(register_file_fields.name)" ' +
+                '                    size="sm" ' +
+                '                    title="New register file name">' +
+                '      </b-form-input>' +
+                '    </b-form-group>' +
+                '' +
+                '    <b-form-group label="Type:">' +
+                '      <b-form-select :options="register_file_types" ' +
+                '                     required ' +
+                '                     v-model="register_file_fields.type" ' +
+                '                     :state="valid(register_file_fields.type)" ' +
+                '                     size="sm"' +
+                '                     title="Register file type">' +
+                '    </b-form-select>' +
+                '    </b-form-group>' +
+                '' +
+                '    <b-form-group v-if="register_file_fields.type == \'floating point\'">' +
+                '      <b-form-checkbox-group v-model="register_file_fields.precision">' +
+                '        <b-form-checkbox value="register_file_fields.precision">' +
+                '          Double Precision' +
+                '        </b-form-checkbox>' +
+                '      </b-form-checkbox-group>' +
+                '    </b-form-group>' +
+                '  </b-form>' +
+                '</b-modal >'
 
   }
 
   Vue.component('register-file-new', uielto_register_file_new) ;
-
-  /*Determines the refresh timeout depending on the device being used*/
-  function getDebounceTime(){
-    if(screen.width > 768){
-      return 500;
-    }
-    else{
-      return 1000;
-    }
-  }

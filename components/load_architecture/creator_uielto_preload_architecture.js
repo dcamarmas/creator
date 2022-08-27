@@ -77,11 +77,11 @@
                     for (i = 0; i < load_architectures.length; i++) {
                          if (e.name == load_architectures[i].id) {
                              var aux_architecture = JSON.parse(load_architectures[i].architecture);
-                             uielto_preload_architecture.methods.load_arch_select_aux(e.name, aux_architecture, true, e) ;
+                             uielto_preload_architecture.methods.load_arch_select_aux(e.name, aux_architecture, true, e);
 
                              //Refresh UI
                              hide_loading();
-                             show_notification('The selected architecture has been loaded correctly', 'success') ;
+                             show_notification('The selected architecture has been loaded correctly', 'success');
 
                              // Google Analytics
                              creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized' + e.name);
@@ -96,19 +96,19 @@
                     });
 
                     //Read architecture JSON
-                    $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg) {
-                      uielto_preload_architecture.methods.load_arch_select_aux(e.name, cfg, true, e) ;
+                    $.getJSON('architecture/'+e.name+'.json' + "?v=" + new Date().getTime(), function(cfg){
+                      uielto_preload_architecture.methods.load_arch_select_aux(e.name, cfg, true, e);
 
                       //Refresh UI
                       hide_loading();
-                      show_notification('The selected architecture has been loaded correctly', 'success') ;
+                      show_notification('The selected architecture has been loaded correctly', 'success');
 
                       // Google Analytics
                       creator_ga('architecture', 'architecture.loading', 'architectures.loading.customized');
 
                       }).fail(function() {
                         hide_loading();
-                        show_notification('The selected architecture is not currently available', 'info') ;
+                        show_notification('The selected architecture is not currently available', 'info');
                       });
                   },
 
@@ -159,10 +159,10 @@
                       $.getJSON('examples/example_set.json' + "?v=" + new Date().getTime(), function(set) {
                         //Current architecture in upperCase
                         if (typeof uielto_preload_architecture.data.architecture_name === 'undefined'){
-                          var current_architecture = architecture.arch_conf[0].value.toUpperCase() ;
+                          var current_architecture = architecture.arch_conf[0].value.toUpperCase();
                         }
                         else{
-                          var current_architecture = uielto_preload_architecture.data.architecture_name.toUpperCase() ;
+                          var current_architecture = uielto_preload_architecture.data.architecture_name.toUpperCase();
                         }
 
                         //Search for architecture name in the example set 'set'

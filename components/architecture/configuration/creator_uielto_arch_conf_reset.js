@@ -23,60 +23,61 @@
 
   var uielto_arch_conf_reset = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      title:                          { type: String, required: true },
-                      arch_field_index:               { type: Number, required: true },
-                      arch_field_value:               { type: String, required: true },
-                      architecture_name:              { type: String, required: true },
-                    }, 
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  arch_field_index:               { type: Number, required: true },
+                  arch_field_value:               { type: String, required: true },
+                  architecture_name:              { type: String, required: true },
+                }, 
 
-        data:       function () {
-                      return {
-                        
+    data:       function () {
+                  return {
+                    
+                  }
+                },
+
+    methods:    {
+                  //Reset the architecture field
+                  reset_arch_field(index, arch){
+                    show_loading();
+
+                    //Read original value from JSON
+                    for (var i = 0; i < load_architectures.length; i++) {
+                      if(arch == load_architectures[i].id){
+                        var aux_arch = JSON.parse(load_architectures[i].architecture);
+                        var aux_architecture = register_value_deserialize(aux_arch);
+
+                        architecture.arch_conf[index].value = aux_architecture.arch_conf[index].value;
+                        app._data.architecture = architecture;
+
+                        hide_loading();
+                        show_notification('The architecture field has been reset correctly', 'success') ;
+                        return;
                       }
-                    },
+                    }
 
-        methods:    {
-                      //Reset the architecture field
-                      reset_arch_field(index, arch){
-                        show_loading();
+                    $.getJSON('architecture/'+arch+'.json', function(cfg){
+                      var aux_architecture = cfg;
 
-                        for (var i = 0; i < load_architectures.length; i++) {
-                          if(arch == load_architectures[i].id){
-                            var auxArch = JSON.parse(load_architectures[i].architecture);
-                            var auxArchitecture = register_value_deserialize(auxArch);
+                      var aux_architecture_2 = register_value_deserialize(aux_architecture);
+                      architecture.arch_conf[index].value = aux_architecture_2.arch_conf[index].value;
 
-                            architecture.arch_conf[index].value = auxArchitecture.arch_conf[index].value;
-                            app._data.architecture = architecture; //TODO: bidirectional
+                      app._data.architecture = architecture;
 
-                            hide_loading();
-                            show_notification('The architecture field has been reset correctly', 'success') ;
-                            return;
-                          }
-                        }
+                      hide_loading();
+                      show_notification('The architecture field has been reset correctly', 'success') ;
+                    });
+                  },
+                },
 
-                        $.getJSON('architecture/'+arch+'.json', function(cfg){
-                          var auxArchitecture = cfg;
-
-                          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-                          architecture.arch_conf[index].value = auxArchitecture2.arch_conf[index].value;
-
-                          app._data.architecture = architecture;
-
-                          hide_loading();
-                          show_notification('The architecture field has been reset correctly', 'success') ;
-                        });
-                      },
-                    },
-
-        template:   '<b-modal :id ="id" ' +
-                    '         :title="title" ' +
-                    '         ok-variant="danger" ' +
-                    '         ok-title="Delete" ' +
-                    '         @ok="reset_arch_field(arch_field_index, architecture_name)">' +
-                    '  <span class="h6">Are you sure you want to reset the item?</span>' +
-                    '</b-modal >'
+    template:   '<b-modal :id ="id" ' +
+                '         :title="title" ' +
+                '         ok-variant="danger" ' +
+                '         ok-title="Delete" ' +
+                '         @ok="reset_arch_field(arch_field_index, architecture_name)">' +
+                '  <span class="h6">Are you sure you want to reset the item?</span>' +
+                '</b-modal >'
 
   }
 

@@ -23,122 +23,128 @@
 
   var uielto_memory_layout = {
 
-        props:      {
-                      memory_layout:                  { type: Array,  required: true }
-                    },
+    props:      {
+                  memory_layout:                  { type: Array,  required: true }
+                },
 
-        data:       function () {
-                      return {
-                        
-                      }
-                    },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-        methods:    {
-                      //Show edit directive modal
-                      edit_memory_layout_modal(button){
-                        for (var i = 0; i < this._props.memory_layout.length; i++) {
-                          app._data.modalEditMemoryLayout.memory_layout[i] = "0x" + ((this._props.memory_layout[i].value).toString(16)).padStart(8, "0").toUpperCase();
-                        }
+    methods:    {
+                  //Show edit memory layout modal
+                  edit_memory_layout_modal(button){
+                    for (var i = 0; i < this._props.memory_layout.length; i++) {
+                      app._data.modal_edit_memory_layout.memory_layout[i] = this._props.memory_layout[i].value;
+                    }
+                    this.$root.$emit('bv::show::modal', 'change_memory_layout', button);
+                  }
+                },
 
-                        this.$root.$emit('bv::show::modal', 'change_memory_layout', button);
-                      }
-                    },
-
-        template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv">' +
-                    '' +
-                    '  <div class="col-lg-12 col-sm-12">' +
-                    '    <span class="h6">Memory layout:</span>' +
-                    '    <div class="col-lg-12 col-sm-12 row">' +
-                    '      <div class="compMenu">' +
-                    '        <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" ' +
-                    '                  @click.stop="edit_memory_layout_modal($event.target)">' +
-                    '          <span class="fas fa-exchange-alt"></span> ' +
-                    '          Change Memory Layout' +
-                    '        </b-button>' +
-                    '      </div>' +
-                    '      <div class="compMenu">' +
-                    '        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" ' +
-                    '                  v-b-modal.reset_memory_layout> ' +
-                    '          <span class="fas fa-power-off"></span>' +
-                    '          Reset Memory Layout' +
-                    '        </b-button>' +
-                    '      </div>' +
-                    '    </div>' +
-                    '    <br>' +
-                    '  </div>' +
-                    '' +
-                    '  <div class="col-lg-3 col-sm-12 "></div>' +
-                    '' +
-                    '  <!-- Memory layout sketch -->' +
-                    '  <div class="col-lg-6 col-sm-12 ">' +
-                    '    <b-list-group class="memoryLayout">' +
-                    '      <b-list-group horizontal>' +
-                    '        <b-list-group-item variant="info" class="memoryLayout">' +
-                    '          <br>' +
-                    '          .text' +
-                    '          <br>' +
-                    '        </b-list-group-item>' +
-                    '        <b-list-group-item class="memoryLayout noBorder left">' +
-                    '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[0].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
-                    '          </span>' +
-                    '          <br>' +
-                    '          <br>' +
-                    '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[1].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
-                    '          </span>' +
-                    '        </b-list-group-item>' +
-                    '      </b-list-group>' +
-                    '' +
-                    '      <b-list-group horizontal>' +
-                    '        <b-list-group-item variant="warning" class="memoryLayout"><br>.data<br></b-list-group-item>' +
-                    '        <b-list-group-item class="memoryLayout noBorder left">' +
-                    '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[2].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
-                    '          </span>' +
-                    '          <br>' +
-                    '          <br>' +
-                    '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[3].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
-                    '          </span>' +
-                    '        </b-list-group-item>' +
-                    '      </b-list-group>' +
-                    '' +
-                    '      <b-list-group horizontal>' +
-                    '        <b-list-group-item variant="secondary" class="memoryLayout">' +
-                    '          <br>' +
-                    '          ...' +
-                    '          <br>' +
-                    '          <br>' +
-                    '        </b-list-group-item>' +
-                    '        <b-list-group-item class="memoryLayout noBorder">' +
-                    '          ' +
-                    '        </b-list-group-item>' +
-                    '      </b-list-group>' +
-                    '' +
-                    '      <b-list-group horizontal>' +
-                    '        <b-list-group-item variant="success" class="memoryLayout">' +
-                    '          <br>' +
-                    '          stack' +
-                    '          <br>' +
-                    '        </b-list-group-item>' +
-                    '        <b-list-group-item class="memoryLayout noBorder left">' +
-                    '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[4].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
-                    '          </span>' +
-                    '          <br>' +
-                    '          <br>' +
-                    '          <span class="h6" v-if="memory_layout.length > 0">' +
-                    '            0x{{((memory_layout[5].value).toString(16)).padStart(8, "0").toUpperCase()}}' +
-                    '          </span>' +
-                    '        </b-list-group-item>' +
-                    '      </b-list-group>' +
-                    '    </b-list-group>' +
-                    '  </div>' +
-                    '' +
-                    '  <div class="col-lg-3 col-sm-12 "></div>' +
-                    '' +
-                    '</div>'
+    template:   '<div class="col-lg-12 col-sm-12 row memoryLayoutDiv">' +
+                '' +
+                '  <div class="col-lg-12 col-sm-12">' +
+                '    <span class="h6">Memory layout:</span>' +
+                '    <div class="col-lg-12 col-sm-12 row">' +
+                '      <div class="compMenu">' +
+                '        <b-button class="btn btn-outline-secondary btn-sm buttonBackground h-100 w-100" ' +
+                '                  @click.stop="edit_memory_layout_modal($event.target)">' +
+                '          <span class="fas fa-exchange-alt"></span> ' +
+                '          Change Memory Layout' +
+                '        </b-button>' +
+                '      </div>' +
+                '      <div class="compMenu">' +
+                '        <b-button class="btn btn-outline-danger btn-sm buttonBackground h-100 w-100" ' +
+                '                  v-b-modal.reset_memory_layout> ' +
+                '          <span class="fas fa-power-off"></span>' +
+                '          Reset Memory Layout' +
+                '        </b-button>' +
+                '      </div>' +
+                '    </div>' +
+                '    <br>' +
+                '  </div>' +
+                '' +
+                '  <div class="col-lg-3 col-sm-12 "></div>' +
+                '' +
+                '  <!-- Memory layout sketch -->' +
+                '  <div class="col-lg-6 col-sm-12 ">' +
+                '    <b-list-group class="memoryLayout">' +
+                '      <b-list-group horizontal>' +
+                '        <b-list-group-item variant="info" class="memoryLayout">' +
+                '          <br>' +
+                '          .text' +
+                '          <br>' +
+                '          <br>' +
+                '        </b-list-group-item>' +
+                '        <b-list-group-item class="memoryLayout noBorder left">' +
+                '          <span class="h6" v-if="memory_layout.length > 0">' +
+                '            {{memory_layout[0].value}}' +
+                '          </span>' +
+                '          <br>' +
+                '          <br>' +
+                '          <span class="h6" v-if="memory_layout.length > 0">' +
+                '            {{memory_layout[1].value}}' +
+                '          </span>' +
+                '        </b-list-group-item>' +
+                '      </b-list-group>' +
+                '' +
+                '      <b-list-group horizontal>' +
+                '        <b-list-group-item variant="warning" class="memoryLayout">' +
+                '          <br>' +
+                '          .data' +
+                '          <br>' +
+                '          <br>' +
+                '        </b-list-group-item>' +
+                '        <b-list-group-item class="memoryLayout noBorder left">' +
+                '          <span class="h6" v-if="memory_layout.length > 0">' +
+                '            {{memory_layout[2].value}}' +
+                '          </span>' +
+                '          <br>' +
+                '          <br>' +
+                '          <span class="h6" v-if="memory_layout.length > 0">' +
+                '            {{memory_layout[3].value}}' +
+                '          </span>' +
+                '        </b-list-group-item>' +
+                '      </b-list-group>' +
+                '' +
+                '      <b-list-group horizontal>' +
+                '        <b-list-group-item variant="secondary" class="memoryLayout">' +
+                '          <br>' +
+                '          ...' +
+                '          <br>' +
+                '          <br>' +
+                '        </b-list-group-item>' +
+                '        <b-list-group-item class="memoryLayout noBorder">' +
+                '          ' +
+                '        </b-list-group-item>' +
+                '      </b-list-group>' +
+                '' +
+                '      <b-list-group horizontal>' +
+                '        <b-list-group-item variant="success" class="memoryLayout">' +
+                '          <br>' +
+                '          stack' +
+                '          <br>' +
+                '          <br>' +
+                '        </b-list-group-item>' +
+                '        <b-list-group-item class="memoryLayout noBorder left">' +
+                '          <span class="h6" v-if="memory_layout.length > 0">' +
+                '            {{memory_layout[4].value}}' +
+                '          </span>' +
+                '          <br>' +
+                '          <br>' +
+                '          <span class="h6" v-if="memory_layout.length > 0">' +
+                '            {{memory_layout[5].value}}' +
+                '          </span>' +
+                '        </b-list-group-item>' +
+                '      </b-list-group>' +
+                '    </b-list-group>' +
+                '  </div>' +
+                '' +
+                '  <div class="col-lg-3 col-sm-12 "></div>' +
+                '' +
+                '</div>'
 
   }
 

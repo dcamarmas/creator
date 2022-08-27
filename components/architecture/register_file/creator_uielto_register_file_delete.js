@@ -23,39 +23,40 @@
 
   var uielto_register_file_delete = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      title:                          { type: String, required: true },
-                      element:                        { type: String, required: true }
-                    }, 
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  index:                          { type: Number, required: true }
+                }, 
 
-        data:       function () {
-                      return {
-                        
-                      }
-                    },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-        methods:    {
-                      delete_register_file(comp){
-                        for (var i = 0; i < architecture_hash.length; i++){
-                          if(comp == architecture_hash[i].name){
-                            architecture.components.splice(i,1);
-                            architecture_hash.splice(i,1);
-                            for (var j = 0; j < architecture_hash.length; j++){
-                              architecture_hash[j].index = j;
-                            }
-                          }
-                        }
-                      }
-                    },
+    methods:    {
+                  //Delete one register file
+                  delete_register_file(){
+                    architecture.components.splice(this._props.index,1);
+                    architecture_hash.splice(this._props.index,1);
 
-        template:   '<b-modal :id ="id" ' +
-                    '         :title="title" ' +
-                    '         ok-variant="danger" ' +
-                    '         ok-title="Delete" ' +
-                    '         @ok="delete_register_file(element)">' +
-                    '  <span class="h6">Are you sure you want to delete the register file?</span>' +
-                    '</b-modal>'
+                    //Update hash table
+                    for (var j = 0; j < architecture_hash.length; j++){
+                      architecture_hash[j].index = j;
+                    }
+
+                    show_notification('Register file correctly deleted', 'success') ;
+                  }
+                },
+
+    template:   '<b-modal :id ="id" ' +
+                '         :title="title" ' +
+                '         ok-variant="danger" ' +
+                '         ok-title="Delete" ' +
+                '         @ok="delete_register_file()">' +
+                '  <span class="h6">Are you sure you want to delete the register file?</span>' +
+                '</b-modal>'
 
   }
 

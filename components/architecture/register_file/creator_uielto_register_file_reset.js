@@ -23,72 +23,73 @@
 
   var uielto_register_file_reset = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      architecture_name:              { type: String, required: true }
-                    },
+    props:      {
+                  id:                             { type: String, required: true },
+                  architecture_name:              { type: String, required: true }
+                },
 
-        data:       function () {
-                      return {
-                        
-                      }
-                    },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-        methods:    {
-                      //Reset components
-                      reset_register_file(arch){
-                        show_loading();
+    methods:    {
+                  //Reset register files
+                  reset_register_file(){
+                    show_loading();
 
-                        for (var i = 0; i < load_architectures.length; i++){
-                          if(arch == load_architectures[i].id){
-                            var auxArch = JSON.parse(load_architectures[i].architecture);
-                            var auxArchitecture = register_value_deserialize(auxArch);
+                    //Read original value from JSON
+                    for (var i = 0; i < load_architectures.length; i++){
+                      if(this._props.architecture_name == load_architectures[i].id){
+                        var aux_arch = JSON.parse(load_architectures[i].architecture);
+                        var aux_architecture = register_value_deserialize(aux_arch);
 
-                            architecture.components = auxArchitecture.components;
-                            app._data.architecture = architecture; //TODO: bidirectional
+                        architecture.components = aux_architecture.components;
+                        app._data.architecture = architecture;
 
-                            architecture_hash = [];
-                            for (var i = 0; i < architecture.components.length; i++) {
-                              architecture_hash.push({name: architecture.components[i].name, index: i});
-                              app._data.architecture_hash = architecture_hash;
-                            }
-
-                            hide_loading();
-                            show_notification('The register file has been reset correctly', 'success') ;
-
-                            return;
-                          }
+                        architecture_hash = [];
+                        for (var i = 0; i < architecture.components.length; i++) {
+                          architecture_hash.push({name: architecture.components[i].name, index: i});
+                          app._data.architecture_hash = architecture_hash;
                         }
 
-                        $.getJSON('architecture/'+arch+'.json', function(cfg){
-                          var auxArchitecture = cfg;
+                        hide_loading();
+                        show_notification('The register file has been reset correctly', 'success') ;
 
-                          var auxArchitecture2 = register_value_deserialize(auxArchitecture);
-                          architecture.components = auxArchitecture2.components;
+                        return;
+                      }
+                    }
 
-                          app._data.architecture = architecture;
+                    $.getJSON('architecture/' + this._props.architecture_name + '.json', function(cfg){
+                      var aux_architecture = cfg;
 
-                          architecture_hash = [];
-                          for (var i = 0; i < architecture.components.length; i++){
-                            architecture_hash.push({name: architecture.components[i].name, index: i});
-                            app._data.architecture_hash = architecture_hash;
-                          }
+                      var aux_architecture_2 = register_value_deserialize(aux_architecture);
+                      architecture.components = aux_architecture_2.components;
 
-                          hide_loading();
-                          show_notification('The registers has been reset correctly', 'success') ;
-                        });
-                      },
+                      app._data.architecture = architecture;
+
+                      architecture_hash = [];
+                      for (var i = 0; i < architecture.components.length; i++){
+                        architecture_hash.push({name: architecture.components[i].name, index: i});
+                        app._data.architecture_hash = architecture_hash;
+                      }
+
+                      hide_loading();
+                      show_notification('The registers has been reset correctly', 'success') ;
+                    });
+                  },
 
 
-                    },
+                },
 
-        template:   '<b-modal :id ="id" ' +
-                    '         title="Reset register file" ' +
-                    '         ok-variant="danger" ' +
-                    '         ok-title="Reset" ' +
-                    '         @ok="reset_register_file(architecture_name)">' +
-                    '  <span class="h6">Are you sure you want to reset the architecture?</span>' +
-                    '</b-modal >'
+    template:   '<b-modal :id ="id" ' +
+                '         title="Reset register file" ' +
+                '         ok-variant="danger" ' +
+                '         ok-title="Reset" ' +
+                '         @ok="reset_register_file()">' +
+                '  <span class="h6">Are you sure you want to reset the architecture?</span>' +
+                '</b-modal >'
 
   }
 

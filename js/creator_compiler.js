@@ -35,45 +35,10 @@ var back_card = [];
 /*Load architecture*/
 var architecture = {components:[], instructions:[], directives:[], memory_layout:[]};
 var architecture_hash = [];
-/*Components form select*/
-var componentsTypes = [
-  { text: 'Integer', value: 'integer' },
-  { text: 'Floating point', value: 'floating point' },
-  { text: 'Control', value: 'control' },
-];
-/*Intructions form select*/
-var instructionsTypes = [
-  { text: 'Arithmetic integer', value: 'Arithmetic integer' },
-  { text: 'Arithmetic floating point', value: 'Arithmetic floating point' },
-  { text: 'Logic', value: 'Logic' },
-  { text: 'Transfer between registers', value: 'Transfer between registers' },
-  { text: 'Memory access', value: 'Memory access' },
-  { text: 'Comparison', value: 'Comparison' },
-  { text: 'I/O', value: 'I/O' },
-  { text: 'Syscall', value: 'Syscall' },
-  { text: 'Control', value: 'Control' },
-  { text: 'Function call', value: 'Function call' },
-  { text: 'Conditional bifurcation', value: 'Conditional bifurcation' },
-  { text: 'Unconditional bifurcation', value: 'Unconditional bifurcation' },
-  { text: 'Other', value: 'Other' },
-];
-/*Directives form select*/
-var actionTypes = [
-  { text: 'Data Segment', value: 'data_segment' },
-  { text: 'Code Segment', value: 'code_segment' },
-  { text: 'Global Symbol', value: 'global_symbol' },
-  { text: 'Byte', value: 'byte' },
-  { text: 'Half Word', value: 'half_word' },
-  { text: 'Word', value: 'word' },
-  { text: 'Double Word', value: 'double_word' },
-  { text: 'Float', value: 'float' },
-  { text: 'Double', value: 'double' },
-  { text: 'Space', value: 'space' },
-  { text: 'ASCII not finished in null', value: 'ascii_not_null_end' },
-  { text: 'ASCII finished in null', value: 'ascii_null_end' },
-  { text: 'Align', value: 'align' },
-  { text: 'Balign', value: 'balign'},
-];
+
+
+
+
 
 
 /*Compilator*/
@@ -195,7 +160,7 @@ var display = '' ;
 
 // Load architecture
 
-function load_arch_select ( cfg )
+function load_arch_select ( cfg ) //TODO: repeated?
 {
       var ret = {
                         errorcode: "",
@@ -1014,9 +979,9 @@ function assembly_compiler()
         /* Initialize stack */
         writeMemory("00", parseInt(stack_address), "word") ;
 
-        address = architecture.memory_layout[0].value;
-        data_address = architecture.memory_layout[2].value;
-        stack_address = architecture.memory_layout[4].value;
+        address = parseInt(architecture.memory_layout[0].value);
+        data_address = parseInt(architecture.memory_layout[2].value);
+        stack_address = parseInt(architecture.memory_layout[4].value);
 
   // save current value as default values for reset()...
         creator_memory_prereset() ;

@@ -7438,27 +7438,27 @@
   "memory_layout": [
     {
       "name": "text start",
-      "value": 0
+      "value": "0x00000000"
     },
     {
       "name": "text end",
-      "value": 2097151
+      "value": "0x001FFFFF"
     },
     {
       "name": "data start",
-      "value": 2097152
+      "value": "0x00200000"
     },
     {
       "name": "data end",
-      "value": 96206015
+      "value": "0x05BBFCBF"
     },
     {
       "name": "stack start",
-      "value": 268435452
+      "value": "0x0FFFFFFC"
     },
     {
       "name": "stack end",
-      "value": 268435455
+      "value": "0x0FFFFFFF"
     }
   ]
 }

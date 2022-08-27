@@ -166,7 +166,7 @@ function writeRegister ( value, indexComp, indexElem )
 
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
           (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
-          (value != architecture.memory_layout[4].value)) {
+          (value != parseInt(architecture.memory_layout[4].value))) {
             writeStackLimit(parseInt(bi_intToBigInt(value,10)));
       }
 
@@ -194,7 +194,7 @@ function writeRegister ( value, indexComp, indexElem )
 
       if ((architecture.components[indexComp].elements[indexElem].properties.includes('pointer') != false) &&
           (architecture.components[indexComp].elements[indexElem].properties.includes('stack') != false)   &&
-          (value != architecture.memory_layout[4].value)) {
+          (value != parseInt(architecture.memory_layout[4].value))) {
             writeStackLimit(parseFloat(value));
       }
 

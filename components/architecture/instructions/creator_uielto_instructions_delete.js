@@ -23,31 +23,33 @@
 
   var uielto_instructions_delete = {
 
-        props:      {
-                      id:                             { type: String, required: true },
-                      instruction:                    { type: Number, required: true }
-                    }, 
+    props:      {
+                  id:                             { type: String, required: true },
+                  title:                          { type: String, required: true },
+                  index:                          { type: Number, required: true }
+                }, 
 
-        data:       function () {
-                      return {
-                        
-                      }
-                    },
+    data:       function () {
+                  return {
+                    
+                  }
+                },
 
-        methods:    {
-                      //Delete the instruction
-                      delete_instructions(index){
-                        architecture.instructions.splice(index,1);
-                      },
-                    },
+    methods:    {
+                  //Delete the instruction
+                  delete_instructions(){
+                    architecture.instructions.splice(this._props.index, 1);
+                    show_notification('Instruction correctly deleted', 'success');
+                  },
+                },
 
-        template:   '<b-modal :id ="id" ' +
-                    '         title="Delete Instruction" ' +
-                    '         ok-variant="danger" ' +
-                    '         ok-title="Delete" ' +
-                    '         @ok="delete_instructions(instruction)">' +
-                    '  <span class="h6">Are you sure you want to delete the item?</span>' +
-                    '</b-modal >'
+    template:   '<b-modal :id ="id" ' +
+                '         :title="title" ' +
+                '         ok-variant="danger" ' +
+                '         ok-title="Delete" ' +
+                '         @ok="delete_instructions">' +
+                '  <span class="h6">Are you sure you want to delete the item?</span>' +
+                '</b-modal >'
 
   }
 
