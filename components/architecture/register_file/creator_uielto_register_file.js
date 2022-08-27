@@ -71,7 +71,7 @@
                       for(var j = 0; j < architecture.components[i].elements.length; j++){
                         if(architecture.components[i].name == name && architecture.components[i].elements.length-1 == j){
                           id++;
-                          app._data.modal_new_register.id = id;
+                          app._data.modal_new_register.reg_id = id;
                         }
                         if(architecture.components[i].type == architecture.components[index].type && architecture.components[i].double_precision == architecture.components[index].double_precision){
                           id++;

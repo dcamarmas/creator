@@ -173,7 +173,7 @@ try
         register_file_index: null,
         type: '',
         double_precision: '',
-        id: '',
+        reg_id: '',
         simple_reg: []
       },
       //Edit register modal
@@ -181,16 +181,11 @@ try
         title: '',
         register_file_index: null,
         register_index: null,
-        name: '',
         type: '',
         double_precision: '',
         reg_id: '',
-        default_value: '',
-        properties: [],
-        precision: '',
         simple_reg: [],
-        simple1: '',
-        simple2: ''
+        register: {}
       },
       //Delete register modal
       modal_delete_register:{ //TODO: include into register component - modal info

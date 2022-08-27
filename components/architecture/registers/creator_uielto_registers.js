@@ -54,7 +54,7 @@
                     var id = 0;
                     for(var i = 0; i < architecture.components.length; i++){
                       for(var j = 0; j < architecture.components[i].elements.length; j++){
-                        if(architecture.components[i].elements[j].name == app._data.modal_edit_register.name){
+                        if(architecture.components[i].elements[j].name == name){
                           app._data.modal_edit_register.reg_id = id;
                         }
                         if(architecture.components[i].type == architecture.components[this._props.register_file_index].type && architecture.components[i].double_precision == architecture.components[this._props.register_file_index].double_precision){
@@ -63,20 +63,12 @@
                       }
                     }
 
-                    //Get register information
-                    app._data.modal_edit_register.name             = architecture.components[this._props.register_file_index].elements[index].name;
+                    //Get register file information
                     app._data.modal_edit_register.type             = architecture.components[this._props.register_file_index].type;
                     app._data.modal_edit_register.double_precision = architecture.components[this._props.register_file_index].double_precision;
 
-                    if(app._data.modal_edit_register.double_precision == true){
-                      app._data.modal_edit_register.simple1  = architecture.components[this._props.register_file_index].elements[index].simple_reg[0];
-                      app._data.modal_edit_register.simple2  = architecture.components[this._props.register_file_index].elements[index].simple_reg[1];
-                    }
-                    else{
-                      app._data.modal_edit_register.default_value = (architecture.components[this._props.register_file_index].elements[index].default_value).toString();
-                    }
-
-                    app._data.modal_edit_register.properties = architecture.components[this._props.register_file_index].elements[index].properties;
+                    ///Get register information
+                    app._data.modal_edit_register.register = Object.assign({}, architecture.components[this._props.register_file_index].elements[index]);
 
                     this.$root.$emit('bv::show::modal', 'edit_register', button);
                   },
