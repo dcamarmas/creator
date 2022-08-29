@@ -35,7 +35,8 @@
 
     methods:    {
                   //Create a new architecture
-                  new_arch(){
+                  new_arch()
+                  {
                     //Refresh UI
                     uielto_toolbar_btngroup.methods.change_UI_mode('simulator');
                     uielto_data_view_selector.methods.change_data_view('registers', 'int');
