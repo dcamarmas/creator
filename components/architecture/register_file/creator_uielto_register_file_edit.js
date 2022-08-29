@@ -40,15 +40,18 @@
 
     methods:    {
                   //Verify all field of modified register file
-                  verify_edit_register_file(evt){
+                  verify_edit_register_file(evt)
+                  {
                     evt.preventDefault();
 
                     if (!this._props.name) {
                       show_notification('Please complete all fields', 'danger') ;
                     }
                     else {
-                      for (var i = 0; i < architecture_hash.length; i++){
-                        if ((this._props.name == architecture_hash[i].name) && (this._props.index != i)){
+                      for (var i = 0; i < architecture_hash.length; i++)
+                      {
+                        if ((this._props.name == architecture_hash[i].name) && (this._props.index != i))
+                        {
                             show_notification('The component already exists', 'danger') ;
                             return;
                         }
@@ -69,8 +72,10 @@
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

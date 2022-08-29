@@ -38,7 +38,8 @@
 
     methods:    {
                   //Delete the register
-                  delete_register(){
+                  delete_register()
+                  {
                     architecture.components[this._props.register_file_index].elements.splice(this._props.register_index,1);
                     show_notification('Register correctly deleted', 'success') ;
                   },

@@ -65,51 +65,63 @@
 
     methods:    {
                   //Check all fields of modify instruction
-                  edit_instructions_verify(evt){
+                  edit_instructions_verify(evt)
+                  {
                     evt.preventDefault();
                     var empty = 0;
 
                     //Verify CO
                     if (typeof(this._props.instruction.co) !== 'object')
                     {
-                      for (var i = 0; i < this._props.instruction.co.length; i++){
-                        if (this._props.instruction.co.charAt(i) != "0" && this._props.instruction.co.charAt(i) != "1"){
+                      for (var i = 0; i < this._props.instruction.co.length; i++)
+                      {
+                        if (this._props.instruction.co.charAt(i) != "0" && this._props.instruction.co.charAt(i) != "1")
+                        {
                           show_notification('The value of co must be binary', 'danger') ;
                           return;
                         }
                       }
                     }
-                    else {
-                        for (let val in this._props.instruction.co) {
-                          if (!/^[01]+$/.test(val)) {
-                            show_notification('The value of co must be binary', 'danger') ;
-                            return;
-                          }
+                    else 
+                    {
+                      for (let val in this._props.instruction.co)
+                      {
+                        if (!/^[01]+$/.test(val))
+                        {
+                          show_notification('The value of co must be binary', 'danger') ;
+                          return;
                         }
+                      }
                     }
 
                     //Verify COP
                     var aux_cop = "";
 
-                    for (var i = 1; i < this._props.number_fields; i++){
-                      if (this._props.instruction.fields[i].type == 'cop'){
+                    for (var i = 1; i < this._props.number_fields; i++)
+                    {
+                      if (this._props.instruction.fields[i].type == 'cop')
+                      {
                         if (!this._props.instruction.fields[i].valueField){
                           empty = 1;
                         }
-                        else {
+                        else 
+                        {
                           if ((this._props.instruction.fields[i].valueField).length != (this._props.instruction.fields[i].startbit - this._props.instruction.fields[i].stopbit + 1))
                           {
                             show_notification('The length of cop should be ' + (this._props.instruction.fields[i].startbit - this._props.instruction.fields[i].stopbit + 1) + ' binary numbers', 'danger') ;
                             return;
                           }
 
-                          for (var j = 0; j < (this._props.instruction.fields[i].valueField).length; j++){
-                            if (this._props.instruction.fields[i].valueField.charAt(j) != "0" && this._props.instruction.fields[i].valueField.charAt(j) != "1"){
+                          for (var j = 0; j < (this._props.instruction.fields[i].valueField).length; j++)
+                          {
+                            if (this._props.instruction.fields[i].valueField.charAt(j) != "0" && this._props.instruction.fields[i].valueField.charAt(j) != "1")
+                            {
                               show_notification('The value of cop must be binary', 'danger') ;
                               return;
                             }
                           }
                         }
+
                         aux_cop = aux_cop + this._props.instruction.fields[i].valueField;
                       }
                     }
@@ -117,9 +129,12 @@
                     this._props.instruction.cop = aux_cop;
 
                     //Verify instruction fields
-                    for (var i = 0; i < this._props.number_fields; i++){
-                      for (var j = i + 1; j < this._props.number_fields; j++){
-                        if (this._props.instruction.fields[i].name == this._props.instruction.fields[j].name){
+                    for (var i = 0; i < this._props.number_fields; i++)
+                    {
+                      for (var j = i + 1; j < this._props.number_fields; j++)
+                      {
+                        if (this._props.instruction.fields[i].name == this._props.instruction.fields[j].name)
+                        {
                           show_notification('Field name repeated', 'danger') ;
                           return;
                         }
@@ -131,7 +146,8 @@
                     }
 
                     //Verify empty fields
-                    if (!this._props.instruction.name || !this._props.instruction.type || !this._props.instruction.co || !this._props.instruction.nwords || !this._props.number_fields || !this._props.instruction.signature_definition || !this._props.instruction.definition || empty == 1) {
+                    if (!this._props.instruction.name || !this._props.instruction.type || !this._props.instruction.co || !this._props.instruction.nwords || !this._props.number_fields || !this._props.instruction.signature_definition || !this._props.instruction.definition || empty == 1)
+                    {
                       show_notification('Please complete all fields', 'danger') ;
                       return;
                     }
@@ -157,18 +173,22 @@
                       show_notification('The length of co don\'t match with the desription', 'danger');
                       return;
                     }
-                    else {
+                    else 
+                    {
                       //Verify repeat instruction
                       var ex_cop = false;
-                      for (var i = 1; i < this._props.number_fields; i++){
+                      for (var i = 1; i < this._props.number_fields; i++)
+                      {
                         if (this._props.instruction.fields[i].type == 'cop'){
                           ex_cop = true;
                         }
                       }
 
                       for (var i = 0; i < architecture.instructions.length; i++){
-                        if ((this._props.instruction.co == architecture.instructions[i].co) && (i!= this._props.index) && (ex_cop == false)){
-                          if (((!this._props.instruction.cop) || (ex_cop != true))){
+                        if ((this._props.instruction.co == architecture.instructions[i].co) && (i!= this._props.index) && (ex_cop == false))
+                        {
+                          if (((!this._props.instruction.cop) || (ex_cop != true)))
+                          {
                             show_notification('The instruction already exists', 'danger') ;
                             return;
                           }
@@ -177,8 +197,10 @@
 
                       let aux_cop = (() => this._props.instruction.co instanceof Array ? this.formInstrucion.co.join("") : this._props.instruction.co)() + this._props.instruction.cop;
 
-                      for (var i = 0; i < architecture.instructions.length && ex_cop == true ; i++){
-                        if ((aux_cop == architecture.instructions[i].cop) && (!aux_cop == false) && (i != this._props.index)){
+                      for (var i = 0; i < architecture.instructions.length && ex_cop == true ; i++)
+                      {
+                        if ((aux_cop == architecture.instructions[i].cop) && (!aux_cop == false) && (i != this._props.index))
+                        {
                           show_notification('The instruction already exists', 'danger') ;
                           return;
                         }
@@ -214,19 +236,23 @@
                     }
 
                     //Intruction fields
-                    for (var j = 0; j < this._props.number_fields; j++) {
-                      if (j < architecture.instructions[this._props.index].fields.length) {
+                    for (var j = 0; j < this._props.number_fields; j++)
+                    {
+                      if (j < architecture.instructions[this._props.index].fields.length)
+                      {
                         architecture.instructions[this._props.index].fields[j].name = this._props.instruction.fields[j].name;
                         architecture.instructions[this._props.index].fields[j].type = this._props.instruction.fields[j].type;
                         architecture.instructions[this._props.index].fields[j].valueField = this._props.instruction.fields[j].valueField;
 
-                        if (!architecture.instructions[this._props.index].separated) {
+                        if (!architecture.instructions[this._props.index].separated)
+                        {
                           architecture.instructions[this._props.index].fields[j].startbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].startbit) : this._props.instruction.fields[j].startbit.map(val => parseInt(val));
                           architecture.instructions[this._props.index].fields[j].stopbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].stopbit): this._props.instruction.fields[j].stopbit.map(val => parseInt(val));
                           architecture.instructions[this._props.index].separated[j] = this._props.instruction.separated[j];
                         }
                       }
-                      else{
+                      else
+                      {
                         var new_field = {name: this._props.instruction.fields[j].name, type: this._props.instruction.fields[j].type, startbit: this._props.instruction.fields[j].startbit, stopbit: this._props.instruction.fields[j].stopbit, valueField: this._props.instruction.fields[j].valueField};
                         architecture.instructions[this._props.index].fields.push(new_field);
                       }
@@ -251,7 +277,8 @@
                   },
 
                   //Verify new number of fields
-                  change_number_fields(){
+                  change_number_fields()
+                  {
                     //Top limit
                     if(this._props.number_fields > (this._props.instruction.nwords * 32)){
                       this._props.number_fields = (this._props.instruction.nwords * 32);
@@ -263,25 +290,29 @@
                     }
 
                     //Add fields
-                    if(this._props.number_fields > this._props.instruction.fields.length){
+                    if(this._props.number_fields > this._props.instruction.fields.length)
+                    {
                       var diff = this._props.number_fields - this._props.instruction.fields.length;
-                      for (var i = 0; i < diff; i++) {
+                      for (var i = 0; i < diff; i++)
+                      {
                         var new_field = {name: '', type: '', startbit: '', stopbit: '', valueField: ''};
                         this._props.instruction.fields.push(new_field);
                       }
                     }
 
                     //Delete fields
-                    if(this._props.number_fields < this._props.instruction.fields.length){
+                    if(this._props.number_fields < this._props.instruction.fields.length)
+                    {
                       var diff = this._props.instruction.fields.length - this._props.number_fields;
-                      for (var i = 0; i < diff; i++) {
+                      for (var i = 0; i < diff; i++){
                         this._props.instruction.fields.splice(-1,1);
                       }
                     }
                   },
 
                   //Generate the different instruction signature
-                  generate_signature(){
+                  generate_signature()
+                  {
                     var signature = this._props.instruction.signature_definition;
 
                     //Signature definition cleaning
@@ -298,7 +329,8 @@
                     re = new RegExp(" +", "g");
                     signature = signature.replace(re, " ");
 
-                    for (var i = 0; i < this._props.number_fields; i++){
+                    for (var i = 0; i < this._props.number_fields; i++)
+                    {
                       re = new RegExp("[Ff]"+i, "g");
 
                       if(i == 0){
@@ -321,7 +353,8 @@
                     re = new RegExp(" +", "g");
                     signatureRaw = signatureRaw.replace(re, " ");
 
-                    for (var i = 0; i < this._props.number_fields; i++){
+                    for (var i = 0; i < this._props.number_fields; i++)
+                    {
                       re = new RegExp("[Ff]"+i, "g");
                       signatureRaw = signatureRaw.replace(re, this._props.instruction.fields[i].name);
                     }
@@ -331,14 +364,18 @@
                   },
                   
                   //Change to separate field
-                  change_to_separate_field(val, pos) {
-                    if (val) {
+                  change_to_separate_field(val, pos)
+                  {
+                    if (val)
+                    {
                       this._props.instruction.fields[pos].startbit = [0];
                       this._props.instruction.fields[pos].stopbit = [0];
                       if (this._props.instruction.fields[pos].type == 'co'){
                         this._props.instruction.co = ['0'];
                       }
-                    } else {
+                    }
+                    else
+                    {
                       this._props.instruction.fields[pos].startbit = 0;
                       this._props.instruction.fields[pos].stopbit = 0;
                       if (this._props.instruction.fields[pos].type == 'co'){
@@ -348,7 +385,8 @@
                   },
 
                   //Add new separate value
-                  add_separate_values(pos) {
+                  add_separate_values(pos)
+                  {
                     this._props.instruction.fields[pos].startbit.push(0);
                     this._props.instruction.fields[pos].stopbit.push(0);
                     if (this._props.instruction.fields[pos].type == 'co'){
@@ -357,7 +395,8 @@
                   },
 
                   //Less new separate value
-                  less_separate_values(pos) {
+                  less_separate_values(pos)
+                  {
                     this._props.instruction.fields[pos].startbit.pop();
                     this._props.instruction.fields[pos].stopbit.pop();
                     if (this._props.instruction.fields[pos].type == 'co'){
@@ -371,22 +410,27 @@
                   /*******************/
 
                   //Pagination bar names
-                  link_generator (pageNum) {
+                  link_generator (pageNum)
+                  {
                     return this.instruction_page_link[pageNum - 1]
                   },
 
-                  page_generator (pageNum) {
+                  page_generator (pageNum)
+                  {
                     return this.instruction_page_link[pageNum - 1].slice(1)
                   },
 
                   //Set original values into the form
-                  reset_form() {
+                  reset_form()
+                  {
                     this.instruction_page = 1;
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

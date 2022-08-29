@@ -36,8 +36,9 @@
 
     methods:    {
                   //Show instruction fields modal
-                  view_instructions_modal(name, index, button){
-                    app._data.modal_field_instruction.title = "Fields of " + name;
+                  view_instructions_modal(name, index, button)
+                  {
+                    app._data.modal_field_instruction.title       = "Fields of " + name;
                     app._data.modal_field_instruction.index       = index;
                     app._data.modal_field_instruction.instruction = Object.assign({}, architecture.instructions[index]);
 
@@ -45,17 +46,19 @@
                   },
 
                   //Show edit instruction modal
-                  edit_instructions_modal(name, index, button){
+                  edit_instructions_modal(name, index, button)
+                  {
                     app._data.modal_edit_instruction.title         = "Edit  " + name;
                     app._data.modal_edit_instruction.index         = index;
-                    app._data.modal_edit_instruction.instruction   = Object.assign({}, architecture.instructions[index]);
+                    app._data.modal_edit_instruction.instruction   = Object.assign(app._data.modal_edit_instruction.instruction, architecture.instructions[index]);
                     app._data.modal_edit_instruction.number_fields = app._data.modal_edit_instruction.instruction.fields.length;
 
                     this.$root.$emit('bv::show::modal', 'edit_instructions', button);
                   },
 
                   //Show delete instruction modal
-                  delete_instructions_modal(name, index, button){
+                  delete_instructions_modal(name, index, button)
+                  {
                     app._data.modal_delete_instruction.title = "Delete " + name;
                     app._data.modal_delete_instruction.index = index;
                     

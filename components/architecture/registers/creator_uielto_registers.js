@@ -37,14 +37,16 @@
 
     methods:    {
                   //Show edit register modal
-                  edit_register_modal(name, index, button){
+                  edit_register_modal(name, index, button)
+                  {
                     app._data.modal_edit_register.title               = "Edit " + name;
                     app._data.modal_edit_register.register_file_index = this._props.register_file_index;
                     app._data.modal_edit_register.register_index      = index;
 
                     //Load all simple precision registers at the moment //TODO: improve the search
                     app._data.modal_edit_register.simple_reg = [];
-                    for (var i = 0; i < architecture_hash.length; i++){
+                    for (var i = 0; i < architecture_hash.length; i++)
+                    {
                       for (var j = 0; j < architecture.components[i].elements.length && architecture.components[i].type =="floating point" && architecture.components[i].double_precision == false; j++){
                         app._data.modal_edit_register.simple_reg.push({ text: architecture.components[i].elements[j].name, value: architecture.components[i].elements[j].name},);
                       }
@@ -52,8 +54,10 @@
 
                     //Generate new register ID //TODO: improve the search
                     var id = 0;
-                    for(var i = 0; i < architecture.components.length; i++){
-                      for(var j = 0; j < architecture.components[i].elements.length; j++){
+                    for(var i = 0; i < architecture.components.length; i++)
+                    {
+                      for(var j = 0; j < architecture.components[i].elements.length; j++)
+                      {
                         if(architecture.components[i].elements[j].name == name){
                           app._data.modal_edit_register.reg_id = id;
                         }
@@ -74,7 +78,8 @@
                   },
 
                   //Show delete register modal
-                  delete_register_modal(name, register_index, button){
+                  delete_register_modal(name, register_index, button)
+                  {
                     app._data.modal_delete_register.title               = "Delete " + name;
                     app._data.modal_delete_register.register_file_index = this._props.register_file_index;
                     app._data.modal_delete_register.register_index      = register_index;
@@ -83,10 +88,13 @@
                   },
 
                   //Generate new register ID //TODO: improve the search
-                  element_id(name, type, double){
+                  element_id(name, type, double)
+                  {
                     var id = 0;
-                    for(var i = 0; i < architecture.components.length; i++){
-                      for(var j = 0; j < architecture.components[i].elements.length; j++){
+                    for(var i = 0; i < architecture.components.length; i++)
+                    {
+                      for(var j = 0; j < architecture.components[i].elements.length; j++)
+                      {
                         if(architecture.components[i].elements[j].name == name){
                           return id;
                         }
