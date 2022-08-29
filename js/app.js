@@ -206,13 +206,16 @@ try
         title: '',
         index: null,
         instruction: {},
-        numfields: null
+        number_fields: null
       },
       //Delete instruction modal
       modal_delete_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
       },
+
+
+
 
 
 
