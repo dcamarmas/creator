@@ -402,10 +402,11 @@
 
                         <!-- Pseudoinstructions modals -->
 
-                        <!-- Pseudontruction fields-->
+                        <!-- Pseudontruction fields -->
                         <pseudoinstructions-fields  id="fields_pseudoinstructions"
-                                                    :title="modalViewPseudoFields.title"
-                                                    :pseudoinstruction="formPseudoinstruction">
+                                                    :title="modal_field_pseudoinstruction.title"
+                                                    :index="modal_field_pseudoinstruction.index"
+                                                    :pseudoinstruction="modal_field_pseudoinstruction.pseudoinstruction">
                         </pseudoinstructions-fields>
 
                         <!-- New Pseudontruction -->
@@ -416,15 +417,18 @@
                                                   :architecture_name="architecture_name">
                         </pseudoinstructions-reset>
 
-                        <!-- Edit Pseudointructions -->
+                        <!-- Edit Pseudointructions 
                         <pseudoinstructions-edit  id="edit_pseudoinstructions"
-                                                  :element="modalEditPseudoinst"
-                                                  :pseudoinstruction="formPseudoinstruction">
-                        </pseudoinstructions-edit>
+                                                  :title="modal_edit_pseudoinstruction.title"
+                                                  :index="modal_edit_pseudoinstruction.index"
+                                                  :pseudoinstruction="modal_edit_pseudoinstruction.pseudoinstruction"
+                                                  :number_fields="modal_edit_pseudoinstruction.number_fields">
+                        </pseudoinstructions-edit>-->
 
                         <!-- Delete Pseudoinstruction -->
                         <pseudoinstructions-delete  id="delete_pseudoinstructions"
-                                                    :pseudoinstruction="modalDeletPseudoinst.index">
+                                                    :title="modal_delete_pseudoinstruction.title"
+                                                    :index="modal_delete_pseudoinstruction.index">
                         </pseudoinstructions-delete>
 
                       </b-tab>
