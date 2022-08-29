@@ -52,10 +52,10 @@
                   {
                     evt.preventDefault();
 
-                    if (this._props.register.name.length == 0 || !this._props.register.name || !(this._props.register.default_value).toString()) {
+                    if (this._props.register.name.length == 0 || !this._props.register.name || (typeof(this._props.register.default_value) !== 'undefined' && !(this._props.register.default_value).toString())) {
                       show_notification('Please complete all fields', 'danger') ;
                     }
-                    else if(isNaN((this._props.register.default_value).toString())){
+                    else if(typeof(this._props.register.default_value) !== 'undefined' && isNaN((this._props.register.default_value).toString())){
                       show_notification('The default value must be a number', 'danger') ;
                     }
                     else 
