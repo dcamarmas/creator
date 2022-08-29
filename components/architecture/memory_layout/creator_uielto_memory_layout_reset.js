@@ -48,7 +48,7 @@
                         var aux_architecture = register_value_deserialize(aux_arch);
 
                         architecture.memory_layout = aux_architecture.memory_layout;
-                        app._data.architecture = architecture; //TODO: bidirectional
+                        app._data.architecture = architecture;
 
                         hide_loading();
                         show_notification('The memory layout has been reset correctly', 'success') ;
