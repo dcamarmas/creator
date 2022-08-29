@@ -41,12 +41,14 @@
 
     methods:    {
                   //Read the JSON of new architecture
-                  read_arch(e){
+                  read_arch(e)
+                  {
                     show_loading();
                     e.preventDefault();
 
                     //Verify all form fields
-                    if(!this.name_arch || !this.load_arch){
+                    if(!this.name_arch || !this.load_arch)
+                    {
                       hide_loading();
                       show_notification('Please complete all fields', 'danger');
                       return;
@@ -60,7 +62,8 @@
                     var files = document.getElementById('arch_file').files;
 
                     //Read one or more files
-                    for (var i = 0; i < files.length; i++){
+                    for (var i = 0; i < files.length; i++)
+                    {
                       file = files[i];
                       reader = new FileReader();
 
@@ -73,7 +76,8 @@
                           load_architectures.push({id: name_arch, architecture: event.currentTarget.result});
 
                           //Refresh cache values
-                          if (typeof(Storage) !== "undefined"){
+                          if (typeof(Storage) !== "undefined")
+                          {
                             var auxArch = JSON.stringify(load_architectures, null, 2);
                             localStorage.setItem("load_architectures", auxArch);
 
@@ -96,8 +100,10 @@
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

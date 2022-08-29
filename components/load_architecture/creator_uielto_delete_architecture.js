@@ -36,18 +36,21 @@
 
     methods:    {
                   //Remove architecture
-                  remove_cache_arch(index){
+                  remove_cache_arch(index)
+                  {
                     //Get architecture name
                     var id = architecture_available[index].name;
 
                     //Delete architecture on CREATOR
-                    for (var i = 0; i < load_architectures.length; i++){
+                    for (var i = 0; i < load_architectures.length; i++)
+                    {
                       if(load_architectures[i].id == id){
                         load_architectures.splice(i, 1);
                       }
                     }
 
-                    for (var i = 0; i < load_architectures_available.length; i++){
+                    for (var i = 0; i < load_architectures_available.length; i++)
+                    {
                       if(load_architectures_available[i].name == id){
                         load_architectures_available.splice(i, 1);
                       }
