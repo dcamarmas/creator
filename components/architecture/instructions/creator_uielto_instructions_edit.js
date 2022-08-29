@@ -334,7 +334,7 @@
                   change_to_separate_field(val, pos) {
                     if (val) {
                       this._props.instruction.fields[pos].startbit = [0];
-                      this._props.instruction.fields[pos].stopbit =[0];
+                      this._props.instruction.fields[pos].stopbit = [0];
                       if (this._props.instruction.fields[pos].type == 'co'){
                         this._props.instruction.co = ['0'];
                       }
@@ -641,7 +641,8 @@
                 '                </b-form-input>' +
                 '              </b-form-group>' +
                 '            </div>' +
-                '            <div class="col-lg-2 col-2 fields" v-if="typeof(instruction.separated) !== \'undefined\' && instruction.separated[i-1]">' +
+                '            <div class="col-lg-2 col-2 fields"' +
+                '                 v-if="typeof(instruction.separated) !== \'undefined\' && instruction.separated[i-1]">' +
                 '                <b-button variant="primary" ' +
                 '                          @click="add_separate_values(i-1)" ' +
                 '                          size="sm">' +
