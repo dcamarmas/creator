@@ -215,62 +215,24 @@ try
       },
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-      //Pseudoinstruction form
-      formPseudoinstruction: { //TODO - modal info
-        name: '',
-        nwords: 1,
-        numfields: "0",
-        numfieldsAux: "0",
-        nameField: [],
-        typeField: [],
-        startBitField: [],
-        stopBitField: [],
-        signature: '',
-        signatureRaw: '',
-        signature_definition: '',
-        definition: '',
-        help: '',
-      },
-
-      //Instructions fields
-      modalViewPseudoFields:{ //TODO: include into pseudoinstruction component - modal info
+      //Pseudoinstruction fields
+      modal_field_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
         title: '',
+        index: null,
+        pseudoinstruction: {}
       },
-
       //Edit pseudoinstruction modal
-      modalEditPseudoinst:{ //TODO: include into pseudoinstruction component - modal info
-        element: '',
-        index: 0,
+      modal_edit_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
+        title: '',
+        index: null,
+        pseudoinstruction: {},
+        number_fields: null
       },
-
       //Delete pseudoinstruction modal
-      modalDeletPseudoinst:{ //TODO: include into pseudoinstruction component - modal info
-        index: 0,
+      modal_delete_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
+        title: '',
+        index: null,
       },
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       //Edit directive modal
@@ -279,7 +241,6 @@ try
         index: null,
         directive: {}
       },
-
       //Delete directive modal //TODO: include into directives component - modal info
       modal_delete_directive:{
         title: '',
@@ -613,4 +574,3 @@ catch(e)
     location.reload(true)
   }, 3000);
 }
-

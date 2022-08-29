@@ -63,7 +63,6 @@
                       properties: [],
                       separated: [],
                       fields: [{name: '', type: '', startbit: '', stopbit: '', valueField: ''}],
-
                       signature: '',
                       signatureRaw: '',
                       signature_definition: '',
@@ -234,7 +233,6 @@
 
                     //Generate new signature
                     this.generate_signature();
-
                     var signature = this.instruction.signature;
                     var signatureRaw = this.instruction.signatureRaw;
 
@@ -243,7 +241,7 @@
                       this.instruction.cop='';
                     }
 
-                    //Create new nstruction object
+                    //Create new instruction object
                     var new_instruction = {
                       name: this.instruction.name,
                       type: this.instruction.type,
@@ -446,14 +444,11 @@
                     this.instruction.nwords = 1;
                     this.instruction.separated = [];
                     this.instruction.properties = [];
-
                     this.number_fields = "1";
                     this.instruction.fields = [{name: '', type: '', startbit: '', stopbit: '', valueField: ''}];
-
                     this.instruction.signature ='';
                     this.instruction.signatureRaw = '';
                     this.instruction.signature_definition = '';
-
                     this.instruction.definition = '';
                     this.instruction.help = '';
                   },

@@ -50,7 +50,7 @@
                   {
                     app._data.modal_edit_instruction.title         = "Edit  " + name;
                     app._data.modal_edit_instruction.index         = index;
-                    app._data.modal_edit_instruction.instruction   = Object.assign(app._data.modal_edit_instruction.instruction, architecture.instructions[index]);
+                    app._data.modal_edit_instruction.instruction   = Object.assign({}, architecture.instructions[index]);
                     app._data.modal_edit_instruction.number_fields = app._data.modal_edit_instruction.instruction.fields.length;
 
                     this.$root.$emit('bv::show::modal', 'edit_instructions', button);
