@@ -23,52 +23,52 @@
 
   var uielto_info = {
 
-        props:      {
-                      target:                 { type: String, required: true },
-                      show_instruction_help:  { type: Boolean, required: true }
-                    },
+    props:      {
+                  target:                 { type: String, required: true },
+                  show_instruction_help:  { type: Boolean, required: true }
+                },
 
-        methods:    {
-                      closePopover(){
-                        this.$root.$emit('bv::hide::popover')
-                      }
-                    },
+    methods:    {
+                  closePopover(){
+                    this.$root.$emit('bv::hide::popover')
+                  }
+                },
 
-        template:   ' <b-popover :target="target" triggers="click blur">' +
-                    '   <template v-slot:title>' +
-                    '     <b-button @click="closePopover" class="close" aria-label="Close">' +
-                    '       <span class="d-inline-block" aria-hidden="true">&times;</span>' +
-                    '     </b-button>' +
-                    '     <br>' +
-                    '   </template>' +
-                    ' ' +
-                    '   <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" ' +
-                    '             href=\'https://creatorsim.github.io/\' ' +
-                    '             target="_blank" ' +
-                    '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.general_help\', \'help.general_help\');">' +
-                    '     <span class="fas fa-question-circle" ></span> ' +
-                    '     Help' +
-                    '   </b-button>' +
-                    ' ' +
-                    '   <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_instruction_help==\'true\'"' +
-                    '             id="inst_ass" v-b-toggle.sidebar_help' +
-                    '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.instruction_help\', \'help.instruction_help\');">' +
-                    '     <span class="fas fa-book"></span>' +
-                    '     Instruction Help' +
-                    '   </b-button>' +
-                    ' ' +
-                    '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" ' +
-                    '             v-b-modal.notifications>' +
-                    '     <span class="fas fa-bell"></span> ' +
-                    '     Show Notifications' +
-                    '   </b-button>' +
-                    ' ' +
-                    '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
-                    '             v-b-modal.about>' +
-                    '     <span class="fas fa-address-card"></span> ' +
-                    '     About us' +
-                    '   </b-button>' +
-                    ' </b-popover>'
+    template:   ' <b-popover :target="target" triggers="click blur">' +
+                '   <template v-slot:title>' +
+                '     <b-button @click="closePopover" class="close" aria-label="Close">' +
+                '       <span class="d-inline-block" aria-hidden="true">&times;</span>' +
+                '     </b-button>' +
+                '     <br>' +
+                '   </template>' +
+                ' ' +
+                '   <b-button class="btn btn-outline-secondary btn-sm btn-block infoButton" ' +
+                '             href=\'https://creatorsim.github.io/\' ' +
+                '             target="_blank" ' +
+                '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.general_help\', \'help.general_help\');">' +
+                '     <span class="fas fa-question-circle" ></span> ' +
+                '     Help' +
+                '   </b-button>' +
+                ' ' +
+                '   <b-button class="btn btn-outline-secondary btn-block btn-sm h-100 infoButton" v-if="show_instruction_help==\'true\'"' +
+                '             id="inst_ass" v-b-toggle.sidebar_help' +
+                '             onclick="creator_ga(\'send\', \'event\', \'help\', \'help.instruction_help\', \'help.instruction_help\');">' +
+                '     <span class="fas fa-book"></span>' +
+                '     Instruction Help' +
+                '   </b-button>' +
+                ' ' +
+                '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100" ' +
+                '             v-b-modal.notifications>' +
+                '     <span class="fas fa-bell"></span> ' +
+                '     Show Notifications' +
+                '   </b-button>' +
+                ' ' +
+                '   <b-button class="btn btn-outline-secondary btn-sm btn-block buttonBackground h-100"' +
+                '             v-b-modal.about>' +
+                '     <span class="fas fa-address-card"></span> ' +
+                '     About us' +
+                '   </b-button>' +
+                ' </b-popover>'
   }
 
   Vue.component('popover-info', uielto_info) ;

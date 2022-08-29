@@ -39,38 +39,28 @@
                       //Screen change
                       //
 
-                      change_UI_mode(e) {
-
-                        if(app._data.creator_mode != e){
-
-                          if(app._data.creator_mode == "architecture"){
-                            app._data.advanced_mode = true;
-                          }
-
-                          // Close codemirror
-                          if(textarea_assembly_editor != null && e != "assembly"){
-                            app._data.assembly_code = textarea_assembly_editor.getValue();
-                            code_assembly = textarea_assembly_editor.getValue();
-                            codemirrorHistory = textarea_assembly_editor.getHistory();
-                            textarea_assembly_editor.toTextArea();
-                          }
-
+                      change_UI_mode(e)
+                      {
+                        if(app._data.creator_mode != e)
+                        {
                           // slow transition <any> => "architecture"
                           if (e == "architecture")
                           {
-                              $(".loading").show();
-                              setTimeout(function(){
-                                app._data.creator_mode = e;
-                                app.$forceUpdate();
-                                 $(".loading").hide();
-                               }, 50) ;
-                              return ;
+                            $(".loading").show();
+                            setTimeout(function(){
+                              app._data.creator_mode = e;
+                              app.$forceUpdate();
+                               $(".loading").hide();
+                             }, 50) ;
+                            return ;
                           }
 
                           // fast transition <any> => <any> - "architecture"
                           app._data.creator_mode = e;
 
-                          if(e == "assembly"){
+                          //Assembly view
+                          if(e == "assembly")
+                          {
                             setTimeout(function(){
                               codemirrorStart();
                               if (codemirrorHistory != null ){
@@ -78,7 +68,6 @@
                                 textarea_assembly_editor.undo();
                               }
                               textarea_assembly_editor.setValue(code_assembly);
-                              //if(app._data.update_binary != ""){
                               if(update_binary != ""){
                                 $("#divAssembly").attr("class", "col-lg-10 col-sm-12");
                                 $("#divTags").attr("class", "col-lg-2 col-sm-12");
@@ -87,7 +76,16 @@
                             },50);
                           }
 
-                          // Close all toast and refresh
+                          //Architecture or simulator view => Close codemirror
+                          if(textarea_assembly_editor != null && e != "assembly")
+                          {
+                            app._data.assembly_code = textarea_assembly_editor.getValue();
+                            code_assembly = textarea_assembly_editor.getValue();
+                            codemirrorHistory = textarea_assembly_editor.getHistory();
+                            textarea_assembly_editor.toTextArea();
+                          }
+
+                          //Close all toast and refresh
                           app.$bvToast.hide()
                           app.$forceUpdate();
                         }
@@ -98,73 +96,66 @@
                       // Architecture
                       //
 
-                      change_mode(){
-                        if(app._data.advanced_mode == false){
-                          app._data.advanced_mode = true;
-                        }
-                        else{
-                          app._data.advanced_mode = false;
-                        }
+                      //Change advanced mode
+                      change_advanced_mode()
+                      {
+                        app._data.advanced_mode = !app._data.advanced_mode
                       },
 
                       //
                       // Assembly
                       //
 
-                      newAssembly(){
+                      new_assembly()
+                      {
                         textarea_assembly_editor.setValue("");
                       },
 
                       //Compile assembly code
                       assembly_compiler(code)
                       {
-
                         show_loading();
-                        promise = new Promise((resolve, reject) => {
 
+                        promise = new Promise((resolve, reject) => {
                           setTimeout(function() {
 
                             // Compile
                             if (typeof(code)!=="undefined") {
-                                code_assembly=code;
+                                code_assembly = code;
                             }
                             else{
                                 code_assembly = textarea_assembly_editor.getValue();
                             }
-
                             var ret = assembly_compiler() ;
 
                             //Update/reset
                             app._data.totalStats   = 0;
                             app._data.instructions = instructions;
-
-                            tokenIndex = 0;
+                            tokenIndex = 0; //TODO: change to token_index in all files
                             uielto_toolbar_btngroup.methods.reset(true);
 
                             //Save a backup in the cache memory
                             if (typeof(Storage) !== "undefined")
                             {
-                              var auxObject = jQuery.extend(true, {}, architecture);
-                              var auxArchitecture = register_value_serialize(auxObject);
-                              var auxArch = JSON.stringify(auxArchitecture, null, 2);
+                              var aux_object = jQuery.extend(true, {}, architecture);
+                              var aux_architecture = register_value_serialize(aux_object);
+                              var aux_arch = JSON.stringify(aux_architecture, null, 2);
 
                               var date = new Date();
                               var auxDate = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds()+" - "+date.getDate()+"/"+(date.getMonth()+1)+"/"+date.getFullYear();
-                              console_log(app._data.architecture_name);
 
                               localStorage.setItem("arch_name", app._data.architecture_name);
-                              localStorage.setItem("architecture_copy", auxArch);
+                              localStorage.setItem("architecture_copy", aux_arch);
                               localStorage.setItem("assembly_copy", code_assembly);
                               localStorage.setItem("date_copy", auxDate);
                             }
 
-                            // show error/warning
+                            //show error/warning
                             hide_loading();
-
                             switch (ret.type)
                             {
                               case "error":
-                                   app.compile_error(ret.msg, ret.token, ret.line) ;
+                                   uielto_toolbar_btngroup.methods.compile_error(ret.msg, ret.token, ret.line) ;
                                    break;
 
                               case "warning":
@@ -189,7 +180,7 @@
                       //Show error message in the compilation
                       compile_error(msg, token, line)
                       {
-                        var code_assembly_segment = code_assembly.split('\n') ;
+                        var code_assembly_segment = code_assembly.split('\n');
                         uielto_toolbar_btngroup.methods.change_UI_mode('assembly');
 
                         setTimeout(function() {
@@ -198,9 +189,10 @@
                           // line 1
                           app.modalAssemblyError.line1 = "" ;
                           app.modalAssemblyError.code1 = "" ;
-                          if (line > 0) {
-                              app.modalAssemblyError.line1 = line ;
-                              app.modalAssemblyError.code1 = code_assembly_segment[line - 1] ;
+                          if (line > 0) 
+                          {
+                            app.modalAssemblyError.line1 = line ;
+                            app.modalAssemblyError.code1 = code_assembly_segment[line - 1] ;
                           }
 
                           // line 2
@@ -210,23 +202,24 @@
                           // line 3
                           app.modalAssemblyError.line3 = "" ;
                           app.modalAssemblyError.code3 = ""  ;
-                          if (line < code_assembly_segment.length - 1) {
-                              app.modalAssemblyError.line3 = line + 2 ;
-                              app.modalAssemblyError.code3 = code_assembly_segment[line + 1] ;
+                          if (line < code_assembly_segment.length - 1) 
+                          {
+                            app.modalAssemblyError.line3 = line + 2 ;
+                            app.modalAssemblyError.code3 = code_assembly_segment[line + 1] ;
                           }
 
                           app.modalAssemblyError.error = msg ;
-
                         },75);
                       },
 
                       //Remove a loaded binary
-                      removeLibrary(){
-                          update_binary = "";
-                          load_binary = false;
-                          $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
-                          $("#divTags").attr("class", "col-lg-0 col-sm-0");
-                          $("#divTags").hide();
+                      remove_library()
+                      {
+                        update_binary = "";
+                        load_binary = false;
+                        $("#divAssembly").attr("class", "col-lg-12 col-sm-12");
+                        $("#divTags").attr("class", "col-lg-0 col-sm-0");
+                        $("#divTags").hide();
                       },
 
 
@@ -237,12 +230,11 @@
                       // Reset execution
                       reset ( reset_graphic )
                       {
-                        /* Google Analytics */
+                        // Google Analytics
                         creator_ga('execute', 'execute.reset', 'execute.reset');
 
                         show_loading();
                         setTimeout(function() {
-
                           // UI: reset I/O
                           app._data.resetBut = true ;
                           app._data.keyboard = "" ;
@@ -251,53 +243,51 @@
 
                           // UI: reset row color...
                           for (var i = 0; i < instructions.length; i++) {
-                               instructions[i]._rowVariant = '' ;
+                            instructions[i]._rowVariant = '' ;
                           }
 
-                          reset(reset_graphic) ;
+                          reset(reset_graphic);
 
                           // UI: set default row color...
-                          for (var i = 0; i < instructions.length; i++) {
-                               if (instructions[i].Label == "main") {
-                                   instructions[i]._rowVariant = 'success' ;
-                               }
+                          for (var i = 0; i < instructions.length; i++) 
+                          {
+                            if (instructions[i].Label == "main") {
+                              instructions[i]._rowVariant = 'success' ;
+                            }
                           }
 
-                          /*Auto-scroll*/
-                          if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
-                            var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
-                            var rowpos = $(id).position();
-                            if(rowpos){
-                              var pos = rowpos.top - $('.instructions_table').height();
+                          //Auto-scroll
+                          if(execution_index >= 0 && (execution_index + + (parseInt(architecture.arch_conf[1].value) / 8)) < instructions.length){
+                            var id = "#inst_table__row_" + instructions[execution_index + 4].Address;
+                            var row_pos = $(id).position();
+                            if(row_pos){
+                              var pos = row_pos.top - $('.instructions_table').height();
                               $('.instructions_table').animate({scrollTop: (pos)}, 200);
                             }
                           }
-                          else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
+                          else if(execution_index > 0 && (execution_index + 4) >= instructions.length){
                             $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
                           }
 
-                          /*Reset graphic*/
+                          //Reset graphic
                           if(reset_graphic == true && app._data.data_mode == "stats"){
                             ApexCharts.exec('graphic', 'updateSeries', stats_value);
                           }
 
                           hide_loading();
-
                         }, 25);
 
                         // Close all toast
                         app.$bvToast.hide()
-
                       },
 
                       //Execute one instruction
-                      executeInstruction ( )
+                      execute_instruction ()
                       {
                         // Google Analytics
                         creator_ga('execute', 'execute.instruction', 'execute.instruction');
 
-                        var ret = executeInstruction();
-                        // console.log(JSON.stringify(ret,2,null));
+                        var ret = execute_instruction();
 
                         if (typeof ret === "undefined") {
                           console.log("AQUI hemos llegado y un poema se ha encontrado...") ;
@@ -323,16 +313,19 @@
                           }
 
                           //Auto-scroll
-                          if(app._data.autoscroll == true && runProgram == false){
-                            if(executionIndex >= 0 && (executionIndex + 4) < instructions.length){
-                              var id = "#inst_table__row_" + instructions[executionIndex + 4].Address;
-                              var rowpos = $(id).position();
-                              if(rowpos){
-                                var pos = rowpos.top - $('.instructions_table').height();
+                          if(app._data.autoscroll == true && run_program == false)
+                          {
+                            if(execution_index >= 0 && (execution_index + 4) < instructions.length)
+                            {
+                              var id = "#inst_table__row_" + instructions[execution_index + (parseInt(architecture.arch_conf[1].value) / 8)].Address;
+                              var row_pos = $(id).position();
+                              if(row_pos)
+                              {
+                                var pos = row_pos.top - $('.instructions_table').height();
                                 $('.instructions_table').animate({scrollTop: (pos)}, 200);
                               }
                             }
-                            else if(executionIndex > 0 && (executionIndex + 4) >= instructions.length){
+                            else if(execution_index > 0 && (execution_index + 4) >= instructions.length){
                               $('.instructions_table').animate({scrollTop: ($('.instructions_table').height())}, 300);
                             }
                           }
@@ -345,95 +338,86 @@
                       },
 
                       //Execute all program
-                      executeProgram ( but )
+                      execute_program (but)
                       {
-                        /* Google Analytics */
+                        // Google Analytics
                         creator_ga('execute', 'execute.run', 'execute.run');
 
-                        app._data.runExecution = true;
-                        app._data.runExecution = false;
-                        runProgram=true;
+                        app._data.run_execution = true;
+                        app._data.run_execution = false;
+                        run_program=true;
 
                         if (instructions.length == 0)
                         {
-                            show_notification('No instructions in memory', 'danger') ;
-                            runProgram=false;
-                            return;
+                          show_notification('No instructions in memory', 'danger') ;
+                          run_program=false;
+                          return;
                         }
-                        if (executionIndex < -1)
+                        if (execution_index < -1)
                         {
-                            show_notification('The program has finished', 'warning') ;
-                            runProgram=false;
-                            return;
+                          show_notification('The program has finished', 'warning') ;
+                          run_program=false;
+                          return;
                         }
-                        if (executionIndex == -1)
+                        if (execution_index == -1)
                         {
-                            show_notification('The program has finished with errors', 'danger') ;
-                            runProgram=false;
-                            return;
+                          show_notification('The program has finished with errors', 'danger') ;
+                          run_program=false;
+                          return;
                         }
 
-                        //$("#stopExecution").show();
-                        //$("#playExecution").hide();
-
-                        this.programExecutionInst(but);
+                        this.program_execution_inst(but);
                       },
 
-                      programExecutionInst(but)
+                      program_execution_inst(but)
                       {
-                        for (var i=0; (i<app._data.instructionsPacked) && (executionIndex >= 0); i++)
+                        for (var i=0; (i<app._data.instructions_packed) && (execution_index >= 0); i++)
                         {
-                          if(mutexRead == true){
+                          if(mutex_read == true)
+                          {
                             iter1 = 1;
-                            //$("#stopExecution").hide();
-                            //$("#playExecution").show();
-                            runProgram=false;
+                            run_program=false;
                             return;
                           }
-                          else if(instructions[executionIndex].Break == true && iter1 == 0){
+                          else if(instructions[execution_index].Break == true && iter1 == 0)
+                          {
                             iter1 = 1;
-                            //$("#stopExecution").hide();
-                            //$("#playExecution").show();
-                            runProgram=false;
+                            run_program=false;
                             return;
                           }
-                          else if(this.runExecution == true){
-                            app._data.runExecution = false;
+                          else if(this.run_execution == true)
+                          {
+                            app._data.run_execution = false;
                             iter1 = 1;
-                            //$("#stopExecution").hide();
-                            //$("#playExecution").show();
-                            runProgram=false;
+                            run_program=false;
                             return;
                           }
-                          else if(but == true && i == 0){
+                          else if(but == true && i == 0)
+                          {
                             app._data.resetBut = false;
                           }
-                          else if(this.resetBut == true){
+                          else if(this.resetBut == true)
+                          {
                             app._data.resetBut = false;
-
-                            //$("#stopExecution").hide();
-                            //$("#playExecution").show();
-                            runProgram=false;
+                            run_program=false;
                             return;
                           }
-                          else{
-                            this.executeInstruction();
+                          else
+                          {
+                            this.execute_instruction();
                             iter1 = 0;
                           }
                         }
 
-                        if(executionIndex >= 0){
-                          setTimeout(this.programExecutionInst, 15);
-                        }
-                        else{
-                          //$("#stopExecution").hide();
-                          //$("#playExecution").show();
+                        if(execution_index >= 0){
+                          setTimeout(this.program_execution_inst, 15);
                         }
                       },
 
                       //Stop program excution
-                      stopExecution() {
-                        app._data.runExecution = true;
+                      stop_execution() 
+                      {
+                        app._data.run_execution = true;
                       },
                     },
                     
@@ -506,7 +490,7 @@
   }
 
   function button_advanced_mode(){
-    return  '<div class="buttons" v-if="item==\'btn_advanced_mode\'" @click="change_mode">' +
+    return  '<div class="buttons" v-if="item==\'btn_advanced_mode\'" @click="change_advanced_mode">' +
             '  <b-button class="btn btn-outline-secondary btn-block menuGroup btn-sm h-100"' +
             '            id="advanced_mode1" ' +
             '            v-if="app._data.advanced_mode == true">' +
@@ -526,7 +510,7 @@
             '            size="sm" ' +
             '            class="btn btn-block  menuGroup btn-sm p-0" ' +
             '            variant="outline-secondary">' +
-            '  <b-dropdown-item @click="newAssembly">' +
+            '  <b-dropdown-item @click="new_assembly">' +
             '    <span class="fas fa-file"></span> ' +
             '    New' +
             '  </b-dropdown-item>' +
@@ -564,7 +548,7 @@
             '    <span class="fas fa-upload"></span>' +
             '    Load Library' +
             '  </b-dropdown-item>' +
-            '  <b-dropdown-item @click="removeLibrary">' +
+            '  <b-dropdown-item @click="remove_library">' +
             '    <span class="far fa-trash-alt"></span>' +
             '    Remove' +
             '  </b-dropdown-item>' +
@@ -582,7 +566,7 @@
   function button_instruction(){
     return  '<b-button v-if="item==\'btn_instruction\'" accesskey="a" ' +
             '          class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1 text-truncate" ' +
-            '          @click="executeInstruction" id="inst">' +
+            '          @click="execute_instruction" id="inst">' +
             '  <span class="fas fa-fast-forward"></span>' +
             '  Inst.' +
             '</b-button>' +
@@ -592,8 +576,8 @@
   }
 
   function button_run(){
-    return  '<b-button v-if="item==\'btn_run\' && runExecution == false" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
-            '          @click="executeProgram(true)" ' +
+    return  '<b-button v-if="item==\'btn_run\' && run_execution == false" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 mr-1" ' +
+            '          @click="execute_program(true)" ' +
             '          id="playExecution">' +
             '  <span class="fas fa-play"></span>' +
             '  Run' +
@@ -602,8 +586,8 @@
 
   function button_stop(){
     return  '<b-button v-if="item==\'btn_stop\'" class="btn btn-block btn-outline-secondary actionsGroup btn-sm h-100 text-truncate" ' +
-            '          @click="stopExecution" ' +
-            '          id="stopExecution">' +
+            '          @click="stop_execution" ' +
+            '          id="stop_execution">' +
             //'          style="display: none">' +
             '  <span class="fas fa-stop"></span>' +
             '  Stop' +

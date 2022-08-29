@@ -23,45 +23,45 @@
 
   var uielto_about = {
 
-        props:      {
-                      id:                   { type: String,  required: true }
-                    },
+    props:      {
+                  id:                   { type: String,  required: true }
+                },
 
-        template:   ' <b-modal  :id ="id" ' +
-                    '           title="About us" ' +
-                    '           scrollable' +
-                    '           hide-footer>' +
-                    ' ' +
-                    '   <b-card-group>' +
-                    '     <card-author ' +
-                    '       author_img="/creator/images/author_fgarcia.png" ' +
-                    '       author_alt="author_fgarcia" ' +
-                    '       author_full_name="Félix García Carballeira" ' +
-                    '       author_href_linked="https://es.linkedin.com/in/f%C3%A9lix-garc%C3%ADa-carballeira-4ab48a14" ' +
-                    '       author_href_rgate="https://www.researchgate.net/profile/Felix_Garcia-Carballeira" ' +
-                    '       author_href_github="" ' +
-                    '     ></card-author>' +
-                    '' +
-                    '     <card-author ' +
-                    '       author_img="/creator/images/author_acaldero.png" ' +
-                    '       author_alt="author_acaldero" ' +
-                    '       author_full_name="Alejandro Calderón Mateos" ' +
-                    '       author_href_linked="https://www.linkedin.com/in/alejandro-calderon-mateos/" ' +
-                    '       author_href_rgate="https://www.researchgate.net/profile/Alejandro_Calderon2" ' +
-                    '       author_href_github="https://github.com/acaldero/wepsim" ' +
-                    '     ></card-author>' +
-                    '' +
-                    '     <card-author ' +
-                    '       author_img="/creator/images/author_dcamarmas.png" ' +
-                    '       author_alt="author_dcamarmas" ' +
-                    '       author_full_name="Diego Camarmas Alonso" ' +
-                    '       author_href_linked="https://www.linkedin.com/in/dcamarmas" ' +
-                    '       author_href_rgate="https://www.researchgate.net/profile/Diego-Camarmas-Alonso" ' +
-                    '       author_href_github="https://github.com/dcamarmas" ' +
-                    '     ></card-author>' +
-                    '   </b-card-group>' +
-                    ' ' +
-                    ' </b-modal>'
+    template:   ' <b-modal  :id ="id" ' +
+                '           title="About us" ' +
+                '           scrollable' +
+                '           hide-footer>' +
+                ' ' +
+                '   <b-card-group>' +
+                '     <card-author ' +
+                '       author_img="/creator/images/author_fgarcia.png" ' +
+                '       author_alt="author_fgarcia" ' +
+                '       author_full_name="Félix García Carballeira" ' +
+                '       author_href_linked="https://es.linkedin.com/in/f%C3%A9lix-garc%C3%ADa-carballeira-4ab48a14" ' +
+                '       author_href_rgate="https://www.researchgate.net/profile/Felix_Garcia-Carballeira" ' +
+                '       author_href_github="" ' +
+                '     ></card-author>' +
+                '' +
+                '     <card-author ' +
+                '       author_img="/creator/images/author_acaldero.png" ' +
+                '       author_alt="author_acaldero" ' +
+                '       author_full_name="Alejandro Calderón Mateos" ' +
+                '       author_href_linked="https://www.linkedin.com/in/alejandro-calderon-mateos/" ' +
+                '       author_href_rgate="https://www.researchgate.net/profile/Alejandro_Calderon2" ' +
+                '       author_href_github="https://github.com/acaldero/wepsim" ' +
+                '     ></card-author>' +
+                '' +
+                '     <card-author ' +
+                '       author_img="/creator/images/author_dcamarmas.png" ' +
+                '       author_alt="author_dcamarmas" ' +
+                '       author_full_name="Diego Camarmas Alonso" ' +
+                '       author_href_linked="https://www.linkedin.com/in/dcamarmas" ' +
+                '       author_href_rgate="https://www.researchgate.net/profile/Diego-Camarmas-Alonso" ' +
+                '       author_href_github="https://github.com/dcamarmas" ' +
+                '     ></card-author>' +
+                '   </b-card-group>' +
+                ' ' +
+                ' </b-modal>'
   }
 
   Vue.component('uielto-about', uielto_about) ;

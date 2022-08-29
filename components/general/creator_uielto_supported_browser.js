@@ -23,58 +23,60 @@
 
   var uielto_browser = {
 
-        props:      {
-                      id:          { type: String, required: true }
-                    },
+    props:      {
+                  id:          { type: String, required: true }
+                },
 
-        data:       function () {
-                      return {
+    data:       function () {
+                  return {
 
-                      }
-                    },
+                  }
+                },
 
-        methods:    {
+    methods:    {
 
-                    },
+                },
 
-        template:   '<b-modal  :id ="id" title="Browser not supported" hide-footer>' +
-                    '  <span class="h6">You are using an unsupported browser, please use one of the following:</span>' +
-                    '  <br>' +
-                    '  <b-list-group>' +
-                    '    <b-list-group-item class="d-flex justify-content-between align-items-center">' +
-                    '      Google Chrome 70+' +
-                    '      <b-badge pill class="browserBadge">' +
-                    '        <b-img src="./images/chrome.png" ' +
-                    '               class="shadow broserIcon" ' +
-                    '               rounded="circle" ' +
-                    '               fluid alt="Responsive image">' +
-                    '        </b-img>' +
-                    '      </b-badge>' +
-                    '    </b-list-group-item>' +
-                    ' ' +
-                    '    <b-list-group-item class="d-flex justify-content-between align-items-center">' +
-                    '      Mozilla Firefox 60+' +
-                    '      <b-badge pill class="browserBadge">' +
-                    '        <b-img src="./images/firefox.png" ' +
-                    '               class="shadow broserIcon" ' +
-                    '               rounded="circle" ' +
-                    '               fluid alt="Responsive image">' +
-                    '        </b-img>' +
-                    '      </b-badge>' +
-                    '    </b-list-group-item>' +
-                    ' ' +
-                    '    <b-list-group-item class="d-flex justify-content-between align-items-center">' +
-                    '      Apple Safari 12+' +
-                    '      <b-badge pill class="browserBadge">' +
-                    '        <b-img src="./images/safari.png" ' +
-                    '               class="shadow broserIcon" ' +
-                    '               rounded="circle"' +
-                    '               fluid alt="Responsive image">' +
-                    '        </b-img>' +
-                    '      </b-badge>' +
-                    '    </b-list-group-item>' +
-                    '  </b-list-group>' +
-                    '</b-modal>'
+    template:   '<b-modal  :id ="id" title="Browser not supported" hide-footer>' +
+                '  <span class="h6">You are using an unsupported browser, please use one of the following:</span>' +
+                '  <br>' +
+                '  <b-list-group>' +
+                '' +
+                '    <b-list-group-item class="d-flex justify-content-between align-items-center">' +
+                '      Google Chrome 70+' +
+                '      <b-badge pill class="browserBadge">' +
+                '        <b-img src="./images/chrome.png" ' +
+                '               class="shadow broserIcon" ' +
+                '               rounded="circle" ' +
+                '               fluid alt="Responsive image">' +
+                '        </b-img>' +
+                '      </b-badge>' +
+                '    </b-list-group-item>' +
+                ' ' +
+                '    <b-list-group-item class="d-flex justify-content-between align-items-center">' +
+                '      Mozilla Firefox 60+' +
+                '      <b-badge pill class="browserBadge">' +
+                '        <b-img src="./images/firefox.png" ' +
+                '               class="shadow broserIcon" ' +
+                '               rounded="circle" ' +
+                '               fluid alt="Responsive image">' +
+                '        </b-img>' +
+                '      </b-badge>' +
+                '    </b-list-group-item>' +
+                ' ' +
+                '    <b-list-group-item class="d-flex justify-content-between align-items-center">' +
+                '      Apple Safari 12+' +
+                '      <b-badge pill class="browserBadge">' +
+                '        <b-img src="./images/safari.png" ' +
+                '               class="shadow broserIcon" ' +
+                '               rounded="circle"' +
+                '               fluid alt="Responsive image">' +
+                '        </b-img>' +
+                '      </b-badge>' +
+                '    </b-list-group-item>' +
+                '' +
+                '  </b-list-group>' +
+                '</b-modal>'
   }
 
   Vue.component('supported-browser', uielto_browser) ;

@@ -23,34 +23,34 @@
 
   var uielto_toolbar = {
 
-        props:      {
-                      id:                           { type: String,  required: true },
-                      components:                   { type: String,  required: true },
-                      browser:                      { type: String,  required: true }
-                    },
+    props:      {
+                  id:                           { type: String,  required: true },
+                  components:                   { type: String,  required: true },
+                  browser:                      { type: String,  required: true }
+                },
 
-        computed:   {
-                      components_array: function () {
-                                                      return this._props.components.split('|')
-                                                    }
-                    },
+    computed:   {
+                  components_array: function () {
+                                                  return this._props.components.split('|')
+                                                }
+                },
 
-        methods:    {
-                      
-                    },
+    methods:    {
+                  
+                },
 
-        template: '<b-container :id="id" fluid align-h="center" class="menu my-3 mx-0">' +
-                  ' <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">' +
-                  '   <b-cols class="px-2 py-1"' +
-                  '         v-for="(item, index) in components_array">' +
-                  '     <toolbar-btngroup :group="item.split(\',\')"' +
-                  '                       :browser="browser">' +
-                  '     </toolbar-btngroup>' +
-                  ' ' +
-                  '     <div class="w-100 d-block d-sm-none"></div>' +
-                  '   </b-cols>' +
-                  ' </b-row>' +
-                  '</b-container>'
+    template: '<b-container :id="id" fluid align-h="center" class="menu my-3 mx-0">' +
+              ' <b-row cols-xl="4" cols-lg="3" cols-md="3" cols-sm="2" cols-xs="1" cols="1">' +
+              '   <b-cols class="px-2 py-1"' +
+              '           v-for="(item, index) in components_array">' +
+              '     <toolbar-btngroup :group="item.split(\',\')"' +
+              '                       :browser="browser">' +
+              '     </toolbar-btngroup>' +
+              ' ' +
+              '     <div class="w-100 d-block d-sm-none"></div>' +
+              '   </b-cols>' +
+              ' </b-row>' +
+              '</b-container>'
   }
 
   Vue.component('uielto-toolbar', uielto_toolbar) ;

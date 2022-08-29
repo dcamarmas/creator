@@ -22,35 +22,36 @@
   /* jshint esversion: 6 */
 
   var uielto_author = {
-        props:      {
-                       author_img:         { type: String, required: true },
-                       author_alt:         { type: String, required: true },
-                       author_full_name:   { type: String, required: true },
-                       author_href_linked: { type: String, required: false },
-                       author_href_rgate:  { type: String, required: false },
-                       author_href_github: { type: String, required: false }
-                    },
+    
+    props:      {
+                   author_img:         { type: String, required: true },
+                   author_alt:         { type: String, required: true },
+                   author_full_name:   { type: String, required: true },
+                   author_href_linked: { type: String, required: false },
+                   author_href_rgate:  { type: String, required: false },
+                   author_href_github: { type: String, required: false }
+                },
 
-        template:   '  <b-card :img-src="author_img" ' +
-                    '          :img-alt="author_alt" img-top>' +
-                    ' ' +
-                    '    <b-card-text>' +
-                    '      <div class="authorName"><span class="h6">{{ author_full_name }}</span></div>' +
-                    '      <hr>' +
-                    '      <a aria-label="linkedin" target="_blank" :href="author_href_linked">' +
-                    '        <span class="fab fa-linkedin"></span>' + ' linkedin' +
-                    '      </a>' +
-                    '      <hr>' +
-                    '      <a aria-label="r-gate" target="_blank" :href="author_href_rgate">' +
-                    '        <span class="fab fa-researchgate"></span>' + ' r-gate' +
-                    '      </a>' +
-                    '      <hr>' +
-                    '      <a aria-label="github" target="_blank" :href="author_href_github">' +
-                    '        <span class="fab fa-github"></span>' + ' github' +
-                    '      </a>' +
-                    '    </b-card-text>' +
-                    ' ' +
-                    '  </b-card>'
+    template:   '  <b-card :img-src="author_img" ' +
+                '          :img-alt="author_alt" img-top>' +
+                ' ' +
+                '    <b-card-text>' +
+                '      <div class="authorName"><span class="h6">{{ author_full_name }}</span></div>' +
+                '      <hr>' +
+                '      <a aria-label="linkedin" target="_blank" :href="author_href_linked">' +
+                '        <span class="fab fa-linkedin"></span>' + ' linkedin' +
+                '      </a>' +
+                '      <hr>' +
+                '      <a aria-label="r-gate" target="_blank" :href="author_href_rgate">' +
+                '        <span class="fab fa-researchgate"></span>' + ' r-gate' +
+                '      </a>' +
+                '      <hr>' +
+                '      <a aria-label="github" target="_blank" :href="author_href_github">' +
+                '        <span class="fab fa-github"></span>' + ' github' +
+                '      </a>' +
+                '    </b-card-text>' +
+                ' ' +
+                '  </b-card>'
   }
 
   Vue.component('card-author', uielto_author) ;
