@@ -38,30 +38,39 @@
 
     methods:    {
                   //Check de memory layout changes
-                  verify_edit_memory_layout(evt){
+                  verify_edit_memory_layout(evt)
+                  {
                     evt.preventDefault();
 
-                    for(var i = 0; i < this._props.memory_layout.length; i++){
-                      if (!this._props.memory_layout[i]) {
+                    for(var i = 0; i < this._props.memory_layout.length; i++)
+                    {
+                      if (!this._props.memory_layout[i])
+                      {
                         show_notification('Please complete all fields', 'danger') ;
                         return;
                       }
 
-                      if(this._props.memory_layout[i] != "" && this._props.memory_layout[i] != null){
-                        if(!isNaN(parseInt(this._props.memory_layout[i]))){
-                          if (parseInt(this._props.memory_layout[i]) < 0) {
+                      if(this._props.memory_layout[i] != "" && this._props.memory_layout[i] != null)
+                      {
+                        if(!isNaN(parseInt(this._props.memory_layout[i])))
+                        {
+                          if (parseInt(this._props.memory_layout[i]) < 0) 
+                          {
                             show_notification('The value can not be negative', 'danger') ;
                             return;
                           }
                         }
-                        else {
+                        else 
+                        {
                           show_notification('The value must be a number', 'danger') ;
                           return;
                         }
                       }
 
-                      for (var j = i+1; j < this._props.memory_layout.length; j++) {
-                        if (parseInt(this._props.memory_layout[i]) >= parseInt(this._props.memory_layout[j])) {
+                      for (var j = i+1; j < this._props.memory_layout.length; j++)
+                      {
+                        if (parseInt(this._props.memory_layout[i]) >= parseInt(this._props.memory_layout[j]))
+                        {
                           show_notification('The segment can not be overlap', 'danger') ;
                           return;
                         }
@@ -72,7 +81,8 @@
                   },
 
                   //Edit memory layout
-                  edit_memory_layout(){
+                  edit_memory_layout()
+                  {
                     this.show_modal = false;
 
                     for(var i = 0; i < this._props.memory_layout.length; i++){
@@ -87,8 +97,10 @@
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

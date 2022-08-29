@@ -47,7 +47,8 @@
 
     methods:    {
                   //Verify all fields of modify architecture field
-                  verify_edit_arch_field(evt, index){
+                  verify_edit_arch_field(evt, index)
+                  {
                     evt.preventDefault();
                     if (!this._props.arch_field_value) {
                       show_notification('Please complete the fields', 'danger') ;
@@ -58,7 +59,8 @@
                   },
 
                   //Edit architecture field
-                  edit_arch_field(index){ 
+                  edit_arch_field(index)
+                  { 
                     this.show_modal = false;
 
                     architecture.arch_conf[index].value = this._props.arch_field_value;
@@ -71,7 +73,8 @@
                   },
 
                   //Form validator
-                  valid(value){
+                  valid(value)
+                  {
                     if(parseInt(value) != 0){
                       if(!value){
                         return false;

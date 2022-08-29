@@ -36,18 +36,22 @@
 
     methods:    {
                   //Show edit architecture field modal
-                  edit_arch_field_modal(field, index, button){
+                  edit_arch_field_modal(field, index, button)
+                  {
                     app._data.modal_edit_arch_field.title = "Edit " + field; 
                     app._data.modal_edit_arch_field.field = field; 
                     app._data.modal_edit_arch_field.value = this._props.arch_conf[index].value; 
                     app._data.modal_edit_arch_field.index = index; 
+
                     this.$root.$emit('bv::show::modal', 'edit_arch_field', button);
                   },
 
                   //Show reset architecture field modal
-                  reset_arch_field_modal(field, index, button){
+                  reset_arch_field_modal(field, index, button)
+                  {
                     app._data.modal_reset_arch_field.title = "Reset " + field; 
                     app._data.modal_reset_arch_field.index = index; 
+                    
                     this.$root.$emit('bv::show::modal', 'reset_arch_field', button);
                   }
                   

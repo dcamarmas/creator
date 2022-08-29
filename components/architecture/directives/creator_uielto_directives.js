@@ -36,7 +36,8 @@
 
     methods:    {
                   //Show edit directive modal
-                  edit_directive_modal(name, index, button){
+                  edit_directive_modal(name, index, button)
+                  {
                     app._data.modal_edit_directive.title = "Edit " + name;
                     app._data.modal_edit_directive.index = index;
                     app._data.modal_edit_directive.directive = Object.assign({}, architecture.directives[index]);
@@ -45,7 +46,8 @@
                   },
                   
                   //Show delete directive modal
-                  delete_directive_modal(name, index, button){
+                  delete_directive_modal(name, index, button)
+                  {
                     app._data.modal_delete_directive.title = "Delete " + name;
                     app._data.modal_delete_directive.index = index;
 

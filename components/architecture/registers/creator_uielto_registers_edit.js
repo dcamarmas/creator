@@ -48,7 +48,8 @@
 
     methods:    {
                   //Check all field of modified register
-                  edit_register_verify(evt){
+                  edit_register_verify(evt)
+                  {
                     evt.preventDefault();
 
                     if (this._props.register.name.length == 0 || !this._props.register.name || !(this._props.register.default_value).toString()) {
@@ -57,10 +58,14 @@
                     else if(isNaN((this._props.register.default_value).toString())){
                       show_notification('The default value must be a number', 'danger') ;
                     }
-                    else {
-                      for (var i = 0; i < architecture_hash.length; i++){
-                        for (var j = 0; j < architecture.components[i].elements.length; j++){
-                          for (var z = 0; z < this._props.register.name.length; z++){
+                    else 
+                    {
+                      for (var i = 0; i < architecture_hash.length; i++)
+                      {
+                        for (var j = 0; j < architecture.components[i].elements.length; j++)
+                        {
+                          for (var z = 0; z < this._props.register.name.length; z++)
+                          {
                             if ((architecture.components[i].elements[j].name.includes(this._props.register.name[z]) != false) && (this._props.register_file_index != i || this._props.register_index != j)){
                                 show_notification('The element already exists', 'danger') ;
                                 return;
@@ -74,7 +79,8 @@
                   },
 
                   //Modify register
-                  edit_register(){
+                  edit_register()
+                  {
                     this.show_modal = false;
 
                     //Modify the register into the register file
@@ -82,17 +88,21 @@
                     if(architecture.components[this._props.register_file_index].type == "control" || architecture.components[this._props.register_file_index].type == "integer"){
                       architecture.components[this._props.register_file_index].elements[this._props.register_index].default_value = bi_intToBigInt(this._props.register.default_value,10) ;
                     }
-                    else{
+                    else
+                    {
                       if(architecture.components[this._props.register_file_index].double_precision == false){
                         architecture.components[this._props.register_file_index].elements[this._props.register_index].default_value = parseFloat(this._props.register.default_value, 10);
                       }
-                      else{
+                      else
+                      {
                         var aux_value;
                         var aux_sim1;
                         var aux_sim2;
 
-                        for (var a = 0; a < architecture_hash.length; a++) {
-                          for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                        for (var a = 0; a < architecture_hash.length; a++) 
+                        {
+                          for (var b = 0; b < architecture.components[a].elements.length; b++) 
+                          {
                             if(architecture.components[a].elements[b].name == this._props.register.simple_reg[0]){
                               aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].value));
                             }
@@ -117,8 +127,10 @@
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }
@@ -144,7 +156,8 @@
                   },
 
                   //Convert hexadecimal number to double floating point number
-                  hex2double ( hexvalue ){
+                  hex2double ( hexvalue )
+                  {
                       return hex2double(hexvalue) ;
                   },
                 },

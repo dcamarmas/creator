@@ -81,46 +81,58 @@
 
     methods:    {
                   //Check all fields of new instruction
-                  new_instructions_verify(evt){
+                  new_instructions_verify(evt)
+                  {
                     evt.preventDefault();
                     var empty = 0;
 
                     //Verify CO
                     if (typeof(this.instruction.co) !== 'object')
                     {
-                      for (var i = 0; i < this.instruction.co.length; i++){
-                        if (this.instruction.co.charAt(i) != "0" && this.instruction.co.charAt(i) != "1"){
+                      for (var i = 0; i < this.instruction.co.length; i++)
+                      {
+                        if (this.instruction.co.charAt(i) != "0" && this.instruction.co.charAt(i) != "1")
+                        {
                           show_notification('The value of co must be binary', 'danger') ;
                           return;
                         }
                       }
                     }
-                    else {
-                        for (let val in this.instruction.co) {
-                          if (!/^[01]+$/.test(val)) {
-                            show_notification('The value of co must be binary', 'danger') ;
-                            return;
-                          }
+                    else
+                    {
+                      for (let val in this.instruction.co)
+                      {
+                        if (!/^[01]+$/.test(val))
+                        {
+                          show_notification('The value of co must be binary', 'danger') ;
+                          return;
                         }
+                      }
                     }
 
                     //Verify COP
                     var aux_cop = "";
 
-                    for (var i = 1; i < this.number_fields; i++){
-                      if (this.instruction.fields[i].type == 'cop'){
-                        if (!this.instruction.fields[i].valueField){
+                    for (var i = 1; i < this.number_fields; i++)
+                    {
+                      if (this.instruction.fields[i].type == 'cop')
+                      {
+                        if (!this.instruction.fields[i].valueField)
+                        {
                           empty = 1;
                         }
-                        else {
+                        else 
+                        {
                           if ((this.instruction.fields[i].valueField).length != (this.instruction.fields[i].startbit - this.instruction.fields[i].stopbit + 1))
                           {
                             show_notification('The length of cop should be ' + (this.instruction.fields[i].startbit - this.instruction.fields[i].stopbit + 1) + ' binary numbers', 'danger') ;
                             return;
                           }
 
-                          for (var j = 0; j < (this.instruction.fields[i].valueField).length; j++){
-                            if (this.instruction.fields[i].valueField.charAt(j) != "0" && this.instruction.fields[i].valueField.charAt(j) != "1"){
+                          for (var j = 0; j < (this.instruction.fields[i].valueField).length; j++)
+                          {
+                            if (this.instruction.fields[i].valueField.charAt(j) != "0" && this.instruction.fields[i].valueField.charAt(j) != "1")
+                            {
                               show_notification('The value of cop must be binary', 'danger') ;
                               return;
                             }
@@ -133,21 +145,26 @@
                     this.instruction.cop = aux_cop;
 
                     //Verify instruction fields
-                    for (var i = 0; i < this.number_fields; i++){
-                      for (var j = i + 1; j < this.number_fields; j++){
-                        if (this.instruction.fields[i].name == this.instruction.fields[j].name){
+                    for (var i = 0; i < this.number_fields; i++)
+                    {
+                      for (var j = i + 1; j < this.number_fields; j++)
+                      {
+                        if (this.instruction.fields[i].name == this.instruction.fields[j].name)
+                        {
                           show_notification('Field name repeated', 'danger') ;
                           return;
                         }
                       }
 
-                      if(!this.instruction.fields[i].name || !this.instruction.fields[i].type || (!this.instruction.fields[i].startbit && this.instruction.fields[i].startbit != 0) || (!this.instruction.fields[i].stopbit && this.instruction.fields[i].stopbit != 0)){
+                      if(!this.instruction.fields[i].name || !this.instruction.fields[i].type || (!this.instruction.fields[i].startbit && this.instruction.fields[i].startbit != 0) || (!this.instruction.fields[i].stopbit && this.instruction.fields[i].stopbit != 0))
+                      {
                         empty = 1;
                       }
                     }
 
                     //Verify empty fields
-                    if (!this.instruction.name || !this.instruction.type || !this.instruction.co || !this.instruction.nwords || !this.number_fields || !this.instruction.signature_definition || !this.instruction.definition || empty == 1) {
+                    if (!this.instruction.name || !this.instruction.type || !this.instruction.co || !this.instruction.nwords || !this.number_fields || !this.instruction.signature_definition || !this.instruction.definition || empty == 1)
+                    {
                       show_notification('Please complete all fields', 'danger') ;
                       return;
                     }
@@ -176,15 +193,18 @@
                     else {
                       //Verify repeat instruction
                       var ex_cop = false;
-                      for (var i = 1; i < this.number_fields; i++){
+                      for (var i = 1; i < this.number_fields; i++)
+                      {
                         if (this.instruction.fields[i].type == 'cop'){
                           ex_cop = true;
                         }
                       }
 
                       for (var i = 0; i < architecture.instructions.length; i++){
-                        if ((this.instruction.co == architecture.instructions[i].co) && (i!= this.index) && (ex_cop == false)){
-                          if (((!this.instruction.cop) || (ex_cop != true))){
+                        if ((this.instruction.co == architecture.instructions[i].co) && (i!= this.index) && (ex_cop == false))
+                        {
+                          if (((!this.instruction.cop) || (ex_cop != true)))
+                          {
                             show_notification('The instruction already exists', 'danger') ;
                             return;
                           }
@@ -193,8 +213,10 @@
 
                       let aux_cop = (() => this.instruction.co instanceof Array ? this.formInstrucion.co.join("") : this.instruction.co)() + this.instruction.cop;
 
-                      for (var i = 0; i < architecture.instructions.length && ex_cop == true ; i++){
-                        if ((aux_cop == architecture.instructions[i].cop) && (!aux_cop == false) && (i != this.index)){
+                      for (var i = 0; i < architecture.instructions.length && ex_cop == true ; i++)
+                      {
+                        if ((aux_cop == architecture.instructions[i].cop) && (!aux_cop == false) && (i != this.index))
+                        {
                           show_notification('The instruction already exists', 'danger') ;
                           return;
                         }
@@ -206,7 +228,8 @@
 
                   
                   //Create a new instruction
-                  new_instruction(ex_cop){
+                  new_instruction(ex_cop)
+                  {
                     this.show_modal = false;
 
                     //Generate new signature
@@ -241,9 +264,10 @@
                     architecture.instructions.push(new_instruction);
 
                     //Add the new instruction fields and separated
-                    for (var i = 0; i < this.number_fields; i++){
+                    for (var i = 0; i < this.number_fields; i++)
+                    {
                       //Separated
-                      if (typeof(this.instruction.fields[i].startbit) === 'object') {
+                      if (typeof(this.instruction.fields[i].startbit) === 'object'){
                         this.instruction.separated[i] = true;
                       }
                       else{
@@ -263,7 +287,8 @@
                   },
 
                   //Verify new number of fields
-                  change_number_fields(){
+                  change_number_fields()
+                  {
                     //Top limit
                     if(this.number_fields > (this.instruction.nwords * 32)){
                       this.number_fields = (this.instruction.nwords * 32);
@@ -275,16 +300,19 @@
                     }
 
                     //Add fields
-                    if(this.number_fields > this.instruction.fields.length){
+                    if(this.number_fields > this.instruction.fields.length)
+                    {
                       var diff = this.number_fields - this.instruction.fields.length;
-                      for (var i = 0; i < diff; i++) {
+                      for (var i = 0; i < diff; i++)
+                      {
                         var new_field = {name: '', type: '', startbit: '', stopbit: '', valueField: ''};
                         this.instruction.fields.push(new_field);
                       }
                     }
 
                     //Delete fields
-                    if(this.number_fields < this.instruction.fields.length){
+                    if(this.number_fields < this.instruction.fields.length)
+                    {
                       var diff = this.instruction.fields.length - this.number_fields;
                       for (var i = 0; i < diff; i++) {
                         this.instruction.fields.splice(-1,1);
@@ -310,7 +338,8 @@
                     re = new RegExp(" +", "g");
                     signature = signature.replace(re, " ");
 
-                    for (var i = 0; i < this.number_fields; i++){
+                    for (var i = 0; i < this.number_fields; i++)
+                    {
                       re = new RegExp("[Ff]"+i, "g");
 
                       if(i == 0){
@@ -333,7 +362,8 @@
                     re = new RegExp(" +", "g");
                     signatureRaw = signatureRaw.replace(re, " ");
 
-                    for (var i = 0; i < this.number_fields; i++){
+                    for (var i = 0; i < this.number_fields; i++)
+                    {
                       re = new RegExp("[Ff]"+i, "g");
                       signatureRaw = signatureRaw.replace(re, this.instruction.fields[i].name);
                     }
@@ -343,36 +373,46 @@
                   },
 
                   //Change to separate field
-                  change_to_separate_field(val, pos) {
-                    if (val) {
+                  change_to_separate_field(val, pos)
+                  {
+                    if (val)
+                    {
                       this.instruction.fields[pos].startbit = [0];
                       this.instruction.fields[pos].stopbit = [0];
-                      if (this.instruction.fields[pos].type == 'co'){
+                      if (this.instruction.fields[pos].type == 'co')
+                      {
                         this.instruction.co = ['0'];
                       }
-                    } else {
+                    } 
+                    else
+                    {
                       this.instruction.fields[pos].startbit = 0;
                       this.instruction.fields[pos].stopbit = 0;
-                      if (this.instruction.fields[pos].type == 'co'){
+                      if (this.instruction.fields[pos].type == 'co')
+                      {
                         this.instruction.co = '0';
                       }
                     }
                   },
 
                   //Add new separate value
-                  add_separate_values(pos) {
+                  add_separate_values(pos)
+                  {
                     this.instruction.fields[pos].startbit.push(0);
                     this.instruction.fields[pos].stopbit.push(0);
-                    if (this.instruction.fields[pos].type == 'co'){
+                    if (this.instruction.fields[pos].type == 'co')
+                    {
                       this.instruction.co.push('0');
                     }
                   },
 
                   //Less new separate value
-                  less_separate_values(pos) {
+                  less_separate_values(pos)
+                  {
                     this.instruction.fields[pos].startbit.pop();
                     this.instruction.fields[pos].stopbit.pop();
-                    if (this.instruction.fields[pos].type == 'co'){
+                    if (this.instruction.fields[pos].type == 'co')
+                    {
                       this.instruction.co.pop();
                     }
                   },
@@ -383,16 +423,19 @@
                   /*******************/
 
                   //Pagination bar names
-                  link_generator (pageNum) {
+                  link_generator (pageNum)
+                  {
                     return this.instruction_page_link[pageNum - 1]
                   },
 
-                  page_generator (pageNum) {
+                  page_generator (pageNum)
+                  {
                     return this.instruction_page_link[pageNum - 1].slice(1)
                   },
 
                   //Clean instruction form
-                  clean_form(){
+                  clean_form()
+                  {
                     this.instruction_page = 1;
 
                     //Instruction
@@ -416,8 +459,10 @@
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

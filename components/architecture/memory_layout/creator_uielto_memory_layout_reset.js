@@ -36,11 +36,13 @@
 
     methods:    {
                   //Reset the memory layout
-                  reset_memory_layout(arch){
+                  reset_memory_layout(arch)
+                  {
                     show_loading();
 
                     //Read original value from JSON
-                    for (var i = 0; i < load_architectures.length; i++){
+                    for (var i = 0; i < load_architectures.length; i++)
+                    {
                       if(arch == load_architectures[i].id){
                         var aux_arch = JSON.parse(load_architectures[i].architecture);
                         var aux_architecture = register_value_deserialize(aux_arch);

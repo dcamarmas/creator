@@ -51,23 +51,30 @@
 
     methods:    {
                   //Verify all field of new register
-                  new_register_verify(evt){
+                  new_register_verify(evt)
+                  {
                     evt.preventDefault();
                     
-                    if (this.register.name.length == 0 || !this.register.name){
+                    if (this.register.name.length == 0 || !this.register.name)
+                    {
                          show_notification('Please complete all fields', 'danger') ;
                     }
-                    else{
+                    else
+                    {
                       if (!this.register.default_value && this._props.double_precision == false){
                          show_notification('Please complete all fields', 'danger') ;
                       }
                       else if(isNaN(this.register.default_value)){
                          show_notification('The default value must be a number', 'danger') ;
                       }
-                      else{
-                        for (var i = 0; i < architecture_hash.length; i++){
-                          for (var j = 0; j < architecture.components[i].elements.length; j++){
-                            for (var z = 0; z < this.register.name.length; z++){
+                      else
+                      {
+                        for (var i = 0; i < architecture_hash.length; i++)
+                        {
+                          for (var j = 0; j < architecture.components[i].elements.length; j++)
+                          {
+                            for (var z = 0; z < this.register.name.length; z++)
+                            {
                               if ((architecture.components[i].elements[j].name.includes(this.register.name[z]) != false)){
                                   show_notification('The element already exists', 'danger') ;
                                   return;
@@ -82,30 +89,37 @@
                   },
 
                   //Create a new element
-                  new_register(){
+                  new_register()
+                  {
                     this.show_modal = false;
 
                     //Add the new register into the register file
-                    if(this._props.type == "integer"){
+                    if(this._props.type == "integer")
+                    {
                       var new_element = {name:this.register.name, nbits: parseInt(architecture.arch_conf[1].value), value: bi_intToBigInt(this.register.default_value,10), default_value:bi_intToBigInt(this.register.default_value,10), properties: this.register.properties};
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if(this._props.type == "control"){
+                    if(this._props.type == "control")
+                    {
                       var new_element = {name:this.register.name, nbits: parseInt(architecture.arch_conf[1].value), value: bi_intToBigInt(this.register.default_value,10), default_value:bi_intToBigInt(this.register.default_value,10), properties: ["read", "write"]};
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "floating point")&&(this._props.double_precision == false)){
+                    if((this._props.type == "floating point")&&(this._props.double_precision == false))
+                    {
                       var new_element = {name:this.register.name, nbits: parseInt(architecture.arch_conf[1].value), value: parseFloat(this.register.default_value), default_value:parseFloat(this.register.default_value), properties: this.register.properties};
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    if((this._props.type == "floating point")&&(this._props.double_precision == true)){
+                    if((this._props.type == "floating point")&&(this._props.double_precision == true))
+                    {
                       var aux_new;
                       var aux_value;
                       var aux_sim_1;
                       var aux_sim_2;
 
-                      for (var a = 0; a < architecture_hash.length; a++){ //TODO: improve the search
-                        for (var b = 0; b < architecture.components[a].elements.length; b++) {
+                      for (var a = 0; a < architecture_hash.length; a++)
+                      { //TODO: improve the search
+                        for (var b = 0; b < architecture.components[a].elements.length; b++)
+                        {
                           if(architecture.components[a].elements[b].name == this.register.simple1){
                             aux_sim_1 = bin2hex(float2bin(architecture.components[a].elements[b].default_value));
                           }
@@ -125,7 +139,8 @@
                   },
 
                   //Clean register file form
-                  clean_form(){
+                  clean_form()
+                  {
                     this.register.name = '';
                     this.register.id = '';
                     this.register.type = '';
@@ -152,8 +167,10 @@
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }

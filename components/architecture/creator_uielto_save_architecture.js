@@ -36,7 +36,8 @@
 
     methods:    {
                   //Download the architecture
-                  arch_save(){
+                  arch_save()
+                  {
                     //Generate architecture JSON
                     var aux_object = jQuery.extend(true, {}, architecture);
                     var aux_architecture = register_value_serialize(aux_object);
