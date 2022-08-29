@@ -96,7 +96,8 @@
                       },
 
                       //Create a new pseudoinstruction
-                      new_pseudoinstruction(){
+                      new_pseudoinstruction()
+                      {
                         this.show_modal = false;
 
                         //Generate new signature
@@ -132,10 +133,13 @@
 
                           architecture.pseudoinstructions[architecture.pseudoinstructions.length-1].fields.push(new_field);
                         }
+
+                        show_notification('Pseudoinstruction correctly created', 'success') ;
                       },
 
                       //Verify the pseudoinstruction definition
-                      pseudoinstruction_definition_validator(name, definition, fields){ ///TODO: improve like new compiler
+                      pseudoinstruction_definition_validator(name, definition, fields) //TODO: improve like new compiler
+                      {
 
                         //Clean definition
                         var re = new RegExp("^\n+");
@@ -304,11 +308,6 @@
                                           show_notification("Immediate number " + instruction_parts[z] + " is not valid", 'danger') ;
                                           return -1;
                                         }
-
-                                        /*if((aux_num.toString(2)).length > field_length){
-                                          show_notification("Immediate number " + instruction_parts[z] + " is too big", 'danger') ;
-                                          return -1;
-                                        }*/
 
                                         var num_positive = Math.pow(2, field_length-1);
                                         var num_negative = num_positive * (-1);

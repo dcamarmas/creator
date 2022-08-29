@@ -135,7 +135,8 @@
                       var new_element = {name:this.register.name, nbits: parseInt(architecture.arch_conf[1].value)*2, value: aux_new, properties: this.register.properties};
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
-                    
+
+                    show_notification('Register correctly created', 'success') ;
                   },
 
                   //Clean register file form

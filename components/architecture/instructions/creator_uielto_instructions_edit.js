@@ -243,18 +243,24 @@
                         architecture.instructions[this._props.index].fields[j].name = this._props.instruction.fields[j].name;
                         architecture.instructions[this._props.index].fields[j].type = this._props.instruction.fields[j].type;
                         architecture.instructions[this._props.index].fields[j].valueField = this._props.instruction.fields[j].valueField;
-
-                        if (!architecture.instructions[this._props.index].separated)
-                        {
-                          architecture.instructions[this._props.index].fields[j].startbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].startbit) : this._props.instruction.fields[j].startbit.map(val => parseInt(val));
-                          architecture.instructions[this._props.index].fields[j].stopbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].stopbit): this._props.instruction.fields[j].stopbit.map(val => parseInt(val));
-                          architecture.instructions[this._props.index].separated[j] = this._props.instruction.separated[j];
-                        }
                       }
                       else
                       {
-                        var new_field = {name: this._props.instruction.fields[j].name, type: this._props.instruction.fields[j].type, startbit: this._props.instruction.fields[j].startbit, stopbit: this._props.instruction.fields[j].stopbit, valueField: this._props.instruction.fields[j].valueField};
+                        var new_field = {
+                                          name: this._props.instruction.fields[j].name, 
+                                          type: this._props.instruction.fields[j].type, 
+                                          startbit: this._props.instruction.fields[j].startbit, 
+                                          stopbit: this._props.instruction.fields[j].stopbit, 
+                                          valueField: this._props.instruction.fields[j].valueField
+                                        };
                         architecture.instructions[this._props.index].fields.push(new_field);
+                      }
+
+                      if (!architecture.instructions[this._props.index].separated)
+                      {
+                        architecture.instructions[this._props.index].fields[j].startbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].startbit) : this._props.instruction.fields[j].startbit.map(val => parseInt(val));
+                        architecture.instructions[this._props.index].fields[j].stopbit = !this._props.instruction.separated[j] ? parseInt(this._props.instruction.fields[j].stopbit): this._props.instruction.fields[j].stopbit.map(val => parseInt(val));
+                        architecture.instructions[this._props.index].separated[j] = this._props.instruction.separated[j];
                       }
                     }
 
