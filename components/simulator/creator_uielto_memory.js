@@ -47,9 +47,9 @@
                    
             },
 
-  template: ' <b-container fluid align-h="center" class="mx-0 px-0">' +
+  template: ' <b-container fluid align-h="center" class="mx-0 px-2">' +
             '   <b-row cols="1" >' +
-            '     <b-col align-h="center" class="px-0">' +
+            '     <b-col align-h="center" class="px-2">' +
             '       <b-form-group label="Main memory segment:" v-slot="{ ariaDescribedby }" >' +
             '         <b-form-radio-group' +
             '           id="btn-radios-1"' +

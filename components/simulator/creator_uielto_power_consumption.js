@@ -21,32 +21,33 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_stats = {
+  var uielto_power_consumption = {
 
   props:      {
-                stats:       { type: Array,  required: true },
-                stats_value: { type: Number, required: true }
+                power_consumption:       { type: Array,  required: true },
+                power_consumption_value: { type: Number, required: true },
+                total_power_consumption: { type: Number, required: true },
               },
 
   data:       function () {
     return {
-      stat_representation: 'graphic',
-      stat_representation_options:  [
-                                      { text: 'Graphic', value: 'graphic' },
-                                      { text: 'Table', value: 'table' }
-                                    ]
+      power_consumption_representation: 'graphic',
+      power_consumption_representation_options: [
+                                                  { text: 'Graphic', value: 'graphic' },
+                                                  { text: 'Table',   value: 'table' }
+                                                ]
     }
   },
 
   template:   ' <b-container fluid align-h="center" class="mx-0 px-2">' +
               '   <b-row cols="1" >' +
               '     <b-col align-h="center" class="px-0">' +
-              '       <b-form-group label="Stats view:" v-slot="{ ariaDescribedby }">' +
+              '       <b-form-group label="Power consumption view:" v-slot="{ ariaDescribedby }">' +
               '         <b-form-radio-group' +
               '           id="btn-radios-1"' +
               '           class="w-50"' +
-              '           v-model="stat_representation"' +
-              '           :options="stat_representation_options"' +
+              '           v-model="power_consumption_representation"' +
+              '           :options="power_consumption_representation_options"' +
               '           button-variant="outline-secondary"' +
               '           size="sm"' +
               '           :aria-describedby="ariaDescribedby"' +
@@ -54,14 +55,18 @@
               '           buttons' +
               '         ></b-form-radio-group>' +
               '       </b-form-group>' +
-              ' ' +
-              '       <plot-stats :stats_value="stats_value" v-if="stat_representation == \'graphic\'"></plot-stats>  ' +
-              '       <table-stats :stats="stats" v-if="stat_representation == \'table\'"></table-stats> ' +
-              ' ' +
+              '' +
+              '       <b-list-group class="align-items-center py-2 px-4">' +
+              '         <b-list-group-item>Total power consumption: {{total_power_consumption}}</b-list-group-item>' +
+              '       </b-list-group>' +
+              '' +
+              '       <plot-power-consumption  :power_consumption_value="power_consumption_value" v-if="power_consumption_representation == \'graphic\'"></plot-power-consumption>  ' +
+              '       <table-power-consumption :power_consumption="power_consumption" v-if="power_consumption_representation == \'table\'"></table-power-consumption> ' +
+              '' +
               '     </b-col>' +
               '   </b-row>' +
               ' </b-container>'
 
   }
 
-  Vue.component('stats', uielto_stats) ;
+  Vue.component('power-consumption', uielto_power_consumption) ;

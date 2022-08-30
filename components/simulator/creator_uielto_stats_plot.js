@@ -99,9 +99,8 @@
                 }
               },
 
-  template:   ' <div id="chart" class="stats px-0">' +
+  template:   ' <div id="stat_plot" class="stats px-0">' +
               '   <apexchart id="graphic" ' +
-              '              ref="chart" ' +
               '              type="donut" ' +
               '              :options="chartOptions" ' +
               '              :series="stats_value" ' +

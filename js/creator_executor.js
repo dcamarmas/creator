@@ -367,6 +367,9 @@ function execute_instruction ( )
     // Refresh stats
     stats_update(type) ;
 
+    // Refresh power consumption
+    power_consumtion_update(type) ;
+
     // Execution error
     if (execution_index == -1){
        error = 1;
@@ -463,7 +466,10 @@ function reset ()
   execution_init = 1;
 
   // Reset stats
-    stats_reset() ;
+  stats_reset();
+
+  //Power consumption reset
+  power_consumtion_reset();
 
   // Reset console
   mutex_read    = false ;
@@ -666,6 +672,49 @@ function stats_reset ( )
 
     stats[i].number_instructions = 0;
     stats_value[i] = 0;
+  }
+}
+
+
+/*
+ * Power consumption
+ */
+
+function power_consumtion_update ( type )
+{
+  for (var i = 0; i < power_consumption.length; i++)
+  {
+    if (type == power_consumption[i].type)
+    {
+      power_consumption[i].power_consumption++;
+      power_consumption_value[0].data[i] ++;
+
+      total_power_consumption++;
+      if (typeof app !== "undefined") {
+        app._data.total_power_consumption++;
+      }
+    }
+  }
+
+  //Power Consumptiom
+  for (var i = 0; i < stats.length; i++){
+    power_consumption[i].percentage = ((power_consumption[i].power_consumption/total_power_consumption)*100).toFixed(2);
+  }
+}
+
+function power_consumtion_reset ( )
+{
+  total_power_consumption = 0 ;
+  if (typeof app !== "undefined") {
+    app._data.total_power_consumption = 0 ;
+  }
+
+  for (var i = 0; i < power_consumption.length; i++)
+  {
+    power_consumption[i].percentage = 0;
+
+    power_consumption[i].number_instructions = 0;
+    power_consumption_value[0].data[i] = 0;
   }
 }
 
