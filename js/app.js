@@ -63,7 +63,7 @@ try
       browser: "",
 
       //Displayed notifications
-      notifications: notifications, //TODO: copy?
+      notifications: notifications, //TODO: copy or only in app?
 
 
       //
@@ -259,7 +259,6 @@ try
 
       example_set_available: example_set_available,
       example_available: example_available,
-      //example_loaded: null, //TODO
 
       //
       //Code error modal

@@ -87,9 +87,19 @@ function main_memory_packs_forav ( addr, value )
 
 function main_memory_datatypes_packs_foravt ( addr, value, type, size )
 {
-        return { address: addr,
-                 value: value, default: "00",
-                 type: type,   size: size } ;
+  var default_value = "00"
+
+  if (typeof(main_memory_datatypes[addr]) !== 'undefined')
+  {
+    default_value = main_memory_datatypes[addr].default_value;
+  }
+
+  return { address: addr,
+           value: value, 
+           default: default_value,
+           type: type,
+           size: size 
+         } ;
 }
 
 // reset (set to defaults) and clear (remove all values)
