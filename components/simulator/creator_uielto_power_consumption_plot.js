@@ -21,7 +21,7 @@
 
   /* jshint esversion: 6 */
 
-  var uielto_stats_plot = {
+  var uielto_power_consumption_plot = {
 
   /*Import Graph component*/
   components: {
@@ -29,13 +29,13 @@
   },
 
   props:      {
-                stats_value: { type: Number, required: true }
+                power_consumption_value: { type: Number, required: true }
               },
               
   data:       function () {
                 return {
                   
-                  /*Stats Graph configure*/
+                  /*power_consumption Graph configure*/
                   chartOptions: {
                     colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
                     chart: {
@@ -99,15 +99,15 @@
                 }
               },
 
-  template:   ' <div id="stat_plot" class="stats px-0">' +
+  template:   ' <div id="power_consumption_plot" class="stats px-0">' +
               '   <apexchart id="graphic" ' +
               '              type="donut" ' +
               '              :options="chartOptions" ' +
-              '              :series="stats_value" ' +
+              '              :series="power_consumption_value" ' +
               '              height="150%" >' +
               '   </apexchart>' +
               ' </div>'
 
   }
 
-  Vue.component('plot-stats', uielto_stats_plot) ;
+  Vue.component('plot-power-consumption', uielto_power_consumption_plot) ;

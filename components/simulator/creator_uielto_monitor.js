@@ -27,7 +27,7 @@
                 display:  { type: String, required: true }
               },
 
-template:     ' <b-container fluid align-h="start">' +
+template:     ' <b-container fluid align-h="start" class="mx-0 px-0">' +
               '   <b-row cols="2" align-h="start">' +
               '     <b-col cols="1">' +
               '       <span class="fas fa-desktop fa-2x mb-2 consoleIcon"></span>' +

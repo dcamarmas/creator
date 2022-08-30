@@ -38,7 +38,8 @@
 
                   register_variant: "secondary",
                   memory_pressed: false,
-                  stat_pressed: false
+                  stat_pressed: false,
+                  power_consumption_pressed: false
                 }
               },
 
@@ -74,6 +75,7 @@
                     this.register_variant                      = "secondary";
                     this.memory_pressed                        = false;
                     this.stat_pressed                          = false;
+                    this.power_consumption_pressed             = false;
                   }
 
                   if(e == "memory"){
@@ -83,6 +85,7 @@
                     this.register_variant                      = "outline-secondary";
                     this.memory_pressed                        = true;
                     this.stat_pressed                          = false;
+                    this.power_consumption_pressed             = false;
                   }
 
                   if(e == "stats"){
@@ -92,6 +95,17 @@
                     this.register_variant                      = "outline-secondary";
                     this.memory_pressed                        = false;
                     this.stat_pressed                          = true;
+                    this.power_consumption_pressed             = false;
+                  }
+
+                  if(e == "power_consumption"){
+                    //Change button backgroun
+                    this.reg_representation_options[0].pressed = false;
+                    this.reg_representation_options[1].pressed = false;
+                    this.register_variant                      = "outline-secondary";
+                    this.memory_pressed                        = false;
+                    this.stat_pressed                          = false;
+                    this.power_consumption_pressed             = true;
                   }
 
                   /* Google Analytics */
@@ -103,7 +117,7 @@
 
               },
 
-  template:   '<b-container fluid align-h="center" class="mx-0 px-0">' +
+  template:   '<b-container fluid align-h="center" class="mx-0 px-2">' +
               '  <b-row cols="1" >' +
               '' +
               '    <b-col class="px-1">' +
@@ -146,6 +160,15 @@
               '                  @click="change_data_view(\'stats\', \'\')">' +
               '          <span class=" fas fa-chart-bar"></span>' +
               '          Stats' +
+              '        </b-button>' +
+              '' +
+              '        <b-button id="stats_btn"' +
+              '                  size="sm"' +
+              '                  :pressed.sync="power_consumption_pressed"' +
+              '                  variant="outline-secondary"' +
+              '                  @click="change_data_view(\'power_consumption\', \'\')">' +
+              '          <span class=" fas fa-bolt"></span>' +
+              '          Power Consumption' +
               '        </b-button>' +
               '        ' +
               '      </b-button-group>' +

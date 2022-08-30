@@ -626,12 +626,17 @@
 
 
                     <!-- Stats view--->
-                    <stats  id="stats" 
-                            :data_mode="data_mode" 
-                            :stats="stats" 
+                    <stats  :stats="stats" 
                             :stats_value="stats_value"
                             v-if="data_mode == 'stats'">  
                     </stats>
+
+
+                    <!-- Power Consumption view--->
+                    <power-consumption  :power_consumption="power_consumption" 
+                                        :power_consumption_value="power_consumption_value"
+                                        v-if="data_mode == 'power_consumption'">  
+                    </power-consumption>
 
                   </b-col>
 
