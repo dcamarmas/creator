@@ -30,153 +30,40 @@
     data:       function () {
                   return {
                     //Instructions table fields
-                    instructions_fields: ['name', 'co', 'cop', 'nwords', 'properties', 'signatureRaw', 'fields', 'definition', 'actions'],
+                    instructions_fields: ['name', 'co', 'cop', 'nwords', 'signatureRaw', 'properties', 'power_consumption', 'fields', 'definition', 'actions'],
                   }
                 },
 
     methods:    {
                   //Show instruction fields modal
-                  view_instructions_modal(name, index, button){
-                    app._data.modal_field_instruction.title = "Fields of " + name;
+                  view_instructions_modal(name, index, button)
+                  {
+                    app._data.modal_field_instruction.title       = "Fields of " + name;
                     app._data.modal_field_instruction.index       = index;
-                    app._data.modal_field_instruction.instruction = Object.assign({}, architecture.instructions[index]);
+                    app._data.modal_field_instruction.instruction = structuredClone(architecture.instructions[index]);
 
                     this.$root.$emit('bv::show::modal', 'fields_instructions', button);
                   },
 
-
-
-
-
-
-
-
-
-
-
-
-
-
                   //Show edit instruction modal
-                  edit_instructions_modal(name, index, button){
-                    /*app._data.modal_edit_instruction.nameent = name;
-                    for (var i = 0; i < architecture.instructions.length; i++) {
-                      if(name == architecture.instructions[i].name && co == architecture.instructions[i].co && cop == architecture.instructions[i].cop){
-                        app._data.modal_edit_instruction.name = architecture.instructions[i].name;
-                        app._data.modal_edit_instruction.type = architecture.instructions[i].type;
-                        app._data.modal_edit_instruction.cop = architecture.instructions[i].cop;
-                        app._data.modal_edit_instruction.co = architecture.instructions[i].co;
-                        app._data.modal_edit_instruction.co = architecture.instructions[i].co;
-                        app._data.modal_edit_instruction.cop = architecture.instructions[i].cop;
-                        app._data.modal_edit_instruction.nwords = architecture.instructions[i].nwords;
-                        app._data.modal_edit_instruction.numfields = architecture.instructions[i].fields.length;
-                        app._data.modal_edit_instruction.numfieldsAux = architecture.instructions[i].fields.length;
-                        app._data.modal_edit_instruction.signature_definition= architecture.instructions[i].signature_definition;
-                        app._data.modal_edit_instruction.definition = architecture.instructions[i].definition;
-                        app._data.modal_edit_instruction.help = architecture.instructions[i].help;
-                        app._data.modal_edit_instruction.separated = [];
-                        app._data.modal_edit_instruction.properties = architecture.instructions[i].properties;
-
-                        for (var j = 0; j < architecture.instructions[i].fields.length; j++) {
-                          app._data.modal_edit_instruction.nameField [j]= architecture.instructions[i].fields[j].name;
-                          app._data.modal_edit_instruction.typeField[j] = architecture.instructions[i].fields[j].type;
-                          //app._data.modal_edit_instruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-                          //app._data.modal_edit_instruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-                          if (typeof(architecture.instructions[i].separated) === 'undefined' || !architecture.instructions[i].separated[j]) {
-                            app._data.modal_edit_instruction.startBitField[j] = architecture.instructions[i].fields[j].startbit;
-                            app._data.modal_edit_instruction.stopBitField[j] = architecture.instructions[i].fields[j].stopbit;
-                            app._data.modal_edit_instruction.separated.push(false);
-                          }
-                          else {
-                            app._data.modal_edit_instruction.startBitField[j] = [...architecture.instructions[i].fields[j].startbit];
-                            app._data.modal_edit_instruction.stopBitField[j] =  [...architecture.instructions[i].fields[j].stopbit];
-                            app._data.modal_edit_instruction.separated.push(true);
-                          }
-                          app._data.modal_edit_instruction.valueField[j] = architecture.instructions[i].fields[j].valueField;
-                        }
-                        this.generate_signature();
-                        break;
-                      }
-                    }*/
-
-                    app._data.modal_edit_instruction.title       = "Edit  " + name;
-                    app._data.modal_edit_instruction.index       = index;
-                    app._data.modal_edit_instruction.instruction = Object.assign({}, architecture.instructions[index]);
-                    app._data.modal_edit_instruction.numfields   = app._data.modal_edit_instruction.instruction.fields.length;
+                  edit_instructions_modal(name, index, button)
+                  {
+                    app._data.modal_edit_instruction.title         = "Edit  " + name;
+                    app._data.modal_edit_instruction.index         = index;
+                    app._data.modal_edit_instruction.instruction   = structuredClone(architecture.instructions[index]);
+                    app._data.modal_edit_instruction.number_fields = app._data.modal_edit_instruction.instruction.fields.length;
 
                     this.$root.$emit('bv::show::modal', 'edit_instructions', button);
                   },
 
-
-
-
-
-
-
-
-
-
                   //Show delete instruction modal
-                  delete_instructions_modal(name, index, button){
+                  delete_instructions_modal(name, index, button)
+                  {
                     app._data.modal_delete_instruction.title = "Delete " + name;
                     app._data.modal_delete_instruction.index = index;
+                    
                     this.$root.$emit('bv::show::modal', 'delete_instructions', button);
                   },
-
-
-
-
-
-
-
-
-
-                  //Generate the instruction signature
-                  /*generate_signature(){ //TODO
-                    var signature = app._data.form_instruction.signature_definition;
-
-                    var re = new RegExp("^ +");
-                    app._data.form_instruction.signature_definition= app._data.form_instruction.signature_definition.replace(re, "");
-
-                    re = new RegExp(" +", "g");
-                    app._data.form_instruction.signature_definition = app._data.form_instruction.signature_definition.replace(re, " ");
-
-                    re = new RegExp("^ +");
-                    signature= signature.replace(re, "");
-
-                    re = new RegExp(" +", "g");
-                    signature = signature.replace(re, " ");
-
-                    for (var z = 0; z < app._data.form_instruction.numfields; z++){
-                      re = new RegExp("[Ff]"+z, "g");
-
-                      if(z == 0){
-                        signature = signature.replace(re, app._data.form_instruction.name);
-                      }
-                      else{
-                        signature = signature.replace(re, app._data.form_instruction.typeField[z]);
-                      }
-                    }
-
-                    re = new RegExp(" ", "g");
-                    signature = signature.replace(re , ",");
-
-                    var signatureRaw = app._data.form_instruction.signature_definition;
-
-                    re = new RegExp("^ +");
-                    signatureRaw= signatureRaw.replace(re, "");
-
-                    re = new RegExp(" +", "g");
-                    signatureRaw = signatureRaw.replace(re, " ");
-
-                    for (var z = 0; z < app._data.form_instruction.numfields; z++){
-                      re = new RegExp("[Ff]"+z, "g");
-                      signatureRaw = signatureRaw.replace(re, app._data.form_instruction.nameField[z]);
-                    }
-
-                    app._data.form_instruction.signature = signature;
-                    app._data.form_instruction.signatureRaw = signatureRaw;
-                  },*/
                 },
 
     template:   '<div>' +

@@ -1812,7 +1812,7 @@ function readRegister ( indexComp, indexElem )
     for (var i = 0; i < instructions.length; i++) {
       draw.space.push(i);
     }
-    draw.danger.push(executionIndex);
+    draw.danger.push(execution_index);
 
     throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be read', 'danger', null);
   }
@@ -1856,7 +1856,7 @@ function writeRegister ( value, indexComp, indexElem )
         for (var i = 0; i < instructions.length; i++) {
            draw.space.push(i);
         }
-        draw.danger.push(executionIndex);
+        draw.danger.push(execution_index);
 
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
@@ -1884,7 +1884,7 @@ function writeRegister ( value, indexComp, indexElem )
         if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
           return;
         }
-        draw.danger.push(executionIndex);
+        draw.danger.push(execution_index);
 
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
@@ -1912,7 +1912,7 @@ function writeRegister ( value, indexComp, indexElem )
         if ((architecture.components[indexComp].elements[indexElem].properties.includes('ignore_write') != false)){
           return;
         }
-        draw.danger.push(executionIndex);
+        draw.danger.push(execution_index);
 
         throw packExecute(true, 'The register '+ architecture.components[indexComp].elements[indexElem].name.join(' | ') +' cannot be written', 'danger', null);
       }
@@ -2017,9 +2017,19 @@ function main_memory_packs_forav ( addr, value )
 
 function main_memory_datatypes_packs_foravt ( addr, value, type, size )
 {
-        return { address: addr,
-                 value: value, default: "00",
-                 type: type,   size: size } ;
+  var default_value = "00"
+
+  if (typeof(main_memory_datatypes[addr]) !== 'undefined')
+  {
+    default_value = main_memory_datatypes[addr].default_value;
+  }
+
+  return { address: addr,
+           value: value, 
+           default: default_value,
+           type: type,
+           size: size 
+         } ;
 }
 
 // reset (set to defaults) and clear (remove all values)
@@ -2853,15 +2863,10 @@ var notifications = [];
 /*Available examples*/
 var example_set_available = [];
 var example_available = [];
-/*Execution*/
-var executionIndex = 0;
-var runExecution = false;
-var runProgram = false;
-var iter1 = 1;
-var executionInit = 1;
+
 /*Keyboard*/
 var consoleMutex = false;
-var mutexRead = false;
+var mutex_read = false;
 var newExecution = true;
 /*Instructions memory*/
 var instructions = [];
@@ -3156,8 +3161,8 @@ function assembly_compiler()
         creator_memory_clear() ;
         extern = [];
         data = [];
-        executionInit = 1;
-        mutexRead = false;
+        execution_init = 1;
+        mutex_read = false;
 
         pc = 4;
 
@@ -6320,6 +6325,16 @@ function binaryStringToInt( b ) {
  */
 
 
+
+
+/*Execution*/
+var execution_index = 0;
+var run_execution = false;
+var run_program = false;
+var iter1 = 1;
+var execution_init = 1;
+
+
 /*
  * Execution
  */
@@ -6336,7 +6351,7 @@ function packExecute ( error, err_msg, err_type, draw )
   return ret ;
 }
 
-function executeInstruction ( )
+function execute_instruction ( )
 {
   var draw = {
       space:   [],
@@ -6346,39 +6361,39 @@ function executeInstruction ( )
       flash:   []
   } ;
 
-  console_log(mutexRead);
+  console_log(mutex_read);
   newExecution = false;
 
   do {
-    console_log(executionIndex);
+    console_log(execution_index);
     console_log(architecture.components[0].elements[0].value);
 
     if (instructions.length == 0) {
       return packExecute(true, 'No instructions in memory', 'danger', null);
     }
-    if (executionIndex < -1) {
+    if (execution_index < -1) {
       return packExecute(true, 'The program has finished', 'warning', null);
     }
-    if (executionIndex == -1) {
+    if (execution_index == -1) {
       return packExecute(true, 'The program has finished with errors', 'danger', null);
     }
-    else if (mutexRead == true) {
+    else if (mutex_read == true) {
       return packExecute(false, '', 'info', null);
     }
 
     //Search a main tag
-    if (executionInit == 1)
+    if (execution_init == 1)
     {
       for (var i = 0; i < instructions.length; i++)
       {
         if (instructions[i].Label == architecture.arch_conf[4].value) {
-          //draw.success.push(executionIndex) ;
+          //draw.success.push(execution_index) ;
           architecture.components[0].elements[0].value = bi_intToBigInt(instructions[i].Address, 10);
-          executionInit = 0;
+          execution_init = 0;
           break;
         }
         else if (i == instructions.length-1) {
-          executionIndex = -1;
+          execution_index = -1;
           return packExecute(true, 'Label "'+ architecture.arch_conf[4].value +'" not found', 'danger', null);
         }
       }
@@ -6391,24 +6406,24 @@ function executeInstruction ( )
     {
       if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) 
       {
-        executionIndex = i;
+        execution_index = i;
 
-        console_log(instructions[executionIndex].hide);
-        console_log(executionIndex);
+        console_log(instructions[execution_index].hide);
+        console_log(execution_index);
         console_log(instructions[i].Address);
 
-        if (instructions[executionIndex].hide == false) {
-          draw.info.push(executionIndex);
+        if (instructions[execution_index].hide == false) {
+          draw.info.push(execution_index);
         }
       }
       else{
-        if (instructions[executionIndex].hide == false) {
+        if (instructions[execution_index].hide == false) {
           draw.space.push(i);
         }
       }
     }
 
-    var instructionExec = instructions[executionIndex].loaded;
+    var instructionExec = instructions[execution_index].loaded;
     var instructionExecParts = instructionExec.split(' ');
 
     var signatureDef;
@@ -6512,7 +6527,7 @@ function executeInstruction ( )
 
 
     // preload
-    if (typeof instructions[executionIndex].preload === "undefined")
+    if (typeof instructions[execution_index].preload === "undefined")
     {
       //writeRegister and readRegister
       var readings_description = "";
@@ -6618,12 +6633,12 @@ function executeInstruction ( )
 
       // DEBUG
       console_log(" ................................. " +
-                  "instructions[" + executionIndex + "]:\n" +
+                  "instructions[" + execution_index + "]:\n" +
                    auxDef + "\n" +
                   " ................................. ");
 
       // preload instruction
-      eval("instructions[" + executionIndex + "].preload = function(elto) { " +
+      eval("instructions[" + execution_index + "].preload = function(elto) { " +
            "   try {\n" +
                auxDef.replace(/this./g,"elto.") + "\n" +
            "   }\n" +
@@ -6635,7 +6650,7 @@ function executeInstruction ( )
 
 
     try {
-      var result = instructions[executionIndex].preload(this);
+      var result = instructions[execution_index].preload(this);
       if ( (typeof result != "undefined") && (result.error) ) {
         return result;
       }
@@ -6649,8 +6664,8 @@ function executeInstruction ( )
 
       console_log("Error: " + e);
       error = 1;
-      draw.danger.push(executionIndex) ;
-      executionIndex = -1;
+      draw.danger.push(execution_index) ;
+      execution_index = -1;
 
       return packExecute(true, msg, 'danger', draw) ;
     }
@@ -6659,32 +6674,32 @@ function executeInstruction ( )
     stats_update(type) ;
 
     // Execution error
-    if (executionIndex == -1){
+    if (execution_index == -1){
        error = 1;
        return packExecute(false, '', 'info', null); //CHECK
     }
 
     // Next instruction to execute
-    if (error != 1 && executionIndex < instructions.length)
+    if (error != 1 && execution_index < instructions.length)
     {
       for (var i = 0; i < instructions.length; i++)
       {
         if (parseInt(instructions[i].Address, 16) == architecture.components[0].elements[0].value) {
-          executionIndex = i;
-          draw.success.push(executionIndex) ;
+          execution_index = i;
+          draw.success.push(execution_index) ;
           break;
         }
-        else if (i == instructions.length-1 && mutexRead == true){
-          executionIndex = instructions.length+1;
+        else if (i == instructions.length-1 && mutex_read == true){
+          execution_index = instructions.length+1;
         }
         else if (i == instructions.length-1){
-          draw.space.push(executionIndex) ;
-          executionIndex = instructions.length+1;
+          draw.space.push(execution_index) ;
+          execution_index = instructions.length+1;
         }
       }
     }
 
-    if (executionIndex >= instructions.length && mutexRead == true)
+    if (execution_index >= instructions.length && mutex_read == true)
     {
       for (var i = 0; i < instructions.length; i++) {
         draw.space.push(i);
@@ -6692,23 +6707,23 @@ function executeInstruction ( )
       draw.info=[];
       return packExecute(false, 'The execution of the program has finished', 'success', draw); //CHECK
     }
-    else if(executionIndex >= instructions.length && mutexRead == false)
+    else if(execution_index >= instructions.length && mutex_read == false)
     {
       for (var i = 0; i < instructions.length; i++){
         draw.space.push(i) ;
       }
       draw.info=[];
-      executionIndex = -2;
+      execution_index = -2;
       return packExecute(false, 'The execution of the program has finished', 'success', draw);
     }
     else{
       if (error != 1) {
-        draw.success.push(executionIndex);
+        draw.success.push(execution_index);
       }
     }
-    console_log(executionIndex) ;
+    console_log(execution_index) ;
   }
-  while(instructions[executionIndex].hide == true) ;
+  while(instructions[execution_index].hide == true) ;
 
   return packExecute(false, null, null, draw) ;
 }
@@ -6723,12 +6738,12 @@ function executeProgramOneShot ( limit_n_instructions )
   // execute program
   for (var i=0; i<limit_n_instructions; i++)
   {
-    ret = executeInstruction();
+    ret = execute_instruction();
 
     if (ret.error == true){
       return ret;
     }
-    if (executionIndex < -1) {
+    if (execution_index < -1) {
       return ret;
     }
   }
@@ -6741,8 +6756,8 @@ function creator_executor_exit ( )
   // Google Analytics
   creator_ga('execute', 'execute.exit');
 
-  // executionIndex = -1; // REASON: line 360 said that if executionIndex == -1 then throw error... :-(
-  executionIndex = instructions.length + 1;
+  // execution_index = -1; // REASON: line 360 said that if execution_index == -1 then throw error... :-(
+  execution_index = instructions.length + 1;
 }
 
 function reset ()
@@ -6750,14 +6765,14 @@ function reset ()
   // Google Analytics
   creator_ga('execute', 'execute.reset');
 
-  executionIndex = 0;
-  executionInit = 1;
+  execution_index = 0;
+  execution_init = 1;
 
   // Reset stats
     stats_reset() ;
 
   // Reset console
-  mutexRead    = false ;
+  mutex_read    = false ;
   newExecution = true ;
   keyboard = '' ;
   display  = '' ;
@@ -6898,12 +6913,12 @@ function writeStackLimit ( stackLimit )
   }
   if (stackLimit <= parseInt(architecture.memory_layout[3].value) && stackLimit >= parseInt(parseInt(architecture.memory_layout[2].value)))
   {
-    draw.danger.push(executionIndex);
+    draw.danger.push(execution_index);
     throw packExecute(true, 'Stack pointer cannot be placed in the data segment', 'danger', null);
   }
   else if(stackLimit <= parseInt(architecture.memory_layout[1].value) && stackLimit >= parseInt(architecture.memory_layout[0].value))
   {
-    draw.danger.push(executionIndex);
+    draw.danger.push(execution_index);
     throw packExecute(true, 'Stack pointer cannot be placed in the text segment', 'danger', null);
   }
   else
@@ -7045,20 +7060,20 @@ function keyboard_read ( fn_post_read, fn_post_params )
   }
 
   // UI
-  mutexRead = true;
+  mutex_read = true;
   app._data.enter = false;
-  console_log(mutexRead);
+  console_log(mutex_read);
 
   if (newExecution == true)
   {
     app._data.keyboard = "";
     consoleMutex    = false;
-    mutexRead       = false;
+    mutex_read       = false;
     app._data.enter = null;
 
     show_notification('The data has been uploaded', 'info') ;
 
-    if (runProgram == false){
+    if (run_program == false){
       uielto_toolbar_btngroup.methods.executeProgram();
     }
 
@@ -7074,25 +7089,25 @@ function keyboard_read ( fn_post_read, fn_post_params )
 
   app._data.keyboard = "";
   consoleMutex    = false;
-  mutexRead       = false;
+  mutex_read       = false;
   app._data.enter = null;
 
   show_notification('The data has been uploaded', 'info') ;
 
-  console_log(mutexRead);
+  console_log(mutex_read);
 
-  if (executionIndex >= instructions.length)
+  if (execution_index >= instructions.length)
   {
     for (var i = 0; i < instructions.length; i++){
       draw.space.push(i) ;
     }
 
-    executionIndex = -2;
+    execution_index = -2;
     return packExecute(true, 'The execution of the program has finished', 'success', null);
   }
 
-  if (runProgram == false) {
-    app.$options.components["toolbar-btngroup"].options.methods.executeProgram();
+  if (run_program == false) {
+    uielto_toolbar_btngroup.methods.execute_program();
   }
 }
 

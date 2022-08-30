@@ -37,7 +37,8 @@
 
     methods:    {
                   //Delete the instruction
-                  delete_instructions(){
+                  delete_instructions()
+                  {
                     architecture.instructions.splice(this._props.index, 1);
                     show_notification('Instruction correctly deleted', 'success');
                   },

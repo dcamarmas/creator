@@ -37,7 +37,8 @@
 
     methods:    {
                   //Load backup from cache
-                  load_copy(){
+                  load_copy()
+                  {
                     //Load architecture from cache
                     var aux_architecture = JSON.parse(localStorage.getItem("architecture_copy"));
                     architecture = register_value_deserialize(aux_architecture);
@@ -46,7 +47,8 @@
 
                     //Generate architecture hash table
                     architecture_hash = [];
-                    for (var i = 0; i < architecture.components.length; i++){
+                    for (var i = 0; i < architecture.components.length; i++)
+                    {
                       architecture_hash.push({name: architecture.components[i].name, index: i});
                       app._data.architecture_hash = architecture_hash;
                     }
@@ -56,8 +58,10 @@
                     backup_data_address = architecture.memory_layout[3].value;
 
                     //Load examples
-                    for (var i = 0; i < app._data.arch_available.length; i++) {
-                      if(app._data.arch_available[i].name === app._data.architecture_name){
+                    for (var i = 0; i < app._data.arch_available.length; i++)
+                    {
+                      if(app._data.arch_available[i].name === app._data.architecture_name)
+                      {
                         uielto_preload_architecture.methods.load_examples_available(app._data.arch_available[i].examples[0]);
                       }
                     }
@@ -74,7 +78,8 @@
                   },
 
                   //Delete backup on cache
-                  remove_copy(){
+                  remove_copy()
+                  {
                     localStorage.removeItem("architecture_copy");
                     localStorage.removeItem("assembly_copy");
                     localStorage.removeItem("date_copy");

@@ -62,6 +62,9 @@ try
       //Accesskey
       browser: "",
 
+      //Displayed notifications
+      notifications: notifications, //TODO: copy or only in app?
+
 
       //
       // Current view
@@ -76,9 +79,6 @@ try
 
       //Notification speed
       notification_time: 1500,
-
-      //Displayed notifications
-      notifications: notifications, //TODO: copy?
 
       // Instruction help size
       instruction_help_size: 33,
@@ -173,7 +173,7 @@ try
         register_file_index: null,
         type: '',
         double_precision: '',
-        id: '',
+        reg_id: '',
         simple_reg: []
       },
       //Edit register modal
@@ -181,16 +181,11 @@ try
         title: '',
         register_file_index: null,
         register_index: null,
-        name: '',
         type: '',
         double_precision: '',
         reg_id: '',
-        default_value: '',
-        properties: [],
-        precision: '',
         simple_reg: [],
-        simple1: '',
-        simple2: ''
+        register: {}
       },
       //Delete register modal
       modal_delete_register:{ //TODO: include into register component - modal info
@@ -200,137 +195,44 @@ try
       },
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Instructions fields*/
+      //Instructions fields
       modal_field_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
         instruction: {}
       },
-
-
-
-
-
-
-
-
-
-
-
-
-      /*Edit instruction modal*/
+      //Edit instruction modal
       modal_edit_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
         instruction: {},
-        numfields: null
-
-
-
-
-        /*element: '',
-        co: '',
-        cop: '',
-        name: '',
-        type: '',
-        co: '',
-        cop: '',
-        nwords: 1,
-        help: '',
-        properties: [],
-        numfields: "1",
-        numfieldsAux: "1",
-        nameField: [],
-        typeField: [],
-        separated: [],
-        startBitField: [],
-        stopBitField: [],
-        valueField: [],
-        assignedCop: false,
-        signature: '',
-        signatureRaw: '',
-        signature_definition: '',
-        definition: '',*/
+        number_fields: null
       },
-
-
-
-
-
-
-
-      /*Delete instruction modal*/
+      //Delete instruction modal
       modal_delete_instruction:{ //TODO: include into instruction component - modal info
         title: '',
         index: null,
       },
 
 
-
-
-
-
-
-
-
-
-
-      //Pseudoinstruction form
-      formPseudoinstruction: { //TODO - modal info
-        name: '',
-        nwords: 1,
-        numfields: "0",
-        numfieldsAux: "0",
-        nameField: [],
-        typeField: [],
-        startBitField: [],
-        stopBitField: [],
-        signature: '',
-        signatureRaw: '',
-        signature_definition: '',
-        definition: '',
-        help: '',
-      },
-
-      //Instructions fields
-      modalViewPseudoFields:{ //TODO: include into pseudoinstruction component - modal info
+      //Pseudoinstruction fields
+      modal_field_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
         title: '',
+        index: null,
+        pseudoinstruction: {}
       },
-
       //Edit pseudoinstruction modal
-      modalEditPseudoinst:{ //TODO: include into pseudoinstruction component - modal info
-        element: '',
-        index: 0,
+      modal_edit_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
+        title: '',
+        index: null,
+        pseudoinstruction: {},
+        number_fields: null
       },
-
       //Delete pseudoinstruction modal
-      modalDeletPseudoinst:{ //TODO: include into pseudoinstruction component - modal info
-        index: 0,
+      modal_delete_pseudoinstruction:{ //TODO: include into pseudoinstruction component - modal info
+        title: '',
+        index: null,
       },
-
-
-
-
-
-
-
-
-
-
-
-
 
 
       //Edit directive modal
@@ -339,7 +241,6 @@ try
         index: null,
         directive: {}
       },
-
       //Delete directive modal //TODO: include into directives component - modal info
       modal_delete_directive:{
         title: '',
@@ -358,7 +259,6 @@ try
 
       example_set_available: example_set_available,
       example_available: example_available,
-      //example_loaded: null, //TODO
 
       //
       //Code error modal
@@ -391,7 +291,7 @@ try
       instructions_packed: 20,
 
       //Run button
-      runExecution: false,
+      run_execution: false,
 
       //Reset button
       resetBut: false,
@@ -584,11 +484,11 @@ try
       {
         show_notification("There has been an exception. Error description: '" + error, 'danger') ;
 
-        if (executionIndex != -1) {
-          instructions[executionIndex]._rowVariant = 'danger';
+        if (execution_index != -1) {
+          instructions[execution_index]._rowVariant = 'danger';
         }
         
-        executionIndex = -1;
+        execution_index = -1;
 
         /* Google Analytics */
         creator_ga('execute', 'execute.exception', 'execute.exception.' + error);
@@ -673,4 +573,3 @@ catch(e)
     location.reload(true)
   }, 3000);
 }
-

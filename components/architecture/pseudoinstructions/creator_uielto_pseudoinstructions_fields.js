@@ -26,6 +26,7 @@
         props:      {
                       id:                             { type: String, required: true },
                       title:                          { type: String, required: true },
+                      index:                          { type: Number, required: true },
                       pseudoinstruction:              { type: Object, required: true }  
                     },
 
@@ -36,34 +37,18 @@
                     },
 
         methods:    {
-                      //Clean instruction form
-                      clean_form(){
-                        app._data.formPseudoinstruction.name = '';
-                        app._data.formPseudoinstruction.nwords = 1;
-                        app._data.formPseudoinstruction.numfields = "0";
-                        app._data.formPseudoinstruction.numfields = "0";
-                        app._data.formPseudoinstruction.nameField = [];
-                        app._data.formPseudoinstruction.typeField = [];
-                        app._data.formPseudoinstruction.startBitField = [];
-                        app._data.formPseudoinstruction.stopBitField = [];
-                        app._data.formPseudoinstruction.signature ='';
-                        app._data.formPseudoinstruction.signatureRaw = '';
-                        app._data.formPseudoinstruction.signature_definition = '';
-                        app._data.formPseudoinstruction.definition = '';
-                        app._data.formPseudoinstruction.help = '';
-                      },
+
                     },
 
         template:   '<b-modal :id ="id"' +
                     '         size="lg"' +
                     '         :title="title" ' +
-                    '         hide-footer ' +
-                    '         @hidden="clean_form">' +
+                    '         hide-footer>' +
                     '  <b-form>' +
                     '    <div id="viewFieldsPseudo">' +
                     '      <div class="col-lg-12 col-sm-12 row">' +
                     '        <div class="col-lg-2 col-2 fields">' +
-                    '          ' +
+                    '' +
                     '        </div>' +
                     '        <div class="col-lg-2 col-2 fields">' +
                     '          <span class="h6">Name:</span>' +
@@ -82,16 +67,16 @@
                     '        </div>' +
                     '      </div>' +
                     '' +
-                    '      <div v-if="isNaN(parseInt(pseudoinstruction.numfieldsAux)) == false">  ' +
-                    '        <div v-for="i in parseInt(pseudoinstruction.numfieldsAux)">' +
+                    '      <div>  ' +
+                    '        <div v-for="(item, field_index) in pseudoinstruction.fields">' +
                     '          <div class="col-lg-12 col-sm-12 row">' +
                     '            <div class="col-lg-2 col-2 fields">' +
-                    '              <span class="h6">Field {{i-1}}</span>' +
+                    '              <span class="h6">Field {{field_index}}</span>' +
                     '            </div>' +
                     '            <div class="col-lg-2 col-2 fields">' +
                     '              <b-form-group>' +
                     '                <b-form-input type="text" ' +
-                    '                              v-model="pseudoinstruction.nameField[i-1]" ' +
+                    '                              v-model="pseudoinstruction.fields[field_index].name" ' +
                     '                              required ' +
                     '                              size="sm" ' +
                     '                              disabled ' +
@@ -101,7 +86,7 @@
                     '            </div>' +
                     '            <div class="col-lg-2 col-2 fields">' +
                     '              <b-form-group>' +
-                    '                <b-form-input v-model="pseudoinstruction.typeField[i-1]" ' +
+                    '                <b-form-input v-model="pseudoinstruction.fields[field_index].type" ' +
                     '                              required ' +
                     '                              type="text" ' +
                     '                              size="sm" ' +
@@ -115,7 +100,7 @@
                     '                <b-form-input type="number" ' +
                     '                              min="0" ' +
                     '                              :max="32 * pseudoinstruction.nwords - 1" ' +
-                    '                              v-model="pseudoinstruction.startBitField[i-1]" ' +
+                    '                              v-model="pseudoinstruction.fields[field_index].startbit" ' +
                     '                              required ' +
                     '                              size="sm" ' +
                     '                              disabled ' +
@@ -125,7 +110,14 @@
                     '            </div>' +
                     '            <div class="col-lg-2 col-2 fields">' +
                     '              <b-form-group>' +
-                    '                <b-form-input type="number" min="0" :max="32 * pseudoinstruction.nwords - 1" v-model="pseudoinstruction.stopBitField[i-1]" required size="sm" disabled title="Field end bit">' +
+                    '                <b-form-input type="number"' +
+                    '                              min="0"' +
+                    '                              :max="32 * pseudoinstruction.nwords - 1"' +
+                    '                              v-model="pseudoinstruction.fields[field_index].stopbit"' +
+                    '                              required' +
+                    '                              size="sm"' +
+                    '                              disabled' +
+                    '                              title="Field end bit">' +
                     '                </b-form-input>' +
                     '              </b-form-group>' +
                     '            </div>' +

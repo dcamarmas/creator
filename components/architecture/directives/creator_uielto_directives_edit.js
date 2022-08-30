@@ -57,20 +57,25 @@
 
     methods:    {
                   //Verify all fields of modify directive
-                  verify_edit_directive(evt){
+                  verify_edit_directive(evt)
+                  {
                     evt.preventDefault();
 
-                    if (!this._props.directive.name || !this._props.directive.action) {
+                    if (!this._props.directive.name || !this._props.directive.action)
+                    {
                       show_notification('Please complete all fields', 'danger') ;
                     }
-                    else {
+                    else 
+                    {
                       if(isNaN(parseInt(this._props.directive.size)) && (this._props.directive.action == 'byte' || this._props.directive.action == 'half_word' || this._props.directive.action == 'word' || this._props.directive.action == 'double_word' || this._props.directive.action == 'float' || this._props.directive.action == 'double' || this._props.directive.action == 'space')){
                         show_notification('Please complete all fields', 'danger') ;
                       }
-                      else{
-                        console.log(this._props.index);
-                        for (var i = 0; i < architecture.directives.length; i++) {
-                          if((this._props.directive.name == architecture.directives[i].name) && (this._props.index != i)){
+                      else
+                      {
+                        for (var i = 0; i < architecture.directives.length; i++)
+                        {
+                          if((this._props.directive.name == architecture.directives[i].name) && (this._props.index != i))
+                          {
                             show_notification('The directive already exists', 'danger') ;
                             return;
                           }
@@ -82,11 +87,9 @@
                   },
 
                   //Edit directive
-                  edit_directive(){
+                  edit_directive()
+                  {
                     this.show_modal = false;
-
-                    architecture.directives[this._props.index].name   = this._props.directive.name;
-                    architecture.directives[this._props.index].action = this._props.directive.action;
 
                     if(this._props.directive.action == 'byte' || this._props.directive.action == 'half_word' || this._props.directive.action == 'word' || this._props.directive.action == 'double_word' || this._props.directive.action == 'float' || this._props.directive.action == 'double' || this._props.directive.action == 'space'){
                       architecture.directives[this._props.index].size = this._props.directive.size;
@@ -95,12 +98,16 @@
                       architecture.directives[this._props.index].size = null;
                     }
 
+                    Object.assign(architecture.directives[this._props.index], this._props.directive);
+
                     show_notification('Directive correctly modified', 'success') ;
                   },
 
                   //Form validator
-                  valid(value){
-                    if(parseInt(value) != 0){
+                  valid(value)
+                  {
+                    if(parseInt(value) != 0)
+                    {
                       if(!value){
                         return false;
                       }
