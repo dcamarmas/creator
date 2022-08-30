@@ -34,74 +34,61 @@
               
   data:       function () {
                 return {
-                  
-                  /*power_consumption Graph configure*/
+                  //Power_consumption Graph configure
                   chartOptions: {
-                    colors:['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
                     chart: {
-                      id: 'graphic',
-                      type: 'donut',
-                    },
-                    labels: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
-                    dataLabels: {
-                      enabled: true
-                    },
-                    donut: {
-                      labels: {
-                        show: true,
-                        total: {
-                          show: true,
-                          showAlways: true,
-                          label: "Total",
-                        },
-                      },
-                    },
-                    fill: {
-                      type: 'gradient',
-                      gradient: {
-                        shade: 'dark',
-                        type: "horizontal",
-                        shadeIntensity: 0.5,
-                        gradientToColors: undefined, // optional, if not defined - uses the shades of same color in series
-                        inverseColors: true,
-                        opacityFrom: 1,
-                        opacityTo: 1,
-                        stops: [0, 50, 100],
-                        colorStops: []
-                      },
-                      colors: ['red', 'blue', 'yellow', 'purple', 'green', 'orange', 'gray', 'pink', 'teal', 'black', 'lime', 'indigo', 'cyan'],
-                    },
-                    legend: {
-                      formatter: function(val, opts) {
-                        return val + " - " + opts.w.globals.series[opts.seriesIndex]
-                      }
+                      type: 'bar',
+                      height: 350
                     },
                     plotOptions: {
-                      pie: {
-                        donut: {
-                          labels: {
-                            show: true,
-                            total: {
-                              show: true,
-                              showAlways: true,
-                              color: 'black',
-                              formatter: function (w) {
-                                return w.globals.seriesTotals.reduce((a, b) => {
-                                  return a + b
-                                }, 0)
-                              }
-                            }
-                          }
-                        }
+                      bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        endingShape: 'rounded',
+                        distributed: true,
+                      },
+                    },
+                    dataLabels: {
+                      enabled: true,
+                      style: {
+                        fontSize: '12px',
+                        colors: ["#304758"]
                       }
                     },
-                  },
+                    legend: {
+                      show: false
+                    },
+                    stroke: {
+                      show: true,
+                      width: 2,
+                      colors: ['transparent']
+                    },
+                    xaxis: {
+                      categories: ["Arithmetic integer", "Arithmetic floating point", "Logic", "Transfer between registers", "Memory access", "Comparison", "I/O", "Syscall", "Control", "Function call", "Conditional bifurcation", "Unconditional bifurcation", "Other"],
+                      
+                    },
+                    yaxis: {
+                      title: {
+                        text: 'Power Consumption'
+                      }
+                    },
+                    fill: {
+                      opacity: 1
+                    },
+                    tooltip: {
+                      y: {
+                        formatter: function (val) {
+                          return "Power Consumption: " + val
+                        }
+                      }
+                    }
+                  }
                 }
               },
 
   template:   ' <div id="power_consumption_plot" class="stats px-0">' +
               '   <apexchart id="graphic" ' +
-              '              type="donut" ' +
+              '              type="bar" ' +
               '              :options="chartOptions" ' +
               '              :series="power_consumption_value" ' +
               '              height="150%" >' +

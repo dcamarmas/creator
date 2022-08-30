@@ -144,7 +144,11 @@ var stats = [
 ];
 /*Power consumption*/
 var total_power_consumption = 0;
-var power_consumption_value = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+var power_consumption_value = [
+                                {
+                                  data: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                                }
+                              ];
 var power_consumption = [
   { type: 'Arithmetic integer', power_consumption: 0, percentage: 0 },
   { type: 'Arithmetic floating point', power_consumption: 0, percentage: 0},

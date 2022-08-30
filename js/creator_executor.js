@@ -687,7 +687,7 @@ function power_consumtion_update ( type )
     if (type == power_consumption[i].type)
     {
       power_consumption[i].power_consumption++;
-      power_consumption_value[i] ++;
+      power_consumption_value[0].data[i] ++;
 
       total_power_consumption++;
       if (typeof app !== "undefined") {
@@ -714,7 +714,7 @@ function power_consumtion_reset ( )
     power_consumption[i].percentage = 0;
 
     power_consumption[i].number_instructions = 0;
-    power_consumption_value[i] = 0;
+    power_consumption_value[0].data[i] = 0;
   }
 }
 
