@@ -82,7 +82,12 @@
                       precision = true;
                     }
 
-                    var new_register_file = {name: this.register_file_fields.name, type: this.register_file_fields.type, double_precision: precision ,elements:[]};
+                    var new_register_file = {
+                                              name: this.register_file_fields.name, 
+                                              type: this.register_file_fields.type, 
+                                              double_precision: precision ,
+                                              elements:[]
+                                            };
                     architecture.components.push(new_register_file);
                     var new_register_file_hash = {name: this.register_file_fields.name, index: architecture_hash.length};
                     architecture_hash.push(new_register_file_hash);

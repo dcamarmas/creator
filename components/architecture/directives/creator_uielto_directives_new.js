@@ -95,7 +95,11 @@
                   {
                     this.show_modal = false;
 
-                    var new_directive = {name: this.directive_fields.name, action: this.directive_fields.action, size: this.directive_fields.size};
+                    var new_directive = {
+                                          name: this.directive_fields.name, 
+                                          action: this.directive_fields.action, 
+                                          size: this.directive_fields.size
+                                        };
                     architecture.directives.push(new_directive);
 
                     show_notification('Directive correctly created', 'success') ;

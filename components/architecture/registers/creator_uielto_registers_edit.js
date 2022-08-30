@@ -82,46 +82,8 @@
                   edit_register()
                   {
                     this.show_modal = false;
-
-                    //Modify the register into the register file
-                    architecture.components[this._props.register_file_index].elements[this._props.register_index].name = this._props.register.name;
-                    if(architecture.components[this._props.register_file_index].type == "control" || architecture.components[this._props.register_file_index].type == "integer"){
-                      architecture.components[this._props.register_file_index].elements[this._props.register_index].default_value = bi_intToBigInt(this._props.register.default_value,10) ;
-                    }
-                    else
-                    {
-                      if(architecture.components[this._props.register_file_index].double_precision == false){
-                        architecture.components[this._props.register_file_index].elements[this._props.register_index].default_value = parseFloat(this._props.register.default_value, 10);
-                      }
-                      else
-                      {
-                        var aux_value;
-                        var aux_sim1;
-                        var aux_sim2;
-
-                        for (var a = 0; a < architecture_hash.length; a++) 
-                        {
-                          for (var b = 0; b < architecture.components[a].elements.length; b++) 
-                          {
-                            if(architecture.components[a].elements[b].name == this._props.register.simple_reg[0]){
-                              aux_sim1 = bin2hex(float2bin(architecture.components[a].elements[b].value));
-                            }
-                            if(architecture.components[a].elements[b].name == this._props.register.simple_reg[1]){
-                              aux_sim2 = bin2hex(float2bin(architecture.components[a].elements[b].value));
-                            }
-                          }
-                        }
-
-                        aux_value = aux_sim1 + aux_sim2;
-
-                        architecture.components[this._props.register_file_index].elements[this._props.register_index].value = hex2double("0x" + aux_value);
-                        architecture.components[this._props.register_file_index].elements[this._props.register_index].simple_reg[0] = this._props.register.simple_reg[0];
-                        architecture.components[this._props.register_file_index].elements[this._props.register_index].simple_reg[1] = this._props.register.simple_reg[1];
-                      }
-                    }
-                    architecture.components[this._props.register_file_index].elements[this._props.register_index].properties = this._props.register.properties;
-
-                    //architecture.components[this._props.register_file_index].elements[this._props.register_index] = Object.assign({}, this._props.register); //TODO
+                    
+                    Object.assign(architecture.components[this._props.register_file_index].elements[this._props.register_index], this._props.register);
 
                     show_notification('Register file correctly modified', 'success') ;
                   },

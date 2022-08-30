@@ -72,7 +72,6 @@
                       }
                       else
                       {
-                        console.log(this._props.index);
                         for (var i = 0; i < architecture.directives.length; i++)
                         {
                           if((this._props.directive.name == architecture.directives[i].name) && (this._props.index != i))
@@ -92,9 +91,6 @@
                   {
                     this.show_modal = false;
 
-                    architecture.directives[this._props.index].name   = this._props.directive.name;
-                    architecture.directives[this._props.index].action = this._props.directive.action;
-
                     if(this._props.directive.action == 'byte' || this._props.directive.action == 'half_word' || this._props.directive.action == 'word' || this._props.directive.action == 'double_word' || this._props.directive.action == 'float' || this._props.directive.action == 'double' || this._props.directive.action == 'space'){
                       architecture.directives[this._props.index].size = this._props.directive.size;
                     }
@@ -102,7 +98,7 @@
                       architecture.directives[this._props.index].size = null;
                     }
 
-                    //architecture.directives[this._props.index] = Object.assign({}, this._props.directive); //TODO
+                    Object.assign(architecture.directives[this._props.index], this._props.directive);
 
                     show_notification('Directive correctly modified', 'success') ;
                   },

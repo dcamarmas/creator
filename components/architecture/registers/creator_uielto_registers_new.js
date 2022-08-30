@@ -96,17 +96,35 @@
                     //Add the new register into the register file
                     if(this._props.type == "integer")
                     {
-                      var new_element = {name:this.register.name, nbits: parseInt(architecture.arch_conf[1].value), value: bi_intToBigInt(this.register.default_value,10), default_value:bi_intToBigInt(this.register.default_value,10), properties: this.register.properties};
+                      var new_element = {
+                                          name:this.register.name, 
+                                          nbits: parseInt(architecture.arch_conf[1].value), 
+                                          value: bi_intToBigInt(this.register.default_value,10), 
+                                          default_value:bi_intToBigInt(this.register.default_value,10), 
+                                          properties: this.register.properties
+                                        };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
                     if(this._props.type == "control")
                     {
-                      var new_element = {name:this.register.name, nbits: parseInt(architecture.arch_conf[1].value), value: bi_intToBigInt(this.register.default_value,10), default_value:bi_intToBigInt(this.register.default_value,10), properties: ["read", "write"]};
+                      var new_element = {
+                                          name:this.register.name, 
+                                          nbits: parseInt(architecture.arch_conf[1].value), 
+                                          value: bi_intToBigInt(this.register.default_value,10), 
+                                          default_value:bi_intToBigInt(this.register.default_value,10), 
+                                          properties: ["read", "write"]
+                                        };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
                     if((this._props.type == "floating point")&&(this._props.double_precision == false))
                     {
-                      var new_element = {name:this.register.name, nbits: parseInt(architecture.arch_conf[1].value), value: parseFloat(this.register.default_value), default_value:parseFloat(this.register.default_value), properties: this.register.properties};
+                      var new_element = {
+                                          name:this.register.name, 
+                                          nbits: parseInt(architecture.arch_conf[1].value), 
+                                          value: parseFloat(this.register.default_value), 
+                                          default_value:parseFloat(this.register.default_value), 
+                                          properties: this.register.properties
+                                        };
                       architecture.components[this._props.register_file_index].elements.push(new_element);
                     }
                     if((this._props.type == "floating point")&&(this._props.double_precision == true))
