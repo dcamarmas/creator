@@ -47,11 +47,11 @@
 
                   switch(view){
                     case "hex":
-                      if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                         ret = "0x" + (((register.value).toString(16)).padStart(register.nbits/4, "0")).toUpperCase();
                       }
                       else {
-                        if (this.component.name == "Simple floating point registers") {
+                        if (architecture.components[this._props.component.index].type == "floating point") {
                           ret = "0x" + bin2hex(float2bin(register.value));
                         }
                         else {
@@ -61,11 +61,11 @@
                       break;
 
                     case "bin":
-                      if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                         ret = (((register.value).toString(2)).padStart(register.nbits, "0"));
                       }
                       else {
-                        if (this.component.name == "Simple floating point registers") {
+                        if (architecture.components[this._props.component.index].type == "floating point") {
                           ret = float2bin(register.value);
                         }
                         else {
@@ -75,7 +75,7 @@
                       break;
 
                     case "signed":
-                      if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                         if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 1)
                           ret = parseInt(register.value.toString(10))-0x100000000;
                         if ((((register.value).toString(2)).padStart(register.nbits, '0')).charAt(0) == 0)
@@ -91,11 +91,11 @@
                       break;
 
                     case "char":
-                      if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                         ret = hex2char8((((register.value).toString(16)).padStart(register.nbits/4, "0")));
                       }
                       else {
-                        if (this.component.name == "Simple floating point registers") {
+                        if (architecture.components[this._props.component.index].type == "floating point") {
                           ret = hex2char8(bin2hex(float2bin(register.value)));
                         }
                         else {
@@ -105,7 +105,7 @@
                       break;
 
                     case "decimal":
-                      if (this.component.name == "Control registers" || this.component.name == "Integer registers") {
+                      if (architecture.components[this._props.component.index].type == "control" || architecture.components[this._props.component.index].type == "integer") {
                         ret = hex2float("0x"+(((register.value).toString(16)).padStart(register.nbits/4, "0")));
                       }
                       else {
